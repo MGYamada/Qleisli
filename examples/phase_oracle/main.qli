@@ -1,7 +1,7 @@
 use oracle::phase_oracle;
-use std::quantum::init0;
-use std::quantum::h;
-use std::observe::measure_z;
+use std::state::init0;
+
+
 
 observe fn main() -> Bit {
     measure_z(h(phase_oracle(h(init0()))))

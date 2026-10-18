@@ -24,7 +24,7 @@ fn large_inline_th_repetition_matches_the_same_independent_recurrence() {
 
 fn th_repetition(counts: &[usize], inline_count: usize) {
     let root = SourceRoot::new("");
-    let imports = "use std::quantum::{init0,h,t}; use std::observe::measure_z;
+    let imports = "use std::state::init0; use std::gate::t;\x20
         unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}";
     for &count in counts {
         let source =
@@ -70,14 +70,14 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
 )]
 #[test]
 fn grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution() {
-    let source = "// 日本語\n/// Shared import docs.\nuse std::{quantum::{init0,h,},observe::measure_z};\nobserve fn main()->Bit{measure_z(h(init0()))}";
+    let source = "// 日本語\n/// Shared import docs.\nuse std::{state::init0,gate::{x,t,}};\nobserve fn main()->Bit{measure_z(h(init0()))}";
     let parsed = parse_documented_module(source).unwrap();
     assert_eq!(parsed.syntax.uses.len(), 3);
     for (item, docs) in parsed.syntax.uses.iter().zip(&parsed.import_docs) {
         assert_eq!(docs[0].text, " Shared import docs.");
         assert_eq!(
             &source[item.span.start..item.span.end],
-            "use std::{quantum::{init0,h,},observe::measure_z};"
+            "use std::{state::init0,gate::{x,t,}};"
         );
     }
     let root = SourceRoot::new(source);
@@ -91,14 +91,14 @@ fn grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution() {
         2
     );
     for bad in [
-        "use std::quantum::{};",
-        "use std::quantum::{h,,x};",
-        "use std::quantum::{h x};",
-        "use std::quantum::{h;",
+        "use std::gate::{};",
+        "use std::gate::{x,,t};",
+        "use std::gate::{x t};",
+        "use std::gate::{x;",
     ] {
         assert!(parse_module(bad).is_err(), "{bad}");
     }
-    for bad in ["use std::quantum::{h,h};", "use helper::{hidden};"] {
+    for bad in ["use std::gate::{x,x};", "use helper::{hidden};"] {
         root.write("main.qli", bad);
         root.write("helper.qli", "unitary fn hidden(q:Q<Bit>)->Q<Bit>{q}");
         assert!(check_project(&root.0).is_err(), "{bad}");
@@ -259,44 +259,142 @@ fn grouped_import_markdown_renders_each_source_item_once() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn every_sealed_declaration_matches_the_existing_source_signature() {
+fn every_language_primitive_matches_the_existing_source_signature() {
+    use PrimitiveId::*;
+    use qleisli::frontend::core::{PrimitiveId, primitive};
+    // Independent small concrete ports cover both dynamic and fixed contracts;
+    // the catalog supplies no source authority to these ordinary declarations.
+    let cases = [
+        (H, "unitary", 0, 1, "q:Q<Bit>", "Q<Bit>", "h(q)"),
+        (
+            Phase,
+            "unitary",
+            2,
+            1,
+            "q:Q<Bit>",
+            "Q<Bit>",
+            "phase[1,2](q)",
+        ),
+        (
+            GlobalPhaseEighth,
+            "unitary",
+            0,
+            1,
+            "q:Q<(Bit,Unit)>",
+            "Q<(Bit,Unit)>",
+            "global_phase_eighth(q)",
+        ),
+        (Unit, "unitary", 0, 1, "v:Unit", "Q<Unit>", "unit(v)"),
+        (Finish, "unitary", 0, 1, "q:Q<Unit>", "Unit", "finish(q)"),
+        (
+            Split,
+            "unitary",
+            0,
+            1,
+            "q:Q<(Bit,Unit)>",
+            "(Q<Bit>,Q<Unit>)",
+            "split(q)",
+        ),
+        (
+            Join,
+            "unitary",
+            0,
+            2,
+            "a:Q<Bit>,b:Q<Unit>",
+            "Q<(Bit,Unit)>",
+            "join(a,b)",
+        ),
+        (MeasureZ, "observe", 0, 1, "q:Q<Bit>", "Bit", "measure_z(q)"),
+        (
+            Discard,
+            "observe",
+            0,
+            1,
+            "q:Q<(Bit,Unit)>",
+            "Unit",
+            "discard(q)",
+        ),
+        (
+            TakeBit,
+            "unitary",
+            2,
+            1,
+            "q:Q<Bits<1>>",
+            "(Q<Bit>,Q<Bits<0>>)",
+            "take_bit[1,0](q)",
+        ),
+        (
+            PutBit,
+            "unitary",
+            2,
+            2,
+            "a:Q<Bit>,z:Q<Bits<0>>",
+            "Q<Bits<1>>",
+            "put_bit[1,0](a,z)",
+        ),
+        (EmptyBits, "unitary", 0, 0, "", "Bits<0>", "empty_bits()"),
+        (
+            PrependBit,
+            "unitary",
+            1,
+            2,
+            "b:Bit,z:Bits<0>",
+            "Bits<1>",
+            "prepend_bit[0](b,z)",
+        ),
+    ];
     let root = SourceRoot::new("");
-    for declaration in PRIMITIVES {
-        let signature = declaration
-            .signature
-            .replace("Q<(A,B)>", "Q<(Bit,Unit)>")
-            .replace("Q<A>", "Q<Bit>")
-            .replace("Q<B>", "Q<Unit>");
-        let (input, output) = signature.split_once(" -> ").unwrap();
-        let inputs = input.strip_prefix('(').unwrap().strip_suffix(')').unwrap();
-        // Input parameter commas within Q<(A,B)> are not argument separators.
-        let input_types: Vec<&str> = match declaration.name {
-            "init0" => vec![],
-            "split" => vec!["Q<(Bit,Unit)>"],
-            "join" => vec!["Q<Bit>", "Q<Unit>"],
-            _ => inputs.split(", ").collect(),
+    assert_eq!(PRIMITIVES.len(), cases.len());
+    assert_eq!(PrimitiveId::ALL.len(), cases.len());
+    let mut visited = std::collections::BTreeSet::new();
+    for (id, kind, natural_arity, arity, parameters, output, body) in cases {
+        assert!(visited.insert(id));
+        let descriptor = primitive(id);
+        assert_eq!(descriptor.id, id);
+        assert_eq!(descriptor.name(), id.spelling());
+        assert_eq!(descriptor.natural_arity(), natural_arity);
+        assert_eq!(descriptor.arity(), arity);
+        assert_eq!(format!("{:?}", descriptor.kind()).to_lowercase(), kind);
+        let basis_a = if matches!(id, GlobalPhaseEighth | Discard) {
+            "(Bit,Unit)"
+        } else {
+            "Bit"
         };
-        assert_eq!(input_types.len(), declaration.arity);
-        let params = input_types
-            .iter()
-            .enumerate()
-            .map(|(i, ty)| format!("q{i}:{ty}"))
+        let signature = descriptor
+            .signature
+            .replace("Q<A>", &format!("Q<{basis_a}>"))
+            .replace("(A,B)", "(Bit,Unit)")
+            .replace("Q<B>", "Q<Unit>")
+            .replace("n-1", "0")
+            .replace("n+1", "1")
+            .replace(
+                "Bits<n>",
+                if id == PrependBit {
+                    "Bits<0>"
+                } else {
+                    "Bits<1>"
+                },
+            )
+            .replace(' ', "");
+        let input_types = parameters
+            .split(',')
+            .filter(|field| !field.is_empty())
+            .map(|field| field.split_once(':').map_or(field, |(_, ty)| ty))
             .collect::<Vec<_>>()
             .join(",");
-        let args = (0..declaration.arity)
-            .map(|i| format!("q{i}"))
-            .collect::<Vec<_>>()
-            .join(",");
-        let kind = format!("{:?}", declaration.kind).to_lowercase();
+        assert_eq!(signature, format!("({input_types})->{output}"));
+
         root.write(
             "main.qli",
-            &format!(
-                "use {}::{}; {kind} fn f({params})->{output}{{{}({args})}}",
-                declaration.module, declaration.name, declaration.name
-            ),
+            &format!("{kind} fn f({parameters})->{output}{{{body}}}"),
         );
-        check_project(&root.0).unwrap_or_else(|e| panic!("{}: {e}", declaration.name));
+        check_project(&root.0).unwrap_or_else(|e| panic!("{}: {e}", id.spelling()));
     }
+    assert!(
+        PRIMITIVES
+            .iter()
+            .all(|descriptor| visited.contains(&descriptor.id))
+    );
 }
 
 #[cfg_attr(
@@ -306,7 +404,7 @@ fn every_sealed_declaration_matches_the_existing_source_signature() {
 #[test]
 fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::observe::measure_z;
+        "use std::state::init0;\x20
         unitary fn id(q:Q<Bit>)->Q<Bit>{q}
         observe fn main()->Bit{measure_z(apply_contract(id,id,init0()))}",
     );
@@ -326,10 +424,10 @@ fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
 )]
 #[test]
 fn toffoli_flat_pattern_remains_a_located_compatibility_error_with_a_nested_repair() {
-    let source = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/toffoli_flat/main.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/toffoli_flat/main.qli",
     );
-    let root = SourceRoot::new(source);
+    let root = SourceRoot::new(&source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(
         error.code,

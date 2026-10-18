@@ -1,0 +1,7 @@
+use std::state::init0; use std::gate::x;
+        
+        observe fn main()->(Bit,Bit,Bit){
+            let c=measure_z(init0());
+            let (a,b,d)=(x(init0()),if c {init0()} else {x(init0())},init0());
+            (measure_z(a),measure_z(b),measure_z(d))
+        }

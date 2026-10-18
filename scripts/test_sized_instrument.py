@@ -197,7 +197,7 @@ def main():
     parameters['classical-copy-capture']=(1,2,1,3,'qpe')
     wrong_sources = {
         'wrong-zero-helper':source | {'initialization':source['initialization'].replace(
-            'use std::quantum::init0;','use std::quantum::init0;\nuse std::quantum::x;').replace('init0();','x(init0());')},
+            'use std::state::init0;','use std::state::init0;\nuse std::gate::x;').replace('init0();','x(init0());')},
         'wrong-readout-order':source | {'readout':source['readout'].replace('take_bit[n,0]', 'take_bit[n,n-1]')},
     }
     for name,s in wrong_sources.items():

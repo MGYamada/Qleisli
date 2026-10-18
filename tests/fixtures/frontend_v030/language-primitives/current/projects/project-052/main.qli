@@ -1,0 +1,3 @@
+use std::state::init0;
+use std::gate::cnot;
+pub isometry fn entry(q:Q<Unit>)->Q<Bit>{finish(global_phase_eighth(q));init0()}

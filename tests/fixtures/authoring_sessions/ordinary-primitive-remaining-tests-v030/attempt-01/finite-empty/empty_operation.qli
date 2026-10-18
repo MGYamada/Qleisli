@@ -1,0 +1,5 @@
+unitary fn identity(q:Q<Bits<0>>)->Q<Bits<0>>{q}
+        unitary fn apply[const U:Op<Bits<0>>](q:Q<Bits<0>>)->Q<Bits<0>>
+          requires Applicable(U){U(q)}
+        unitary fn audited(q:Q<Bits<0>>)->Q<Bits<0>>{apply[identity](q)}
+        fn main()->Unit{()}

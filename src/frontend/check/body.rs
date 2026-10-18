@@ -24,6 +24,9 @@ fn disposal_error(span: Span, message: impl std::fmt::Display) -> SourceError {
 fn unresolved_function_message(name: &str) -> String {
     let mut message = format!("unresolved function {name}");
     let explanation = match name {
+        "phase_eighth" => {
+            "; use language primitive global_phase_eighth without an import for the exact global scalar; import std::gate::t for the derived relative phase gate."
+        }
         "drop" | "forget" => {
             "; there is no built-in Rust drop or forget operation. Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, it must be returned or explicitly consumed; scope exit is not destruction. Measurement, discard, reset and checked clean discharge have distinct meanings; reset returns a fresh owner."
         }

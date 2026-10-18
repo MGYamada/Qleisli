@@ -1,0 +1,10 @@
+use std::state::init0; use std::gate::x; use std::gate::cnot;
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)}
+        observe fn recreate(q:Q<Bit>)->Q<Bit>{
+            let b=measure_z(q);if b{x(init0())}else{init0()}
+        }
+        observe fn main()->(Bit,Bit){
+            let(a,r)=cnot(h(init0()),init0());
+            let(c,q)=controlled(power(oracle,0))(recreate(a),recreate(r));
+            (measure_z(c),measure_z(q))
+        }

@@ -13,15 +13,21 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 use std::process::Command;
 
-const HHH: &str = include_str!(
-    "fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli"
-);
-const ID: &str = include_str!(
-    "fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-identity/main.qli"
-);
-const NEGATIVE_H: &str = include_str!(
-    "fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-negative-h/main.qli"
-);
+static HHH: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-hhh/main.qli",
+    )
+});
+static ID: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-identity/main.qli",
+    )
+});
+static NEGATIVE_H: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+    common::current_source_text(
+        "tests/fixtures/authoring_sessions/reference-meaning-v030/attempt-01/contract-negative-h/main.qli",
+    )
+});
 
 fn kernel() -> Kernel {
     Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native kernel"))
@@ -58,7 +64,7 @@ fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal, Error> {
 )]
 #[test]
 fn observing_specialization_checks_calls_and_unused_original_obligations() {
-    let definitions = "use std::quantum::{init0,h,phase}; use std::observe::measure_z;
+    let definitions = "use std::state::init0;\x20
         fn reference(q: Q<Bit>) -> Bit { measure_z(q) }
         fn implementation(q: Q<Bit>) -> Bit { measure_z(phase[1,3](h(h(q)))) }";
     let called = format!(
@@ -99,12 +105,14 @@ fn observing_specialization_checks_calls_and_unused_original_obligations() {
 )]
 #[test]
 fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_changes() {
-    let positive = include_str!(
-        "fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-readout/main.qli"
+    let positive = common::current_source_text(
+        "tests/fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-readout/main.qli",
     );
-    let negative = include_str!(
-        "fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-residual/main.qli"
+    let positive = positive.as_str();
+    let negative = common::current_source_text(
+        "tests/fixtures/authoring_sessions/instrument-contract-v030/attempt-01/contract-residual/main.qli",
     );
+    let negative = negative.as_str();
     let proposal = lower(&elaborate(positive)).unwrap();
     let accepted = kernel().accept(proposal.proposal()).unwrap();
     proposal.validate_source_steps(&accepted).unwrap();
@@ -136,7 +144,7 @@ fn observing_specialization_preserves_original_cli_sources_and_refuses_residual_
 )]
 #[test]
 fn observing_specialization_keeps_nested_equations_empty_values_and_references() {
-    let source = "use std::quantum::{init0,h,cnot,unit,finish}; use std::observe::measure_z;
+    let source = "use std::state::init0; use std::gate::cnot;\x20
         fn reference(q: Q<Bit>) -> (Unit,(Bit,Q<Unit>)) {
             let empty=unit(()); ((),(measure_z(q),empty))
         }
@@ -163,8 +171,8 @@ fn observing_specialization_keeps_nested_equations_empty_values_and_references()
 )]
 #[test]
 fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
-    let source = "use std::classical::{empty_bits,prepend_bit}; use std::quantum::init0;
-        use std::observe::measure_z;
+    let source = " use std::state::init0;
+\x20\x20\x20\x20\x20\x20\x20\x20
         fn reference(q:Q<Bit>)->(Bits<0>,Bits<2>){let b=measure_z(q); (empty_bits(),prepend_bit[1](b,prepend_bit[0](not(b),empty_bits())))}
         fn candidate(q:Q<Bit>)->(Bits<0>,Bits<2>){reference(q)}
         pub observe fn main()->(Bits<0>,Bits<2>){apply_contract(candidate,reference,init0())}";
@@ -199,10 +207,10 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
 )]
 #[test]
 fn observing_specialization_rechecks_changed_reference_dependencies_and_output_order() {
-    let main = "use dependency::reference; use std::quantum::init0; use std::observe::measure_z;
+    let main = "use dependency::reference; use std::state::init0;\x20
         fn implementation(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}
         pub observe fn main()->(Bit,Bit){apply_contract(implementation,reference,init0())}";
-    let dependency = "use std::observe::measure_z;
+    let dependency = "
         pub observe fn reference(q:Q<Bit>)->(Bit,Bit){let b=measure_z(q);(b,not(b))}";
     let make = |dep: &str| {
         modules(BTreeMap::from([
@@ -258,11 +266,11 @@ fn selected_zero(source: &str) {
 )]
 #[test]
 fn first_hhh_source_runs_unchanged_through_both_adapters_and_cli() {
-    let root = SourceRoot::new(HHH);
+    let root = SourceRoot::new(HHH.as_str());
     let ordinary = compile_project(&root.0).unwrap();
     let distribution = run_closed(&ordinary, SimulationLimits::default()).unwrap();
     assert!((distribution[&vec![false]] - 1.0).abs() < 1e-12);
-    selected_zero(HHH);
+    selected_zero(HHH.as_str());
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args(["run", "--format=json"])
         .args(["--entry=main::main", "--ir-profile=raw"])
@@ -289,7 +297,7 @@ fn first_hhh_source_runs_unchanged_through_both_adapters_and_cli() {
 )]
 #[test]
 fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() {
-    let observed = elaborate(HHH);
+    let observed = elaborate(HHH.as_str());
     assert!(observed.has_function_contracts());
     assert!(observed.lower_raw().is_err());
     let checked = check(&observed).unwrap();
@@ -297,9 +305,9 @@ fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() 
         checked.lower().is_err(),
         "observing Bit root is not a pure hierarchy entry"
     );
-    let pure = HHH.replace("pub observe fn main() -> Bit {\n    measure_z(h(apply_contract(implementation, reference_h, init0())))\n}",
+    let pure = HHH.as_str().replace("pub observe fn main() -> Bit {\n    measure_z(h(apply_contract(implementation, reference_h, init0())))\n}",
         "pub unitary fn main(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation, reference_h, q) }");
-    assert_ne!(pure, HHH);
+    assert_ne!(pure, HHH.as_str());
     let source = elaborate(&pure);
     assert_eq!(source.lower().unwrap_err().code(), "contract");
     assert_eq!(source.lower_raw().unwrap_err().code(), "contract");
@@ -319,7 +327,7 @@ fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() 
 )]
 #[test]
 fn identity_and_negative_h_fail_exact_equations_in_both_adapters() {
-    for source in [ID, NEGATIVE_H] {
+    for source in [ID.as_str(), NEGATIVE_H.as_str()] {
         assert!(compile_project(&SourceRoot::new(source).0).is_err());
         let error = check(&elaborate(source)).unwrap_err();
         assert_eq!(error.code(), "contract", "{error}");
@@ -333,7 +341,7 @@ fn identity_and_negative_h_fail_exact_equations_in_both_adapters() {
 )]
 #[test]
 fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
-    let source = "use std::quantum::{init0,x}; use std::observe::measure_z;
+    let source = "use std::state::init0; use std::gate::x;\x20
         classical fn flip(b: Bit) -> Bit { not b }
         meaning X: Bit = permutation_by(flip);
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> { x(q) }
@@ -355,7 +363,7 @@ fn declared_finite_meaning_keeps_its_request_on_both_adapters() {
 )]
 #[test]
 fn unused_and_zero_count_contracts_are_not_erased() {
-    let definitions = "use std::quantum::{init0,h}; use std::observe::measure_z;
+    let definitions = "use std::state::init0;\x20
         unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
         unitary fn specified(q: Q<Bit>) -> Q<Bit> { h(q) }";
     for body in [
@@ -377,7 +385,7 @@ fn unused_and_zero_count_contracts_are_not_erased() {
 )]
 #[test]
 fn unused_generic_body_keeps_its_closed_function_contract_in_both_adapters() {
-    let source = "use std::quantum::{init0,h}; use std::observe::measure_z;
+    let source = "use std::state::init0;\x20
         unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
         unitary fn specified(q: Q<Bit>) -> Q<Bit> { h(q) }
         unitary fn unused[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> {
@@ -401,7 +409,7 @@ fn unused_generic_body_keeps_its_closed_function_contract_in_both_adapters() {
 )]
 #[test]
 fn nested_contracts_keep_their_independent_dependencies() {
-    let source = HHH.replace("pub observe fn main()", "unitary fn nested(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation,reference_h,q) }\npub observe fn main()")
+    let source = HHH.as_str().replace("pub observe fn main()", "unitary fn nested(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation,reference_h,q) }\npub observe fn main()")
         .replace("measure_z(h(apply_contract(implementation, reference_h, init0())))",
             "measure_z(h(apply_contract(nested,reference_h,init0())))");
     selected_zero(&source);
@@ -415,7 +423,7 @@ fn nested_contracts_keep_their_independent_dependencies() {
 )]
 #[test]
 fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
-    let source = elaborate(HHH);
+    let source = elaborate(HHH.as_str());
     let root = SourceRoot::new("");
     assert!(
         source
@@ -442,12 +450,11 @@ fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
 )]
 #[test]
 fn changed_reference_dependency_is_rechecked_from_new_sources() {
-    let main = HHH.replace(
+    let main = HHH.as_str().replace(
         "unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }",
         "use dependency::reference_h;",
     );
-    let dependency =
-        "use std::quantum::h; pub unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }";
+    let dependency = " pub unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }";
     let make = |dep: &str| {
         modules(BTreeMap::from([
             ("main".into(), main.clone()),
@@ -472,12 +479,12 @@ fn changed_reference_dependency_is_rechecked_from_new_sources() {
 )]
 #[test]
 fn receipt_sources_and_actual_emitted_step_cannot_be_substituted() {
-    let proposal = lower(&elaborate(HHH)).unwrap();
+    let proposal = lower(&elaborate(HHH.as_str())).unwrap();
     let accepted = kernel().accept(proposal.proposal()).unwrap();
     let all = receipts(accepted.raw());
     assert_eq!(all.len(), 1);
     let evidence = all[0];
-    assert!(retained(evidence, "main", HHH));
+    assert!(retained(evidence, "main", HHH.as_str()));
     let mut identity = evidence.identity().clone();
     identity
         .sources
@@ -520,11 +527,11 @@ fn receipt_sources_and_actual_emitted_step_cannot_be_substituted() {
 )]
 #[test]
 fn equal_matrix_receipt_cannot_replace_the_original_implementation_snapshot() {
-    let proposal = lower(&elaborate(HHH)).unwrap();
+    let proposal = lower(&elaborate(HHH.as_str())).unwrap();
     let accepted = kernel().accept(proposal.proposal()).unwrap();
     let original = receipts(accepted.raw())[0];
     // Identity metadata is deliberately unchanged: neither names nor equality
-    // of matrices proves that this H/H receipt binds the original HHH body.
+    // of matrices proves that this H/H receipt binds the original HHH.as_str() body.
     let replacement = FunctionEvidence::check(
         original.signature().clone(),
         original.specification().clone(),

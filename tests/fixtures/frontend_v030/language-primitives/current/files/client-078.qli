@@ -1,0 +1,9 @@
+use std::state::init0;
+
+
+observe fn m(q: Q<Bit>) -> Bit { measure_z(q) }
+
+observe fn main() -> Bit {
+    let q = adjoint(m)(measure_z(init0()));
+    measure_z(q)
+}

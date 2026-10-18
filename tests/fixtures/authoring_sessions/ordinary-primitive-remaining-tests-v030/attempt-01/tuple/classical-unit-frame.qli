@@ -1,0 +1,6 @@
+unitary fn f(q:Q<Unit>,c:Bit)->(Q<Unit>,Bit,Unit) {
+        let t = if c { (q,c,()) } else { (q,not c,()) }; t
+    } observe fn main()->(Bit,Bit,Bit) {
+        let t=(1,0,1); let (a,b,c)=t; let (d,e,f)=t;
+        (a xor d,b xor e,c xor f)
+    }

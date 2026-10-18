@@ -165,14 +165,18 @@ def conditions (artifact : Artifact) (definition : Definition) : Bool :=
 
 /-- These private predicates omit only validity already established on the
 same immutable artifact by preparation. Full maps, freshness and shape remain. -/
-private def portsAfterHeaders (source destination : Side) (map : PortMap) : Bool :=
-  Layout.structureValid (Ports.layout source destination map) (Ports.witness source map) &&
-    decide (Ports.ClassicalMatch source destination map)
+private def portsAfterHeaders (optimized : Bool) (source destination : Side) (map : PortMap) : Bool :=
+  if optimized then Ports.shapeAfterHeaders source destination map else
+    Layout.structureValid (Ports.layout source destination map) (Ports.witness source map) &&
+      decide (Ports.ClassicalMatch source destination map)
 
-private theorem portsAfterHeaders_eq (source destination : Side) (map : PortMap)
+private theorem portsAfterHeaders_eq (optimized : Bool) (source destination : Side) (map : PortMap)
     (before : sideValid source = true) (after : sideValid destination = true) :
-    portsAfterHeaders source destination map = Ports.shapeValid source destination map := by
-  simp [portsAfterHeaders, Ports.shapeValid, before, after]
+    portsAfterHeaders optimized source destination map = Ports.shapeValid source destination map := by
+  cases optimized
+  · simp [portsAfterHeaders, Ports.shapeValid, before, after]
+  · simpa only [portsAfterHeaders, ↓reduceIte] using
+      Ports.shapeAfterHeaders_eq source destination map before after
 
 private def structureAfterHeaders (operation : StructuralOp) (interface : Interface) : Bool :=
   operation.bounded && interface.inputs.classical.isEmpty && interface.outputs.classical.isEmpty &&
@@ -185,7 +189,7 @@ private theorem structureAfterHeaders_eq (operation : StructuralOp) (interface :
     structureAfterHeaders operation interface = Structural.valid operation interface := by
   simp [structureAfterHeaders, Structural.valid, header]
 
-private def preparedConditions (artifact : Artifact) (definition : Definition) : Bool :=
+private def preparedConditions (optimized : Bool) (artifact : Artifact) (definition : Definition) : Bool :=
   definition.body.bounded && match definition.body with
   | .leaf _ => true
   | .sequence children =>
@@ -201,8 +205,8 @@ private def preparedConditions (artifact : Artifact) (definition : Definition) :
     (do
       let callee ← artifact.definitions[child]?
       return definition.effect == callee.effect &&
-        portsAfterHeaders definition.interface.inputs callee.interface.inputs input &&
-        portsAfterHeaders callee.interface.outputs definition.interface.outputs output &&
+        portsAfterHeaders false definition.interface.inputs callee.interface.inputs input &&
+        portsAfterHeaders false callee.interface.outputs definition.interface.outputs output &&
         renamed definition.interface callee.interface input output).getD false
   | .repeatOp _ child =>
     (do
@@ -215,7 +219,7 @@ private def preparedConditions (artifact : Artifact) (definition : Definition) :
         definition.interface == (⟨body.interface.outputs, body.interface.inputs⟩ : Interface)).getD false
   | .control child _ => (artifact.definitions[child]?.map (controlled definition)).getD false
   | .rewire map => definition.effect == Effect.unitary &&
-    portsAfterHeaders definition.interface.inputs definition.interface.outputs map
+    portsAfterHeaders optimized definition.interface.inputs definition.interface.outputs map
   | .structural operation => definition.effect == Effect.unitary &&
     structureAfterHeaders operation definition.interface
   | .dyadicPhase target _ _ => phase definition target
@@ -223,9 +227,9 @@ private def preparedConditions (artifact : Artifact) (definition : Definition) :
   | .observeZ input output => observe definition input output
   | .init0 output => initializeZero definition output
 
-private theorem preparedConditions_eq (artifact : Artifact) (headers : Headers artifact)
+private theorem preparedConditions_eq (optimized : Bool) (artifact : Artifact) (headers : Headers artifact)
     (definition : Definition) (valid : definition.interface.valid = true) :
-    preparedConditions artifact definition = conditions artifact definition := by
+    preparedConditions optimized artifact definition = conditions artifact definition := by
   have sides : sideValid definition.interface.inputs = true ∧
       sideValid definition.interface.outputs = true := by
     simpa only [Interface.valid, Bool.and_eq_true] using valid
@@ -239,9 +243,9 @@ private theorem preparedConditions_eq (artifact : Artifact) (headers : Headers a
       have otherSides : sideValid callee.interface.inputs = true ∧
           sideValid callee.interface.outputs = true := by
         simpa only [Interface.valid, Bool.and_eq_true] using other
-      simp only [bind, Option.bind, portsAfterHeaders_eq _ _ _ sides.1 otherSides.1,
-        portsAfterHeaders_eq _ _ _ otherSides.2 sides.2]
-  case rewire map => rw [portsAfterHeaders_eq _ _ _ sides.1 sides.2]
+      simp only [bind, Option.bind, portsAfterHeaders_eq false _ _ _ sides.1 otherSides.1,
+        portsAfterHeaders_eq false _ _ _ otherSides.2 sides.2]
+  case rewire map => rw [portsAfterHeaders_eq optimized _ _ _ sides.1 sides.2]
   case structural operation => rw [structureAfterHeaders_eq _ _ valid]
 
 /-- Header cost includes every actual referenced definition/meaning/encoding,
@@ -332,6 +336,63 @@ private def preparedCharge (original : Nat) (interface : Interface) : Nat :=
 private theorem preparedCharge_le (original : Nat) (interface : Interface) :
     preparedCharge original interface ≤ original := Nat.min_le_left _ _
 
+/-- The original non-map charge includes complete own-header validation.
+Removing just its separately charged map component cannot underflow. -/
+private theorem maps_le_preparedCharge (base maps : Nat) (interface : Interface)
+    (headerCovered : 16 * interface.charge ≤ base) :
+    maps ≤ preparedCharge (base + maps) interface := by
+  unfold preparedCharge
+  omega
+
+private theorem headerCost_coversOwn (artifact : Artifact) (definition : Definition) :
+    definition.interface.charge ≤ headerCost sideCharge artifact definition := by
+  unfold headerCost Interface.charge
+  omega
+
+private theorem originalMapsCovered (artifact : Artifact) (definition : Definition) (scan : Nat) :
+    mapsCost artifact definition ≤ preparedCharge
+      (scan + 16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
+        mapsCost artifact definition) definition.interface := by
+  apply maps_le_preparedCharge
+  have own := headerCost_coversOwn artifact definition
+  omega
+
+/-- This first optimization is limited to actual rewire rows. Calls retain
+both original map charges and their joint-frame `renamed` consistency checks;
+no quadratic renaming allowance is inferred from an identity selector. -/
+private def mapAttempts (cost : Side → Side → PortMap → Nat)
+    (_artifact : Artifact) (definition : Definition) : Nat :=
+  match definition.body with
+  | .rewire map => cost definition.interface.inputs definition.interface.outputs map
+  | _ => 0
+
+private def selectedMapsCost (artifact : Artifact) (definition : Definition) : Nat :=
+  match definition.body with
+  | .rewire map => Ports.selectedWorkCharge definition.interface.inputs definition.interface.outputs map
+  | _ => mapsCost artifact definition
+
+private def finishPrepared (optimized : Bool) (artifact : Artifact) (definition : Definition)
+    (charge remaining : Nat) : Except Error Checked :=
+  if charge > remaining then .error .limit else
+  if !preparedConditions optimized artifact definition then .error .invalidIr else .ok ⟨charge⟩
+
+private theorem finishPrepared_conditions (optimized : Bool) (artifact : Artifact)
+    (headers : Headers artifact) (definition : Definition)
+    (valid : definition.interface.valid = true) (charge remaining : Nat) (checked : Checked)
+    (accepted : finishPrepared optimized artifact definition charge remaining = .ok checked) :
+    checked.visits ≤ remaining ∧ conditions artifact definition = true := by
+  unfold finishPrepared at accepted
+  split at accepted
+  next exceeded => contradiction
+  next charged =>
+    split at accepted
+    next invalid => contradiction
+    next good =>
+      cases Except.ok.inj accepted
+      have complete : preparedConditions optimized artifact definition = true := by simpa using good
+      exact ⟨Nat.le_of_not_gt charged,
+        by simpa only [preparedConditions_eq optimized artifact headers definition valid] using complete⟩
+
 private def preparedCheck (artifact : Artifact) (index remaining : Nat) : Except Error Checked :=
   if remaining > Limits.maxVisits then .error .limit else
   match artifact.definitions[index]? with
@@ -341,11 +402,22 @@ private def preparedCheck (artifact : Artifact) (index remaining : Nat) : Except
     if initial > remaining then .error .limit else
     let scan := initial + headerCost sideScan artifact definition
     if scan > remaining then .error .limit else
-    let original := scan + 16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
-      mapsCost artifact definition
-    let charge := preparedCharge original definition.interface
-    if charge > remaining then .error .limit else
-    if !preparedConditions artifact definition then .error .invalidIr else .ok ⟨charge⟩
+    let maps := mapsCost artifact definition
+    let original := scan + 16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) + maps
+    let legacy := preparedCharge original definition.interface
+    -- This raw-size guard does not run an identity selector. If the old route
+    -- fits but optional full scan/fallback could reach the boundary, retain
+    -- the original algorithm and original charge before starting that work.
+    let upper := mapAttempts Ports.identityAttemptUpper artifact definition
+    if legacy ≤ remaining && legacy + upper > remaining then
+      finishPrepared false artifact definition legacy remaining
+    else
+      let probe := mapAttempts Ports.identityScanCharge artifact definition
+      if scan + probe > remaining then .error .limit else
+      let attempt := mapAttempts Ports.identityAttemptCharge artifact definition
+      if scan + attempt > remaining then .error .limit else
+      let charge := legacy - maps + selectedMapsCost artifact definition
+      finishPrepared true artifact definition charge remaining
 
 private theorem preparedCheck_conditions (artifact : Artifact) (headers : Headers artifact)
     (index remaining : Nat) (checked : Checked)
@@ -366,16 +438,20 @@ private theorem preparedCheck_conditions (artifact : Artifact) (headers : Header
         split at accepted
         next invalid => contradiction
         next scanned =>
+          have header := headers.1 index definition hd
           split at accepted
-          next invalid => contradiction
-          next charged =>
+          next legacy =>
+            have complete := finishPrepared_conditions false artifact headers definition header _ _ checked accepted
+            exact ⟨complete.1, Nat.le_of_not_gt limit, definition, rfl, complete.2⟩
+          next selected =>
             split at accepted
             next invalid => contradiction
-            next valid =>
-              cases Except.ok.inj accepted
-              refine ⟨Nat.le_of_not_gt charged, Nat.le_of_not_gt limit, definition, rfl, ?_⟩
-              have checked : preparedConditions artifact definition = true := by simpa using valid
-              simpa only [preparedConditions_eq artifact headers definition (headers.1 index definition hd)] using checked
+            next probed =>
+              split at accepted
+              next invalid => contradiction
+              next attempted =>
+                have complete := finishPrepared_conditions true artifact headers definition header _ _ checked accepted
+                exact ⟨complete.1, Nat.le_of_not_gt limit, definition, rfl, complete.2⟩
 
 private def preparedStep (artifact : Artifact) (used index : Nat) : Except Failure Nat :=
   match preparedCheck artifact index (Limits.maxVisits - used) with

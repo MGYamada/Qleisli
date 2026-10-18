@@ -1,0 +1,2 @@
+
+unitary fn bad(q:Q<Unit>) -> Q<Unit> { h(q) }

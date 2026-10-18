@@ -107,14 +107,18 @@ def encodingConditions (artifact : Artifact) (encoding : Encoding) : Bool :=
 
 /-- These private predicates omit only validity already established on the
 same immutable artifact by preparation. Full maps, freshness and shape remain. -/
-private def portsAfterHeaders (source destination : Side) (map : PortMap) : Bool :=
-  Layout.structureValid (Ports.layout source destination map) (Ports.witness source map) &&
-    decide (Ports.ClassicalMatch source destination map)
+private def portsAfterHeaders (optimized : Bool) (source destination : Side) (map : PortMap) : Bool :=
+  if optimized then Ports.shapeAfterHeaders source destination map else
+    Layout.structureValid (Ports.layout source destination map) (Ports.witness source map) &&
+      decide (Ports.ClassicalMatch source destination map)
 
-private theorem portsAfterHeaders_eq (source destination : Side) (map : PortMap)
+private theorem portsAfterHeaders_eq (optimized : Bool) (source destination : Side) (map : PortMap)
     (before : sideValid source = true) (after : sideValid destination = true) :
-    portsAfterHeaders source destination map = Ports.shapeValid source destination map := by
-  simp [portsAfterHeaders, Ports.shapeValid, before, after]
+    portsAfterHeaders optimized source destination map = Ports.shapeValid source destination map := by
+  cases optimized
+  · simp [portsAfterHeaders, Ports.shapeValid, before, after]
+  · simpa only [portsAfterHeaders, ↓reduceIte] using
+      Ports.shapeAfterHeaders_eq source destination map before after
 
 private def structureAfterHeaders (operation : StructuralOp) (interface : Interface) : Bool :=
   operation.bounded && interface.inputs.classical.isEmpty && interface.outputs.classical.isEmpty &&
@@ -127,7 +131,7 @@ private theorem structureAfterHeaders_eq (operation : StructuralOp) (interface :
     structureAfterHeaders operation interface = Structural.valid operation interface := by
   simp [structureAfterHeaders, Structural.valid, header]
 
-private def meaningAfterHeaders (artifact : Artifact) (meaning : Meaning) : Bool :=
+private def meaningAfterHeaders (optimized : Bool) (artifact : Artifact) (meaning : Meaning) : Bool :=
   meaning.body.bounded && match meaning.body with
   | .qpeInstrument n m provider => qpeBoundary artifact meaning n m provider
   | _ => quantumOnly meaning.interface && match meaning.body with
@@ -156,7 +160,7 @@ private def meaningAfterHeaders (artifact : Artifact) (meaning : Meaning) : Bool
         let u ← artifact.meanings[child]?
         return pureMeaning u && u.interface.inputs == u.interface.outputs &&
           meaning.interface == u.interface).getD false
-    | .rewire permutation => portsAfterHeaders meaning.interface.inputs meaning.interface.outputs permutation
+    | .rewire permutation => portsAfterHeaders optimized meaning.interface.inputs meaning.interface.outputs permutation
     | .structural operation => structureAfterHeaders operation meaning.interface
     | .phase _ _ => meaning.interface.inputs == meaning.interface.outputs &&
       onePort meaning.interface.inputs #[.bit]
@@ -164,7 +168,7 @@ private def meaningAfterHeaders (artifact : Artifact) (meaning : Meaning) : Bool
       onePort meaning.interface.inputs #[.bits width]
     | .qpeInstrument _ _ _ => false
 
-private def encodingAfterHeaders (artifact : Artifact) (encoding : Encoding) : Bool :=
+private def encodingAfterHeaders (optimized : Bool) (artifact : Artifact) (encoding : Encoding) : Bool :=
   encoding.body.bounded && match encoding.body with
   | .identity => encoding.logical == encoding.physical
   | .tensor left right =>
@@ -176,24 +180,24 @@ private def encodingAfterHeaders (artifact : Artifact) (encoding : Encoding) : B
   | .rewire child permutation =>
     (do
       let e ← artifact.encodings[child]?
-      return encoding.logical == e.logical && portsAfterHeaders e.physical encoding.physical permutation).getD false
+      return encoding.logical == e.logical && portsAfterHeaders optimized e.physical encoding.physical permutation).getD false
   | .zeroScratch bits compute => zeroScratch artifact encoding bits compute
 
 
-private theorem meaningAfterHeaders_eq (artifact : Artifact) (meaning : Meaning)
+private theorem meaningAfterHeaders_eq (optimized : Bool) (artifact : Artifact) (meaning : Meaning)
     (header : meaning.interface.valid = true) :
-    meaningAfterHeaders artifact meaning = meaningConditions artifact meaning := by
+    meaningAfterHeaders optimized artifact meaning = meaningConditions artifact meaning := by
   have sides : sideValid meaning.interface.inputs = true ∧ sideValid meaning.interface.outputs = true := by
     simpa only [Interface.valid, Bool.and_eq_true] using header
   cases hb : meaning.body <;>
     simp only [meaningAfterHeaders, meaningConditions, hb, header, Bool.true_and]
-  case rewire permutation => rw [portsAfterHeaders_eq _ _ _ sides.1 sides.2]
+  case rewire permutation => rw [portsAfterHeaders_eq optimized _ _ _ sides.1 sides.2]
   case structural operation => rw [structureAfterHeaders_eq _ _ header]
 
-private theorem encodingAfterHeaders_eq (artifact : Artifact) (headers : Headers artifact)
+private theorem encodingAfterHeaders_eq (optimized : Bool) (artifact : Artifact) (headers : Headers artifact)
     (encoding : Encoding) (before : sideValid encoding.logical = true)
     (after : sideValid encoding.physical = true) :
-    encodingAfterHeaders artifact encoding = encodingConditions artifact encoding := by
+    encodingAfterHeaders optimized artifact encoding = encodingConditions artifact encoding := by
   have header : (encodingInterface encoding).valid = true := by
     simp [encodingInterface, Interface.valid, before, after]
   cases hb : encoding.body <;>
@@ -202,7 +206,7 @@ private theorem encodingAfterHeaders_eq (artifact : Artifact) (headers : Headers
     cases hc : artifact.encodings[child]? with
     | none => simp
     | some source =>
-      simp only [bind, Option.bind, portsAfterHeaders_eq _ _ _ (headers.2.2 child source hc).2 after]
+      simp only [bind, Option.bind, portsAfterHeaders_eq optimized _ _ _ (headers.2.2 child source hc).2 after]
 
 
 inductive Subject where
@@ -235,13 +239,13 @@ def Subject.conditions (artifact : Artifact) : Subject → Bool
   | .meaning m => meaningConditions artifact m
   | .encoding e => encodingConditions artifact e
 
-private def Subject.afterHeaders (artifact : Artifact) : Subject → Bool
-  | .meaning m => meaningAfterHeaders artifact m
-  | .encoding e => encodingAfterHeaders artifact e
+private def Subject.afterHeaders (optimized : Bool) (artifact : Artifact) : Subject → Bool
+  | .meaning m => meaningAfterHeaders optimized artifact m
+  | .encoding e => encodingAfterHeaders optimized artifact e
 
-private theorem subjectAfterHeaders_eq (artifact : Artifact) (headers : Headers artifact)
+private theorem subjectAfterHeaders_eq (optimized : Bool) (artifact : Artifact) (headers : Headers artifact)
     (ref : Ref) (value : Subject) (found : subject artifact ref = some value) :
-    value.afterHeaders artifact = value.conditions artifact := by
+    value.afterHeaders optimized artifact = value.conditions artifact := by
   cases ht : ref.table <;> simp only [subject, ht] at found
   case definition => contradiction
   case proof => contradiction
@@ -251,14 +255,14 @@ private theorem subjectAfterHeaders_eq (artifact : Artifact) (headers : Headers 
     | some meaning =>
       have same : Subject.meaning meaning = value := by simpa [hm] using found
       subst value
-      exact meaningAfterHeaders_eq artifact meaning (headers.2.1 ref.index meaning hm)
+      exact meaningAfterHeaders_eq optimized artifact meaning (headers.2.1 ref.index meaning hm)
   case encoding =>
     cases he : artifact.encodings[ref.index]? with
     | none => simp [he] at found
     | some encoding =>
       have same : Subject.encoding encoding = value := by simpa [he] using found
       subst value
-      exact encodingAfterHeaders_eq artifact headers encoding
+      exact encodingAfterHeaders_eq optimized artifact headers encoding
         (headers.2.2 ref.index encoding he).1 (headers.2.2 ref.index encoding he).2
 
 def Subject.capacity : Subject → Bool
@@ -428,6 +432,70 @@ private def preparedCharge (original : Nat) (interface : Interface) : Nat :=
 private theorem preparedCharge_le (original : Nat) (interface : Interface) :
     preparedCharge original interface ≤ original := Nat.min_le_left _ _
 
+/-- The original non-map charge includes complete own-header validation.
+Removing just its separately charged map component cannot underflow. -/
+private theorem maps_le_preparedCharge (base maps : Nat) (interface : Interface)
+    (headerCovered : 16 * interface.charge ≤ base) :
+    maps ≤ preparedCharge (base + maps) interface := by
+  unfold preparedCharge
+  omega
+
+private theorem headerCost_coversOwn (artifact : Artifact) (value : Subject) :
+    value.interface.charge ≤ value.headerCost sideCharge artifact := by
+  unfold Subject.headerCost Interface.charge
+  omega
+
+private theorem originalMapsCovered (artifact : Artifact) (value : Subject) (scan : Nat) :
+    value.mapsCost artifact ≤ preparedCharge
+      (scan + 16 * (1 + value.bodyCharge + value.headerCost sideCharge artifact) +
+        value.mapsCost artifact) value.interface := by
+  apply maps_le_preparedCharge
+  have own := headerCost_coversOwn artifact value
+  omega
+
+private def Subject.mapAttempts (cost : Side → Side → PortMap → Nat)
+    (artifact : Artifact) : Subject → Nat
+  | .meaning m => match m.body with
+    | .rewire map => cost m.interface.inputs m.interface.outputs map
+    | _ => 0
+  | .encoding e => match e.body with
+    | .rewire child map => (artifact.encodings[child]?.map
+        (fun source => cost source.physical e.physical map)).getD 0
+    | _ => 0
+
+private def Subject.selectedMapsCost (artifact : Artifact) (value : Subject) : Nat :=
+  match value with
+  | .meaning m => match m.body with
+    | .structural _ => value.mapsCost artifact
+    | _ => value.mapAttempts Ports.selectedWorkCharge artifact
+  | .encoding _ => value.mapAttempts Ports.selectedWorkCharge artifact
+
+private def finishPrepared (optimized : Bool) (artifact : Artifact) (value : Subject)
+    (charge remaining : Nat) : Except Error Checked :=
+  if charge > remaining then .error .limit else
+  if !value.capacity then .error .limit else
+  if !value.afterHeaders optimized artifact then .error .invalidIr else .ok ⟨charge⟩
+
+private theorem finishPrepared_conditions (optimized : Bool) (artifact : Artifact)
+    (headers : Headers artifact) (ref : Ref) (value : Subject)
+    (found : subject artifact ref = some value) (charge remaining : Nat) (checked : Checked)
+    (accepted : finishPrepared optimized artifact value charge remaining = .ok checked) :
+    checked.visits ≤ remaining ∧ value.conditions artifact = true := by
+  unfold finishPrepared at accepted
+  split at accepted
+  next exceeded => contradiction
+  next charged =>
+    split at accepted
+    next capacity => contradiction
+    next bounded =>
+      split at accepted
+      next invalid => contradiction
+      next good =>
+        cases Except.ok.inj accepted
+        have complete : value.afterHeaders optimized artifact = true := by simpa using good
+        exact ⟨Nat.le_of_not_gt charged,
+          by simpa only [subjectAfterHeaders_eq optimized artifact headers ref value found] using complete⟩
+
 private def preparedCheck (artifact : Artifact) (ref : Ref) (remaining : Nat) : Except Error Checked :=
   if remaining > Limits.maxVisits then .error .limit else
   match subject artifact ref with
@@ -438,10 +506,17 @@ private def preparedCheck (artifact : Artifact) (ref : Ref) (remaining : Nat) : 
     let scan := initial + value.headerCost sideScan artifact
     if scan > remaining then .error .limit else
     let original := fullCharge artifact value
-    let charge := preparedCharge original value.interface
-    if charge > remaining then .error .limit else
-    if !value.capacity then .error .limit else
-    if !value.afterHeaders artifact then .error .invalidIr else .ok ⟨charge⟩
+    let legacy := preparedCharge original value.interface
+    let upper := value.mapAttempts Ports.identityAttemptUpper artifact
+    if legacy ≤ remaining && legacy + upper > remaining then
+      finishPrepared false artifact value legacy remaining
+    else
+      let probe := value.mapAttempts Ports.identityScanCharge artifact
+      if scan + probe > remaining then .error .limit else
+      let attempt := value.mapAttempts Ports.identityAttemptCharge artifact
+      if scan + attempt > remaining then .error .limit else
+      let charge := legacy - value.mapsCost artifact + value.selectedMapsCost artifact
+      finishPrepared true artifact value charge remaining
 
 private theorem preparedCheck_conditions (artifact : Artifact) (headers : Headers artifact)
     (ref : Ref) (remaining : Nat) (checked : Checked)
@@ -463,18 +538,18 @@ private theorem preparedCheck_conditions (artifact : Artifact) (headers : Header
         next invalid => contradiction
         next scanned =>
           split at accepted
-          next invalid => contradiction
-          next charged =>
+          next legacy =>
+            have complete := finishPrepared_conditions false artifact headers ref value hv _ _ checked accepted
+            exact ⟨complete.1, Nat.le_of_not_gt limit, value, rfl, complete.2⟩
+          next selected =>
             split at accepted
             next invalid => contradiction
-            next capacity =>
+            next probed =>
               split at accepted
               next invalid => contradiction
-              next valid =>
-                cases Except.ok.inj accepted
-                refine ⟨Nat.le_of_not_gt charged, Nat.le_of_not_gt limit, value, rfl, ?_⟩
-                have checked : value.afterHeaders artifact = true := by simpa using valid
-                simpa only [subjectAfterHeaders_eq artifact headers ref value hv] using checked
+              next attempted =>
+                have complete := finishPrepared_conditions true artifact headers ref value hv _ _ checked accepted
+                exact ⟨complete.1, Nat.le_of_not_gt limit, value, rfl, complete.2⟩
 
 /-- Read only array lengths before comparing full fields. A failed comparison
 reads at most the meaning's matching prefix; prepared fallback retains its

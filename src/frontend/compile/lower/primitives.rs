@@ -1,13 +1,12 @@
-//! Sealed primitive signatures, ownership transitions, effects, and raw IR.
+//! Language primitive signatures, ownership transitions, effects, and raw IR.
 //!
 //! This is the source-side check. The independent verifier rechecks emitted IR
 //! without calling these methods or trusting frontend ownership bookkeeping.
 
-use super::super::{CompileError, ErrorCode, MAX_BITS, Ty, empty_bits_primitive};
+use super::super::{CompileError, ErrorCode, MAX_BITS, PrimitiveId, Ty};
 use super::{Lowerer, Slot, Value};
 use crate::frontend::ast::{Expr, ExprKind, RuntimeArguments, Span};
-use crate::ir::{Effect, RawOp, SingleGate};
-use std::collections::BTreeSet;
+use crate::ir::{RawOp, SingleGate};
 
 impl Lowerer<'_, '_> {
     pub(super) fn quantum(
@@ -76,126 +75,40 @@ impl Lowerer<'_, '_> {
         self.quantum(module, span, value, bit_only)
     }
 
-    pub(super) fn sealed(
+    pub(super) fn primitive_call(
         &mut self,
         module: &str,
         span: Span,
-        namespace: &str,
-        name: &str,
+        primitive: PrimitiveId,
         args: Vec<Value>,
     ) -> Result<Value, CompileError> {
-        self.sealed_with_source(
-            module,
-            span,
-            namespace,
-            name,
-            args,
-            RuntimeArguments::Values(&[]),
-        )
+        self.primitive_with_source(module, span, primitive, args, RuntimeArguments::Values(&[]))
     }
 
-    pub(super) fn sealed_with_source(
+    pub(super) fn primitive_with_source(
         &mut self,
         module: &str,
         span: Span,
-        namespace: &str,
-        name: &str,
+        primitive: PrimitiveId,
         mut args: Vec<Value>,
         source_args: RuntimeArguments<'_>,
     ) -> Result<Value, CompileError> {
-        // This existing total ordinary constructor creates no quantum owner
-        // or operation. Its resolved primitive identity is shared with basis
-        // evaluation; a same-spelled ordinary declaration never enters here.
-        if empty_bits_primitive(namespace, name) {
-            if !args.is_empty() {
-                return Err(self.error(
-                    module,
-                    span,
-                    ErrorCode::Arity,
-                    "empty_bits requires 0 arguments",
-                ));
-            }
-            return Ok(Value::EmptyBits);
-        }
-        if namespace == "std::registers" && matches!(name, "empty" | "consume_empty") {
-            let arity = usize::from(name == "consume_empty");
-            if args.len() != arity {
-                return Err(self.primitive_refusal(
-                    module,
-                    span,
-                    ErrorCode::Arity,
-                    "empty register primitive argument arity mismatch",
-                )?);
-            }
-            self.compiler.charge(module, span, 8)?;
-            if name == "empty" {
-                let value = self.register(Ty::bits(0), Vec::new());
-                let slot = self.quantum(module, span, &value, false)?;
-                self.raw.operations.push(RawOp::PackUnit {
-                    output: self.raw.registers[&slot].token,
-                });
-                return Ok(value);
-            }
-            let value = args.pop().expect("empty owner");
-            if value.ty() != Ty::quantum(Ty::bits(0)) {
-                return Err(self.primitive_refusal(
-                    module,
-                    span,
-                    ErrorCode::TypeMismatch,
-                    "consume_empty requires exactly Q<Bits<0>>",
-                )?);
-            }
-            let slot = self.quantum_argument(module, span, &value, false, source_args.first())?;
-            let owner = self
-                .raw
-                .registers
-                .remove(&slot)
-                .expect("live zero-width owner");
-            self.raw
-                .operations
-                .push(RawOp::UnpackUnit { input: owner.token });
-            return Ok(Value::Unit);
-        }
-        let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
-            if crate::frontend::check::primitive::Primitive::lookup(&format!("{namespace}::{name}"))
-                .is_some()
-            {
-                self.error(
-                    module,
-                    span,
-                    ErrorCode::Unsupported,
-                    format!("finite lowering profile does not support `{namespace}::{name}`"),
-                )
-            } else {
-                self.error(
-                    module,
-                    span,
-                    ErrorCode::UnknownName,
-                    "unknown sealed primitive",
-                )
-            }
-        })?;
-        let arity = declaration.arity;
-        if args.len() != arity {
+        if args.len() != primitive.runtime_arity() {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::Arity,
-                format!("{name} requires {arity} arguments"),
+                format!(
+                    "{} requires {} arguments",
+                    primitive.spelling(),
+                    primitive.runtime_arity()
+                ),
             ));
         }
-        self.add_effect(
-            module,
-            span,
-            match declaration.kind {
-                crate::frontend::ast::FnKind::Unitary => Effect::Unitary,
-                crate::frontend::ast::FnKind::Isometry => Effect::Isometry,
-                crate::frontend::ast::FnKind::Observe => Effect::Observe,
-                _ => unreachable!("sealed quantum declaration"),
-            },
-        );
-        match name {
-            "unit" => {
+        self.add_effect(module, span, primitive.effect());
+        match primitive {
+            PrimitiveId::EmptyBits => Ok(Value::EmptyBits),
+            PrimitiveId::Unit => {
                 if args.pop() != Some(Value::Unit) {
                     return Err(self.error(
                         module,
@@ -211,7 +124,7 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(value)
             }
-            "finish" => {
+            PrimitiveId::Finish => {
                 let value = args.pop().expect("one input");
                 if value.ty() != Ty::quantum(Ty::unit()) {
                     return Err(self.error(
@@ -229,98 +142,26 @@ impl Lowerer<'_, '_> {
                     .push(RawOp::UnpackUnit { input: owner.token });
                 Ok(Value::Unit)
             }
-            "init0" => {
-                let slot = self.raw.init0();
-                Ok(Value::quantum(slot, Ty::bit()))
-            }
-            "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" => {
+
+            PrimitiveId::H => {
                 let value = args.pop().expect("one argument");
                 let slot =
                     self.quantum_argument(module, span, &value, true, source_args.first())?;
-                let gate = match name {
-                    "h" => SingleGate::H,
-                    "x" => SingleGate::X,
-                    "z" => SingleGate::Z,
-                    _ => SingleGate::T,
-                };
-                // These source aliases introduce no gate kind or acceptance rule.
-                let repetitions = match name {
-                    "s" => 2,
-                    "sdg" => 6,
-                    "tdg" => 7,
-                    _ => 1,
-                };
-                for _ in 0..repetitions {
-                    self.raw.gate_bit(gate, slot).map_err(|failure| {
-                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
-                    })?;
-                }
+                self.raw.gate_bit(SingleGate::H, slot).map_err(|failure| {
+                    self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                })?;
                 Ok(value)
             }
-            "id" | "phase_eighth" => {
+            PrimitiveId::GlobalPhaseEighth => {
                 let value = args.pop().expect("one argument");
                 let slot =
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
-                if name == "phase_eighth" {
-                    self.raw.scalar_eighth(slot).map_err(|failure| {
-                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
-                    })?;
-                }
+                self.raw.scalar_eighth(slot).map_err(|failure| {
+                    self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                })?;
                 Ok(value)
             }
-            "cnot" | "toffoli" => {
-                let slots = args
-                    .iter()
-                    .enumerate()
-                    .map(|(index, arg)| {
-                        self.quantum_argument(module, span, arg, true, source_args.optional(index))
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-                if slots.iter().collect::<BTreeSet<_>>().len() != slots.len() {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Ownership,
-                        "gate operands alias one quantum register",
-                    ));
-                }
-                if name == "cnot" {
-                    self.raw.cnot(slots[0], slots[1]).map_err(|failure| {
-                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
-                    })?;
-                } else {
-                    let inputs: Vec<_> = slots
-                        .iter()
-                        .map(|slot| self.raw.registers[slot].token)
-                        .collect();
-                    let outputs: Vec<_> = slots.iter().map(|_| self.token()).collect();
-                    self.raw.operations.push(RawOp::Toffoli {
-                        control_a: inputs[0],
-                        control_b: inputs[1],
-                        target: inputs[2],
-                        control_a_out: outputs[0],
-                        control_b_out: outputs[1],
-                        target_out: outputs[2],
-                    });
-                    for (slot, output) in slots.iter().zip(outputs) {
-                        self.raw
-                            .registers
-                            .get_mut(slot)
-                            .expect("owned register")
-                            .token = output;
-                    }
-                }
-                let mut args = args.into_iter();
-                let a = args.next().expect("first input");
-                let b = args.next().expect("second input");
-                let pair = Value::pair(a, b);
-                Ok(if let Some(target) = args.next() {
-                    Value::pair(pair, target)
-                } else {
-                    pair
-                })
-            }
-            "split" => {
+            PrimitiveId::Split => {
                 let value = args.pop().expect("one input");
                 let slot =
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
@@ -350,7 +191,7 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(Value::pair(left, right))
             }
-            "join" => {
+            PrimitiveId::Join => {
                 let a =
                     self.quantum_argument(module, span, &args[0], false, source_args.first())?;
                 let b =
@@ -384,44 +225,37 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(value)
             }
-            "measure_z" | "reset" | "discard" => {
+
+            PrimitiveId::MeasureZ | PrimitiveId::Discard => {
                 let value = args.pop().expect("one input");
                 let slot = self.quantum_argument(
                     module,
                     span,
                     &value,
-                    name != "discard",
+                    primitive == PrimitiveId::MeasureZ,
                     source_args.first(),
                 )?;
-                if name == "measure_z" {
+                if primitive == PrimitiveId::MeasureZ {
                     let output = self.raw.measure_z(slot).map_err(|failure| {
                         self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
                     })?;
                     Ok(Value::Classical(output))
-                } else if name == "discard" {
+                } else {
                     let reg = self.raw.registers.remove(&slot).expect("owned register");
                     self.raw
                         .operations
                         .push(RawOp::Discard { input: reg.token });
                     Ok(Value::Unit)
-                } else {
-                    let reg = self.raw.registers.remove(&slot).expect("owned register");
-                    let wire = self.wire();
-                    let value = self.register(Ty::bit(), vec![wire]);
-                    let slot = self.quantum(module, span, &value, true)?;
-                    self.raw.operations.push(RawOp::Reset {
-                        input: reg.token,
-                        output: self.raw.registers[&slot].token,
-                        fresh_wire: wire,
-                    });
-                    Ok(value)
                 }
             }
-            _ => Err(self.error(
+            PrimitiveId::Phase
+            | PrimitiveId::TakeBit
+            | PrimitiveId::PutBit
+            | PrimitiveId::PrependBit => Err(self.error(
                 module,
                 span,
-                ErrorCode::Unsupported,
-                "unsupported sealed operation",
+                ErrorCode::TypeMismatch,
+                "primitive requires its original checked natural arguments",
             )),
         }
     }

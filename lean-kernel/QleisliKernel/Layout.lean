@@ -114,6 +114,52 @@ def structureValid (layout : Rewire) (witness : Witness) : Bool :=
   decide (Permutation (wires layout.inputs).length layout.axes witness.inverseAxes) &&
   decide (PortsMatch layout)
 
+/-- Positional range maps are the complete finite identity permutation,
+including the empty owner or wire domain. -/
+theorem range_permutation (n : Nat) : Permutation n (List.range n) (List.range n) := by
+  refine ⟨by simp, by simp, ?_⟩
+  intro i
+  have same : indexAt (List.range n) i.val = i.val := by
+    simp only [indexAt, List.getElem?_range i.isLt, Option.getD_some]
+  simp only [same]
+  exact ⟨i.isLt, i.isLt, by simp, by simp⟩
+
+private theorem range_indexAt (n i : Nat) (inside : i < n) :
+    indexAt (List.range n) i = i := by
+  simp only [indexAt, List.getElem?_range inside, Option.getD_some]
+
+/-- Identity maps preserve the actual complete per-port trees and within-port
+axis order. The premise is full interface validity, not matching widths. -/
+private theorem identity_portsMatch (ports : Interface) (valid : interfaceValid ports = true) :
+    PortsMatch ⟨ports, ports, List.range ports.length, List.range (wires ports).length⟩ := by
+  have bounded : ∀ axis ∈ wires ports, axis < (wires ports).length := by
+    simp only [interfaceValid, Bool.and_eq_true] at valid
+    simpa only [List.all_eq_true, decide_eq_true_eq] using valid.2
+  unfold PortsMatch
+  intro j
+  dsimp only
+  rw [range_indexAt ports.length j.val j.isLt]
+  simp only [List.getElem?_eq_getElem j.isLt, Option.getD_some]
+  refine ⟨by simp, ?_⟩
+  calc
+    (ports[j.val].axes).map (indexAt (List.range (wires ports).length)) =
+        (ports[j.val].axes).map (fun axis => axis) := by
+      apply List.map_eq_map_iff.mpr
+      intro axis member
+      apply range_indexAt
+      exact bounded axis (List.mem_flatMap_of_mem (List.getElem_mem j.isLt) member)
+    _ = ports[j.val].axes := by simp
+
+/-- Exact identity rewire validity, with every owner retained even when its
+axis list is empty. This is a theorem about the existing predicate. -/
+theorem identity_structureValid (ports : Interface) (valid : interfaceValid ports = true) :
+    structureValid ⟨ports, ports, List.range ports.length, List.range (wires ports).length⟩
+      ⟨List.range ports.length, List.range (wires ports).length⟩ = true := by
+  have owners := range_permutation ports.length
+  have axes := range_permutation (wires ports).length
+  have shapes := identity_portsMatch ports valid
+  simp [structureValid, valid, owners, axes, shapes]
+
 inductive Error where
   | limit | invalidIr | contract
   deriving BEq, DecidableEq, Repr

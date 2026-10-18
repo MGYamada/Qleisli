@@ -30,14 +30,14 @@ APPROVED = {
     "pennylane_demos": ("PennyLaneAI/demos", "Apache-2.0"),
 }
 TOLERANCE = 1e-11
-IMPORTS = """use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::t;
-use std::quantum::cnot;
-use std::quantum::join;
-use std::quantum::split;
-use std::observe::measure_z;
+IMPORTS = """use std::state::init0;
+
+use std::gate::x;
+use std::gate::t;
+use std::gate::cnot;
+
+
+
 """
 
 
@@ -1009,7 +1009,7 @@ def current_counterexample_sources(corpus=None):
         require(type(data["format"]) is int and data["format"] == 1 and
                 data["kind"] == "explicit-counterexample-source-migration" and
                 data["source_selection"] == "snapshot" and
-                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application", "capability-operation-naming"),
+                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application", "capability-operation-naming", "language-owned-primitives"),
                 "unknown counterexample migration format")
         require(type(data["issue"]) is int and data["issue"] > 0 and
                 all(isinstance(data[key], str) and data[key].strip()
@@ -1050,7 +1050,12 @@ def current_counterexample_sources(corpus=None):
                         "counterexample snapshot changed: " + source)
                 before = local(predecessor, str(PurePosixPath(source).relative_to(project)))
                 after = local(base, source)
-                if data["transformation"] == "basis-to-classical-function":
+                if data["transformation"] == "language-owned-primitives":
+                    from corpus_primitive_migration import canonical_counterexample_primitives
+                    translated = (canonical_counterexample_primitives(before.read_bytes(), project)
+                                  if before.suffix == ".qli" else before.read_bytes())
+                    failure = "counterexample migration changed more than the primitive source translation"
+                elif data["transformation"] == "basis-to-classical-function":
                     translated = re.sub(rb"(?m)^(pub )?basis fn\b",
                                         lambda match: (match.group(1) or b"") + b"classical fn",
                                         before.read_bytes())

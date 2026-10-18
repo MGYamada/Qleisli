@@ -1902,7 +1902,8 @@
     "migrations/coherent-basis-v030/migration.json",
     "migrations/classical-functions-v030/migration.json",
     "migrations/operation-application-v030/migration.json",
-    "migrations/capability-naming-v030/migration.json"
+    "migrations/capability-naming-v030/migration.json",
+    "migrations/language-primitives-v030/migration.json"
   ],
   "negative_expectations": {
     "path": "negative/current-manifest.json",
@@ -1911,6 +1912,7 @@
   "counterexample_source_migrations": [
     "migrations/classical-functions-v030/counterexamples.json",
     "migrations/operation-counterexamples-v030/counterexamples.json",
-    "migrations/capability-naming-v030/counterexamples.json"
+    "migrations/capability-naming-v030/counterexamples.json",
+    "migrations/language-primitives-v030/counterexamples.json"
   ]
 }

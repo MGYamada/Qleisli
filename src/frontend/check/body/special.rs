@@ -83,10 +83,8 @@ impl Checker<'_, '_> {
                     Target::Primitive(id) => {
                         self.program
                             .budget
-                            .charge(callee.span, id.module.len() + id.name.len() + 2)?;
-                        let path = format!("{}::{}", id.module, id.name);
-                        let primitive =
-                            primitive::Primitive::lookup(&path).expect("typed primitive target");
+                            .charge(callee.span, id.spelling().len() + 1)?;
+                        let primitive = id;
                         // This existing total ordinary constructor introduces no
                         // quantum owner. Other sealed calls retain their normal
                         // quantum/static obligations outside the basis grammar.
@@ -364,18 +362,17 @@ impl Checker<'_, '_> {
         if let Target::Primitive(id) = self.resolve(name)? {
             self.program
                 .budget
-                .charge(name.span, id.module.len() + id.name.len() + 2)?;
-            let path = format!("{}::{}", id.module, id.name);
-            let primitive = primitive::Primitive::lookup(&path).expect("typed primitive target");
+                .charge(name.span, id.spelling().len() + 1)?;
+            let primitive = id;
             use primitive::Primitive::*;
-            if !matches!(primitive, H | X | Z | T | S | Sdg | Tdg | Id | PhaseEighth) {
+            if !matches!(primitive, H | GlobalPhaseEighth) {
                 return Err(SourceError::new(
                     "effect",
                     name.span,
-                    "static sealed operation requires a unary unitary quantum primitive",
+                    "static operation requires a unary unitary language primitive",
                 ));
             }
-            if !matches!(primitive, Id | PhaseEighth) {
+            if primitive != GlobalPhaseEighth {
                 normalize::expect(
                     basis,
                     &Ty::bit(),
@@ -758,11 +755,11 @@ impl Checker<'_, '_> {
                     span,
                     &self.program.budget,
                 )?),
-                actual: Some(plans::operation_contract(
+                actual: Some(Box::new(plans::operation_contract(
                     &operation,
                     span,
                     &self.program.budget,
-                )?),
+                )?)),
             };
             self.obligation_subject(
                 span,

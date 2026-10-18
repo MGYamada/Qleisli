@@ -13,10 +13,10 @@ use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+\x20
+\x20
 classical fn predicate(value: Bit) -> Bit { value }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
@@ -48,9 +48,32 @@ fn observing_contracts_compare_complete_instruments_on_the_emitted_call() {
             accepted.request().is_none(),
             "a call is not a whole-root request"
         );
-        assert!(
-            evidence(accepted.program().operations.as_slice()).is_empty(),
-            "Observe does not become a pure circuit action"
+        // The observing call stays an instrument. Its implementation may
+        // contain the ordinary T gate's separately checked scalar Unit action.
+        let pure = evidence(accepted.program().operations.as_slice());
+        assert_eq!(pure.len(), usize::from(implementation == "measure_z(t(q))"));
+        for receipt in pure {
+            assert_eq!(
+                receipt.identity().implementation,
+                "std::gate::scalar_eighth"
+            );
+            assert_eq!(receipt.identity().specification, "std::gate::scalar_eighth");
+            assert_eq!(receipt.signature(), &qleisli::contract::BasisType::Unit);
+            assert_eq!((receipt.meaning().rows(), receipt.meaning().cols()), (1, 1));
+            assert_eq!(
+                receipt.meaning().get(0, 0),
+                Some(qleisli::contract::exact::Exact::phase(1))
+            );
+        }
+        assert_eq!(accepted.derived_effect(), qleisli::ir::Effect::Observe);
+        assert_eq!(
+            accepted
+                .program()
+                .operations
+                .iter()
+                .filter(|op| matches!(op, RawOp::MeasureZ { .. }))
+                .count(),
+            1
         );
         probability(
             &run_closed(&accepted, SimulationLimits::default()).unwrap(),
@@ -177,12 +200,12 @@ fn observing_reference_source_replacement_requires_a_fresh_equation() {
     ));
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
+        " pub observe fn readout(q: Q<Bit>) -> Bit { measure_z(q) }",
     );
     let original = compile_project(&root.0).unwrap();
     root.write(
         "reference.qli",
-        "use std::observe::measure_z; pub observe fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
+        " pub observe fn readout(q: Q<Bit>) -> Bit { not(measure_z(q)) }",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -267,8 +290,41 @@ fn unchanged_client_requires_one_specification_across_private_layouts() {
             &format!("{IMPORTS} pub unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ {body} }}"),
         );
         let program = compile_project(&root.0).unwrap();
-        let attached = evidence(&program.program().operations);
+        let all = evidence(&program.program().operations);
+        let attached: Vec<_> = all
+            .iter()
+            .copied()
+            .filter(|item| {
+                item.identity().implementation == "implementation::phase"
+                    && item.identity().specification == "main::specified_phase"
+            })
+            .collect();
         assert_eq!(attached.len(), 2);
+        // Both Bell CNOTs retain the ordinary X provider in addition to the
+        // two source-contract calls; their complete phase/axis matrix is fixed.
+        let gates: Vec<_> = all
+            .iter()
+            .copied()
+            .filter(|item| {
+                item.identity().implementation == "std::gate::x"
+                    && item.identity().specification == "std::gate::x"
+            })
+            .collect();
+        assert_eq!(gates.len(), 2);
+        assert_eq!(all.len(), attached.len() + gates.len());
+        for gate in gates {
+            assert_eq!((gate.meaning().rows(), gate.meaning().cols()), (2, 2));
+            for column in 0..2 {
+                for row in 0..2 {
+                    let expected = if row == 1 - column {
+                        qleisli::contract::exact::Exact::one()
+                    } else {
+                        qleisli::contract::exact::Exact::zero()
+                    };
+                    assert_eq!(gate.meaning().get(row, column), Some(expected));
+                }
+            }
+        }
         assert!(Arc::ptr_eq(attached[0], attached[1]));
         assert_eq!(
             attached[0].identity().implementation,
@@ -310,9 +366,40 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
         }}"
     ));
     let program = compile_project(&root.0).unwrap();
-    let attached = evidence(&program.program().operations);
+    let all = evidence(&program.program().operations);
+    let attached: Vec<_> = all
+        .iter()
+        .copied()
+        .filter(|item| {
+            item.identity().implementation == "main::second"
+                && item.identity().specification == "main::specified"
+        })
+        .collect();
     assert_eq!(attached.len(), 5);
-    assert_eq!(attached[0].depth(), 3);
+    // The six final T calls retain scalar Unit receipts. They are not extra
+    // top-contract uses, and none may be dropped from the emitted computation.
+    let scalars: Vec<_> = all
+        .iter()
+        .copied()
+        .filter(|item| {
+            item.identity().implementation == "std::gate::scalar_eighth"
+                && item.identity().specification == "std::gate::scalar_eighth"
+        })
+        .collect();
+    assert_eq!(scalars.len(), 6);
+    assert_eq!(all.len(), attached.len() + scalars.len());
+    for scalar in scalars {
+        assert_eq!(scalar.signature(), &qleisli::contract::BasisType::Unit);
+        assert_eq!(scalar.depth(), 1);
+        assert_eq!(scalar.expanded_steps(), 1);
+        assert_eq!((scalar.meaning().rows(), scalar.meaning().cols()), (1, 1));
+        assert_eq!(
+            scalar.meaning().get(0, 0),
+            Some(qleisli::contract::exact::Exact::phase(1))
+        );
+    }
+    // Three source contract levels enclose the actual ordinary T scalar leaf.
+    assert_eq!(attached[0].depth(), 4);
     assert!(attached.iter().all(|value| Arc::ptr_eq(attached[0], value)));
     let result = run_closed(&program, SimulationLimits::default()).unwrap();
     probability(&result, &[false, false], (1.0 - 1.0 / 2.0_f64.sqrt()) / 2.0);
@@ -452,13 +539,37 @@ fn repeated_nested_contracts_share_one_execution_budget() {
     let attached = evidence(&program.program().operations);
     assert_eq!(attached.len(), 30);
     assert!(attached.iter().all(|item| Arc::ptr_eq(item, attached[0])));
-    assert_eq!(attached[0].depth(), 2);
+    // The two source contract levels now enclose the ordinary T scalar leaf.
+    assert_eq!(attached[0].depth(), 3);
+    // Each original power(t,8) keeps eight paid scalar actions, even though
+    // their complete exact unitary is identity. Evidence reuse cannot erase work.
+    assert_eq!(attached[0].expanded_steps(), 8);
+    assert_eq!(
+        (attached[0].meaning().rows(), attached[0].meaning().cols()),
+        (2, 2)
+    );
+    for column in 0..2 {
+        for row in 0..2 {
+            let expected = if row == column {
+                qleisli::contract::exact::Exact::one()
+            } else {
+                qleisli::contract::exact::Exact::zero()
+            };
+            assert_eq!(attached[0].meaning().get(row, column), Some(expected));
+        }
+    }
     // Every individual call fits easily; the complete repeated computation
     // exceeds this budget. Reusing a proof must not reset execution accounting.
     let limited = SimulationLimits {
         max_execution_steps: 100,
         ..SimulationLimits::default()
     };
+    let single_source = format!(
+        "{IMPORTS} {BUDGETED_FUNCTIONS}
+        observe fn main() -> Bit {{ measure_z(h(outer(h(init0())))) }}"
+    );
+    let single = compile_project(&SourceRoot::new(&single_source).0).unwrap();
+    probability(&run_closed(&single, limited).unwrap(), &[false], 1.0);
     assert_eq!(
         run_closed(&program, limited),
         Err(SimulationError::ExecutionLimit { max: 100 })
@@ -620,7 +731,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
     );
     root.write(
         "helper.qli",
-        "use std::quantum::z; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { z(q) }",
+        "use std::gate::z; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { z(q) }",
     );
     let previous = compile_project(&root.0).unwrap();
     assert!(
@@ -632,7 +743,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
     );
     root.write(
         "helper.qli",
-        "use std::quantum::x; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { x(q) }",
+        "use std::gate::x; pub unitary fn step(q: Q<Bit>) -> Q<Bit> { x(q) }",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -665,9 +776,26 @@ fn exact_source_types_declared_effects_and_ordinary_targets_are_required() {
         rejects(&format!("{IMPORTS} {declaration}
             unitary fn client(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified_phase,q) }}"), code);
     }
+    // Ordinary source Z is now a valid target; the bare H language primitive
+    // still is not an ordinary declaration for FunctionEquality.
+    let ordinary = format!(
+        "{IMPORTS} unitary fn client(q: Q<Bit>) -> Q<Bit> {{ apply_contract(z,specified_phase,q) }}"
+    );
+    // This test remains common-checking only; concrete native equations are
+    // covered by the separate native contract tests above.
+    let parsed = qleisli::frontend::compile::ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        ordinary.clone(),
+    )]))
+    .unwrap_or_else(|error| panic!("{ordinary}\n{error}"));
+    assert_eq!(
+        parsed.function_effect("main::client").unwrap().inferred(),
+        qleisli::ir::Effect::Unitary
+    );
     rejects(
-        &format!(
-            "{IMPORTS} unitary fn client(q: Q<Bit>) -> Q<Bit> {{ apply_contract(z,specified_phase,q) }}"
+        &ordinary.replace(
+            "apply_contract(z,specified_phase,q)",
+            "apply_contract(h,specified_phase,q)",
         ),
         ErrorCode::TypeMismatch,
     );
@@ -765,12 +893,12 @@ fn apply_contract_is_reserved_and_has_exact_static_name_syntax() {
 #[test]
 fn observing_contract_receipts_keep_each_original_caller_module() {
     let root = SourceRoot::new(
-        "use left::left_read;use right::right_read;use std::quantum::init0;
+        "use left::left_read;use right::right_read;use std::state::init0;
         observe fn main()->(Bit,Bit){(left_read(init0()),right_read(init0()))}",
     );
     root.write(
         "specified.qli",
-        "use std::observe::measure_z;
+        "
         pub observe fn actual(q:Q<Bit>)->Bit{measure_z(q)}
         pub observe fn reference(q:Q<Bit>)->Bit{measure_z(q)}",
     );

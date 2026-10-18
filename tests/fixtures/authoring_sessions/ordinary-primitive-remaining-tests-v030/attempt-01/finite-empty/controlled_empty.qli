@@ -1,0 +1,13 @@
+
+        
+        classical fn labels(q:Bit)->(Bit,(Bit,Bit)){(q,(0,0))}
+        meaning T:Bit=phase_by(labels);
+        unitary fn scalar(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}
+        unitary fn gate(q:Q<Bit>)->Q<Bit>{
+            let e=basis unit(()) as () {empty_bits()};
+            let (q,e)=controlled(scalar)(q,e);
+            finish(basis e as _ {()});
+            q
+        }
+        unitary fn audited(q:Q<Bit>)->Q<Bit>{apply_contract(gate,T,q)}
+        fn main()->Unit{()}

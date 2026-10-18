@@ -1,0 +1,1080 @@
+{
+  "status": "Actual terminal BEFORE, plus separately identified environment-only retry in another observation.",
+  "driver_metadata": {
+    "argv": [
+      "python3",
+      "-B",
+      "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "pid": 32883,
+    "pgid": 32883,
+    "whole_working_before": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "aaa5b1ac29ec374cc88b9554013531b4aafeeb2c36152a2a1328f7fb2bdff83d"
+    },
+    "compiler": {
+      "path": "/opt/homebrew/bin/rustc",
+      "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+      "selection": "explicit normal RUSTC",
+      "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+    },
+    "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+    "outer_environment": {
+      "RUSTC": "/opt/homebrew/bin/rustc",
+      "RUSTDOC": "/opt/homebrew/bin/rustdoc",
+      "CARGO_TARGET_DIR": "/Users/masa/git/Qleisli/target",
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0"
+    },
+    "exit_code": 101,
+    "interrupted": false,
+    "seconds": 2161.820384541992,
+    "whole_working_after": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "aaa5b1ac29ec374cc88b9554013531b4aafeeb2c36152a2a1328f7fb2bdff83d"
+    },
+    "whole_working_stable": true,
+    "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+    "inputs_stable": true,
+    "kernel_stable": true
+  },
+  "input_maps": {
+    "inputs_before": {
+      "count": 346,
+      "canonical_sha256": "412bb11e4b96e5121c560d6812be5d33082f6e5acd3c2f80556aefff29913953",
+      "canonical_encoding": "UTF-8 JSON sorted keys and comma/colon separators; no trailing newline",
+      "relevant_test_hashes": {
+        "tests/axis_routing_boundary.rs": "a4c93294af2fc3cefb07cc0694f04c558512bc38e6c18d9b8de148cf30a7baea",
+        "tests/body_effects.rs": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+        "tests/check_scope_cli.rs": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+        "tests/check_scope_report.rs": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+        "tests/checked_operations.rs": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+        "tests/classical_functions.rs": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+        "tests/cli_sampling.rs": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+        "tests/common_authoring_diagnostics.rs": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+        "tests/compile.rs": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+        "tests/computed_derived_source.rs": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+        "tests/engineering_boundary_baseline.rs": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+        "tests/finite_empty_bits.rs": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+        "tests/function_contracts.rs": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+        "tests/mixed_booleans.rs": "e34c993b11f2b30194cb88e8109de15f0633d4be11bb01b206f4e0d096d28890",
+        "tests/qfor.rs": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+        "tests/quantum_unit_source.rs": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+        "tests/rectangular_meanings.rs": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+        "tests/review_v019.rs": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+        "tests/review_v024.rs": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+        "tests/shared_resolution.rs": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+        "tests/source_snapshots.rs": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+        "tests/static_semantics.rs": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+        "tests/tuple_shapes.rs": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f"
+      }
+    },
+    "inputs_after": {
+      "count": 346,
+      "canonical_sha256": "412bb11e4b96e5121c560d6812be5d33082f6e5acd3c2f80556aefff29913953",
+      "canonical_encoding": "UTF-8 JSON sorted keys and comma/colon separators; no trailing newline",
+      "relevant_test_hashes": {
+        "tests/axis_routing_boundary.rs": "a4c93294af2fc3cefb07cc0694f04c558512bc38e6c18d9b8de148cf30a7baea",
+        "tests/body_effects.rs": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+        "tests/check_scope_cli.rs": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+        "tests/check_scope_report.rs": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+        "tests/checked_operations.rs": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+        "tests/classical_functions.rs": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+        "tests/cli_sampling.rs": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+        "tests/common_authoring_diagnostics.rs": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+        "tests/compile.rs": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+        "tests/computed_derived_source.rs": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+        "tests/engineering_boundary_baseline.rs": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+        "tests/finite_empty_bits.rs": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+        "tests/function_contracts.rs": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+        "tests/mixed_booleans.rs": "e34c993b11f2b30194cb88e8109de15f0633d4be11bb01b206f4e0d096d28890",
+        "tests/qfor.rs": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+        "tests/quantum_unit_source.rs": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+        "tests/rectangular_meanings.rs": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+        "tests/review_v019.rs": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+        "tests/review_v024.rs": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+        "tests/shared_resolution.rs": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+        "tests/source_snapshots.rs": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+        "tests/static_semantics.rs": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+        "tests/tuple_shapes.rs": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f"
+      }
+    }
+  },
+  "actual_archives": {
+    "driver": {
+      "path": "reports/remaining-normal.driver.json.gz",
+      "sha256": "3ba97976d4230986b2dd371e438f15f9a1384755e50ca660632435ebb979a213",
+      "bytes": 33469,
+      "expanded_sha256": "7d7d72845090c95e120e9e97d3b82141b65ca5a51cfda0382d5c9ab0c024c594",
+      "expanded_bytes": 75768,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.json",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "started": {
+      "path": "reports/remaining-normal.started.json.gz",
+      "sha256": "11a34195865c25c426c0a73f53f7d26acb1931d3eff8c8de2232dcc23c507898",
+      "bytes": 17198,
+      "expanded_sha256": "8a8d7b33e112ddc005b75083305a968fb755596dbc223b94ff9596ce75c6c079",
+      "expanded_bytes": 38270,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.started.json",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "stdout": {
+      "path": "reports/remaining-normal.stdout.txt.gz",
+      "sha256": "20c517fa64ab9df748b22bba8a6600acc23ff6b405fad32353efd8deae7df4a4",
+      "bytes": 82101,
+      "expanded_sha256": "8bc3ba6c2fcf55814192f3e5c094cb8bc85f18fa1c98aef4fa3ee985198e9ed3",
+      "expanded_bytes": 565450,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.stdout.txt",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "stderr": {
+      "path": "reports/remaining-normal.stderr.txt.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "bytes": 20,
+      "expanded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expanded_bytes": 0,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.stderr.txt",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "invocation": {
+      "path": "reports/remaining-normal.invocation.py.txt.gz",
+      "sha256": "62ebc0feb7fe9cc19df13c0c80024d41c8e38e020a18ed4906a6b61a873f8f9f",
+      "bytes": 1071,
+      "expanded_sha256": "b7a85478309ee4d85aef6d7df8b99925185767df2f623f1de1faf81e69689d32",
+      "expanded_bytes": 3872,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/remaining-normal-477-followup-v1.py",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    },
+    "observer": {
+      "path": "reports/root-observer.py.txt.gz",
+      "sha256": "cf9530a3d6c1a04adb9c190d8e9620d2cca99fc1f05b8496b2ee2622ba321785",
+      "bytes": 1562,
+      "expanded_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+      "expanded_bytes": 4100,
+      "original_external_path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/run_v3.py",
+      "encoding": "gzip level9 mtime0; exactly round-tripped during external archival assembly, not by the authoring reader."
+    }
+  },
+  "counts": {
+    "harnesses": 128,
+    "failed_tests": 35,
+    "retained_qli_sources": 79
+  },
+  "failed_tests": [
+    {
+      "test": "interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads",
+      "failed_test_line": 440,
+      "target": "Running unittests src/lib.rs (target/debug/deps/qleisli-ec126c744a504ac1)",
+      "group": "environment-only",
+      "status": "Original ps permission failure retained; separate later actual retry is recorded, with no source repair.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 53352,
+        "expanded_end_byte_exclusive": 53739,
+        "sha256": "5bd1777e47fdd84e93e891de00cd13b41ef39616752fbbc05081103f07ae7e89",
+        "bytes": 387,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "private_wrapper_suggestions_do_not_require_an_effect_annotation",
+      "failed_test_line": 556,
+      "target": "Running tests/body_effects.rs (target/debug/deps/body_effects-3c2ad9e3640fd6b1)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 59638,
+        "expanded_end_byte_exclusive": 59975,
+        "sha256": "74dc2a0b686a5fd80290f6508d413bb16ebfa3a15a4b2565f02e6eb31c9e2dca",
+        "bytes": 337,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "requestless_entry_and_mainless_library_have_explicit_success_scopes",
+      "failed_test_line": 607,
+      "target": "Running tests/check_scope_cli.rs (target/debug/deps/check_scope_cli-e14efad839e1598b)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 62154,
+        "expanded_end_byte_exclusive": 62890,
+        "sha256": "90fd9fd41913ee3f4f966b29ea6e667665ddf0337e69ed632f15b4a20b36b33f",
+        "bytes": 736,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "operation_instantiations_stay_within_concrete_roots_and_selected_qrate",
+      "failed_test_line": 638,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 63545,
+        "expanded_end_byte_exclusive": 63903,
+        "sha256": "de79d0a96e975f9671decf9d3e9b796d4e7a3a3059b2598a3c911cc8738f7b67",
+        "bytes": 358,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "entry_and_library_reports_describe_actual_concrete_roots",
+      "failed_test_line": 639,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 63904,
+        "expanded_end_byte_exclusive": 64155,
+        "sha256": "e0a2e76534d19902947360b5a282de981caa5400fef6a1a6d10ac57b67fcb40a",
+        "bytes": 251,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "unused_finite_meaning_is_not_a_native_request",
+      "failed_test_line": 640,
+      "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 64156,
+        "expanded_end_byte_exclusive": 64385,
+        "sha256": "b39ebe806bad06993cdd208d0cdbcfbb9efc4ef876c0695e3599c2b62acef42a",
+        "bytes": 229,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "canonical_control_zero_power_evaluates_effectful_arguments_in_source_order",
+      "failed_test_line": 684,
+      "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-480a98f52eb397fc)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 67125,
+        "expanded_end_byte_exclusive": 67483,
+        "sha256": "8da34faa4ff494179631bdd718a90bf056b361ba32d061a63d4f40bf1407f841",
+        "bytes": 358,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_checked_constructor_retains_requests_and_checks_real_provider",
+      "failed_test_line": 695,
+      "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-480a98f52eb397fc)",
+      "group": "ordinary-gate",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/ordinary-gate-test-repair-v2.patch",
+          "sha256": "0824a6abfdf9e194ec131c775831a751bf89c865fd3778d36373d0d82004c60e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-gate-test-drift-rmdyqesc/v2/MANIFEST-v2.json",
+          "sha256": "15015ba61ae0a70615c28c0ea8f49d9ea4d492e369ee0cf57743680bb0549fe1"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 67484,
+        "expanded_end_byte_exclusive": 440843,
+        "sha256": "2b3e3dbba0e897cccabdfcc9bd4ef6b9fa05ab943911a0bdd0aad034eba7d68f",
+        "bytes": 373359,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "eager_argument_effects_belong_to_the_caller_in_source_order",
+      "failed_test_line": 748,
+      "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-ccd234b1e1e8482a)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 444405,
+        "expanded_end_byte_exclusive": 444782,
+        "sha256": "c6f6ea49b649c95609de9be5d5b6a6d9a113985d89f0224a7645872a2437d8a3",
+        "bytes": 377,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller",
+      "failed_test_line": 751,
+      "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-ccd234b1e1e8482a)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 444783,
+        "expanded_end_byte_exclusive": 445086,
+        "sha256": "5fa683d4a301528ea96f06c5ce0a3d7b44a2741d0b4804e8ba9f64000da283fa",
+        "bytes": 303,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "seeded_samples_have_atomic_human_and_json_outputs",
+      "failed_test_line": 828,
+      "target": "Running tests/cli_sampling.rs (target/debug/deps/cli_sampling-c9033d991753bb07)",
+      "group": "scope-sampling",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/scope-and-sampling-v1.patch",
+          "sha256": "9b1a764d8ce0c46176a2479ce97154e8995d7c867ad057bfe4749756cc2e973c"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-check-scope-count-repair-zkxvxfdm/MANIFEST-v1.json",
+          "sha256": "7f1e5b05fc3acaa194a4007b4a7708de206eff0c89e831de03cd293da7e155de"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 447316,
+        "expanded_end_byte_exclusive": 447832,
+        "sha256": "9d6f902d8c212fce1909c57456d88b423039628a00da5e5ae5e56c201dfed525",
+        "bytes": 516,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "explicit_else_imports_and_inferred_unitary_adjoint_still_execute",
+      "failed_test_line": 858,
+      "target": "Running tests/common_authoring_diagnostics.rs (target/debug/deps/common_authoring_diagnostics-337f96240e8f31fd)",
+      "group": "classical",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/three-classical-diagnostics-repair-v1.patch",
+          "sha256": "41eef366e405a82e3266d8cfe6d99b418090315fd4b15622ffb138b94c91aff5"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-classical-test-drift-bk3s9i4l/MANIFEST-v1.json",
+          "sha256": "01267f50331d615f9ba430329a4c75e6729b4be836a6fd12d169020ba595f6b8"
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 449019,
+        "expanded_end_byte_exclusive": 449549,
+        "sha256": "4ebe5762d41a9f005fc46611ef0cb57a7dc9affac4dd2ca6f605ae365202a210",
+        "bytes": 530,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "missing_import_reports_the_call_site_even_in_unused_functions",
+      "failed_test_line": 903,
+      "target": "Running tests/compile.rs (target/debug/deps/compile-9b35c367586c29fd)",
+      "group": "root-profile",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/test-profile-v3.patch",
+          "sha256": "5c7db1b7948bc837568b322d344fd7209b0ffaf2675b941e32d2f9d25eac1ac2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+          "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 452705,
+        "expanded_end_byte_exclusive": 453036,
+        "sha256": "d171a3394dcf2ffd2357eb9e0acf05415930662ada86cbc02c4aef0af446fbf2",
+        "bytes": 331,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "existing_canonical_t_chain_keeps_its_raw_length_profile",
+      "failed_test_line": 946,
+      "target": "Running tests/computed_derived_source.rs (target/debug/deps/computed_derived_source-ade639f939de4be6)",
+      "group": "root-profile",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/test-profile-v3.patch",
+          "sha256": "5c7db1b7948bc837568b322d344fd7209b0ffaf2675b941e32d2f9d25eac1ac2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-ordinary-profile-tests-vjkhht1z/v3/MANIFEST-v3.json",
+          "sha256": "8f65b4c9aae09a197aea545886ce733053f493f8c6cbe303543b7780fec246c5"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 454030,
+        "expanded_end_byte_exclusive": 454704,
+        "sha256": "b44cc964a3611ef8b5b731fd4ab1e77b05cde325e524c67a2cb7c66a78501645",
+        "bytes": 674,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_pi8_profile_retains_exact_integers_and_explicit_refusals",
+      "failed_test_line": 1072,
+      "target": "Running tests/engineering_boundary_baseline.rs (target/debug/deps/engineering_boundary_baseline-0537d504577ddceb)",
+      "group": "pi8",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/pi8-current-v1.patch",
+          "sha256": "48c5788eef5a8dbea15a691588a9f9de91ca52a57231d345160b5d9f85c82868"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-pi8-current-translation-b3w6o58p/MANIFEST-v1.json",
+          "sha256": "ca7beffea5d4cbf0f16c78d7ec8608ec16f802f070f4d07cf9d998fc99dd6599"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 460963,
+        "expanded_end_byte_exclusive": 462964,
+        "sha256": "008db7b47c601ac9276c01cb208315bb473154139e22621f4a0da6c02b869b46",
+        "bytes": 2001,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_empty_basis_meaning_and_phase_fault_use_the_actual_native_contract",
+      "failed_test_line": 1200,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 469929,
+        "expanded_end_byte_exclusive": 470289,
+        "sha256": "59700c41a2ebbd4336afbf0dd04e47e2f0481ccf56871d0d69f591c83c673818",
+        "bytes": 360,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "empty_register_operation_formal_checks_its_actual_provider_and_exact_ports",
+      "failed_test_line": 1203,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470290,
+        "expanded_end_byte_exclusive": 470576,
+        "sha256": "087492d980825d94e3b44315bca1a5af9ff99354e08a78314258297665ca6e88",
+        "bytes": 286,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_zero_register_product_meaning_keeps_unit_nodes_and_axis_order",
+      "failed_test_line": 1205,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470577,
+        "expanded_end_byte_exclusive": 470849,
+        "sha256": "9ba21d8f6fdf8da4296a5d839e17267fac8eef0a50d839f0d23055460e3c48a0",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "controlled_empty_register_scalar_preserves_the_exact_relative_phase",
+      "failed_test_line": 1207,
+      "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+      "group": "finite-empty",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/empty-bits-request-baseline-v2.patch",
+          "sha256": "9d0784a0778d2b7200d7d3d53cd03259a79d159b394c8c7a6cea5c1c663d250e"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-empty-bits-request-baseline-y3fn48rj/v2/MANIFEST-v2.json",
+          "sha256": "55685662adbfe4ae4b16060f9cce7486404969f54ab2264c0499496df677904d"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 470850,
+        "expanded_end_byte_exclusive": 471122,
+        "sha256": "0ce45519d5d46a3265696b78b833f4c1c8c33d5fbb7d24f4f45cd68c89f371e7",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "exact_source_types_declared_effects_and_ordinary_targets_are_required",
+      "failed_test_line": 1303,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476246,
+        "expanded_end_byte_exclusive": 476601,
+        "sha256": "3531e3bbe8695f3f9dcfffe1ac8bff37fa3c7f50d2bf4edd9fbed451b80443e1",
+        "bytes": 355,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "nested_function_evidence_survives_external_inverse_and_control",
+      "failed_test_line": 1310,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476602,
+        "expanded_end_byte_exclusive": 476867,
+        "sha256": "461dab5af3f7c8a6122892fda0854bfd6622e7bec6ba87eb8c6ae4814031b59c",
+        "bytes": 265,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "observing_contracts_compare_complete_instruments_on_the_emitted_call",
+      "failed_test_line": 1315,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 476868,
+        "expanded_end_byte_exclusive": 477136,
+        "sha256": "ce61652b09252beac76e22583ecb33d9343bacb17689cd4219659a6a73e53011",
+        "bytes": 268,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "repeated_nested_contracts_share_one_execution_budget",
+      "failed_test_line": 1320,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 477137,
+        "expanded_end_byte_exclusive": 477381,
+        "sha256": "864a354459a631b6e581850f2554c442c8dc7ee9885e6e24764ad39d78d04148",
+        "bytes": 244,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "unchanged_client_requires_one_specification_across_private_layouts",
+      "failed_test_line": 1322,
+      "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+      "group": "function-contracts",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/function-contract-test-repair-v1.patch",
+          "sha256": "4e0456678a177971c654a45c9795db30671b8c5a1fed54b4fe3a2b07dc3012d2"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-function-contract-test-drift-beewk3ew/MANIFEST-v1.json",
+          "sha256": "d9646ccf6d37cdbc99165ab3d730791a18b3ffe510174f341ff855eeb5e72410"
+        }
+      },
+      "source_group_count": 12,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 477382,
+        "expanded_end_byte_exclusive": 477654,
+        "sha256": "85459500ea748f8977109876ad36e4109af1e6a012a23dbadc370c3417dd5490",
+        "bytes": 272,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "multiple_carried_owners_keep_the_complete_entangled_interface",
+      "failed_test_line": 1890,
+      "target": "Running tests/qfor.rs (target/debug/deps/qfor-b89ffd0db47d4cd1)",
+      "group": "qfor",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/qfor-complex-oracle-v2.patch",
+          "sha256": "9179cb72c8ea3936dafceb9b9a24c1a66639ff4fdc4bf25dc336deb04ed0dad3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+          "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 510913,
+        "expanded_end_byte_exclusive": 511554,
+        "sha256": "3bb6de26e66e59c7449e76c44ec7c48e750cba3243535c34f4d3030dc8738c02",
+        "bytes": 641,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "quantum_fold_preserves_an_external_reference_and_zero_iteration_identity",
+      "failed_test_line": 1891,
+      "target": "Running tests/qfor.rs (target/debug/deps/qfor-b89ffd0db47d4cd1)",
+      "group": "qfor",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/qfor-complex-oracle-v2.patch",
+          "sha256": "9179cb72c8ea3936dafceb9b9a24c1a66639ff4fdc4bf25dc336deb04ed0dad3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-qfor-complex-oracle-repair-iqd0nam0/v2/MANIFEST-v2.json",
+          "sha256": "ae684372d44302904ef6632fc7ed00c93d2110ad1bd494c4c33fe055a2098cb1"
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 511555,
+        "expanded_end_byte_exclusive": 512015,
+        "sha256": "3261b7a7c06033069dbcc943017c54d654c038f30830c13cfb9e29438333dbbb",
+        "bytes": 460,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "selected_z_direct_inverse_and_control_preserve_reference_phase",
+      "failed_test_line": 2004,
+      "target": "Running tests/quantum_unit_source.rs (target/debug/deps/quantum_unit_source-1438ae3e352a846c)",
+      "group": "z-rectangular",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/z-rectangular-test-repair-v1.patch",
+          "sha256": "1ad9e75e6ba6faa0be0ae875cdd2b2ae21c736f31b978c6b7e2ca7160436a489"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+          "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f"
+        }
+      },
+      "source_group_count": 17,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 519111,
+        "expanded_end_byte_exclusive": 519549,
+        "sha256": "c6d2c3665249584d05a11e15ec12ae3e8e2864fe7f248f722b85848d57daf4fe",
+        "bytes": 438,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "ordinary_project_equal_width_distinct_trees_and_inverse",
+      "failed_test_line": 2036,
+      "target": "Running tests/rectangular_meanings.rs (target/debug/deps/rectangular_meanings-20bc1bcd739816d0)",
+      "group": "z-rectangular",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/z-rectangular-test-repair-v1.patch",
+          "sha256": "1ad9e75e6ba6faa0be0ae875cdd2b2ae21c736f31b978c6b7e2ca7160436a489"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-z-rectangular-test-drift-byeevcfj/MANIFEST-v1.json",
+          "sha256": "98bb645856ab268a1548de9127c019d6138ce9d82990e15606901f3355bb345f"
+        }
+      },
+      "source_group_count": 17,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 520350,
+        "expanded_end_byte_exclusive": 520765,
+        "sha256": "a03354c685033b6a82bb7b51c396d9ea2ba10a4c190f3e8806620108f89861b7",
+        "bytes": 415,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset",
+      "failed_test_line": 2091,
+      "target": "Running tests/review_v019.rs (target/debug/deps/review_v019-29825c5cb11ff718)",
+      "group": "review019",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/review-v019-probability-v1.patch",
+          "sha256": "0301d8f0be47ffb1cb93c54af4382bd4d4925cb7c75c5fac2fb758fb41160bf3"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-review-v019-probability-usccrch1/MANIFEST-v1.json",
+          "sha256": "b86f974f1917cfa38afbc2a1a373eda9c13ff17fe04f21eabd1a7e103f4236fc"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 523058,
+        "expanded_end_byte_exclusive": 523423,
+        "sha256": "3e36254cf445282d93ec3929d26e0c64a1f4f9084410b273003c7f669b92133b",
+        "bytes": 365,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "misplaced_public_import_has_a_checked_repair",
+      "failed_test_line": 2148,
+      "target": "Running tests/review_v024.rs (target/debug/deps/review_v024-c5bf1a90be3fdf86)",
+      "group": "review024",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/review-v024-import-v1.patch",
+          "sha256": "7eb419725bb36f9bfa95f7b159803348b7fa43451257893f794e5dd2c8e20d51"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-review024-import-repair-o2ahsapc/MANIFEST-v1.json",
+          "sha256": "edf4c2c73e18c9ada3b256893cd81e178e2cf6f0b86f30b4838725b167ca1004"
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 526833,
+        "expanded_end_byte_exclusive": 527130,
+        "sha256": "2355c388e109e6d050a4b36641ddfaa4e0a9f3141275a9a4d3747366dbcd9a8c",
+        "bytes": 297,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "same_named_host_providers_keep_distinct_definition_and_instance_identity",
+      "failed_test_line": 2348,
+      "target": "Running tests/shared_resolution.rs (target/debug/deps/shared_resolution-4420cba110fdbb5d)",
+      "group": "shared-resolution",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/shared-resolution-provider-v1.patch",
+          "sha256": "6586b6b03348f6c0459fdaeb3566523ee7b30d01e2644667cf1fe54eca62e729"
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-shared-resolution-provider-_t6t6s2k/MANIFEST-v1.json",
+          "sha256": "eba2988b550d1bfa971a741f931f764d12154472476ac24ce43dfab174d697b4"
+        }
+      },
+      "source_group_count": 3,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 538459,
+        "expanded_end_byte_exclusive": 538841,
+        "sha256": "63b14e0faac2a1795220fcd2e57953d2ed23a784127f38006897fd85533d33b6",
+        "bytes": 382,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "small_native_specializations_retain_exact_shared_sources",
+      "failed_test_line": 2567,
+      "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-0da74a9eadd276e1)",
+      "group": "source-snapshots",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/source-snapshots-probability-v1.patch",
+          "sha256": "98c1eb5763f1bb9c6abe45bc6e08a81b9b076d3903bb1336b4ef2adfdc8f2cd8",
+          "bytes": 1445
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+          "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+          "bytes": 1983
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 551476,
+        "expanded_end_byte_exclusive": 551823,
+        "sha256": "e352bebb501b75fe8c00c1c9dd9b448712cf8606c31adbe1f9bc4ccec1d9b0dd",
+        "bytes": 347,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "shared_receipts_keep_exact_bindings_and_outlive_source_changes",
+      "failed_test_line": 2568,
+      "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-0da74a9eadd276e1)",
+      "group": "source-snapshots",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/source-snapshots-probability-v1.patch",
+          "sha256": "98c1eb5763f1bb9c6abe45bc6e08a81b9b076d3903bb1336b4ef2adfdc8f2cd8",
+          "bytes": 1445
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-source-snapshot-probability-gc9iv907/MANIFEST-v1.json",
+          "sha256": "f9b1b4accea199ea8af34aac4e231b13b00be7ef82a4fbf34f7dbbf2cd055b72",
+          "bytes": 1983
+        }
+      },
+      "source_group_count": 7,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 551824,
+        "expanded_end_byte_exclusive": 552105,
+        "sha256": "1af55dad88950997ccdb796944af847a3a5224128f92a090c5a6ec5a7523cbdc",
+        "bytes": 281,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "review_same_wire_obstructions_do_not_reject_semantic_unitaries",
+      "failed_test_line": 2671,
+      "target": "Running tests/static_semantics.rs (target/debug/deps/static_semantics-296949e68b9a49ec)",
+      "group": "static-c3x",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/static-c3x-selection-v1.patch",
+          "sha256": "ed910fe24f9d66f274c2a33205483383a3ae069779a9945d8df2e0baa6fb5f2f",
+          "bytes": 1139
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-static-c3x-table-selection-e3wnihy7/MANIFEST-v1.json",
+          "sha256": "206b12df734c6ef702c8d714c13bf2a34e9ee4b6d2772c022e12cf0443f88bb5",
+          "bytes": 1707
+        }
+      },
+      "source_group_count": 2,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 557440,
+        "expanded_end_byte_exclusive": 557782,
+        "sha256": "7a7a5ed78a622e4980b1381585f27f3f42fee3d285b30190a15d2bbb012b8bc6",
+        "bytes": 342,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    },
+    {
+      "test": "nary_owners_include_units_pending_fields_and_branch_frames",
+      "failed_test_line": 2730,
+      "target": "Running tests/tuple_shapes.rs (target/debug/deps/tuple_shapes-c0c145aaf394ee7e)",
+      "group": "tuple",
+      "repair_packet": {
+        "patch": {
+          "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/tuple-probability-v1.patch",
+          "sha256": "39b1e26f10b7ef4f03da0e7c6306496524c9f3bce5a7f45655b4f367051ca5c3",
+          "bytes": 812
+        },
+        "manifest": {
+          "path": "/private/tmp/qleisli-tuple-probability-758wh7ay/MANIFEST-v1.json",
+          "sha256": "4344509b4525296b3970fa77c2ce3af611449246c977da920f5913db2ca17659",
+          "bytes": 1657
+        }
+      },
+      "source_group_count": 4,
+      "status": "Frozen repair candidate; semantic AFTER is not recorded by this packet.",
+      "complete_panic_block": {
+        "archive": "reports/remaining-normal.stdout.txt.gz",
+        "expanded_start_byte": 559846,
+        "expanded_end_byte_exclusive": 560193,
+        "sha256": "89974490c35764a03a3cc2f320a711f0e728805a1e395cc4548775fb3e875f58",
+        "bytes": 347,
+        "scope": "Exact complete Cargo per-test stdout failure block; source-bearing Debug bytes remain losslessly in the full archive."
+      }
+    }
+  ],
+  "scope": "Retrospective inert archival record of the actual unsuccessful normal run, not a new replay or acceptance decision. HEAD477 identifies Git provenance; whole-working aaa5 includes earlier axis/mixed test repairs and is not clean Git477. The 79 stored QLI inputs are separate historical/current/helper/counterexample inputs, not 79 executions or one project. Original unmet/after-unreached cases receive no negative credit. No full MSRV/current-CI, proof, release, issue completion or new guarantee claim.",
+  "pending": "All semantic repair AFTER results and full current CI remain external/future; this packet creates no result for them."
+}

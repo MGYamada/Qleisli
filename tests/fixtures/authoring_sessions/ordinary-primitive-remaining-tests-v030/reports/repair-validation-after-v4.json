@@ -1,0 +1,1123 @@
+{
+  "scope": "Separate actual root follow-up results, transcribed after completion. Not a fresh same-commit/full-CI, full-library, release, issue-completion or new-guarantee claim. Frozen BEFORE sources and observations stay unchanged.",
+  "transcribed_utc": "2026-10-18T00:38:21Z",
+  "clock_scope": "Actual projection time, not fabricated command start time.",
+  "assembly_snapshot": {
+    "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+    "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+  },
+  "assembly_cli_sha256": "ba99534f8e8bbbca7ae328dc47972d4326d506f3026ccd36255c49ea2d059c2f",
+  "recorded_epoch_note": "fmt ran at f746; the qualified proof consumer, both native suites and both strict Clippy runs ran at9e4. All6 complete346-entry Rust/std input maps are identical. Normal/proof/fmt observe CLI0266; MSRV and later Clippy observe CLIba99534f. Those are separate actual compiler-era binary observations, not standalone build attestations. Future inert retention changes the whole-working hash; unchanged input identities do not establish fresh same-commit CI.",
+  "core_source": {
+    "sha256": "305329f229786e217b64c97d28798facf89ffc4169bfba2d7d67a3c6b301ce10",
+    "files": 298,
+    "algorithm": "sha256-sorted-path-and-content-map-v1",
+    "scope": "Current read-only source-closure equality; existing official proof/evidence records remain authoritative and unchanged."
+  },
+  "input_map_reconstruction": {
+    "before_archive": "remaining-normal.driver.json.gz",
+    "field": "inputs_after",
+    "before_driver_sha256": "7d7d72845090c95e120e9e97d3b82141b65ca5a51cfda0382d5c9ab0c024c594",
+    "count": 346,
+    "canonical_sha256": "a94641c457f4e50d0a00406ba42fbcef7a824c108449e23ff1ad8433d649b5a9",
+    "canonical_encoding": "UTF-8 JSON sorted keys, comma/colon separators, no newline",
+    "replace_only": {
+      "tests/body_effects.rs": {
+        "before": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+        "after": "7ec4bec35dfa3d2ec245f44b293b217c73ace4232aa0a9af5646f3098efaa95e"
+      },
+      "tests/check_scope_cli.rs": {
+        "before": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+        "after": "0c889b1b36a58bef5695a68897c93e635794af633a4aac5c3c72993e66538512"
+      },
+      "tests/check_scope_report.rs": {
+        "before": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+        "after": "4b1abfa6c70d1f8765cc97e8fef17c540b5ece64b08562d39bab46edf6bf574a"
+      },
+      "tests/checked_operations.rs": {
+        "before": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+        "after": "2cdd0103026f5bb0478390998a9f02667cf4700ef2439338a86e58ec7305f789"
+      },
+      "tests/classical_functions.rs": {
+        "before": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+        "after": "81620470ff209c0e9984f3d110a660df81e79c64742c1c7ec570a34697787b47"
+      },
+      "tests/cli_sampling.rs": {
+        "before": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+        "after": "6033a4057d873581cd5a3e4d43353a5d22cb510721503eb8f4cb168a425356e4"
+      },
+      "tests/common_authoring_diagnostics.rs": {
+        "before": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+        "after": "c1dcb3afc45bec1a10ba691cb8a09be42b6209dbd666c8b5cd439301ec235386"
+      },
+      "tests/compile.rs": {
+        "before": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+        "after": "9e5e0acb2ebfc20d3f04a2a05744d5ecd81fa00d2ef78962eae2c71f7fd8ba13"
+      },
+      "tests/computed_derived_source.rs": {
+        "before": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+        "after": "55b7ce28ea0b52c1a6c243ab604cfdb55f48850c182bbede26d9bfd51b7389f1"
+      },
+      "tests/finite_empty_bits.rs": {
+        "before": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+        "after": "2bbae4bdd35cefc14e70664ca4995dbd1c54a9d44e1712ebf63536d4ed4c7ec8"
+      },
+      "tests/function_contracts.rs": {
+        "before": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+        "after": "e1edb437188ff40980aeb54a5552d78b0db742363d8ef44b77dc5098fc68794a"
+      },
+      "tests/qfor.rs": {
+        "before": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+        "after": "0a591b547c908b0ebb680da1db711950ec695ed5af0efb92cd76aa8129205589"
+      },
+      "tests/quantum_unit_source.rs": {
+        "before": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+        "after": "b9e043ad7fc3fb5b0ed7c06f632d906b60c74bcd71e15ee49332d2ff1d72c422"
+      },
+      "tests/rectangular_meanings.rs": {
+        "before": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+        "after": "98e068b0bd881b581f46597278840caaa0c94320566c93ea47599327eddf4ba5"
+      },
+      "tests/review_v019.rs": {
+        "before": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+        "after": "6a6356b5559bf0efa2cd97631d1b2d36f37862b5057e0151dc0745fabef8aee7"
+      },
+      "tests/review_v024.rs": {
+        "before": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+        "after": "e42b93ab7dad9f67ddbc6047590835fa2ace7417820ff098fec59d1cfb2eea21"
+      },
+      "tests/shared_resolution.rs": {
+        "before": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+        "after": "7fdd732e75927820dadcb0788eeef2a0ec970d0d98e7a1e30e639d1662927249"
+      },
+      "tests/source_snapshots.rs": {
+        "before": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+        "after": "d37e047e309f35e61e0075ff88877d8093aa711f021f114adc2dcd227737dcee"
+      },
+      "tests/static_semantics.rs": {
+        "before": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+        "after": "740c791b438a489ea6b424812762aef68d21eebb4497b5454a1f41713219f55a"
+      },
+      "tests/tuple_shapes.rs": {
+        "before": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f",
+        "after": "018f9a1b97a458a8fc16cde17b2d34a39ee08806c6c371420a709d7d74490850"
+      }
+    },
+    "scope": "The full retained BEFORE map plus these20 actual test-file replacements reconstructs each complete AFTER input map exactly; no duplicated346-file inventories."
+  },
+  "reader_and_driver_pins": {
+    "/private/tmp/qleisli-generic-plan-validation-ji3399kg/run_v3.py": {
+      "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/run_v3.py",
+      "sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+      "bytes": 4100
+    },
+    "/Users/masa/git/Qleisli/scripts/ci_source_checks.py": {
+      "path": "/Users/masa/git/Qleisli/scripts/ci_source_checks.py",
+      "sha256": "5fbf1dad141ed41ea2c7bdac059ee0379c4b40fa316f73922127e70bd55dc763",
+      "bytes": 8670
+    },
+    "/Users/masa/git/Qleisli/scripts/check_schema_registry.py": {
+      "path": "/Users/masa/git/Qleisli/scripts/check_schema_registry.py",
+      "sha256": "2421cd3ba6354e92cdda0c5ad6630b9aac65af949a5310c7f90db1735c093850",
+      "bytes": 9599
+    }
+  },
+  "events": [
+    {
+      "kind": "fmt",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-fmt-v3.json",
+        "sha256": "6944419a85a8872070cec7500ba9b749e9abf09106ff8622a94e0baaed67e850",
+        "bytes": 75724
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-fmt-v3.started.json",
+        "sha256": "042b00c67265a46b1ae216611d00af03302619959890b3c8a9fc9a284035cc85",
+        "bytes": 38228
+      },
+      "command": [
+        "/opt/homebrew/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 6.776808708906174,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "f7462806d63f917266ff0ec45e74e37b0bae29f1a71b6f54200929ef0c4720a3"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "f7462806d63f917266ff0ec45e74e37b0bae29f1a71b6f54200929ef0c4720a3"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-fmt-v3.stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-fmt-v3.stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "actual_stdout": "",
+      "actual_stderr": ""
+    },
+    {
+      "kind": "proof-consumer",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-prepared-successor-v4.json",
+        "sha256": "5da75b5c86577c41053d7cdde955a1bb6240fe617a8058768eaaa8abfe066c78",
+        "bytes": 75903
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-prepared-successor-v4.started.json",
+        "sha256": "4725fcdcc51f240287cebc1aaa23d5a6615d1afc86de7ec62821ac909d5bcfce",
+        "bytes": 38406
+      },
+      "command": [
+        "env",
+        "ELAN_TOOLCHAIN=leanprover/lean4:v4.30.0",
+        "/bin/sh",
+        "-c",
+        "cd /Users/masa/git/Qleisli/lean-kernel && lake env lean --version && exec lake env lean -DwarningAsError=true ../tests/fixtures/hierarchical_prepared_v030/Current.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 6.4833847500849515,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-prepared-successor-v4.stdout.txt",
+          "sha256": "f2d97a2fefaf0e62d790b9cddf4699fedd72798146e9d0ba5140b47f90cbcbc3",
+          "bytes": 2022
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-prepared-successor-v4.stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "observed_lean_version_line": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+      "actual_stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\nQleisliKernel.Hierarchical.Conditional.scan.eq_1 (artifact : QleisliKernel.Hierarchical.Artifact.Artifact)\n  (order : List Nat) (state : QleisliKernel.Hierarchical.Conditional.State) :\n  QleisliKernel.Hierarchical.Conditional.scan artifact order state =\n    List.foldlM (QleisliKernel.Hierarchical.Conditional.step artifact) state order\nQleisliKernel.Hierarchical.Conditional.typedScan.eq_1 (artifact : QleisliKernel.Hierarchical.Artifact.Artifact)\n  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact) (order : List Nat)\n  (state : QleisliKernel.Hierarchical.Conditional.State) :\n  QleisliKernel.Hierarchical.Conditional.typedScan artifact context order state =\n    List.foldlM (QleisliKernel.Hierarchical.Conditional.typedStep artifact context) state order\nQleisliKernel.Hierarchical.Conditional.typedLocalCheck.congr_simp\n  (artifact artifact\u271d : QleisliKernel.Hierarchical.Artifact.Artifact) (e_artifact : artifact = artifact\u271d)\n  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact) (index index\u271d : Nat)\n  (e_index : index = index\u271d) (remaining remaining\u271d : Nat) (e_remaining : remaining = remaining\u271d) :\n  QleisliKernel.Hierarchical.Conditional.typedLocalCheck artifact context index remaining =\n    QleisliKernel.Hierarchical.Conditional.typedLocalCheck artifact\u271d \u22ef index\u271d remaining\u271d\nQleisliKernel.Hierarchical.Conditional.typedStep.congr_simp\n  (artifact artifact\u271d : QleisliKernel.Hierarchical.Artifact.Artifact) (e_artifact : artifact = artifact\u271d)\n  (context : QleisliKernel.Hierarchical.TypedRule.PreparedContext artifact)\n  (state state\u271d : QleisliKernel.Hierarchical.Conditional.State) (e_state : state = state\u271d) (index index\u271d : Nat)\n  (e_index : index = index\u271d) :\n  QleisliKernel.Hierarchical.Conditional.typedStep artifact context state index =\n    QleisliKernel.Hierarchical.Conditional.typedStep artifact\u271d \u22ef state\u271d index\u271d\n",
+      "proof_consumer": {
+        "path": "tests/fixtures/hierarchical_prepared_v030/Current.lean",
+        "sha256": "6c1655ffba2f3f5a4cc95e511f6725d601f6db19d25ea4ff714150b74c7ea690",
+        "scope": "Current fixed consumer compiled against the existing complete core; this record grants no new theorem, adoption or guarantee."
+      },
+      "rust_compiler_scope": "Outer observation-driver metadata only; the actual proof tool version is the separately printed Lean line."
+    },
+    {
+      "kind": "normal-native",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-normal-v4.json",
+        "sha256": "17d48f48467c95227f1538aa8bf5ff3411a4378b06371a4988ea8f79f1943fb5",
+        "bytes": 76696
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-normal-v4.started.json",
+        "sha256": "1f9ec81ae898654b4892b4f5d084135bbb43963c6ad64476d29fe2fd22877340",
+        "bytes": 39199
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "/opt/homebrew/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--no-fail-fast",
+        "--test",
+        "axis_routing_boundary",
+        "--test",
+        "mixed_booleans",
+        "--test",
+        "body_effects",
+        "--test",
+        "checked_operations",
+        "--test",
+        "check_scope_cli",
+        "--test",
+        "check_scope_report",
+        "--test",
+        "cli_sampling",
+        "--test",
+        "classical_functions",
+        "--test",
+        "common_authoring_diagnostics",
+        "--test",
+        "compile",
+        "--test",
+        "computed_derived_source",
+        "--test",
+        "engineering_boundary_baseline",
+        "--test",
+        "finite_empty_bits",
+        "--test",
+        "function_contracts",
+        "--test",
+        "qfor",
+        "--test",
+        "review_v019",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "rectangular_meanings",
+        "--test",
+        "review_v024",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "source_snapshots",
+        "--test",
+        "static_semantics",
+        "--test",
+        "tuple_shapes"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 363.38190912501886,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-normal-v4.stdout.txt",
+          "sha256": "7c84efc90468e84a5952e6606d4f85837361cdea5d6bfc387b113b96b645b149",
+          "bytes": 25450
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-normal-v4.stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "selected_targets": [
+        "axis_routing_boundary",
+        "mixed_booleans",
+        "body_effects",
+        "checked_operations",
+        "check_scope_cli",
+        "check_scope_report",
+        "cli_sampling",
+        "classical_functions",
+        "common_authoring_diagnostics",
+        "compile",
+        "computed_derived_source",
+        "engineering_boundary_baseline",
+        "finite_empty_bits",
+        "function_contracts",
+        "qfor",
+        "review_v019",
+        "quantum_unit_source",
+        "rectangular_meanings",
+        "review_v024",
+        "shared_resolution",
+        "source_snapshots",
+        "static_semantics",
+        "tuple_shapes"
+      ],
+      "target_results": [
+        {
+          "target": "Running tests/axis_routing_boundary.rs (target/debug/deps/axis_routing_boundary-2b5a99afca9a8725)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.97s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 7.97
+        },
+        {
+          "target": "Running tests/body_effects.rs (target/debug/deps/body_effects-3c2ad9e3640fd6b1)",
+          "actual_summary_line": "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.88s",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 10.88
+        },
+        {
+          "target": "Running tests/check_scope_cli.rs (target/debug/deps/check_scope_cli-e14efad839e1598b)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.13s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 10.13
+        },
+        {
+          "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-4782b1652e60cc04)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.69s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 3.69
+        },
+        {
+          "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-480a98f52eb397fc)",
+          "actual_summary_line": "test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.87s",
+          "passed": 28,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 27.87
+        },
+        {
+          "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-ccd234b1e1e8482a)",
+          "actual_summary_line": "test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.75s",
+          "passed": 37,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 10.75
+        },
+        {
+          "target": "Running tests/cli_sampling.rs (target/debug/deps/cli_sampling-c9033d991753bb07)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.40s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 3.4
+        },
+        {
+          "target": "Running tests/common_authoring_diagnostics.rs (target/debug/deps/common_authoring_diagnostics-337f96240e8f31fd)",
+          "actual_summary_line": "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.36s",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 5.36
+        },
+        {
+          "target": "Running tests/compile.rs (target/debug/deps/compile-9b35c367586c29fd)",
+          "actual_summary_line": "test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.19s",
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 18.19
+        },
+        {
+          "target": "Running tests/computed_derived_source.rs (target/debug/deps/computed_derived_source-ade639f939de4be6)",
+          "actual_summary_line": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 86.38s",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 86.38
+        },
+        {
+          "target": "Running tests/engineering_boundary_baseline.rs (target/debug/deps/engineering_boundary_baseline-0537d504577ddceb)",
+          "actual_summary_line": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 0.17
+        },
+        {
+          "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-7e785f065577a857)",
+          "actual_summary_line": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.98s",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 7.98
+        },
+        {
+          "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-fd95f7ca65509da0)",
+          "actual_summary_line": "test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.41s",
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 11.41
+        },
+        {
+          "target": "Running tests/mixed_booleans.rs (target/debug/deps/mixed_booleans-5ee7b779bd0ddf11)",
+          "actual_summary_line": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.47s",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 5.47
+        },
+        {
+          "target": "Running tests/qfor.rs (target/debug/deps/qfor-b89ffd0db47d4cd1)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 0.26
+        },
+        {
+          "target": "Running tests/quantum_unit_source.rs (target/debug/deps/quantum_unit_source-1438ae3e352a846c)",
+          "actual_summary_line": "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.12s",
+          "passed": 24,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 4.12
+        },
+        {
+          "target": "Running tests/rectangular_meanings.rs (target/debug/deps/rectangular_meanings-20bc1bcd739816d0)",
+          "actual_summary_line": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.88s",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 5.88
+        },
+        {
+          "target": "Running tests/review_v019.rs (target/debug/deps/review_v019-29825c5cb11ff718)",
+          "actual_summary_line": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.94s",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 20.94
+        },
+        {
+          "target": "Running tests/review_v024.rs (target/debug/deps/review_v024-c5bf1a90be3fdf86)",
+          "actual_summary_line": "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.39s",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 16.39
+        },
+        {
+          "target": "Running tests/shared_resolution.rs (target/debug/deps/shared_resolution-4420cba110fdbb5d)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.85s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 1.85
+        },
+        {
+          "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-0da74a9eadd276e1)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 6.67s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 2,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 6.67
+        },
+        {
+          "target": "Running tests/static_semantics.rs (target/debug/deps/static_semantics-296949e68b9a49ec)",
+          "actual_summary_line": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 33.95s",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 33.95
+        },
+        {
+          "target": "Running tests/tuple_shapes.rs (target/debug/deps/tuple_shapes-c0c145aaf394ee7e)",
+          "actual_summary_line": "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.32s",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 17.32
+        }
+      ],
+      "native_gate": {
+        "actual_line": "native test gate: zero conditional native skips",
+        "conditional_skips": 0
+      },
+      "result": {
+        "passed": 257,
+        "failed": 0,
+        "existing_ignored": 2,
+        "targets": 23
+      }
+    },
+    {
+      "kind": "msrv-native",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-v4.json",
+        "sha256": "b63b0c8a953657f56c550ab8d6d912bd4e530ad71478eaede59bf199d0918bed",
+        "bytes": 76797
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-v4.started.json",
+        "sha256": "12d17f6bfe8719d345bd2581043a9a051c3adfe3e29e11a6824f9784fdf82a25",
+        "bytes": 39301
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "python3",
+        "-B",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "--offline",
+        "--no-fail-fast",
+        "--test",
+        "axis_routing_boundary",
+        "--test",
+        "mixed_booleans",
+        "--test",
+        "body_effects",
+        "--test",
+        "checked_operations",
+        "--test",
+        "check_scope_cli",
+        "--test",
+        "check_scope_report",
+        "--test",
+        "cli_sampling",
+        "--test",
+        "classical_functions",
+        "--test",
+        "common_authoring_diagnostics",
+        "--test",
+        "compile",
+        "--test",
+        "computed_derived_source",
+        "--test",
+        "engineering_boundary_baseline",
+        "--test",
+        "finite_empty_bits",
+        "--test",
+        "function_contracts",
+        "--test",
+        "qfor",
+        "--test",
+        "review_v019",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "rectangular_meanings",
+        "--test",
+        "review_v024",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "source_snapshots",
+        "--test",
+        "static_semantics",
+        "--test",
+        "tuple_shapes"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 487.5995764581021,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+        "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+        "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "ba99534f8e8bbbca7ae328dc47972d4326d506f3026ccd36255c49ea2d059c2f",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-v4.stdout.txt",
+          "sha256": "41c490b71824955eb8ec4c36ab9a4392d097ebdb5e0e535b54a3508e262343ac",
+          "bytes": 25454
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-v4.stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "selected_targets": [
+        "axis_routing_boundary",
+        "mixed_booleans",
+        "body_effects",
+        "checked_operations",
+        "check_scope_cli",
+        "check_scope_report",
+        "cli_sampling",
+        "classical_functions",
+        "common_authoring_diagnostics",
+        "compile",
+        "computed_derived_source",
+        "engineering_boundary_baseline",
+        "finite_empty_bits",
+        "function_contracts",
+        "qfor",
+        "review_v019",
+        "quantum_unit_source",
+        "rectangular_meanings",
+        "review_v024",
+        "shared_resolution",
+        "source_snapshots",
+        "static_semantics",
+        "tuple_shapes"
+      ],
+      "target_results": [
+        {
+          "target": "Running tests/axis_routing_boundary.rs (target/debug/deps/axis_routing_boundary-1c98067b93352847)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.00s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 11.0
+        },
+        {
+          "target": "Running tests/body_effects.rs (target/debug/deps/body_effects-adc68591c8a906da)",
+          "actual_summary_line": "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.68s",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 15.68
+        },
+        {
+          "target": "Running tests/check_scope_cli.rs (target/debug/deps/check_scope_cli-99b3b707098105e4)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.13s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 11.13
+        },
+        {
+          "target": "Running tests/check_scope_report.rs (target/debug/deps/check_scope_report-733f324814312704)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.36s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 4.36
+        },
+        {
+          "target": "Running tests/checked_operations.rs (target/debug/deps/checked_operations-1532ea741c82df03)",
+          "actual_summary_line": "test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 33.73s",
+          "passed": 28,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 33.73
+        },
+        {
+          "target": "Running tests/classical_functions.rs (target/debug/deps/classical_functions-6200025b0f660585)",
+          "actual_summary_line": "test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.99s",
+          "passed": 37,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 13.99
+        },
+        {
+          "target": "Running tests/cli_sampling.rs (target/debug/deps/cli_sampling-8c38e2288d7c8464)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.13s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 4.13
+        },
+        {
+          "target": "Running tests/common_authoring_diagnostics.rs (target/debug/deps/common_authoring_diagnostics-201f12b7d6886876)",
+          "actual_summary_line": "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.57s",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 7.57
+        },
+        {
+          "target": "Running tests/compile.rs (target/debug/deps/compile-2b6e9877fd74efd6)",
+          "actual_summary_line": "test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.24s",
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 27.24
+        },
+        {
+          "target": "Running tests/computed_derived_source.rs (target/debug/deps/computed_derived_source-b843b242689df9b7)",
+          "actual_summary_line": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 123.14s",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 123.14
+        },
+        {
+          "target": "Running tests/engineering_boundary_baseline.rs (target/debug/deps/engineering_boundary_baseline-0c367d22d7baad45)",
+          "actual_summary_line": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 0.21
+        },
+        {
+          "target": "Running tests/finite_empty_bits.rs (target/debug/deps/finite_empty_bits-138dd0ec5524c41e)",
+          "actual_summary_line": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.64s",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 13.64
+        },
+        {
+          "target": "Running tests/function_contracts.rs (target/debug/deps/function_contracts-9455b60ff0bccc00)",
+          "actual_summary_line": "test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.11s",
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 22.11
+        },
+        {
+          "target": "Running tests/mixed_booleans.rs (target/debug/deps/mixed_booleans-efc08c22f0604274)",
+          "actual_summary_line": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.22s",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 8.22
+        },
+        {
+          "target": "Running tests/qfor.rs (target/debug/deps/qfor-d8a29045df961bc8)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 0.26
+        },
+        {
+          "target": "Running tests/quantum_unit_source.rs (target/debug/deps/quantum_unit_source-9204aad4debf99a1)",
+          "actual_summary_line": "test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.47s",
+          "passed": 24,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 7.47
+        },
+        {
+          "target": "Running tests/rectangular_meanings.rs (target/debug/deps/rectangular_meanings-57d1aca65cbda01f)",
+          "actual_summary_line": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.11s",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 10.11
+        },
+        {
+          "target": "Running tests/review_v019.rs (target/debug/deps/review_v019-54514032d72df10f)",
+          "actual_summary_line": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.70s",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 22.7
+        },
+        {
+          "target": "Running tests/review_v024.rs (target/debug/deps/review_v024-3b64949e508607fd)",
+          "actual_summary_line": "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.98s",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 21.98
+        },
+        {
+          "target": "Running tests/shared_resolution.rs (target/debug/deps/shared_resolution-9f781155a13fcebf)",
+          "actual_summary_line": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.99s",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 1.99
+        },
+        {
+          "target": "Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-3caf9aef5f08a189)",
+          "actual_summary_line": "test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 9.64s",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 2,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 9.64
+        },
+        {
+          "target": "Running tests/static_semantics.rs (target/debug/deps/static_semantics-27c270b8f2a80cc4)",
+          "actual_summary_line": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 40.67s",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 40.67
+        },
+        {
+          "target": "Running tests/tuple_shapes.rs (target/debug/deps/tuple_shapes-bb83f8d9097d7389)",
+          "actual_summary_line": "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.29s",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "test_seconds": 17.29
+        }
+      ],
+      "native_gate": {
+        "actual_line": "native test gate: zero conditional native skips",
+        "conditional_skips": 0
+      },
+      "result": {
+        "passed": 257,
+        "failed": 0,
+        "existing_ignored": 2,
+        "targets": 23
+      }
+    },
+    {
+      "kind": "normal-clippy",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-clippy-v4.json",
+        "sha256": "6dc2f52539316ddbbd1a1548ff74f965bdd55b20f6bfafc3df94160ec2b366ec",
+        "bytes": 75780
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-clippy-v4.started.json",
+        "sha256": "d2a75b9d665f8cc1cc2a4d49953560a5544398b4a898f7dba2af4a92132e0ea7",
+        "bytes": 38283
+      },
+      "command": [
+        "/opt/homebrew/bin/cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 11.221885042032227,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "ba99534f8e8bbbca7ae328dc47972d4326d506f3026ccd36255c49ea2d059c2f",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-clippy-v4.stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-clippy-v4.stderr.txt",
+          "sha256": "6c3bce29a982580370ab265530b863dc3e957ba70b632d2663a25fe7259c6bc8",
+          "bytes": 119
+        }
+      },
+      "actual_stdout": "",
+      "actual_stderr": "    Checking qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `dev` profile [unoptimized] target(s) in 7.74s\n"
+    },
+    {
+      "kind": "msrv-clippy",
+      "driver_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-clippy-v4.json",
+        "sha256": "09df503cb93b48815208074b38be503f2775a796ab4ae9c6765fb315f04a575b",
+        "bytes": 75883
+      },
+      "started_record": {
+        "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-clippy-v4.started.json",
+        "sha256": "6778d9f00112fc58be63847c3f68721590ac72df989bd3666dabf66f1e8dd4c6",
+        "bytes": 38386
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "interrupted": false,
+      "driver_seconds": 16.559169332962483,
+      "whole_working_before": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "whole_working_after": {
+        "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+        "working_inputs_sha256": "9e4e31bf27dcd34c176eff07b632634ee4b4cbf77f0cbe5c85bcfaf000bfbf10"
+      },
+      "inputs_stable": true,
+      "whole_working_stable": true,
+      "kernel_stable": true,
+      "reported_rust_compiler": {
+        "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+        "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+        "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+      },
+      "reported_kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "observed_cli_after_sha256": "ba99534f8e8bbbca7ae328dc47972d4326d506f3026ccd36255c49ea2d059c2f",
+      "streams": {
+        "stdout": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-clippy-v4.stdout.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/477-final-repairs-msrv-clippy-v4.stderr.txt",
+          "sha256": "cf7021e8d8efd055775387db44d9524e95316868433095c7117a72ee5f70decc",
+          "bytes": 119
+        }
+      },
+      "actual_stdout": "",
+      "actual_stderr": "    Checking qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `dev` profile [unoptimized] target(s) in 7.96s\n"
+    }
+  ],
+  "counts": {
+    "actual_commands": 6,
+    "normal_passed": 257,
+    "msrv_passed": 257,
+    "existing_ignored_per_native_suite": 2,
+    "native_conditional_skips_per_suite": 0
+  },
+  "remaining": "Latest committed-head CI, whole-project/full release validation and any further obligations are outside these focused results. The observed CLI hash is not a fresh standalone build attestation."
+}

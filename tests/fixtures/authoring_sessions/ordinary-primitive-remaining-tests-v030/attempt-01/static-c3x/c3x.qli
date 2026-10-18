@@ -1,0 +1,6 @@
+// Review counterexample: an odd four-bit permutation is a semantic unitary.
+// Same-wire NCT realizability is a separate judgment. See Issue 120.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+unitary fn c3x(q: Q<((Bit,Bit),(Bit,Bit))>) -> Q<((Bit,Bit),(Bit,Bit))> {
+    basis q as ((a,b),(c,d)) { ((a xor (b and (c and d)), b), (c, d)) }
+}

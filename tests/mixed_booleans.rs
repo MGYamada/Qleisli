@@ -5,12 +5,16 @@ mod common;
 use common::SourceRoot;
 use qleisli::contract::exact::{Budget, Exact};
 use qleisli::contract::meaning::FiniteMeaning;
-use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
+use qleisli::contract::{
+    BasisType, Circuit, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
+};
 use qleisli::frontend::compile::compile_project;
 use qleisli::frontend::compile::{ElaboratedProgram, ParsedProgram};
 use qleisli::frontend::parser::parse_module;
 use qleisli::interchange::native::{AcceptedProgram, Kernel};
-use qleisli::ir::{Effect, RawOp, SingleGate};
+use qleisli::ir::{
+    BasisShape, Effect, QuantumPort, RawOp, RawProgram, SingleGate, TokenId, WireId,
+};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -46,13 +50,68 @@ fn accept(graph: &ElaboratedProgram) -> AcceptedProgram {
 
 fn distribution(program: &AcceptedProgram, expected: &[(&[bool], f64)]) {
     let actual = run_closed(program, SimulationLimits::default()).unwrap();
-    assert_eq!(actual.len(), expected.len(), "{actual:?}");
     for (bits, probability) in expected {
         assert!(
             (actual.get(*bits).expect("expected ordered output") - probability).abs() < 1e-12,
             "{bits:?}: {actual:?}"
         );
     }
+    // Ordinary H Z H can leave numerical zero outcomes in the simulator.
+    // Check their mass with the same existing tolerance; do not renormalize.
+    for (bits, probability) in &actual {
+        let requested = expected
+            .iter()
+            .find(|(outcome, _)| *outcome == bits.as_slice())
+            .map_or(0.0, |(_, probability)| *probability);
+        assert_eq!(bits.len(), program.raw().classical_outputs.len());
+        assert!(probability.is_finite() && *probability >= 0.0);
+        assert!((probability - requested).abs() < 1e-12, "{actual:?}");
+    }
+    assert!((actual.values().sum::<f64>() - 1.0).abs() < 1e-12);
+}
+
+fn ordinary_cnot_outputs(program: &AcceptedProgram) -> (TokenId, TokenId) {
+    let operations = &program.raw().operations;
+    let applications = operations
+        .iter()
+        .filter_map(|operation| match operation {
+            RawOp::ApplyUnitary { output, steps, .. } => Some((*output, steps)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(applications.len(), 1);
+    assert!(!operations.iter().any(|op| matches!(op, RawOp::Cnot { .. })));
+    let (output, steps) = applications[0];
+    let matrix = Circuit::new(
+        BasisType::pair(BasisType::Bit, BasisType::Bit),
+        steps.clone(),
+    )
+    .unwrap()
+    .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+    .unwrap();
+    // Independent little-endian |a,b> -> |a,b XOR a>, with exact phase +1.
+    for column in 0..4 {
+        for row in 0..4 {
+            let coefficient = if row == [0, 3, 2, 1][column] {
+                Exact::one()
+            } else {
+                Exact::zero()
+            };
+            assert_eq!(matrix.get(row, column), Some(coefficient));
+        }
+    }
+    operations
+        .iter()
+        .find_map(|operation| match operation {
+            RawOp::Split {
+                input,
+                left,
+                right,
+                left_bits: 1,
+            } if *input == output => Some((*left, *right)),
+            _ => None,
+        })
+        .expect("ordinary CNOT returns both ordered owners")
 }
 
 fn both_closed(name: &str, expected: &[(&[bool], f64)]) -> AcceptedProgram {
@@ -79,7 +138,7 @@ fn eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use() {
     assert_eq!(
         operations
             .iter()
-            .filter(|op| matches!(op, RawOp::Init0 { .. }))
+            .filter(|op| matches!(op, RawOp::LiftBasis { output_wires, table, .. } if output_wires.len() == 1 && table == &[0]))
             .count(),
         1
     );
@@ -124,13 +183,7 @@ fn bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order(
     // hence 00/10, not two independent fair bits or a reversed tuple.
     let accepted = both_closed("bell-xor", &[(&[false, false], 0.5), (&[true, false], 0.5)]);
     let operations = &accepted.raw().operations;
-    assert_eq!(
-        operations
-            .iter()
-            .filter(|op| matches!(op, RawOp::Cnot { .. }))
-            .count(),
-        1
-    );
+    ordinary_cnot_outputs(&accepted);
     let measured = operations
         .iter()
         .filter_map(|op| match op {
@@ -167,29 +220,7 @@ fn pending_first_argument_keeps_entangled_owner_during_later_argument_measuremen
         &[(&[true, false], 0.5), (&[false, true], 0.5)],
     );
     let operations = &accepted.raw().operations;
-    let (q, r) = operations
-        .iter()
-        .find_map(|op| match op {
-            RawOp::Cnot {
-                control_out,
-                target_out,
-                ..
-            } => Some((*control_out, *target_out)),
-            _ => None,
-        })
-        .unwrap();
-    let (index, x_input, x_output) = operations
-        .iter()
-        .enumerate()
-        .find_map(|(i, op)| match op {
-            RawOp::Gate {
-                gate: SingleGate::X,
-                input,
-                output,
-            } => Some((i, *input, *output)),
-            _ => None,
-        })
-        .unwrap();
+    let (q, r) = ordinary_cnot_outputs(&accepted);
     let measured = operations
         .iter()
         .enumerate()
@@ -199,8 +230,47 @@ fn pending_first_argument_keeps_entangled_owner_during_later_argument_measuremen
         })
         .collect::<Vec<_>>();
     assert_eq!(measured.len(), 2);
-    assert!(measured[0].0 < index && index < measured[1].0);
-    assert_eq!((measured[0].1, x_input, measured[1].1), (r, q, x_output));
+    assert_eq!(measured[0].1, r);
+    let x_body = &operations[measured[0].0 + 1..measured[1].0];
+    assert!(!x_body.is_empty(), "ordinary X must retain actual work");
+    let mut live = q;
+    for operation in x_body {
+        let RawOp::Gate { input, output, .. } = operation else {
+            panic!("unexpected operation in ordinary X");
+        };
+        assert_eq!(*input, live, "the pending first owner must survive the RHS");
+        assert_ne!(input, output);
+        live = *output;
+    }
+    assert_eq!(measured[1].1, live);
+    // Request the exact X equation for the actual retained gate interval.
+    // Source-step replay above and the numerical outcome oracle are separate.
+    FunctionEvidence::check(
+        BasisType::Bit,
+        RawProgram {
+            quantum_inputs: vec![QuantumPort {
+                token: q,
+                wires: vec![WireId(0)],
+                shape: BasisShape { bits: 1 },
+            }],
+            classical_inputs: vec![],
+            operations: x_body.to_vec(),
+            quantum_outputs: vec![live],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        },
+        FiniteMeaning::permutation(BasisType::Bit, vec![1, 0])
+            .unwrap()
+            .target_ir()
+            .unwrap(),
+        FunctionIdentity {
+            implementation: "retained::pending_x_body".into(),
+            specification: "independent |b> -> |b XOR 1>, phase +1".into(),
+            sources: vec![],
+        },
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
     assert_eq!(
         accepted.raw().classical_outputs,
         vec![measured[1].2, measured[0].2]
@@ -228,7 +298,12 @@ fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
         .operations
         .iter()
         .filter_map(|op| match op {
-            RawOp::Init0 { output, wire } => Some((*output, *wire)),
+            RawOp::LiftBasis {
+                output,
+                output_wires,
+                table,
+                ..
+            } if output_wires.len() == 1 && table == &[0] => Some((*output, output_wires[0])),
             _ => None,
         })
         .collect::<Vec<_>>();
@@ -246,7 +321,11 @@ fn repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids() {
             .operations
             .iter()
             .filter_map(|op| match op {
-                RawOp::Init0 { wire, .. } => Some(*wire),
+                RawOp::LiftBasis {
+                    output_wires,
+                    table,
+                    ..
+                } if output_wires.len() == 1 && table == &[0] => Some(output_wires[0]),
                 _ => None,
             })
             .collect::<Vec<_>>();
@@ -306,15 +385,12 @@ fn ignored_measurement_and_unit_return_keep_observation_before_later_logic() {
 fn representable_phases_match_independent_exact_targets_and_interference() {
     for (numerator, denominator, eighths) in [(1, 3, 1), (2, 4, 1), (3, 3, 3), (0, 4, 0)] {
         let text = format!(
-            "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ phase[{numerator},{denominator}](q) }}"
+            " pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ phase[{numerator},{denominator}](q) }}"
         );
         let graph = elaborate(&text, "main::f", BTreeMap::new());
         let definition = &graph.definitions()[graph.root()];
         assert_eq!(definition.steps().len(), 1);
-        assert_eq!(
-            definition.steps()[0].primitive(),
-            Some("std::quantum::phase")
-        );
+        assert_eq!(definition.steps()[0].primitive(), Some("phase"));
         assert_eq!(
             definition.steps()[0].natural_arguments(),
             &[numerator, denominator]
@@ -360,8 +436,7 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
 
     // The source domain is j < 2^k, independently of whether modular reduction
     // could represent an equal operator. Do not broaden it at the Raw target.
-    let invalid =
-        "use std::quantum::phase; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[9,3](q) }";
+    let invalid = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[9,3](q) }";
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), invalid.into())]))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())

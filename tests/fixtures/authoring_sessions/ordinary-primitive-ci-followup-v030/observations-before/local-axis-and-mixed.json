@@ -1,0 +1,124 @@
+{
+  "recorded_utc": "2026-10-17T23:05:29Z",
+  "clock_scope": "Retrospective assembly after the actual root run completed; no invented command start time.",
+  "command": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--test",
+    "axis_routing_boundary",
+    "--test",
+    "mixed_booleans",
+    "--no-fail-fast",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "cwd": "/Users/masa/git/Qleisli",
+  "transcript": "\nrunning 3 tests\ntest physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work ... FAILED\ntest ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes ... ok\ntest native_valid_missing_or_wrong_swap_work_fails_the_independent_equation ... ok\n\nfailures:\n\nfailures:\n    physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work\n\ntest result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.82s\n\n\nrunning 7 tests\ntest unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... FAILED\ntest eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use ... ok\ntest ignored_measurement_and_unit_return_keep_observation_before_later_logic ... ok\ntest repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids ... FAILED\ntest bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order ... FAILED\ntest pending_first_argument_keeps_entangled_owner_during_later_argument_measurement ... FAILED\ntest representable_phases_match_independent_exact_targets_and_interference ... ok\n\nfailures:\n\nfailures:\n    bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order\n    pending_first_argument_keeps_entangled_owner_during_later_argument_measurement\n    repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids\n    unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target\n\ntest result: FAILED. 3 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.75s\n\n",
+  "raw_stderr": "   Compiling qleisli v0.3.0-beta (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 5.29s\n     Running tests/axis_routing_boundary.rs (target/debug/deps/axis_routing_boundary-2b5a99afca9a8725)\n\nthread 'physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work' (62046859) panicked at tests/axis_routing_boundary.rs:153:13:\nassertion `left == right` failed\n  left: 0\n right: 3\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nerror: test failed, to rerun pass `--test axis_routing_boundary`\n     Running tests/mixed_booleans.rs (target/debug/deps/mixed_booleans-5ee7b779bd0ddf11)\n\nthread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' (62048179) panicked at tests/mixed_booleans.rs:49:5:\nassertion `left == right` failed: {[false]: 6.162975822039156e-33, [true]: 1.0000000000000004}\n  left: 2\n right: 1\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids' (62048177) panicked at tests/mixed_booleans.rs:49:5:\nassertion `left == right` failed: {[false, true]: 6.162975822039157e-33, [true, true]: 1.0000000000000004}\n  left: 2\n right: 1\n\nthread 'bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order' (62048173) panicked at tests/mixed_booleans.rs:127:5:\nassertion `left == right` failed\n  left: 0\n right: 1\n\nthread 'pending_first_argument_keeps_entangled_owner_during_later_argument_measurement' (62048176) panicked at tests/mixed_booleans.rs:180:10:\ncalled `Option::unwrap()` on a `None` value\nerror: test failed, to rerun pass `--test mixed_booleans`\nerror: 2 targets failed:\n    `--test axis_routing_boundary`\n    `--test mixed_booleans`\n",
+  "projection": "Complete actual stdout/stderr plus original driver metadata excluding repeated full input maps; original full driver and maps separately hash-bound.",
+  "driver": {
+    "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/axis-and-mixed-ci-before-v1.json",
+    "sha256": "343ba134b6a984a0895b8807e535e319f8798be7f0ce830748a014c057fc099f",
+    "bytes": 75853
+  },
+  "stream_identities": {
+    "stdout": {
+      "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/axis-and-mixed-ci-before-v1.stdout.txt",
+      "sha256": "239c7b7a724ac42e49095c9fe3e0ce11a532b911f45b20477f9450dbc271a551",
+      "bytes": 1563
+    },
+    "stderr": {
+      "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/axis-and-mixed-ci-before-v1.stderr.txt",
+      "sha256": "7dc359f7fd6c2fa229614df9412819157ff0d73ca05499d35a7ef76045dae237",
+      "bytes": 1782
+    }
+  },
+  "driver_metadata": {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--test",
+      "axis_routing_boundary",
+      "--test",
+      "mixed_booleans",
+      "--no-fail-fast",
+      "--",
+      "--nocapture"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "pid": 30208,
+    "pgid": 30208,
+    "whole_working_before": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "9df7850104ff796d39d910f964f6026070aa1efb03b07680dd30aaa4b2b0bba9"
+    },
+    "compiler": {
+      "path": "/opt/homebrew/bin/rustc",
+      "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+      "selection": "explicit normal RUSTC",
+      "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+    },
+    "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+    "outer_environment": {
+      "RUSTC": "/opt/homebrew/bin/rustc",
+      "RUSTDOC": "/opt/homebrew/bin/rustdoc",
+      "CARGO_TARGET_DIR": "/Users/masa/git/Qleisli/target",
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0"
+    },
+    "exit_code": 101,
+    "interrupted": false,
+    "seconds": 24.144315749872476,
+    "whole_working_after": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "9df7850104ff796d39d910f964f6026070aa1efb03b07680dd30aaa4b2b0bba9"
+    },
+    "whole_working_stable": true,
+    "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+    "inputs_stable": true,
+    "kernel_stable": true
+  },
+  "input_maps": {
+    "inputs_before": {
+      "count": 346,
+      "canonical_sha256": "d132131def12f265014af396b97159c58d34ca0c815832ead325b88d9ddd870d",
+      "canonical_encoding": "UTF-8 JSON, sorted keys, separators comma/colon, no trailing newline",
+      "test_hashes": {
+        "tests/axis_routing_boundary.rs": "9316170a2e200dceac5f0dd40a1fbb5b7eb90d61066670bc71437bec56fda11e",
+        "tests/mixed_booleans.rs": "e84a0dd72f3a020ba42017a5f50cc1301148b16d36850081ad4861fbfe5341e0"
+      }
+    },
+    "inputs_after": {
+      "count": 346,
+      "canonical_sha256": "d132131def12f265014af396b97159c58d34ca0c815832ead325b88d9ddd870d",
+      "canonical_encoding": "UTF-8 JSON, sorted keys, separators comma/colon, no trailing newline",
+      "test_hashes": {
+        "tests/axis_routing_boundary.rs": "9316170a2e200dceac5f0dd40a1fbb5b7eb90d61066670bc71437bec56fda11e",
+        "tests/mixed_booleans.rs": "e84a0dd72f3a020ba42017a5f50cc1301148b16d36850081ad4861fbfe5341e0"
+      }
+    }
+  },
+  "result": {
+    "axis_routing_boundary": {
+      "passed": 2,
+      "failed": 1,
+      "ignored": 0
+    },
+    "mixed_booleans": {
+      "passed": 3,
+      "failed": 4,
+      "ignored": 0
+    }
+  },
+  "scope": "The mixed failures are first observed in this local BEFORE reproduction, not in the hosted jobs which stopped at axis_routing_boundary. Existing source selection used the four exact current fixtures retained in attempt-01.",
+  "after_result": "Not recorded in this BEFORE-only observation."
+}

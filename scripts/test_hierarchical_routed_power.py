@@ -111,8 +111,7 @@ def main():
     parser.add_argument('--record', type=Path)
     args = parser.parse_args()
     modules = sources()
-    signed = modules | {'evolution': modules['evolution'].replace(
-        'use std::quantum::phase;', 'use std::quantum::phase;\nuse std::quantum::x;').replace(
+    signed = modules | {'evolution': ('use std::gate::x;\n' + modules['evolution']).replace(
         'phase[j,d](bit)', 'phase[1,1](x(phase[1,1](x(bit))))')}
     graphs, stages, probes = {}, {}, {}
     source = PRELUDE

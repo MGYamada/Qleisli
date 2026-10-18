@@ -8,9 +8,8 @@ use std::process::Command;
 )]
 #[test]
 fn seeded_samples_have_atomic_human_and_json_outputs() {
-    let root = SourceRoot::new(
-        "use std::quantum::init0; use std::observe::measure_z; observe fn main() -> Bit { measure_z(init0()) }",
-    );
+    let root =
+        SourceRoot::new("use std::state::init0;  observe fn main() -> Bit { measure_z(init0()) }");
     for json in [false, true] {
         let mut c = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         c.arg("sample")
@@ -26,8 +25,9 @@ fn seeded_samples_have_atomic_human_and_json_outputs() {
         let s = String::from_utf8(output.stdout).unwrap();
         if json {
             assert!(s.contains("\"seed\":\"18446744073709551615\""), "{s}");
-            // Init0, MeasureZ and the projection's axis metadata copy each cost one step.
-            assert!(s.contains("\"shots\":[{\"bits\":[false],\"execution_steps\":3},{\"bits\":[false],\"execution_steps\":3}],\"execution_steps\":6"),"{s}");
+            // Ordinary init0 executes PackUnit then LiftBasis; MeasureZ and
+            // the projection's one-axis metadata copy each add one more step.
+            assert!(s.contains("\"shots\":[{\"bits\":[false],\"execution_steps\":4},{\"bits\":[false],\"execution_steps\":4}],\"execution_steps\":8"),"{s}");
         } else {
             assert_eq!(s, "0\n0\n");
         }

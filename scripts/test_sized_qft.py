@@ -10,6 +10,7 @@ import json
 import math
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_file
 import subprocess
 import tempfile
 
@@ -115,8 +116,8 @@ def main():
     parser.add_argument('--small', action='store_true', help='use widths one through three and only a small shared/frame case')
     args = parser.parse_args()
     widths = [w for w in WIDTHS if not args.small or w <= 3]
-    source = SOURCE.read_text()
-    inverse_source = INVERSE_SOURCE.read_text()
+    source = current_source_file(SOURCE).read_text()
+    inverse_source = current_source_file(INVERSE_SOURCE).read_text()
     modules = {'fourier': source, 'inverse': inverse_source}
     artifacts, bindings = {}, {}
     for width in widths:
@@ -152,7 +153,7 @@ def main():
         'missing-reversal': source.replace('k+k+2 <= n', 'k+k+2 <= 0'),
         'missing-phase': source.replace('0..n-1-stage carry pair', '0..0 carry pair'),
         'wrong-phase': source.replace('controlled_phase[1,n-stage-k]', 'controlled_phase[2,n-stage-k]'),
-        'wrong-h': source.replace('std::quantum::h', 'std::quantum::x').replace('h(target)', 'x(target)'),
+        'wrong-h': ('use std::gate::x;\n' + source).replace('h(target)', 'x(target)'),
     }
     for key, changed in fault_sources.items():
         artifacts[key] = canonical_boundary(compile_source(changed, 'fourier', {'n': 2}))

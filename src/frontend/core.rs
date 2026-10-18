@@ -1,163 +1,94 @@
-//! Compiler-owned primitive declarations, separate from ordinary `.qli` std.
-//!
-//! This inventory is used by import resolution and primitive lowering. It does
-//! not allow source files to declare or replace primitives. `A` and `B` below
-//! are specification metavariables, not new generic source syntax.
-//!
-//! Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
+//! Audited language primitive signatures, separate from ordinary checked stdlib.
+//! Metadata grants no native acceptance, source preservation or capabilities.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 use super::ast::FnKind;
+pub use super::primitive::PrimitiveId;
 
-/// A sealed source signature. Implementations and independent IR checking are
-/// still required; this declaration is not executable evidence.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Primitive {
-    pub module: &'static str,
-    pub name: &'static str,
-    pub kind: FnKind,
-    pub arity: usize,
+    pub id: PrimitiveId,
     pub signature: &'static str,
 }
-
-/// The sealed surface; additive aliases lower to already specified finite IR.
+impl Primitive {
+    pub fn name(self) -> &'static str {
+        self.id.spelling()
+    }
+    pub fn kind(self) -> FnKind {
+        match self.id.effect() {
+            crate::ir::Effect::Unitary => FnKind::Unitary,
+            crate::ir::Effect::Isometry => FnKind::Isometry,
+            crate::ir::Effect::Observe => FnKind::Observe,
+        }
+    }
+    pub fn arity(self) -> usize {
+        self.id.runtime_arity()
+    }
+    pub fn natural_arity(self) -> usize {
+        self.id.natural_arity()
+    }
+}
+use PrimitiveId::*;
 pub const PRIMITIVES: &[Primitive] = &[
     Primitive {
-        module: "std::quantum",
-        name: "unit",
-        kind: FnKind::Unitary,
-        arity: 1,
+        id: H,
+        signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        id: Phase,
+        signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        id: GlobalPhaseEighth,
+        signature: "(Q<A>) -> Q<A>",
+    },
+    Primitive {
+        id: Unit,
         signature: "(Unit) -> Q<Unit>",
     },
     Primitive {
-        module: "std::quantum",
-        name: "finish",
-        kind: FnKind::Unitary,
-        arity: 1,
+        id: Finish,
         signature: "(Q<Unit>) -> Unit",
     },
     Primitive {
-        module: "std::quantum",
-        name: "init0",
-        kind: FnKind::Isometry,
-        arity: 0,
-        signature: "() -> Q<Bit>",
+        id: Split,
+        signature: "(Q<(A,B)>) -> (Q<A>,Q<B>)",
     },
     Primitive {
-        module: "std::quantum",
-        name: "h",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
+        id: Join,
+        signature: "(Q<A>,Q<B>) -> Q<(A,B)>",
     },
     Primitive {
-        module: "std::quantum",
-        name: "x",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "z",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "t",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "s",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "sdg",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "tdg",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "id",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<A>) -> Q<A>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "phase_eighth",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<A>) -> Q<A>",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "cnot",
-        kind: FnKind::Unitary,
-        arity: 2,
-        signature: "(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "toffoli",
-        kind: FnKind::Unitary,
-        arity: 3,
-        signature: "(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "split",
-        kind: FnKind::Unitary,
-        arity: 1,
-        signature: "(Q<(A,B)>) -> (Q<A>, Q<B>)",
-    },
-    Primitive {
-        module: "std::quantum",
-        name: "join",
-        kind: FnKind::Unitary,
-        arity: 2,
-        signature: "(Q<A>, Q<B>) -> Q<(A,B)>",
-    },
-    Primitive {
-        module: "std::observe",
-        name: "measure_z",
-        kind: FnKind::Observe,
-        arity: 1,
+        id: MeasureZ,
         signature: "(Q<Bit>) -> Bit",
     },
     Primitive {
-        module: "std::observe",
-        name: "reset",
-        kind: FnKind::Observe,
-        arity: 1,
-        signature: "(Q<Bit>) -> Q<Bit>",
+        id: Discard,
+        signature: "(Q<A>) -> Unit",
     },
     Primitive {
-        module: "std::observe",
-        name: "discard",
-        kind: FnKind::Observe,
-        arity: 1,
-        signature: "(Q<A>) -> Unit",
+        id: TakeBit,
+        signature: "(Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n-1>>)",
+    },
+    Primitive {
+        id: PutBit,
+        signature: "(Q<Bit>,Q<Bits<n-1>>) -> Q<Bits<n>>",
+    },
+    Primitive {
+        id: EmptyBits,
+        signature: "() -> Bits<0>",
+    },
+    Primitive {
+        id: PrependBit,
+        signature: "(Bit,Bits<n>) -> Bits<n+1>",
     },
 ];
 
-pub fn primitive(module: &str, name: &str) -> Option<&'static Primitive> {
+/// Descriptor lookup consumes an already resolved language identity.
+/// It is not source name resolution and cannot confer primitive authority.
+pub fn primitive(id: PrimitiveId) -> &'static Primitive {
     PRIMITIVES
         .iter()
-        .find(|item| item.module == module && item.name == name)
+        .find(|item| item.id == id)
+        .expect("complete audited language catalog")
 }

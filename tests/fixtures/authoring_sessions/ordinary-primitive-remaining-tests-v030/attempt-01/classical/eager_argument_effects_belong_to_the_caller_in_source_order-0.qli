@@ -1,0 +1,3 @@
+use std::state::init0; use std::gate::x; 
+        classical fn left(a: Bit, b: Bit) -> Bit { a }
+        pub observe fn main() -> Bit { left(measure_z(x(init0())),measure_z(init0())) }

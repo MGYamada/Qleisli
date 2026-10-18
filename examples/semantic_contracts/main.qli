@@ -1,8 +1,8 @@
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::z;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+
 
 classical fn copy_bit(value: Bit) -> Bit { value }
 

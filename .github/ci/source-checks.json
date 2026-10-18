@@ -47,7 +47,15 @@
         ],
         [
           "python3",
+          "scripts/test_run_rust_tests.py"
+        ],
+        [
+          "python3",
           "scripts/test_ci_actions.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_release_ready.py"
         ],
         [
           "python3",
@@ -163,8 +171,10 @@
           "tests/fixtures/lean_layout_dag/first_source"
         ],
         [
+          "python3",
+          "scripts/current_source_fixtures.py",
+          "--check",
           "{compiler}",
-          "check",
           "tests/fixtures/lean_phase_layout/first_source"
         ],
         [
@@ -253,10 +263,6 @@
         [
           "python3",
           "scripts/test_check_constitution.py"
-        ],
-        [
-          "python3",
-          "scripts/test_check_release_ready.py"
         ],
         [
           "python3",
@@ -400,6 +406,13 @@
           "python3",
           "scripts/run_kernel_tests.py",
           "--",
+          "python3",
+          "scripts/run_rust_tests.py",
+          "--workers",
+          "2",
+          "--record",
+          "{record}",
+          "--",
           "cargo",
           "+1.98.1",
           "test",
@@ -417,6 +430,13 @@
         [
           "python3",
           "scripts/run_kernel_tests.py",
+          "--",
+          "python3",
+          "scripts/run_rust_tests.py",
+          "--workers",
+          "2",
+          "--record",
+          "{record}",
           "--",
           "cargo",
           "+1.98.1",
@@ -527,6 +547,8 @@
           "interchange",
           "--test",
           "interop",
+          "--test",
+          "interop_zero_preparation",
           "--test",
           "isometry_source",
           "--test",
@@ -796,6 +818,13 @@
           "scripts/run_kernel_tests.py",
           "--",
           "python3",
+          "scripts/run_rust_tests.py",
+          "--workers",
+          "2",
+          "--record",
+          "{record}",
+          "--",
+          "python3",
           "scripts/run_msrv.py",
           "test",
           "--test",
@@ -812,6 +841,13 @@
         [
           "python3",
           "scripts/run_kernel_tests.py",
+          "--",
+          "python3",
+          "scripts/run_rust_tests.py",
+          "--workers",
+          "2",
+          "--record",
+          "{record}",
           "--",
           "python3",
           "scripts/run_msrv.py",
@@ -922,6 +958,8 @@
           "interchange",
           "--test",
           "interop",
+          "--test",
+          "interop_zero_preparation",
           "--test",
           "isometry_source",
           "--test",

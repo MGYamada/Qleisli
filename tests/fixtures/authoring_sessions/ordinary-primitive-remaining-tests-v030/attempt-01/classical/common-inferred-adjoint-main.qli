@@ -1,0 +1,1 @@
+use std::state::init0; use std::gate::x;  observe fn m(q:Q<Bit>)->Q<Bit>{x(q)} observe fn main()->Bit{measure_z(adjoint(m)(init0()))}

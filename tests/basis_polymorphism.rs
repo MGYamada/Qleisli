@@ -317,7 +317,7 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     let kernel =
         Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"));
-    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
+    let source = "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
     let p = parsed(source);
     for (ty, provider, width) in [("Bit", "main::flip", 1), ("Unit", "main::scalar", 0)] {
         for n in 0..=4 {
@@ -388,13 +388,13 @@ fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
 #[test]
 fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    let source = "use std::quantum::{x,phase_eighth};
+    let source = "use std::gate::x;
         classical fn flip(b:Bit)->Bit{not b}
         classical fn angle(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
         meaning Flip:Bit=permutation_by(flip);
         meaning Eighth:Unit=phase_by(angle);
         pub unitary fn bit_provider(q:Q<Bit>)->Q<Bit>{x(q)}
-        pub unitary fn unit_provider(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        pub unitary fn unit_provider(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         unitary fn run[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
             requires Applicable(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
         pub unitary fn bit[const n:Nat,const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit>
@@ -407,7 +407,7 @@ fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
         } else {
             source
                 .replace("{x(q)}", "{q}")
-                .replace("{phase_eighth(q)}", "{q}")
+                .replace("{global_phase_eighth(q)}", "{q}")
         };
         let program = parsed(&text);
         for (entry, provider, width) in [("bit", "bit_provider", 1), ("unit", "unit_provider", 0)] {

@@ -123,9 +123,9 @@ impl Mul for Exact {
 }
 
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+\x20\x20
 ";
 
 fn compiled_steps(definitions: &str, preparation: &str, operation: &str) -> Vec<CircuitStep> {
@@ -896,8 +896,8 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
-    let imports = "use std::quantum::{s,sdg,tdg,id,phase_eighth};";
+fn ordinary_phase_gates_match_exact_operators_and_their_static_clients() {
+    let imports = "use std::gate::{s,sdg,tdg,id}; unitary fn bit_identity(q:Q<Bit>)->Q<Bit>{id[type(Bit)](q)}";
     for (name, exponent) in [("s", 2), ("sdg", 6), ("tdg", 7)] {
         for (operation, power) in [
             (format!("power({name},1)(q)"), exponent),
@@ -917,7 +917,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
             "{imports}
             unitary fn controlled(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> {{
                 let (c,t) = split(q);
-                let (c,t) = qif(c,t) {{ 0 => id, 1 => {name} }};
+                let (c,t) = qif(c,t) {{ 0 => bit_identity, 1 => {name} }};
                 join(c,t)
             }}"
         );
@@ -938,7 +938,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     let steps = compiled_steps(
         &format!(
             "{imports}
-        unitary fn direct(q:Q<Bit>)->Q<Bit>{{ phase_eighth(tdg(sdg(s(id(q))))) }}"
+        unitary fn direct(q:Q<Bit>)->Q<Bit>{{ global_phase_eighth(tdg(sdg(s(id[type(Bit)](q))))) }}"
         ),
         "let q = init0();",
         "power(direct,1)(q)",
@@ -957,15 +957,15 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
-    let imports = "use std::quantum::{id,phase_eighth};";
+fn language_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
+    let imports = "use std::gate::id; unitary fn unit_identity(q:Q<Unit>)->Q<Unit>{id[type(Unit)](q)} unitary fn bit_identity(q:Q<Bit>)->Q<Bit>{id[type(Bit)](q)}";
     let unit = "let pair = basis init0() as b { ((),b) };
         let (q,b) = split(pair); discard(b);";
     for (operation, exponent) in [
-        ("power(id,1)(q)", 0),
-        ("power(phase_eighth,1)(q)", 1),
-        ("adjoint(phase_eighth)(q)", 7),
-        ("power(phase_eighth,8)(q)", 0),
+        ("power(unit_identity,1)(q)", 0),
+        ("power(global_phase_eighth,1)(q)", 1),
+        ("adjoint(global_phase_eighth)(q)", 7),
+        ("power(global_phase_eighth,8)(q)", 0),
     ] {
         let steps = compiled_steps(imports, unit, operation);
         assert_operator(0, &steps, |_, _| Exact::phase(exponent));
@@ -975,8 +975,8 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
         "{imports}
         unitary fn mixed(q:Q<((Bit,Unit),Bit)>)->Q<((Bit,Unit),Bit)> {{
             let (cu,b) = split(q); let (c,u) = split(cu);
-            let (c,u) = qif(c,u) {{ 0 => id, 1 => phase_eighth }};
-            let (c,b) = qif(c,b) {{ 0 => id, 1 => phase_eighth }};
+            let (c,u) = qif(c,u) {{ 0 => unit_identity, 1 => global_phase_eighth }};
+            let (c,b) = qif(c,b) {{ 0 => bit_identity, 1 => global_phase_eighth }};
             join(join(c,u),b)
         }}"
     );
@@ -995,7 +995,7 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     let steps = compiled_steps(
         imports,
         "let q = join(init0(),init0());",
-        "adjoint(phase_eighth)(q)",
+        "adjoint(global_phase_eighth)(q)",
     );
     assert_operator(2, &steps, |row, column| {
         if row == column {
@@ -1014,33 +1014,40 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
 fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
     use qleisli::frontend::compile::{ErrorCode, check_project};
     let root = SourceRoot::new(
-        "use std::quantum::{init0,phase_eighth};
-        use std::observe::discard;
-        observe fn main()->Unit { discard(phase_eighth(init0())); () }",
+        "use std::state::init0;
+\x20\x20\x20\x20\x20\x20\x20\x20
+        observe fn main()->Unit { discard(global_phase_eighth(init0())); () }",
     );
     let verified = compile_project(&root.0).unwrap();
-    assert_eq!(verified.program().operations.len(), 3);
+    assert_eq!(verified.program().operations.len(), 4);
+    assert!(matches!(
+        &verified.program().operations[0],
+        RawOp::PackUnit { .. }
+    ));
     assert!(
-        matches!(&verified.program().operations[1], RawOp::ApplyUnitary { steps, .. }
+        matches!(&verified.program().operations[1], RawOp::LiftBasis { output_wires, table, .. } if output_wires.len() == 1 && table == &[0])
+    );
+    assert!(
+        matches!(&verified.program().operations[2], RawOp::ApplyUnitary { steps, .. }
         if steps.len() == 1 && matches!(&steps[0].action,
             CircuitAction::Monomial { indices, permutation, phases }
             if indices.is_empty() && permutation == &[0] && phases == &[1]))
     );
     for (source, code) in [
         (
-            "use std::quantum::id; unitary fn f(q:Q<Unit>)->(Q<Unit>,Q<Unit>){(id(q),id(q))}",
+            "use std::gate::id; unitary fn f(q:Q<Unit>)->(Q<Unit>,Q<Unit>){(id[type(Unit)](q),id[type(Unit)](q))}",
             ErrorCode::Ownership,
         ),
         (
-            "use std::quantum::phase_eighth; unitary fn f(q:Bit)->Bit{phase_eighth(q)}",
+            " unitary fn f(q:Bit)->Bit{global_phase_eighth(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
-            "use std::quantum::s; unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{s(q)}",
+            "use std::gate::s; unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{s(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
-            "use std::quantum::tdg; unitary fn f(q:Q<Unit>)->Q<Unit>{power(tdg,0)(q)}",
+            "use std::gate::tdg; unitary fn f(q:Q<Unit>)->Q<Unit>{power(tdg,0)(q)}",
             ErrorCode::TypeMismatch,
         ),
     ] {
@@ -1102,22 +1109,22 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
         }}"
     ));
     let verified = compile_project(&root.0).unwrap();
-    let table = verified
+    // Ordinary init0 now introduces one-wire basis injections first. Select
+    // the unique four-wire action by its interface, before checking its table.
+    let mut tables = verified
         .program()
         .operations
         .iter()
-        .find_map(|op| match op {
+        .filter_map(|op| match op {
             RawOp::LiftBasis {
                 table,
                 output_wires,
                 ..
-            } => {
-                assert_eq!(output_wires.len(), 4);
-                Some(table)
-            }
+            } if output_wires.len() == 4 => Some(table),
             _ => None,
-        })
-        .unwrap();
+        });
+    let table = tables.next().expect("one four-wire C3X basis action");
+    assert!(tables.next().is_none(), "unique four-wire basis action");
     let expected: Vec<u16> = (0..14).chain([15, 14]).collect();
     assert_eq!(table, &expected);
     assert!(permutation_is_odd(

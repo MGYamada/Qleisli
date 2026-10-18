@@ -45,7 +45,7 @@ fn bell_draws_follow_the_word_threshold_and_consume_deterministic_words() {
 #[test]
 fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
     let source = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::quantum::x; use std::observe::measure_z; use std::observe::reset; observe fn main() -> (Bit,Bit) { let (a,b) = cnot(h(init0()),init0()); let a = reset(a); let flag = measure_z(b); let a = if flag { x(a) } else { a }; (flag,measure_z(a)) }",
+        "use std::state::init0;  use std::gate::cnot; use std::gate::x;  use std::state::reset; observe fn main() -> (Bit,Bit) { let (a,b) = cnot(h(init0()),init0()); let a = reset(a); let flag = measure_z(b); let a = if flag { x(a) } else { a }; (flag,measure_z(a)) }",
     );
     for p in [
         compile_project(Path::new("examples/bell")).unwrap(),
@@ -70,7 +70,7 @@ fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
 #[test]
 fn discarded_entangled_half_is_sampled_and_no_state_is_reused() {
     let source = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::observe::measure_z; use std::observe::discard; observe fn main() -> Bit { let (a,b)=cnot(h(init0()),init0()); discard(a); measure_z(b) }",
+        "use std::state::init0;  use std::gate::cnot;   observe fn main() -> Bit { let (a,b)=cnot(h(init0()),init0()); discard(a); measure_z(b) }",
     );
     let p = compile_project(&source.0).unwrap();
     let mut draws = 0;
@@ -280,7 +280,7 @@ fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
 #[test]
 fn interference_probability_matches_an_independent_analytic_value() {
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::t; use std::observe::measure_z; observe fn main() -> Bit { measure_z(h(t(h(init0())))) }",
+        "use std::state::init0;  use std::gate::t;  observe fn main() -> Bit { measure_z(h(t(h(init0())))) }",
     );
     let p = compile_project(&root.0).unwrap();
     let mut rng = SplitMix64::new(17);

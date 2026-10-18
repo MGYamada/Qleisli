@@ -114,40 +114,10 @@ jobs:
         with:
           toolchain: '1.98.1'
           components: rustfmt clippy
-      - name: Run shared rust-latest checks and retain results
-        id: rust-latest
-        uses: ./.github/actions/source-check
+      - name: Run the shared Rust validation suite
+        uses: ./.github/actions/rust-suite
         with:
-          group: rust-latest
-      - name: Run shared source-contracts checks and retain results
-        id: source-contracts
-        uses: ./.github/actions/source-check
-        with:
-          group: source-contracts
-          compiler: target/debug/qleisli
-          artifact-name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
-      - name: Run shared source-semantics checks and retain results
-        id: source-semantics
-        uses: ./.github/actions/source-check
-        with:
-          group: source-semantics
-          compiler: target/debug/qleisli
-      - name: Representative corpus checks
-        id: corpus
-        run: |
-          python3 scripts/check_input_corpus.py target/debug/qleisli --quick --report "$RUNNER_TEMP/corpus.json"
-      - name: Retain actual corpus mode, selected probes and partial failures
-        if: always() && (steps.corpus.outcome == 'success' || steps.corpus.outcome == 'failure')
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: corpus-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/corpus.json
-          if-no-files-found: error
-      - name: Run shared rust-latest-lint-research checks and retain results
-        id: rust-latest-lint-research
-        uses: ./.github/actions/source-check
-        with:
-          group: rust-latest-lint-research
+          profile: latest
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
@@ -179,23 +149,10 @@ jobs:
         with:
           toolchain: '1.85.0'
           components: clippy
-      - name: Run shared rust-msrv checks and retain results
-        id: rust-msrv
-        uses: ./.github/actions/source-check
+      - name: Run the shared Rust validation suite
+        uses: ./.github/actions/rust-suite
         with:
-          group: rust-msrv
-      - name: Run shared source-contracts checks and retain results
-        id: source-contracts
-        uses: ./.github/actions/source-check
-        with:
-          group: source-contracts
-          compiler: target/debug/qleisli
-          artifact-name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
-      - name: Run shared rust-msrv-lint-research checks and retain results
-        id: rust-msrv-lint-research
-        uses: ./.github/actions/source-check
-        with:
-          group: rust-msrv-lint-research
+          profile: msrv
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
@@ -378,7 +335,7 @@ jobs:
         working-directory: lean-kernel
         run: |
           lake env lean -DwarningAsError=true Tests.lean
-          lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
+          lake env lean -DwarningAsError=true ../tests/fixtures/hierarchical_prepared_v030/Current.lean
       - name: Replay the compiled project definitions through Lean's kernel
         if: needs.changes.outputs.proof_lane == 'full'
         working-directory: lean-kernel

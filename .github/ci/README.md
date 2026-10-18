@@ -333,6 +333,13 @@ their mode and coverage selections. Progress is diagnostic; only completed
 checks and the retained failure report determine success. Full validation
 remains separately requested; no corpus sharding is enabled.
 
+## Companion tooling validation
+
+Extract the `qargo`, `qlippy`, `qlifmt` and `qlidoc` binaries into this
+repository's root `bin/` directory before testing the companion bundle.
+Run bundle and runtime validation using explicit paths to those four files,
+which must come from the same checked build.
+
 ## Native comparisons (#206)
 
 Local reproduction uses the same command manifests as hosted checks:
@@ -351,27 +358,72 @@ python3 scripts/ci_profiles.py --checks rust-latest --output "$qleisli_validatio
 python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qleisli_validation_dir/lint"
 ```
 
+Historical source consumers use explicit current-source mappings. The phase-layout
+first project remains immutable; `current_source_fixtures.py --check` validates
+its registered migration chain and records the selected source hashes before
+calling the supplied compiler. It propagates compiler refusal and rejects missing
+or changed mappings without falling back to the historical source.
+
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
-The latest and MSRV Rust groups split all-target testing into two literal,
-sequential native-gated Cargo commands: ownership/source-IR correspondence,
-then every other integration target plus libraries, binaries, examples and
-benches. Before either command, `check_rust_test_partition.py` compares their
+The latest and MSRV Rust groups retain two literal native-gated selections:
+ownership/source-IR correspondence, then every other integration target plus
+libraries, binaries, examples and benches. Before either selection,
+`check_rust_test_partition.py` compares their
 positive selections with the same pinned Cargo's complete root-package
 metadata. Missing, extra, duplicate, overlapping or unreviewed target conventions
 fail; adding a target requires updating the explicit selection. The guard records
 the inventory and exact commands in the existing immutable command log. It does
-not execute tests or replace native validation. The separate ignored-dialect,
+not execute tests or replace native validation. `run_rust_tests.py` builds each
+selection once, checks every returned root-package harness against Cargo's
+metadata, and schedules at most two harnesses together. Cargo retains its normal
+runtime environment. Each harness runs every default case with two test threads,
+fixed across hosts rather than derived from CPU count; no test-name filter is added. Exact
+executable hashes, complete logs, elapsed times, failures, running targets and
+unstarted targets remain in the command artifact. A failed harness stops new
+submissions; every selected harness must pass before later checks can run.
+The outer process-group deadline also terminates worker/native descendants.
+One worker retains a fresh serial scheduling route for bounded comparisons.
+The complete `computed_derived_source` harness runs first, alone with one test
+thread. Its original 205-T and ordered-chunk equations reached the fixed
+60-second native deadline during extracted-source parallel validation. This
+isolation reduces competition for those queries without filtering any case,
+changing an acceptance rule or increasing a deadline. Per-harness records state
+the actual isolation and thread count. Failure leaves all later targets not run.
+Local single-query timings do not establish the Linux failure's cause or repair;
+the new candidate must pass hosted extracted-source validation.
+The separate ignored-dialect,
 catalog, documentation and doctest commands retain their existing coverage.
 
 Each command retains its 3,600-second timeout. Two commands provide more
 aggregate available test time than the former single invocation; this is not a
-speedup or preservation of an aggregate time cap. Job limits, required contexts,
+preservation of an aggregate time cap. Job limits, required contexts,
 case counts, existing skips and native gates remain unchanged. No passed
 partition substitutes for another, and failure retains later commands as not run.
+The [bounded experiment](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/README.md)
+measures the same 34 small-system tests at 24.17 seconds with the original
+selection and 16.68 seconds in the initial two-worker scheduler window. This is a warm development
+measurement, not a claim about hosted full-CI time. Optimization level 1 was
+measured separately and not adopted; compiler profiles remain unchanged.
+The current fixed two-thread harness configuration is a later validation window,
+distinct from that initial timing comparison. Failed-target reasons are emitted
+last so bounded distribution-log previews retain them after other workers finish.
+
+The shared `rust-suite` action owns the latest/MSRV source-contract and lint
+sequence. Only latest runs source semantics and the existing quick corpus profile.
+Producer jobs, pinned toolchains, native preparation, dependency archives,
+successful-evidence receipts and stable required contexts remain distinct.
+Distribution uses the same two-worker scheduler and native skip gate against
+the extracted complete source archive, offline in its existing caller-owned
+production target. It retains per-harness records under distribution logs;
+the extracted research suite, package, documentation and installation checks
+remain separate. No checkout test result replaces an extracted-source result.
 
 The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
 infrastructure regressions before the changes job can schedule heavy builds.
+It also runs release-policy/corpus-wiring regressions, so a broken workflow
+adapter fails before scheduling Rust/native jobs. That unchanged test command
+moves from repository integrity into preflight and is not duplicated there.
 It runs for both documentation and full profiles. The same local invocation
 includes unstaged, staged and non-ignored untracked inputs; a clean hosted
 checkout checks the complete committed tree. `check_whitespace.py --committed`
@@ -396,8 +448,9 @@ Cargo arguments. It fixes PATH, rustc, rustdoc and Clippy together. A separately
 queried Rustup version does not establish which compiler Cargo finds on PATH;
 local validation records must identify the tools that actually execute.
 
-The repository-integrity group retains
-all 34 static checks formerly written in the documentation job. Its tools are
+The repository-integrity group retains 33 static checks formerly written in
+the documentation job; the remaining release-policy regression runs earlier in
+preflight. The complete prior 34-command coverage remains enforced. Its tools are
 Python 3.11+ and Git, with full history for the historical archive check; no
 Rust or Lean build is required. Constitutional continuity against the reviewed
 base is a separate `check_constitution.py --base-ref COMMIT` invocation because
@@ -445,8 +498,12 @@ check every caller's preparation, coverage, cache and receipt wiring.
 Native comparisons require a clean checkout and the pinned tools. Without
 `--plan`, supply a new `--output` directory; `--task` selects named groups only
 for local reproduction and reports every omitted group. Hosted runs reject
-partial selection. A common Rust all-target build precedes parallel execution,
-so no source test depends on another worker having built the CLI first. Fresh
+partial selection. A common Rust all-target build precedes comparison execution,
+so no source test depends on another worker having built the CLI first. When
+selected, `native-paths` runs alone before the remaining groups use the worker
+pool. Its recorded failure does not skip the remaining groups. The 900-second
+per-command timeout, complete command inventory and acceptance checks remain
+unchanged; this ordering does not establish a hosted runtime bound. Fresh
 native decisions and independent oracles still execute for every selected test.
 Preflight failures retain a failed report without overwriting earlier runs.
 Every selected group is explicitly unexecuted until preparation succeeds;
@@ -482,7 +539,10 @@ and distinguish version rejection from malformed or semantically invalid frames.
 The native-paths group exercises the single Lean acceptance boundary through
 source, raw, QIRF, foreign and Python entry points. Environment selection and
 explicit kernel arguments use the same implementation; missing and incompatible
-checkers cannot fall back. Runtime Rust/MSRV/installation jobs first build and
+checkers cannot fall back. The VM-28 script flushes its current phase or corpus
+case, completed process count and elapsed time to stderr, retaining progress if an outer
+process-group timeout prevents its final JSON record. Runtime Rust/MSRV/installation
+jobs first build and
 audit the matching kernel, then set an absolute `QLEISLI_KERNEL` path.
 
 The native-acceptance group exercises immutable accepted handles, explicit

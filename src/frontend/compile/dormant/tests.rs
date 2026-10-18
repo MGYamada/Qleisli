@@ -248,9 +248,14 @@ fn inactive_original_region_restores_the_complete_instance_on_every_result() {
 #[test]
 fn inactive_carry_checks_bound_ops_with_the_actual_original_nat_owner_type() {
     for gate in ["x", "z"] {
+        let body = if gate == "x" {
+            "h(phase[1,1](h(q)))"
+        } else {
+            "phase[1,1](q)"
+        };
         let mut project = project();
         let source = format!(
-            "use std::quantum::{gate};use std::registers::{{take_bit,put_bit}};
+            "unitary fn {gate}(q:Q<Bit>)->Q<Bit>{{{body}}}
             unitary fn actual(q:Q<Bits<1>>)->Q<Bits<1>>{{
                 let(b,empty)=take_bit[1,0](q);put_bit[1,0]({gate}(b),empty)}}
             unitary fn unused[const n:Nat,const U:Op<Bits<n>>](q:Q<Bits<n>>)->Q<Bits<n>>
@@ -335,8 +340,8 @@ fn inactive_basis_carry_retains_distinct_zero_width_actual_owner_trees() {
     for basis in ["Unit", "Bits<0>"] {
         let mut project = project();
         let source = format!(
-            "use std::quantum::phase_eighth;
-            unitary fn actual(q:Q<{basis}>)->Q<{basis}>{{phase_eighth(q)}}
+            "
+            unitary fn actual(q:Q<{basis}>)->Q<{basis}>{{global_phase_eighth(q)}}
             unitary fn unused[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A>
               requires Applicable(U){{qfor static i in 0..0 carry r=q{{U(ctrl r);yield r;}}}}"
         );
@@ -446,10 +451,10 @@ fn unused_original_static_roots_cannot_hide_closed_u32_overflow() {
 #[test]
 fn inactive_guarded_owner_subtraction_stays_conditional_without_losing_valid_phase() {
     let mut project = project();
-    let source = "use std::registers::{take_bit,put_bit};use std::quantum::phase_eighth;
+    let source = "
         unitary fn guarded[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{
             if static n==0 {q} else {
-                let(b,r)=take_bit[n,0](q);phase_eighth(ctrl r);put_bit[n,0](b,r)}}";
+                let(b,r)=take_bit[n,0](q);global_phase_eighth(ctrl r);put_bit[n,0](b,r)}}";
     let module = project.modules.get_mut("main").unwrap();
     module.ast = crate::frontend::parser::parse_module(source).unwrap();
     module.source = source.into();

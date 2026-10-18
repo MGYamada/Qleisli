@@ -3,8 +3,9 @@
 
 Archives, logs and the JSON report are retained outside the checkout. Owned
 build work is removed unless --keep-work is requested; an explicit --target-dir
-remains caller-owned. Uses installed Git, Cargo/Rust and Python only; Cargo runs
-offline. This gate does not replace MSRV, Lean or exact-commit CI checks.
+remains caller-owned. Uses installed Git, Cargo/Rust, Python and an explicitly
+selected audited native checker; Cargo runs offline. This gate does not replace
+MSRV, Lean or exact-commit CI checks.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
@@ -50,6 +51,8 @@ SOURCE_ROOTS = (
     "lean-kernel/Main.lean", "lean-kernel/Protocol.lean", "lean-kernel/Tests.lean",
     "lean-kernel/lakefile.toml", "lean-kernel/lean-toolchain", "lean-kernel/lake-manifest.json",
     "scripts/check_lean_kernel.py", "scripts/test_check_lean_kernel.py", "scripts/test_lean_hierarchy.py",
+    "scripts/run_kernel_tests.py", "scripts/run_rust_tests.py", "scripts/check_rust_test_partition.py",
+    "scripts/ci_runtime.py", "scripts/ci_source_checks.py",
     "scripts/test_lean_layout.py",
     "scripts/test_lean_layout_dag.py",
     "scripts/test_lean_phase_layout.py",
@@ -433,8 +436,11 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
         report["installed_quickstart"] = json.loads(commands.run(
             [sys.executable, packaged_source / "scripts/check_installation.py", executable],
             work))
-        commands.run(["cargo", "test", "--offline", "--all-targets", "--target-dir",
-                      target / "source-production"], source)
+        commands.run([sys.executable, source / "scripts/run_kernel_tests.py", "--",
+                      sys.executable, source / "scripts/run_rust_tests.py", "--workers", "2",
+                      "--offline", "--target-dir", target / "source-production",
+                      "--record", artifacts / "logs/source-production/record.json", "--",
+                      "cargo", "+1.98.1", "test", "--all-targets"], source)
         commands.run(["cargo", "test", "--offline", "--all-targets", "--manifest-path",
                       "research/semantic-kernel/Cargo.toml", "--target-dir",
                       target / "source-research"], source)

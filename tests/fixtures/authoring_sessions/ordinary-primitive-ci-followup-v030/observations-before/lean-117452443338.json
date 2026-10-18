@@ -1,0 +1,91 @@
+{
+  "recorded_utc": "2026-10-17T23:05:29Z",
+  "clock_scope": "Retrospective record assembly; actual hosted timestamps remain in transcript.",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 1,
+  "exit_scope": "The containing bash -e Actions step reports exit 1 after these compiler diagnostics. Separate per-process exit metadata is not printed.",
+  "provider": "mcp__code_review__pull_requests_checks",
+  "account": "No account supplied or returned.",
+  "head_revision": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "job": {
+    "id": 117452443338,
+    "head_sha": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+    "name": "check-lean-kernel",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "run_id": 39051477459,
+  "url": "https://github.com/MGYamada/Qleisli/actions/runs/39051477459/job/117452443338",
+  "event": "push",
+  "actual_checkout": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "transcript": "2026-10-17T17:05:58.1774042Z ##[group]Run lake env lean -DwarningAsError=true Tests.lean\n2026-10-17T17:05:58.1774513Z \u001b[36;1mlake env lean -DwarningAsError=true Tests.lean\u001b[0m\n2026-10-17T17:05:58.1775108Z \u001b[36;1mlake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean\u001b[0m\n2026-10-17T17:05:58.1834140Z shell: /usr/bin/bash -e {0}\n2026-10-17T17:05:58.1834400Z env:\n2026-10-17T17:05:58.1834611Z   RUSTUP_TOOLCHAIN: 1.98.1\n2026-10-17T17:05:58.1835060Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel\n2026-10-17T17:05:58.1835529Z ##[endgroup]\n2026-10-17T17:08:10.4974728Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:95:54: error: Type mismatch\n2026-10-17T17:08:10.4983152Z   Conditional.typedLocalCheck\n2026-10-17T17:08:10.4983628Z has type\n2026-10-17T17:08:10.4984533Z   (artifact : Artifact) → TypedRule.PreparedContext artifact → Nat → Nat → Except Error Local\n2026-10-17T17:08:10.4985433Z but is expected to have type\n2026-10-17T17:08:10.4986233Z   (artifact : Artifact) → TypedRule.Context artifact → Nat → Nat → Except Error Local\n2026-10-17T17:08:10.4987267Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:97:42: error: Type mismatch\n2026-10-17T17:08:10.4988048Z   Conditional.typedStep\n2026-10-17T17:08:10.4988396Z has type\n2026-10-17T17:08:10.4988748Z   (artifact : Artifact) →\n2026-10-17T17:08:10.4989666Z     TypedRule.PreparedContext artifact → Conditional.State → Nat → Except Failure Conditional.State\n2026-10-17T17:08:10.4990564Z but is expected to have type\n2026-10-17T17:08:10.4991636Z   (artifact : Artifact) → TypedRule.Context artifact → Conditional.State → Nat → Except Failure Conditional.State\n2026-10-17T17:08:10.4993299Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:99:42: error: Type mismatch\n2026-10-17T17:08:10.4993864Z   Conditional.typedScan\n2026-10-17T17:08:10.4994090Z has type\n2026-10-17T17:08:10.4994336Z   (artifact : Artifact) →\n2026-10-17T17:08:10.4994911Z     TypedRule.PreparedContext artifact → List Nat → Conditional.State → Except Failure Conditional.State\n2026-10-17T17:08:10.4995457Z but is expected to have type\n2026-10-17T17:08:10.4996058Z   (artifact : Artifact) → TypedRule.Context artifact → List Nat → Conditional.State → Except Failure Conditional.State\n2026-10-17T17:08:10.4996929Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:100:0: error: Not a definitional equality: the left-hand side\n2026-10-17T17:08:10.4997515Z   checkAll\n2026-10-17T17:08:10.4997783Z is not definitionally equal to the right-hand side\n2026-10-17T17:08:10.4998096Z   Conditional.checkAll\n2026-10-17T17:08:10.4998533Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:100:64: error: Type mismatch\n2026-10-17T17:08:10.4999005Z   rfl\n2026-10-17T17:08:10.4999196Z has type\n2026-10-17T17:08:10.4999394Z   ?m.3 = ?m.3\n2026-10-17T17:08:10.4999602Z but is expected to have type\n2026-10-17T17:08:10.4999856Z   checkAll = Conditional.checkAll\n2026-10-17T17:08:10.5350613Z ##[error]Process completed with exit code 1.\n",
+  "projection": {
+    "log_line_ranges": [
+      [
+        376,
+        413
+      ],
+      [
+        436,
+        436
+      ]
+    ],
+    "full_log": {
+      "path": "/private/tmp/qleisli-pr419-477-lean-leaf-audit-v6sd0c6g/job-117452443338.log.txt",
+      "sha256": "61b0c93e4f48e766bf30bfb5d5ffb6e7ce325f0dd23e6f70d5eeb5d8ef7ca669",
+      "bytes": 37344
+    },
+    "full_response": {
+      "path": "/private/tmp/qleisli-pr419-477-lean-leaf-audit-v6sd0c6g/job-117452443338.response.json",
+      "sha256": "cdc366d61e4fd4e1f6652b5445cb411dc2860f2a9ad9a8bca280360294feaa0c",
+      "bytes": 38985
+    },
+    "audit": {
+      "path": "/private/tmp/qleisli-pr419-477-lean-leaf-audit-v6sd0c6g/audit.json",
+      "sha256": "f0be649fc2869c2987345db70355055454bd76caeddb678f4b18b1341126d7c2",
+      "bytes": 6286
+    },
+    "provider_log_truncated": false
+  },
+  "diagnostics": [
+    {
+      "line": 384,
+      "text": "2026-10-17T17:08:10.4974728Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:95:54: error: Type mismatch"
+    },
+    {
+      "line": 390,
+      "text": "2026-10-17T17:08:10.4987267Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:97:42: error: Type mismatch"
+    },
+    {
+      "line": 397,
+      "text": "2026-10-17T17:08:10.4993299Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:99:42: error: Type mismatch"
+    },
+    {
+      "line": 404,
+      "text": "2026-10-17T17:08:10.4996929Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:100:0: error: Not a definitional equality: the left-hand side"
+    },
+    {
+      "line": 408,
+      "text": "2026-10-17T17:08:10.4998533Z ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean:100:64: error: Type mismatch"
+    }
+  ],
+  "prior_command": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "scope": "Sequencing evidence: bash -e runs Tests.lean before the fixture and reaches the fixture; first command therefore completed successfully. No child test-count claim."
+  },
+  "source_input": "No QLI input is executed by this Lean fixture. Its complete immutable original is bound in session.json; attempt-01 QLI files belong to the Rust observations.",
+  "after_result": "Not recorded in this BEFORE-only observation."
+}

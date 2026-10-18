@@ -19,9 +19,9 @@ continues; existing fixed-QFT implementations retain their contracts and
 regression evidence. Historical family studies are not current release gates.
 
 The normative [semantic namespace Reference](docs/src/reference/stdlib.md)
-defines mathematical admission and naming rules. The six ordinary bundled
-modules are `std::basis`, `std::transform`, `std::reflection` and
-`std::measurement`, `std::gate` and `std::structure`, with twenty-one public
+defines mathematical admission and naming rules. The seven ordinary bundled
+modules are `std::basis`, `std::transform`, `std::reflection`,
+`std::measurement`, `std::gate`, `std::structure` and `std::state`, with twenty-five public
 definitions and five private reflection, scalar-phase, phase-provider,
 packed-control and fixed-identity helpers.
 Public names describe mathematical operations; algorithm selection
@@ -35,8 +35,13 @@ v1 factorization identity; neither spelling is an implemented syntax/API.
 The fixed A001–A003 circuits now live in the ordinary local
 [order-finding arithmetic source](examples/order_finding/arithmetic.qli).
 `std::routines` and `std::transforms` have no compatibility aliases. Current
-foundation catalog names and their primitive contracts remain distinct from
-the ordinary mathematical modules.
+bare language primitive identities and their contracts remain distinct from
+the ordinary mathematical modules. Retired foundation import paths have no
+aliases or prelude. Lexical bindings and ordinary declarations/imports take
+priority; only a genuinely unbound name can select a primitive, never a failed
+type/effect/access check. The complete 27-entry audit lives in the primitive
+Reference; its 13 retained identities are a technical inventory, not a new
+human minimality/admission judgment.
 
 Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
 `corpus` under its [existing intake policy](corpus/POLICY.md). Prepare the

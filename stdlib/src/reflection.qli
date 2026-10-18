@@ -3,7 +3,7 @@
 //! Inputs may be entangled with external references; no product-state promise.
 //! Contract identifier: R002. Private classical helpers grant no evidence privilege.
 use std::transform::hadamard2;
-use std::quantum::z;
+use std::gate::z;
 
 /// Return 0 exactly on (0,0), and 1 on every other pair of basis labels.
 /// Computing this predicate and applying Z to its auxiliary gives phase +1

@@ -7,8 +7,8 @@ use qleisli::frontend::compile::compile_project;
 use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 
-const PREP: &str = "use std::quantum::{unit,finish,init0,h,x,z,join,split};
-    use std::observe::measure_z;
+const PREP: &str = "use std::state::init0; use std::gate::x; use std::gate::z;
+\x20\x20\x20\x20
     isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
     meaning Plus:Unit -> Bit=reference(prepare);";
 
@@ -58,10 +58,35 @@ fn run(source: &str) -> std::collections::BTreeMap<Vec<bool>, f64> {
         .unwrap();
     let accepted = kernel.accept(raw.proposal()).unwrap();
     raw.validate_source_steps(&accepted).unwrap();
-    assert_eq!(
-        run_closed(&accepted, SimulationLimits::default()).unwrap(),
-        expected
-    );
+    let actual = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    // Both adapters execute already independently checked exact equations.
+    // Numerical H Z H may retain mathematical-zero outcomes in one adapter;
+    // compare every ordered outcome in both maps at the existing 1e-12 bound.
+    // This neither clips/renormalizes results nor changes native exact equality.
+    let width = program.raw().classical_outputs.len();
+    assert_eq!(accepted.raw().classical_outputs.len(), width);
+    for distribution in [&expected, &actual] {
+        for (bits, probability) in distribution {
+            assert_eq!(bits.len(), width);
+            assert!(probability.is_finite() && *probability >= 0.0);
+        }
+        assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
+    }
+    for (left, right) in [(&expected, &actual), (&actual, &expected)] {
+        for (bits, probability) in left {
+            let compared = right.get(bits).copied().unwrap_or(0.0);
+            assert!(
+                (probability - compared).abs() < 1e-12,
+                "{expected:?} != {actual:?}"
+            );
+            if *probability > 1e-12 {
+                assert!(
+                    right.contains_key(bits),
+                    "missing nonzero ordered outcome {bits:?}"
+                );
+            }
+        }
+    }
     expected
 }
 
@@ -115,7 +140,7 @@ fn ordinary_project_composition_and_tensor_preserve_ordered_ports() {
 #[test]
 fn rectangular_composition_preserves_an_entangled_caller() {
     let result = run(&format!("{PREP}
-        use std::quantum::cnot;
+        use std::gate::cnot;
         isometry fn duplicate(q:Q<Bit>)->Q<(Bit,Bit)>{{let(a,b)=cnot(q,init0());join(a,b)}}
         meaning Copy:Bit -> (Bit,Bit)=reference(duplicate);
         unitary fn ident(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{q}}

@@ -94,8 +94,8 @@ fn an_actually_consumed_runtime_owner_retains_the_ownership_error() {
 #[test]
 fn declared_effects_survive_arguments_tuples_conditions_and_both_arms() {
     let declarations = r#"
-use std::quantum::init0;
-use std::observe::measure_z;
+use std::state::init0;
+
 observe fn strong(v: Unit) -> Unit { let result=measure_z(init0()); v }
 observe fn condition(b: Bit) -> Bit { let result=measure_z(init0()); b }
 unitary fn keep(v: Unit) -> Unit { v }
@@ -139,7 +139,7 @@ unitary fn keep(v: Unit) -> Unit { v }
 fn branch_local_shadows_expire_but_moved_outer_names_remain_reserved() {
     accepted(
         r#"
-use std::quantum::h;
+
 unitary fn restored(b: Bit, q: Q<Bit>) -> Q<Bit> {
     let q = if b { let h = q; h } else { q };
     h(q)
@@ -148,7 +148,7 @@ unitary fn restored(b: Bit, q: Q<Bit>) -> Q<Bit> {
     );
     rejected(
         r#"
-use std::quantum::h;
+
 unitary fn reserved(b: Bit, h: Q<Bit>) -> Q<Bit> {
     let q = if b { let h = h; h } else { h };
     h(q)
@@ -240,7 +240,7 @@ fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
 #[test]
 fn computed_certificates_preserve_effects_and_outer_name_restrictions() {
     let prefix = r#"
-use std::quantum::z;
+use std::gate::z;
 classical fn p(x: Bit) -> Bit { x }
 unitary fn forget(b: Bit) -> Unit { () }
 "#;
@@ -257,8 +257,8 @@ unitary fn forget(b: Bit) -> Unit { () }
             accepted(&source);
             let root = SourceRoot::new(&format!(
                 "{source}
-                use std::quantum::init0;
-                use std::observe::measure_z;
+                use std::state::init0;
+\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
                 observe fn main() -> Bit {{
                     let b = measure_z(init0());
                     measure_z(oracle(b,init0()))
@@ -289,7 +289,7 @@ unitary fn forget(b: Bit) -> Unit { () }
     }
     rejected(
         &format!(
-            "{prefix} use std::quantum::init0; use std::observe::measure_z;
+            "{prefix} use std::state::init0;\x20
             observe fn phase(a:Q<Bit>)->Q<Bit>{{let b=measure_z(init0());z(a)}}
             unitary fn oracle(q:Q<Bit>)->Q<Bit>{{with_computed(q,p){{|a|phase(a)}}}}"
         ),
@@ -297,7 +297,7 @@ unitary fn forget(b: Bit) -> Unit { () }
     );
     rejected(
         &format!(
-            "{prefix} use std::quantum::init0;
+            "{prefix} use std::state::init0;
             unitary fn prepare() -> Q<Bit> {{ with_computed(init0(),p) {{ |a| a }} }}"
         ),
         ErrorCode::Effect,
@@ -324,9 +324,9 @@ fn ordinary_basis_and_computed_names_resolve_in_the_declaration_module() {
 use helper::ordinary;
 use helper::lifted;
 use helper::oracle;
-use std::quantum::init0;
-use std::quantum::h;
-use std::observe::measure_z;
+use std::state::init0;
+
+
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { q }
 classical fn predicate(x: Bit) -> Bit { 0 }
 observe fn main() -> (Bit,(Bit,Bit)) {
@@ -340,8 +340,8 @@ observe fn main() -> (Bit,(Bit,Bit)) {
     fs::write(
         root.0.join("helper.qli"),
         r#"
-use std::quantum::x;
-use std::quantum::z;
+use std::gate::x;
+use std::gate::z;
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { x(q) }
 classical fn predicate(x: Bit) -> Bit { not x }
 pub unitary fn ordinary(q: Q<Bit>) -> Q<Bit> { flip(q) }

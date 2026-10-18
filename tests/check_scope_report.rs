@@ -30,10 +30,17 @@ fn entry_and_library_reports_describe_actual_concrete_roots() {
         entry.concrete_bundled_roots(),
         library.concrete_bundled_roots()
     );
+    // Both local sources have no Meaning request; their common nonzero
+    // baseline belongs to the checked bundled ordinary contracts.
+    assert_eq!(
+        entry.native_decisions().requests_checked(),
+        library.native_decisions().requests_checked()
+    );
     for checked in [&entry, &library] {
         let decisions = checked.native_decisions();
         assert!(decisions.complete());
-        assert_eq!(decisions.requests_checked(), 0);
+        assert!(decisions.requests_checked() > 0);
+        assert!(decisions.requests_checked() <= decisions.decisions());
         // Lowering and dependency checks can make additional native decisions;
         // a concrete source root count is not an invocation count.
         assert!(
@@ -60,7 +67,13 @@ fn unused_finite_meaning_is_not_a_native_request() {
          meaning Flip:Bit=permutation_by(flip);
          observe fn main()->Bit{0}",
     );
-    assert_eq!(unused.native_decisions().requests_checked(), 0);
+    assert!(ordinary.native_decisions().complete());
+    assert!(unused.native_decisions().complete());
+    assert!(ordinary.native_decisions().requests_checked() > 0);
+    assert_eq!(
+        unused.native_decisions().requests_checked(),
+        ordinary.native_decisions().requests_checked()
+    );
     assert_eq!(
         unused.native_decisions().decisions(),
         ordinary.native_decisions().decisions()
@@ -74,14 +87,21 @@ fn unused_finite_meaning_is_not_a_native_request() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn reference_meaning_requests_do_not_promote_the_entry() {
+    let ordinary = report("observe fn main() -> Bit { 0 }");
     let checked = report(
-        "use std::quantum::h;
+        "
          unitary fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
          meaning H:Bit=reference(reference_h);
          observe fn main()->Bit{0}",
     );
     assert_eq!(checked.entry_request_checked(), Some(false));
-    assert!(checked.native_decisions().requests_checked() > 0);
+    assert!(ordinary.native_decisions().complete());
+    assert!(checked.native_decisions().complete());
+    assert!(ordinary.native_decisions().requests_checked() > 0);
+    assert!(
+        checked.native_decisions().requests_checked()
+            > ordinary.native_decisions().requests_checked()
+    );
     assert!(
         checked.native_decisions().decisions()
             > checked.concrete_local_roots() + checked.concrete_bundled_roots()
@@ -95,7 +115,7 @@ fn reference_meaning_requests_do_not_promote_the_entry() {
 )]
 fn operation_instantiations_stay_within_concrete_roots_and_selected_qrate() {
     let root = SourceRoot::new(
-        "use std::quantum::{x,init0}; use std::observe::measure_z;
+        "use std::gate::x; use std::state::init0;\x20
          unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
          unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
          unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
@@ -113,5 +133,12 @@ fn operation_instantiations_stay_within_concrete_roots_and_selected_qrate() {
         .unwrap();
     assert_eq!(checked.concrete_local_roots(), 3);
     assert_eq!(checked.entry_request_checked(), Some(false));
-    assert_eq!(checked.native_decisions().requests_checked(), 0);
+    let ordinary = report("observe fn main() -> Bit { 0 }");
+    assert!(ordinary.native_decisions().complete());
+    assert!(checked.native_decisions().complete());
+    assert!(ordinary.native_decisions().requests_checked() > 0);
+    assert_eq!(
+        checked.native_decisions().requests_checked(),
+        ordinary.native_decisions().requests_checked()
+    );
 }

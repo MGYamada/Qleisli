@@ -1,6 +1,6 @@
 use oracle::mark;
-use std::quantum::init0;
-use std::quantum::join;
+use std::state::init0;
+
 use std::transform::hadamard2;
 use std::reflection::reflect_uniform2;
 

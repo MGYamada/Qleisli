@@ -38,12 +38,12 @@ fn assert_distribution(actual: &BTreeMap<Vec<bool>, f64>, expected: &BTreeMap<Ve
 fn hidden_measurement_histories_add_weights_despite_opposite_final_phases() {
     let program = compile(
         r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::z;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+use std::gate::cnot;
+
 observe fn main() -> Bit {
     let (a,r) = cnot(h(init0()),init0());
     let hidden = measure_z(a);
@@ -69,11 +69,11 @@ observe fn main() -> Bit {
 #[test]
 fn adaptive_observation_preserves_joint_weights_correlations_and_coarse_graining() {
     let source = r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::t;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::t;
+use std::gate::cnot;
+
 observe fn main() -> OUTPUT_TYPE {
     let (a,r) = cnot(t(t(h(t(h(init0()))))),init0());
     let choice = measure_z(h(init0()));
@@ -142,13 +142,13 @@ fn injective_growth_keeps_reference_coherence_while_reset_erases_it() {
     for reset in [false, true] {
         let source = format!(
             r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::t;
-use std::quantum::cnot;
-use std::quantum::split;
-use std::observe::measure_z;
-use std::observe::reset;
+use std::state::init0;
+
+use std::gate::t;
+use std::gate::cnot;
+
+
+use std::state::reset;
 observe fn main() -> (Bit,(Bit,Bit)) {{
     let (a,r) = cnot(h(init0()),init0());
     let (a,b) = split(basis t(a) as x {{ (x,x) }});
@@ -169,7 +169,7 @@ observe fn main() -> (Bit,(Bit,Bit)) {{
                 .program()
                 .operations
                 .iter()
-                .filter(|op| matches!(op, RawOp::Reset { .. }))
+                .filter(|op| matches!(op, RawOp::Discard { .. }))
                 .count(),
             usize::from(reset)
         );
@@ -207,10 +207,10 @@ fn zero_probability_histories_do_not_execute_or_normalize_an_inactive_arm() {
     for choice in [false, true] {
         let source = format!(
             r#"
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::x;
+
 observe fn main() -> (Bit,Bit) {{
     let choice = measure_z({});
     let q = init0();

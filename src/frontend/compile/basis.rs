@@ -323,7 +323,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         }
         let key = match self.compiler.resolve(self.module, callee)? {
             Callee::User(key) => key,
-            Callee::Sealed(namespace, name) if empty_bits_primitive(&namespace, &name) => {
+            Callee::Primitive(PrimitiveId::EmptyBits) => {
                 if !args.is_empty() {
                     return Err(self.compiler.error(
                         self.module,
@@ -337,7 +337,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
                     label: 0,
                 });
             }
-            Callee::Sealed(_, _) => {
+            Callee::Primitive(_) => {
                 return Err(self.compiler.error(
                     self.module,
                     callee.span,

@@ -29,7 +29,7 @@ fn selected_coherent_unit_empty_bits_and_product_trees_remain_exact() {
         ("label()", "Bits<0>"),
     ] {
         let graph = source(&format!(
-            "use std::classical::empty_bits;
+            "
             classical fn label()->Bits<0>{{empty_bits()}}
             pub unitary fn f(q:Q<Unit>)->Q<{output}>{{basis q as () {{{body}}}}}"
         ));
@@ -120,13 +120,17 @@ fn selected_coherent_injectivity_checks_every_label_and_ordinary_label_copying()
 #[test]
 fn selected_coherent_input_work_precedes_the_isolated_map_once() {
     let graph = source(
-        "use std::quantum::x;
+        "use std::gate::x;
         pub unitary fn f(q:Q<Bit>, r:Q<Bit>)->(Q<Bit>,Q<Bit>){
             (basis x(q) as b {not b},r)}",
     );
     let steps = graph.definitions()[graph.root()].steps();
     assert_eq!(steps.len(), 2);
-    assert_eq!(steps[0].primitive(), Some("std::quantum::x"));
+    assert_eq!(steps[0].primitive_identity(), None);
+    assert_eq!(
+        graph.definitions()[steps[0].called_definition().unwrap()].path(),
+        "std::gate::x"
+    );
     assert_eq!(
         steps[0].output().identity(),
         steps[1].inputs()[0].identity()
@@ -152,7 +156,7 @@ fn selected_coherent_native_raw_and_replay_preserve_an_entangled_caller() {
     use qleisli::interchange::native::Kernel;
     use qleisli::sim::{SimulationLimits, run_closed};
     let graph = source(
-        "use std::quantum::{init0,h,cnot}; use std::observe::measure_z;
+        "use std::state::init0; use std::gate::cnot;\x20
         pub observe fn f()->(Bit,Bit){let(a,b)=cnot(h(init0()),init0());
             let a=basis a as x {not x}; (measure_z(a),measure_z(b))}",
     );
@@ -231,19 +235,19 @@ fn exact_pair(
 )]
 #[test]
 fn selected_coherent_exact_scalar_phase_survives_a_zero_width_owner_lift() {
-    let prefix = "use std::quantum::phase_eighth;";
-    let implementation = "basis phase_eighth(q) as () {()}";
+    let prefix = "";
+    let implementation = "basis global_phase_eighth(q) as () {()}";
     exact_pair(
         prefix,
         "Unit",
         "Unit",
         implementation,
-        "phase_eighth(q)",
+        "global_phase_eighth(q)",
         true,
     );
     // These have the same sole measurement probability and different exact
     // scalar actions; both incorrect reference requests must be refused.
-    for reference in ["q", "phase_eighth(phase_eighth(q))"] {
+    for reference in ["q", "global_phase_eighth(global_phase_eighth(q))"] {
         exact_pair(prefix, "Unit", "Unit", implementation, reference, false);
     }
 }
@@ -254,7 +258,7 @@ fn selected_coherent_exact_scalar_phase_survives_a_zero_width_owner_lift() {
 )]
 #[test]
 fn selected_coherent_exact_inverse_and_control_use_the_original_square_map() {
-    let prefix = "use std::quantum::{x,z,cnot,split,join};
+    let prefix = "use std::gate::x; use std::gate::z; use std::gate::cnot;
         unitary fn lift(q:Q<Bit>)->Q<Bit>{basis q as x {not x}}";
     exact_pair(prefix, "Bit", "Bit", "adjoint(lift)(q)", "x(q)", true);
     exact_pair(prefix, "Bit", "Bit", "adjoint(lift)(q)", "q", false);
@@ -290,7 +294,7 @@ fn selected_coherent_exact_inverse_and_control_use_the_original_square_map() {
 )]
 #[test]
 fn selected_coherent_exact_rectangular_map_binds_phase_table_and_product_axes() {
-    let prefix = "use std::quantum::{init0,x,z,cnot,join};";
+    let prefix = "use std::state::init0; use std::gate::x; use std::gate::z; use std::gate::cnot;";
     let implementation = "basis q as b {(b,not b)}";
     let reference = "let(a,b)=cnot(q,x(init0()));join(a,b)";
     exact_pair(prefix, "Bit", "(Bit,Bit)", implementation, reference, true);

@@ -6,8 +6,8 @@ use common::SourceRoot;
 use qleisli::frontend::compile::{ErrorCode, check_project};
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project_diagnostic};
 
-const IMPORTS: &str = "use std::quantum::x;
-use std::quantum::z;
+const IMPORTS: &str = "use std::gate::x;
+use std::gate::z;
 classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";

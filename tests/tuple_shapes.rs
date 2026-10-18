@@ -142,8 +142,8 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
         ErrorCode::Ownership,
     );
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::x;
-        use std::observe::measure_z;
+        "use std::state::init0; use std::gate::x;
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn main()->(Bit,Bit,Bit){
             let c=measure_z(init0());
             let (a,b,d)=(x(init0()),if c {init0()} else {x(init0())},init0());
@@ -151,10 +151,16 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
         }",
     );
     let ir = compile_project(&root.0).unwrap();
-    assert_eq!(
-        run_closed(&ir, SimulationLimits::default()).unwrap()[&vec![true, true, false]],
-        1.0
-    );
+    let distribution = run_closed(&ir, SimulationLimits::default()).unwrap();
+    let expected = vec![true, true, false];
+    assert!(distribution.contains_key(&expected));
+    for (bits, probability) in &distribution {
+        assert_eq!(bits.len(), 3);
+        assert!(probability.is_finite() && *probability >= 0.0);
+        let mass = if bits == &expected { 1.0 } else { 0.0 };
+        assert!((probability - mass).abs() < 1e-12);
+    }
+    assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
 #[test]

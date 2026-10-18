@@ -2,16 +2,38 @@
 use super::*;
 
 fn checked(source: &str) -> Result<()> {
-    let module = crate::frontend::parser::parse_module(source).unwrap();
+    use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+    crate::frontend::project::check_bundled_manifest().unwrap();
+    let mut builder = Builder::default();
+    builder
+        .insert(
+            Source::local("main".into(), None, source.into(), ParsePolicy::Project).unwrap_or_else(
+                |failure| panic!("ordinary source {} at {:?}", failure.name, failure.span()),
+            ),
+        )
+        .unwrap();
+    for bundled in BundledRegistry::sources() {
+        builder
+            .insert(
+                Source::bundled(bundled, ParsePolicy::Project).unwrap_or_else(|failure| {
+                    panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                }),
+            )
+            .unwrap();
+    }
+    let sources = builder.finish();
     program_with(
-        BTreeMap::from([("main", &module)]),
+        sources
+            .iter()
+            .map(|(name, source)| (name, source.syntax()))
+            .collect(),
         SourceLimits::selected(),
         |_, _, _, _, _, _, _| Ok(()),
     )
     .map(|_| ())
 }
 
-const PREP: &str = "use std::quantum::{finish,init0,h};
+const PREP: &str = "use std::state::init0;
     isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
     meaning Plus:Unit -> Bit=reference(prepare);";
 
@@ -30,7 +52,7 @@ fn rectangular_meaning_source_keeps_both_ports_in_references_and_refinements() {
     assert_eq!(checked(&wrong).unwrap_err().code, "type");
     // The existing endomorphic apply_contract API must match both Meaning
     // ports, including different trees with the same physical width.
-    let wrong_contract = "use std::quantum::{split,finish};
+    let wrong_contract = "
         unitary fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
         meaning Strip:(Unit,Bit) -> Bit=reference(strip);
         unitary fn id(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{q}
@@ -66,7 +88,7 @@ fn rectangular_meaning_composition_and_tensor_require_exact_ordered_trees() {
 
 #[test]
 fn rectangular_meaning_does_not_hide_observation_or_grant_adjoint() {
-    let observed = "use std::quantum::{finish,init0}; use std::observe::measure_z;
+    let observed = "use std::state::init0;\x20
         fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);let _=measure_z(init0());init0()}
         meaning Bad:Unit -> Bit=reference(prepare);";
     assert_eq!(checked(observed).unwrap_err().code, "effect");

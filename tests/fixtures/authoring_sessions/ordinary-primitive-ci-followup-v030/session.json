@@ -1,0 +1,156 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Retain the first hosted ordinary-CNOT census and live Lean consumer failures at PR419 head477, plus the separate local axis/mixed BEFORE reproduction.",
+  "baseline_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "project_version": "0.3.0-beta",
+  "author": "Codex subagent; informed repository and actual-log review; exact model identifier and sampling settings unavailable",
+  "context": "context.md",
+  "record_status": "BEFORE only: four hosted Rust leaves, two hosted Lean leaves, one local root reproduction; no after result recorded here.",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retrospective exact copies of the two axis Rust-helper source inputs and four mapped mixed inputs already committed at the actual BEFORE epoch. Separate storage inputs, not one executed filesystem project. No QLI repair.",
+      "sha256": {
+        "mixed_bell_xor.qli": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02",
+        "finite_project.qli": "505331ecc398ffc55cb799402ca1df89bd0a1aab397b36f07c192c6879b19b0d",
+        "mixed_provider.qli": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655",
+        "selected_probe.qli": "495a32b85943efd1bc8738430a23505f91ed76bef69632c703187760dc481961",
+        "mixed_repeated_helper.qli": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299",
+        "mixed_pending_argument.qli": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b"
+      },
+      "observations": [
+        "observations-before/rust-117452443345.json",
+        "observations-before/rust-117452443294.json",
+        "observations-before/rust-117451780165.json",
+        "observations-before/rust-117451780110.json",
+        "observations-before/lean-117452443338.json",
+        "observations-before/lean-117451780089.json",
+        "observations-before/local-axis-and-mixed.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "attempt-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "immutable_originals": {
+    "tests/axis_routing_boundary.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "9316170a2e200dceac5f0dd40a1fbb5b7eb90d61066670bc71437bec56fda11e",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/axis_routing_boundary.rs"
+    },
+    "tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ab0924a83a31a4836bcd572c0240bc40e014f71f052e904d07868958f303f4f6",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean"
+    },
+    "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "874759ea08d390082ff271363adddd2aec906ae11a1f3e2fbfd51a1956df816f",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean"
+    },
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "338f2ce44d148487f66f1285d073fa5b2f897175f9c003106a674a0ad1bc5f68",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/lean-kernel/QleisliKernel/Hierarchical/Conditional.lean"
+    },
+    "stdlib/src/gate.qli": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/stdlib/src/gate.qli"
+    },
+    ".github/workflows/ci.yml": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "a3dbfab514d72147fa867e223a01a8e9af07fbc500e908656d559937083d71cc",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/.github/workflows/ci.yml"
+    },
+    ".github/ci/source-checks.json": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "1e27e1be5ee1c9b686c35a8d0ea8df8d9cade26f13653e9cca79f19279422c0a",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/.github/ci/source-checks.json"
+    },
+    "tests/mixed_booleans.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "e84a0dd72f3a020ba42017a5f50cc1301148b16d36850081ad4861fbfe5341e0",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/mixed_booleans.rs"
+    },
+    "scripts/current_source_fixtures.py": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "fae3233e656b97cf566b967d43f3ec8d873cb4981718c1a4dff7c05308024509",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/scripts/current_source_fixtures.py"
+    },
+    "tests/common/mod.rs": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "f5c2e7a5c1919fce4808b8afe1cfe19ca5b65ecd0efd4100dfe81a49b041f615",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/common/mod.rs"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/source-map.json": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "ea624b57cef5f3549131b44a92c2e05fc294f61251c0407099a49f4f5de45557",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/frontend_v030/language-primitives/source-map.json"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-116.qli": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/frontend_v030/language-primitives/current/files/client-116.qli"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-119.qli": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/frontend_v030/language-primitives/current/files/client-119.qli"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-120.qli": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/frontend_v030/language-primitives/current/files/client-120.qli"
+    },
+    "tests/fixtures/frontend_v030/language-primitives/current/files/client-196.qli": {
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "sha256": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655",
+      "url": "https://github.com/MGYamada/Qleisli/blob/47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5/tests/fixtures/frontend_v030/language-primitives/current/files/client-196.qli"
+    }
+  },
+  "source_selection": {
+    "selected_probe.qli": {
+      "test": "physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work",
+      "construction": "Exact decoded source(body) for the first three-CNOT loop case in the committed Rust driver; no final newline added."
+    },
+    "finite_project.qli": {
+      "test": "physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work",
+      "construction": "Exact finite(text) closed wrapper for the same first case. Both finite and selected array elements are evaluated before the first failing assertion."
+    },
+    "mixed_bell_xor.qli": {
+      "snapshot": "mixed_bell_xor.qli",
+      "historical": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor/main.qli",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-116.qli",
+      "sha256": "4e38d72a251bb0b37d6954dd84fce16b72811c1f85b3986381477709819ebb02",
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "selection": "Unchanged current_source_fixtures.current_source_file; equivalent full-chain data selector to common::current_source_text, no source rewriting."
+    },
+    "mixed_pending_argument.qli": {
+      "snapshot": "mixed_pending_argument.qli",
+      "historical": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument/main.qli",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-119.qli",
+      "sha256": "8226af6d14b9590e7c37ad843c4907b82fe56064eb9a497c6a8d0b2ab62eaf2b",
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "selection": "Unchanged current_source_fixtures.current_source_file; equivalent full-chain data selector to common::current_source_text, no source rewriting."
+    },
+    "mixed_repeated_helper.qli": {
+      "snapshot": "mixed_repeated_helper.qli",
+      "historical": "tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper/main.qli",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-120.qli",
+      "sha256": "046e986b7faeaebd0b490722de0f2a7561b61b015a05fe4c935aa8c15efcf299",
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "selection": "Unchanged current_source_fixtures.current_source_file; equivalent full-chain data selector to common::current_source_text, no source rewriting."
+    },
+    "mixed_provider.qli": {
+      "snapshot": "mixed_provider.qli",
+      "historical": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli",
+      "selected": "tests/fixtures/frontend_v030/language-primitives/current/files/client-196.qli",
+      "sha256": "17280eedb02f14ea5e3de4daa380687eac032ad699a3769dedd433addaefb655",
+      "git_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "selection": "Unchanged current_source_fixtures.current_source_file; equivalent full-chain data selector to common::current_source_text, no source rewriting."
+    }
+  },
+  "scope": "Assertion and proof-consumer failures are not native acceptance counterexamples. No source theorem, new acceptance, changed cap, constitutional guarantee, release or issue-completion claim. Original source/test/proof histories stay unchanged."
+}

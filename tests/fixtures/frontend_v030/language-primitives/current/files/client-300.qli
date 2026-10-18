@@ -1,0 +1,7 @@
+use std::state::init0;
+
+observe fn main() -> Bit {
+    let b = 0;
+    let b = init0();
+    measure_z(init0())
+}

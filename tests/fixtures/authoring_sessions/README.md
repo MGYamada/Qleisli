@@ -5,6 +5,19 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [shared source-contract consumer repair](source-contract-consumer-v030/README.md)
+retains both hosted retired-import failures, the unchanged first source and
+separate translated input. Full local command logs preserve the later JSON
+request-count/reset-span oracle failures and repairs; current checking and
+unfinished hosted CI remain distinct from inert history and general proofs.
+
+The [QPE host consumer history](qpe-host-consumer-v030/README.md) preserves both
+actual hosted failures after native acceptance contradicted an old limit
+expectation. Separate normal/MSRV checks retain the existing six-qubit case,
+phase/provider/runtime faults and real transport-limit refusals within unchanged
+caps; full logs, original consumers and the initial interpretation correction
+remain inert history, distinct from latest-head CI and general proofs.
+
 The [long ordinary computed-leaf first history](computed-long-leaf-v030/README.md)
 retains three separate sources and all first diagnostics: expanded 1,025/257 T
 calls exhaust source work, while a compact 257-fold reaches the separate finite
@@ -140,6 +153,13 @@ Bell/independent/GHZ, phase-interference and teleportation first sources,
 unchanged algorithm replays and deliberate ownership/algorithm counterexamples.
 Analytical expectations, actual outputs and executable identities distinguish
 numerical observations from general proofs and source-preservation claims.
+
+Six related example files later received the language-primitive import migration.
+Their original logical paths, hashes and session JSON remain unchanged. The
+[retained-source index](retained-source-records-v1.json) binds exact Git-recovered
+bytes in inert `.qli.txt` copies to that original session and each source record.
+The strict reader checks the complete copy inventory without Git or replaying
+commands; current executable examples remain separate.
 
 The [observing-contract boundary study](instrument-contract-v030/README.md)
 preserves four first projects and their actual selected Raw results. A separate
@@ -615,3 +635,8 @@ observations after implementation. All eight unchanged repaired projects match
 independent ordered distributions, including copied Bell outcomes. First
 failures remain intact; Raw native validity and source-step replay do not prove
 original AST preservation or eliminate the finite-project profile limitations.
+
+The [Rust CI scheduling experiment](ci-rust-parallel-v030/README.md) retains
+original sources, hosted timeouts, local preflight failure and same-source bounded
+measurements as inert bytes. Its retention regression never executes history;
+full candidate CI and native acceptance remain separate requirements.

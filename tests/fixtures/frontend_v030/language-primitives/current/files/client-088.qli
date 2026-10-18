@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::structure::consume_empty;
+use std::structure::empty;
+pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { let () = consume_empty(q); empty() }

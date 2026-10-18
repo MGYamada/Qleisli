@@ -6,7 +6,7 @@ use qleisli::frontend::compile::check_project_diagnostic;
 use qleisli::frontend::project::{manifest_warnings, qrate_source_root};
 use std::{fs, process::Command};
 
-const IMPORTS: &str = "use std::quantum::{init0,cnot,h}; use std::observe::measure_z;\n";
+const IMPORTS: &str = "use std::state::init0; use std::gate::cnot; \n";
 
 #[test]
 fn tuple_diagnostics_do_not_blame_returned_or_destructured_bindings() {

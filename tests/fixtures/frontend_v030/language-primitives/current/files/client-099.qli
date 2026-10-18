@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::gate::cnot;
+
+pub iso fn entry(q:Q<Unit>)->Bit{finish(q);measure_z(init0())}

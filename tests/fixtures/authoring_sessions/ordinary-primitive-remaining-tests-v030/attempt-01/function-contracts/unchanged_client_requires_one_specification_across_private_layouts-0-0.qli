@@ -1,0 +1,19 @@
+
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
+classical fn predicate(value: Bit) -> Bit { value }
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
+ use implementation::phase;
+        unitary fn client(q: Q<Bit>) -> Q<Bit> { apply_contract(phase,specified_phase,q) }
+        observe fn main() -> ((Bit,Bit),Bit) {
+            let (r,q)=cnot(h(init0()),init0());
+            let q=client(q);
+            let (r,q)=cnot(r,q);
+            let pair=(measure_z(h(r)),measure_z(q));
+            let (c,target)=qif(h(init0()),x(init0())) { 0 => identity, 1 => client };
+            discard(target);
+            (pair,measure_z(h(c)))
+        }

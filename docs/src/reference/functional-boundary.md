@@ -209,13 +209,17 @@ paths for every such argument. With no Op arguments these conjunctions are
 empty, but body/effect/interface/materialization checks still apply. These are
 conservative derivations, not a claim of maximal inference from arbitrary bodies.
 
-Sealed gates retain their existing direct runtime interfaces. For direct
-adjoint/control and `qif` targets, the common sealed profile permits
-`std::quantum::{h,x,z,t,s,sdg,tdg,id,phase_eighth}` with all three paths. The first
-seven require Bit; `id` and `phase_eighth` retain the actual target basis.
-Other sealed primitives reject as direct transformed targets. A gate name
-cannot be passed as a general static/host Op provider. An ordinary checked
-wrapper supplies that provider interface; concrete lowering limits still apply.
+For direct primitive `adjoint`/`controlled` and `qif` targets, the common
+profile permits bare `h` on Bit and `global_phase_eighth` on the actual complete
+Basis tree. Other primitive identities are not direct transformed targets in
+this profile; an ordinary checked wrapper supplies a static/host provider.
+The ordinary gates in `std::gate`, including X/Z/T/S and identity, use the
+ordinary provider rules above, with explicit Basis actuals for `id`. A language
+primitive itself is not a general static/host Op provider. Phase providers use
+an ordinary wrapper with their explicit `[j,k]` actuals. Concrete coefficient,
+materialization and access obligations still apply, including unused actuals.
+Lexical bindings and ordinary declarations/imports precede primitive lookup;
+a wrong-category, moved or rejected ordinary target never retries a builtin.
 Opaque/certified external providers remain unsupported in this
 profile; a Unitary annotation or a Meaning alone cannot grant their paths.
 Closed source Meaning evidence retains its actual provider, ordered interface,

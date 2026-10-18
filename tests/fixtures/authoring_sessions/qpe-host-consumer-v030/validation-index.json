@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.qpe-host-consumer-local-validation-retention",
+  "version": 1,
+  "record": "validation.records.json.gz",
+  "record_sha256": "913357c1278641bb663576d2be53569f9cf04bf974881b1700a2ecdd9d29ed62",
+  "uncompressed_sha256": "8ea4076dadd1ec0d3eadb6f605a92dc3cef8598a8dd721393f3afdd0a448b432",
+  "file_count": 12,
+  "expanded_original_bytes": 248530,
+  "files": [
+    {
+      "path": "qleisli-qpe-host-consumer-msrv-f-v1.json",
+      "bytes": 2193,
+      "sha256": "09b67197cc45fce50fe914ff7704b5926410e4f2dfe40706fcdbd03a99b14381",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-qpe-host-consumer-normal-f-v1.json",
+      "bytes": 2194,
+      "sha256": "48bd7a6885fd8bfe486a9b6976561d4b7e9b2ac63bde077343943d251eb90161",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-msrv-f-v1.json",
+      "bytes": 78509,
+      "sha256": "b9efd4ef854b4b7fc91805768aa2a4f45954d4678e517296d2ec4eca0b8112fa",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-msrv-f-v1.started.json",
+      "bytes": 41013,
+      "sha256": "5b52cb0be7bef5c9ae1be53fd5db13205b73ce959bf6000d26e6b79fd64cd21c",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-msrv-f-v1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-msrv-f-v1.stdout.txt",
+      "bytes": 720,
+      "sha256": "fbae19ea1cbaf187a26444ee7ab8cdca7021842172664ae6e15c330bc1261c1e",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-normal-f-v1.json",
+      "bytes": 75791,
+      "sha256": "e0e3b16979acb9fa206b33cdbde331316263f3b9e30973a5ab58d48aff8a2f64",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-normal-f-v1.started.json",
+      "bytes": 38295,
+      "sha256": "b814f42d66245144a58d94a17b1b6d29e6882bad01b90eb75d62b328100bf831",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-normal-f-v1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qpe-host-consumer-normal-f-v1.stdout.txt",
+      "bytes": 720,
+      "sha256": "fbae19ea1cbaf187a26444ee7ab8cdca7021842172664ae6e15c330bc1261c1e",
+      "mode": "0644"
+    },
+    {
+      "path": "run_host_msrv_v1.py",
+      "bytes": 4995,
+      "sha256": "d20c1088e72b9776ed777fedb85d224019bf46fce1f5ced9ab0453db6aed52b1",
+      "mode": "0644"
+    },
+    {
+      "path": "run_v3.py",
+      "bytes": 4100,
+      "sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+      "mode": "0644"
+    }
+  ]
+}

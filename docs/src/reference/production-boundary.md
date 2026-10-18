@@ -433,6 +433,36 @@ constitutional guarantee.
 | Foreign export | Consumes `AcceptedProgram` and emits target text. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output; output validity alone is not a translation theorem. |
 | `sim`, `host`, hierarchy execution and sampling | Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation. |
 
+OpenQASM/QIR export may replace three adjacent actual expanded function
+steps, `H; Z; H`, with the existing X/CX/CCX word. The target axis and the
+ordered zero, one or two controls, including polarity, must match in all three
+steps; Z must have identity permutation and exact eighth-turn phases `[0,4]`.
+No source name or inferred label authorizes this replacement, and no step
+commutes across another. Nonmatching words retain the existing emitter policy.
+The original accepted graph, source types, owners and dependencies remain intact.
+
+A final target-word pass also recognizes exactly adjacent uncontrolled `H; Z; H`
+on one identical physical operand, including words separated by pure Raw
+operation boundaries. It reads the actual emitted gate definitions and operand
+maps and uses the same native equation gate, receipt cache and export-wide work
+counter. Allocation, singleton preparation, measurement and discard boundaries
+prevent a window from crossing them. No phase folding, commuting or source-name
+lookup creates a window. This pass starts only after the gate stream emitted by the existing cursor
+normalization and lowering has satisfied the existing 4,096-gate cap; final
+shortening cannot admit an otherwise over-limit emitted stream. Other target limits and original checked
+obligations remain unchanged. This bounded local comparison is not a general
+source, target-emission, physical-resource or external-QIS preservation theorem.
+
+Each distinct compact original/replacement Raw pair requires the existing native
+function-equation check under the input `AcceptedProgram`'s own checker. The
+local comparison retains full scalar phase and ordered control polarities. An
+export retains at most seven complete-body local receipts and shares the
+existing 10,000,000 exact-work budget across all Raw operations. Unavailable
+checking, rejection or exhausted capacity produces no artifact or alternate
+acceptance path. These local equations do not establish general source/export,
+resource or external QIS preservation; the two adopted guarantees and pending
+QS/PR/RS/EXACT obligations retain their existing scopes.
+
 Explicit module-map source selection parses, instantiates, elaborates and
 lowers **untrusted proposals**. Ordinary commands with explicit entry/module
 bindings use the shared source execution plan. `emit-proposal` writes

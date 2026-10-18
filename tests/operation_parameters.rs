@@ -6,10 +6,10 @@ use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 const PRELUDE: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+\x20
+\x20
 unitary fn ident(q:Q<Bit>)->Q<Bit>{q}
 unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
 unitary fn phase(q:Q<Bit>)->Q<Bit>{t(q)}
@@ -94,7 +94,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     );
     root.write(
         "meanings.qli",
-        "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
+        "use std::gate::x; classical fn flip(b:Bit)->Bit{not b}
         pub meaning Flip:Bit=permutation_by(flip);
         pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
     );
@@ -142,42 +142,49 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
         }}"
     ));
     for body in ["z(q)", "power(t,4)(q)"] {
-        root.write(
-            "provider.qli",
-            &format!(
-                "use std::quantum::z; use std::quantum::t;
+        let provider = format!(
+            "use std::gate::z; use std::gate::t;
             pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{{{body}}}"
-            ),
         );
+        root.write("provider.qli", &provider);
         let p = compile_project(&root.0).unwrap();
         assert!(
             (run_closed(&p, SimulationLimits::default()).unwrap()[&vec![true, false]] - 1.0).abs()
                 < 1e-12
         );
-        let receipt = p
+        // Ordinary CNOT also retains X receipts. Check the complete accepted
+        // program above, then locate this client's requested Meaning by identity.
+        let receipts: Vec<_> = p
             .program()
             .operations
             .iter()
-            .find_map(|op| match op {
-                RawOp::ApplyUnitary { steps, .. } => steps.iter().find_map(|s| match &s.action {
-                    CircuitAction::Contract { evidence, .. } => Some(evidence),
-                    _ => None,
-                }),
+            .filter_map(|op| match op {
+                RawOp::ApplyUnitary { steps, .. } => Some(steps),
                 _ => None,
             })
-            .unwrap();
-        assert_eq!(receipt.identity().specification, "meaning main::ZMeaning");
+            .flatten()
+            .filter_map(|step| match &step.action {
+                CircuitAction::Contract { evidence, .. }
+                    if evidence.identity().specification == "meaning main::ZMeaning" =>
+                {
+                    Some(evidence)
+                }
+                _ => None,
+            })
+            .collect();
+        assert_eq!(receipts.len(), 1, "one requested client receipt");
+        let identity = receipts[0].identity();
+        assert_eq!(identity.implementation, "provider::implementation");
         assert!(
-            receipt
-                .identity()
+            identity
                 .sources
                 .iter()
-                .any(|(_, s)| s.contains(body))
+                .any(|(module, source)| module == "provider" && source == &provider)
         );
     }
     root.write(
         "provider.qli",
-        "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
+        "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -597,21 +604,38 @@ fn retired_operation_spellings_reject_at_both_source_entry_points() {
 )]
 #[test]
 fn direct_literal_power_keeps_named_function_access_distinct_from_static_providers() {
-    for body in ["power(z,0)(q)", "power(z,2)(q)", "power(z,0)(h(q))"] {
-        check(&format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
-    }
-    // Direct repetition does not grant primitive names a general Op provider
-    // contract, even at zero count or through a constructed inverse/control.
+    // Z is an ordinary std function. Its zero-count description retains the
+    // same provider, inverse and control access as other ordinary functions.
     for body in [
+        "power(z,0)(q)",
+        "power(z,2)(q)",
+        "power(z,0)(h(q))",
         "use_op[power(z,0)](q)",
         "adjoint(power(z,0))(q)",
-        "let (c,q)=controlled(power(z,0))(init0(),q);discard(c);q",
+        "power(h,0)(q)",
+        "use_op[power(had,0)](q)",
     ] {
+        check(&format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
+    }
+    check("unitary fn f(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){controlled(power(z,0))(c,q)}");
+    // Bare H supports direct literal repetition, but remains outside general
+    // Op-provider descriptions; the ordinary `had` wrapper above supplies one.
+    for body in ["use_op[power(h,0)](q)", "adjoint(power(h,0))(q)"] {
         rejects(
             &format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"),
             ErrorCode::TypeMismatch,
         );
     }
+    rejects(
+        "unitary fn f(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){controlled(power(h,0))(c,q)}",
+        ErrorCode::TypeMismatch,
+    );
+    // Valid controlled Z still cannot conceal preparation or discard inside
+    // a Unitary function, including when its repetition count is zero.
+    rejects(
+        "unitary fn f(q:Q<Bit>)->Q<Bit>{let (c,q)=controlled(power(z,0))(init0(),q);discard(c);q}",
+        ErrorCode::Effect,
+    );
 }
 
 fn arrow_study(name: &str) -> String {
@@ -673,13 +697,9 @@ fn an_equal_dimension_unitor_is_not_an_endomorphic_static_provider() {
 }
 
 fn composition_study(name: &str, attempt: &str) -> String {
-    std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/authoring_sessions/meaning-composition-v030")
-            .join(attempt)
-            .join(format!("{name}.qli")),
-    )
-    .unwrap()
+    common::current_source_text(&format!(
+        "tests/fixtures/authoring_sessions/meaning-composition-v030/{attempt}/{name}.qli"
+    ))
 }
 
 #[cfg_attr(
@@ -763,10 +783,11 @@ fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
 )]
 #[test]
 fn explicit_endomorphisms_match_abbreviations_in_the_project_adapter() {
-    let first =
-        include_str!("fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli");
-    let scalar = "use std::quantum::{unit,finish,phase_eighth};
-        unitary fn minus(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}
+    let first = common::current_source_text(
+        "tests/fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli",
+    );
+    let scalar = "
+        unitary fn minus(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}
         unitary fn scalar_control[const U:Op<Unit>](q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>
             requires Controllable(U){let(c,u)=split(q);let(c,u)=controlled(U)(c,u);join(c,u)}
         pub observe fn main()->Bit{let(c,u)=split(scalar_control[minus](join(h(init0()),unit(()))));finish(u);measure_z(h(c))}";

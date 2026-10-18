@@ -20,18 +20,44 @@ fn report(source: &str) -> qleisli::frontend::compile::ProjectCheckReport {
 }
 
 fn nested_equation_decisions(source: &str) {
+    // A source with no local Meaning request still checks bundled contracts.
+    let baseline = report("fn main()->Unit{()}");
     let checked = report(source);
+    assert!(baseline.native_decisions().complete());
     assert!(checked.native_decisions().complete());
+    assert_eq!(baseline.entry_request_checked(), Some(false));
     assert_eq!(checked.entry_request_checked(), Some(false));
+    assert!(baseline.native_decisions().requests_checked() > 0);
+    assert!(
+        baseline.native_decisions().requests_checked() <= baseline.native_decisions().decisions()
+    );
+    assert_eq!(
+        checked.concrete_bundled_roots(),
+        baseline.concrete_bundled_roots()
+    );
     // FunctionEvidence is a reachable dependency of an ordinarily checked
-    // QIRF root. Its fresh native equation check has no separate root request.
-    // Counts alone do not prove that equation; the phase/type faults below
-    // exercise its actual independent rejection boundary.
-    assert_eq!(checked.native_decisions().requests_checked(), 0);
+    // QIRF root. Its fresh native equation check adds no separate root request
+    // beyond the common bundled baseline. Counts alone do not prove that
+    // equation; the phase/type faults below check its independent boundary.
+    assert_eq!(
+        checked.native_decisions().requests_checked(),
+        baseline.native_decisions().requests_checked()
+    );
     assert!(
         checked.native_decisions().decisions()
             > checked.concrete_local_roots() + checked.concrete_bundled_roots()
     );
+    // Bundled checks can themselves have nested decisions. The local equation
+    // must add a surplus beyond both ordinary root counts and that baseline.
+    let nested = |report: &qleisli::frontend::compile::ProjectCheckReport| {
+        report
+            .native_decisions()
+            .decisions()
+            .checked_sub(report.concrete_local_roots())
+            .and_then(|count| count.checked_sub(report.concrete_bundled_roots()))
+            .expect("every concrete root has its native decision")
+    };
+    assert!(nested(&checked) > nested(&baseline));
 }
 
 #[test]
@@ -64,7 +90,7 @@ fn unused_closed_empty_register_root_is_checked_without_polluting_a_bit_client()
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn ordinary_empty_register_constructor_classical_calls_and_branch_results_keep_their_type() {
-    let source = "use std::classical::empty_bits;
+    let source = "
         classical fn empty_label()->Bits<0>{empty_bits()}
         unitary fn choose(c:Bit,x:Bits<0>)->Bits<0>{if c{x}else{empty_label()}}
         fn main()->(Bits<0>,Unit,Bit){(choose(1,empty_label()),(),1)}";
@@ -99,7 +125,7 @@ fn normalized_zero_sizes_and_closed_static_helpers_remain_exact_empty_registers(
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn exact_empty_basis_meaning_and_phase_fault_use_the_actual_native_contract() {
-    let prefix = "use std::quantum::phase_eighth;
+    let prefix = "
         classical fn phase_labels(x:Bits<0>)->(Bit,(Bit,Bit)){(1,(0,0))}
         meaning Scalar:Bits<0> = phase_by(phase_labels);";
     let suffix = "unitary fn audited(q:Q<Bits<0>>)->Q<Bits<0>>{
@@ -108,7 +134,7 @@ fn exact_empty_basis_meaning_and_phase_fault_use_the_actual_native_contract() {
         fn main()->Unit{()}";
     let correct = format!(
         "{prefix}
-        unitary fn implementation(q:Q<Bits<0>>)->Q<Bits<0>>{{phase_eighth(q)}}
+        unitary fn implementation(q:Q<Bits<0>>)->Q<Bits<0>>{{global_phase_eighth(q)}}
         {suffix}"
     );
     nested_equation_decisions(&correct);
@@ -168,10 +194,10 @@ fn exact_zero_register_product_meaning_keeps_unit_nodes_and_axis_order() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn zero_width_quantum_branch_phi_retains_an_owner_through_explicit_basis_maps() {
-    let source = "use std::classical::empty_bits;
-        use std::quantum::{unit,finish,phase_eighth};
+    let source = "
+\x20\x20\x20\x20\x20\x20\x20\x20
         unitary fn choose(c:Bit,q:Q<Bits<0>>)->Q<Bits<0>>{
-            if c{phase_eighth(q)}else{q}
+            if c{global_phase_eighth(q)}else{q}
         }
         fn main()->Unit{
             let q=basis unit(()) as () {empty_bits()};
@@ -202,11 +228,11 @@ fn zero_width_quantum_branch_phi_retains_an_owner_through_explicit_basis_maps() 
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn controlled_empty_register_scalar_preserves_the_exact_relative_phase() {
-    let source = "use std::classical::empty_bits;
-        use std::quantum::{unit,finish,phase_eighth};
+    let source = "
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn labels(q:Bit)->(Bit,(Bit,Bit)){(q,(0,0))}
         meaning T:Bit=phase_by(labels);
-        unitary fn scalar(q:Q<Bits<0>>)->Q<Bits<0>>{phase_eighth(q)}
+        unitary fn scalar(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}
         unitary fn gate(q:Q<Bit>)->Q<Bit>{
             let e=basis unit(()) as () {empty_bits()};
             let (q,e)=controlled(scalar)(q,e);
@@ -224,9 +250,9 @@ fn controlled_empty_register_scalar_preserves_the_exact_relative_phase() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn observing_empty_register_result_reaches_the_complete_instrument_schema() {
-    let source = "use std::classical::empty_bits;
-        use std::quantum::unit;
-        use std::observe::discard;
+    let source = "
+\x20\x20\x20\x20\x20\x20\x20\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         observe fn actual(q:Q<Bits<0>>)->Bits<0>{discard(q);empty_bits()}
         observe fn reference(q:Q<Bits<0>>)->Bits<0>{discard(q);empty_bits()}
         observe fn main()->Bits<0>{
@@ -241,7 +267,7 @@ fn observing_empty_register_result_reaches_the_complete_instrument_schema() {
 fn zero_width_does_not_allow_type_coercions_owner_loss_or_duplicate_owners() {
     for (source, expected) in [
         (
-            "use std::quantum::finish;
+            "
           unitary fn bad(q:Q<Bits<0>>)->Unit{finish(q)}",
             ErrorCode::TypeMismatch,
         ),
@@ -258,12 +284,12 @@ fn zero_width_does_not_allow_type_coercions_owner_loss_or_duplicate_owners() {
             ErrorCode::Ownership,
         ),
         (
-            "use std::classical::empty_bits;
+            "
           fn bad()->Bits<0>{empty_bits(())}",
             ErrorCode::Arity,
         ),
         (
-            "use std::classical::empty_bits;
+            "
           classical fn bad()->Bits<0>{empty_bits(())}",
             ErrorCode::Arity,
         ),

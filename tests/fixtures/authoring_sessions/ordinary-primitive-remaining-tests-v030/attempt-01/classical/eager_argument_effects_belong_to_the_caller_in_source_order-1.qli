@@ -1,0 +1,3 @@
+use std::state::init0; 
+        classical fn both(a: Bit, b: Bit) -> Bit { a and b }
+        pub observe fn main() -> Bit { both(0,measure_z(init0())) }

@@ -171,11 +171,10 @@ pub enum ModuleOrigin {
 pub enum ImportOrigin {
     Local,
     Bundled,
-    Sealed,
 }
 
-/// A name admitted to a module's top-level scope. `Sealed` is assigned only
-/// by this resolver for known compiler primitives, never by a local `.qli`.
+/// An explicitly imported ordinary source declaration. Language primitives
+/// resolve without imports and never receive a library-origin label.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResolvedImport {
     pub module: String,
@@ -314,15 +313,14 @@ impl Project {
             })
             .map(|module| format!("{}::{name}", module.name))
             .collect();
-        candidates.extend(
-            super::core::PRIMITIVES
-                .iter()
-                .filter(|item| item.name == name && item.module != excluded)
-                .map(|item| format!("{}::{name}", item.module)),
-        );
         candidates.sort();
         if candidates.is_empty() {
-            String::new()
+            super::resolve::PrimitiveId::lookup_unbound(name).map_or_else(String::new, |id| {
+                format!(
+                    "; help: call language primitive `{}` without an import",
+                    id.spelling()
+                )
+            })
         } else {
             format!(
                 "; help: public alternatives: {}",
@@ -474,7 +472,7 @@ impl Project {
                 self.public_name_hint(&name, &module)
             ),
             FailureKind::UnknownPrimitive { module, name } => format!(
-                "sealed module `{module}` has no public name `{name}`{}",
+                "retired compiler-owned module `{module}` has no public name `{name}`{}",
                 self.public_name_hint(&name, &module)
             ),
             FailureKind::Private(path) => format!("`{path}` is not public"),
@@ -506,12 +504,13 @@ impl Project {
                         };
                         (owner.clone(), name.clone(), declaration.kind, origin)
                     }
-                    Target::Primitive(id) => (
-                        id.module.into(),
-                        id.name.into(),
-                        sealed_kind(id.module, id.name).expect("resolved primitive"),
-                        ImportOrigin::Sealed,
-                    ),
+                    Target::Primitive(_) => {
+                        return Err(source_error(
+                            source,
+                            usage.span,
+                            "language primitives cannot be imported; call their bare spellings",
+                        ));
+                    }
                 };
                 imports.insert(
                     local.clone(),
@@ -699,13 +698,4 @@ fn check_declarations(module: &Source) -> Result<(), LoadFailure> {
         }
     }
     Ok(())
-}
-
-fn sealed_kind(module: &str, name: &str) -> Option<FnKind> {
-    let path = format!("{module}::{name}");
-    super::check::primitive::Primitive::lookup(&path).map(|item| match item.effect() {
-        crate::ir::Effect::Unitary => FnKind::Unitary,
-        crate::ir::Effect::Isometry => FnKind::Isometry,
-        crate::ir::Effect::Observe => FnKind::Observe,
-    })
 }

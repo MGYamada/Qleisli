@@ -22,7 +22,9 @@ from check_distribution import (
     digest, extract_checked, license_inventory, read_archive, tracked_files, validate,
     SOURCE_ROOTS, check_source_roots,
 )
-from check_installation import check_documentation, check_registry_links
+from check_installation import (
+    check_documentation, check_registry_links, native_decision_counts, check_native_decision_summary,
+)
 
 
 class QuickstartDocumentationTests(unittest.TestCase):
@@ -65,6 +67,45 @@ class QuickstartDocumentationTests(unittest.TestCase):
                             check_documentation(self.root, self.package)
                     finally:
                         path.write_text(text)
+
+
+class InstallationNativeSummaryTests(unittest.TestCase):
+    def test_positive_contract_counts_are_not_pinned_to_one_std_census(self):
+        roots = {"local": 1, "bundled": 24}
+        for count, requests in [(78, 2), (100, 4)]:
+            text = f"native decisions: {count}; independent requests checked: {requests}\n"
+            parsed = native_decision_counts(text)
+            self.assertEqual(parsed, (count, requests))
+            check_native_decision_summary(parsed, roots, {
+                "count": count, "requests_checked": requests, "complete": True,
+            })
+
+    def test_missing_duplicate_malformed_zero_or_incomplete_text_counts_reject(self):
+        good = "native decisions: 78; independent requests checked: 2\n"
+        for text in [
+            "", good + good, "prefix " + good,
+            good.replace("78", "not-a-count"), good.replace("2\n", "0\n"),
+            good.replace("2\n", "79\n"), good.replace("78", "-78"),
+            good + "native decision metadata truncated; counts may be incomplete\n",
+        ]:
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                native_decision_counts(text)
+
+    def test_json_counts_must_match_text_and_cover_all_complete_roots(self):
+        roots = {"local": 1, "bundled": 24}
+        good = {"count": 78, "requests_checked": 2, "complete": True}
+        for field, value in [
+            ("count", 77), ("count", "78"), ("count", True),
+            ("requests_checked", 0), ("requests_checked", 3),
+            ("requests_checked", "2"), ("requests_checked", True),
+            ("complete", False),
+        ]:
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                check_native_decision_summary((78, 2), roots, {**good, field: value})
+        for changed in [{"local": 0, "bundled": 24}, {"local": 1, "bundled": 0},
+                        {"local": 1, "bundled": 78}]:
+            with self.subTest(roots=changed), self.assertRaises(ValueError):
+                check_native_decision_summary((78, 2), changed, good)
 
 
 class CommandDiagnosticsTests(unittest.TestCase):
@@ -527,7 +568,8 @@ class SyntheticCommands:
         elif len(argv) > 1 and Path(argv[1]).name == "check_installation.py":
             output = json.dumps({"package": "qleisli", "version": "0.0.0-synthetic",
                                  "checks": ["synthetic-only"]}).encode()
-        if self.fail and argv[:2] == ["cargo", "test"] and "--all-targets" in argv:
+        if self.fail and "--all-targets" in argv and (argv[:2] == ["cargo", "test"]
+                or (len(argv) > 1 and Path(argv[1]).name == 'run_kernel_tests.py')):
             output, error, exit_code = b"synthetic partial stdout\n", b"synthetic test failure\n", 23
         kwargs["stdout"].write(output)
         kwargs["stderr"].write(error)
@@ -580,6 +622,14 @@ class ScratchTests(unittest.TestCase):
                             for path in driver.target_paths))
         self.assertTrue(driver.installed.is_relative_to(work))
         self.assertEqual(report["cargo_target"]["ownership"], "validator")
+        production = next(row for row in report['commands'] if 'run_rust_tests.py' in ' '.join(row['argv']))
+        argv = production['argv']
+        self.assertEqual(Path(production['cwd']), work / 'source')
+        self.assertEqual(Path(argv[1]), work / 'source/scripts/run_kernel_tests.py')
+        self.assertIn('--offline', argv)
+        self.assertIn('--all-targets', argv)
+        self.assertEqual(argv[argv.index('--workers') + 1], '2')
+        self.assertEqual(Path(argv[argv.index('--record') + 1]), Path(report['artifacts']) / 'logs/source-production/record.json')
         self.assert_durable_evidence(report)
 
     def test_failure_removes_owned_work_preserving_failure_and_evidence(self):

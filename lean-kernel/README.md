@@ -44,9 +44,12 @@ capacities without changing them. Equality-only field accounting is distinct
 from type/uniqueness checking. Ordinary and typed conditional paths share one
 state transition and invariant proof, while their local rule checkers retain
 separate premises. Typed context proofs arise from actual complete-artifact
-checking, never a serialized flag. The [compatibility proof](../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean)
-compares all seven conditional entry/transition definitions with their literal
-pre-refactor expressions, including failure, visits and request order.
+checking, never a serialized flag. The immutable [v0.2.5 proof](../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean)
+records its original seven literal factoring equations. The live
+[current regression](../tests/fixtures/hierarchical_prepared_v030/README.md)
+retains those frozen comparisons separately from current PreparedContext
+equations, indexed ordinary-rule equivalence and complete finite obligations.
+It does not assert equality of old/current whole-checker work or acceptance.
 
 The [VM-23 packet](../tests/fixtures/verification_v023/README.md) covers actual
 scalar/matrix semantics, canonicality and work/capacity. The [finite checker](QleisliKernel/Finite.lean)
@@ -164,7 +167,7 @@ directory run:
 lake build
 lake env lean Tests.lean
 lake env lean Audit.lean
-lake env lean ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
+lake env lean -DwarningAsError=true ../tests/fixtures/hierarchical_prepared_v030/Current.lean
 lake env leanchecker --fresh QleisliKernel
 lake env leanchecker --fresh Main
 ```

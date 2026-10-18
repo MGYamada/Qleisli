@@ -10,9 +10,17 @@ use crate::ir::{BitControl, CircuitAction, CircuitStep};
 #[derive(Default)]
 pub(in crate::interop) struct ExpansionBudget {
     used: usize,
+    pub(super) normalizations: super::normalization::State,
 }
 
 impl ExpansionBudget {
+    pub(in crate::interop) fn for_program(program: &crate::AcceptedProgram) -> Self {
+        Self {
+            used: 0,
+            normalizations: super::normalization::State::for_program(program),
+        }
+    }
+
     fn reserve(&mut self, steps: &[CircuitStep]) -> Result<(), InteropError> {
         for step in steps {
             if let CircuitAction::Contract { evidence, .. } = &step.action {
@@ -292,6 +300,7 @@ mod tests {
         }];
         let mut budget = ExpansionBudget {
             used: MAX_FUNCTION_EXPANDED_STEPS - 1,
+            ..Default::default()
         };
         let mut cursor = Cursor::new(&steps, 0, &mut budget).unwrap();
         assert!(cursor.next().unwrap().is_some());

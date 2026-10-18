@@ -218,7 +218,7 @@ impl Collector<'_> {
         })?;
         let proposal = native::Proposal::from_raw(&raw, None, Version::V2, None)
             .map_err(|e| invalid(span, &e.to_string()))?;
-        self.account(proposal.artifact().len(), span)?;
+        self.charge_artifact_bytes(proposal.artifact().len(), span)?;
         self.source.meaning_artifacts.insert(
             id,
             Arc::new(CheckedTarget {
@@ -444,7 +444,7 @@ impl Collector<'_> {
         };
         let proposal = native::Proposal::from_raw(&wrapper, Some(&interface), Version::V2, None)
             .map_err(|e| invalid(span, &e.to_string()))?;
-        self.account(proposal.artifact().len(), span)?;
+        self.charge_artifact_bytes(proposal.artifact().len(), span)?;
         let boundary = UnitaryBoundary::new(signature, input, output)
             .map_err(|e| invalid(span, &e.to_string()))?;
         let leaf = finite_leaf::check_with_kernel(
@@ -520,7 +520,7 @@ impl Collector<'_> {
         self.source.instruments.insert(key, Arc::new(pair));
         Ok(())
     }
-    fn account(&mut self, bytes: usize, span: Span) -> Result<()> {
+    fn charge_artifact_bytes(&mut self, bytes: usize, span: Span) -> Result<()> {
         self.bytes = self
             .bytes
             .checked_add(bytes)
@@ -620,7 +620,7 @@ impl Collector<'_> {
             None,
             Some((self.kernel, self.budget, &meanings.leaves)),
         )?;
-        self.account(proposal.payload().len(), span)?;
+        self.charge_artifact_bytes(proposal.payload().len(), span)?;
         // Fresh acceptance binds the exact bytes, then source replay binds both
         // candidates to their independent original definition graphs.
         let accepted = self
@@ -751,7 +751,7 @@ mod tests {
     )]
     #[test]
     fn reference_operation_replay_rejects_equal_matrix_receipt_substitution() {
-        let prefix = "use std::quantum::{h,init0}; use std::observe::measure_z;
+        let prefix = "use std::state::init0;\x20
             fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
             meaning H:Bit=reference(reference_h);
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}";
@@ -835,7 +835,7 @@ mod tests {
     )]
     #[test]
     fn source_contract_replay_rejects_same_matrix_different_native_pair() {
-        let text = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z;
+        let text = " use std::state::init0;\x20
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub observe fn main()->Bit{measure_z(apply_contract(implementation,specified,init0()))}";

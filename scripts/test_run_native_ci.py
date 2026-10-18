@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 import run_native_ci
@@ -213,9 +214,11 @@ class NativeCI(unittest.TestCase):
     def test_workflow_separates_full_proofs_from_native_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         kernel = workflow.split("  check-lean-kernel:\n")[1].split("  check-distribution:\n")[0]
-        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "kernel-refactoring-equivalence.lean",
+        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "hierarchical_prepared_v030/Current.lean",
                         "leanchecker --fresh QleisliKernel", "leanchecker --fresh Main", "test_check_lean_kernel.py --compiled"):
             self.assertLess(kernel.index(command), kernel.index("run_native_ci.py"))
+        self.assertNotIn("../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean", kernel)
+        self.assertIn("../tests/fixtures/hierarchical_prepared_v030/Current.lean", kernel)
         model = workflow.split("  check-lean:\n")[1].split("  check-lean-kernel:\n")[0]
         self.assertIn("python3 scripts/check_schema_registry.py", model)
         self.assertIn("use-github-cache: 'false'", model)
@@ -234,6 +237,81 @@ class NativeCI(unittest.TestCase):
         self.assertIn("check_schema_registry.py --source-only", model)
         self.assertIn("proof_lane == 'model'", model)
         self.assertIn("proof_lane == 'full'", model)
+
+    def test_native_paths_finishes_before_pool_and_failure_does_not_skip_remainder(self):
+        tasks = [dict(id=identifier, name=identifier, commands=[["echo", identifier, "{record}"]],
+                      env={"QLEISLI_KERNEL": "bound-kernel"})
+                 for identifier in ["z-last", "native-paths", "a-first"]]
+        original = copy.deepcopy(tasks)
+        for native_status in ["passed", "failed", "timed-out"]:
+            with self.subTest(native_status=native_status), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                environment = {"QLEISLI_KERNEL": "root-kernel"}
+                finished = threading.Event()
+                pooled = threading.Barrier(2, timeout=5)
+                seen = []
+                lock = threading.Lock()
+
+                def fake(task, observed_root, directory, timeout, observed_environment):
+                    self.assertIs(task, next(row for row in tasks if row['id'] == task['id']))
+                    self.assertEqual(observed_root, root)
+                    self.assertEqual(directory, root / task['id'])
+                    self.assertEqual(timeout, 900)
+                    self.assertIs(observed_environment, environment)
+                    with lock:
+                        seen.append(task['id'])
+                    if task['id'] == 'native-paths':
+                        self.assertEqual(seen, ['native-paths'])
+                        self.assertIs(threading.current_thread(), threading.main_thread())
+                        status = native_status
+                        finished.set()
+                    else:
+                        self.assertTrue(finished.is_set())
+                        pooled.wait()  # The remaining groups still overlap.
+                        status = 'passed'
+                    directory.mkdir()
+                    log = directory / 'command.log'
+                    log.write_text(status)
+                    command = run_native_ci.record_command(task['commands'][0], directory)
+                    return dict(id=task['id'], status=status, seconds=0, log=str(log), commands=[dict(
+                        command=command, executed_command=launch_command(command),
+                        exit_code=0 if status == 'passed' else -9)])
+
+                with patch.object(run_native_ci, 'run_task', side_effect=fake) as run:
+                    results = execute(tasks, root, root, 2, 900, environment)
+                self.assertEqual(run.call_count, len(tasks))
+                self.assertEqual(sorted(seen), ['a-first', 'native-paths', 'z-last'])
+                self.assertEqual([row['id'] for row in results], sorted(seen))
+                self.assertEqual(tasks, original)
+                self.assertEqual([row['status'] for row in results], ['passed', native_status, 'passed'])
+                report = dict(binding={'head': 'bound'}, manifest_sha256='manifest', tasks=results)
+                if native_status == 'passed':
+                    verify_coverage(report, tasks, {'head': 'bound'}, 'manifest')
+                else:
+                    with self.assertRaisesRegex(ValueError, 'failed or incomplete comparison: native-paths'):
+                        verify_coverage(report, tasks, {'head': 'bound'}, 'manifest')
+
+    def test_local_selection_does_not_add_or_duplicate_the_exclusive_group(self):
+        tasks = load_tasks(MANIFEST)
+        for requested in [['native-paths'], ['lean-observation'], ['lean-observation', 'native-paths']]:
+            with self.subTest(requested=requested), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                selected = select_tasks(tasks, requested)
+                seen = []
+
+                def fake(task, observed_root, directory, timeout, environment):
+                    seen.append(task['id'])
+                    self.assertIn(task, selected)
+                    self.assertEqual(directory, root / task['id'])
+                    self.assertEqual(timeout, 900)
+                    return dict(id=task['id'], status='passed', seconds=0)
+
+                with patch.object(run_native_ci, 'run_task', side_effect=fake):
+                    results = execute(selected, root, root, 4, 900, {})
+                self.assertEqual(sorted(seen), sorted(requested))
+                self.assertEqual([row['id'] for row in results], sorted(requested))
+                if 'native-paths' in requested:
+                    self.assertEqual(seen[0], 'native-paths')
 
     def test_workers_really_overlap(self):
         with tempfile.TemporaryDirectory() as directory:

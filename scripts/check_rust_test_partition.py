@@ -21,6 +21,7 @@ HEAVY = ['frontend_ownership_differential', 'source_ir_correspondence']
 CATEGORIES = ['--lib', '--bins', '--examples', '--benches']
 EXAMPLES = ['interop', 'lean_kernel', 'native_acceptance', 'sampled_shor15', 'shor15']
 WRAPPER = ['python3', 'scripts/run_kernel_tests.py', '--']
+SCHEDULER = ['python3', 'scripts/run_rust_tests.py', '--workers', '2', '--record', '{record}', '--']
 LATEST = ['cargo', '+1.98.1']
 MSRV = ['python3', 'scripts/run_msrv.py']
 NAME = re.compile(r'[a-zA-Z_][a-zA-Z_0-9-]*\Z')
@@ -67,7 +68,7 @@ def selection(group, commands):
             or commands[offset + 3:] != suffix):
         raise ValueError('changed partition guard order or surrounding Rust checks')
     first, second = commands[offset], commands[offset + 2]
-    head = WRAPPER + entry + ['test']
+    head = WRAPPER + SCHEDULER + entry + ['test']
     if first[:len(head)] != head or second[:len(head) + len(CATEGORIES)] != head + CATEGORIES:
         raise ValueError('changed native wrapper, Cargo entry point or target categories')
     heavy = names(first[len(head):])

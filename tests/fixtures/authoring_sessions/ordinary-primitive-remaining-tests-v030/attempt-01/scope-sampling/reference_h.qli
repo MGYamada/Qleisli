@@ -1,0 +1,4 @@
+
+         unitary fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
+         meaning H:Bit=reference(reference_h);
+         observe fn main()->Bit{0}

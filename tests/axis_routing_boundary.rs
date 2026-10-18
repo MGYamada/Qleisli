@@ -16,7 +16,7 @@ use std::collections::BTreeMap;
 
 fn source(body: &str) -> String {
     format!(
-        "use std::quantum::{{split,join,cnot,init0}};use std::observe::measure_z;
+        "use std::gate::cnot; use std::state::init0;
          use std::gate::swap;use std::structure::permute_axes;
          pub unitary fn probe(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let(a,b)=split(q);{body}}}"
     )
@@ -121,8 +121,8 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
     for (body, cnots, controlled_actions, reversed) in [
         (
             "let(a,b)=cnot(a,b);let(b,a)=cnot(b,a);let(a,b)=cnot(a,b);join(a,b)",
-            3,
             0,
+            3,
             false,
         ),
         ("join(b,a)", 0, 0, true),
@@ -168,6 +168,33 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
                     .count(),
                 controlled_actions
             );
+            // Ordinary CNOT retains controlled-X work in each ApplyUnitary.
+            // Check the actual steps/receipts, including full phase and local
+            // control/target order, rather than counting arbitrary pure actions.
+            for operation in &program.raw().operations {
+                let RawOp::ApplyUnitary { steps, .. } = operation else {
+                    continue;
+                };
+                let matrix = qleisli::contract::Circuit::new(
+                    BasisType::pair(BasisType::Bit, BasisType::Bit),
+                    steps.clone(),
+                )
+                .unwrap()
+                .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap();
+                assert_eq!((matrix.rows(), matrix.cols()), (4, 4));
+                for column in 0..4 {
+                    let image = if column & 1 == 1 { column ^ 2 } else { column };
+                    for row in 0..4 {
+                        let expected = if row == image {
+                            Exact::one()
+                        } else {
+                            Exact::zero()
+                        };
+                        assert_eq!(matrix.entries()[row * 4 + column], expected);
+                    }
+                }
+            }
             assert!(program.raw().operations.iter().all(|op| matches!(
                 op,
                 RawOp::Split { .. }
@@ -207,8 +234,8 @@ fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
         "let q=join(init0(),x(init0()));permute_axes(excl q);let(a,b)=split(q);(measure_z(a),measure_z(b))",
     ] {
         let text = format!(
-            "use std::gate::swap;use std::structure::permute_axes;use std::quantum::{{init0,x,join,split}};
-             use std::observe::measure_z;pub observe fn main()->(Bit,Bit){{{body}}}"
+            "use std::gate::swap;use std::structure::permute_axes;use std::state::init0; use std::gate::x;
+             pub observe fn main()->(Bit,Bit){{{body}}}"
         );
         for program in [
             compile_project(&SourceRoot::new(&text).0).unwrap(),

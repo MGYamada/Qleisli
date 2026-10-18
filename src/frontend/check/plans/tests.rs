@@ -13,9 +13,31 @@ const CONTROL_OWNERS: &str = "unitary fn zero(q:Q<Bits<0>>)->Q<Bits<0>>{q}
     }";
 
 fn checked(source: &str) -> CheckedProgram {
-    let module = crate::frontend::parser::parse_module(source).unwrap();
+    use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+    crate::frontend::project::check_bundled_manifest().unwrap();
+    let mut builder = Builder::default();
+    builder
+        .insert(
+            Source::local("main".into(), None, source.into(), ParsePolicy::Project).unwrap_or_else(
+                |failure| panic!("ordinary source {} at {:?}", failure.name, failure.span()),
+            ),
+        )
+        .unwrap();
+    for bundled in BundledRegistry::sources() {
+        builder
+            .insert(
+                Source::bundled(bundled, ParsePolicy::Project).unwrap_or_else(|failure| {
+                    panic!("ordinary source {} at {:?}", failure.name, failure.span())
+                }),
+            )
+            .unwrap();
+    }
+    let sources = builder.finish();
     super::super::program_with(
-        BTreeMap::from([("main", &module)]),
+        sources
+            .iter()
+            .map(|(name, source)| (name, source.syntax()))
+            .collect(),
         SourceLimits::selected(),
         |_, _, _, _, _, _, _| Ok(()),
     )
@@ -229,7 +251,7 @@ fn call_in<'a>(program: &'a CheckedProgram, owner: &str, target: &str) -> &'a St
 #[test]
 fn dormant_checked_operation_and_zero_repeat_keep_the_complete_original_tree() {
     let program = checked(
-        "use std::quantum::x;
+        "use std::gate::x;
          unitary fn candidate(q:Q<Bit>)->Q<Bit>{x(q)}
          classical fn phase_z(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
          meaning Z:Bit=phase_by(phase_z);
@@ -765,7 +787,7 @@ fn basis_type_tags_order_and_reference_sites_are_exact() {
 #[test]
 fn rectangular_provider_plan_retains_actual_ports_and_effective_access_mask() {
     let program = checked(
-        "use std::quantum::{finish,init0};
+        "use std::state::init0;
          pub isometry fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
          fn apply[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
          pub isometry fn forward(q:Q<Unit>)->Q<Bit>{apply[prepare](q)}",
@@ -786,7 +808,7 @@ fn rectangular_provider_plan_retains_actual_ports_and_effective_access_mask() {
 #[test]
 fn ordinary_calls_keep_public_effect_boundary_after_complete_inference() {
     let library = crate::frontend::parser::parse_module(
-        "use std::quantum::h;
+        "
          pub observe fn opaque(q:Q<Bit>)->Q<Bit>{h(q)}
          pub isometry fn widened(q:Q<Bit>)->Q<Bit>{h(q)}
          unitary fn inside(q:Q<Bit>)->Q<Bit>{opaque(q)}

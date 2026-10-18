@@ -1,0 +1,11 @@
+
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t;
+ 
+
+classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+meaning ZMeaning:Bit=phase_by(z_phase);
+unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
+unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+
+        pub unitary fn client(q:Q<Bit>)->Q<Bit>{use_op[checked_op(provider,ZMeaning)](q)}

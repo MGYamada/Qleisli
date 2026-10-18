@@ -17,6 +17,7 @@ use crate::ir::{
 use std::collections::{BTreeMap, BTreeSet};
 #[path = "fourier.rs"]
 mod fourier;
+mod fourier_transport;
 mod preservation;
 mod zero_basis;
 pub use preservation::{FramePort, InitializationMove, PreparationValidation, SourceEvent};
@@ -35,6 +36,8 @@ pub struct HierarchyProposal {
     moves: Vec<InitializationMove>,
     zero_basis: Vec<zero_basis::Interval>,
     pure_traces: Vec<zero_basis::DefinitionTrace>,
+    native_sources: Vec<zero_basis::NativeSourceTrace>,
+    fourier_transport: Option<std::sync::Arc<fourier_transport::Transport>>,
 }
 impl std::fmt::Debug for HierarchyProposal {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -57,13 +60,29 @@ impl HierarchyProposal {
     pub fn comparison_request(&self) -> &[u8] {
         &self.comparison
     }
+    /// Actual proposed execution graph. Source-event unitary definition indices
+    /// address `source_trace_graph`, which factoring can retain separately.
     pub fn pure_graph(&self) -> &[u8] {
         &self.graph
     }
     /// Untrusted pre-compaction table retaining the original source-derived
     /// definitions, including bodies replaced by exact trace factoring.
     pub fn lowering_precursor(&self) -> &[u8] {
-        &self.precursor
+        &self.retained_source_proposal().precursor
+    }
+    /// Graph indexed by `SourceEvent::unitary_definition`. Optional Fourier
+    /// factoring retains this original graph separately from `pure_graph`.
+    /// Event `definition` and `step` instead index the checked source collection.
+    pub fn source_trace_graph(&self) -> &[u8] {
+        &self.retained_source_proposal().graph
+    }
+    fn retained_source_proposal(&self) -> &Self {
+        self.fourier_transport
+            .as_ref()
+            .map_or(self, |transport| &transport.original)
+    }
+    pub(super) fn validate_fourier_transport(&self) -> Result<()> {
+        fourier_transport::validate(self)
     }
     /// Whether the proposal uses initialization/unitary/readout transport.
     /// This includes checked public Isometry roots with no measurements, even
@@ -72,11 +91,14 @@ impl HierarchyProposal {
     pub fn is_instrument(&self) -> bool {
         self.instrument
     }
+    /// Original source-order events. Unitary node indices address
+    /// `source_trace_graph`; initialization-move indices address this slice.
     pub fn source_events(&self) -> &[SourceEvent] {
-        &self.events
+        &self.retained_source_proposal().events
     }
+    /// Proposed moves whose initialization/crossed indices address `source_events`.
     pub fn initialization_moves(&self) -> &[InitializationMove] {
-        &self.moves
+        &self.retained_source_proposal().moves
     }
     /// Validate only stable extraction of fresh initialization against this
     /// exact freshly checked instrument. Source-to-unitary translation remains
@@ -90,8 +112,11 @@ impl HierarchyProposal {
                 "checked payload differs from source proposal",
             ));
         }
-        zero_basis::validate(self)?;
-        preservation::validate(self)
+        self.validate_source_transport(
+            checked.reconstruction().checker(),
+            checked.reconstruction().structural_work(),
+            checked.reconstruction().native_exact_work(),
+        )
     }
 
     /// Validate source-order initialization moves against the same immutable
@@ -105,8 +130,58 @@ impl HierarchyProposal {
                 "native checked instrument differs from source proposal",
             ));
         }
-        zero_basis::validate(self)?;
-        preservation::validate(self)
+        self.validate_source_transport(
+            checked.checker(),
+            checked.structural_work(),
+            checked.exact_work(),
+        )
+    }
+    /// Replay the source before freshly checking its dormant native obligations
+    /// with the same canonical checker that accepted the executed instrument.
+    /// Fourier transport requires two complete native hierarchy decisions.
+    /// Each retains its own 2M structural and 10M exact-work limit, so that pair
+    /// can consume up to 4M/20M. Host replay and the legacy report's additional
+    /// finite-leaf native checks retain their separate existing budgets. This
+    /// is not one shared native budget or a total-work/resource-safety theorem.
+    /// The accepted report's metrics describe only the executed graph; the
+    /// returned preparation validation counts source events and movements.
+    fn validate_source_transport(
+        &self,
+        checker: &std::path::Path,
+        actual_structural_work: usize,
+        actual_exact_work: usize,
+    ) -> Result<PreparationValidation> {
+        self.validate_fourier_transport()?;
+        let original = self.retained_source_proposal();
+        zero_basis::validate(original)?;
+        let validation = preservation::validate(original)?;
+        if self.fourier_transport.is_some() {
+            let checked = crate::interchange::hierarchical::Kernel::new(checker)
+                .check_instrument_native(original.payload(), original.comparison_request())
+                .map_err(|error| preservation::invalid(error.to_string()))?;
+            if checked.checker() != checker {
+                return Err(preservation::invalid(
+                    "original Fourier check changed the retained canonical checker path",
+                ));
+            }
+            // Defensively enforce each native decision's established limits.
+            // Do not reinterpret them as a cross-decision successful-work cap.
+            if actual_structural_work > 2_000_000
+                || checked.structural_work() > 2_000_000
+                || actual_exact_work > crate::contract::DEFAULT_EXACT_WORK
+                || checked.exact_work() > crate::contract::DEFAULT_EXACT_WORK
+            {
+                return Err(limit(format!(
+                    "executed or original Fourier check exceeds its native work limit: structural actual {}, original {}, each at most 2000000; exact actual {}, original {}, each at most {}",
+                    actual_structural_work,
+                    checked.structural_work(),
+                    actual_exact_work,
+                    checked.exact_work(),
+                    crate::contract::DEFAULT_EXACT_WORK,
+                )));
+            }
+        }
+        Ok(validation)
     }
 }
 
@@ -655,12 +730,14 @@ struct Lower<'a> {
     inline_visits: usize,
     zero_basis: Vec<zero_basis::Interval>,
     pure_traces: Vec<zero_basis::DefinitionTrace>,
+    native_sources: Vec<zero_basis::NativeSourceTrace>,
     trace_zero_basis: bool,
     pure_trace_cells: usize,
 }
 struct NativeOperation<'a> {
     key: super::elaborate::OperationKey,
     leaf: &'a crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+    witness: Option<std::sync::Arc<super::raw::SourceOperationWitness>>,
 }
 impl Lower<'_> {
     fn native_operation(
@@ -1286,8 +1363,20 @@ impl Lower<'_> {
     fn operation(&mut self, op: &SourceOperation) -> Result<usize> {
         let key = op.key();
         if let Some(native) = self.native_operations.iter().find(|entry| entry.key == key) {
+            if zero_basis::operation_uses_table(self.source, op)? {
+                let witness = native
+                    .witness
+                    .as_ref()
+                    .ok_or_else(|| fail("checked provider lacks its original Raw source witness"))?
+                    .clone();
+                return self.native_source_operation(op, native.leaf, witness);
+            }
             return self.native_operation(native.leaf);
         }
+        self.operation_source(op)
+    }
+    /// Expand the original source at this root; descendants retain their checks.
+    fn operation_source(&mut self, op: &SourceOperation) -> Result<usize> {
         if let Some((kind, children, ports)) = op.constructed() {
             if ports.effect != Effect::Unitary {
                 return Err(fail(
@@ -2118,10 +2207,32 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
     for definition in source.definitions() {
         for step in definition.steps() {
             if let Some(operation) = step.operation().filter(|_| has_basis_tables) {
-                if zero_basis::operation_uses_table(source, operation)? {
+                // Isometry arrows are materialized by invoke/invoke_operation,
+                // then replayed against their original bodies and source paths.
+                // Their preparation is not an atomic pure transformation. Pure
+                // branches still require the structural-table transport below.
+                let forward_isometry = step.kind() == "apply"
+                    && step.effect() == "iso"
+                    && (operation.has_constructed()
+                        || operation.definition().is_some_and(|id| {
+                            source
+                                .definitions()
+                                .get(id)
+                                .is_some_and(|definition| definition.effect() == "iso")
+                        }));
+                if forward_isometry && !zero_basis::materialized_without_repeat(operation)? {
+                    return Ok(HierarchyEligibility::Ineligible(Error::new(
+                        "unsupported", step.span(),
+                        "zero-basis forward repetition requires retained original child transport; select the Raw profile",
+                    ).in_module(step.module())));
+                }
+                if zero_basis::operation_uses_table(source, operation)?
+                    && !zero_basis::operation_has_structural_tables(source, operation)?
+                    && !forward_isometry
+                {
                     return Ok(HierarchyEligibility::Ineligible(Error::new(
                         "unsupported",step.span(),
-                        "zero-basis hierarchy transport requires ordinary source calls; static operation transforms retain the Raw profile",
+                        "zero-basis hierarchy transport requires original structural unitary tables; preparation retains the Raw profile",
                     ).in_module(step.module())));
                 }
             }
@@ -2155,6 +2266,14 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
     lower_inner(source, &[])
 }
 
+/// Retain original Raw correspondence only where hierarchy also carries basis intervals.
+pub(super) fn operation_needs_source_witness(
+    source: &ElaboratedProgram,
+    operation: &SourceOperation,
+) -> Result<bool> {
+    zero_basis::operation_uses_table(source, operation)
+}
+
 pub(super) fn lower_with_checked_operation(
     check: &super::SourceMeaningCheck<'_>,
 ) -> Result<HierarchyProposal> {
@@ -2163,9 +2282,17 @@ pub(super) fn lower_with_checked_operation(
     let op = proposal
         .operation()
         .ok_or_else(|| fail("hierarchy binding requires an original source operation binding"))?;
+    let witness = if operation_needs_source_witness(proposal.source(), op)? {
+        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+        let mut cells = 0;
+        Some(check.source_witness(&mut budget, &mut cells)?)
+    } else {
+        None
+    };
     let operations = [NativeOperation {
         key: op.key(),
         leaf: check.leaf(),
+        witness,
     }];
     lower_inner(proposal.source(), &operations)
 }
@@ -2173,15 +2300,36 @@ pub(super) fn lower_with_checked_operation(
 pub(super) fn lower_with_checked_meanings(
     check: &super::CheckedSourceMeanings<'_>,
 ) -> Result<HierarchyProposal> {
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let operations = check
         .leaves
         .iter()
         .map(|(key, leaf, _)| {
+            let leaf = leaf
+                .unitary()
+                .ok_or_else(|| fail("rectangular Meaning requires the Raw lowering profile"))?;
+            let mut witness = None;
+            for candidate in check.source_witnesses.iter() {
+                budget
+                    .charge(1)
+                    .map_err(|_| limit("native source witness lookup exceeds shared work"))?;
+                if candidate.key() != key {
+                    continue;
+                }
+                budget
+                    .charge(leaf.payload().len())
+                    .map_err(|_| limit("native source witness lookup exceeds shared work"))?;
+                if candidate.payload() == leaf.payload()
+                    && candidate.matches(check.source(), candidate.operation(), &mut budget)?
+                {
+                    witness = Some(candidate.clone());
+                    break;
+                }
+            }
             Ok(NativeOperation {
                 key: key.clone(),
-                leaf: leaf
-                    .unitary()
-                    .ok_or_else(|| fail("rectangular Meaning requires the Raw lowering profile"))?,
+                leaf,
+                witness,
             })
         })
         .collect::<Result<Vec<_>>>()?;
@@ -2206,6 +2354,7 @@ fn lower_inner<'a>(
         inline_visits: 0,
         zero_basis: vec![],
         pure_traces: vec![],
+        native_sources: vec![],
         trace_zero_basis: source
             .definitions()
             .iter()
@@ -2261,6 +2410,7 @@ fn lower_inner<'a>(
         let (compact, id, mapping) = lower.graph.compact_export(id)?;
         zero_basis::remap(&mut lower.zero_basis, &mapping)?;
         zero_basis::remap_traces(&mut lower.pure_traces, &mapping)?;
+        zero_basis::remap_native_sources(&mut lower.native_sources, &mapping)?;
         let graph = compact.artifact(id);
         (graph.clone(), compact.comparison(id), graph, false)
     } else {
@@ -2337,6 +2487,7 @@ fn lower_inner<'a>(
         preservation::remap_events(&mut state.events, &map)?;
         zero_basis::remap(&mut lower.zero_basis, &map)?;
         zero_basis::remap_traces(&mut lower.pure_traces, &map)?;
+        zero_basis::remap_native_sources(&mut lower.native_sources, &map)?;
         let graph = compact.artifact(pure);
         let pure_request = compact.comparison(pure);
         let readout_inputs = side(&desired, &[]);
@@ -2431,10 +2582,12 @@ fn lower_inner<'a>(
         moves,
         zero_basis: lower.zero_basis,
         pure_traces: lower.pure_traces,
+        native_sources: lower.native_sources,
+        fourier_transport: None,
     };
     zero_basis::validate(&result)?;
     if instrument {
         preservation::validate(&result)?;
     }
-    Ok(result)
+    fourier_transport::propose(result)
 }

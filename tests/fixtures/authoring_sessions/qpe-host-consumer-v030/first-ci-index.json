@@ -1,0 +1,65 @@
+{
+  "format": "qleisli.qpe-host-consumer-first-ci-retention",
+  "version": 1,
+  "record": "first-ci.records.json.gz",
+  "record_sha256": "e94632d363aca0196f7a618c39ecd6938da1657bba9dd3be2c2fcdd53729af62",
+  "uncompressed_sha256": "2fe2196f47278a669a104bfa4c013c802cca9ef9c8e5a9c1af1dade51a0613f9",
+  "file_count": 9,
+  "expanded_original_bytes": 223434,
+  "files": [
+    {
+      "path": "before/scripts/test_qpe_instrument_host.py",
+      "bytes": 13934,
+      "sha256": "094822ba4b13bf48b43b1a0a426b6885f951b2c67010b89b2aa35098138871d9",
+      "mode": "0644"
+    },
+    {
+      "path": "before/tests/hierarchical_qpe_host.rs",
+      "bytes": 5056,
+      "sha256": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553247826.log.txt",
+      "bytes": 49550,
+      "sha256": "bc1836e969771bd2e0161ab3622d22c61ad0c7f8818ec0c16879c3d24badaed6",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553247826.meta.json",
+      "bytes": 717,
+      "sha256": "76286bcdc4818329b18cef60f1a22378f0cf365f9c9251078e156455122cd2e4",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553247826.raw.json",
+      "bytes": 51584,
+      "sha256": "57071f072a7fc6832e30ca4a8bfcf30613b9d27c2313bb79d504e6f8d8967249",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553462279.log.txt",
+      "bytes": 48333,
+      "sha256": "da00d997d5bc480f629cbc8bef4aacee5b4329e847d64323c49680c6e835950a",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553462279.meta.json",
+      "bytes": 717,
+      "sha256": "53e22be9e465628a9c175bf2a436442cdd2397bb049571990f34777af10be53e",
+      "mode": "0644"
+    },
+    {
+      "path": "history/job-117553462279.raw.json",
+      "bytes": 50346,
+      "sha256": "6d99e3da9edcb4ff4af6bbaed9a359fc61ec8d5c4875559a21abc3fd08d32807",
+      "mode": "0644"
+    },
+    {
+      "path": "history/kernel-failure-audit-v1.json",
+      "bytes": 3197,
+      "sha256": "29c13f0ed0c84230c797fb3b3ff8cfc47cce3cbe162d44cf3863ab03f3a474ab",
+      "mode": "0644"
+    }
+  ]
+}

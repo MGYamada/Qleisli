@@ -1,0 +1,163 @@
+{
+  "recorded_utc": "2026-10-17T23:52:59Z",
+  "clock_scope": "Retrospective transcription time only.",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/run_kernel_tests.py",
+    "--",
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--lib",
+    "interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "cwd": "/Users/masa/git/Qleisli",
+  "transcript": "    Finished `test` profile [unoptimized] target(s) in 0.16s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-ec126c744a504ac1)\n\nrunning 1 test\ntest interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 442 filtered out; finished in 4.02s\n\nnative test gate: zero conditional native skips\n",
+  "raw_stderr": "",
+  "driver": {
+    "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/process-tree-unsandbox-v1.json",
+    "sha256": "bf618678594bcc1ef35950def39322f5cf6282c5dcd63d682f3153770a6632ab",
+    "bytes": 75946
+  },
+  "streams": {
+    "stdout": {
+      "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/process-tree-unsandbox-v1.stdout.txt",
+      "sha256": "d6c6611f7abd89b6867ebec0dad595d5b0b1ca954cb1e20b4b2fc274db663420",
+      "bytes": 405
+    },
+    "stderr": {
+      "path": "/private/tmp/qleisli-generic-plan-validation-ji3399kg/process-tree-unsandbox-v1.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "driver_metadata": {
+    "argv": [
+      "python3",
+      "-B",
+      "scripts/run_kernel_tests.py",
+      "--",
+      "/opt/homebrew/bin/cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--lib",
+      "interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+    "pid": 74990,
+    "pgid": 74990,
+    "whole_working_before": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "aaa5b1ac29ec374cc88b9554013531b4aafeeb2c36152a2a1328f7fb2bdff83d"
+    },
+    "compiler": {
+      "path": "/opt/homebrew/bin/rustc",
+      "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+      "selection": "explicit normal RUSTC",
+      "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+    },
+    "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+    "outer_environment": {
+      "RUSTC": "/opt/homebrew/bin/rustc",
+      "RUSTDOC": "/opt/homebrew/bin/rustdoc",
+      "CARGO_TARGET_DIR": "/Users/masa/git/Qleisli/target",
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0"
+    },
+    "exit_code": 0,
+    "interrupted": false,
+    "seconds": 13.665568875148892,
+    "whole_working_after": {
+      "head": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+      "working_inputs_sha256": "aaa5b1ac29ec374cc88b9554013531b4aafeeb2c36152a2a1328f7fb2bdff83d"
+    },
+    "whole_working_stable": true,
+    "observed_cli_after_sha256": "0266bd9ccef539818168c7cf6fa9e130f7ef139957944b51798a582ed3a062ec",
+    "inputs_stable": true,
+    "kernel_stable": true
+  },
+  "input_maps": {
+    "inputs_before": {
+      "count": 346,
+      "canonical_sha256": "412bb11e4b96e5121c560d6812be5d33082f6e5acd3c2f80556aefff29913953",
+      "canonical_encoding": "UTF-8 JSON sorted keys and comma/colon separators; no trailing newline",
+      "relevant_test_hashes": {
+        "tests/axis_routing_boundary.rs": "a4c93294af2fc3cefb07cc0694f04c558512bc38e6c18d9b8de148cf30a7baea",
+        "tests/body_effects.rs": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+        "tests/check_scope_cli.rs": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+        "tests/check_scope_report.rs": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+        "tests/checked_operations.rs": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+        "tests/classical_functions.rs": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+        "tests/cli_sampling.rs": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+        "tests/common_authoring_diagnostics.rs": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+        "tests/compile.rs": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+        "tests/computed_derived_source.rs": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+        "tests/engineering_boundary_baseline.rs": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+        "tests/finite_empty_bits.rs": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+        "tests/function_contracts.rs": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+        "tests/mixed_booleans.rs": "e34c993b11f2b30194cb88e8109de15f0633d4be11bb01b206f4e0d096d28890",
+        "tests/qfor.rs": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+        "tests/quantum_unit_source.rs": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+        "tests/rectangular_meanings.rs": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+        "tests/review_v019.rs": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+        "tests/review_v024.rs": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+        "tests/shared_resolution.rs": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+        "tests/source_snapshots.rs": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+        "tests/static_semantics.rs": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+        "tests/tuple_shapes.rs": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f"
+      }
+    },
+    "inputs_after": {
+      "count": 346,
+      "canonical_sha256": "412bb11e4b96e5121c560d6812be5d33082f6e5acd3c2f80556aefff29913953",
+      "canonical_encoding": "UTF-8 JSON sorted keys and comma/colon separators; no trailing newline",
+      "relevant_test_hashes": {
+        "tests/axis_routing_boundary.rs": "a4c93294af2fc3cefb07cc0694f04c558512bc38e6c18d9b8de148cf30a7baea",
+        "tests/body_effects.rs": "a1547a3d0dc6aa5823faf87c6106ff7645ba7ad98066ff29a950ef0e5982e291",
+        "tests/check_scope_cli.rs": "84070984db1069357fc66bbab8f3904345a1d58810718f28958e1838b0038910",
+        "tests/check_scope_report.rs": "664d559fb538a50e76230f4416f44b31b65410a2faa0eed14a69fd8f40290a30",
+        "tests/checked_operations.rs": "7faff981689b1c87b4a893301dd121ec1e0e3cddd8f697106e482cb5c2659e66",
+        "tests/classical_functions.rs": "45d3dbfd773fa622209b57648bc1cf317107620a2b55cdce8aa8eeab7dbdae9c",
+        "tests/cli_sampling.rs": "43151e8c9a2a9bc9fbe439b0090bc56c1eb6ac81275a24b032c35fcd355521cc",
+        "tests/common_authoring_diagnostics.rs": "64468334624b77bcf5a27ca19d77b216e2c76877f3a82ffc40df9ee5fb73ccc3",
+        "tests/compile.rs": "d5bb19b61dafb2b774cfa41e0634711bb6e6974873d48affc8f369cca1336b38",
+        "tests/computed_derived_source.rs": "ce3f0ead9d5d1a431eb36ca24fad493ba9c73cea2a6708b5db4fdb82bd2a4851",
+        "tests/engineering_boundary_baseline.rs": "50c07457b49c994bde28b40b9ff741c251bb4ac47a247815ee93e72978c9e9bc",
+        "tests/finite_empty_bits.rs": "46d2ce1e829950501004b1c1748d520380941fd9b830351afee9c843684337be",
+        "tests/function_contracts.rs": "65b323ebf44e2148960b38e1b5bfe1ed98480ab9310bf737975cd35c1fc76273",
+        "tests/mixed_booleans.rs": "e34c993b11f2b30194cb88e8109de15f0633d4be11bb01b206f4e0d096d28890",
+        "tests/qfor.rs": "5cf93248e6577ae90cb0b288805f9287547aeb845178477cc669e836744ff9a0",
+        "tests/quantum_unit_source.rs": "e67b8dd8528f2e2ef749dc903d5cba58a382b17c06108363808d659a968b2c8e",
+        "tests/rectangular_meanings.rs": "4fa60af04883a1b14f745968c1e7a47aae09b678ac6e67fb47e37940056e3d83",
+        "tests/review_v019.rs": "889b70932d22206c40e6ca4b405b449930ceebb415b51b336780e7094e8d2140",
+        "tests/review_v024.rs": "c6b590086a8e00d3d53ceab0ac7d80b9fb8fa9c1e0f0f4a3ccf40f510869f895",
+        "tests/shared_resolution.rs": "1bbdd602567fbf0ca91b199f2d167be7d11ecde3acb407f4884c1206941cd745",
+        "tests/source_snapshots.rs": "8554f7c2d3efc592241dee31e680ce5776755be0b6f5be2007e4b08fbd6dd59c",
+        "tests/static_semantics.rs": "ecfdb2e710358bde4dc7088c49e7c28ef0be743f6afabd149204c41e879f6c36",
+        "tests/tuple_shapes.rs": "b39dba0a357f03d91e048499b4a30c2be9fa3592cea5e2201ee5ec83ed44ed9f"
+      }
+    }
+  },
+  "result": {
+    "passed": 1,
+    "failed": 0,
+    "filtered": 442,
+    "test_seconds": 4.02,
+    "driver_seconds": 13.665568875148892
+  },
+  "scope": "Separate actual unsandboxed environment retry of the original process-tree test, with no source edits and no semantic repair evidence. Original full BEFORE ps permission diagnostic remains unchanged. This is not a full library/MSRV or CI pass."
+}

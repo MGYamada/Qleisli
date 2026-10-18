@@ -1,0 +1,9 @@
+
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
+classical fn predicate(value: Bit) -> Bit { value }
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
+ unitary fn client(q: Q<Bit>) -> Q<Bit> { apply_contract(z,specified_phase,q) }

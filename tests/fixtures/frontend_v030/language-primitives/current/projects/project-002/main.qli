@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::state::reset;
+pub unitary fn f(q: Q<Bit>) -> Unit { discard(q) }
+pub observe fn main() -> Unit { f(init0()) }

@@ -1,8 +1,8 @@
 use estimation::phase3;
-use std::quantum::init0;
-use std::quantum::x;
-use std::quantum::join;
-use std::observe::discard;
+use std::state::init0;
+use std::gate::x;
+
+
 
 observe fn main() -> ((Bit, Bit), Bit) {
     let one = join(join(x(init0()), init0()), join(init0(), init0()));

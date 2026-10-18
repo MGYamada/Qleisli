@@ -16,8 +16,8 @@ use std::collections::BTreeMap;
 
 macro_rules! first_source {
     ($case:literal) => {
-        include_str!(concat!(
-            "fixtures/authoring_sessions/classical-runtime-v030/attempt-01/",
+        common::current_source_text(concat!(
+            "tests/fixtures/authoring_sessions/classical-runtime-v030/attempt-01/",
             $case,
             "/main.qli"
         ))
@@ -44,7 +44,7 @@ fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
             for honest in [true, false] {
                 assert!(first.contains("helper[const U:Op<Bit>]"));
                 let text = first
-                    .replace("use std::quantum::x;", "use std::quantum::{x,h};classical fn ident(b:Bit)->Bit{b} meaning Identity:Bit=permutation_by(ident);")
+                    .replace("use std::gate::x;", "use std::gate::x;classical fn ident(b:Bit)->Bit{b} meaning Identity:Bit=permutation_by(ident);")
                     .replace("helper[const U:Op<Bit>]", "helper[const n:Nat,const U:Op<Bit,Flip>]")
                                         .replace("requires Applicable(U){U(q)}\npub unitary fn implementation", "requires Applicable(U),n<=2{qfor static i in 0..n carry a=q{yield U(a)}}\npub unitary fn implementation")
                     .replace("helper[leaf]", &format!("helper[{count},leaf]"))
@@ -105,8 +105,12 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
     use qleisli::interchange::hierarchical;
     for count in 0..=2 {
         for honest in [true, false] {
-            let leaf = if honest { "phase_eighth(q)" } else { "q" };
-            let text=format!("use std::quantum::phase_eighth;
+            let leaf = if honest {
+                "global_phase_eighth(q)"
+            } else {
+                "q"
+            };
+            let text=format!("
                 classical fn angle((u,b):(Unit,Bit))->(Bit,(Bit,Bit)){{(1,(0,0))}}
                 classical fn target((u,b):(Unit,Bit))->(Bit,(Bit,Bit)){{({},({},0))}}
                 meaning One:(Unit,Bit)=phase_by(angle); meaning M:(Unit,Bit)=phase_by(target);
@@ -227,7 +231,7 @@ fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
 fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
-    let prelude = "use std::quantum::x;
+    let prelude = "use std::gate::x;
         classical fn flip(b:Bit)->Bit{not b}
         classical fn ident(b:Bit)->Bit{b}
         meaning Flip:Bit=permutation_by(flip);
@@ -325,10 +329,10 @@ fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
 fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
-    let text = "use std::quantum::phase_eighth;
+    let text = "
         classical fn angle(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
         meaning Eighth:Unit=phase_by(angle);
-        unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        unitary fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         pub unitary fn client(q:Q<Unit>)->Q<Unit>{adjoint(checked_op(implementation,Eighth))(q)}";
     let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
         .unwrap()
@@ -381,13 +385,12 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
         )
         .replace("permutation_by(swap)", "phase_by(angle)")
         .replace(
-            "use std::quantum::split;",
-            "use std::quantum::split; use std::quantum::phase_eighth;",
-        )
-        .replace("join(u,join(b,a))", "join(phase_eighth(u),join(a,b))");
+            "join(u,join(b,a))",
+            "join(global_phase_eighth(u),join(a,b))",
+        );
     let direct_phase = phase.replace(
-        "let (u,r)=split(q);\n    let (a,b)=split(r);\n    join(phase_eighth(u),join(a,b))",
-        "phase_eighth(q)",
+        "let (u,r)=split(q);\n    let (a,b)=split(r);\n    join(global_phase_eighth(u),join(a,b))",
+        "global_phase_eighth(q)",
     );
     assert_ne!(direct_phase, phase);
     for (template, scalar) in [
@@ -401,8 +404,8 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
                 let text = if honest {
                     text
                 } else if scalar {
-                    text.replace("phase_eighth(u)", "u")
-                        .replace("phase_eighth(q)", "q")
+                    text.replace("global_phase_eighth(u)", "u")
+                        .replace("global_phase_eighth(q)", "q")
                 } else {
                     text.replace("join(b,a)", "join(a,b)")
                 };
@@ -486,7 +489,7 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
             "(Unit,Unit)",
             "classical fn angle((u,v):(Unit,Unit))->(Bit,(Bit,Bit)){(1,(0,0))}",
             "phase_by(angle)",
-            "let (u,v)=split(q);join(phase_eighth(u),v)",
+            "let (u,v)=split(q);join(global_phase_eighth(u),v)",
             true,
             BasisType::pair(BasisType::Unit, BasisType::Unit),
         ),
@@ -499,7 +502,7 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
             BasisType::Tuple(vec![BasisType::Unit, BasisType::Bit, BasisType::Unit]),
         ),
     ] {
-        let text=format!("use std::quantum::{{split,join,phase_eighth}};{helper}
+        let text=format!("{helper}
             meaning M:{basis}={meaning};
             pub unitary fn implementation(q:Q<{basis}>)->Q<{basis}>{{{body}}}
             pub unitary fn client[const U:Op<{basis},M>](q:Q<{basis}>)->Q<{basis}> requires Applicable(U){{U(q)}}");
@@ -670,7 +673,7 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
             text.replace("{x(q)}", "{q}")
         } else {
             text.replace(
-                "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
+                "global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))",
                 "q",
             )
         };
@@ -737,7 +740,7 @@ fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
 fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
-    let common = "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
+    let common = "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
     let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
     let parsed = ParsedProgram::parse(BTreeMap::from([
         (
@@ -839,12 +842,12 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
 fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
-    let bit = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
-    let unit = "use std::quantum::phase_eighth;\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\npub unitary fn host[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}";
+    let bit = "use std::gate::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
+    let unit = "\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}\npub unitary fn host[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}";
     let wrong_bit = bit.replace("{helper(q)}", "{q}");
     let wrong_unit = unit.replace(
-        "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
-        "phase_eighth(phase_eighth(phase_eighth(q)))",
+        "global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))",
+        "global_phase_eighth(global_phase_eighth(global_phase_eighth(q)))",
     );
     for (text, meaning, correct) in [
         (bit, "Flip", true),
@@ -908,7 +911,7 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
 fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
-    let source = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
+    let source = "use std::gate::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     let flip = parsed.finite_meaning_target("main::Flip").unwrap();
     let identity = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
@@ -937,7 +940,40 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
         assert_eq!(leaf.definition().path(), "main::implementation");
         let accepted = kernel().accept(leaf.proposal()).unwrap();
         leaf.validate_source_steps(&accepted).unwrap();
-        assert_eq!(accepted.raw().operations.len(), count as usize);
+        // The actual selected ordinary X body is H, four T phases, then H.
+        // Retain each requested application, owner transition and full phase.
+        let word = [
+            qleisli::ir::SingleGate::H,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::T,
+            qleisli::ir::SingleGate::H,
+        ];
+        assert_eq!(accepted.derived_effect(), Effect::Unitary);
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        let input = &accepted.raw().quantum_inputs[0];
+        assert_eq!(input.wires.len(), 1);
+        assert_eq!(accepted.raw().operations.len(), count as usize * word.len());
+        let mut live = input.token;
+        for (position, operation) in accepted.raw().operations.iter().enumerate() {
+            let RawOp::Gate {
+                gate,
+                input,
+                output,
+            } = operation
+            else {
+                panic!("ordinary X repetition must retain its gate body");
+            };
+            assert_eq!(*gate, word[position % word.len()]);
+            assert_eq!(*input, live);
+            assert_ne!(input, output);
+            live = *output;
+        }
+        assert_eq!(accepted.raw().quantum_outputs, vec![live]);
+        let outputs = accepted.output_ports();
+        assert_eq!(outputs.len(), 1);
+        assert_eq!(outputs[0].wires, input.wires);
         let checker = kernel();
         for (meaning, matches) in [(&flip, count == 1), (&identity, count != 1)] {
             let result =
@@ -966,7 +1002,7 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
 fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
-    let scalar = "use std::quantum::phase_eighth;\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\nunitary fn inner[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
+    let scalar = "\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}\nunitary fn inner[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), scalar.into())])).unwrap();
     let minus = FiniteMeaning::phase(BasisType::Unit, vec![4]).unwrap();
     let identity = FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
@@ -1002,7 +1038,7 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     }
     // Zero-count wrappers retain preflight of the original body. The now
     // supported inverse-X body passes; a finer phase remains unsupported.
-    let unsupported = "use std::quantum::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn)(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,0)](q)}";
+    let unsupported = "use std::gate::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn)(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,0)](q)}";
     let parsed =
         ParsedProgram::parse(BTreeMap::from([("main".into(), unsupported.into())])).unwrap();
     let source = parsed
@@ -1027,7 +1063,7 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     proposal.validate_source_steps(&accepted).unwrap();
     assert!(accepted.raw().operations.is_empty());
     let fine = unsupported
-        .replace("use std::quantum::x;", "use std::quantum::phase;")
+        .replace("use std::gate::x;", "")
         .replace("x(q)", "phase[1,4](q)");
     let fine = ParsedProgram::parse(BTreeMap::from([("main".into(), fine)]))
         .unwrap()
@@ -1073,8 +1109,8 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
         "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
     );
     let wrong_scalar = scalar.replace(
-        "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
-        "phase_eighth(phase_eighth(phase_eighth(q)))",
+        "global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))",
+        "global_phase_eighth(global_phase_eighth(global_phase_eighth(q)))",
     );
     assert_ne!(wrong_scalar, scalar);
     for (source, name, correct, signature) in [
@@ -1402,10 +1438,23 @@ fn accept(graph: &ElaboratedProgram) -> AcceptedProgram {
 }
 
 fn closed(program: &AcceptedProgram, expected: &[bool]) {
-    assert_eq!(
-        run_closed(program, SimulationLimits::default()).unwrap(),
-        BTreeMap::from([(expected.to_vec(), 1.0)])
-    );
+    let actual = run_closed(program, SimulationLimits::default()).unwrap();
+    // Ordinary H Z H is simulated numerically; retain ordered outcomes and
+    // check mathematical-zero tails without clipping or normalization.
+    assert_eq!(expected.len(), program.raw().classical_outputs.len());
+    let probability = actual.get(expected).expect("expected ordered output");
+    assert!((probability - 1.0).abs() < 1e-12);
+    for (bits, probability) in &actual {
+        let requested = if bits.as_slice() == expected {
+            1.0
+        } else {
+            0.0
+        };
+        assert_eq!(bits.len(), expected.len());
+        assert!(probability.is_finite() && *probability >= 0.0);
+        assert!((probability - requested).abs() < 1e-12);
+    }
+    assert!((actual.values().sum::<f64>() - 1.0).abs() < 1e-12);
 }
 
 fn both_closed(source: &str, expected: &[bool]) -> ElaboratedProgram {
@@ -1472,7 +1521,7 @@ fn canonical_declaration_retains_expression_ast_and_old_spelling_has_migration_e
 #[test]
 fn frozen_flip_is_reused_coherently_and_ordinarily_with_explicit_profile_limit() {
     let source = first_source!("shared-flip");
-    let graph = both_closed(source, &[true, false]);
+    let graph = both_closed(&source, &[true, false]);
     // Raw now implements this actual coherent body. The separate hierarchy
     // profile still refuses its classical results/table transport.
     assert_eq!(graph.lower().unwrap_err().code(), "unsupported");
@@ -1505,7 +1554,7 @@ fn act_on_two_axes(table: &[u16], state: [(i32, i32); 4]) -> [(i32, i32); 4] {
 )]
 #[test]
 fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
-    let source = "use std::quantum::init0; use std::observe::measure_z;
+    let source = "use std::state::init0;\x20
         classical fn flip(x: Bit) -> Bit { not x }
         unitary fn lifted(q: Q<Bit>) -> Q<Bit> { basis q as b { flip(b) } }
         pub observe fn main() -> (Bit,Bit) {
@@ -1518,7 +1567,12 @@ fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
     let initial: Vec<_> = operations
         .iter()
         .filter_map(|operation| match operation {
-            RawOp::Init0 { output, wire } => Some((*output, *wire)),
+            RawOp::LiftBasis {
+                output,
+                output_wires,
+                table,
+                ..
+            } if output_wires.len() == 1 && table == &[0] => Some((*output, output_wires[0])),
             _ => None,
         })
         .collect();
@@ -1532,7 +1586,7 @@ fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
                 output,
                 output_wires,
                 table,
-            } => Some((*input, *output, output_wires, table)),
+            } if table.len() == 2 => Some((*input, *output, output_wires, table)),
             _ => None,
         })
         .collect();
@@ -1552,7 +1606,7 @@ fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
     // from the action being compared. This closed source needs no other action.
     assert!(operations.iter().all(|operation| matches!(
         operation,
-        RawOp::Init0 { .. } | RawOp::LiftBasis { .. } | RawOp::MeasureZ { .. }
+        RawOp::PackUnit { .. } | RawOp::LiftBasis { .. } | RawOp::MeasureZ { .. }
     )));
     for column in 0..4 {
         let mut input = [(0, 0); 4];
@@ -1575,7 +1629,7 @@ fn coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference() {
 )]
 #[test]
 fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
-    both_closed(first_source!("ordinary-and"), &[false]);
+    both_closed(&first_source!("ordinary-and"), &[false]);
     for (a, b, expected) in [(0, 0, false), (0, 1, false), (1, 0, false), (1, 1, true)] {
         both_closed(
             &format!(
@@ -1601,8 +1655,8 @@ fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
 )]
 #[test]
 fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
-    let source = "use std::quantum::init0; use std::quantum::h; use std::quantum::z;
-        use std::observe::measure_z;
+    let source = "use std::state::init0;  use std::gate::z;
+\x20\x20\x20\x20\x20\x20\x20\x20
         classical fn flip(x: Bit) -> Bit { not x }
         meaning Flip: Bit = permutation_by(flip);
         pub unitary fn oracle(q: Q<Bit>) -> Q<Bit> { with_computed(q,flip) { |a| z(a) } }
@@ -1641,7 +1695,7 @@ fn one_classical_body_remains_a_static_meaning_and_exact_computed_predicate() {
 )]
 #[test]
 fn unit_and_nested_products_retain_exact_trees_and_argument_list_arity() {
-    both_closed(first_source!("nested-label"), &[false]);
+    both_closed(&first_source!("nested-label"), &[false]);
     let source = "classical fn singleton((): Unit) -> Unit { () }
         classical fn pick(((),(b,())): (Unit,(Bit,Unit))) -> ((Bit,Unit),(Unit,Bit)) {
             ((b,()),((),not b))
@@ -1681,7 +1735,7 @@ fn unit_and_nested_products_retain_exact_trees_and_argument_list_arity() {
 )]
 #[test]
 fn eager_argument_effects_belong_to_the_caller_in_source_order() {
-    let source = "use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
+    let source = "use std::state::init0; use std::gate::x;\x20
         classical fn left(a: Bit, b: Bit) -> Bit { a }
         pub observe fn main() -> Bit { left(measure_z(x(init0())),measure_z(init0())) }";
     let graph = both_closed(source, &[true]);
@@ -1692,14 +1746,18 @@ fn eager_argument_effects_belong_to_the_caller_in_source_order() {
             .operations
             .iter()
             .filter_map(|op| match op {
-                RawOp::Init0 { .. } => Some("init"),
+                RawOp::LiftBasis {
+                    output_wires,
+                    table,
+                    ..
+                } if output_wires.len() == 1 && table == &[0] => Some("init"),
                 RawOp::MeasureZ { .. } => Some("measure"),
                 _ => None,
             })
             .collect();
         assert_eq!(sequence, ["init", "measure", "init", "measure"]);
     }
-    let source = "use std::quantum::init0; use std::observe::measure_z;
+    let source = "use std::state::init0;\x20
         classical fn both(a: Bit, b: Bit) -> Bit { a and b }
         pub observe fn main() -> Bit { both(0,measure_z(init0())) }";
     let graph = both_closed(source, &[false]);
@@ -1717,7 +1775,7 @@ fn eager_argument_effects_belong_to_the_caller_in_source_order() {
         assert_eq!(accepted.derived_effect(), Effect::Observe);
     }
     rejected_before_native(
-        "use std::observe::measure_z;
+        "
          classical fn left(a: Bit,b: Bit) -> Bit { a }
          unitary fn bad(q: Q<Bit>) -> Bit { left(0,measure_z(q)) }
          pub fn main() -> Bit { 0 }",
@@ -1750,10 +1808,10 @@ fn open_ordinary_inputs_are_explicit_ports_and_closed_wrappers_execute() {
 
 #[test]
 fn quantum_arguments_and_invalid_unused_declarations_are_rejected_before_native() {
-    rejected_before_native(first_source!("quantum-argument"), "type", "type_mismatch");
+    rejected_before_native(&first_source!("quantum-argument"), "type", "type_mismatch");
     for source in [
         "classical fn invalid(x: Bit) -> Unit { x } pub fn main() -> Bit { 0 }",
-        "use std::quantum::init0; use std::observe::measure_z;
+        "use std::state::init0;\x20
          classical fn invalid() -> Bit { measure_z(init0()) }
          pub fn main() -> Bit { 0 }",
     ] {
@@ -2053,7 +2111,7 @@ fn generic_access_providers_check_original_requests_and_preserve_reference_phase
                 "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
             ),
             1.0,
-            "phase_eighth(q)",
+            "global_phase_eighth(q)",
             "q",
         ),
     ] {
@@ -2127,8 +2185,8 @@ fn access_routing_and_nested_controls_match_independent_exact_and_reference_acti
         hierarchical,
     };
     use qleisli::ir::QuantumPort;
-    let inverse = "use std::quantum::{h,phase,split,join};unitary fn turn(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(h(b),phase[1,3](a))}pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(turn)(q)}";
-    let control = "use std::quantum::{phase_eighth,split,join};unitary fn leaf(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}unitary fn inner(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{let(c,u)=split(q);let(c,u)=controlled(leaf)(c,u);join(c,u)}pub unitary fn client(q:Q<(Bit,(Bit,Unit))>)->Q<(Bit,(Bit,Unit))>{let(c,q)=split(q);let(c,q)=controlled(inner)(c,q);join(c,q)}";
+    let inverse = "unitary fn turn(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(h(b),phase[1,3](a))}pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(turn)(q)}";
+    let control = "unitary fn leaf(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}unitary fn inner(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{let(c,u)=split(q);let(c,u)=controlled(leaf)(c,u);join(c,u)}pub unitary fn client(q:Q<(Bit,(Bit,Unit))>)->Q<(Bit,(Bit,Unit))>{let(c,q)=split(q);let(c,q)=controlled(inner)(c,q);join(c,q)}";
     for (text, controlled, signature) in [
         (
             inverse,

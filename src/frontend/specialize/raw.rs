@@ -17,6 +17,8 @@ mod circuit;
 pub(super) mod contracts;
 mod meanings;
 mod preservation;
+mod source_witness;
+pub(super) use source_witness::SourceOperationWitness;
 
 const MAX_OPERATIONS: usize = 10_000;
 const MAX_CALLS: usize = 1_024;
@@ -79,6 +81,7 @@ impl OperationSite {
 pub struct CheckedSourceMeanings<'a> {
     source: &'a ElaboratedProgram,
     pub(super) leaves: Arc<Vec<CheckedMeaning>>,
+    pub(super) source_witnesses: Arc<Vec<Arc<SourceOperationWitness>>>,
 }
 impl CheckedSourceMeanings<'_> {
     pub fn checked_bindings(&self) -> usize {
@@ -153,6 +156,8 @@ fn check_operation_meanings_selected<'a>(
         kernel,
         budget,
         leaves: Vec::new(),
+        source_witnesses: Vec::new(),
+        witness_cells: 0,
         bytes: 0,
     };
     for (caller, definition) in source.definitions().iter().enumerate() {
@@ -178,6 +183,7 @@ fn check_operation_meanings_selected<'a>(
     Ok(CheckedSourceMeanings {
         source,
         leaves: Arc::new(collector.leaves),
+        source_witnesses: Arc::new(collector.source_witnesses),
     })
 }
 
@@ -186,6 +192,8 @@ struct MeaningCollector<'a, 'b> {
     kernel: &'b native::Kernel,
     budget: &'b mut Budget,
     leaves: Vec<CheckedMeaning>,
+    source_witnesses: Vec<Arc<SourceOperationWitness>>,
+    witness_cells: usize,
     bytes: usize,
 }
 impl MeaningCollector<'_, '_> {
@@ -256,7 +264,7 @@ impl MeaningCollector<'_, '_> {
             .bytes
             .checked_add(proposal.payload().len())
             .ok_or_else(|| Error::new("limit", span, "provider byte accounting overflow"))?;
-        if self.bytes > MAX_CELLS {
+        if self.bytes.saturating_add(self.witness_cells) > MAX_CELLS {
             return Err(Error::new(
                 "limit",
                 span,
@@ -266,7 +274,7 @@ impl MeaningCollector<'_, '_> {
         self.budget
             .charge(proposal.payload().len())
             .map_err(|e| Error::new("limit", span, e.to_string()))?;
-        let check = (|| -> Result<(meanings::Leaf, Option<Arc<crate::contract::FunctionEvidence>>)> {
+        let check = (|| -> Result<(meanings::Leaf, Option<Arc<crate::contract::FunctionEvidence>>, Option<crate::AcceptedProgram>)> {
             if target.signature() != target.codomain() {
                 let required = source.meaning_artifacts.get(&id)
                     .ok_or_else(|| invalid(span, "original rectangular target has no fresh native artifact"))?;
@@ -277,12 +285,12 @@ impl MeaningCollector<'_, '_> {
                 proposal.replay_with_work(&accepted, self.budget)?;
                 let leaf = crate::frontend::pure::check(self.kernel, accepted.raw(), target.signature(), target.codomain(), Some(&required.matrix), self.budget)
                     .map_err(|e| Error::new(if e.is_capacity() {"limit"} else {"contract"}, span, e.to_string()))?;
-                return Ok((meanings::Leaf::Pure(leaf), None));
+                return Ok((meanings::Leaf::Pure(leaf), None, None));
             }
             if target.references().is_empty() {
                 let required = target.finite().map_err(|e| invalid(span, &e.to_string()))?;
                 let check = proposal.check_finite_meaning(self.kernel, required, self.budget)?;
-                return Ok((meanings::Leaf::Unitary(check.leaf), None));
+                return Ok((meanings::Leaf::Unitary(check.leaf), None, None));
             }
             let required = source.meaning_artifacts.get(&id)
                 .ok_or_else(|| invalid(span, "original reference target has no fresh native artifact"))?;
@@ -301,10 +309,10 @@ impl MeaningCollector<'_, '_> {
                 .map_err(|e| Error::new(if e.error.is_capacity() {"limit"} else {"contract"}, span, e.to_string()))?);
             let leaf = contracts::leaf(self.kernel, &receipt, self.budget, span)?;
             self.bytes = self.bytes.saturating_add(leaf.payload().len());
-            if self.bytes > MAX_CELLS {
+            if self.bytes.saturating_add(self.witness_cells) > MAX_CELLS {
                 return Err(Error::new("limit", span, "source Meaning checking exceeds 100000 aggregate provider bytes"));
             }
-            Ok((meanings::Leaf::Unitary(leaf), Some(receipt)))
+            Ok((meanings::Leaf::Unitary(leaf), Some(receipt), Some(accepted)))
         })()
             .map_err(|mut error| {
                 let location = match site.origin() {
@@ -320,6 +328,25 @@ impl MeaningCollector<'_, '_> {
                 );
                 error
             })?;
+        if let meanings::Leaf::Unitary(leaf) = &check.0 {
+            if super::lower::operation_needs_source_witness(source, operation)? {
+                // Original/actual payload bytes already consume the collector's
+                // one shared allowance; witness metadata gets only its remainder.
+                let mut retained = self.bytes.checked_add(self.witness_cells).ok_or_else(|| {
+                    Error::new("limit", span, "source witness aggregate retention overflow")
+                })?;
+                let witness = SourceOperationWitness::from_owned(
+                    proposal,
+                    leaf,
+                    check.2,
+                    check.1.clone(),
+                    self.budget,
+                    &mut retained,
+                )?;
+                self.witness_cells = retained - self.bytes;
+                self.source_witnesses.push(witness);
+            }
+        }
         self.leaves.push((operation.key(), check.0, check.1));
         Ok(())
     }
@@ -355,6 +382,14 @@ pub struct SourceMeaningCheck<'a> {
     leaf: CheckedUnitaryLeaf,
 }
 impl SourceMeaningCheck<'_> {
+    /// Retain this same original proposal; never lower a replacement witness.
+    pub(super) fn source_witness(
+        &self,
+        budget: &mut Budget,
+        aggregate: &mut usize,
+    ) -> Result<Arc<SourceOperationWitness>> {
+        SourceOperationWitness::from_borrowed(self, budget, aggregate)
+    }
     pub fn source(&self) -> &RawSourceProposal {
         self.source
     }
@@ -2430,7 +2465,7 @@ mod tests {
     )]
     #[test]
     fn finite_meaning_replay_charges_control_sectors_to_the_callers_budget() {
-        let text = "use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
+        let text = "use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -2479,7 +2514,7 @@ mod tests {
                 .unwrap()
         };
         let source = elaborate(
-            "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
+            "use std::gate::x; classical fn flip(b:Bit)->Bit{not b}
             meaning X:Bit=permutation_by(flip); fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
             fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
             pub unitary fn main(q:Q<Bit>)->Q<Bit>{apply[checked_op(direct,X)](q)}",
@@ -2628,7 +2663,7 @@ mod tests {
         use crate::interchange::{hierarchical, json};
         use hierarchical::execution::ExecutionLimits;
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(),
-            "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))} unitary fn inner[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)} pub unitary fn outer[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=2{inner[A,power(U,k)](q)}".into())])).unwrap();
+            "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))} unitary fn inner[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)} pub unitary fn outer[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=2{inner[A,power(U,k)](q)}".into())])).unwrap();
         let executable = std::env::var_os("QLEISLI_KERNEL").expect("matching native checker");
         let checker = native::Kernel::new(executable.clone());
         let hierarchy_checker = hierarchical::Kernel::new(executable);
@@ -2785,7 +2820,7 @@ mod tests {
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
         use crate::frontend::compile::OperationBinding;
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(),
-            "use std::quantum::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q} pub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,2)](q)}".into())]))
+            "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q} pub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,2)](q)}".into())]))
             .unwrap().instantiate("main::outer", BTreeMap::new(), BTreeMap::from([("U".into(), OperationBinding::new("main::flip", BTreeMap::new()))])).unwrap().elaborate().unwrap();
         let caller = source
             .definitions()
@@ -2826,7 +2861,7 @@ mod tests {
     fn source_meaning_gate_rejects_a_native_valid_replaced_provider() {
         let source = ParsedProgram::parse(BTreeMap::from([(
             "main".into(),
-            "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
+            "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
         )]))
         .unwrap()
         .instantiate("main::implementation", BTreeMap::new(), BTreeMap::new())
@@ -2835,8 +2870,22 @@ mod tests {
         .unwrap();
         let mut proposal = source.lower_raw().unwrap();
         let required = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+        let boundary = proposal.finite_boundary.as_ref().unwrap();
+        // Keep the original exact source ports. Canonical target IR uses its
+        // own token IDs; those cannot stand in for this expanded X boundary.
+        assert_eq!(boundary.input().wires, boundary.output().wires);
+        assert_eq!(boundary.input().shape, boundary.output().shape);
+        let mut replacement = required.target_ir().unwrap();
+        replacement.quantum_inputs = vec![boundary.input().clone()];
+        replacement.quantum_outputs = vec![boundary.output().token];
+        let [RawOp::ApplyUnitary { input, output, .. }] = replacement.operations.as_mut_slice()
+        else {
+            panic!("one independently authored identity action")
+        };
+        *input = boundary.input().token;
+        *output = boundary.output().token;
         proposal.proposal = native::Proposal::from_raw(
-            &required.target_ir().unwrap(),
+            &replacement,
             Some(&RootInterface {
                 input: BasisType::Bit,
                 output: BasisType::Bit,
@@ -2874,8 +2923,7 @@ mod tests {
     #[test]
     fn raw_source_replay_rejects_noncommuting_gate_reordering() {
         use crate::ir::SingleGate;
-        let text =
-            "use std::quantum::{h,z};pub unitary fn main(q:Q<Bit>)->Q<Bit>{h(excl q);z(excl q);q}";
+        let text = "use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{h(excl q);z(excl q);q}";
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -2887,17 +2935,30 @@ mod tests {
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         preservation::validate(&source, accepted.raw()).unwrap();
         let mut wrong = accepted.raw().clone();
-        assert_eq!(wrong.operations.len(), 2);
-        // Keep every token edge and the exact type/effect interface valid,
-        // while exchanging only the gate actions on that ordered chain.
-        for (op, replacement) in wrong
-            .operations
-            .iter_mut()
-            .zip([SingleGate::Z, SingleGate::H])
+        // The ordinary Z body is four exact eighth turns. Keep the full
+        // phase and every token edge while exchanging H;Z with Z;H.
+        let original = [
+            SingleGate::H,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+        ];
+        let reordered = [
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::T,
+            SingleGate::H,
+        ];
+        assert_eq!(wrong.operations.len(), original.len());
+        for ((op, expected), replacement) in
+            wrong.operations.iter_mut().zip(original).zip(reordered)
         {
             let RawOp::Gate { gate, .. } = op else {
-                panic!("gate chain")
+                panic!("ordinary H and four exact phase actions")
             };
+            assert_eq!(*gate, expected);
             *gate = replacement;
         }
         let wrong = kernel.accept_raw(wrong).unwrap();

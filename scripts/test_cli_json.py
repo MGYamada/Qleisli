@@ -28,7 +28,7 @@ class JsonCliTests(unittest.TestCase):
         self.assertIsNotNone(selected, "select the native checker with QLEISLI_KERNEL")
         return str(Path(selected).resolve(strict=True))
 
-    def assert_requestless_source_check(self, result):
+    def assert_source_check_without_entry_request(self, result):
         self.assertEqual(set(result), {
             "checker_paths", "checker_identity", "native_decisions", "entry",
             "concrete_ir_roots", "source_preservation_verified",
@@ -48,7 +48,10 @@ class JsonCliTests(unittest.TestCase):
         self.assertIs(type(native["count"]), int)
         self.assertGreaterEqual(native["count"], roots["local"] + roots["bundled"])
         self.assertIs(type(native["requests_checked"]), int)
-        self.assertEqual(native["requests_checked"], 0)
+        # Bundled derived source contributes checked requests; these do not
+        # establish an independent requested contract for this entry.
+        self.assertGreater(native["requests_checked"], 0)
+        self.assertLessEqual(native["requests_checked"], native["count"])
         self.assertIs(native["complete"], True)
 
     def invoke(self, *args, status=0):
@@ -87,9 +90,9 @@ class JsonCliTests(unittest.TestCase):
         return result
 
     def test_check_run_and_distribution_order(self):
-        self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
+        self.source("use std::state::init0;  \n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
-        self.assert_requestless_source_check(self.invoke("check", self.root, "--format=json")["result"])
+        self.assert_source_check_without_entry_request(self.invoke("check", self.root, "--format=json")["result"])
         rows = self.invoke("run", "--format=json", self.root)["result"]["distribution"]
         self.assertEqual([row["bits"] for row in rows], [[False, True], [True, False]])
         for row in rows:
@@ -134,7 +137,7 @@ class JsonCliTests(unittest.TestCase):
             "unknown_name": "observe fn main() -> Unit { missing() }",
             "recursive_call": "unitary fn f() -> Unit { f() }",
             "ownership": "unitary fn f(q:Q<Bit>) -> (Q<Bit>,Q<Bit>) { (q,q) }",
-            "effect": "use std::quantum::init0; unitary fn f() -> Q<Bit> { init0() }",
+            "effect": "use std::state::init0; unitary fn f() -> Q<Bit> { init0() }",
             "arity": "unitary fn f() -> Unit { () } observe fn main() -> Unit { f(1) }",
             "project": "use absent::name;",
         }
@@ -176,7 +179,7 @@ class JsonCliTests(unittest.TestCase):
         self.assertEqual(result["command"], "")
 
     def test_seeded_samples_use_fresh_preparation_and_preserve_correlation(self):
-        self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
+        self.source("use std::state::init0;  \n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
         args = ("sample", self.root, "--shots=64", "--seed=18446744073709551615", "--format=json")
         result = self.invoke(*args)["result"]
@@ -193,7 +196,7 @@ class JsonCliTests(unittest.TestCase):
     def test_text_json_and_interop_samples_keep_the_same_seeded_results(self):
         for source in [
             "observe fn main() -> Unit { () }",
-            "use std::quantum::{init0,h,cnot}; use std::observe::measure_z; "
+            "use std::state::init0; use std::gate::cnot;  "
             "observe fn main() -> (Bit,Bit) { "
             "let (a,b) = cnot(h(init0()),init0()); (measure_z(a),measure_z(b)) }",
         ]:

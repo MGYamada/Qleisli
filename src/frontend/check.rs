@@ -719,14 +719,9 @@ impl<'a> Program<'a> {
                         provider(*id, crate::ir::Effect::Unitary)?
                     }
                     OperationIdentity::Global(resolve::Target::Primitive(id)) => {
-                        self.budget
-                            .charge(span, id.module.len() + id.name.len() + 2)?;
-                        let path = format!("{}::{}", id.module, id.name);
+                        self.budget.charge(span, id.spelling().len() + 1)?;
                         use primitive::Primitive::*;
-                        if !matches!(
-                            primitive::Primitive::lookup(&path),
-                            Some(H | X | Z | T | S | Sdg | Tdg | Id | PhaseEighth)
-                        ) {
+                        if !matches!(id, H | GlobalPhaseEighth) {
                             return Err(failure().in_module(&interface.module));
                         }
                     }

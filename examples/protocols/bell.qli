@@ -1,8 +1,8 @@
 //! Shared Bell preparation and destructive Bell-basis measurement.
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::cnot;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::cnot;
+
 
 /// Prepare (|00> + |11>)/sqrt(2), returning both distinct owners.
 pub isometry fn prepare() -> (Q<Bit>, Q<Bit>) {

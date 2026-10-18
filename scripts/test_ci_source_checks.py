@@ -20,7 +20,8 @@ class SourceChecksTests(unittest.TestCase):
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
             'test_check_fixture_budget', 'test_check_fixture_references',
-            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition', 'test_ci_actions',
+            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition', 'test_run_rust_tests', 'test_ci_actions',
+            'test_check_release_ready',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel', 'test_run_kernel_tests')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
@@ -67,7 +68,7 @@ class SourceChecksTests(unittest.TestCase):
             import check_rust_test_partition as partition
             heavy, rest = partition.selection(group, checks.definition(group)['commands'])
             self.assertEqual(heavy, ['frontend_ownership_differential', 'source_ir_correspondence'])
-            self.assertEqual(len(rest), 120)
+            self.assertEqual(len(rest), 121)
             self.assertTrue(all(argv[:3] == ['python3', 'scripts/run_kernel_tests.py', '--']
                                 for argv in (commands[start + 1], commands[start + 3])))
         with patch.object(checks, 'definition', return_value={'prepare': ['loop']}):
@@ -114,10 +115,15 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_repository_checks_keep_prior_coverage_and_separate_continuity(self):
         commands = checks.plan('repository-integrity')
-        # Bind the exact prior command coverage, independent of the manifest.
+        # Move exactly one policy regression earlier; keep every prior command.
+        release = ['python3', 'scripts/test_check_release_ready.py']
+        self.assertNotIn(release, commands)
+        self.assertEqual(checks.plan('ci-preflight').count(release), 1)
+        prior = commands[:8] + [release] + commands[8:]
+        # Bind the exact prior coverage and order, independent of the manifest.
         import hashlib
-        self.assertEqual(len(commands), 34)
-        self.assertEqual(hashlib.sha256(json.dumps(commands).encode()).hexdigest(),
+        self.assertEqual(len(commands), 33)
+        self.assertEqual(hashlib.sha256(json.dumps(prior).encode()).hexdigest(),
                          'ad1d29d1bdf9374234a3357e304041b4aaeae64a08a9138b326103079768e254')
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
         self.assertIn('group: repository-integrity', workflow)
@@ -126,14 +132,20 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_shared_contract_commands_preserve_both_existing_consumers(self):
         commands = checks.plan('source-contracts', Path('/selected/qleisli'))
-        self.assertEqual(sum(argv[0] == '/selected/qleisli' for argv in commands), 3)
+        self.assertEqual(sum(argv[0] == '/selected/qleisli' for argv in commands), 2)
+        self.assertEqual(commands[2], ['python3', 'scripts/current_source_fixtures.py',
+                                      '--check', '/selected/qleisli',
+                                      'tests/fixtures/lean_phase_layout/first_source'])
         self.assertEqual({argv[1] for argv in commands if argv[0] == 'python3'}, {
+            'scripts/current_source_fixtures.py',
             'scripts/test_lean_phase_layout.py', 'scripts/test_lean_interference.py',
             'scripts/test_lean_qft.py', 'scripts/test_lean_qpe.py',
             'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py',
             'scripts/test_public_effects.py'})
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
-        self.assertEqual(workflow.count('group: source-contracts\n          compiler: target/debug/qleisli'), 2)
+        self.assertEqual(workflow.count('uses: ./.github/actions/rust-suite'), 2)
+        shared = (checks.ROOT / '.github/actions/rust-suite/action.yml').read_text()
+        self.assertEqual(shared.count('group: source-contracts\n        compiler: target/debug/qleisli'), 1)
         for group, compiler in [('absent', None), ('source-contracts', None)]:
             with self.assertRaises(ValueError): checks.plan(group, compiler)
 

@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::state::reset;
+pub isometry fn g(q: Q<Bit>) -> Q<Bit> { reset(q) }
+pub observe fn main() -> Bit { measure_z(g(init0())) }

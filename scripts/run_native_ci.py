@@ -116,14 +116,23 @@ def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeou
     environment = execution_environment() if environment is None else environment
     if any(task.get("env", {}).keys() - TASK_ENVIRONMENT for task in tasks):
         raise ValueError("comparison environment is not in the reviewed allowlist")
+    def record(result):
+        results.append(result)
+        print(f"{result['status']}: {result['id']} ({result['seconds']:.1f}s)", flush=True)
+        if result["status"] != "passed":
+            print(Path(result["log"]).read_text(), flush=True)
+
+    # This group performs serial source/native checks. Give it the runner alone
+    # before the pooled comparisons, retaining every command's existing timeout.
+    # A recorded failure still leaves all other selected groups to execute.
+    for task in tasks:
+        if task["id"] == "native-paths":
+            record(run_task(task, root, directory / task["id"], timeout, environment))
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, environment): task for task in tasks}
+        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, environment): task
+                   for task in tasks if task["id"] != "native-paths"}
         for future in as_completed(futures):
-            result = future.result()
-            results.append(result)
-            print(f"{result['status']}: {result['id']} ({result['seconds']:.1f}s)", flush=True)
-            if result["status"] != "passed":
-                print(Path(result["log"]).read_text(), flush=True)
+            record(future.result())
     return sorted(results, key=lambda row: row["id"])
 
 

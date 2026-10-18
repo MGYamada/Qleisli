@@ -169,74 +169,56 @@ fn substituted_size_overflow_points_to_the_caller_module() {
 fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
     // Expected schemas are source fixtures, independent of the shared catalog.
     let cases = [
-        ("std::quantum::h", "q: Q<Bit>", "Q<Bit>", "h(q)", "unitary"),
-        ("std::quantum::x", "q: Q<Bit>", "Q<Bit>", "x(q)", "unitary"),
+        ("h", "q: Q<Bit>", "Q<Bit>", "h(q)", "unitary"),
+        ("std::gate::x", "q: Q<Bit>", "Q<Bit>", "x(q)", "unitary"),
         (
-            "std::quantum::cnot",
+            "std::gate::cnot",
             "q: Q<Bit>, r: Q<Bit>",
             "(Q<Bit>,Q<Bit>)",
             "cnot(q,r)",
             "unitary",
         ),
+        ("phase", "q: Q<Bit>", "Q<Bit>", "phase[1,2](q)", "unitary"),
         (
-            "std::quantum::phase",
-            "q: Q<Bit>",
-            "Q<Bit>",
-            "phase[1,2](q)",
-            "unitary",
-        ),
-        (
-            "std::quantum::controlled_phase",
+            "std::gate::controlled_phase",
             "q: Q<Bit>, r: Q<Bit>",
             "(Q<Bit>,Q<Bit>)",
             "controlled_phase[1,2](q,r)",
             "unitary",
         ),
-        ("std::quantum::init0", "", "Q<Bit>", "init0()", "iso"),
+        ("std::state::init0", "", "Q<Bit>", "init0()", "iso"),
+        ("measure_z", "q: Q<Bit>", "Bit", "measure_z(q)", "observe"),
         (
-            "std::observe::measure_z",
-            "q: Q<Bit>",
-            "Bit",
-            "measure_z(q)",
-            "observe",
-        ),
-        (
-            "std::registers::take_bit",
+            "take_bit",
             "q: Q<Bits<2>>",
             "(Q<Bit>,Q<Bits<1>>)",
             "take_bit[2,0](q)",
             "unitary",
         ),
         (
-            "std::registers::put_bit",
+            "put_bit",
             "q: Q<Bit>, r: Q<Bits<1>>",
             "Q<Bits<2>>",
             "put_bit[2,0](q,r)",
             "unitary",
         ),
         (
-            "std::registers::empty",
+            "std::structure::empty",
             "",
             "Q<Bits<0>>",
             "empty()",
             "unitary",
         ),
         (
-            "std::registers::consume_empty",
+            "std::structure::consume_empty",
             "q: Q<Bits<0>>",
             "Unit",
             "consume_empty(q)",
             "unitary",
         ),
+        ("empty_bits", "", "Bits<0>", "empty_bits()", "unitary"),
         (
-            "std::classical::empty_bits",
-            "",
-            "Bits<0>",
-            "empty_bits()",
-            "unitary",
-        ),
-        (
-            "std::classical::prepend_bit",
+            "prepend_bit",
             "q: Bit, r: Bits<0>",
             "Bits<1>",
             "prepend_bit[0](q,r)",
@@ -245,7 +227,12 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
     ];
     for (path, inputs, output, body, effect) in cases {
         let assertion = if effect == "iso" { "isometry" } else { effect };
-        let source = format!("use {path}; pub {assertion} fn f({inputs}) -> {output} {{ {body} }}");
+        let import = if path.contains("::") {
+            format!("use {path};")
+        } else {
+            String::new()
+        };
+        let source = format!("{import} pub {assertion} fn f({inputs}) -> {output} {{ {body} }}");
         let prepared = ParsedProgram::parse(sources(&source))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -255,7 +242,17 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
         let definition = &prepared.definitions()[prepared.root()];
         assert_eq!(definition.effect(), effect);
         assert_eq!(definition.steps().len(), 1);
-        assert_eq!(definition.steps()[0].primitive(), Some(path));
+        let step = &definition.steps()[0];
+        if path.contains("::") {
+            assert_eq!(step.primitive_identity(), None);
+            assert_eq!(
+                prepared.definitions()[step.called_definition().unwrap()].path(),
+                path
+            );
+        } else {
+            assert_eq!(step.primitive(), Some(path));
+            assert!(step.called_definition().is_none());
+        }
         // An extra natural argument must fail at the shared signature boundary.
         let name = path.rsplit("::").next().unwrap();
         let tail = body.split_once('(').unwrap().1;
@@ -348,6 +345,7 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
         "std::gate",
         "std::measurement",
         "std::reflection",
+        "std::state",
         "std::structure",
         "std::transform",
     ]);
@@ -412,7 +410,7 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
 
 #[test]
 fn guarded_subtraction_index_and_linear_normalization() {
-    let valid = "use std::registers::take_bit; use std::registers::put_bit; pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { let (a,b) = take_bit[n,n-1](q); put_bit[n,n-1](a,b) }";
+    let valid = "  pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { let (a,b) = take_bit[n,n-1](q); put_bit[n,n-1](a,b) }";
     ParsedProgram::parse(sources(valid)).unwrap();
     reject(&valid.replace(" requires n >= 1", ""), "size");
     reject(&valid.replace("take_bit[n,n-1]", "take_bit[n,n]"), "size");
@@ -473,7 +471,7 @@ fn shadowing_moves_tuple_shape_and_effects() {
         "type",
     );
     reject(
-        "use std::observe::measure_z; pub unitary fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
+        " pub unitary fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
         "effect",
     );
     reject(
@@ -679,10 +677,23 @@ fn preparation_limits_and_utf8_diagnostics_are_explicit() {
         &format!("pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {nested} }}"),
         "limit",
     );
-    let many = (0..65)
+    // Seven ordinary bundled modules consume their actual fixed-cap slots.
+    let at_limit = (0..57)
         .map(|i| (format!("m{i}"), prefix.to_owned()))
         .collect();
-    assert_eq!(ParsedProgram::parse(many).unwrap_err().code(), "limit");
+    ParsedProgram::parse(at_limit).unwrap();
+    for count in [58, 65] {
+        let many = (0..count)
+            .map(|i| (format!("m{i}"), prefix.to_owned()))
+            .collect();
+        let error = ParsedProgram::parse(many).unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert!(
+            error
+                .message()
+                .contains("7 bundled modules count toward 64")
+        );
+    }
     let text = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { α }";
     let e = ParsedProgram::parse(sources(text)).unwrap_err();
     assert_eq!(&text[e.span().start..e.span().end], "α");
@@ -701,7 +712,7 @@ fn file_loader_reuses_regular_file_and_byte_guards() {
 
 #[test]
 fn lexical_binding_identity_prevents_shadowed_owner_escape() {
-    let local_callee = "use std::quantum::h; pub unitary fn f(h: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { yield h(q); }; (h,q) }";
+    let local_callee = " pub unitary fn f(h: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { yield h(q); }; (h,q) }";
     let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
@@ -721,8 +732,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     reject(moved, "ownership");
     let fold = "pub unitary fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { qfor static k in 0..1 carry pair = (q,r) { let (q,r) = pair; let a = if static k == 0 { let old = q; let q = r; old } else { let old = q; let q = r; old }; yield (a,q); } }";
     reject(fold, "ownership");
-    let local_callee =
-        "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let h = q; let q = h; h(q) }";
+    let local_callee = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let h = q; let q = h; h(q) }";
     let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
@@ -756,9 +766,9 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
 
 #[test]
 fn classical_shadows_restore_outer_bindings_in_branches_and_folds() {
-    let branch = "use std::classical::empty_bits; pub unitary fn f(x: Bit) -> Bit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
+    let branch = " pub unitary fn f(x: Bit) -> Bit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
     ParsedProgram::parse(sources(branch)).unwrap();
-    let fold = "use std::classical::empty_bits; pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
+    let fold = " pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
     ParsedProgram::parse(sources(fold)).unwrap();
 }
 
@@ -893,18 +903,21 @@ fn concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order() {
     let names: Vec<_> = body
         .steps()
         .iter()
-        .map(|s| s.primitive().unwrap())
+        .map(|step| {
+            step.primitive()
+                .unwrap_or_else(|| source.definitions()[step.called_definition().unwrap()].path())
+        })
         .collect();
     assert_eq!(
         names,
         [
-            "std::observe::measure_z",
-            "std::quantum::h",
-            "std::quantum::init0",
-            "std::observe::measure_z",
-            "std::classical::empty_bits",
-            "std::classical::prepend_bit",
-            "std::classical::prepend_bit"
+            "measure_z",
+            "h",
+            "std::state::init0",
+            "measure_z",
+            "empty_bits",
+            "prepend_bit",
+            "prepend_bit"
         ]
     );
     assert_eq!(body.steps()[0].effect(), "observe");
@@ -929,7 +942,8 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
             .unwrap();
         assert_eq!(instance.elaborate().unwrap_err().code(), "limit");
     }
-    let provider = "use std::quantum::phase; pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }";
+    let provider =
+        " pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }";
     let main = "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }";
     let program = ParsedProgram::parse(BTreeMap::from([
         ("main".into(), main.into()),
@@ -991,7 +1005,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
             .code(),
         "limit"
     );
-    let source = "use std::quantum::h; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
+    let source = " pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
     let program = ParsedProgram::parse(sources(source)).unwrap();
     assert_eq!(
         program
@@ -1024,8 +1038,8 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
     assert_eq!(body.inputs()[0].ty().width(), Some(0));
     assert!(body.inputs()[0].identity().is_some());
     assert_eq!(
-        body.steps()[0].primitive(),
-        Some("std::registers::consume_empty")
+        graph.definitions()[body.steps()[0].called_definition().unwrap()].path(),
+        "std::structure::consume_empty"
     );
     assert_eq!(body.output().ty().width(), Some(0));
     assert!(!body.output().ty().is_quantum());
@@ -1035,7 +1049,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
 fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
     let nested = std::thread::Builder::new().stack_size(2 * 1024 * 1024).spawn(|| {
         let expr = "h(".repeat(16) + "f[n-1](q)" + &")".repeat(16);
-        let text = format!("use std::quantum::h; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> {{ if static n > 0 {{ {expr} }} else {{ q }} }}");
+        let text = format!(" pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> {{ if static n > 0 {{ {expr} }} else {{ q }} }}");
         ParsedProgram::parse(sources(&text)).unwrap().instantiate("main::f", naturals(&[("n",8)]), BTreeMap::new()).unwrap().elaborate().unwrap_err()
     }).unwrap().join().unwrap();
     assert_eq!(nested.code(), "limit");
@@ -1095,7 +1109,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
     let modules = BTreeMap::from([
         ("main".into(),"use skip::skip; use rotate::rotate; pub unitary fn f[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { skip[rotate[j,d]](q) }".into()),
         ("skip".into(),"pub unitary fn skip[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }".into()),
-        ("rotate".into(),"use std::quantum::phase; pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }".into()),
+        ("rotate".into()," pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }".into()),
     ]);
     let program = ParsedProgram::parse(modules).unwrap();
     assert_eq!(
@@ -1109,7 +1123,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
     );
     let modules = BTreeMap::from([
         ("main".into(),"use rotate::rotate; pub unitary fn f(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { controlled(power(rotate,0))(c,q) }".into()),
-        ("rotate".into(),"use std::quantum::phase; pub unitary fn rotate(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }".into()),
+        ("rotate".into()," pub unitary fn rotate(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }".into()),
     ]);
     let graph = ParsedProgram::parse(modules)
         .unwrap()
@@ -1123,7 +1137,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
     assert_eq!(
         graph.definitions()[operation.child().unwrap().definition().unwrap()].steps()[0]
             .primitive(),
-        Some("std::quantum::phase")
+        Some("phase")
     );
 }
 
@@ -1181,8 +1195,8 @@ fn historical_fourier_header(source: &str) -> String {
 }
 
 fn delayed_fourier_source() -> String {
-    historical_fourier_header(include_str!(
-        "fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+    historical_fourier_header(&common::current_source_text(
+        "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
     ))
 }
 
@@ -1223,11 +1237,11 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
             "classical entry values",
         ),
         (
-            "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
+            " pub unitary fn f() -> Bits<0> { empty_bits() }",
             "classical results",
         ),
         (
-            "use std::observe::measure_z; pub observe fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
+            " pub observe fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
             "exactly one Bits",
         ),
     ] {
@@ -1251,7 +1265,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     // Preparation now has an explicit hierarchy path with empty readout; the
     // source remains Isometry rather than acquiring an observation effect.
     let preparation = ParsedProgram::parse(sources(
-        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+        "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
     ))
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1270,10 +1284,8 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     assert!(preparation.lower().unwrap().is_instrument());
     // The public Isometry contract selects the existing empty-readout adapter;
     // the actual H body and Raw proposal remain Unitary.
-    let program = ParsedProgram::parse(sources(
-        "use std::quantum::h; pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
-    ))
-    .unwrap();
+    let program =
+        ParsedProgram::parse(sources(" pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}")).unwrap();
     assert_eq!(
         program.public_function_effect("main::f"),
         Some(qleisli::ir::Effect::Isometry)
@@ -1297,14 +1309,12 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
 
     // A public Observe contract over the same pure body still cannot select
     // either pure hierarchy profile, even when the implementation is visible.
-    let observing = ParsedProgram::parse(sources(
-        "use std::quantum::h; pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
-    ))
-    .unwrap()
-    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-    .unwrap()
-    .elaborate()
-    .unwrap();
+    let observing = ParsedProgram::parse(sources(" pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}"))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
     let error = observing.check_lowering_profile().unwrap_err();
     assert!(error.message().contains("matching checked public effect"));
     assert_eq!(
@@ -1345,8 +1355,8 @@ fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
 
     // Signature admission does not turn a later body restriction into another
     // target-selection opportunity: lowering still reports its actual error.
-    let source = "use std::quantum::h; use std::observe::measure_z;
-        use std::classical::{empty_bits,prepend_bit};
+    let source = "\x20
+\x20\x20\x20\x20\x20\x20\x20\x20
         pub observe fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Bits<1>) {
             let b = measure_z(q); let r = h(r); (r,prepend_bit[0](b,empty_bits()))
         }";
@@ -1368,8 +1378,8 @@ fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
 
 #[test]
 fn root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source() {
-    let textbook = historical_fourier_header(include_str!(
-        "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+    let textbook = historical_fourier_header(&common::current_source_text(
+        "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli",
     ));
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
@@ -1425,8 +1435,8 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
         max_amplitudes: 4096,
         max_steps: 1_000_000,
     };
-    let textbook = historical_fourier_header(include_str!(
-        "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+    let textbook = historical_fourier_header(&common::current_source_text(
+        "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli",
     ));
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
@@ -1514,9 +1524,7 @@ fn direct_finite_source_gates_preserve_entangled_h_x_references() {
         ("h(x(h(q)))", "Z"),
         ("h(x(h(x(q))))", "ZX"),
     ] {
-        let text = format!(
-            "use std::quantum::h; use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {body} }}"
-        );
+        let text = format!(" use std::gate::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {body} }}");
         let p = ParsedProgram::parse(sources(&text))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1608,7 +1616,7 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
             .code(),
         "unsupported"
     );
-    let reversed = "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(a: Q<Bit>, b: Q<Bit>) -> Bits<2> { let a = measure_z(a); let b = measure_z(b); let z = empty_bits(); let z = prepend_bit[0](a,z); prepend_bit[1](b,z) }";
+    let reversed = "   pub observe fn f(a: Q<Bit>, b: Q<Bit>) -> Bits<2> { let a = measure_z(a); let b = measure_z(b); let z = empty_bits(); let z = prepend_bit[0](a,z); prepend_bit[1](b,z) }";
     let error = ParsedProgram::parse(sources(reversed))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1853,7 +1861,7 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         "preservation"
     );
     // Zero-width owners remain present through structural consume/produce.
-    let empty=ParsedProgram::parse(sources("use std::registers::consume_empty; use std::registers::empty; pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { let () = consume_empty(q); empty() }")).unwrap().instantiate("main::f",BTreeMap::new(),BTreeMap::new()).unwrap().elaborate().unwrap().lower().unwrap();
+    let empty=ParsedProgram::parse(sources("use std::structure::consume_empty; use std::structure::empty; pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { let () = consume_empty(q); empty() }")).unwrap().instantiate("main::f",BTreeMap::new(),BTreeMap::new()).unwrap().elaborate().unwrap().lower().unwrap();
     let checked = kernel
         .check_against(empty.payload(), empty.comparison_request())
         .unwrap();
@@ -2253,7 +2261,7 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
     send_sync::<Instantiation>();
     send_sync::<ElaboratedProgram>();
 
-    let source = "use std::quantum::x; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
+    let source = "use std::gate::x; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
     let original = ParsedProgram::parse(sources(source)).unwrap();
     let retained = original.clone();
     drop(original);

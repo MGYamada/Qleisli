@@ -1,9 +1,9 @@
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::x;
-use std::quantum::cnot;
-use std::observe::measure_z;
-use std::observe::discard;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::cnot;
+
+
 use implementation::selected;
 use specification::phase;
 

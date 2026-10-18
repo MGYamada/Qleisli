@@ -1,9 +1,9 @@
 //! Two implementations of one phase-fixed meaning share an unchanged client.
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::z;
-use std::quantum::t;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::z;
+use std::gate::t;
+
 
 classical fn z_phase(b: Bit) -> (Bit,(Bit,Bit)) { (0,(0,b)) }
 meaning ZMeaning: Bit = phase_by(z_phase);

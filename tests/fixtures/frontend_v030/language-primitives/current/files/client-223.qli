@@ -1,0 +1,14 @@
+use std::state::init0;
+use std::gate::s;
+use std::gate::sdg;
+use std::gate::tdg;
+use std::gate::t;
+use std::gate::id;
+
+
+observe fn main() -> Bit {
+    let q = h(init0());
+    let q = tdg(t(sdg(s(id[type(Bit)](q)))));
+    let q = adjoint(global_phase_eighth)(global_phase_eighth(q));
+    measure_z(h(q))
+}

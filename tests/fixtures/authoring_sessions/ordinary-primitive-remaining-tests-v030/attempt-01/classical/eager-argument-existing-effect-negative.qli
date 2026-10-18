@@ -1,0 +1,4 @@
+
+         classical fn left(a: Bit,b: Bit) -> Bit { a }
+         unitary fn bad(q: Q<Bit>) -> Bit { left(0,measure_z(q)) }
+         pub fn main() -> Bit { 0 }

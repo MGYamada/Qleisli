@@ -1,0 +1,2 @@
+unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)}

@@ -1,9 +1,9 @@
 //! Hadamard tests of a supplied phase-fixed operation on a supplied target.
 //! Retain the target owner: reading the meter does not discard the target.
-use std::quantum::init0;
-use std::quantum::h;
-use std::quantum::t;
-use std::observe::measure_z;
+use std::state::init0;
+
+use std::gate::t;
+
 
 /// E[(-1)^bit] = Re Tr(rho U). The target is returned after meter observation.
 pub observe fn real_overlap[const U: Op<Bit>](q: Q<Bit>) -> (Bit,Q<Bit>)

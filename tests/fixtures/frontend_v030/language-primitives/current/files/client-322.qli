@@ -1,0 +1,7 @@
+use std::state::init0;
+
+observe fn main() -> (Bit,Bit) {
+    let q = init0();
+    let first = measure_z(q);
+    (first,measure_z(q))
+}

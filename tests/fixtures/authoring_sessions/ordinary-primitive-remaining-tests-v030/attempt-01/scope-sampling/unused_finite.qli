@@ -1,0 +1,3 @@
+classical fn flip(x:Bit)->Bit{not x}
+         meaning Flip:Bit=permutation_by(flip);
+         observe fn main()->Bit{0}

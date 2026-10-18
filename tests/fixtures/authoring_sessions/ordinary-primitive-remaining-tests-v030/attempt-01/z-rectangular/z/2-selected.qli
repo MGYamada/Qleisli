@@ -1,0 +1,1 @@
+use std::gate::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)} pub unitary fn f(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){controlled(oracle)(c,q)}

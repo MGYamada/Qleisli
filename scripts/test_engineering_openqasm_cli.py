@@ -149,7 +149,7 @@ def live(cli, kernel):
             (project / 'Qargo.toml').write_text('schema-version = 2\n\n[qrate]\nedition = "2026"\n')
             (project / 'main.qli').write_text(
                 '// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0\n'
-                'use std::quantum::{init0,h,finish,unit};\nuse std::observe::measure_z;\n'
+                'use std::state::init0;\n\n'
                 'observe fn operation(u: Q<Unit>) -> Bit { finish(u); measure_z(' + expression + ') }\n'
                 'observe fn main() -> Bit { operation(unit(())) }\n')
             result = subprocess.run([cli, 'interop', 'emit-qasm', str(project), '--input=qli',

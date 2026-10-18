@@ -733,7 +733,7 @@ impl Lowerer<'_, '_> {
                             None
                         }
                     }
-                    Callee::Sealed(..) => None,
+                    Callee::Primitive(..) => None,
                 }
             };
             if let Some(op) = op {
@@ -1154,13 +1154,13 @@ impl Lowerer<'_, '_> {
                 )?;
                 self.call_instance(&key, values, Some(site), instance)
             }
-            Callee::Sealed(namespace, name) => {
+            Callee::Primitive(primitive) => {
                 if !static_args.is_empty() {
-                    return self.sealed_static_with_source(
-                        module, source, callee, &namespace, &name, values, args,
+                    return self.primitive_static_with_source(
+                        module, source, callee, primitive, values, args,
                     );
                 }
-                self.sealed_with_source(module, span, &namespace, &name, values, args)
+                self.primitive_with_source(module, span, primitive, values, args)
             }
         }
     }
@@ -1371,10 +1371,11 @@ impl Lowerer<'_, '_> {
                     &steps,
                     expected.as_ref(),
                 )?;
-                let joined = self.sealed(module, expr.span, "std::quantum", "join", vec![c, q])?;
+                let joined =
+                    self.primitive_call(module, expr.span, PrimitiveId::Join, vec![c, q])?;
                 let slot = self.quantum(module, expr.span, &joined, false)?;
                 self.apply_circuit(slot, steps);
-                self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
+                self.primitive_call(module, expr.span, PrimitiveId::Split, vec![joined])
             }
             ExprKind::Unit => Ok(Value::Unit),
             ExprKind::Bit(_) | ExprKind::Not(_) | ExprKind::And(..) | ExprKind::Xor(..) => {
@@ -1557,26 +1558,21 @@ impl Lowerer<'_, '_> {
                     ));
                 }
             }
-            Callee::Sealed(namespace, gate) => {
-                if namespace != "std::quantum"
-                    || !matches!(
-                        gate.as_str(),
-                        "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" | "id" | "phase_eighth"
-                    )
-                {
+            Callee::Primitive(primitive) => {
+                if !matches!(primitive, PrimitiveId::H | PrimitiveId::GlobalPhaseEighth) {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::Effect,
-                        "static sealed operation requires a unary unitary quantum primitive",
+                        "static operation requires a unary unitary language primitive",
                     ));
                 }
-                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::bit() {
+                if *primitive == PrimitiveId::H && *basis != Ty::bit() {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::TypeMismatch,
-                        "sealed gate requires Q<Bit>",
+                        "h requires Q<Bit>",
                     ));
                 }
             }
@@ -1607,8 +1603,8 @@ impl Lowerer<'_, '_> {
         )?;
         let result = match target {
             Callee::User(key) => inner.call_bound(&key, vec![arg], None, BTreeMap::new())?,
-            Callee::Sealed(namespace, gate) => {
-                inner.sealed(module, name.span, &namespace, &gate, vec![arg])?
+            Callee::Primitive(primitive) => {
+                inner.primitive_call(module, name.span, primitive, vec![arg])?
             }
         };
         let slot = inner.quantum(module, name.span, &result, false)?;

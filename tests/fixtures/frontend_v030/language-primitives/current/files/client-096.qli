@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::gate::cnot;
+
+pub observe fn entry()->(Bits<0>,Q<Bit>){(empty_bits(),init0())}

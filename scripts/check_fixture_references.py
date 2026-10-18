@@ -15,6 +15,7 @@ import subprocess
 import sys
 
 from check_pr_size import ROOT, exact_commit, git, hosted_context, unique_object
+from check_authoring_sessions import retained_source_record_index
 
 # Reviewed pre-retention tree. Existing records are not retroactively deleted
 # or declared consumed. New paths remain checked on pushes as well as PRs.
@@ -22,6 +23,9 @@ BASELINE = "22dccc5bdbf62f802f12fe7ce457132ae51e036d"
 PREFIX = "tests/fixtures/"
 TEXT_LIMIT = 16 * 1024 * 1024
 LITERALS = re.compile(r'''["']([^"'\n\r\x00]+)["']''')
+RETAINED_INDEX = "tests/fixtures/authoring_sessions/retained-source-records-v1.json"
+RETAINED_PREFIX = "tests/fixtures/authoring_sessions/retained-source-records-v1/"
+AUTHORING_PREFIX = "tests/fixtures/authoring_sessions/"
 
 
 def rooted_source(name):
@@ -132,6 +136,20 @@ def references(name, text, paths, index=None):
     return found
 
 
+def retained_record_references(contents, paths):
+    """Only the exact validated inert-copy set is a consumed archive.
+
+    Directory links and invalid candidate index fields grant no reachability.
+    Read immutable snapshot bytes; never run a recorded command or Git lookup.
+    """
+    def read_bytes(name):
+        return contents[AUTHORING_PREFIX + name].encode("utf-8")
+
+    stored = {path[len(AUTHORING_PREFIX):] for path in paths if path.startswith(RETAINED_PREFIX)}
+    records = retained_source_record_index(contents[RETAINED_INDEX].encode("utf-8"), read_bytes, stored)
+    return {AUTHORING_PREFIX + path for path in records.values()}
+
+
 def reachability(contents, paths):
     index = path_index(paths)
     roots = {name for name in contents if rooted_source(name)}
@@ -141,7 +159,8 @@ def reachability(contents, paths):
     # readers. Their members are not roots; they must be reached from a manifest.
     enumerated = {
         "scripts/check_fixture_archives.py": ("tests/fixtures/**/*.archive.json",),
-        "scripts/check_authoring_sessions.py": ("tests/fixtures/authoring_sessions/*/session.json",),
+        "scripts/check_authoring_sessions.py": ("tests/fixtures/authoring_sessions/*/session.json",
+                                                RETAINED_INDEX),
     }
     for reader, patterns in enumerated.items():
         if reader in roots:
@@ -154,7 +173,15 @@ def reachability(contents, paths):
         name = pending.popleft()
         if name not in contents:
             continue
-        links = references(name, contents[name], paths, index)
+        if name.startswith(RETAINED_PREFIX):
+            links = set()  # Inert source bytes are hashed, never transitive consumers.
+        elif name == RETAINED_INDEX:
+            try:
+                links = retained_record_references(contents, paths)
+            except (ValueError, KeyError, TypeError, AttributeError, RecursionError):
+                links = set()  # The strict integrity reader reports malformed copies/index.
+        else:
+            links = references(name, contents[name], paths, index)
         # Authoring manifests store source names relative to attempt IDs.
         if name.endswith("/session.json"):
             try:
@@ -192,7 +219,8 @@ def snapshot(root, commit):
     paths = set(rows)
     selected = [(p, oid, size) for p, (oid, size) in rows.items()
                 if size <= TEXT_LIMIT and (rooted_source(p) or p.startswith(PREFIX)
-                                          and PurePosixPath(p).suffix in {".json", ".toml"})]
+                                          and (PurePosixPath(p).suffix in {".json", ".toml"}
+                                               or p.startswith(RETAINED_PREFIX) and p.endswith(".qli.txt")))]
     reply = subprocess.run(["git", "--no-replace-objects", "cat-file", "--batch"], cwd=root,
                            input="".join(oid + "\n" for _, oid, _ in selected).encode(),
                            capture_output=True, check=True).stdout

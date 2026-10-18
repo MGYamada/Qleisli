@@ -1,0 +1,9 @@
+
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+ 
+ 
+classical fn predicate(value: Bit) -> Bit { value }
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
+ pub unitary fn phase(q: Q<Bit>) -> Q<Bit> { with_computed(q,predicate) { |a| z(a) } }

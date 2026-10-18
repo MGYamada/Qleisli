@@ -172,7 +172,7 @@ pub(in crate::frontend) enum EvidenceSubject {
     Operation {
         operation: Arc<ResolvedStatic>,
         required: Option<OperationContract>,
-        actual: Option<OperationContract>,
+        actual: Option<Box<OperationContract>>,
     },
     Call {
         site: UseSiteId,
@@ -1720,7 +1720,7 @@ pub(super) fn validate_and_finish(
                     return Err(validation.failure(span));
                 };
                 validation.named_operation(owner, operation, logical)?;
-                for contract in required.iter().chain(actual) {
+                for contract in required.iter().chain(actual.as_deref()) {
                     validation.contract(owner, contract, span)?;
                 }
             }

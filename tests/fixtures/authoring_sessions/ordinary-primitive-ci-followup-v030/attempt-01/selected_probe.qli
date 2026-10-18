@@ -1,0 +1,3 @@
+use std::gate::cnot; use std::state::init0;
+         use std::gate::swap;use std::structure::permute_axes;
+         pub unitary fn probe(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);let(a,b)=cnot(a,b);let(b,a)=cnot(b,a);let(a,b)=cnot(a,b);join(a,b)}

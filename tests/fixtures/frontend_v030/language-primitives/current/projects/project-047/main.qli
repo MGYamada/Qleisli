@@ -1,0 +1,3 @@
+use std::state::init0;
+use std::gate::cnot;
+pub isometry fn entry()->Q<Bit>{init0()}

@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import unittest
 
-from check_verification_inventory import ROOT, INVENTORY, check, digest, public_surface, variants
+from check_verification_inventory import ROOT, INVENTORY, check, check_language_primitives, digest, public_surface, variants
 
 
 class InventoryTests(unittest.TestCase):
@@ -39,6 +39,67 @@ class InventoryTests(unittest.TestCase):
 
     def test_frozen_repository_is_covered(self):
         self.assertEqual(check(self.root,self.data),[])
+
+    def test_typed_source_growth_rejects_even_after_enum_and_hash_refresh(self):
+        path = self.root/'src/frontend/primitive.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace('pub enum PrimitiveId {',
+                                             'pub enum PrimitiveId { ExtraSourceIdentity,'))
+            for source in self.data['sources']:
+                if source['path'] == 'src/frontend/primitive.rs':
+                    source['sha256'] = digest(path)
+            enum = next(row for row in self.data['enums']
+                        if (row['path'], row['name']) == ('src/frontend/primitive.rs', 'PrimitiveId'))
+            enum['members']['ExtraSourceIdentity'] = {'declaration': 'ExtraSourceIdentity', 'group': 'source'}
+            self.bad('unreviewed typed language primitive identity set')
+        finally:
+            path.write_text(original)
+
+    def test_typed_spelling_cannot_restore_a_retired_alias(self):
+        path = self.root/'src/frontend/primitive.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace('=> "global_phase_eighth"', '=> "phase_eighth"'))
+            with self.assertRaisesRegex(ValueError, 'typed language primitive spelling drift'):
+                check_language_primitives(self.root)
+        finally:
+            path.write_text(original)
+
+    def test_typed_spelling_early_return_cannot_hide_behind_canonical_rows(self):
+        path = self.root/'src/frontend/primitive.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace(
+                'match self {',
+                'if self == Self::H { return "different_h"; } match self {', 1))
+            with self.assertRaisesRegex(ValueError, 'typed language primitive spelling body must remain canonical'):
+                check_language_primitives(self.root)
+        finally:
+            path.write_text(original)
+
+    def test_typed_all_cannot_duplicate_or_omit_an_identity(self):
+        path = self.root/'src/frontend/primitive.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace('Self::H,', 'Self::H, Self::H,', 1))
+            with self.assertRaisesRegex(ValueError, 'typed language primitive ALL drift'):
+                check_language_primitives(self.root)
+        finally:
+            path.write_text(original)
+
+    def test_typed_lookup_cannot_add_a_hidden_alias(self):
+        path = self.root/'src/frontend/primitive.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace(
+                'Self::ALL.iter().copied().find(|id| id.spelling() == name)',
+                'if name == "phase_eighth" { return Some(Self::GlobalPhaseEighth); }\n'
+                '        Self::ALL.iter().copied().find(|id| id.spelling() == name)'))
+            with self.assertRaisesRegex(ValueError, 'typed language primitive lookup must remain canonical'):
+                check_language_primitives(self.root)
+        finally:
+            path.write_text(original)
 
     def test_new_constructor_is_rejected_even_if_hash_is_updated(self):
         path = self.root/'src/ir.rs'

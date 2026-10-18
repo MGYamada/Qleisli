@@ -6,6 +6,8 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import hashlib
 import json
 import copy
+import contextlib
+import io
 from pathlib import Path
 import shutil
 import tempfile
@@ -13,6 +15,116 @@ import unittest
 from unittest.mock import patch
 
 import current_source_fixtures as fixtures
+from primitive_source_migration import OLD, migrate_qli, migrate_qli_current
+
+
+class PrimitiveSourceMigration(unittest.TestCase):
+    def translated(self, before, after):
+        result = migrate_qli(before)
+        self.assertEqual(result['issues'], [])
+        self.assertEqual(result['source'], after)
+        self.assertEqual(migrate_qli(after)['source'], after)
+
+    def unchanged_refusal(self, source, message):
+        result = migrate_qli(source)
+        self.assertEqual(result['source'], source)
+        self.assertEqual(result['edits'], [])
+        self.assertTrue(any(message in issue for issue in result['issues']), result)
+
+    def test_mixed_group_splits_only_actual_imports_and_renames_eighth(self):
+        self.translated('use std::{quantum::{h,s,phase_eighth},observe::{reset,measure_z}};\nfn f(q:Q<Bit>)->Q<Bit>{phase_eighth(s(h(q)))}',
+                        'use std::gate::s;\nuse std::state::reset;\nfn f(q:Q<Bit>)->Q<Bit>{global_phase_eighth(s(h(q)))}')
+
+    def test_comment_quoted_text_and_crlf_are_not_spelling_rewrites(self):
+        self.translated('// std::quantum::h\r\nuse std::quantum::h;\r\n/* phase_eighth /* nested */ */\r\n"std::quantum::h"\r\nfn f(q:Q<Bit>)->Q<Bit>{h(q)}',
+                        '// std::quantum::h\r\n\r\n/* phase_eighth /* nested */ */\r\n"std::quantum::h"\r\nfn f(q:Q<Bit>)->Q<Bit>{h(q)}')
+
+    def test_import_line_comment_cannot_swallow_following_function(self):
+        self.translated('use std::quantum::{h // keep this\n};fn f(q:Q<Bit>)->Q<Bit>{h(q)}',
+                        '// keep this\nfn f(q:Q<Bit>)->Q<Bit>{h(q)}')
+
+    def test_empty_register_and_classical_paths_have_distinct_destinations(self):
+        self.translated('use std::registers::{empty,consume_empty,take_bit,put_bit};use std::classical::{empty_bits,prepend_bit};',
+                        'use std::structure::empty;\nuse std::structure::consume_empty;')
+
+    def test_explicit_bit_and_product_basis_arguments_remain_exact(self):
+        self.translated('use std::quantum::id;fn f(q:Q<(Unit,Bits<0>)>)->Q<(Unit,Bits<0>)>{id[type((Unit,Bits<0>))](q)}',
+                        'use std::gate::id;fn f(q:Q<(Unit,Bits<0>)>)->Q<(Unit,Bits<0>)>{id[type((Unit,Bits<0>))](q)}')
+
+    def test_id_cannot_gain_inferred_argument_or_provider_type(self):
+        for source in ('use std::quantum::id;fn f(q:Q<Bit>)->Q<Bit>{id(q)}',
+                       'use std::{gate::{id,t}};fn f(q:Q<Bit>)->Q<Bit>{power(id,0)(q)}'):
+            self.unchanged_refusal(source, 'explicit Basis')
+
+    def test_shadowed_renaming_and_import_conflicts_require_manual_review(self):
+        for source in ('use std::quantum::phase_eighth;fn f(phase_eighth:Bit)->Bit{phase_eighth}',
+                       'use std::quantum::phase_eighth;fn f(global_phase_eighth:Bit)->Bit{global_phase_eighth}',
+                       'use std::quantum::phase_eighth;fn f((phase_eighth,x):(Bit,Bit))->Bit{x}',
+                       'use std::quantum::phase_eighth;fn f(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|global_phase_eighth| phase_eighth(global_phase_eighth)}}',
+                       'use std::quantum::phase_eighth;fn f(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|(x,phase_eighth)| x}}',
+                       'use std::quantum::phase_eighth;fn f(q:Q<Bit>)->Q<Bit>{basis q as (phase_eighth,x) {x}}',
+                       'use std::quantum::h;unitary fn h(q:Q<Bit>)->Q<Bit>{q}',
+                       'use std::quantum::h;use other::h;'):
+            result=migrate_qli(source)
+            self.assertTrue(result['issues'])
+            self.assertEqual(result['source'], source)
+
+    def test_deliberate_alias_glob_qualified_and_unknown_negatives_are_not_repaired(self):
+        for source, diagnostic in (
+                ('use std::quantum::h as local;', 'alias'),
+                ('use std::quantum::*;', 'glob'),
+                ('fn f(q:Q<Bit>)->Q<Bit>{std::quantum::h(q)}', 'qualified'),
+                ('use std::quantum::missing;', 'unknown retired'),
+                ('use std::quantum::swap;', 'unknown retired')):
+            self.unchanged_refusal(source, diagnostic)
+
+    def test_catalog_is_the_exact_27_old_entries(self):
+        self.assertEqual(len(OLD), 27)
+        self.translated('use std::gate::swap;', 'use std::gate::swap;')
+
+    def test_local_function_named_use_is_not_treated_as_an_import(self):
+        self.translated('use std::quantum::h;fn use(q:Q<Bit>)->Q<Bit>{h(q)}',
+                        'fn use(q:Q<Bit>)->Q<Bit>{h(q)}')
+
+
+
+class CurrentPrimitiveLayout(unittest.TestCase):
+    def test_only_erased_import_separators_at_line_end_are_removed(self):
+        before = 'use std::quantum::init0; use std::observe::measure_z;\nfn f(){()}\n'
+        lexical = migrate_qli(before)
+        result = migrate_qli_current(before)
+        self.assertEqual(lexical['source'], 'use std::state::init0; \nfn f(){()}\n')
+        self.assertEqual(result['source'], 'use std::state::init0;\nfn f(){()}\n')
+        self.assertEqual(result['edits'], lexical['edits'])
+        self.assertEqual(result['layout_edits'], [(22, 23, '', 'removed-import separator')])
+        self.assertEqual(migrate_qli_current(result['source'])['source'], result['source'])
+
+    def test_comments_quoted_text_and_all_line_endings_are_preserved(self):
+        before = ('// retained padding \r\nuse std::quantum::h; \r\n'
+                  '"quoted trailing \t\ntext"\r'
+                  '/* retained block \t\ncomment */\nfn f(){()} \n')
+        result = migrate_qli_current(before)
+        self.assertEqual(result['source'], before.replace('use std::quantum::h; ', ''))
+        self.assertEqual(result['source'].count('\r'), before.count('\r'))
+        self.assertEqual(result['source'].count('\n'), before.count('\n'))
+
+    def test_adjacent_removals_clean_only_their_own_empty_line(self):
+        before = '  use std::quantum::h; \tuse std::quantum::unit; \t\nfn f(){()}  \n\n'
+        result = migrate_qli_current(before)
+        self.assertEqual(result['source'], '\nfn f(){()}  \n\n')
+        self.assertEqual(len(result['layout_edits']), 1)
+
+    def test_import_adjacent_comments_and_nonterminal_gaps_stay_exact(self):
+        for before in ('use std::quantum::h; \t// retained trailing \nfn f(){()}\n',
+                       'use std::quantum::h; \tfn f(){()}\n'):
+            self.assertEqual(migrate_qli_current(before)['source'], migrate_qli(before)['source'])
+
+    def test_refused_source_has_no_layout_fallback(self):
+        before = 'use std::quantum::unknown; \nfn f(){()}\n'
+        result = migrate_qli_current(before)
+        self.assertTrue(result['issues'])
+        self.assertEqual(result['source'], before)
+        self.assertEqual(result['layout_edits'], [])
 
 
 class SourceFixtureIdentity(unittest.TestCase):
@@ -33,6 +145,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
         self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
+        self.primitive_manifest = self.root / "language-primitive-source-map.json"
+        self.primitive_manifest.write_text(json.dumps(dict(format="qleisli.language-primitive-source-map", version=1, files=[], projects=[])))
         self.public_effects_manifest = self.root / "public-effect-source-map.json"
         self.public_effects_manifest.write_text(json.dumps(dict(format="qleisli.public-effect-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
@@ -71,7 +185,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
                             ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
                             ("ISOMETRY_MAP", self.isometry_manifest.name),
-                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name)):
+                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name),
+                            ("PRIMITIVE_MAP", self.primitive_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -449,6 +564,88 @@ class SourceFixtureIdentity(unittest.TestCase):
             fixtures.current_source_fixture(self.original)
 
 
+    def test_project_selector_checks_all_links_from_any_registered_root(self):
+        self.checked_project_entry()
+        for path in (self.original, self.current, self.selected, self.coherent, self.checked):
+            self.assertEqual(fixtures.current_source_project(path), self.checked)
+            self.assertEqual(fixtures.current_source_project(path.relative_to(self.root)), self.checked)
+        old = (self.original / "main.qli").read_bytes()
+        (self.original / "main.qli").write_bytes(old + b"\nchanged")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_project(self.checked)
+
+    def test_project_selector_checks_complete_source_inventory_at_each_link(self):
+        self.checked_project_entry()
+        for project in (self.original, self.current, self.selected, self.coherent, self.checked):
+            added = project / "unused.qli"
+            added.write_text("unitary fn unused()->Unit{()}")
+            try:
+                with self.assertRaisesRegex(ValueError, "identity changed"):
+                    fixtures.current_source_project(self.checked)
+            finally:
+                added.unlink()
+
+    def test_project_selector_requires_registered_roots_not_arbitrary_directories(self):
+        unknown = self.root / "unregistered"
+        unknown.mkdir()
+        (unknown / "main.qli").write_text("unitary fn f()->Unit{()}")
+        with self.assertRaisesRegex(ValueError, "unregistered source project"):
+            fixtures.current_source_project(unknown)
+        with self.assertRaisesRegex(ValueError, "unregistered source project"):
+            fixtures.current_source_project(self.current / "main.qli")
+
+    def test_project_selector_follows_a_new_final_stage_from_a_registered_current_root(self):
+        selected = self.public_effect_project()
+        final = self.root / "primitive-current"
+        shutil.copytree(selected, final)
+        entry = dict(before_path=selected.name, current_path=final.name, files=[
+            dict(path=name, before_sha256=self.sha(selected / name),
+                 current_sha256=self.sha(final / name)) for name in ("main.qli", "Qargo.toml")])
+        self.primitive_manifest.write_text(json.dumps(dict(
+            format="qleisli.language-primitive-source-map", version=1, files=[], projects=[entry])))
+        self.assertEqual(fixtures.current_source_project(final), final)
+        self.assertEqual(fixtures.current_source_fixture(self.original), final)
+        original = (selected / "main.qli").read_bytes()
+        (selected / "main.qli").write_bytes(original + b"\nchanged")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_project(final)
+
+    def test_project_selector_rejects_duplicate_and_backwards_chain_links(self):
+        entry = self.namespace_entry()
+        for before, current in (("current", "different"), (entry["current_path"], "historical")):
+            changed = dict(entry, before_path=before, current_path=current)
+            self.primitive_manifest.write_text(json.dumps(dict(
+                format="qleisli.language-primitive-source-map", version=1,
+                files=[], projects=[changed])))
+            with self.assertRaisesRegex(ValueError, "ambiguous|unordered|cyclic"):
+                fixtures.current_source_project(self.selected)
+
+
+    def test_check_command_uses_current_project_and_propagates_compiler_refusal(self):
+        self.checked_project_entry()
+        compiler = self.root / "selected-compiler"
+        with (patch("subprocess.run") as run,
+              contextlib.redirect_stdout(io.StringIO()) as output):
+            run.return_value.returncode = 7
+            self.assertEqual(fixtures.main(["--check", str(compiler), str(self.original)]), 7)
+        run.assert_called_once_with([str(compiler.resolve()), "check", str(self.checked)], check=False)
+        record = json.loads(output.getvalue())
+        self.assertEqual(record["executed_project"], str(self.checked))
+        self.assertEqual(record["source_sha256"], fixtures.source_hashes(self.checked))
+
+    def test_check_command_rejects_changed_history_before_launching_compiler(self):
+        self.checked_project_entry()
+        source = self.original / "main.qli"
+        source.write_bytes(source.read_bytes() + b"\nchanged")
+        with (patch("subprocess.run") as run,
+              contextlib.redirect_stderr(io.StringIO()) as error,
+              self.assertRaises(SystemExit) as exit_status):
+            fixtures.main(["--check", str(self.root / "compiler"), str(self.checked)])
+        self.assertEqual(exit_status.exception.code, 2)
+        self.assertIn("source fixture identity changed", error.getvalue())
+        run.assert_not_called()
+
+
 class SourceFileIdentity(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="qleisli-file-identity-")
@@ -472,6 +669,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
         self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
+        self.primitive_manifest = self.root / "language-primitive-source-map.json"
+        self.primitive_manifest.write_text(json.dumps(dict(format="qleisli.language-primitive-source-map", version=1, files=[], projects=[])))
         self.public_effects_manifest = self.root / "public-effect-source-map.json"
         self.public_effects_manifest.write_text(json.dumps(dict(format="qleisli.public-effect-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
@@ -499,7 +698,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
                             ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
                             ("ISOMETRY_MAP", self.isometry_manifest.name),
-                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name)):
+                            ("PUBLIC_EFFECTS_MAP", self.public_effects_manifest.name),
+                            ("PRIMITIVE_MAP", self.primitive_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -834,7 +1034,72 @@ class SourceFileIdentity(unittest.TestCase):
             fixtures.current_source_file(self.original)
 
 
+    def test_language_primitive_map_is_required_even_for_unmapped_source(self):
+        self.primitive_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing language primitive source map"):
+            fixtures.current_source_file(self.current)
+
+
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_primitive_derivatives_replay_only_recorded_lexical_and_explicit_type_edits(self):
+        from primitive_source_migration import migrate_qli, migrate_qli_current
+        directory = fixtures.ROOT / "tests/fixtures/frontend_v030/language-primitives"
+        mapping = fixtures._read_map(directory / "source-map.json")
+        entries = fixtures._file_entries(mapping, "language primitive")
+        review = json.loads((directory / "translation-review.json").read_text())
+        self.assertEqual(review["status"], "generated-unvalidated")
+        self.assertEqual(review["layout_revision"], 5)
+        self.assertEqual(review["layout_helper"]["sha256"], hashlib.sha256(
+            (fixtures.ROOT / review["layout_helper"]["path"]).read_bytes()).hexdigest())
+        self.assertEqual({r["before_path"] for r in review["files"]}, set(entries))
+        expected = set()
+        for row in review["files"]:
+            before, current = (fixtures.ROOT / row[key] for key in ("before_path", "current_path"))
+            self.assertEqual(row["before_sha256"], hashlib.sha256(before.read_bytes()).hexdigest())
+            self.assertEqual(row["current_sha256"], hashlib.sha256(current.read_bytes()).hexdigest())
+            text = before.read_bytes().decode("utf-8")
+            for edit in row["manual_edits"]:
+                self.assertEqual(edit["before"], "id(q)")
+                self.assertEqual(edit["after"], "id[type(Bit)](q)")
+                self.assertEqual(text.count(edit["before"]), 1)
+                text = text.replace(edit["before"], edit["after"])
+            lexical = migrate_qli(text)
+            self.assertEqual(row["lexical_sha256"], hashlib.sha256(
+                lexical["source"].encode("utf-8")).hexdigest())
+            translated = migrate_qli_current(text)
+            self.assertEqual(translated["issues"], [])
+            self.assertEqual(row["lexical_edits"], [dict(start=a, end=b, replacement=c, kind=k)
+                             for a, b, c, k in translated["edits"]])
+            self.assertEqual(row["layout_edits"], [dict(start=a, end=b, replacement=c, kind=k)
+                             for a, b, c, k in translated["layout_edits"]])
+            self.assertEqual(translated["source"].encode("utf-8"), current.read_bytes())
+            expected.add(current)
+        for entry in mapping["projects"]:
+            before, current = (fixtures.ROOT / entry[key] for key in ("before_path", "current_path"))
+            fixtures._verify_pair(before, current, entry, "before_sha256")
+            for row in entry["files"]:
+                if row["path"].endswith("Qargo.toml"):
+                    self.assertEqual((before / row["path"]).read_bytes(), (current / row["path"]).read_bytes())
+                else:
+                    selected = fixtures.current_source_file(before / row["path"])
+                    self.assertEqual(selected.read_bytes(), (current / row["path"]).read_bytes())
+                expected.add(current / row["path"])
+        # Full byte inventories above cover every record. The selector's
+        # graph/order checks run once here; synthetic tests exercise each
+        # mutation. Avoid reparsing the complete map for every fixture row.
+        for row in (review["files"][0], review["files"][-1]):
+            self.assertEqual(fixtures.current_source_file(fixtures.ROOT / row["before_path"]),
+                             fixtures.ROOT / row["current_path"])
+        for row in (mapping["projects"][0], mapping["projects"][-1]):
+            current = fixtures.ROOT / row["current_path"]
+            self.assertEqual(fixtures.current_source_project(current), current)
+        self.assertEqual({p for p in (directory / "current").rglob("*") if p.is_file()}, expected)
+        for row in review["exclusions"]:
+            original = fixtures.ROOT / row["path"]
+            self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(), row["sha256"])
+            self.assertNotIn(row["path"], entries)
+
+
     def test_public_effect_map_changes_only_recorded_named_annotation_prefixes(self):
         import re
         root = fixtures.ROOT
@@ -880,8 +1145,10 @@ class RepositoryMigrationTests(unittest.TestCase):
                 self.assertEqual(count, 1)
             self.assertEqual(current.read_bytes(), transformed)
             self.assertNotEqual(current.read_bytes(), before.read_bytes())
-            self.assertEqual(fixtures.current_source_file(logical), current)
-            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(fixtures.current_source_file(logical),
+                             fixtures.current_source_file(current))
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
             expected_inputs.add(current)
         self.assertEqual(recorded, set(entries))
         for entry in projects.values():
@@ -893,7 +1160,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         self.assertEqual({p for p in (directory / "current").rglob("*") if p.is_file()},
                          expected_inputs)
         broad = root / "tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/empty-classical/main.qli"
-        self.assertEqual(fixtures.current_source_file(broad), broad)
+        self.assertNotIn(broad.relative_to(root).as_posix(), entries)
         self.assertIn(b"pub observe fn entry", broad.read_bytes())
 
     def test_isometry_map_covers_selected_clients_and_changes_only_effect_prefixes(self):
@@ -920,8 +1187,8 @@ class RepositoryMigrationTests(unittest.TestCase):
             transformed, count = marker.subn(b'isometry', before.read_bytes())
             self.assertGreater(count, 0)
             self.assertEqual(current.read_bytes(), transformed)
-            self.assertEqual(fixtures.current_source_file(before), current)
-            self.assertEqual(fixtures.current_source_file(current), current)
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
 
     def test_selected_current_file_inventory_has_no_unmapped_operation_names(self):
         from operation_naming import canonical_operation_names

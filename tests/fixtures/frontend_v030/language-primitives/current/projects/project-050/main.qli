@@ -1,0 +1,3 @@
+use std::state::init0;
+use std::gate::cnot;
+pub unitary fn entry(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}

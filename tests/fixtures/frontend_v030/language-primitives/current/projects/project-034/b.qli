@@ -1,0 +1,1 @@
+pub unitary fn h(q:Q<Bit>)->Q<Bit>{q}

@@ -1,0 +1,5 @@
+{
+  "scope": "Inert first local proof-consumer failure only, no AFTER pass.",
+  "event_path": "tests/fixtures/hierarchical_prepared_v030/first-local-compile/event.json",
+  "event_sha256": "051866c154e58158a286ff9a4df8a93a192efea78966f2f933bc1add0eeeef82"
+}

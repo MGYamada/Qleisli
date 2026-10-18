@@ -640,10 +640,15 @@ class SyntheticRelease(unittest.TestCase):
         self.assertIn('inputs.release_readiness',final)
 
     def test_corpus_runs_representative_checks_for_every_ci_profile(self):
-        text=(ROOT/'.github/workflows/ci.yml').read_text()
-        block=text.split('        id: corpus\n')[1].split('      - name: Retain actual corpus mode')[0]
+        workflow=(ROOT/'.github/workflows/ci.yml').read_text()
+        for job, profile in [('check-rust','latest'),('check-rust-msrv','msrv')]:
+            caller=re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {job}:\n')[1])[0]
+            self.assertIn('uses: ./.github/actions/rust-suite',caller)
+            self.assertIn('profile: '+profile,caller)
+        text=(ROOT/'.github/actions/rust-suite/action.yml').read_text()
+        block=text.split('      id: corpus\n')[1].split('    - name: Retain actual corpus mode')[0]
         self.assertNotIn('CORPUS_FULL',block)
-        command=textwrap.dedent(block.split('        run: |\n')[1])
+        command=textwrap.dedent(block.split('      run: |\n')[1])
         with tempfile.TemporaryDirectory(prefix='qleisli-corpus-ci-') as directory:
             root=Path(directory)
             arguments=root/'arguments.txt'
@@ -666,7 +671,7 @@ class SyntheticRelease(unittest.TestCase):
                     self.assertEqual(arguments.read_text().splitlines(),[
                         'scripts/check_input_corpus.py','target/debug/qleisli','--quick',
                         '--report',str(root/'corpus.json')])
-        retained=text.split('      - name: Retain actual corpus mode')[1].split('      - run:')[0]
+        retained=text.split('    - name: Retain actual corpus mode')[1].split('    - name: Run strict')[0]
         self.assertIn('if: always()',retained)
         self.assertIn('corpus-${{ github.sha }}-${{ github.run_attempt }}',retained)
 

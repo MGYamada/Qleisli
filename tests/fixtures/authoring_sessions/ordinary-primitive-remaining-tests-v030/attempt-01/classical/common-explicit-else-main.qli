@@ -1,0 +1,11 @@
+use std::state::init0;
+use std::gate::x;
+
+
+observe fn main() -> (Bit, Bit) {
+    let q = init0();
+    let r = init0();
+    let m = measure_z(q);
+    if m { x(excl r); () } else { () };
+    (m, measure_z(r))
+}

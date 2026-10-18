@@ -148,8 +148,8 @@ def test_source_connection(kernel):
         ('wrong-order','readout','take_bit[n,0]','take_bit[n,n-1]')]:
         source=modules[module].replace(before,after)
         if name == 'wrong-zero':
-            source=source.replace('use std::quantum::init0;',
-                'use std::quantum::init0;\nuse std::quantum::x;')
+            source=source.replace('use std::state::init0;',
+                'use std::state::init0;\nuse std::gate::x;')
         changed=qpe(modules | {module:source})
         rows[name]=(source_documents(changed)[0],rows['qpe'][1],'contract')
     # All small generic composed cases fit the unchanged allowance. Their

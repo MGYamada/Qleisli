@@ -15,10 +15,10 @@ use qleisli::sim::{SimulationLimits, run_closed};
 
 const TOLERANCE: f64 = 1e-12;
 const IMPORTS: &str = "
-use std::quantum::init0; use std::quantum::h; use std::quantum::x;
-use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
-use std::quantum::join; use std::quantum::split;
-use std::observe::measure_z; use std::observe::reset; use std::observe::discard;
+use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+\x20
+ use std::state::reset;\x20
 ";
 
 type Distribution = BTreeMap<Vec<bool>, f64>;
@@ -587,14 +587,41 @@ observe fn main() -> Bit { measure_z(basis init0() as b { not b }) }
     let expected = Distribution::from([(vec![true], 1.0)]);
     assert_distribution(&checked, &expected);
     let mut changed = checked.program().clone();
+    let mut preparation = None;
     let mut replacements = 0;
     for op in &mut changed.operations {
-        if let RawOp::LiftBasis { table, .. } = op {
-            assert_eq!(table.as_slice(), &[1, 0]);
-            *table = vec![0, 1]; // A different total injection with valid ownership/effect.
-            replacements += 1;
+        if let RawOp::LiftBasis {
+            input,
+            output,
+            output_wires,
+            table,
+        } = op
+        {
+            match table.as_slice() {
+                [0] => {
+                    // Ordinary init0 prepares one fresh Bit from Unit; keep it intact.
+                    assert_eq!(output_wires.len(), 1);
+                    assert!(
+                        preparation
+                            .replace((*output, output_wires.clone()))
+                            .is_none()
+                    );
+                }
+                [1, 0] => {
+                    let (prepared_token, prepared_wires) = preparation
+                        .as_ref()
+                        .expect("NOT consumes the preceding zero preparation");
+                    assert_eq!(*input, *prepared_token);
+                    assert_eq!(output_wires.as_slice(), prepared_wires.as_slice());
+                    // Change only the source NOT to another total injection.
+                    *table = vec![0, 1];
+                    replacements += 1;
+                }
+                _ => panic!("unexpected coherent-basis table in this source"),
+            }
         }
     }
+    assert!(preparation.is_some());
     assert_eq!(replacements, 1);
     let changed = accept(changed).expect("both the identity and NOT are valid unitaries");
     let actual = run_closed(&changed, SimulationLimits::default()).unwrap();

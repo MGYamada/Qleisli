@@ -1,7 +1,7 @@
-use std::quantum::x;
-use std::quantum::cnot;
-use std::quantum::split;
-use std::quantum::join;
+use std::gate::x;
+use std::gate::cnot;
+
+
 use std::measurement::parity_zz;
 
 pub isometry fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
