@@ -5,6 +5,13 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [QPE host consumer history](qpe-host-consumer-v030/README.md) preserves both
+actual hosted failures after native acceptance contradicted an old limit
+expectation. Separate normal/MSRV checks retain the existing six-qubit case,
+phase/provider/runtime faults and real transport-limit refusals within unchanged
+caps; full logs, original consumers and the initial interpretation correction
+remain inert history, distinct from latest-head CI and general proofs.
+
 The [long ordinary computed-leaf first history](computed-long-leaf-v030/README.md)
 retains three separate sources and all first diagnostics: expanded 1,025/257 T
 calls exhaust source work, while a compact 257-fold reaches the separate finite

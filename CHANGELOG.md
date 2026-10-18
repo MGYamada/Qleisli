@@ -28,6 +28,8 @@ and exactness obligations retain their recorded scopes and status.
   and prepaid failed attempts and fallbacks. Existing named and generic
   n=1,m=3 QPE regressions now fit the unchanged per-decision limits; this is not
   a universal previous-success budget guarantee.
+  Retain the existing two-target/four-phase host case as an acceptance regression
+  after bounded validator reuse; independent transport-work limits still reject.
   Check ordinary zero preparation separately from NOT in source/IR mutation
   tests. Retain the explicit Bits<0>-to-Unit owner transition before finish,
   untouched reference frames and the existing numerical simulation tolerance.

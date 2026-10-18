@@ -7994,7 +7994,7 @@
       "tests/sized_linear_seeded.rs": "41d854e33e8fdb30eb8e8d7882cadbc8e84b6856a650c9d11afef317cbea2357",
       "tests/sized_cli.rs": "ab5afe4ea337b78a680b7273bfc27ae9a078c090529b238f0c8cd0bdb27ba829",
       "tests/hierarchical_qpe_host.rs": "19bf3b9c921b8dd1f9d2be65c9952e0b0193b34d1b6fc6e1c46fd31f20a6c924",
-      "scripts/test_qpe_instrument_host.py": "094822ba4b13bf48b43b1a0a426b6885f951b2c67010b89b2aa35098138871d9",
+      "scripts/test_qpe_instrument_host.py": "c0488f5745b04d290a18b602b7a9a2d8eae9fc8c250feeb48e6e6e21cddc5bc0",
       "tests/connections.rs": "fcaff4e0ca4f5efe6a62ada25b0d1e415919082f1dfe33143f0f5aa5d6730b4a",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
