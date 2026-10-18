@@ -22,6 +22,9 @@ from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 import check_release_ready as checker
+import ci_rust_artifacts as rust_artifacts
+import ci_source_checks as source_checks
+import test_ci_rust_artifacts as rust_test
 from check_ratification_packet import PacketError, ROOT
 
 SCRIPT = ROOT / 'scripts/check_release_ready.py'
@@ -63,6 +66,7 @@ class SyntheticRelease(unittest.TestCase):
         self.write('release/issue-snapshot.txt', b'Synthetic criterion for test only.\n')
         self.write('release/review.txt', b'Synthetic review; not human authority or an Issue decision.\n')
         self.write('release/evidence.txt', b'Synthetic positive/negative/implementation reference.\n')
+        rust_test.prepare_root(self.root)
         # Match the actual ledger's distinct binding/pending identity fields.
         # The prior {'id': ...} pending fixture concealed a production KeyError.
         interpretations = ['PR-2026-01', 'QS-2026-01', 'RS-2026-01']
@@ -118,6 +122,14 @@ class SyntheticRelease(unittest.TestCase):
         self.context = checker.hosted_context(self.root, self.env)
         self.needs = {'changes': dict(result='success', outputs=dict(profile='full', proof_lane='full', head=self.head))}
         self.payloads = {job: {} for job in checker.SUITES}
+        self.rust_inputs = {}
+        data = rust_test.SyntheticRustReceipts(self.root, self.context, source_checks.snapshot(self.root))
+        for profile, job in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
+            children = {part: rust_artifacts.encoded(data.child(profile, part)) for part in ('differential', 'remaining')}
+            pair = rust_artifacts.aggregate_files(self.root, self.context, profile, children,
+                                                 binding=source_checks.snapshot(self.root))
+            self.rust_inputs[job] = pair
+            self.payloads[job] = {'rust-' + name: raw for name, raw in pair.items()}
         proof = dict(format='qleisli.release-constitution', version=1, context=self.context,
                      ledger_sha256=self.ref(checker.LEDGER)['sha256'], result=dict(self.constitution_result(), mode='current-Lean-replay'))
         self.payloads['check-lean']['constitution.json'] = encoded(proof)
@@ -599,9 +611,27 @@ class SyntheticRelease(unittest.TestCase):
 
     def test_actual_cli_producer_binds_bytes_and_rejects_wrong_job(self):
         output=Path(self.temp.name)/'producer'; env=dict(self.env,GITHUB_JOB='check-rust',GITHUB_OUTPUT=str(Path(self.temp.name)/'outputs'))
-        result=self.cli('--record-job','check-rust','--output',str(output),env=env); self.assertEqual(result.returncode,0,result.stderr)
+        inputs=Path(self.temp.name)/'rust-inputs';inputs.mkdir()
+        for name,raw in self.rust_inputs['check-rust'].items(): (inputs/name).write_bytes(raw)
+        needs={'changes':self.needs['changes']}
+        for part in ('differential','remaining'):
+            needs['check-rust-'+part]=dict(result='success',outputs=dict(source_head=self.context['commit'],
+                source_tree=self.context['tree'],source_run_id=self.context['run_id'],source_attempt=self.context['attempt'],
+                rust_receipt_sha256=checker.digest(self.rust_inputs['check-rust'][part+'.json'])))
+        env['RUST_NEEDS_JSON']=json.dumps(needs)
+        result=self.cli('--record-job','check-rust','--rust',str(inputs),'--output',str(output),env=env); self.assertEqual(result.returncode,0,result.stderr)
         raw=(output/'receipt.json').read_bytes(); self.assertEqual(Path(env['GITHUB_OUTPUT']).read_text(),f'release_receipt_sha256={checker.digest(raw)}\n')
         result=self.cli('--record-job','check-docs','--output',str(output),env=env); self.assertNotEqual(result.returncode,0); self.assertIn('wrong producer',result.stderr)
+
+    def test_rust_parent_cannot_replace_both_actual_children_with_old_empty_or_partial_receipts(self):
+        original=copy.deepcopy(self.payloads['check-rust'])
+        for payload in ({}, {name:raw for name,raw in original.items() if name!='rust-differential.json'}):
+            self.payloads['check-rust']=payload;self.refresh_job('check-rust')
+            self.reject('complete Rust producer pair')
+        self.payloads['check-rust']=original;self.refresh_job('check-rust')
+        changed=json.loads(original['rust-differential.json']);changed['context']['attempt']='1'
+        self.payloads['check-rust']['rust-differential.json']=encoded(changed);self.refresh_job('check-rust')
+        self.reject('Rust producer identity')
 
     def test_legacy_cli_delegates_instead_of_pending_obligation_placeholder(self):
         script=ROOT/'scripts/check_constitution.py'
@@ -642,10 +672,15 @@ class SyntheticRelease(unittest.TestCase):
     def test_corpus_runs_representative_checks_for_every_ci_profile(self):
         workflow=(ROOT/'.github/workflows/ci.yml').read_text()
         for job, profile in [('check-rust','latest'),('check-rust-msrv','msrv')]:
-            caller=re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {job}:\n')[1])[0]
-            self.assertIn('uses: ./.github/actions/rust-suite',caller)
-            self.assertIn('profile: '+profile,caller)
+            for partition in ('differential','remaining'):
+                caller=re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {job}-{partition}:\n')[1])[0]
+                self.assertIn('uses: ./.github/actions/rust-producer',caller)
+                self.assertIn('profile: '+profile,caller)
+                self.assertIn('partition: '+partition,caller)
+        producer=(ROOT/'.github/actions/rust-producer/action.yml').read_text()
+        self.assertIn('uses: ./.github/actions/rust-suite',producer)
         text=(ROOT/'.github/actions/rust-suite/action.yml').read_text()
+        self.assertIn("if: inputs.profile == 'latest' && inputs.partition != 'differential'",text)
         block=text.split('      id: corpus\n')[1].split('    - name: Retain actual corpus mode')[0]
         self.assertNotIn('CORPUS_FULL',block)
         command=textwrap.dedent(block.split('      run: |\n')[1])

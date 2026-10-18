@@ -90,75 +90,153 @@ jobs:
             ${{ runner.temp }}/source-integrity/
             ${{ runner.temp }}/ci-preflight/
           if-no-files-found: error
-  check-rust:
+  check-rust-differential:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
-    outputs:
-      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
-      dependency-cache: ${{ steps.cargo-cache.outputs.status }}
     runs-on: ubuntu-latest
+    outputs:
+      source_head: ${{ steps.validate.outputs.source_head }}
+      source_tree: ${{ steps.validate.outputs.source_tree }}
+      source_run_id: ${{ steps.validate.outputs.source_run_id }}
+      source_attempt: ${{ steps.validate.outputs.source_attempt }}
+      rust_receipt_sha256: ${{ steps.validate.outputs.rust_receipt_sha256 }}
+      dependency-cache: ${{ steps.validate.outputs.dependency-cache }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Prepare the required native acceptance runtime
-        uses: ./.github/actions/native-runtime
-        with:
-          prepare: 'false'
-      - name: Restore dependency archives
-        id: cargo-cache
-        uses: ./.github/actions/cargo-archives
-        with:
-          toolchain: '1.98.1'
-          enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
-      - name: Install the tested Rust toolchain
-        uses: ./.github/actions/rust-toolchain
-        with:
-          toolchain: '1.98.1'
-          components: rustfmt clippy
-      - name: Run the shared Rust validation suite
-        uses: ./.github/actions/rust-suite
+      - name: Validate this complete Rust producer
+        id: validate
+        uses: ./.github/actions/rust-producer
         with:
           profile: latest
-      - name: Bind and retain successful producer evidence
-        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
-        id: release-receipt
-        uses: ./.github/actions/release-receipt
-        with:
-          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+          partition: differential
+          cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
 
-  check-rust-msrv:
+  check-rust-remaining:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
-    outputs:
-      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
-      dependency-cache: ${{ steps.cargo-cache.outputs.status }}
     runs-on: ubuntu-latest
+    outputs:
+      source_head: ${{ steps.validate.outputs.source_head }}
+      source_tree: ${{ steps.validate.outputs.source_tree }}
+      source_run_id: ${{ steps.validate.outputs.source_run_id }}
+      source_attempt: ${{ steps.validate.outputs.source_attempt }}
+      rust_receipt_sha256: ${{ steps.validate.outputs.rust_receipt_sha256 }}
+      dependency-cache: ${{ steps.validate.outputs.dependency-cache }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Prepare the required native acceptance runtime
-        uses: ./.github/actions/native-runtime
+      - name: Validate this complete Rust producer
+        id: validate
+        uses: ./.github/actions/rust-producer
         with:
-          prepare: 'false'
-      - name: Restore dependency archives
-        id: cargo-cache
-        uses: ./.github/actions/cargo-archives
+          profile: latest
+          partition: remaining
+          cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
+
+  check-rust:
+    needs: [changes, check-rust-differential, check-rust-remaining]
+    if: always() && needs.changes.outputs.profile == 'full'
+    runs-on: ubuntu-latest
+    env:
+      RUST_NEEDS_JSON: ${{ toJSON(needs) }}
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ needs['check-rust-differential'].outputs['dependency-cache'] == needs['check-rust-remaining'].outputs['dependency-cache'] && needs['check-rust-remaining'].outputs['dependency-cache'] || 'mixed' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Download both same-run Rust producer receipts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          toolchain: '1.85.0'
-          enabled: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
-      - name: Install the minimum supported Rust toolchain
-        uses: ./.github/actions/rust-toolchain
+          pattern: rust-validation-latest-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-producer-evidence
+      - name: Independently verify both actual artifact byte streams
+        run: python3 scripts/ci_rust_artifacts.py --aggregate --profile latest --evidence "$RUNNER_TEMP/rust-producer-evidence" --output "$RUNNER_TEMP/rust-aggregate"
+      - name: Retain the complete verified pair
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          toolchain: '1.85.0'
-          components: clippy
-      - name: Run the shared Rust validation suite
-        uses: ./.github/actions/rust-suite
-        with:
-          profile: msrv
+          name: rust-aggregate-latest-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-aggregate/
+          if-no-files-found: error
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
         uses: ./.github/actions/release-receipt
         with:
           readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+          rust: ${{ runner.temp }}/rust-aggregate
+
+  check-rust-msrv-differential:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    runs-on: ubuntu-latest
+    outputs:
+      source_head: ${{ steps.validate.outputs.source_head }}
+      source_tree: ${{ steps.validate.outputs.source_tree }}
+      source_run_id: ${{ steps.validate.outputs.source_run_id }}
+      source_attempt: ${{ steps.validate.outputs.source_attempt }}
+      rust_receipt_sha256: ${{ steps.validate.outputs.rust_receipt_sha256 }}
+      dependency-cache: ${{ steps.validate.outputs.dependency-cache }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate this complete Rust producer
+        id: validate
+        uses: ./.github/actions/rust-producer
+        with:
+          profile: msrv
+          partition: differential
+          cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
+
+  check-rust-msrv-remaining:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    runs-on: ubuntu-latest
+    outputs:
+      source_head: ${{ steps.validate.outputs.source_head }}
+      source_tree: ${{ steps.validate.outputs.source_tree }}
+      source_run_id: ${{ steps.validate.outputs.source_run_id }}
+      source_attempt: ${{ steps.validate.outputs.source_attempt }}
+      rust_receipt_sha256: ${{ steps.validate.outputs.rust_receipt_sha256 }}
+      dependency-cache: ${{ steps.validate.outputs.dependency-cache }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate this complete Rust producer
+        id: validate
+        uses: ./.github/actions/rust-producer
+        with:
+          profile: msrv
+          partition: remaining
+          cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}
+
+  check-rust-msrv:
+    needs: [changes, check-rust-msrv-differential, check-rust-msrv-remaining]
+    if: always() && needs.changes.outputs.profile == 'full'
+    runs-on: ubuntu-latest
+    env:
+      RUST_NEEDS_JSON: ${{ toJSON(needs) }}
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ needs['check-rust-msrv-differential'].outputs['dependency-cache'] == needs['check-rust-msrv-remaining'].outputs['dependency-cache'] && needs['check-rust-msrv-remaining'].outputs['dependency-cache'] || 'mixed' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Download both same-run Rust producer receipts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: rust-validation-msrv-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-producer-evidence
+      - name: Independently verify both actual artifact byte streams
+        run: python3 scripts/ci_rust_artifacts.py --aggregate --profile msrv --evidence "$RUNNER_TEMP/rust-producer-evidence" --output "$RUNNER_TEMP/rust-aggregate"
+      - name: Retain the complete verified pair
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rust-aggregate-msrv-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-aggregate/
+          if-no-files-found: error
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+          rust: ${{ runner.temp }}/rust-aggregate
 
   check-macos-source:
     needs: changes

@@ -1,0 +1,84 @@
+name: Validate one complete Rust producer partition
+description: Share pinned setup and fresh evidence production across the four Rust workers
+inputs:
+  profile:
+    description: latest or msrv
+    required: true
+  partition:
+    description: differential or remaining
+    required: true
+  cache:
+    description: Restore registry dependency archives only
+    default: 'true'
+outputs:
+  source_head:
+    value: ${{ steps.record.outputs.source_head }}
+    description: Exact tested commit
+  source_tree:
+    value: ${{ steps.record.outputs.source_tree }}
+    description: Exact tested source tree
+  source_run_id:
+    value: ${{ steps.record.outputs.source_run_id }}
+    description: Current workflow run
+  source_attempt:
+    value: ${{ steps.record.outputs.source_attempt }}
+    description: Current workflow attempt
+  rust_receipt_sha256:
+    value: ${{ steps.record.outputs.rust_receipt_sha256 }}
+    description: Digest of the actual retained producer receipt
+  dependency-cache:
+    value: ${{ steps.cargo-cache.outputs.status }}
+    description: Dependency archive observation
+runs:
+  using: composite
+  steps:
+    - name: Select only the pinned Rust producer settings
+      id: profile
+      shell: bash
+      env:
+        RUST_PROFILE: ${{ inputs.profile }}
+        RUST_PARTITION: ${{ inputs.partition }}
+      run: |
+        case "$RUST_PROFILE" in
+          latest) printf '%s\n' 'toolchain=1.98.1' 'components=rustfmt clippy' >> "$GITHUB_OUTPUT" ;;
+          msrv) printf '%s\n' 'toolchain=1.85.0' 'components=clippy' >> "$GITHUB_OUTPUT" ;;
+          *) echo 'Unknown Rust producer profile' >&2; exit 1 ;;
+        esac
+        case "$RUST_PARTITION" in
+          differential|remaining) ;;
+          *) echo 'Unknown Rust producer partition' >&2; exit 1 ;;
+        esac
+    - name: Prepare the native runtime selection
+      uses: ./.github/actions/native-runtime
+      with:
+        prepare: 'false'
+    - name: Restore dependency archives
+      id: cargo-cache
+      uses: ./.github/actions/cargo-archives
+      with:
+        toolchain: ${{ steps.profile.outputs.toolchain }}
+        enabled: ${{ inputs.cache }}
+    - name: Install the pinned Rust tools
+      uses: ./.github/actions/rust-toolchain
+      with:
+        toolchain: ${{ steps.profile.outputs.toolchain }}
+        components: ${{ steps.profile.outputs.components }}
+    - name: Run the complete assigned Rust commands
+      uses: ./.github/actions/rust-suite
+      with:
+        profile: ${{ inputs.profile }}
+        partition: ${{ inputs.partition }}
+    - name: Bind the actual source, commands and binary identities
+      id: record
+      shell: bash
+      env:
+        RUST_PROFILE: ${{ inputs.profile }}
+        RUST_PARTITION: ${{ inputs.partition }}
+      run: |
+        python3 scripts/ci_rust_artifacts.py --profile "$RUST_PROFILE" --partition "$RUST_PARTITION" --results "$RUNNER_TEMP" --output "$RUNNER_TEMP/rust-validation"
+    - name: Retain the actual producer receipt bytes
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: rust-validation-${{ inputs.profile }}-${{ inputs.partition }}-${{ github.sha }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/rust-validation/
+        if-no-files-found: error

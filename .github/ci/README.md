@@ -376,6 +376,34 @@ or changed mappings without falling back to the historical source.
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
+The internal runner accepts `--partition differential` or `--partition remaining`
+only with the complete `rust-latest` or `rust-msrv` group. Each selection keeps
+fresh native preparation, its existing whole-command guard and complete test
+harnesses. Plans and results retain the canonical command list, selected indices
+and omitted indices. A successful partition does not complete the Rust suite.
+Without that explicit option, the existing complete group runs unchanged.
+Hosted Rust validation runs these two partitions on separate Ubuntu runners for
+each pinned toolchain. The common `rust-producer` action installs the exact tools,
+selects fresh native preparation, runs the assigned commands and retains their
+actual source-bound result bytes. Only the remaining partition runs source
+contracts, latest source semantics/quick corpus, lint and research. Each runner
+builds/audits its own native checker; project outputs and passed results are not
+shared or cached. The extracted-source distribution route remains a complete
+separate check in its existing production target.
+
+The stable `check-rust` and `check-rust-msrv` jobs independently verify both child
+artifacts against the same commit, tree, run and attempt. Expected producer hashes
+are checked before parsing; canonical plans, every executed command, tool/binary
+identities and corpus coverage must match. Metadata records are bounded to 16 MiB.
+Neither a successful child nor an expected hash completes the pair. The existing
+eight required context names retain their complete nine-dependency gate.
+
+Rust release receipts retain both original child byte streams and the aggregate
+descriptor. Final readiness checks these payloads again through its source
+snapshot; old empty Rust receipts and partial, stale or changed pairs reject.
+This is CI execution evidence, not source/runtime preservation, authentication
+from offline JSON, a constitutional discharge or release approval. Full hosted
+speedup remains a measurement to perform on the completed final candidate.
 The latest and MSRV Rust groups retain two literal native-gated selections:
 ownership/source-IR correspondence, then every other integration target plus
 libraries, binaries, examples and benches. Before either selection,

@@ -13,6 +13,12 @@ development milestones from the scope of their evidence.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert
   history with exact-byte integrity checks; edition propagation remains pending.
+- Prepare explicit complete Rust producer partitions from one canonical CI plan,
+  with fresh native preparation and visible omissions. Run each toolchain's two
+  complete partitions on separate runners and verify both artifact byte streams
+  behind the existing required checks and scoped release receipts.
+- Reject missing, failed, skipped or stale Rust pair dependencies before receipt
+  inspection; expected hashes alone do not establish artifact or suite success.
 
 Unpublished development snapshot. Selecting beta does not complete the v0.3.0
 feature or proof gates and does not extend the alpha-only release approval.

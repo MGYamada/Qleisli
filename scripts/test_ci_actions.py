@@ -51,9 +51,12 @@ class CIActions(unittest.TestCase):
         self.assertIn('--report "$RUNNER_TEMP/pr-size.json"', job('changes'))
         self.assertIn('--hosted --report "$RUNNER_TEMP/fixture-budget.json"', job('changes'))
 
-    def shell(self, name, environment, code=0):
+    def shell(self, name, environment, code=0, step=None):
         # Execute the literal run block; GitHub inputs reach it only as env data.
-        block = action(name).split('      run: |\n')[1].split('    - name:')[0]
+        source = action(name)
+        if step is not None:
+            source = source.split('    - name: ' + step + '\n')[1]
+        block = source.split('      run: |\n')[1].split('    - name:')[0]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fake = root / 'python3'
@@ -70,6 +73,7 @@ class CIActions(unittest.TestCase):
                                      '-c', textwrap.dedent(block)], cwd=root, env=env,
                                     capture_output=True, text=True)
             record = root / 'argv'
+            self.assertFalse((root / 'injected').exists())
             return result, json.loads(record.read_text()) if record.exists() else None, env
 
     def traced_shell(self, name, tool, environment, fail_at=0, code=23):
@@ -156,8 +160,6 @@ class CIActions(unittest.TestCase):
 
     def test_rust_toolchain_callers_preserve_configuration_and_preparation_order(self):
         expected = {
-            'check-rust': ('1.98.1', 'rustfmt clippy', '', 'false'),
-            'check-rust-msrv': ('1.85.0', 'clippy', '', 'false'),
             'check-macos-source': ('1.85.0', '', 'x86_64-apple-darwin', 'false'),
             'check-interop': ('1.98.1', '', '', 'false'),
             'check-lean-kernel': ('1.98.1', '', '', 'false'),
@@ -270,40 +272,39 @@ class CIActions(unittest.TestCase):
         self.assertNotIn('continue-on-error', text)
 
     def test_source_group_inventory_and_preparation_ownership(self):
-        expected = {
-            'check-rust': ['rust-latest', 'source-contracts', 'source-semantics', 'rust-latest-lint-research'],
-            'check-rust-msrv': ['rust-msrv', 'source-contracts', 'rust-msrv-lint-research'],
-            'check-docs': ['book', 'repository-integrity'],
-        }
-        for name, groups in expected.items():
-            block = job(name)
-            if name in ('check-rust', 'check-rust-msrv'):
-                profile = 'latest' if name == 'check-rust' else 'msrv'
-                self.assertIn('profile: ' + profile, action_step(block, 'rust-suite'))
-                self.assertNotIn('uses: ./.github/actions/source-check', block)
-                shared = action('rust-suite').replace('${{ inputs.profile }}', profile)
-                if profile == 'msrv':
-                    shared = re.sub(r"    - name: Run source semantics\n.*?(?=    - name:)", '', shared, flags=re.S)
-                self.assertEqual(re.findall(r'        group: ([\w-]+)', shared), groups)
-            else:
-                self.assertEqual(re.findall(r'          group: ([\w-]+)', block), groups)
-                self.assertEqual(block.count('uses: ./.github/actions/source-check'), len(groups))
-            for group in groups:
-                self.assertIn(name, describe(group)['lanes'])
-        for name in ('check-rust', 'check-rust-msrv', 'check-macos-source',
-                     'check-interop', 'check-lean-kernel', 'check-distribution'):
+        shared = action('rust-suite')
+        producer = action('rust-producer')
+        self.assertEqual(producer.count('uses: ./.github/actions/rust-suite'), 1)
+        self.assertIn("prepare: 'false'", action_step(producer.replace('    - ', '      - '), 'native-runtime'))
+        for profile, base in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
+            for part in ('differential', 'remaining'):
+                name = base + '-' + part; block = job(name)
+                self.assertIn('profile: ' + profile, action_step(block, 'rust-producer'))
+                self.assertIn('partition: ' + part, action_step(block, 'rust-producer'))
+                self.assertIn('    needs: changes', block)
+                expected = ['rust-' + profile]
+                if part == 'remaining':
+                    expected += ['source-contracts'] + (['source-semantics'] if profile == 'latest' else [])
+                    expected += ['rust-' + profile + '-lint-research']
+                for group in expected: self.assertIn(name, describe(group)['lanes'])
+                self.assertEqual(describe('rust-' + profile)['prepare'], ['native-runtime'])
+            parent = job(base)
+            self.assertIn('needs: [changes, ' + base + '-differential, ' + base + '-remaining]', parent)
+            self.assertIn('if: always()', parent)
+            self.assertIn('--aggregate --profile ' + profile, parent)
+            self.assertNotIn('uses: ./.github/actions/rust-suite', parent)
+        self.assertIn("partition: ${{ inputs.partition != 'all' && inputs.partition || '' }}", shared)
+        self.assertIn("if: inputs.partition != 'differential'", shared)
+        self.assertIn("if: inputs.profile == 'latest' && inputs.partition != 'differential'", shared)
+        self.assertEqual(re.findall(r'          group: ([\w-]+)', job('check-docs')), ['book', 'repository-integrity'])
+        for name in ('check-macos-source', 'check-interop', 'check-lean-kernel', 'check-distribution'):
             block = job(name)
             self.assertEqual(block.count('uses: ./.github/actions/native-runtime'), 1)
-            if name in ('check-rust', 'check-rust-msrv'):
-                self.assertIn("prepare: 'false'", block)
-                group = 'rust-latest' if name == 'check-rust' else 'rust-msrv'
-                self.assertEqual(describe(group)['prepare'], ['native-runtime'])
-            else:
-                self.assertNotIn('prepare:', block)
+            self.assertNotIn('prepare:', block)
         native = action('native-runtime')
         self.assertIn("default: 'true'", native)
         self.assertIn('group: native-runtime', native)
-        self.assertIn("build: 'false'", native)  # The shared plan owns the single build/audit.
+        self.assertIn("build: 'false'", native)
         self.assertIn('native-runtime-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}', native)
 
     def test_shared_rust_suite_keeps_optional_coverage_artifacts_and_refusal(self):
@@ -314,8 +315,47 @@ class CIActions(unittest.TestCase):
         self.assertIn('source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}', shared)
         self.assertNotIn('continue-on-error', shared)
         for profile in ('latest', 'msrv', 'unknown', 'latest; touch injected'):
-            result, _, _ = self.shell('rust-suite', dict(RUST_SUITE_PROFILE=profile))
+            result, _, _ = self.shell('rust-suite', dict(RUST_SUITE_PROFILE=profile, RUST_SUITE_PARTITION='all'))
             self.assertEqual(result.returncode == 0, profile in ('latest', 'msrv'))
+        for partition in ('all', 'differential', 'remaining', '', 'unknown', 'remaining; touch injected'):
+            result, _, _ = self.shell('rust-suite', dict(RUST_SUITE_PROFILE='latest', RUST_SUITE_PARTITION=partition))
+            self.assertEqual(result.returncode == 0, partition in ('all', 'differential', 'remaining'))
+
+    def test_shared_producer_keeps_pins_preparation_cache_and_complete_marker_arguments(self):
+        producer = action('rust-producer')
+        self.assertLess(producer.index('uses: ./.github/actions/native-runtime'), producer.index('uses: ./.github/actions/cargo-archives'))
+        self.assertLess(producer.index('uses: ./.github/actions/cargo-archives'), producer.index('uses: ./.github/actions/rust-toolchain'))
+        self.assertLess(producer.index('uses: ./.github/actions/rust-toolchain'), producer.index('uses: ./.github/actions/rust-suite'))
+        self.assertIn('components: ${{ steps.profile.outputs.components }}', producer)
+        self.assertIn('enabled: ${{ inputs.cache }}', producer)
+        self.assertIn('value: ${{ steps.cargo-cache.outputs.status }}', producer)
+        for profile, version, components in [('latest', '1.98.1', 'rustfmt clippy'), ('msrv', '1.85.0', 'clippy')]:
+            for partition in ('differential', 'remaining'):
+                with tempfile.TemporaryDirectory() as directory:
+                    output = Path(directory) / 'outputs'
+                    result, _, _ = self.shell('rust-producer', dict(RUST_PROFILE=profile, RUST_PARTITION=partition,
+                                                                   GITHUB_OUTPUT=str(output)))
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(output.read_text().splitlines(), ['toolchain=' + version, 'components=' + components])
+                block = job(('check-rust' if profile == 'latest' else 'check-rust-msrv') + '-' + partition)
+                self.assertIn("cache: ${{ github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled' }}", block)
+                self.assertIn('dependency-cache: ${{ steps.validate.outputs.dependency-cache }}', block)
+        for code in (0, 29):
+            profile = "profile $(touch injected) 'literal'"
+            result, args, env = self.shell('rust-producer', dict(RUST_PROFILE=profile, RUST_PARTITION='remaining'), code,
+                                          step='Bind the actual source, commands and binary identities')
+            self.assertEqual(result.returncode, code, result.stderr)
+            self.assertEqual(args, ['scripts/ci_rust_artifacts.py', '--profile', profile, '--partition', 'remaining',
+                                    '--results', env['RUNNER_TEMP'], '--output', env['RUNNER_TEMP'] + '/rust-validation'])
+
+    def test_partition_adapter_preserves_arguments_and_failure_without_shell_evaluation(self):
+        for partition in ('differential', 'remaining', "remaining $(touch injected) 'literal'"):
+            for code in (0, 23):
+                result, args, env = self.shell('source-check', dict(CHECK_GROUP='rust-latest', CHECK_COMPILER='',
+                                                                   CHECK_PARTITION=partition), code)
+                self.assertEqual(result.returncode, code)
+                self.assertEqual(args, ['scripts/ci_profiles.py', '--checks', 'rust-latest', '--partition', partition,
+                                       '--output', env['RUNNER_TEMP'] + '/rust-latest-' + partition])
 
     def test_invalid_native_preparation_cannot_silently_skip_build(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -326,8 +366,7 @@ class CIActions(unittest.TestCase):
             self.assertFalse(output.exists())
 
     def test_cache_keys_and_status_preserve_all_six_callers(self):
-        versions = {'check-rust': '1.98.1', 'check-rust-msrv': '1.85.0',
-                    'check-macos-source': '1.85.0', 'check-interop': '1.98.1',
+        versions = {'check-macos-source': '1.85.0', 'check-interop': '1.98.1',
                     'check-lean-kernel': '1.98.1', 'check-distribution': '1.98.1'}
         for name, version in versions.items():
             block = job(name)

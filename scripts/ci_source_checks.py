@@ -38,8 +38,9 @@ def snapshot(root):
                 working_inputs_sha256=state.hexdigest())
 
 
-def definition(group):
-    manifest = json.loads(MANIFEST.read_text())
+def definition(group, *, root=None, contents=None):
+    manifest = json.loads((MANIFEST if root is None else root / '.github/ci/source-checks.json').read_bytes()
+                          if contents is None else contents)
     if set(manifest) != {'format', 'groups', 'tools'} or manifest['format'] != 2:
         raise ValueError('unknown source-check manifest')
     if group not in manifest['groups']:
@@ -66,13 +67,22 @@ def definition(group):
     return spec | {'tools': {name: manifest['tools'][name] for name in spec['tools']}}
 
 
-def describe(group, ancestors=()):
+def describe(group, ancestors=(), *, partition=None, root=None, contents=None):
     if group in ancestors:
         raise ValueError('cyclic check preparation')
-    spec = definition(group)
+    spec = definition(group, root=root, contents=contents)
+    if partition is not None:
+        import check_rust_test_partition
+        if group not in {'rust-latest', 'rust-msrv'} or spec['prepare'] != ['native-runtime']:
+            raise ValueError('producer partition requires the complete native-gated Rust group')
+        indices = check_rust_test_partition.command_indices(group, spec['commands'], partition)
+        spec = spec | dict(partition=dict(name=partition, full_commands=spec['commands'],
+                          selected_indices=indices,
+                          omitted_indices=[i for i in range(len(spec['commands'])) if i not in indices]),
+                          commands=[spec['commands'][i] for i in indices])
     commands, tools, environment = [], {}, {}
     for name in spec['prepare']:
-        dependency = describe(name, (*ancestors, group))
+        dependency = describe(name, (*ancestors, group), root=root, contents=contents)
         commands.extend(dependency['commands'])
         tools.update(dependency['tools'])
         environment.update(dependency['environment'])
@@ -83,8 +93,8 @@ def describe(group, ancestors=()):
                        preparation_commands=len(commands) - len(spec['commands']))
 
 
-def plan(group, compiler=None):
-    commands = describe(group)['commands']
+def plan(group, compiler=None, *, partition=None):
+    commands = describe(group, partition=partition)['commands']
     if any('{compiler}' in command for command in commands) and compiler is None:
         raise ValueError(group + ' requires an explicit --compiler')
     return [[str(compiler.resolve()) if arg == '{compiler}' else arg for arg in command]
@@ -107,15 +117,15 @@ def toolchain(spec, environment):
     return observed
 
 
-def execute(group, compiler, output):
+def execute(group, compiler, output, *, partition=None):
     output = output.resolve()
     if output.is_relative_to(ROOT):
         raise ValueError('source-check output must be outside the source checkout')
     output.mkdir(parents=True, exist_ok=False)
     report = dict(format=1, group=group, status='failed', commands=[], python=sys.version)
     try:
-        commands = plan(group, compiler)
-        spec = describe(group)
+        commands = plan(group, compiler, partition=partition)
+        spec = describe(group, partition=partition)
         report.update(binding=snapshot(ROOT), manifest_sha256=digest(MANIFEST),
                       plan=spec,
                       commands=[dict(argv=argv, status='not-run', reason='earlier check did not complete')
@@ -145,7 +155,8 @@ def execute(group, compiler, output):
             task = dict(id=str(number), commands=[command])
             result = ci_runtime.run_task(task, ROOT, output / str(number), spec['timeout_seconds'], environment)
             report['commands'][number] = dict(argv=command, **result)
-            print(f"{group} {number + 1}/{len(commands)}: {result['status']}", flush=True)
+            label = group if partition is None else f'{group}[{partition}]'
+            print(f"{label} {number + 1}/{len(commands)}: {result['status']}", flush=True)
             if result['status'] != 'passed':
                 if result.get('error'):
                     print(result['error'], file=sys.stderr)
