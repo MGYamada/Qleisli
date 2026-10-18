@@ -47,6 +47,17 @@ class RustSchedulerTests(unittest.TestCase):
         for row in native['records']:
             data = base64.b64decode(row['base64'], validate=True)
             self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
+        computed_bytes = (root / 'computed-timeout-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(computed_bytes).hexdigest(),
+                         'da31b8a3d9b815653bf0b6441954c2b486d49e898fd0ed7e77d1114d47fa3c34')
+        computed = json.loads(gzip.decompress(computed_bytes))
+        self.assertEqual(computed['first_head'], '957f7f930ef9c55c1346eb8162030b89d657d7b6')
+        self.assertEqual(len(computed['records']), 2344)
+        self.assertEqual(len({row['name'] for row in computed['records']}), 2344)
+        for row in computed['records']:
+            data = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644, 0o755))
         archive = (root / index['archive']['path']).read_bytes()
         self.assertEqual(hashlib.sha256(archive).hexdigest(), index['archive']['sha256'])
         records = json.loads(gzip.decompress(archive))['records']
@@ -128,6 +139,38 @@ class RustSchedulerTests(unittest.TestCase):
         self.assertIn('retained failure reason', output.getvalue())
         self.assertEqual([row['status'] for row in results], ['failed', 'not-run', 'not-run'])
 
+    def test_complete_isolated_harness_finishes_before_any_pool_worker(self):
+        rows = [dict(kind='test', name=name, status='not-run') for name in
+                ('alpha', 'computed_derived_source', 'beta')]
+        seen = []; active = []; lock = threading.Lock()
+        def run(row, directory):
+            with lock:
+                if runner.isolated(row): self.assertEqual(active, [])
+                else: self.assertNotIn('computed_derived_source', active)
+                active.append(row['name']); seen.append(row['name'])
+            time.sleep(0.02)
+            with lock: active.remove(row['name'])
+            return row | dict(status='passed', seconds=0.02, log=str(directory / 'absent'))
+        with tempfile.TemporaryDirectory() as directory, patch.object(runner, 'harness', side_effect=run), \
+                contextlib.redirect_stdout(io.StringIO()):
+            results = runner.schedule(rows, 2, Path(directory), lambda rows: None)
+        self.assertEqual(seen[0], 'computed_derived_source')
+        self.assertCountEqual(seen, [row['name'] for row in rows])
+        self.assertEqual([row['name'] for row in results], [row['name'] for row in rows])
+        self.assertTrue(all(row['status'] == 'passed' for row in results))
+
+    def test_isolated_failure_keeps_other_targets_unexecuted(self):
+        rows = [dict(kind='test', name=name, status='not-run') for name in
+                ('alpha', 'computed_derived_source', 'beta')]
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(runner, 'harness', return_value=rows[1] | dict(
+                    status='failed', error='native timeout', seconds=0, log='/missing')) as run, \
+                patch.object(runner, 'ThreadPoolExecutor') as pool, contextlib.redirect_stdout(io.StringIO()):
+            results = runner.schedule(rows, 2, Path(directory), lambda rows: None)
+        run.assert_called_once()
+        pool.assert_not_called()
+        self.assertEqual([row['status'] for row in results], ['not-run', 'failed', 'not-run'])
+
     def test_failure_identity_survives_bounded_previews_after_large_worker_logs(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / 'failed.log'; log.write_text('large output\n' * 2000)
@@ -143,9 +186,10 @@ class RustSchedulerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             child = root / 'cargo-test.py'
-            for mode in ('pass', 'exit', 'skip', 'missing', 'changed', 'wrong-artifact'):
+            for mode in ('pass', 'isolated', 'exit', 'skip', 'missing', 'changed', 'wrong-artifact'):
                 executable = root / 'artifact'; executable.write_text('bound executable')
-                artifact = dict(reason='compiler-artifact',package_id='root-id',target=dict(name=mode),
+                name = 'computed_derived_source' if mode == 'isolated' else mode
+                artifact = dict(reason='compiler-artifact',package_id='root-id',target=dict(name=name),
                                 profile=dict(test=True),executable=str(executable))
                 if mode == 'wrong-artifact': artifact['executable'] = '/other-harness'
                 body = f"print({json.dumps(artifact)!r})\n" + "print('test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s')\n"
@@ -154,13 +198,15 @@ class RustSchedulerTests(unittest.TestCase):
                 if mode == 'missing': body = "print('not a test summary')\n"
                 if mode == 'changed': body += f"from pathlib import Path\nPath({str(executable)!r}).write_text('replaced')\n"
                 child.write_text(body)
-                row = dict(kind='test', name=mode, executable=str(executable), sha256=runner.digest(executable),
-                           package_id='root-id',target=dict(name=mode),profile=dict(test=True),
+                row = dict(kind='test', name=name, executable=str(executable), sha256=runner.digest(executable),
+                           package_id='root-id',target=dict(name=name),profile=dict(test=True),
                            command=[sys.executable, str(child)], status='not-run')
                 result = runner.harness(row, root)
                 self.assertEqual(result['executed_command'], row['command'] +
-                                 ['--message-format=json', '--', '--test-threads', '2'])
-                self.assertEqual(result['status'], 'passed' if mode == 'pass' else 'failed')
+                                 ['--message-format=json', '--', '--test-threads',
+                                  '1' if mode == 'isolated' else '2'])
+                self.assertEqual(result['test_threads'], 1 if mode == 'isolated' else 2)
+                self.assertEqual(result['status'], 'passed' if mode in ('pass', 'isolated') else 'failed')
                 if mode == 'exit': self.assertEqual(result['exit_code'], 7)
 
     def test_missing_kernel_refuses_before_metadata_or_build_and_retains_record(self):

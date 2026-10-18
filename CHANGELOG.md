@@ -27,6 +27,9 @@ and exactness obligations retain their recorded scopes and status.
   builds; preserve the original shared-action shell checks and complete coverage.
   Fix harness concurrency at two test threads across hosts and retain failed
   target identities after other workers finish; preserve original failures.
+  Run the complete long computed-source harness alone with one test thread
+  before the worker pool, preserving the first extracted-source native
+  timeouts, every original case and the fixed transport/work limits.
 
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports
