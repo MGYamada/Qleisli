@@ -50,6 +50,11 @@ class FirstNativeEdition(unittest.TestCase):
             self.assertEqual((len(data), hashlib.sha256(data).hexdigest()),
                              (expected['bytes'], expected['sha256']))
         self.assertEqual(len(set(self.records) - set(index['files'])), 34)
+        readme = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/README.md').read_text()
+        self.assertIn(f'{len(self.records):,} original files, '
+                      f'{sum(map(len, self.records.values())):,} expanded source/log bytes', readme)
+        self.assertIn('80df6cba3f022d8b2aafe4824c468d034309d100f61e5cbbc784b83f6e11483b', readme)
+        self.assertIn('(first.json.gz)', readme)
 
     def test_usage_entry_and_manifest_failures_are_not_reclassified(self):
         self.assertIn(b'unsupported --json', self.records['first-attempt-classification.txt'])
