@@ -1,5 +1,35 @@
 {
   "baseline_commit": "47716d0a2a4bc8dcfc6923ed4cf0f3c4c9d8a8b5",
+  "subsequent_linked_std_descriptor": {
+    "scope": "Separate informed standard-qrate descriptor API/packaging study and focused validation, retained after the ordinary-library cutover. These are not observations from the original remaining-tests BEFORE run, nor qargo pairing completion.",
+    "retained_commit": "01ff5b9b29be88a23a48d742fb58682888ac1a18",
+    "files": [
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/README.md",
+        "sha256": "b35285c83c032f8747570ef4820206d06a6a8128529930c248fd85b40306c745"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/first-index.json",
+        "sha256": "a1965c5aaf8db4bf8f64deff866acb20222b135933b402d304d8c100107e831b"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/first.records.json.gz",
+        "sha256": "0216776c10299b26f6b409df64109ee6655596168e3fe0686ecb9d200f4d165f"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/test-path-first-index.json",
+        "sha256": "8e4c6040713f291e014b4c80c4ec2061a568249d6a1357a825b957c2d9dec528"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/test-path-first.records.json.gz",
+        "sha256": "75aa570b01ccb581500d06039102ef307b1de132880041018b373dd68f973db4"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/linked-std-descriptor-v030/validation-after.json",
+        "sha256": "964c3e721c5c2f96553a660ecdc396d91bb79e4aac9bad16544cd2386f15f308"
+      }
+    ]
+  },
   "predecessor": {
     "manifest": "/private/tmp/qleisli-477-ci-before-retention-j1b9pow9/MANIFEST-v2.json",
     "sha256": "1b42a573b723fa09e1b04d2bfa944ebea337042ab9bd33190c4165f8e6a4fe58",
