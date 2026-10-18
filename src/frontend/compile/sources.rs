@@ -374,6 +374,9 @@ mod tests {
 
     fn project(sources: &[(&str, &str)]) -> Project {
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules: sources
                 .iter()

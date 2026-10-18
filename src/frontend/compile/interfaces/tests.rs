@@ -8,6 +8,9 @@ const FIRST: &str = "tests/fixtures/authoring_sessions/interface-naturals-v030";
 fn project(text: String) -> Project {
     let ast = crate::frontend::parser::parse_module(&text).expect("ordinary source translation");
     Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),

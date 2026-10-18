@@ -549,7 +549,8 @@ mod tests {
                     policy: super::super::SourcePolicy::Legacy,
                     used: 0
                 },
-                &mut discovered
+                &mut discovered,
+                None
             )
             .is_ok()
         );
@@ -644,7 +645,8 @@ mod tests {
                     policy: super::super::SourcePolicy::Legacy,
                     used: 0
                 },
-                &mut discovered
+                &mut discovered,
+                None
             )
             .is_ok()
         );

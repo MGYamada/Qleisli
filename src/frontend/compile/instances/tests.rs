@@ -4,6 +4,9 @@ use crate::frontend::project::{ModuleOrigin, SourceModule};
 
 fn project(source: &str) -> Project {
     Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain explicit typed constitutional edition requests and exact selecting/
+  nested manifest bytes through filesystem project preparation; reject root
+  or module-inventory substitution. Retained configuration shares the existing
+  aggregate input budget. Native edition propagation under #255 remains pending.
+
 - Preserve the original native-edition source/diagnostic study as bounded inert
   history with exact-byte integrity checks; edition propagation remains pending.
 

@@ -40,3 +40,27 @@ case, new guarantee, Issue completion or release is claimed. The existing two
 scoped QLV1 guarantees and broader pending QS/PR/RS/EXACT duties remain.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+
+The later [context-source archive](context-source-first.json.gz) retains eight
+pre-change source files at `8dde351ce8c19d091bdae01c3e9ea49d5e34b368`, before
+typed edition selection and immutable filesystem manifest capture. Its SHA-256
+is `9393bc8b48d43ca3d45b6ed729ce5528593366004650a793b699a878cc208cfb`;
+192,671 expanded archive bytes are checked passively by the same reader.
+This source record claims no native edition check, proof, CI or completion.
+The [first capture-test record](context-tests-first.json.gz), SHA-256
+`1c619586c16e5732311717333591e5d7a2c7424be6dfa98565bd67feb685db61`,
+retains five source/report/log records (37,249 expanded archive bytes).
+Three tests failed in setup because their parent directories had not been
+created. Those refusals are not native/checker failures; the repair creates
+the intended directories without changing the asserted contracts.
+The [first validation record](context-validation-first.json.gz), SHA-256
+`e9f8a889bd773390d4e86d7b3fc915374069aabf9a2c609134528f2aae5f6948`,
+retains eight source/report/log records (124,306 expanded archive bytes): four
+needless-borrow lint errors and an unrelated sandbox process-syscall denial.
+The latter test passed when rerun outside the sandbox; neither is native proof.
+The [first migration record](context-migration-first.json.gz), SHA-256
+`228aaa63263873bbdb101f56da047859595b0c5d0687bf364db94364687e8e85`,
+retains 13 source/report/log records (1,039,731 expanded archive bytes).
+It preserves the later MSRV lint, source/route inventory refusals and the
+old source-only capacity diagnostic expectation. That native attempt passed
+51/52 cases and stopped before MSRV; its partial result is not completion.

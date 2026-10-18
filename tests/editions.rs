@@ -2,7 +2,6 @@ mod common;
 
 use common::SourceRoot;
 use qleisli::frontend::{
-    CURRENT_EDITION,
     compile::ParsedProgram,
     compile::{check_project, check_project_with_policy, compile_project},
     project::{ModuleOrigin, Project, SourcePolicy, bundled_std, read_source_file},
@@ -10,6 +9,105 @@ use qleisli::frontend::{
 use std::{collections::BTreeMap, fs, process::Command};
 
 const SOURCE: &str = "observe fn main() -> Bit { 1 }";
+
+#[test]
+fn qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits() {
+    use qleisli::edition::Edition;
+    use qleisli::frontend::project::QrateSource;
+    let root = SourceRoot::new("");
+    let original =
+        "# selected bytes\nschema-version=2\n[qrate]\nedition='2026'\n[source]\nroot='src'\n";
+    root.write("Qargo.toml", original);
+    fs::create_dir(root.0.join("src")).unwrap();
+    root.write("src/main.qli", SOURCE);
+    let selected = QrateSource::select(&root.0).unwrap();
+    assert_eq!(selected.manifest().source(), original);
+    assert_eq!(selected.manifest().edition(), Edition::E2026);
+    root.write(
+        "Qargo.toml",
+        "schema-version=2\n[qrate]\nedition='2027'\n[source]\nroot='other'\n",
+    );
+    let loaded = selected.load_with_policy(SourcePolicy::default()).unwrap();
+    assert_eq!(loaded.edition(), Edition::E2026);
+    let manifest = loaded.module_manifest("main").unwrap();
+    assert_eq!(manifest.source(), original);
+    assert_eq!(manifest.path(), selected.manifest().path());
+    assert_eq!(loaded.module("main").unwrap().source, SOURCE);
+    assert!(QrateSource::select(&root.0).is_err());
+}
+
+#[test]
+fn nested_sources_keep_their_own_original_manifest_association() {
+    use qleisli::edition::Edition;
+    let root = SourceRoot::new(SOURCE);
+    let nested = "# independent nested bytes\nschema-version=2\n[qrate]\nedition='2026'\n";
+    fs::create_dir(root.0.join("nested")).unwrap();
+    root.write("nested/Qargo.toml", nested);
+    root.write(
+        "nested/leaf.qli",
+        "pub unitary fn leaf(q:Q<Bit>)->Q<Bit>{q}",
+    );
+    root.write("nested/test.qlt", "");
+    let loaded = Project::load_with_policy(&root.0, SourcePolicy::default()).unwrap();
+    assert_eq!(loaded.edition(), Edition::E2026);
+    assert_eq!(
+        loaded.module_manifest("nested::leaf").unwrap().source(),
+        nested
+    );
+    assert_ne!(
+        loaded.module_manifest("main").unwrap().path(),
+        loaded.module_manifest("nested::leaf").unwrap().path()
+    );
+    root.write(
+        "nested/Qargo.toml",
+        "schema-version=2\n[qrate]\nedition='2027'\n",
+    );
+    assert_eq!(
+        loaded.module_manifest("nested::leaf").unwrap().source(),
+        nested
+    );
+    assert!(Project::load_with_policy(&root.0, SourcePolicy::default()).is_err());
+}
+
+#[test]
+fn explicit_in_memory_project_has_no_fabricated_file_manifest() {
+    use qleisli::edition::Edition;
+    let root = SourceRoot::new(SOURCE);
+    let loaded = Project::load_with_policy(&root.0, SourcePolicy::default()).unwrap();
+    let project = Project::from_modules(loaded.root, loaded.modules, Edition::E2026);
+    assert_eq!(project.edition(), Edition::E2026);
+    assert!(project.module_manifest("main").is_none());
+    assert!(project.module_manifest("std::gate").is_none());
+}
+
+#[test]
+fn retained_manifest_bytes_share_the_existing_aggregate_capacity_once() {
+    let root = SourceRoot::new(SOURCE);
+    let nested = "# retained configuration\nschema-version=2\n[qrate]\nedition='2026'\n";
+    fs::create_dir(root.0.join("nested")).unwrap();
+    root.write("nested/Qargo.toml", nested);
+    let leaf = "pub unitary fn leaf(q:Q<Bit>)->Q<Bit>{q}";
+    for number in 0..4 {
+        root.write(&format!("nested/leaf{number}.qli"), leaf);
+    }
+    let bytes = fs::read(root.0.join("Qargo.toml")).unwrap().len()
+        + nested.len()
+        + SOURCE.len()
+        + 4 * leaf.len()
+        + bundled_std()
+            .unwrap()
+            .modules()
+            .map(|(_, text)| text.len())
+            .sum::<usize>();
+    let policy = |project_bytes| SourcePolicy::Bounded {
+        source_bytes: 1 << 20,
+        project_bytes,
+    };
+    Project::load_with_policy(&root.0, policy(bytes as u64)).unwrap();
+    let failure = Project::load_with_policy(&root.0, policy(bytes as u64 - 1)).unwrap_err();
+    assert_eq!(failure.code, "limit");
+    Project::load_with_policy(&root.0, SourcePolicy::Legacy).unwrap();
+}
 
 #[test]
 fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {
@@ -36,7 +134,7 @@ fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {
 )]
 #[test]
 fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
-    assert_eq!(CURRENT_EDITION, "2026");
+    assert_eq!(qleisli::edition::Edition::E2026.as_str(), "2026");
     let root = SourceRoot::new(SOURCE);
     check_project(&root.0).unwrap();
     compile_project(&root.0).unwrap();
@@ -301,7 +399,7 @@ fn bundled_std_descriptor_binds_manifest_and_complete_loaded_source_inventory() 
     assert_eq!(bundle.edition(), qrate["edition"].as_str().unwrap());
     assert_eq!(bundle.product_version(), env!("CARGO_PKG_VERSION"));
     assert_eq!(bundle.version(), bundle.product_version());
-    assert_eq!(bundle.edition(), CURRENT_EDITION);
+    assert_eq!(bundle.edition(), qleisli::edition::Edition::E2026.as_str());
 
     let mut expected = BTreeMap::new();
     for entry in fs::read_dir(repository.join("stdlib/src")).unwrap() {

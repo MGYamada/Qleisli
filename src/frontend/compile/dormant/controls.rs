@@ -457,6 +457,9 @@ mod tests {
             unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
             requires Applicable(U){identity(ctrl q);U(q)}";
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules: BTreeMap::from([(
                 "main".into(),

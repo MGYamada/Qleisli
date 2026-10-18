@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "42a2404e9ad5f9d036c98ae2d687a69510aa17a6c907c77d166c9bf936548571",
+  "surface_sha256": "88e22cad7871b9f6b756609aa09feeab260141f68fc0823c7362d5a81cc28758",
   "groups": [
     {
       "id": "raw-core",
@@ -1802,13 +1802,20 @@
         "Project::load",
         "Project::load_with_policy",
         "read_source_file",
-        "ParsedProgram::load"
+        "ParsedProgram::load",
+        "QrateSource::select",
+        "Project::from_modules",
+        "Project::module_manifest"
       ],
       "status": "untrusted-host",
-      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
+      "blocker": "Native edition propagation/context mismatch rejection and its actual-path proofs under #255 remain unfinished. Other in-memory source/helper migrations, source/compiler/runtime preservation and broader S05/QS/PR/RS/EXACT duties remain open; frontend context is no native acceptance or guarantee.",
       "evidence": [
         "tests/review_v021.rs",
-        "tests/static_operations.rs"
+        "tests/static_operations.rs",
+        "tests/editions.rs",
+        "src/edition.rs",
+        "src/frontend/compile/mod.rs",
+        "tests/fixtures/authoring_sessions/native-edition-v030/README.md"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1825,8 +1832,8 @@
         "MIG-5"
       ],
       "route_test": {
-        "path": "tests/review_v021.rs",
-        "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+        "path": "tests/editions.rs",
+        "test": "qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits"
       },
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -3317,7 +3324,40 @@
           "markers": [
             "pub fn load(",
             "pub fn load_with_policy(",
-            "pub fn read_source_file("
+            "pub fn read_source_file(",
+            "pub fn from_modules(",
+            "pub fn module_manifest(",
+            "fn validate_edition_context(",
+            "fn charge_manifest("
+          ]
+        },
+        {
+          "path": "src/frontend/project/manifest.rs",
+          "markers": [
+            "pub fn select(",
+            "pub fn manifest(",
+            "load_anchored_with_manifest"
+          ]
+        },
+        {
+          "path": "src/frontend/project/edition.rs",
+          "markers": [
+            "pub struct EditionManifest",
+            "fn read_anchored(",
+            "fn capture("
+          ]
+        },
+        {
+          "path": "src/edition.rs",
+          "markers": [
+            "pub enum Edition",
+            "impl FromStr for Edition"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "project.validate_edition_context()"
           ]
         }
       ],
@@ -3325,13 +3365,37 @@
         {
           "path": "tests/review_v021.rs",
           "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "nested_sources_keep_their_own_original_manifest_association"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "explicit_in_memory_project_has_no_fabricated_file_manifest"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "retained_manifest_bytes_share_the_existing_aggregate_capacity_once"
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "test": "source_preparation_rejects_a_substituted_edition_inventory"
+        },
+        {
+          "path": "src/edition.rs",
+          "test": "only_an_explicit_supported_identity_parses"
         }
       ],
-      "entry_path": "Project::{load,load_with_policy}, read_source_file, ParsedProgram::load",
-      "checked_artifact": "Files and schema-2 source-tree edition configuration",
+      "entry_path": "Filesystem Project/QrateSource selection and explicit Project::from_modules with Edition; read_source_file and ParsedProgram::load retain manifest prechecks.",
+      "checked_artifact": "Requested typed edition, original captured manifest bytes and local file/module path-origin associations; no native accepted artifact.",
       "checker": "Host source/configuration checks; no semantic acceptance",
-      "proof_scope": "Source loader and edition regression tests only.",
-      "gaps": "Edition identifies the constitutional regime; loading neither checks quantum meaning nor discharges guarantees."
+      "proof_scope": "Configuration/source preparation regressions, including substitutions, exact retained bytes and aggregate capacity; no native edition proof.",
+      "gaps": "Native edition propagation/mismatch proof and remaining helper migrations are pending under #255. No source, execution, target or constitutional guarantee is discharged."
     },
     {
       "id": "hierarchy-configuration",
@@ -4591,7 +4655,7 @@
         {
           "path": "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean",
           "markers": [
-            "let checked \u2190 Conditional.checkAll packet.artifact packet.order",
+            "let checked ← Conditional.checkAll packet.artifact packet.order",
             "theorem checkAll_conditions"
           ]
         },

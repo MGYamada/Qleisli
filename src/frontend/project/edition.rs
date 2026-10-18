@@ -4,11 +4,42 @@
 
 use std::fs;
 use std::io::Read;
-use std::path::Path;
-use std::sync::OnceLock;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, OnceLock};
 
 use super::{BundledRegistry, LoadFailure, error, io_error, located_error, source_file};
-use crate::frontend::{CURRENT_EDITION, ast::Span};
+use crate::edition::Edition;
+use crate::frontend::ast::Span;
+
+/// The exact validated manifest selected for a source, retained without rereading.
+/// This requested context confers no native acceptance or source preservation proof.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EditionManifest {
+    path: PathBuf,
+    source: Arc<str>,
+    edition: Edition,
+}
+
+impl EditionManifest {
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+    pub fn source(&self) -> &str {
+        &self.source
+    }
+    pub fn edition(&self) -> Edition {
+        self.edition
+    }
+}
+
+fn capture(path: &Path, source: String) -> Result<EditionManifest, LoadFailure> {
+    let (_, edition) = parse_manifest(path, &source)?;
+    Ok(EditionManifest {
+        path: path.into(),
+        source: source.into(),
+        edition,
+    })
+}
 
 const MAX_MANIFEST_BYTES: u64 = 65_536;
 
@@ -31,11 +62,10 @@ pub(super) fn check_bundled() -> Result<(), LoadFailure> {
 
 // Called once per discovered directory. A nested directory inherits the already
 // checked parent edition; its own manifest, when present, must pass afresh.
-pub(super) fn check_anchored(
+pub(super) fn read_anchored(
     directory: &Path,
     anchor: &fs::File,
-    root: bool,
-) -> Result<(), LoadFailure> {
+) -> Result<Option<EditionManifest>, LoadFailure> {
     let path = directory.join("Qargo.toml");
     match source_file::kind(anchor, directory, "Qargo.toml".as_ref()) {
         Ok(source_file::Kind::File) => {}
@@ -47,11 +77,7 @@ pub(super) fn check_anchored(
             ));
         }
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            return if root {
-                check_directory(directory.parent().unwrap_or(directory))
-            } else {
-                Ok(())
-            };
+            return Ok(None);
         }
         Err(e) => return Err(io_error(&path, e)),
     }
@@ -59,11 +85,7 @@ pub(super) fn check_anchored(
         match source_file::child(anchor, directory, std::ffi::OsStr::new("Qargo.toml"), false) {
             Ok(file) => file,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                return if root {
-                    check_directory(directory.parent().unwrap_or(directory))
-                } else {
-                    Ok(())
-                };
+                return Ok(None);
             }
             Err(e) => return Err(io_error(&path, e)),
         };
@@ -87,16 +109,14 @@ pub(super) fn check_anchored(
     }
     let source = String::from_utf8(bytes)
         .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
-    check_manifest(&path, &source)
+    capture(&path, source).map(Some)
 }
 
 pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
     read_directory(directory).map(|_| ())
 }
 
-pub(super) fn read_directory(
-    directory: &Path,
-) -> Result<(std::path::PathBuf, String), LoadFailure> {
+pub(super) fn read_directory(directory: &Path) -> Result<EditionManifest, LoadFailure> {
     for ancestor in directory.ancestors() {
         let path = ancestor.join("Qargo.toml");
         match fs::symlink_metadata(&path) {
@@ -126,8 +146,7 @@ pub(super) fn read_directory(
         }
         let source = String::from_utf8(bytes)
             .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
-        check_manifest(&path, &source)?;
-        return Ok((path, source));
+        return capture(&path, source);
     }
     Err(error(
         &directory.join("Qargo.toml"),
@@ -136,6 +155,7 @@ pub(super) fn read_directory(
     ))
 }
 
+#[cfg(test)]
 pub(super) fn check_manifest(path: &Path, source: &str) -> Result<(), LoadFailure> {
     parse_manifest(path, source).map(|_| ())
 }
@@ -143,7 +163,7 @@ pub(super) fn check_manifest(path: &Path, source: &str) -> Result<(), LoadFailur
 // Distribution identity is a packaging precondition, never semantic authority.
 // User qrates keep their own versions and are not subject to this private gate.
 fn check_bundled_manifest(path: &Path, source: &str) -> Result<(), LoadFailure> {
-    let manifest = parse_manifest(path, source)?;
+    let (manifest, _) = parse_manifest(path, source)?;
     let invalid = |message| {
         located_error(
             path,
@@ -182,7 +202,7 @@ fn check_bundled_manifest(path: &Path, source: &str) -> Result<(), LoadFailure> 
     Ok(())
 }
 
-fn parse_manifest(path: &Path, source: &str) -> Result<toml::Table, LoadFailure> {
+fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), LoadFailure> {
     #[cfg(test)]
     PARSES.with(|count| count.set(count.get() + 1));
     let invalid = |message| {
@@ -223,17 +243,41 @@ fn parse_manifest(path: &Path, source: &str) -> Result<toml::Table, LoadFailure>
         .and_then(|qrate| qrate.get("edition"))
         .and_then(toml::Value::as_str)
         .ok_or_else(|| invalid("Qargo.toml requires an explicit string [qrate].edition; add edition = \"2026\" (there is no default)".to_owned()))?;
-    if edition != CURRENT_EDITION {
-        return Err(invalid(format!(
-            "unsupported Qleisli edition {edition:?}; only \"{CURRENT_EDITION}\" is supported"
-        )));
-    }
-    Ok(manifest)
+    let edition = edition
+        .parse::<Edition>()
+        .map_err(|failure| invalid(failure.to_string()))?;
+    Ok((manifest, edition))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn retained_manifest_accounting_checks_capacity_and_overflow_before_commit() {
+        use super::super::{SourceBudget, SourcePolicy};
+        let path = Path::new("Qargo.toml");
+        let mut budget = SourceBudget {
+            policy: SourcePolicy::Bounded {
+                source_bytes: 1,
+                project_bytes: 64,
+            },
+            used: 0,
+        };
+        budget
+            .charge_manifest(path, 64)
+            .unwrap_or_else(|e| panic!("{}", e.error));
+        assert_eq!(budget.used, 64);
+        assert!(budget.charge_manifest(path, 1).is_err());
+        assert_eq!(budget.used, 64);
+        assert!(budget.charge_manifest(path, u64::MAX).is_err());
+        assert_eq!(budget.used, 64);
+        let mut legacy = SourceBudget {
+            policy: SourcePolicy::Legacy,
+            used: 0,
+        };
+        assert!(legacy.charge_manifest(path, u64::MAX).is_ok());
+    }
     #[test]
     fn a_load_parses_each_manifest_once_even_with_many_empty_sources() {
         let path = std::env::temp_dir().join(format!(

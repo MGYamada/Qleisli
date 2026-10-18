@@ -336,8 +336,19 @@ PATHS = {
         ('tests/interop.rs', 'ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase'),
         ('tests/interop.rs', 'ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order')]),
     'source-configuration': path_rule('configuration', 'source-edition-configuration', '', [
-        ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(']),
-    ], [('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution')]),
+        ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(',
+         'pub fn from_modules(', 'pub fn module_manifest(', 'fn validate_edition_context(', 'fn charge_manifest(']),
+        ('src/frontend/project/manifest.rs', ['pub fn select(', 'pub fn manifest(', 'load_anchored_with_manifest']),
+        ('src/frontend/project/edition.rs', ['pub struct EditionManifest', 'fn read_anchored(', 'fn capture(']),
+        ('src/edition.rs', ['pub enum Edition', 'impl FromStr for Edition']),
+        ('src/frontend/compile/mod.rs', ['project.validate_edition_context()']),
+    ], [('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution'),
+        ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits'),
+        ('tests/editions.rs', 'nested_sources_keep_their_own_original_manifest_association'),
+        ('tests/editions.rs', 'explicit_in_memory_project_has_no_fabricated_file_manifest'),
+        ('tests/editions.rs', 'retained_manifest_bytes_share_the_existing_aggregate_capacity_once'),
+        ('src/frontend/compile/mod.rs', 'source_preparation_rejects_a_substituted_edition_inventory'),
+        ('src/edition.rs', 'only_an_explicit_supported_identity_parses')]),
     'hierarchy-configuration': path_rule('configuration', 'hierarchy-inspect', '', [
         ('src/interchange/hierarchical.rs', ['pub fn new(']),
     ], [('tests/hierarchical_host.rs', 'native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes')]),
@@ -1278,6 +1289,7 @@ ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/te
                                     'native_tensor_composes_component_bounds_without_parent_frobenius')
 
 ROUTES['engineering-openqasm'] = ('src/interchange/engineering_openqasm/tests.rs', 'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering')
+ROUTES['source-edition-configuration'] = ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits')
 
 
 def surface_identity(inventory):

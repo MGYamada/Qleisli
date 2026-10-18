@@ -879,6 +879,9 @@ mod tests {
             })
             .collect();
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules,
         }

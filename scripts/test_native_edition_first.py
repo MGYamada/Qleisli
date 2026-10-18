@@ -13,6 +13,101 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_first_migration_refusals_do_not_claim_a_completed_native_run(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/context-migration-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '228aaa63263873bbdb101f56da047859595b0c5d0687bf364db94364687e8e85')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(1_039_732)
+        self.assertEqual(len(raw), 1_039_731)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '754add7032d904257bcc3ecce72fdc96ba8f909456461edbfab1b10872769df2')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.edition-context-first-migration', 1))
+        self.assertEqual(len(record['records']), 13)
+        data = {}
+        for name, row in record['records'].items():
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual(hashlib.sha256(data[name]).hexdigest(), row['sha256'])
+        attempt = json.loads(data['native-regressions-v1.json'])
+        self.assertEqual([row['exit_code'] for row in attempt['commands']], [0, 0, 0, 101])
+        self.assertIn(b'6 passed; 1 failed; 0 ignored', data['native-regressions-v1-3.stdout'])
+        self.assertIn(b'project exceeds 10-byte aggregate source and manifest limit', data['native-regressions-v1-3.stdout'])
+        self.assertIn(b'nonminimal_bool', data['compat-v2-3.stderr'])
+        self.assertEqual(json.loads(data['source-integrity-v1.json'])['commands'][0]['status'], 'failed')
+        self.assertEqual(json.loads(data['source-integrity-v2.json'])['commands'][1]['status'], 'failed')
+
+    def test_first_lint_and_sandbox_diagnostics_keep_their_actual_scope(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/context-validation-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'e9f8a889bd773390d4e86d7b3fc915374069aabf9a2c609134528f2aae5f6948')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(124_307)
+        self.assertEqual(len(raw), 124_306)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '4c7322d5813e9610494e4cd4b24aa433489d04c067f0735e3d313396a52e2e92')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.edition-context-first-validation', 1))
+        self.assertEqual(set(record['records']), {'src/frontend/project/manifest.rs', 'src/interchange/process.rs',
+                         'compat-v1.json', 'compat-v1-0.stdout', 'compat-v1-0.stderr',
+                         'capture-tests-v2.json', 'capture-tests-v2-0.stdout', 'capture-tests-v2-0.stderr'})
+        data = {}
+        for name, row in record['records'].items():
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual(hashlib.sha256(data[name]).hexdigest(), row['sha256'])
+        self.assertIn(b'4 previous errors', data['compat-v1-0.stderr'])
+        self.assertIn(b'needless_borrow', data['compat-v1-0.stderr'])
+        self.assertIn(b'278 passed; 1 failed; 167 ignored', data['capture-tests-v2-0.stdout'])
+        self.assertIn(b'PermissionDenied', data['capture-tests-v2-0.stdout'])
+
+    def test_first_capture_test_setup_failures_are_not_native_failures(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/context-tests-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '1c619586c16e5732311717333591e5d7a2c7424be6dfa98565bd67feb685db61')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(37_250)
+        self.assertEqual(len(raw), 37_249)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'fbdf78dfe8b85cf0f72a38523aaf54de0ff539bd8d39e5c534132024d2230f7d')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.edition-context-first-test', 1))
+        self.assertEqual(set(record['records']), {'tests/editions.rs', 'tests/common/mod.rs',
+                         'capture-tests-v1.json', 'capture-tests-v1-1.stdout', 'capture-tests-v1-1.stderr'})
+        data = {}
+        for name, row in record['records'].items():
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual(hashlib.sha256(data[name]).hexdigest(), row['sha256'])
+        self.assertIn(b'8 passed; 3 failed; 6 ignored', data['capture-tests-v1-1.stdout'])
+        self.assertEqual(data['capture-tests-v1-1.stdout'].count(b'kind: NotFound'), 3)
+        self.assertIn(b'fn write(&self, name: &str, source: &str)', data['tests/common/mod.rs'])
+        self.assertIn('No nested/src files were written', record['classification'])
+
+    def test_original_sources_before_context_capture_remain_inert_and_exact(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/context-source-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '9393bc8b48d43ca3d45b6ed729ce5528593366004650a793b699a878cc208cfb')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(192_672)
+        self.assertEqual(len(raw), 192_671)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '8638df9b724617a63e5f6d674ef87bf3d67626d3b950566c5165f10200310c7b')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version'], record['head']),
+                         ('qleisli.edition-context-first', 1, '8dde351ce8c19d091bdae01c3e9ea49d5e34b368'))
+        self.assertEqual(set(record['files']), {
+            'src/frontend/mod.rs', 'src/lib.rs', 'src/frontend/project.rs',
+            'src/frontend/project/edition.rs', 'src/frontend/project/manifest.rs',
+            'src/frontend/compile/mod.rs', 'tests/editions.rs',
+            'docs/src/reference/packages-and-artifacts.md',
+        })
+        for row in record['files'].values():
+            data = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), row['sha256'])
+            self.assertIn(row['mode'], (0o644, 0o755))
+        original = base64.b64decode(record['files']['src/frontend/project/manifest.rs']['base64'], validate=True)
+        self.assertIn(b'let root = qrate_source_root(directory)?;', original)
+        self.assertNotIn(b'manifest: Arc<', original)
+
     @classmethod
     def setUpClass(cls):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/first.json.gz').read_bytes()

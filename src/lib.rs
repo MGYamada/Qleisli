@@ -68,6 +68,7 @@
 //! and versioning policy.
 
 pub mod contract;
+pub mod edition;
 pub mod frontend;
 pub mod host;
 pub mod interchange;

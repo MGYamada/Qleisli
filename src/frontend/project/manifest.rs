@@ -4,6 +4,7 @@
 use super::{Diagnostic, Span, edition, error, io_error, located_error};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
+use std::sync::Arc;
 
 /// A selected qrate root whose path is never re-canonicalized during loading.
 /// On Unix, discovery and reads are relative to the held directory identity;
@@ -12,20 +13,31 @@ use std::path::{Component, Path, PathBuf};
 pub struct QrateSource {
     root: PathBuf,
     directory: fs::File,
+    manifest: Arc<super::EditionManifest>,
 }
 
 impl QrateSource {
     /// Select a qrate root and acquire it without following replacement links.
     pub fn select(directory: &Path) -> Result<Self, Diagnostic> {
-        let root = qrate_source_root(directory)?;
+        let (root, manifest) = qrate_source_selection(directory)?;
         let directory = super::source_file::open_directory(&root)
             .map_err(|e| io_error(&root, e).into_diagnostic())?;
-        Ok(Self { root, directory })
+        Ok(Self {
+            root,
+            directory,
+            manifest: Arc::new(manifest),
+        })
     }
 
     /// Selected source identity for diagnostics; do not canonicalize it again.
     pub fn path(&self) -> &Path {
         &self.root
+    }
+
+    /// Exact manifest used to select this root, retained at selection time.
+    /// This requested context does not authorize native acceptance.
+    pub fn manifest(&self) -> &super::EditionManifest {
+        &self.manifest
     }
 
     pub(super) fn unchanged(&self) -> Result<(), super::LoadFailure> {
@@ -59,8 +71,13 @@ impl QrateSource {
     ) -> Result<super::Project, Diagnostic> {
         self.unchanged()
             .map_err(super::LoadFailure::into_diagnostic)?;
-        let project = super::Project::load_anchored(&self.root, &self.directory, policy)
-            .map_err(super::LoadFailure::into_diagnostic)?;
+        let project = super::Project::load_anchored_with_manifest(
+            &self.root,
+            &self.directory,
+            policy,
+            Some(Arc::clone(&self.manifest)),
+        )
+        .map_err(super::LoadFailure::into_diagnostic)?;
         self.unchanged()
             .map_err(super::LoadFailure::into_diagnostic)?;
         Ok(project)
@@ -72,13 +89,19 @@ impl QrateSource {
 /// This legacy path-only query does not retain directory identity. For subsequent
 /// loading/checking/compilation use [`QrateSource`] instead.
 pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic> {
+    qrate_source_selection(directory).map(|(root, _)| root)
+}
+
+fn qrate_source_selection(
+    directory: &Path,
+) -> Result<(PathBuf, super::EditionManifest), Diagnostic> {
     let root = fs::canonicalize(directory).map_err(|e| io_error(directory, e).into_diagnostic())?;
-    let (path, source) =
-        edition::read_directory(&root).map_err(super::LoadFailure::into_diagnostic)?;
+    let captured = edition::read_directory(&root).map_err(super::LoadFailure::into_diagnostic)?;
+    let (path, source) = (captured.path(), captured.source());
     let fail = |message| {
         located_error(
-            &path,
-            &source,
+            path,
+            source,
             Span {
                 start: 0,
                 end: source.len(),
@@ -132,7 +155,7 @@ pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic> {
             "[source].root must select a nonempty relative directory path",
         ));
     }
-    Ok(selected)
+    Ok((selected, captured))
 }
 
 /// Report unused manifest keys without rejecting previously accepted metadata.
@@ -141,8 +164,9 @@ pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic> {
 pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic> {
     let directory =
         fs::canonicalize(directory).map_err(|e| io_error(directory, e).into_diagnostic())?;
-    let (path, source) =
+    let captured =
         edition::read_directory(&directory).map_err(super::LoadFailure::into_diagnostic)?;
+    let (path, source) = (captured.path(), captured.source());
     let manifest: toml::Table = source.parse().expect("edition parser validated TOML");
     let mut unused = Vec::new();
     for (key, value) in manifest {
@@ -167,7 +191,7 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
         }
     }
     unused.sort();
-    Ok(unused.into_iter().map(|(key, non_table)| located_error(&path,&source,
+    Ok(unused.into_iter().map(|(key, non_table)| located_error(path,source,
         Span{start:0,end:source.len()},"project",
         if non_table {
             format!("manifest key `{key}` must be a table; this Qleisli command ignores it; check the schema-2 spelling")

@@ -300,6 +300,9 @@ mod tests {
     fn word_phis_keep_order_reuse_inherited_bits_and_reserve_before_issuing_ids() {
         let text = "unitary fn unused()->Unit{()}";
         let project = Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules: BTreeMap::from([(
                 "main".into(),

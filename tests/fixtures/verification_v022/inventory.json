@@ -2359,6 +2359,16 @@
           "group": "source"
         }
       }
+    },
+    {
+      "path": "src/edition.rs",
+      "name": "Edition",
+      "members": {
+        "E2026": {
+          "declaration": "E2026",
+          "group": "source"
+        }
+      }
     }
   ],
   "sources": [
@@ -4106,6 +4116,22 @@
       }
     },
     {
+      "path": "src/edition.rs",
+      "sha256": "c4b11f4dbf37fd0759ab002b315d20d08793c342f44e3cd529e1470ef40595a7",
+      "group": "source",
+      "surface": {
+        "declarations": [
+          "Edition",
+          "UnsupportedEdition"
+        ],
+        "functions": [
+          "pub const fn as_str(self) -> &'static str",
+          "pub const fn as_u32(self) -> u32"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/ast.rs",
       "sha256": "ce817a22179958dbc34a489809978bb5a50715575ab48bd64fb072f5bc02e052",
       "group": "source",
@@ -4396,7 +4422,7 @@
     },
     {
       "path": "src/frontend/compile/dormant/controls.rs",
-      "sha256": "3eb6d8793a6c64fb74048c81c2ab171d0fc31fa0c1982d866694399a6f2159ab",
+      "sha256": "c30ee796ec9820fe02b40ed82afc2b7119724d49d629188832d8e15beefc2606",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4406,7 +4432,7 @@
     },
     {
       "path": "src/frontend/compile/dormant/tests.rs",
-      "sha256": "b1a82a02d450b273cf44997f1479f6318c5c64fcfd95a6fbe19380b644d5237c",
+      "sha256": "d9236adfc34f70cc7727978d127d1e532d19cf0061a7e7e5d07cf18ad6dfa8fa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4466,7 +4492,7 @@
     },
     {
       "path": "src/frontend/compile/instances/tests.rs",
-      "sha256": "e96707416eaa6ebbcef6b1a0b11f387d0fe7815e18434f06e9408dbf5f69aeb3",
+      "sha256": "0b96c7a763b6d21577b09d57c466674f54709eee632921b2007dae445ea03895",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4486,7 +4512,7 @@
     },
     {
       "path": "src/frontend/compile/interfaces/tests.rs",
-      "sha256": "7f4fbf062022263256cae25609b4f6ee000d95c5b12564bcff841f4cf39e5f4a",
+      "sha256": "5596646a1fbf382349a9c259fc4e057ce8a50cb68e4be5f139c8641061af8fa7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4496,7 +4522,7 @@
     },
     {
       "path": "src/frontend/compile/lower/branch.rs",
-      "sha256": "b74c30114b6b921a8f28b4b8bf72e42e02c4508b4450fc691b58ce8e2af2640d",
+      "sha256": "a449894d7ef7658e6769c7ad9118f8dc76b861ba991da949d240b2b74c177dca",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4506,7 +4532,7 @@
     },
     {
       "path": "src/frontend/compile/lower/call_state_tests.rs",
-      "sha256": "e5bf690355986550816f8a3ed24815dec900a8132f3e718143fea1853f8a1f57",
+      "sha256": "08472163c39045e3bb7308127a8fbc8d61fc0b09c342dfe17df1899d19074118",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4536,7 +4562,7 @@
     },
     {
       "path": "src/frontend/compile/lower/computed_phase.rs",
-      "sha256": "34bfc898e0c38517b367faf45bd4700e54c88a9af4dbcb5a2a14a47743cf2d60",
+      "sha256": "0a73ecd59c54b39fc47a0ee048826c803ae0d4f6703df5e3e9e287fda74dd387",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4546,7 +4572,7 @@
     },
     {
       "path": "src/frontend/compile/lower/dormant_access.rs",
-      "sha256": "b266a72fe45ab3f5749ebf922af459bf89d7142561dd01ff0f449817aa72a816",
+      "sha256": "c52caaf37f7551f27f480ea010d37e9025be8348d853e10f89b4c9b227f50b96",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4616,7 +4642,7 @@
     },
     {
       "path": "src/frontend/compile/lower/static_primitives.rs",
-      "sha256": "8ab650cd5743ee1c43dee68720ced94fa66a30b0d9f7f46ae05ed30df69a05b5",
+      "sha256": "e3141867ffb447bc62fe4ffa22da39b76cae46e8f9ff5139d4ddee322e9008e3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4656,7 +4682,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "7d081e07040b706b56ec649b26df8408a2e873e6beee51707d9839d6a1f463ee",
+      "sha256": "78a32a50248ee066650240b4d89b8449da8137de02f123f8cf73523231e00062",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4735,7 +4761,7 @@
     },
     {
       "path": "src/frontend/compile/operations/identity_tests.rs",
-      "sha256": "36bc69f93c009c225e2cd99046f5d4a0c163964490e839387b01d0b9048f942a",
+      "sha256": "80ca2cfb9f7255d1d066d659e6d659b651b19b6421c56070461e5f66664e60a7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4782,7 +4808,7 @@
     },
     {
       "path": "src/frontend/compile/sources.rs",
-      "sha256": "281f71100b735d4e1ba8c3bcd1e5fdbbcf2fcd886729fc7a573249b3f16a180c",
+      "sha256": "6963b99b98ac81e5d29ec3c0850897350c7b028f3b1ff09c745b0dbcc474b42f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4973,7 +4999,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "66f8b2714d8d9761fdff5c5ac39401c097d1ce9b46c7bd8f9bddfcb47387b31e",
+      "sha256": "efc766673ff4fe76757b9be2e9794f03a61b38c86b9f2a195de5e0b4354eb29a",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5071,7 +5097,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "d5d14599bb5323a5b9c6c155e51b447ee676dcff2bbe9482d04cb647c3689496",
+      "sha256": "ec1f4f3905b99f13604cc6b1db8ed40235b4c5b7f7ab8868d2d2487cbada3705",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5087,10 +5113,13 @@
         "functions": [
           "pub fn bundled_std() -> Result<BundledStd, Diagnostic>",
           "pub fn edition(&self) -> &'static str",
+          "pub fn edition(&self) -> Edition",
+          "pub fn from_modules( root: PathBuf, modules: BTreeMap<String, SourceModule>, edition: Edition, ) -> Self",
           "pub fn load(root: &Path) -> Result<Self, ProjectError>",
           "pub fn load_with_policy(root: &Path, policy: SourcePolicy) -> Result<Self, Diagnostic>",
           "pub fn manifest(&self) -> &'static str",
           "pub fn module(&self, name: &str) -> Option<&SourceModule>",
+          "pub fn module_manifest(&self, name: &str) -> Option<&EditionManifest>",
           "pub fn modules(&self) -> impl ExactSizeIterator<Item = (&'static str, &'static str)>",
           "pub fn name(&self) -> &'static str",
           "pub fn product_version(&self) -> &'static str",
@@ -5102,11 +5131,17 @@
     },
     {
       "path": "src/frontend/project/edition.rs",
-      "sha256": "cda2162538c69ea8b820fff9477bdcaf8a5f8af511dd5b1e0f51d0d6e393eb23",
+      "sha256": "b7b96907fed0334d002bfa5f9094414493188e893a8f852531398eeef8be9b65",
       "group": "source",
       "surface": {
-        "declarations": [],
-        "functions": [],
+        "declarations": [
+          "EditionManifest"
+        ],
+        "functions": [
+          "pub fn edition(&self) -> Edition",
+          "pub fn path(&self) -> &Path",
+          "pub fn source(&self) -> &str"
+        ],
         "capacity_constants": [
           "const MAX_MANIFEST_BYTES: u64 = 65_536;"
         ]
@@ -5114,7 +5149,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
+      "sha256": "6d93f58aae56534701fe194ab0eac28745b1eb4e97f84e184d5f79ca663a21f1",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5122,6 +5157,7 @@
         ],
         "functions": [
           "pub fn load_with_policy( &self, policy: super::SourcePolicy, ) -> Result<super::Project, Diagnostic>",
+          "pub fn manifest(&self) -> &super::EditionManifest",
           "pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic>",
           "pub fn path(&self) -> &Path",
           "pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic>",
@@ -5132,7 +5168,7 @@
     },
     {
       "path": "src/frontend/project/source_file.rs",
-      "sha256": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+      "sha256": "c5c42036017564a52ea5c7351916774dcd76e899e532cf794f412802531966ea",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -6841,11 +6877,12 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "0c0b83faf845b3a0f55fefa3d61a5ad2830342a2a715f5b5afa728e1d203d4c4",
+      "sha256": "16762a4a5b6483141571d898c53238805f1310a8e2416bafac29e90dbfec14a8",
       "group": "raw-core",
       "surface": {
         "declarations": [
           "contract",
+          "edition",
           "frontend",
           "host",
           "interchange",
@@ -7010,7 +7047,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -7032,7 +7069,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -7053,7 +7090,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -7074,7 +7111,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -7100,7 +7137,7 @@
       "binding": "Fresh native check of immutable original QIRF/dependency bytes and request. Square leaf retains two-sided unitarity; pure-leaf reconstructs the original body and exact Gram identity. Private source sidecars retain separately checked reference/implementation leaves and source provenance, without a source-preservation or inverse-access claim. A SourceUnitaryEquation associates two existing native square leaves: each checks its own complete original/canonical QIRF/dependency bytes and exact ordered ports against the same requested matrix. The canonical witness is built from the emitted protected use_ops. This read-only provenance sidecar is not an accepted function descriptor, a whole-root independent request, inverse/control capability, cleanup certificate or source/target/resource-preservation proof; the final outer native protected gate remains mandatory.",
       "encoding": "Exact trees and ordered quantum ports, including zero-width owners; pure-leaf accepts Unit -> A preparation and different input/output widths",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
       "failure": "Reject shape, effect, hidden observation, phase, request, dependency or identity mismatch and exceeded capacity; no receipt or fallback",
       "replacement": [
         "VM-23",
@@ -7125,8 +7162,8 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending. Read-only diagnostic reports retain actual successful native decisions, entry request presence and concrete local/bundled root counts; paths are unpinned and reports cannot authorize execution or source preservation. Independent checked public bounds govern external calls/providers/contracts and public documentation before inlining, specialization or cache reuse; internal diagnostic metadata cannot grant external eligibility. Actual Raw classification and fresh native checks remain separate. Complete closed instance admission does not skip eager nongeneric roots, original dormant obligations, actual per-instance body/native replay or full identity/effect/Meaning/access checks before cache reuse. Bounded first-study archive/stream identity checking is inert retention, not source preservation or a constitutional discharge.",
       "encoding": "One common original type/owner/effect/name judgment including all seven actual ordinary bundled modules; exact tuples/moves/scopes and 13 typed bare PrimitiveId source identities. Lexical bindings (including moved/wrong category) precede ordinary declarations/imports, with builtins only when genuinely unbound; no failed-typecheck fallback, primitive imports, prelude or hidden old aliases. Finite complete ordered closed Basis/Nat/Op instances retain exact Unit/Bit/Bits<n>/product tags, ordinary ordered word identities, quantum owner/axis frames, original body-static/operation plans and observing result schemas. Original u32 Nat arithmetic is distinct from the adopted signed affine/helper and requires-conjunction contracts. Finite and selected emitter restrictions/capacities remain separate; ordinary empty_bits introduces no quantum owner.",
-      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
-      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/file16MiB/project or explicit legacy remains separate. Selected64 total modules including7 actual bundles/1..57 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, each relevant original declaration/bound-Op/Raw-dependency closure retains complete module names and text including comments and relevant bundled sources, with immutable module rows shared across closures. The unchanged128-module/1MiB metadata and4096-byte identity-path bounds, aggregate native transport limits and source-work budget still apply; this selection does not change loading or eager checking of every loaded declaration. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
+      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
+      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite registers/closed Basis actuals at most12 bits, at most256 distinct full declaration instances with nonempty ordered Basis/Nat/Op actuals, including Basis-only and Nat-only instances and separate calls/static expansion1M work/depth64, with unchanged6-bit/1024-step Circuit/FunctionEvidence preflight profiles (not a universal whole-original native leaf root cap). Source policy1MiB/source-file and16MiB/project including retained manifest text, or explicit legacy, remains separate; each read manifest counts once with its existing65536-byte cap. Selected64 total modules including7 actual bundles/1..57 supplied locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and unchanged selected concrete limits. Issued IDs/work are not refunded on failure; maximum profile cases are not generated as validation. Where provider/function/local-equation provenance uses retained_sources, each relevant original declaration/bound-Op/Raw-dependency closure retains complete module names and text including comments and relevant bundled sources, with immutable module rows shared across closures. The unchanged128-module/1MiB metadata and4096-byte identity-path bounds, aggregate native transport limits and source-work budget still apply; this selection does not change loading or eager checking of every loaded declaration. Expanded/eager source forms and the compact257 follow-up can still exhaust the unchanged source-work budget; the205-action regression does not restore all longer forms.",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
         "VM-28"
@@ -7147,7 +7184,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
+      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -7357,15 +7394,18 @@
         "Project::load",
         "Project::load_with_policy",
         "read_source_file",
-        "ParsedProgram::load"
+        "ParsedProgram::load",
+        "QrateSource::select",
+        "Project::from_modules",
+        "Project::module_manifest"
       ],
-      "status": "v0.2.3 user-selected frontend configuration; Rust checker authority unchanged",
-      "request": "Explicit schema-version = 2 and string [qrate].edition = 2026 in the closest enclosing Qargo.toml; no default. Current in-memory parsers use 2026.",
-      "binding": "Each filesystem source checks its enclosing manifest before parsing; bundled std manifest is embedded with source. QLT receives configuration checking only. Metadata is not semantic evidence.",
+      "status": "Requested frontend configuration/context only; production acceptance remains native-only and native edition propagation is unfinished under #255.",
+      "request": "Explicit schema-version = 2 and string [qrate].edition = 2026 in the selecting/closest enclosing Qargo.toml. In-memory Project construction requires explicit Edition::E2026; no default/current/latest or product-version conversion. Other preparation/native helper migrations remain pending.",
+      "binding": "QrateSource retains its exact selecting manifest bytes; filesystem Project discovery captures nearest manifests and associates original local file paths, root and complete module path/origin inventory. Preparation refuses inventory/context substitution and rechecks actual AST bodies. Inherited references share immutable bytes without rereading the selecting request. Single-file and ParsedProgram loading retain their manifest prechecks, with downstream context migration unfinished. QLT receives configuration checking only; none of these facts is native edition evidence.",
       "encoding": "TOML UTF-8; language edition independent of product version and Rust edition; module roots unchanged.",
       "domain": "Only Qleisli edition 2026; no future-edition or cross-qrate resolution guarantee.",
-      "limits": "65536 manifest bytes, independent of source byte budgets; regular-file reads with existing no-follow policy.",
-      "failure": "Missing/invalid/unsupported/oversized/non-UTF-8/symlink manifests fail without skipping a nearer manifest. Narrow incompatible v0.2.3 requirement explicitly selected by the user.",
+      "limits": "Unchanged 65536 bytes per manifest and regular-file no-follow policy. Retained manifest bytes share the existing bounded 16-MiB aggregate project input budget, charged once per actual read; per-source 1-MiB and directory-entry limits remain, and explicit Legacy mode remains outside the aggregate byte bound. This reviewed beta migration may refuse trees near the former source-only aggregate limit.",
+      "failure": "Missing/invalid/floating/unsupported/oversized/non-UTF-8/symlink manifests, exhausted aggregate capacity and changed captured root/module inventory reject. Fresh explicit preparation observes a manifest migration; a saved selection keeps its original request. Native edition mismatch rejection/proofs and general QLT remain unfinished.",
       "replacement": [
         "VM-29"
       ]
@@ -7654,7 +7694,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -7696,7 +7736,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [

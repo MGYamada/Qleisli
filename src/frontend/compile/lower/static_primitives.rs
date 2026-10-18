@@ -405,6 +405,9 @@ mod tests {
         let source = "
             unitary fn f(q:Q<Bit>)->Q<Bit>{phase[1,4](q)}";
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules: BTreeMap::from([(
                 "main".into(),

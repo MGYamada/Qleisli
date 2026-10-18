@@ -9,6 +9,9 @@ fn project() -> Project {
         unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){U(q)}
         unitary fn unused[const V:Op<Unit>](q:Q<Unit>)->Q<Unit>{hold[identity](q)}";
     Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),

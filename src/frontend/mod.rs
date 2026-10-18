@@ -30,7 +30,3 @@ mod scanner;
 mod source;
 mod specialize;
 mod types;
-
-/// Constitutional edition selected by in-memory source APIs and the bundled
-/// library, independently of grammar, product version and Rust's Cargo edition.
-pub const CURRENT_EDITION: &str = "2026";

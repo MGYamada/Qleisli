@@ -243,7 +243,24 @@ The schema/edition check does not validate every qrate name/version/package
 contract.
 
 On Unix, `QrateSource` retains the selected directory identity while loading;
-file contents may still change concurrently. It is not a filesystem-content
+it also retains the exact validated manifest bytes used to select the source
+root. Subsequent loading inherits that captured request instead of rereading
+the selecting manifest. A fresh selection observes an explicit manifest edit.
+Nested manifests are captured during discovery and associated with their
+original `.qli` and `.qlt` file paths. Project preparation rejects a changed
+root or module inventory without a matching captured context. In-memory
+`Project::from_modules` requires an explicit `edition::Edition`; it claims no
+file manifest provenance. This constructor has no current/default selector.
+Retained manifest text shares the bounded loader's existing aggregate project
+input budget with source text; each read manifest is counted once, while
+inherited references share its bytes. Per-source and per-manifest limits remain
+separate. Trees near the former source-only aggregate limit may need less input
+data. The explicit Legacy loader remains outside that aggregate byte limit.
+
+These are requested frontend contexts. Native edition propagation and its
+independent mismatch checks remain unfinished under #255; this capture does
+not prove the verifier checked an edition. Source file contents may still
+change concurrently during loading. It is not a filesystem-content
 snapshot or a complete resolved dependency/configuration identity. Other targets
 retain their documented filesystem trust assumption. Immutable retained program
 or evidence snapshots are separate from this directory selection.
