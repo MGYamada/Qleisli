@@ -55,6 +55,28 @@ def metadata(root=ROOT, tests=('alpha', 'frontend_ownership_differential', 'sour
 
 
 class PartitionTests(unittest.TestCase):
+    def test_producer_partitions_cover_every_original_command_once(self):
+        for group, first in [('rust-latest', [1, 2]), ('rust-msrv', [0, 1])]:
+            original = commands(group)
+            heavy = guard.command_indices(group, original, 'differential')
+            rest = guard.command_indices(group, original, 'remaining')
+            self.assertEqual(heavy, first)
+            self.assertEqual(sorted(heavy + rest), list(range(len(original))))
+            self.assertFalse(set(heavy) & set(rest))
+            self.assertEqual(original[heavy[-1]][-4:],
+                             ['--test', 'frontend_ownership_differential', '--test', 'source_ir_correspondence'])
+            self.assertIn(['python3', 'scripts/check_rust_test_partition.py', '--group', group],
+                          [original[index] for index in rest])
+
+    def test_partition_selection_refuses_unknown_or_changed_complete_plans(self):
+        for group in ('rust-latest', 'rust-msrv'):
+            for part in ('', 'all', 'unknown'):
+                with self.assertRaises(ValueError): guard.command_indices(group, commands(group), part)
+            for index in range(len(commands(group))):
+                changed = commands(group); changed[index] = ['true']
+                for part in ('differential', 'remaining'):
+                    with self.assertRaises(ValueError): guard.command_indices(group, changed, part)
+
     def test_both_pinned_entry_points_keep_complete_disjoint_selection(self):
         for group in ('rust-latest', 'rust-msrv'):
             actual = guard.validate(group, commands(group), metadata(), ROOT)

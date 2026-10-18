@@ -7,6 +7,9 @@ inputs:
   compiler:
     description: Explicit compiler path for groups that require one
     default: ''
+  partition:
+    description: Explicit complete Rust producer partition; empty runs the full group
+    default: ''
   artifact-name:
     description: Override the default group-commit-attempt artifact name
     default: ''
@@ -19,16 +22,23 @@ runs:
       env:
         CHECK_GROUP: ${{ inputs.group }}
         CHECK_COMPILER: ${{ inputs.compiler }}
+        CHECK_PARTITION: ${{ inputs.partition }}
       run: |
         compiler_args=()
+        partition_args=()
+        output_name="$CHECK_GROUP"
         if [[ -n "$CHECK_COMPILER" ]]; then
           compiler_args=(--compiler "$CHECK_COMPILER")
         fi
-        python3 scripts/ci_profiles.py --checks "$CHECK_GROUP" "${compiler_args[@]}" --output "$RUNNER_TEMP/$CHECK_GROUP"
+        if [[ -n "$CHECK_PARTITION" ]]; then
+          partition_args=(--partition "$CHECK_PARTITION")
+          output_name="$CHECK_GROUP-$CHECK_PARTITION"
+        fi
+        python3 scripts/ci_profiles.py --checks "$CHECK_GROUP" "${compiler_args[@]}" "${partition_args[@]}" --output "$RUNNER_TEMP/$output_name"
     - name: Retain command results and explicit unexecuted checks
       if: always() && (steps.check.outcome == 'success' || steps.check.outcome == 'failure')
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
-        name: ${{ inputs.artifact-name || format('{0}-{1}-{2}', inputs.group, github.sha, github.run_attempt) }}
-        path: ${{ runner.temp }}/${{ inputs.group }}/
+        name: ${{ inputs.artifact-name || format('{0}{1}-{2}-{3}', inputs.group, inputs.partition && format('-{0}', inputs.partition) || '', github.sha, github.run_attempt) }}
+        path: ${{ runner.temp }}/${{ inputs.group }}${{ inputs.partition && format('-{0}', inputs.partition) || '' }}/
         if-no-files-found: error

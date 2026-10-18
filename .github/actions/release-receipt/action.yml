@@ -13,6 +13,9 @@ inputs:
   constitution:
     description: Live constitutional verification report
     default: ''
+  rust:
+    description: Complete verified Rust producer-pair directory
+    default: ''
 outputs:
   release_receipt_sha256:
     description: Digest emitted by the checked producer
@@ -28,6 +31,7 @@ runs:
         NATIVE_EVIDENCE: ${{ inputs.native }}
         DISTRIBUTION_EVIDENCE: ${{ inputs.distribution }}
         CONSTITUTION_EVIDENCE: ${{ inputs.constitution }}
+        RUST_EVIDENCE: ${{ inputs.rust }}
       run: |
         evidence_args=()
         if [[ -n "$NATIVE_EVIDENCE" ]]; then
@@ -38,6 +42,9 @@ runs:
         fi
         if [[ -n "$CONSTITUTION_EVIDENCE" ]]; then
           evidence_args+=(--constitution "$CONSTITUTION_EVIDENCE")
+        fi
+        if [[ -n "$RUST_EVIDENCE" ]]; then
+          evidence_args+=(--rust "$RUST_EVIDENCE")
         fi
         python3 scripts/check_release_ready.py --record-job "$GITHUB_JOB" --output "$RUNNER_TEMP/release-receipt" "${evidence_args[@]}"
     - name: Retain exact receipt and planned artifact bytes

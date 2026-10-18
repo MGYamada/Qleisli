@@ -3,6 +3,9 @@
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import contextlib
+import base64
+import gzip
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -15,12 +18,60 @@ import ci_source_checks as checks
 
 
 class SourceChecksTests(unittest.TestCase):
+    def test_rust_producer_first_sources_remain_inert_and_exact(self):
+        stored = (checks.ROOT / 'tests/fixtures/authoring_sessions/ci-rust-parallel-v030/producer-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '21f0923fb5085bc4b2f078b4e854ab078568d475bbb1fd72d313caa88e5308f0')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(176612)
+        self.assertEqual(len(raw), 176611)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '88ac50deea06e1ea1fd278dac3ff202c4b57adcac4aa16de985ec5d8ecd517cc')
+        first = json.loads(raw)
+        self.assertEqual((first['format'], first['version'], first['head']),
+                         ('qleisli.inert-rust-producer-first', 1,
+                          '11745e6884cc0775f47cfceb6bcfd2a8cdb4f9a3'))
+        self.assertEqual(len(first['records']), 9)
+        self.assertEqual({row['path'] for row in first['records']}, {
+            '.github/workflows/ci.yml', '.github/actions/rust-suite/action.yml',
+            '.github/actions/source-check/action.yml', '.github/actions/release-receipt/action.yml',
+            '.github/ci/source-checks.json', 'scripts/check_rust_test_partition.py',
+            'scripts/ci_source_checks.py', 'scripts/ci_profiles.py', 'scripts/check_release_ready.py'})
+        for row in first['records']:
+            data = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o644, 0o755))
+
+    def test_partitioned_plans_keep_fresh_preparation_and_explicit_omissions(self):
+        for group in ('rust-latest', 'rust-msrv'):
+            full = checks.describe(group)
+            selected = []
+            for part in ('differential', 'remaining'):
+                spec = checks.describe(group, partition=part)
+                self.assertEqual(spec['preparation_commands'], 3)
+                self.assertEqual(spec['commands'][:3], checks.plan('native-runtime'))
+                self.assertEqual(spec['tools'], full['tools'])
+                self.assertEqual(spec['environment'], full['environment'])
+                self.assertEqual(spec['timeout_seconds'], 3600)
+                info = spec['partition']
+                self.assertEqual(info['name'], part)
+                self.assertEqual(info['full_commands'], checks.definition(group)['commands'])
+                self.assertEqual(sorted(info['selected_indices'] + info['omitted_indices']),
+                                 list(range(len(info['full_commands']))))
+                self.assertEqual(spec['commands'][3:],
+                                 [info['full_commands'][i] for i in info['selected_indices']])
+                selected.extend(info['selected_indices'])
+            self.assertEqual(sorted(selected), list(range(len(full['commands']) - 3)))
+        for group in ('source-integrity', 'source-contracts', 'native-runtime'):
+            with self.assertRaisesRegex(ValueError, 'producer partition'):
+                checks.plan(group, partition='remaining')
+
     def test_ci_preflight_keeps_hosted_checks_and_precedes_heavy_builds(self):
         commands = checks.plan('ci-preflight')
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
             'test_check_fixture_budget', 'test_check_fixture_references',
-            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition',
+            'test_ci_profiles', 'test_ci_source_checks', 'test_ci_rust_producers', 'test_ci_rust_artifacts', 'test_rust_test_partition',
             'test_run_rust_tests', 'test_native_verification_scheduler', 'test_ci_actions',
             'test_check_release_ready',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
@@ -32,6 +83,29 @@ class SourceChecksTests(unittest.TestCase):
         self.assertLess(changes.index('--checks ci-preflight'), changes.index('id: select'))
         # The complete-tree check is part of local plans, not a late inline job.
         self.assertNotIn('git diff --check', workflow)
+
+    def test_partitioned_execution_reports_only_its_selected_commands(self):
+        for part in ('differential', 'remaining'):
+            with self.subTest(part=part), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / 'out'
+                log = Path(directory) / 'command.log'; log.write_text('synthetic command result')
+                def result(task, *_args):
+                    return dict(status='passed', log=str(log), commands=[])
+                with (patch.object(checks, 'snapshot', return_value=dict(head='bound-source')),
+                      patch.dict(checks.os.environ, {'GITHUB_SHA': 'bound-source'}),
+                      patch.object(checks, 'digest', return_value='bound-bytes'),
+                      patch.object(checks, 'toolchain', return_value={}),
+                      patch.object(checks.ci_runtime, 'run_task', side_effect=result) as run,
+                      contextlib.redirect_stdout(io.StringIO())):
+                    self.assertEqual(checks.execute('rust-latest', None, output, partition=part), 0)
+                report = json.loads((output / 'results.json').read_text())
+                expected = checks.plan('rust-latest', partition=part)
+                self.assertEqual([row['argv'] for row in report['commands']], expected)
+                self.assertEqual(run.call_count, len(expected))
+                info = report['plan']['partition']
+                self.assertEqual(info['name'], part)
+                self.assertTrue(info['omitted_indices'])
+                self.assertFalse(set(info['selected_indices']) & set(info['omitted_indices']))
 
     def test_linked_inventory_identities_precede_heavy_lane_scheduling(self):
         commands = checks.plan('source-integrity')
@@ -144,7 +218,9 @@ class SourceChecksTests(unittest.TestCase):
             'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py',
             'scripts/test_public_effects.py'})
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
-        self.assertEqual(workflow.count('uses: ./.github/actions/rust-suite'), 2)
+        self.assertEqual(workflow.count('uses: ./.github/actions/rust-producer'), 4)
+        producer = (checks.ROOT / '.github/actions/rust-producer/action.yml').read_text()
+        self.assertEqual(producer.count('uses: ./.github/actions/rust-suite'), 1)
         shared = (checks.ROOT / '.github/actions/rust-suite/action.yml').read_text()
         self.assertEqual(shared.count('group: source-contracts\n        compiler: target/debug/qleisli'), 1)
         for group, compiler in [('absent', None), ('source-contracts', None)]:

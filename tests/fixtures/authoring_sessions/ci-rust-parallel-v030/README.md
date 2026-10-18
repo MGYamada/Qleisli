@@ -55,3 +55,37 @@ about 16 seconds. These observations neither identify the Linux cause nor
 establish a repair. The full computed-source harness is now scheduled alone
 with one test thread, before other harness workers. All cases, exact equations,
 fresh native decisions and the 60-second transport deadline remain required.
+
+The [producer-partition first sources](producer-first.json.gz) preserve the nine
+original workflow, plan and receipt implementations at `11745e6884cc0775f47cfceb6bcfd2a8cdb4f9a3`.
+This informed manual study invokes no external model. The current helper selects
+complete commands from the single canonical plan, retaining fresh native
+preparation and explicit omitted indices. Actual latest/MSRV Cargo metadata
+contains 131 targets, including the same two differential and 121 other
+integration targets. This validates partition coverage only; no Rust/native test
+or proof was executed by those metadata/CLI-plan observations. Separate hosted
+producer jobs, same-run aggregation and release receipt binding were still
+pending at that stage.
+
+The [first pair-obligation experiment](producer-obligations-first.json.gz)
+retains the proposed implementation contract, original prototype and its actual
+synthetic output: two complete dependency records and 38 refusals for missing,
+failed, skipped or stale inputs. No artifact bytes or actual hosted jobs were
+validated by that experiment. The current dependency helper returns only the
+expected receipt hashes; independent artifact validation remains mandatory.
+
+The [first post-wiring refusals](producer-wiring-first.json.gz) retain the
+original action/workflow sources and the actual adapter failures while migrating
+the old two inline jobs to four delegated workers. The
+[first release-payload failure](producer-release-first.json.gz) retains the
+old empty-Rust-payload predicate and its actual 41-test failure classification.
+That predicate now requires and verifies both child artifacts. The reader keeps
+these inert byte records; it never executes historical scripts or commands.
+
+The current implementation verifies the exact child report bytes, selected and
+omitted commands, source/run identity, tool/native/compiler bindings and the
+unchanged corpus profile. Hosted workers run the two complete selections on
+separate runners; stable required checks and scoped release readiness require
+both actual artifacts. Synthetic mutation and file-I/O tests do not establish
+hosted speedup, real Rust/native case execution or release readiness. The final
+candidate still needs complete hosted validation and review.
