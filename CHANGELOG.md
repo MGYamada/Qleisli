@@ -30,6 +30,9 @@ and exactness obligations retain their recorded scopes and status.
   Run the complete long computed-source harness alone with one test thread
   before the worker pool, preserving the first extracted-source native
   timeouts, every original case and the fixed transport/work limits.
+  Avoid repeated path tokenization in fixture-reference checks with bounded
+  in-process storage; retain fresh blob reads, complete reference resolution
+  and full checking of long inputs without caching validation results.
 
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports

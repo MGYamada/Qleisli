@@ -7,6 +7,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import argparse
 from collections import deque
 import fnmatch
+from functools import lru_cache
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -71,11 +72,25 @@ def path_index(paths):
     return directories
 
 
+@lru_cache(maxsize=32768)
+def _cached_parts(name):
+    return PurePosixPath(name).parts
+
+
+def path_parts(name):
+    """Reuse bounded immutable text only, never a reference or gate decision."""
+    if isinstance(name, str) and len(name) <= 4096:
+        return _cached_parts(name)
+    # Long strings and other existing PathLike inputs still receive the full
+    # ordinary parse. Cache bounds never become input or acceptance limits.
+    return PurePosixPath(name).parts
+
+
 def glob_match(path, pattern):
     """Match path components; only an explicit ** crosses directories."""
-    parts = PurePosixPath(pattern).parts
+    parts = path_parts(pattern)
     positions = {0}
-    for component in (*PurePosixPath(path).parts, None):
+    for component in (*path_parts(path), None):
         # ** also matches zero components. Iterate in order to close adjacent
         # recursive wildcards without recursive calls on candidate input.
         for position in range(len(parts)):
