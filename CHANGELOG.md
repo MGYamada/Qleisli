@@ -16,6 +16,10 @@ and exactness obligations retain their recorded scopes and status.
   receive migration guidance. Migrate active clients, corpus selections,
   diagnostics and documentation; retain original sources, diagnostics and
   explicit current-source mappings, including the six historical examples.
+  Keep the phase-layout first source unchanged; its shared CI consumer selects
+  the recorded translation after checking both source inventories and hashes.
+  Distinguish the derived std's checked requests from an unchecked independent
+  entry contract in JSON CLI conformance tests.
   Register corpus migrations only after source and representative semantic checks.
   Keep full normal/MSRV/native CI and final-candidate validation unfinished until
   their required checks succeed.

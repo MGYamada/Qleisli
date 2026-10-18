@@ -6,6 +6,26 @@
   "scope": "Explicit current source translations only; first sources, diagnostics, prior maps and history remain unchanged. These records are not execution observations, acceptance evidence, source-preservation proofs, or release approval.",
   "files": [
     {
+      "before_path": "tests/fixtures/lean_phase_layout/first_source/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/language-primitives/current/projects/lean-phase-layout-first/main.qli",
+      "before_sha256": "9d479e02485412d84005f08fedf4b54a3f87566e727f8ccf117c37c30ec9128b",
+      "current_sha256": "fff87c50f573cf81e563967acc674c2ad531dd818cbc249327b06e0beb2fe80e",
+      "logical_paths": [
+        "project:tests/fixtures/lean_phase_layout/first_source"
+      ],
+      "manual_edits": [],
+      "lexical_edits": [
+        {
+          "start": 0,
+          "end": 20,
+          "replacement": "use std::gate::t;",
+          "kind": "import"
+        }
+      ],
+      "lexical_sha256": "fff87c50f573cf81e563967acc674c2ad531dd818cbc249327b06e0beb2fe80e",
+      "layout_edits": []
+    },
+    {
       "before_path": "tests/fixtures/authoring_sessions/public-effects-v030/first/original/discard-isometry/main.qli",
       "current_path": "tests/fixtures/frontend_v030/language-primitives/current/projects/project-001/main.qli",
       "before_sha256": "fb5c6f49d3ca24711f29223cf6cabc52cacc37bfc7c013557a0d9e1b69c9a04c",

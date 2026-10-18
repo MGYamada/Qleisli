@@ -126,8 +126,12 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_shared_contract_commands_preserve_both_existing_consumers(self):
         commands = checks.plan('source-contracts', Path('/selected/qleisli'))
-        self.assertEqual(sum(argv[0] == '/selected/qleisli' for argv in commands), 3)
+        self.assertEqual(sum(argv[0] == '/selected/qleisli' for argv in commands), 2)
+        self.assertEqual(commands[2], ['python3', 'scripts/current_source_fixtures.py',
+                                      '--check', '/selected/qleisli',
+                                      'tests/fixtures/lean_phase_layout/first_source'])
         self.assertEqual({argv[1] for argv in commands if argv[0] == 'python3'}, {
+            'scripts/current_source_fixtures.py',
             'scripts/test_lean_phase_layout.py', 'scripts/test_lean_interference.py',
             'scripts/test_lean_qft.py', 'scripts/test_lean_qpe.py',
             'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py',

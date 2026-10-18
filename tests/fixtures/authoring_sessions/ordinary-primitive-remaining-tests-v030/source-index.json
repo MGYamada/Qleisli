@@ -2738,5 +2738,34 @@
         "sha256": "913357c1278641bb663576d2be53569f9cf04bf974881b1700a2ecdd9d29ed62"
       }
     ]
+  },
+  "subsequent_source_contract_consumer": {
+    "scope": "Separate shared source-contract consumer repair: exact historical first source and both failed hosted logs; local failed/repair/final command windows retained independently. No latest-head CI, source-preservation, issue-completion or release claim.",
+    "source_heads": [
+      "6a4aa2c0e8fa29fd3ee7d817f335293a28aa62f8",
+      "129e12c089545ac4031987c9b95ae52b2c122038"
+    ],
+    "files": [
+      {
+        "path": "tests/fixtures/authoring_sessions/source-contract-consumer-v030/README.md",
+        "sha256": "693f28ea10b7993dd1ef58c2e4089e2a3d9c3b0e0482db20f200df10c3818597"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/source-contract-consumer-v030/first-index.json",
+        "sha256": "9c1aa57980335587128ab6b792437f656a1e34a147948d6e509f7a8af3b47309"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/source-contract-consumer-v030/first.records.json.gz",
+        "sha256": "e4522f0ce520943c252a8d75fc76d61ceb4fe2993f0fc84fb44c5adaa626000b"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/source-contract-consumer-v030/validation-index.json",
+        "sha256": "f05a851b3d1aba62cfd7449e76712ca2942f5beb674e79459ff05401bc2a33ca"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/source-contract-consumer-v030/validation.records.json.gz",
+        "sha256": "7641720727b8ebfc63a45e87c5a64a4d846bfb79703e8228df980e4b5591f7ed"
+      }
+    ]
   }
 }

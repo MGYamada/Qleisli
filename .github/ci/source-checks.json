@@ -163,8 +163,10 @@
           "tests/fixtures/lean_layout_dag/first_source"
         ],
         [
+          "python3",
+          "scripts/current_source_fixtures.py",
+          "--check",
           "{compiler}",
-          "check",
           "tests/fixtures/lean_phase_layout/first_source"
         ],
         [

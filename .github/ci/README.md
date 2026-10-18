@@ -333,6 +333,13 @@ their mode and coverage selections. Progress is diagnostic; only completed
 checks and the retained failure report determine success. Full validation
 remains separately requested; no corpus sharding is enabled.
 
+## Companion tooling validation
+
+Extract the `qargo`, `qlippy`, `qlifmt` and `qlidoc` binaries into this
+repository's root `bin/` directory before testing the companion bundle.
+Run bundle and runtime validation using explicit paths to those four files,
+which must come from the same checked build.
+
 ## Native comparisons (#206)
 
 Local reproduction uses the same command manifests as hosted checks:
@@ -350,6 +357,12 @@ python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/pa
 python3 scripts/ci_profiles.py --checks rust-latest --output "$qleisli_validation_dir/rust"
 python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qleisli_validation_dir/lint"
 ```
+
+Historical source consumers use explicit current-source mappings. The phase-layout
+first project remains immutable; `current_source_fixtures.py --check` validates
+its registered migration chain and records the selected source hashes before
+calling the supplied compiler. It propagates compiler refusal and rejects missing
+or changed mappings without falling back to the historical source.
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.

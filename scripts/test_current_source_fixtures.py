@@ -6,6 +6,8 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import hashlib
 import json
 import copy
+import contextlib
+import io
 from pathlib import Path
 import shutil
 import tempfile
@@ -617,6 +619,31 @@ class SourceFixtureIdentity(unittest.TestCase):
                 files=[], projects=[changed])))
             with self.assertRaisesRegex(ValueError, "ambiguous|unordered|cyclic"):
                 fixtures.current_source_project(self.selected)
+
+
+    def test_check_command_uses_current_project_and_propagates_compiler_refusal(self):
+        self.checked_project_entry()
+        compiler = self.root / "selected-compiler"
+        with (patch("subprocess.run") as run,
+              contextlib.redirect_stdout(io.StringIO()) as output):
+            run.return_value.returncode = 7
+            self.assertEqual(fixtures.main(["--check", str(compiler), str(self.original)]), 7)
+        run.assert_called_once_with([str(compiler.resolve()), "check", str(self.checked)], check=False)
+        record = json.loads(output.getvalue())
+        self.assertEqual(record["executed_project"], str(self.checked))
+        self.assertEqual(record["source_sha256"], fixtures.source_hashes(self.checked))
+
+    def test_check_command_rejects_changed_history_before_launching_compiler(self):
+        self.checked_project_entry()
+        source = self.original / "main.qli"
+        source.write_bytes(source.read_bytes() + b"\nchanged")
+        with (patch("subprocess.run") as run,
+              contextlib.redirect_stderr(io.StringIO()) as error,
+              self.assertRaises(SystemExit) as exit_status):
+            fixtures.main(["--check", str(self.root / "compiler"), str(self.checked)])
+        self.assertEqual(exit_status.exception.code, 2)
+        self.assertIn("source fixture identity changed", error.getvalue())
+        run.assert_not_called()
 
 
 class SourceFileIdentity(unittest.TestCase):
