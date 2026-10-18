@@ -2712,5 +2712,31 @@
     "review019 historical-main and review024 historical-misplaced-measure retain provenance only; selected CR/current empty source distinguish actual current behavior.",
     "New desired repair controls, compact205 and 256/257 capacity cases are not added to the BEFORE source inventory. The existing count4 comment-pad inputs stay exact."
   ],
-  "documentation": "README.md"
+  "documentation": "README.md",
+  "subsequent_qpe_host_consumer": {
+    "scope": "Later actual hosted QPE host expectation failure and separately observed normal/MSRV repair validation. These records are subsequent consumer-maintenance evidence, not part of the original 477 remaining-tests BEFORE run.",
+    "retained_commit": "a03d9e29ea12ca71f2530011d7351e473a3af539",
+    "files": [
+      {
+        "path": "tests/fixtures/authoring_sessions/qpe-host-consumer-v030/README.md",
+        "sha256": "a0ee0e05f9ec6e24495fc958edfdb8d1fd214536d03cb8b13ed9b989fbb314c5"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/qpe-host-consumer-v030/first-ci-index.json",
+        "sha256": "19e8a3b8170573b035b2a587b3fa916700e8e0dee8a0fec72eb77fde2fa97faf"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/qpe-host-consumer-v030/first-ci.records.json.gz",
+        "sha256": "e94632d363aca0196f7a618c39ecd6938da1657bba9dd3be2c2fcdd53729af62"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/qpe-host-consumer-v030/validation-index.json",
+        "sha256": "4e310b2a88ee75304bb3e308317d9c38d8a0e3c18b79041d2f7c080b4c2f282c"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/qpe-host-consumer-v030/validation.records.json.gz",
+        "sha256": "913357c1278641bb663576d2be53569f9cf04bf974881b1700a2ecdd9d29ed62"
+      }
+    ]
+  }
 }
