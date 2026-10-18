@@ -23,6 +23,9 @@ pub(super) struct BundledSource {
 }
 
 impl BundledSource {
+    pub fn name(&self) -> &'static str {
+        self.name
+    }
     pub fn path(&self) -> &'static str {
         self.path
     }

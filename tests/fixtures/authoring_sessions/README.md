@@ -5,6 +5,13 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [linked std descriptor study](linked-std-descriptor-v030/README.md) preserves
+two one-qubit user versions, actual API absence, old qargo import failures,
+empty-root packaging and generic dependency-table refusal in sixteen first
+observations. Separate first-test history retains the macOS path-alias mistake;
+normal/MSRV focused validation remains distinct from unfinished qargo pairing,
+stale-content and official distribution checks.
+
 The [long ordinary computed-leaf first history](computed-long-leaf-v030/README.md)
 retains three separate sources and all first diagnostics: expanded 1,025/257 T
 calls exhaust source work, while a compact 257-fold reaches the separate finite

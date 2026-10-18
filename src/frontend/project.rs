@@ -24,6 +24,62 @@ pub(super) fn check_bundled_manifest() -> Result<(), Diagnostic> {
     edition::check_bundled().map_err(LoadFailure::into_diagnostic)
 }
 
+/// Read-only metadata for this linked library's embedded standard qrate.
+///
+/// Construction validates the existing embedded manifest's schema, edition,
+/// name and complete product version. This is not source checking, an accepted
+/// program, authenticated distribution identity or native binary attestation.
+#[derive(Clone, Copy, Debug)]
+pub struct BundledStd {
+    _validated: (),
+}
+
+/// Describe the actual embedded standard qrate after its existing manifest gate.
+///
+/// This uses no filesystem or runtime selection. Ordinary source and native
+/// checks remain separate and fresh; only the immutable manifest gate is cached.
+pub fn bundled_std() -> Result<BundledStd, Diagnostic> {
+    check_bundled_manifest()?;
+    Ok(BundledStd { _validated: () })
+}
+
+impl BundledStd {
+    /// Complete product version of the linked Qleisli library.
+    pub fn product_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+
+    /// Canonical qrate name, verified by the embedded manifest gate.
+    pub fn name(&self) -> &'static str {
+        "std"
+    }
+
+    /// Complete std version, verified equal to the linked product version.
+    pub fn version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+
+    /// Constitutional edition verified by the embedded manifest gate.
+    pub fn edition(&self) -> &'static str {
+        super::CURRENT_EDITION
+    }
+
+    /// Exact embedded manifest text, without reserialization or normalization.
+    pub fn manifest(&self) -> &'static str {
+        BundledRegistry::manifest()
+    }
+
+    /// Every embedded module's canonical name and exact, unmodified source.
+    ///
+    /// These are the same registry entries consumed by ordinary source loading.
+    /// Their text has not been type-checked merely by obtaining this descriptor.
+    pub fn modules(&self) -> impl ExactSizeIterator<Item = (&'static str, &'static str)> {
+        BundledRegistry::sources()
+            .iter()
+            .map(|source| (source.name(), source.text()))
+    }
+}
+
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
 /// most max(64, project_bytes / 1024) directory entries, including empty files.
 /// Entry accounting is separate from source bytes. The legacy adapter is

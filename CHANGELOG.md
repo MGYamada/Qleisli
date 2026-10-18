@@ -52,6 +52,12 @@ and exactness obligations retain their recorded scopes and status.
   Installation checks distinguish internal derived-contract requests from an
   independently requested entry equation, including text/JSON decision counts.
 
+- Expose read-only metadata for the linked library's actual bundled std after
+  the existing manifest gate, including its complete embedded source inventory.
+  Keep source/native checking and acceptance separate. Effective qargo records,
+  stale-content verification and official peer-toolchain alignment remain
+  unfinished in #171.
+
 - Require the embedded std manifest to name `std` and match the compiler's
   complete product version before loading source. Preserve independent user
   qrate versions, single manifest parsing and immutable embedded caching.

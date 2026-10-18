@@ -256,6 +256,14 @@ identifiers. Its cached result applies only to the embedded manifest. Ordinary
 user manifests retain their normal schema/edition checks and independent package
 versions; source and native acceptance judgments are not cached by this gate.
 
+The read-only Rust API `frontend::project::bundled_std()` returns a privately
+constructed descriptor after that same embedded-manifest gate. Its product
+version, std name/version/edition, exact manifest and complete canonical
+module/source inventory describe the linked library's actual embedded bytes.
+It performs no toolchain selection, source or native check, serialization or
+digest computation. It issues no accepted handle, semantic evidence,
+authenticated release identity or native binary attestation.
+
 Release synchronization includes `stdlib/Qargo.toml`, but the embedded gate
 implements no qargo resolver or pairing-record API. Full effective toolchain/std
 records and stale-content identity checks remain unfinished in

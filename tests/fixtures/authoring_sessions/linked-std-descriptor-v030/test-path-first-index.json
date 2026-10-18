@@ -1,0 +1,47 @@
+{
+  "format": "qleisli.bundled-std-test-path-first-retention",
+  "version": 1,
+  "record": "test-path-first.records.json.gz",
+  "record_sha256": "75aa570b01ccb581500d06039102ef307b1de132880041018b373dd68f973db4",
+  "uncompressed_sha256": "ad28396132f6a0e525df094b538b77977e1a35e372e7bc79ece2ae097451c997",
+  "file_count": 6,
+  "expanded_original_bytes": 129527,
+  "files": [
+    {
+      "path": "bundled-std-normal-editions-g-v1.json",
+      "bytes": 75804,
+      "sha256": "45b31e12501bb945e285d9181c92be56f7e4350d8ae9afae2218aa5e38ad573b",
+      "mode": "0644"
+    },
+    {
+      "path": "bundled-std-normal-editions-g-v1.started.json",
+      "bytes": 38306,
+      "sha256": "914498aebc39ffc9e56377367c2091695b239ac76653e9a3af169c3b30ab3b84",
+      "mode": "0644"
+    },
+    {
+      "path": "bundled-std-normal-editions-g-v1.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "bundled-std-normal-editions-g-v1.stdout.txt",
+      "bytes": 1982,
+      "sha256": "6a5df6d086c9a4af629a5197b1e051a600c72be96fbb2b0d8806b91a1e821340",
+      "mode": "0644"
+    },
+    {
+      "path": "editions.rs.txt",
+      "bytes": 12503,
+      "sha256": "926d7cf2cc1bd8a96713e3e27632ab4a29c6adab7ca79600165369b30afdda91",
+      "mode": "0644"
+    },
+    {
+      "path": "first-failure.json",
+      "bytes": 932,
+      "sha256": "9aa3f0b8043d87bcd3258c07dc467d7b2ca17ddafb110a03c3eb52922da813b6",
+      "mode": "0644"
+    }
+  ]
+}
