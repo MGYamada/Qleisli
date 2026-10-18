@@ -262,3 +262,27 @@ def current_source_project(path):
         _verify_pair(_local(ROOT, before), _local(ROOT, selected), entry, hash_field)
         current = selected
     return _local(ROOT, current)
+
+
+def main(argv=None):
+    """Check one explicitly migrated project with the selected compiler."""
+    import argparse
+    import subprocess
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", required=True, type=Path, metavar="COMPILER")
+    parser.add_argument("project", type=Path)
+    args = parser.parse_args(argv)
+    try:
+        project = current_source_project(args.project)
+        command = [str(args.check.resolve()), "check", str(project)]
+        print(json.dumps(dict(historical_project=str(args.project),
+                              executed_project=str(project),
+                              source_sha256=source_hashes(project), command=command)), flush=True)
+        return subprocess.run(command, check=False).returncode
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

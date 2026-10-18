@@ -151,13 +151,23 @@ def check_result(case, route, process, kernel):
         require(diagnostic.get('code') == code and diagnostic.get('severity') == 'error',
                 f'expected {code} error diagnostic')
         primary = diagnostic.get('primary')
-        module = ('library' if case in ('external-missing-public-effect',
-                                       'external-reset-observe') else 'main')
-        require(isinstance(primary, dict) and primary.get('module') == module
-                and primary.get('path') == str(current_source_project(ORIGINAL / case) / f'{module}.qli')
-                and type(primary.get('start')) is int and type(primary.get('end')) is int
-                and 0 <= primary['start'] < primary['end'],
-                'diagnostic lost its selected current module/path/byte span')
+        if CASES[case][0] == 'reset-profile':
+            # Reset is ordinary bundled source. The existing Raw preparation
+            # refusal points to its discard body, not the former sealed call.
+            source = (ROOT / 'stdlib/src/state.qli').read_bytes()
+            needle = b'discard(q)'
+            require(source.count(needle) == 1, 'reset body location is ambiguous')
+            start = source.index(needle)
+            require(primary == dict(module='std::state', path=None,
+                                    start=start, end=start + len(needle)),
+                    'reset profile refusal lost its exact ordinary bundled source span')
+        else:
+            module = 'library' if case == 'external-missing-public-effect' else 'main'
+            require(isinstance(primary, dict) and primary.get('module') == module
+                    and primary.get('path') == str(current_source_project(ORIGINAL / case) / f'{module}.qli')
+                    and type(primary.get('start')) is int and type(primary.get('end')) is int
+                    and 0 <= primary['start'] < primary['end'],
+                    'diagnostic lost its selected current module/path/byte span')
         message = diagnostic.get('message', '')
     elif code == 'ok':
         require(not stderr and stdout.startswith('checked source: ')

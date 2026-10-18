@@ -28,7 +28,7 @@ class JsonCliTests(unittest.TestCase):
         self.assertIsNotNone(selected, "select the native checker with QLEISLI_KERNEL")
         return str(Path(selected).resolve(strict=True))
 
-    def assert_requestless_source_check(self, result):
+    def assert_source_check_without_entry_request(self, result):
         self.assertEqual(set(result), {
             "checker_paths", "checker_identity", "native_decisions", "entry",
             "concrete_ir_roots", "source_preservation_verified",
@@ -48,7 +48,10 @@ class JsonCliTests(unittest.TestCase):
         self.assertIs(type(native["count"]), int)
         self.assertGreaterEqual(native["count"], roots["local"] + roots["bundled"])
         self.assertIs(type(native["requests_checked"]), int)
-        self.assertEqual(native["requests_checked"], 0)
+        # Bundled derived source contributes checked requests; these do not
+        # establish an independent requested contract for this entry.
+        self.assertGreater(native["requests_checked"], 0)
+        self.assertLessEqual(native["requests_checked"], native["count"])
         self.assertIs(native["complete"], True)
 
     def invoke(self, *args, status=0):
@@ -89,7 +92,7 @@ class JsonCliTests(unittest.TestCase):
     def test_check_run_and_distribution_order(self):
         self.source("use std::state::init0;  \n"
                     "observe fn main() -> (Bit,Bit) { let a = measure_z(h(init0())); (a,not a) }")
-        self.assert_requestless_source_check(self.invoke("check", self.root, "--format=json")["result"])
+        self.assert_source_check_without_entry_request(self.invoke("check", self.root, "--format=json")["result"])
         rows = self.invoke("run", "--format=json", self.root)["result"]["distribution"]
         self.assertEqual([row["bits"] for row in rows], [[False, True], [True, False]])
         for row in rows:

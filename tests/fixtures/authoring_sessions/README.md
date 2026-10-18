@@ -12,6 +12,12 @@ observations. Separate first-test history retains the macOS path-alias mistake;
 normal/MSRV focused validation remains distinct from unfinished qargo pairing,
 stale-content and official distribution checks.
 
+The [shared source-contract consumer repair](source-contract-consumer-v030/README.md)
+retains both hosted retired-import failures, the unchanged first source and
+separate translated input. Full local command logs preserve the later JSON
+request-count/reset-span oracle failures and repairs; current checking and
+unfinished hosted CI remain distinct from inert history and general proofs.
+
 The [QPE host consumer history](qpe-host-consumer-v030/README.md) preserves both
 actual hosted failures after native acceptance contradicted an old limit
 expectation. Separate normal/MSRV checks retain the existing six-qubit case,
