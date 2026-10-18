@@ -11,6 +11,12 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Specify qrate, module and file identity and the semantic, evidence,
+  observational, realization and organizational roles of external artifacts.
+  Distinguish canonical names from storage, configuration from language rules,
+  and the canonical std/toolchain pair from semantic authority. Full qargo
+  dependency/pairing records and native edition binding remain unfinished.
+
 - Share latest/MSRV validation steps and run complete native-gated Rust harness
   selections with two bounded workers after a single build. Retain exact Cargo
   inventories, executable hashes, per-target timing and partial failure records.
@@ -24,6 +30,11 @@ and exactness obligations retain their recorded scopes and status.
   Run the complete long computed-source harness alone with one test thread
   before the worker pool, preserving the first extracted-source native
   timeouts, every original case and the fixed transport/work limits.
+  Avoid repeated path tokenization in fixture-reference checks with bounded
+  in-process storage; retain fresh blob reads, complete reference resolution
+  and full checking of long inputs without caching validation results.
+  Run independent native-bundle corpus pairs with two bounded workers while
+  retaining each pair's selection order, all cases and fixed command deadlines.
 
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports
@@ -65,6 +76,12 @@ and exactness obligations retain their recorded scopes and status.
   type/transport extraction checks. Broader QS/PR/RS/EXACT duties remain pending.
   Installation checks distinguish internal derived-contract requests from an
   independently requested entry equation, including text/JSON decision counts.
+
+- Expose read-only metadata for the linked library's actual bundled std after
+  the existing manifest gate, including its complete embedded source inventory.
+  Keep source/native checking and acceptance separate. Effective qargo records,
+  stale-content verification and official peer-toolchain alignment remain
+  unfinished in #171.
 
 - Require the embedded std manifest to name `std` and match the compiler's
   complete product version before loading source. Preserve independent user

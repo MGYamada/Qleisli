@@ -1,0 +1,392 @@
+{
+  "format": "qleisli.linked-std-first-observation-retention",
+  "version": 1,
+  "record": "first.records.json.gz",
+  "record_sha256": "0216776c10299b26f6b409df64109ee6655596168e3fe0686ecb9d200f4d165f",
+  "uncompressed_sha256": "a75db70933668744a956a8f2d8f4c08909714c9f3a0389caa5f606b742150375",
+  "file_count": 63,
+  "expanded_original_bytes": 69934,
+  "files": [
+    {
+      "path": "attempt-01/empty/Qargo.toml",
+      "bytes": 152,
+      "sha256": "eeb195a6942d61b169d3f0eac1d781bac1a292d4e31697466745195755fc68d0",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/empty/target/qargo/50dc08a938b2366442c055b42abe32c29c542fc5e44b89d69336284c5ea2c67f/42907797cfb9b3553c6485195f20078dabadb715b8ed893bc5d999e3c5f5a040/build-record.json",
+      "bytes": 1118,
+      "sha256": "2a8503a96a7d8c8d4c7a25d873bfec7c31e2c8c766629b0f49e59914cd93377a",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/empty/target/qargo/50dc08a938b2366442c055b42abe32c29c542fc5e44b89d69336284c5ea2c67f/42907797cfb9b3553c6485195f20078dabadb715b8ed893bc5d999e3c5f5a040/module-index.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/empty/target/qargo/50dc08a938b2366442c055b42abe32c29c542fc5e44b89d69336284c5ea2c67f/42907797cfb9b3553c6485195f20078dabadb715b8ed893bc5d999e3c5f5a040/snapshot/Qargo.toml",
+      "bytes": 152,
+      "sha256": "eeb195a6942d61b169d3f0eac1d781bac1a292d4e31697466745195755fc68d0",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/linked-descriptor.rs",
+      "bytes": 150,
+      "sha256": "e864d6a59017ed5fa3e95beab50fd0e7429af9aa2a7acf033fb042c3eb041a41",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/user-a/Qargo.toml",
+      "bytes": 152,
+      "sha256": "eeb195a6942d61b169d3f0eac1d781bac1a292d4e31697466745195755fc68d0",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/user-a/src/main.qli",
+      "bytes": 97,
+      "sha256": "94c719308c3217ef233ea00201d8412e5ec40b4d17f73f1c2fa51a5316995fa4",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/user-b/Qargo.toml",
+      "bytes": 152,
+      "sha256": "df038d0832468733ae7595fc23fb42280d82d377d48eaea4964f003fc2e38a82",
+      "mode": "0644"
+    },
+    {
+      "path": "attempt-01/user-b/src/main.qli",
+      "bytes": 97,
+      "sha256": "94c719308c3217ef233ea00201d8412e5ec40b4d17f73f1c2fa51a5316995fa4",
+      "mode": "0644"
+    },
+    {
+      "path": "capture-before.py",
+      "bytes": 5483,
+      "sha256": "d0fd475ab3a473daf1e8e2de3ff80d6449e65eeae1937e3ac4f586e0e9dce51a",
+      "mode": "0644"
+    },
+    {
+      "path": "context-before.json",
+      "bytes": 2856,
+      "sha256": "ef19c924a9815446f6dda1e2ade30c2ba07e08e0e5c36bc13422e549bd82ce48",
+      "mode": "0644"
+    },
+    {
+      "path": "counterexamples/mismatched-std/Qargo.toml",
+      "bytes": 182,
+      "sha256": "11ea94b3080ffd1323dd7f638878052bba8c17f625d8c226f53c18223b653b08",
+      "mode": "0644"
+    },
+    {
+      "path": "counterexamples/mismatched-std/src/main.qli",
+      "bytes": 97,
+      "sha256": "94c719308c3217ef233ea00201d8412e5ec40b4d17f73f1c2fa51a5316995fa4",
+      "mode": "0644"
+    },
+    {
+      "path": "linked-api-absence.started.json",
+      "bytes": 849,
+      "sha256": "3dc0d859576f516f66598e8789f87dc09543c4a5b5be270217162de0711932dd",
+      "mode": "0644"
+    },
+    {
+      "path": "linked-api-absence.stderr.txt",
+      "bytes": 511,
+      "sha256": "3e3ec9595f0b8674e4a43a538c6d3c9b2e5bae27dc6a71e355301c1bd9e2bce5",
+      "mode": "0644"
+    },
+    {
+      "path": "linked-api-absence.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "observations-before.json",
+      "bytes": 14357,
+      "sha256": "f55f32f92f0ea55aaddf6faf0aa6fe282c26c252966cb3df447ba456c0f66b46",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-build.started.json",
+      "bytes": 487,
+      "sha256": "a0bd5b394e2c1f5071a293e91661783b6dbb13f7620ccc447d2f40a00ed0b666",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-build.stdout.txt",
+      "bytes": 691,
+      "sha256": "86e719c6f3095202f45bdd07af12b61a63840aabd55af126e1f0c4dab30e4f3d",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-check.started.json",
+      "bytes": 487,
+      "sha256": "6bcebadf9184aa6dd31f4a88781a7faea20b63c65f4c779827bcf91494b35e54",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-empty-check.stdout.txt",
+      "bytes": 530,
+      "sha256": "afbfcee7ff1cb3c34bf962151cbb262030e603fe02bebd7954976d68eed355dc",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-help.started.json",
+      "bytes": 318,
+      "sha256": "13dd7dab4155f4713803bbebeac0ba95e21fa2aec02ec5979c21def8b965c360",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-help.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-help.stdout.txt",
+      "bytes": 667,
+      "sha256": "fb1578e8ce2ac7ec8b58da129c602b2270632ba4ea0d0b08f8581bc535ab2e25",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-mismatched-std-dependency.started.json",
+      "bytes": 515,
+      "sha256": "d21f907c836e0cfce372b44f8e184390795ca201d9c1f07875bba5b8b0c6c149",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-mismatched-std-dependency.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-mismatched-std-dependency.stdout.txt",
+      "bytes": 480,
+      "sha256": "6440332cb21ab5f6497e560104223b75158a34c05b72c86e3e3fa79aaf99542f",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-build.started.json",
+      "bytes": 489,
+      "sha256": "835be89ef0867c9589338a2142eaf8279cc58ee809ba67765f4065abe9e634b6",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-build.stdout.txt",
+      "bytes": 724,
+      "sha256": "3a005816caa1a024ab125a500088613b2e6451dcf6db348e47cefd175c6d1703",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-check.started.json",
+      "bytes": 489,
+      "sha256": "5881f55853c68f1329639c056788269a9c282a4875495a949d3ba0ea3e801363",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-a-check.stdout.txt",
+      "bytes": 724,
+      "sha256": "1b930d843df3516393d941fae17e35ed545fdfd15b780ca1f44a33d12a45446d",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-build.started.json",
+      "bytes": 489,
+      "sha256": "2745005c12fc951850e118d2f43fefa77c909b80777ac1f018649997d2dacde1",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-build.stdout.txt",
+      "bytes": 724,
+      "sha256": "4e002a6ab70593eef75e36be22e6b222269e88cfbfe9bfbd6cfd994e986598ae",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-check.started.json",
+      "bytes": 489,
+      "sha256": "a293603933834ddc9398aa6137aafcb52c9015245cb41fd29fc457d79e1a812f",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-user-b-check.stdout.txt",
+      "bytes": 724,
+      "sha256": "496b8aae8ffa17f7b48b3d045b500f7e687ffc8761e3d77cc9cbfff2a5d7cba4",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-version.started.json",
+      "bytes": 345,
+      "sha256": "a258ebb1015769db49538251c11b9a50ebaeb31360d0b777aa163b53af92bee5",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qargo-version.stdout.txt",
+      "bytes": 276,
+      "sha256": "569aed780f7931c76be36c0fc420d7d315b1eab1bdab78112ea561f13a35bcc7",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-check.started.json",
+      "bytes": 472,
+      "sha256": "bd634aa96e676464094a8d403f4c0b685c96f25e4d33c7ed384b88cd5c309b0d",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-check.stdout.txt",
+      "bytes": 418,
+      "sha256": "ee086faca87427f97b01a38150f00ea62b81a6b0d110436e8901d6c9414e95e9",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-run.started.json",
+      "bytes": 468,
+      "sha256": "dd6457fd8e4ca742517ccc9112fc44a2de211c2316b8a5f9fd520774db84de6e",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-run.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-a-run.stdout.txt",
+      "bytes": 148,
+      "sha256": "88da417ab0c55e5101c49f9ce77c3398067b75231bdffa3bbd3da168772c7f34",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-check.started.json",
+      "bytes": 472,
+      "sha256": "4b0d4b065dbdd96fee873d4d50b53ca3effff04d1a2a57d9f10c6e44b4f13c95",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-check.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-check.stdout.txt",
+      "bytes": 418,
+      "sha256": "ee086faca87427f97b01a38150f00ea62b81a6b0d110436e8901d6c9414e95e9",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-run.started.json",
+      "bytes": 468,
+      "sha256": "ee2461aea724b41794f3855c6f3b0f5ac73ed0d7ae1a9ef9fad4a3b44e89a2c6",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-run.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-user-b-run.stdout.txt",
+      "bytes": 148,
+      "sha256": "88da417ab0c55e5101c49f9ce77c3398067b75231bdffa3bbd3da168772c7f34",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-version.started.json",
+      "bytes": 330,
+      "sha256": "5be22a24b7ffc9cf284fd98bc9f162a00153e6b34b96d4737d247f5b65476413",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-version.stderr.txt",
+      "bytes": 3135,
+      "sha256": "8694c32c5d4c96456235c2838fb3faf5ead9a23c99f818bf4ae3acaf105390cf",
+      "mode": "0644"
+    },
+    {
+      "path": "qleisli-version.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "results-before.json",
+      "bytes": 26855,
+      "sha256": "f1625c4430bf697059ff4763f6c3608ed44da5debc347e0a8f86beda52550258",
+      "mode": "0644"
+    },
+    {
+      "path": "rustc-version.started.json",
+      "bytes": 343,
+      "sha256": "5f69f328079ea1324369dd2026c54865b2527b9091e1c4bfb3cac0a3cacd98b4",
+      "mode": "0644"
+    },
+    {
+      "path": "rustc-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0644"
+    },
+    {
+      "path": "rustc-version.stdout.txt",
+      "bytes": 203,
+      "sha256": "03152e4743690e8e6ef7e039b482b60e697bdba87c3a88c738c47343432b6584",
+      "mode": "0644"
+    }
+  ],
+  "context_sha256": "ef19c924a9815446f6dda1e2ade30c2ba07e08e0e5c36bc13422e549bd82ce48",
+  "results_before_sha256": "f1625c4430bf697059ff4763f6c3608ed44da5debc347e0a8f86beda52550258",
+  "verification": "Root lossless per-file byte comparison performed; no permanent semantic validator or execution claim. Captured build-record is actual old qargo output, not proposed new pairing evidence."
+}

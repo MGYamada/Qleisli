@@ -5071,10 +5071,11 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "610f1f9a808012be52e2c59db9c688127e3630e3432cffff988477118527f43d",
+      "sha256": "d5d14599bb5323a5b9c6c155e51b447ee676dcff2bbe9482d04cb647c3689496",
       "group": "source",
       "surface": {
         "declarations": [
+          "BundledStd",
           "ImportOrigin",
           "ModuleOrigin",
           "Project",
@@ -5084,10 +5085,17 @@
           "SourcePolicy"
         ],
         "functions": [
+          "pub fn bundled_std() -> Result<BundledStd, Diagnostic>",
+          "pub fn edition(&self) -> &'static str",
           "pub fn load(root: &Path) -> Result<Self, ProjectError>",
           "pub fn load_with_policy(root: &Path, policy: SourcePolicy) -> Result<Self, Diagnostic>",
+          "pub fn manifest(&self) -> &'static str",
           "pub fn module(&self, name: &str) -> Option<&SourceModule>",
-          "pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic>"
+          "pub fn modules(&self) -> impl ExactSizeIterator<Item = (&'static str, &'static str)>",
+          "pub fn name(&self) -> &'static str",
+          "pub fn product_version(&self) -> &'static str",
+          "pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic>",
+          "pub fn version(&self) -> &'static str"
         ],
         "capacity_constants": []
       }
@@ -5276,7 +5284,7 @@
     },
     {
       "path": "src/frontend/source.rs",
-      "sha256": "fb8ce28968a40655087f2c27283366221ac11052e6cf4625cdd5616750076d7c",
+      "sha256": "8783ce5c9ff338cd1d7fdfd9a6c258c859814487f8c79f5cd8ab1adfba1d97db",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5291,6 +5299,7 @@
           "pub fn local( name: String, path: Option<PathBuf>, text: String, policy: ParsePolicy, ) -> Result<Self, Failure>",
           "pub fn manifest() -> &'static str",
           "pub fn manifest_path() -> &'static str",
+          "pub fn name(&self) -> &'static str",
           "pub fn path(&self) -> &'static str",
           "pub fn path(&self) -> Option<&std::path::Path>",
           "pub fn sources() -> &'static [BundledSource]",

@@ -5,7 +5,7 @@ use qleisli::frontend::{
     CURRENT_EDITION,
     compile::ParsedProgram,
     compile::{check_project, check_project_with_policy, compile_project},
-    project::{Project, SourcePolicy, read_source_file},
+    project::{ModuleOrigin, Project, SourcePolicy, bundled_std, read_source_file},
 };
 use std::{collections::BTreeMap, fs, process::Command};
 
@@ -286,4 +286,78 @@ fn non_file_manifest_is_rejected_before_platform_open() {
             .contains("Qargo.toml must be a regular, non-symlink file"),
         "{error:?}"
     );
+}
+
+#[test]
+fn bundled_std_descriptor_binds_manifest_and_complete_loaded_source_inventory() {
+    let bundle = bundled_std().unwrap();
+    let repository = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let manifest = fs::read_to_string(repository.join("stdlib/Qargo.toml")).unwrap();
+    assert_eq!(bundle.manifest().as_bytes(), manifest.as_bytes());
+    let manifest: toml::Table = manifest.parse().unwrap();
+    let qrate = manifest["qrate"].as_table().unwrap();
+    assert_eq!(bundle.name(), qrate["name"].as_str().unwrap());
+    assert_eq!(bundle.version(), qrate["version"].as_str().unwrap());
+    assert_eq!(bundle.edition(), qrate["edition"].as_str().unwrap());
+    assert_eq!(bundle.product_version(), env!("CARGO_PKG_VERSION"));
+    assert_eq!(bundle.version(), bundle.product_version());
+    assert_eq!(bundle.edition(), CURRENT_EDITION);
+
+    let mut expected = BTreeMap::new();
+    for entry in fs::read_dir(repository.join("stdlib/src")).unwrap() {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if path.extension().is_some_and(|extension| extension == "qli") {
+            assert!(entry.file_type().unwrap().is_file());
+            let name = format!("std::{}", path.file_stem().unwrap().to_str().unwrap());
+            assert!(
+                expected
+                    .insert(name, fs::read_to_string(path).unwrap())
+                    .is_none()
+            );
+        }
+    }
+    assert!(!expected.is_empty());
+    let mut actual = BTreeMap::new();
+    let modules = bundle.modules();
+    let count = modules.len();
+    for (name, source) in modules {
+        assert!(actual.insert(name.to_owned(), source.to_owned()).is_none());
+    }
+    assert_eq!(count, expected.len());
+    assert_eq!(actual, expected);
+
+    let source = SourceRoot::new("");
+    let loaded = Project::load(&source.0).unwrap();
+    let loaded: BTreeMap<_, _> = loaded
+        .modules
+        .values()
+        .filter(|module| module.origin == ModuleOrigin::Bundled)
+        .map(|module| (module.name.clone(), module.source.clone()))
+        .collect();
+    assert_eq!(actual, loaded);
+}
+
+#[test]
+fn bundled_std_descriptor_keeps_external_manifest_checks_fresh() {
+    let bundle = bundled_std().unwrap();
+    let root = SourceRoot::new(SOURCE);
+    let original = fs::read_to_string(root.0.join("Qargo.toml")).unwrap();
+    Project::load(&root.0).unwrap();
+    for _ in 0..2 {
+        root.write(
+            "Qargo.toml",
+            "schema-version = 2\n[qrate]\nedition = \"2027\"\n",
+        );
+        bundled_std().unwrap();
+        let rejected = Project::load(&root.0).unwrap_err();
+        assert!(rejected.message.contains("unsupported Qleisli edition"));
+        assert_eq!(
+            rejected.path,
+            root.0.canonicalize().unwrap().join("Qargo.toml")
+        );
+        root.write("Qargo.toml", &original);
+        Project::load(&root.0).unwrap();
+    }
+    assert_eq!(bundle.manifest(), bundled_std().unwrap().manifest());
 }

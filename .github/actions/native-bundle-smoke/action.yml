@@ -17,5 +17,5 @@ runs:
           echo 'Missing native verification record path' >&2
           exit 1
         fi
-        python3 scripts/test_native_verification.py --kernel "$BUNDLE_KERNEL" --record "$RECORD_PATH"
+        python3 scripts/test_native_verification.py --kernel "$BUNDLE_KERNEL" --record "$RECORD_PATH" --workers 2
         QLEISLI_KERNEL="$BUNDLE_KERNEL" python3 scripts/test_source_kernel.py

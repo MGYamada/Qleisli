@@ -18,6 +18,7 @@
 # Language Reference
 
 - [Source text and lexical boundary](reference/source-text.md)
+- [Qrates, source identity and external artifacts](reference/packages-and-artifacts.md)
 - [Surface-to-core elaboration](reference/elaboration.md)
 - [Ordinary types, quantum owners and equality](reference/type-model.md)
 - [Static values, constraints and bounded specialization](reference/static-language.md)

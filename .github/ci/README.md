@@ -152,6 +152,16 @@ No exception allow-list is installed. Dynamic consumers need an explicit,
 reviewed reader rule with regressions; a source project's directory reference
 does not retain unrelated logs. This static check establishes retention
 reachability, not actual execution, assertion coverage or semantic authority.
+The inspector memoizes only immutable path-component tuples within its process,
+bounded to 32,768 plain strings of at most 4,096 characters. String subclasses,
+longer strings and other PathLike values still receive the complete ordinary parse. Every Git snapshot,
+reference edge and final decision is checked afresh; no file, graph or passing
+result is cached. The [bounded first study](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/reference-parts-first.json)
+compares the original and initial prototype on the same immutable snapshot:
+34.43 and 17.89 seconds, with all 9,986 reached paths equal. This is a warm macOS
+Python 3.14 observation, not a hosted full-CI speedup claim or semantic proof.
+The [first subclass counterexample](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/reference-input-first.json)
+retains the original match and the initial optimization's unhashable-input failure.
 Keep both size ceilings unchanged and run the ordinary immutable-tree budget
 gate after reviewed consolidation.
 
@@ -483,6 +493,16 @@ and target at the existing preparation point; only distribution selects a
 Rustup default. `native-bundle-smoke` runs acceptance and source checks against
 the same relocated checker. Packaging, the macOS CLI rebuild, optional interop,
 full-lane archive/upload and receipts remain explicit in their producer jobs.
+Both `native-paths` and the bundle comparison keep their shared-file prefix serial
+and run at most two independent small-corpus pairs concurrently. Each pair retains both
+environment-selected and explicitly selected CLI calls in that order, fresh
+native decisions, the same results comparison and the existing 70-second command
+deadline. Every selected case (currently 84 at at most four qubits) remains;
+failure drains running pairs and records unstarted cases without success credit.
+Standalone comparison defaults to one worker. Reports retain input order and
+declare concurrency; they do not imply chronological execution across pairs.
+The [first serial source and complete macOS timing](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/bundle-smoke-first.json.gz)
+remain inert history, distinct from current checking and any speedup measurement.
 Rust groups own their native preparation, so their setup action uses
 `prepare: 'false'`; the four other native consumers use the default preparation.
 The mathematical Lean job retains its separate model/full proof work.

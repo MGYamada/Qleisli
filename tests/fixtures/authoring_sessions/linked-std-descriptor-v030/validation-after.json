@@ -1,0 +1,296 @@
+{
+  "format": "qleisli.bundled-std-descriptor-focused-validation",
+  "version": 1,
+  "root_driver_sha256": "8e287df107ab71d7dcc03d2afaca3000f63ba077ec7c7ee2a953331addf7a000",
+  "base_head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+  "status": "passed-focused-local-validation",
+  "normal": {
+    "edition_tests": 13,
+    "manifest_gate_tests": 4,
+    "failed": 0,
+    "ignored": 0,
+    "other_lib_tests_filtered": 439,
+    "conditional_native_skips": 0
+  },
+  "msrv": {
+    "edition_tests": 13,
+    "manifest_gate_tests": 4,
+    "failed": 0,
+    "ignored": 0,
+    "other_lib_tests_filtered": 439,
+    "conditional_native_skips": 0
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 8.351085749920458,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "1f9d13e154403284e6396dd60dc5f35da47fe5f9adc79c32c9529d0b61d0eff6",
+      "label": "bundled-std-fmt-g-v2",
+      "report_sha256": "632800540c9f74d0ffd0b30691ae6a2553f35c255fa5a2e3d4c9f96e019ee5a3",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "editions"
+      ],
+      "compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 10.955498415976763,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "1f9d13e154403284e6396dd60dc5f35da47fe5f9adc79c32c9529d0b61d0eff6",
+      "label": "bundled-std-normal-editions-g-v2",
+      "report_sha256": "c9c8e5476352f66b983df3ce5feec127a944fd4381cbab20fa711f11b30b68a0",
+      "stdout_sha256": "697d43f9267f5ccbf900b435a9b57f24e2c5967ad889fc8fa3ef333e92b14a58",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "frontend::project::edition::tests"
+      ],
+      "compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 23.00528012495488,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "1f9d13e154403284e6396dd60dc5f35da47fe5f9adc79c32c9529d0b61d0eff6",
+      "label": "bundled-std-normal-gates-g-v2",
+      "report_sha256": "5c3f633492cda40e4e5f89201d03b71887c5ff82a917fd4bf7cd0833c0de9377",
+      "stdout_sha256": "e3c362e70429314b5ce1a8ad1c6998fad2752151ed1d329d7eb8d6becdf8f89b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "python3",
+        "-B",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "editions"
+      ],
+      "compiler": {
+        "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+        "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+        "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 24.58519379212521,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "e8e9e2c4fb24a02e00898dd6a77ff04b851b222160e069e43df84fa6b1e62b76",
+      "label": "bundled-std-msrv-editions-g-v2",
+      "report_sha256": "9ea84cbec7f44db9b15ba57fc7145cfc546e484464c124b952e80439ff470ba6",
+      "stdout_sha256": "c6b9a24f1887661f41f0a69c2a608491fd9c33003ad63fb0786c134be95c5d20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/run_kernel_tests.py",
+        "--",
+        "python3",
+        "-B",
+        "scripts/run_msrv.py",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "frontend::project::edition::tests"
+      ],
+      "compiler": {
+        "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+        "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+        "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 21.28849304211326,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "e8e9e2c4fb24a02e00898dd6a77ff04b851b222160e069e43df84fa6b1e62b76",
+      "label": "bundled-std-msrv-gates-g-v2",
+      "report_sha256": "08d2d54c491d7abecb550039e086ba37457f1f67be53a88d6698509bcd032be6",
+      "stdout_sha256": "1f64bf8ad578ccac3b3f9db3201eb578dc59df1f29a68d64f81f7aec8345162e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "compiler": {
+        "path": "/opt/homebrew/bin/rustc",
+        "sha256": "457663fd883b89f08096a30788debdfc0c42bf9ddf7cc079fe0ae44f1c3d17f1",
+        "selection": "explicit normal RUSTC",
+        "version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 39.309954582946375,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "e8e9e2c4fb24a02e00898dd6a77ff04b851b222160e069e43df84fa6b1e62b76",
+      "label": "bundled-std-normal-clippy-g-v2",
+      "report_sha256": "3f3d0daab8f876ffb019434125bbda906eef48c7b174507ddb34109e38c22d28",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "11bb1e147c4453fdfdd1053f07c0d0d7f466392c8ae4bb3897fff1f1dc9c3b4c"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "compiler": {
+        "path": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+        "sha256": "cf4750269faa6c5eba9489e0b92850e2de7e260489d69d89bcfaf23f9fe46015",
+        "selection": "run_msrv.py overrides child CARGO/PATH/RUSTC/RUSTDOC/RUSTUP_TOOLCHAIN",
+        "version": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+      },
+      "kernel_sha256": "bd2bb0c31ac71b646471f1b4f5271bbb9d962e7a2ded5e452c09e9886a8a33cf",
+      "whole_working_before": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "whole_working_after": {
+        "head": "336d021f29aad05e796bd50ee8e5e6a1b2931289",
+        "working_inputs_sha256": "f9efd0a9b1ff8a11d98cabc4b5b951463198935e6f01593b4f52098eee8c2b1b"
+      },
+      "seconds": 44.84254129114561,
+      "exit_code": 0,
+      "inputs_stable": true,
+      "kernel_stable": true,
+      "whole_working_stable": true,
+      "observed_cli_after_sha256": "e8e9e2c4fb24a02e00898dd6a77ff04b851b222160e069e43df84fa6b1e62b76",
+      "label": "bundled-std-msrv-clippy-g-v2",
+      "report_sha256": "e11a34cea86d7d7f2437916ab1b2f0eb94cf7e5167b7ba300f18e65be1668b8e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8768a99a1a3b94c7640e531ea5a944e856c3dc67eff0b0ed8f4d53040472126b"
+    }
+  ],
+  "scope": "Actual local focused tests and strict all-target lints after expected canonical-path repair. Host metadata/fresh loading and existing native-gated source tests remain distinct from a proof or final-head hosted CI. Common tested Rust inputs remain identical through subsequent inventory/retention-only changes. Full suites, release/package/install and latest-head CI remain pending; qargo effective records/stale-content/distribution integration and #171 completion not claimed."
+}
