@@ -647,3 +647,9 @@ The [Rust CI scheduling experiment](ci-rust-parallel-v030/README.md) retains
 original sources, hosted timeouts, local preflight failure and same-source bounded
 measurements as inert bytes. Its retention regression never executes history;
 full candidate CI and native acceptance remain separate requirements.
+
+The [native driver consolidation first history](ci-native-drivers-v030/README.md)
+retains eleven original generated Main bodies and the first refactor,
+compilation, partial-comparison and policy refusals. Its bounded readers do not
+execute history; later compilation and small-system shadow checks remain
+separate from full coverage, default adoption and proof claims.
