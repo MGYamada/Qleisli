@@ -22,6 +22,12 @@ import run_kernel_tests
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_ARGUMENTS = ['--message-format=json', '--', '--test-threads', '2']
+ISOLATED = {('test', 'computed_derived_source')}
+
+
+def isolated(row):
+    """Keep complete long native equations alone within their fixed deadline."""
+    return (row['kind'], row['name']) in ISOLATED
 
 
 def selection(command, metadata):
@@ -81,7 +87,10 @@ def harness(row, directory):
     """Let Cargo retain its runtime environment and default harness arguments."""
     started = time.monotonic()
     log = directory / (row['kind'] + '-' + row['name'] + '.log')
-    result = row | dict(status='failed', log=str(log), executed_command=row['command'] + TEST_ARGUMENTS)
+    arguments = TEST_ARGUMENTS[:-1] + ['1'] if isolated(row) else TEST_ARGUMENTS
+    result = row | dict(status='failed', log=str(log), isolated=isolated(row),
+                        test_threads=1 if isolated(row) else 2,
+                        executed_command=row['command'] + arguments)
     try:
         if digest(row['executable']) != row['sha256']:
             raise ValueError('test executable changed before execution')
@@ -114,17 +123,38 @@ def harness(row, directory):
 def schedule(rows, workers, directory, update):
     """Stop submitting after failure; retain already running and unstarted targets."""
     results = [row.copy() for row in rows]
-    pending = iter(enumerate(rows))
+    pending = iter((index, row) for index, row in enumerate(rows) if not isolated(row))
     failed = False
+    def start(index, row):
+        results[index] = row | dict(status='running')
+        update(results)
+        print(f"Rust harness start: {row['kind']} {row['name']}", flush=True)
+    def finish(index, result):
+        results[index] = result
+        print(f"Rust harness {result['status']}: {result['kind']} {result['name']} "
+              f"({result['seconds']:.2f}s)", flush=True)
+        if result.get('error'):
+            print(json.dumps({key: result.get(key) for key in
+                              ('kind', 'name', 'error', 'exit_code', 'log')}), flush=True)
+        if (log := Path(result['log'])).exists():
+            print(log.read_text(errors='replace'), end='', flush=True)
+        update(results)
+    # Run the entire selected harness, with one libtest thread, before any
+    # pool worker starts. Neither native equations nor test cases are filtered.
+    for index, row in enumerate(rows):
+        if isolated(row):
+            start(index, row)
+            result = harness(row, directory)
+            finish(index, result)
+            if result['status'] != 'passed':
+                return results
     with ThreadPoolExecutor(max_workers=workers) as pool:
         running = {}
         def submit():
             item = next(pending, None)
             if item is not None:
                 index, row = item
-                results[index] = row | dict(status='running')
-                update(results)
-                print(f"Rust harness start: {row['kind']} {row['name']}", flush=True)
+                start(index, row)
                 running[pool.submit(harness, row, directory)] = index
         for _ in range(workers):
             submit()
@@ -132,18 +162,9 @@ def schedule(rows, workers, directory, update):
             done, _ = wait(running, return_when=FIRST_COMPLETED)
             for future in done:
                 index = running.pop(future)
-                results[index] = future.result()
-                result = results[index]
+                result = future.result()
                 failed |= result['status'] != 'passed'
-                print(f"Rust harness {result['status']}: {result['kind']} {result['name']} "
-                      f"({result['seconds']:.2f}s)", flush=True)
-                if result.get('error'):
-                    print(json.dumps({key: result.get(key) for key in
-                                      ('kind', 'name', 'error', 'exit_code', 'log')}), flush=True)
-                log = Path(result['log'])
-                if log.exists():
-                    print(log.read_text(errors='replace'), end='', flush=True)
-            update(results)
+                finish(index, result)
             if not failed:
                 for _ in done:
                     submit()
@@ -165,7 +186,8 @@ def execute(command, workers, record):
     directory = record.parent / 'rust-harnesses'
     directory.mkdir()
     started = time.monotonic()
-    report = dict(format=1, status='failed', command=command, workers=workers, harness_threads=2, harnesses=[],
+    report = dict(format=1, status='failed', command=command, workers=workers, harness_threads=2,
+                  isolated_harness_threads=1, isolated_harnesses=sorted(ISOLATED), harnesses=[],
                   scope='Complete selected harness execution; no semantic acceptance cache.')
     def retain(rows=None):
         if rows is not None:

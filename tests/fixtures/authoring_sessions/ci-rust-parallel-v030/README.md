@@ -46,3 +46,12 @@ now prints failed-target identities/reasons last, after other workers finish.
 Normal Rust and MSRV each pass 466 tests across nine selected harnesses with two
 existing ignores and zero conditional native skips. These bounded macOS runs do
 not prove the earlier native-protocol failure's cause or complete Linux CI.
+
+The [computed-source timeout study](computed-timeout-first.json.gz) retains the
+actual latest-head Linux failure, both unchanged small-qubit sources, the
+original scheduler/checking code and all local per-invocation observations.
+Those two sources pass separately on macOS; their slowest native calls take
+about 16 seconds. These observations neither identify the Linux cause nor
+establish a repair. The full computed-source harness is now scheduled alone
+with one test thread, before other harness workers. All cases, exact equations,
+fresh native decisions and the 60-second transport deadline remain required.

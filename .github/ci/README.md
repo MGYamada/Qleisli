@@ -384,6 +384,14 @@ unstarted targets remain in the command artifact. A failed harness stops new
 submissions; every selected harness must pass before later checks can run.
 The outer process-group deadline also terminates worker/native descendants.
 One worker retains a fresh serial scheduling route for bounded comparisons.
+The complete `computed_derived_source` harness runs first, alone with one test
+thread. Its original 205-T and ordered-chunk equations reached the fixed
+60-second native deadline during extracted-source parallel validation. This
+isolation reduces competition for those queries without filtering any case,
+changing an acceptance rule or increasing a deadline. Per-harness records state
+the actual isolation and thread count. Failure leaves all later targets not run.
+Local single-query timings do not establish the Linux failure's cause or repair;
+the new candidate must pass hosted extracted-source validation.
 The separate ignored-dialect,
 catalog, documentation and doctest commands retain their existing coverage.
 
