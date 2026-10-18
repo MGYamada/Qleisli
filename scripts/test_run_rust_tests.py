@@ -34,6 +34,19 @@ class RustSchedulerTests(unittest.TestCase):
         self.assertEqual(coverage['first_head'], '8befdc78424c48b11e98917152ee7a7dd837261b')
         self.assertEqual([row['structuredContent']['job']['id'] for row in coverage['observations']],
                          [117622633631, 117622627615])
+        workflow_bytes = (root / 'workflow-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(workflow_bytes).hexdigest(),
+                         '9d9b9e75306c0347c0cadc347927d496d4c9116a3dc0a40a4dcdf81f7ff944cf')
+        workflow = json.loads(gzip.decompress(workflow_bytes))
+        self.assertEqual(workflow['first_head'], 'fd17cea85ef1761dba36b67cd0a00f6d227fa0dd')
+        self.assertEqual(workflow['observation']['structuredContent']['job']['id'], 117625096694)
+        native_bytes = (root / 'native-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(native_bytes).hexdigest(),
+                         '1a887cd5c4fb77644fc84d8a032631332abacd53ffbf2dca47277d88e04f3bb3')
+        native = json.loads(gzip.decompress(native_bytes))
+        for row in native['records']:
+            data = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
         archive = (root / index['archive']['path']).read_bytes()
         self.assertEqual(hashlib.sha256(archive).hexdigest(), index['archive']['sha256'])
         records = json.loads(gzip.decompress(archive))['records']
@@ -106,12 +119,25 @@ class RustSchedulerTests(unittest.TestCase):
 
     def test_failure_retains_unstarted_targets_and_stops_submission(self):
         rows = [dict(kind='test', name=str(n), status='not-run') for n in range(3)]
+        output = io.StringIO()
         with tempfile.TemporaryDirectory() as directory, \
-                patch.object(runner, 'harness', return_value=rows[0] | dict(status='failed', seconds=0, log='/missing')) as run, \
-                contextlib.redirect_stdout(io.StringIO()):
+                patch.object(runner, 'harness', return_value=rows[0] | dict(status='failed', error='retained failure reason', seconds=0, log='/missing')) as run, \
+                contextlib.redirect_stdout(output):
             results = runner.schedule(rows, 1, Path(directory), lambda rows: None)
         run.assert_called_once()
+        self.assertIn('retained failure reason', output.getvalue())
         self.assertEqual([row['status'] for row in results], ['failed', 'not-run', 'not-run'])
+
+    def test_failure_identity_survives_bounded_previews_after_large_worker_logs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / 'failed.log'; log.write_text('large output\n' * 2000)
+            row = dict(kind='lib', name='qleisli', status='failed', error='original failure', exit_code=101, log=str(log))
+            output = io.StringIO()
+            with contextlib.redirect_stderr(output):
+                runner.failure_details([row, dict(kind='test', name='later-success', status='passed')])
+            tail = output.getvalue()[-8192:]
+            self.assertEqual(json.loads(tail.splitlines()[-1])['failed_harnesses'], [
+                {key: row[key] for key in ('kind', 'name', 'error', 'exit_code', 'log')}])
 
     def test_actual_child_failure_native_skip_missing_summary_and_changed_binary_refuse(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -132,7 +158,8 @@ class RustSchedulerTests(unittest.TestCase):
                            package_id='root-id',target=dict(name=mode),profile=dict(test=True),
                            command=[sys.executable, str(child)], status='not-run')
                 result = runner.harness(row, root)
-                self.assertEqual(result['executed_command'], row['command'] + ['--message-format=json'])
+                self.assertEqual(result['executed_command'], row['command'] +
+                                 ['--message-format=json', '--', '--test-threads', '2'])
                 self.assertEqual(result['status'], 'passed' if mode == 'pass' else 'failed')
                 if mode == 'exit': self.assertEqual(result['exit_code'], 7)
 

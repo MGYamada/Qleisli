@@ -21,6 +21,7 @@ class SourceChecksTests(unittest.TestCase):
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
             'test_check_fixture_budget', 'test_check_fixture_references',
             'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition', 'test_run_rust_tests', 'test_ci_actions',
+            'test_check_release_ready',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel', 'test_run_kernel_tests')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
@@ -114,10 +115,15 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_repository_checks_keep_prior_coverage_and_separate_continuity(self):
         commands = checks.plan('repository-integrity')
-        # Bind the exact prior command coverage, independent of the manifest.
+        # Move exactly one policy regression earlier; keep every prior command.
+        release = ['python3', 'scripts/test_check_release_ready.py']
+        self.assertNotIn(release, commands)
+        self.assertEqual(checks.plan('ci-preflight').count(release), 1)
+        prior = commands[:8] + [release] + commands[8:]
+        # Bind the exact prior coverage and order, independent of the manifest.
         import hashlib
-        self.assertEqual(len(commands), 34)
-        self.assertEqual(hashlib.sha256(json.dumps(commands).encode()).hexdigest(),
+        self.assertEqual(len(commands), 33)
+        self.assertEqual(hashlib.sha256(json.dumps(prior).encode()).hexdigest(),
                          'ad1d29d1bdf9374234a3357e304041b4aaeae64a08a9138b326103079768e254')
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
         self.assertIn('group: repository-integrity', workflow)

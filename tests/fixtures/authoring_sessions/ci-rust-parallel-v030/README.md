@@ -30,3 +30,19 @@ status is changed by the experiment.
 The later [rooted-retention failures](coverage-first.json.gz) preserve the actual
 hosted refusal and original README/consumer bytes at `8befdc78`. The consumer now
 reads this README explicitly; the inspector and its coverage rules are unchanged.
+
+The [first corpus-policy placement failure](workflow-first.json.gz) retains the
+actual hosted diagnostic and original test/action sources at `fd17cea8`.
+The regression now executes the shared action's actual corpus shell under all
+five existing CI event/profile cases. Its 40 tests move into the early preflight,
+once per workflow, retaining the quick corpus policy and all prior coverage.
+
+The [native/harness observations](native-first.json.gz) preserve the first hosted
+distribution log, the local sandbox `ps` refusal, a later native-protocol failure,
+the same simulator test passing alone, and separate two-thread positive runs.
+The original bounded hosted stdout preview does not identify the failed target;
+its uploaded per-harness payload was not independently downloaded. The scheduler
+now prints failed-target identities/reasons last, after other workers finish.
+Normal Rust and MSRV each pass 466 tests across nine selected harnesses with two
+existing ignores and zero conditional native skips. These bounded macOS runs do
+not prove the earlier native-protocol failure's cause or complete Linux CI.
