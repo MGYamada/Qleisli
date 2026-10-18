@@ -376,6 +376,13 @@ or changed mappings without falling back to the historical source.
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
+The internal runner accepts `--partition differential` or `--partition remaining`
+only with the complete `rust-latest` or `rust-msrv` group. Each selection keeps
+fresh native preparation, its existing whole-command guard and complete test
+harnesses. Plans and results retain the canonical command list, selected indices
+and omitted indices. A successful partition does not complete the Rust suite.
+Without that explicit option, the existing complete group runs unchanged.
+Hosted splitting and its same-run/release aggregation are not enabled yet.
 The latest and MSRV Rust groups retain two literal native-gated selections:
 ownership/source-IR correspondence, then every other integration target plus
 libraries, binaries, examples and benches. Before either selection,

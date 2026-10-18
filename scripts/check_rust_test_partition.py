@@ -78,6 +78,17 @@ def selection(group, commands):
     return heavy, rest
 
 
+def command_indices(group, commands, partition):
+    """Select whole commands from the one canonical, fully checked Rust plan."""
+    selection(group, commands)
+    if partition not in {'differential', 'remaining'}:
+        raise ValueError('unknown Rust producer partition')
+    heavy = 1 + (group == 'rust-latest')
+    indices = [heavy - 1, heavy]
+    return indices if partition == 'differential' else [
+        index for index in range(len(commands)) if index not in indices]
+
+
 def inventory(metadata, root):
     """Reject unreviewed target conventions or feature/workspace selection."""
     if metadata.get('version') != 1 or metadata.get('workspace_root') != str(root):
