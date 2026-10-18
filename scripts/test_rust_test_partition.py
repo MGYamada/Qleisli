@@ -22,15 +22,16 @@ def commands(group='rust-latest', rest=('alpha',)):
     """Build independent literal command fixtures, including unchanged followups."""
     cargo = ['cargo', '+1.98.1'] if group == 'rust-latest' else ['python3', 'scripts/run_msrv.py']
     native = ['python3', 'scripts/run_kernel_tests.py', '--']
+    scheduler = ['python3', 'scripts/run_rust_tests.py', '--workers', '2', '--record', '{record}', '--']
     before = [cargo + ['fmt', '--check']] if group == 'rust-latest' else []
     after = [native + cargo + ['test', '--test', 'sized_review_dialects', '--', '--ignored', '--skip', 'native'],
              ['python3', 'scripts/test_sized_primitive_catalog.py'], cargo + ['doc', '--no-deps'],
              native + cargo + ['test', '--doc']] if group == 'rust-latest' else []
     return before + [
         ['python3', 'scripts/check_rust_test_partition.py', '--group', group],
-        native + cargo + ['test', '--test', 'frontend_ownership_differential', '--test', 'source_ir_correspondence'],
+        native + scheduler + cargo + ['test', '--test', 'frontend_ownership_differential', '--test', 'source_ir_correspondence'],
         ['python3', 'scripts/check_rust_test_partition.py', '--group', group],
-        native + cargo + ['test', '--lib', '--bins', '--examples', '--benches'] +
+        native + scheduler + cargo + ['test', '--lib', '--bins', '--examples', '--benches'] +
         [part for name in rest for part in ['--test', name]],
     ] + after
 
@@ -126,7 +127,8 @@ class PartitionTests(unittest.TestCase):
     def test_native_wrapper_pin_categories_and_guard_order_cannot_change(self):
         mutations = []
         value = commands(); value[2] = value[2][3:]; mutations.append(value)
-        value = commands(); value[2][4] = '+1.85.0'; mutations.append(value)
+        value = commands(); value[2][value[2].index('+1.98.1')] = '+1.85.0'; mutations.append(value)
+        value = commands(); value[2][value[2].index('--workers') + 1] = '4'; mutations.append(value)
         value = commands(); value[4].remove('--benches'); mutations.append(value)
         value = commands(); value[1], value[2] = value[2], value[1]; mutations.append(value)
         value = commands(); value[2] = value[2][:-2]; mutations.append(value)

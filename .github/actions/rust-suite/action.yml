@@ -1,0 +1,51 @@
+name: Shared Rust validation suite
+description: Keep latest and MSRV coverage in one reviewed sequence without changing producer identities
+inputs:
+  profile:
+    description: latest or msrv; the caller installs the matching pinned toolchain
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Validate the Rust suite selection
+      shell: bash
+      env:
+        RUST_SUITE_PROFILE: ${{ inputs.profile }}
+      run: |
+        case "$RUST_SUITE_PROFILE" in
+          latest|msrv) ;;
+          *) echo 'Unknown Rust validation profile' >&2; exit 1 ;;
+        esac
+    - name: Run native-gated Rust checks
+      uses: ./.github/actions/source-check
+      with:
+        group: rust-${{ inputs.profile }}
+    - name: Run source contracts against the same compiler
+      uses: ./.github/actions/source-check
+      with:
+        group: source-contracts
+        compiler: target/debug/qleisli
+        artifact-name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
+    - name: Run source semantics
+      if: inputs.profile == 'latest'
+      uses: ./.github/actions/source-check
+      with:
+        group: source-semantics
+        compiler: target/debug/qleisli
+    - name: Representative corpus checks
+      if: inputs.profile == 'latest'
+      id: corpus
+      shell: bash
+      run: |
+        python3 scripts/check_input_corpus.py target/debug/qleisli --quick --report "$RUNNER_TEMP/corpus.json"
+    - name: Retain actual corpus mode, selected probes and partial failures
+      if: always() && inputs.profile == 'latest' && (steps.corpus.outcome == 'success' || steps.corpus.outcome == 'failure')
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: corpus-${{ github.sha }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/corpus.json
+        if-no-files-found: error
+    - name: Run strict lint and research checks
+      uses: ./.github/actions/source-check
+      with:
+        group: rust-${{ inputs.profile }}-lint-research

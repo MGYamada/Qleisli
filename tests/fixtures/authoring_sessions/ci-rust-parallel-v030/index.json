@@ -1,0 +1,618 @@
+{
+  "format": 1,
+  "base": "bd2a66b726119463074536b6f60560ded09456f0",
+  "role": "Inert original sources, diagnostics and bounded observations; no commands are executed on replay.",
+  "archive": {
+    "path": "records.json.gz",
+    "sha256": "a34c6f26c2dcb091d399ea833735d6985b240ddbe30c8bd75025aa044eb66b48",
+    "bytes": 255611
+  },
+  "records": [
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/.github/ci/source-checks.json",
+      "bytes": 29914,
+      "sha256": "c92dce091274a89b6902106104aae1aeafbb2ed32b966d8a8906b498df8a36b3",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/.github/workflows/ci.yml",
+      "bytes": 28039,
+      "sha256": "1f910edb1ebf7a87e14593cf5ba4016c0cca7d945f0055b971d4c66e70d91b14",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/scripts/check_rust_test_partition.py",
+      "bytes": 10182,
+      "sha256": "a5b7465e9eef0d0c4dbcb4bbc6fda3a31af76d5526af5f30a952a3cb0b4cbdbb",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/scripts/check_distribution.py",
+      "bytes": 26398,
+      "sha256": "43bd136c5af6145f9722037e2ed496c659aa808054dd17542803da033bb9c640",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/tests/finite_empty_bits.rs",
+      "bytes": 12208,
+      "sha256": "2bbae4bdd35cefc14e70664ca4995dbd1c54a9d44e1712ebf63536d4ed4c7ec8",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/tests/public_effects.rs",
+      "bytes": 24712,
+      "sha256": "cce8fb9de54829f73d027c948762d4bc8c7a3084eb62253b96361b1d7a623634",
+      "mode": 420
+    },
+    {
+      "name": "git-bd2a66b726119463074536b6f60560ded09456f0/tests/rectangular_meanings.rs",
+      "bytes": 10656,
+      "sha256": "98e068b0bd881b581f46597278840caaa0c94320566c93ea47599327eddf4ba5",
+      "mode": 420
+    },
+    {
+      "name": "observations/cargo-concurrent-finite_empty_bits.log",
+      "bytes": 1349,
+      "sha256": "75bb612d11042c481ece3e3ad178fb193017afbcac0060da547a4976854275d8",
+      "mode": 420
+    },
+    {
+      "name": "observations/cargo-concurrent-parser.log",
+      "bytes": 2573,
+      "sha256": "6ae4592ae1f357c5f11c88ec4d613f49ba83353edf06eb39bef27365aedd99fc",
+      "mode": 420
+    },
+    {
+      "name": "observations/cargo-concurrent.json",
+      "bytes": 330,
+      "sha256": "c22e2342a9ceada8731c70d020100234c5dcc415c25b7360118e8a39c09e6df6",
+      "mode": 420
+    },
+    {
+      "name": "observations/categories-build.jsonl",
+      "bytes": 22304,
+      "sha256": "435a78c3eed87516aea127eda5dedc6f4846cc594afffa545ed1ea03fe4cce9b",
+      "mode": 420
+    },
+    {
+      "name": "observations/categories-build.stderr",
+      "bytes": 121,
+      "sha256": "1061ab5a984d5e08816b8098397a66256889f7b680943702fcf7bc1f0786f660",
+      "mode": 420
+    },
+    {
+      "name": "observations/hosted-117598322349.json",
+      "bytes": 60661,
+      "sha256": "005787842f4f26d1f1621b68d7d9fc0c11a1cef1ee0fd9a72ddfc0f8a0c60f2c",
+      "mode": 420
+    },
+    {
+      "name": "observations/hosted-117598572940.json",
+      "bytes": 59585,
+      "sha256": "c9a4386a682790040e8113176bb45ea83e2936ad22cab0b346604cec69b2e96c",
+      "mode": 420
+    },
+    {
+      "name": "observations/hosted-117599141499.json",
+      "bytes": 59927,
+      "sha256": "dbd1608ff7545d3e8af5527043e1b6a1248b9c164ac322c020ac9de8edae6dff",
+      "mode": 420
+    },
+    {
+      "name": "observations/hosted-baseline-117598572975.json",
+      "bytes": 73131,
+      "sha256": "86fcb6141ebdf63c327267dd9cdec94096f64baf6955df83216a6d8476de9169",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-opt1.py",
+      "bytes": 3225,
+      "sha256": "e42061e484f85a2aa3fdedbf04a07728fa2edbb7afe7059a669def0782ff49c0",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-original/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-original/stdout.log",
+      "bytes": 3530,
+      "sha256": "dfe1bd174e53b316c6b0c08a6e361ee8ded573b973419b436a15f13dda656b60",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/record.json",
+      "bytes": 2705,
+      "sha256": "9bafb50a4a8f0ca9fd36b5fa4b63757f95d943a1c87389fd7ee672372c9b90d5",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/build.jsonl",
+      "bytes": 19155,
+      "sha256": "56d9731af398d5f51052caa02b92d03e4267b9dbb2cb33c4e656444116f0969e",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/build.stderr",
+      "bytes": 61,
+      "sha256": "a752c42f5fc8aeeace70e8f8f53d9907f5f07ab3d9005a4295ea6c7ab95c9b1d",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1296,
+      "sha256": "15e2d12b86cc0aa0ef43ae55348bea64ffdf18cdd0a93ab10e4b4e9e02a5b3f0",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/test-public_effects.log",
+      "bytes": 1665,
+      "sha256": "06e8d365ec9231672fa136a2d9fe10852b44a4b5e1f102aa33e350222ea53ef5",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/rust-harnesses/test-rectangular_meanings.log",
+      "bytes": 699,
+      "sha256": "c69a37e72c10c4f19b6a185a341c09aea4a5576f8405ac5d21a217a71d1aa8ff",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-parallel/stdout.log",
+      "bytes": 3995,
+      "sha256": "2a4dcc360313764c36c72452f460e5c815686835d1beb21c76fe7d5e0c4fa44e",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/record.json",
+      "bytes": 2698,
+      "sha256": "e220983e1e3f5b6ffbbc2216a1519b5e0b272f463678c740469c3329fd4f2b05",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/build.jsonl",
+      "bytes": 19155,
+      "sha256": "9e4692e56cd59207038f0ce1662dd4b82b39b611e1aa7612b1c1ad8a11f9b5ba",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/build.stderr",
+      "bytes": 61,
+      "sha256": "8eaa7940c5cbabee4ca0e057d1b1006bf05a670ea4beb08977390aa3a61a32cc",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1295,
+      "sha256": "a0ce3d9e29ee21af34a293c41ca4cecbb4142f36c557935d12384694cefdda38",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/test-public_effects.log",
+      "bytes": 1610,
+      "sha256": "78a4caa0bdf184645e018494382f8941ebdeecccdd91ba5dffe8ee294f183aa9",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/rust-harnesses/test-rectangular_meanings.log",
+      "bytes": 699,
+      "sha256": "4211ea267a3acf43d898361283c4f7489d6afdd0f99d7cf12003a7594089e4ec",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure-serial/stdout.log",
+      "bytes": 3937,
+      "sha256": "5e31e6f923b108389e585a00735df90cf53e94093fd6b9017cffc3d920231409",
+      "mode": 420
+    },
+    {
+      "name": "observations/measure.py",
+      "bytes": 3164,
+      "sha256": "c09685f9324f766db934bc187a555b359007d46b46c8a694b903d8ae4582a54c",
+      "mode": 420
+    },
+    {
+      "name": "observations/measurement.json",
+      "bytes": 12536,
+      "sha256": "52132db2c0f8857059032416e295c5cda2e77fc80732c0d48f3b870cefdb1ec5",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-original/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-original/stdout.log",
+      "bytes": 3528,
+      "sha256": "798054136c4cb871323f473cc02f6adce4610fadf3b392b28ad0730501fe7089",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/record.json",
+      "bytes": 2719,
+      "sha256": "ebd444f0d73b17cb18cf4b4d8b03a009894b00a75c5430e1e4a4c2b3988b6a78",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/build.jsonl",
+      "bytes": 19155,
+      "sha256": "80c04720c63dd712b78bf182097de463e9bd9b567275762cc768f5bf9d1ca2fb",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/build.stderr",
+      "bytes": 59,
+      "sha256": "25b8a5afebbc6fc6e9faf54f15ef1c43912b3ede7ef13392988aa4e8998c701c",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1294,
+      "sha256": "c722c9bf196c748c352e3ec1081fbec6d7a2755bbf1af42276ff2801de10bdf9",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/test-public_effects.log",
+      "bytes": 1663,
+      "sha256": "b84b7191a593793fcd68c175e99d14b06e4ccf3456bba82d80b0a8d457a4a88b",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/rust-harnesses/test-rectangular_meanings.log",
+      "bytes": 697,
+      "sha256": "7703dbf49736ce3c6af8f150ef72ecea95fcfc751a875bf0716606b7529829a1",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-parallel/stdout.log",
+      "bytes": 3989,
+      "sha256": "95216e965523f2c43a3ba44f2c8acc212c861736b9784bf4f5da6d2b98323b94",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/record.json",
+      "bytes": 2713,
+      "sha256": "c59354b08c35a246d46dd8e4ae0b143a171b90d14947ea9a28810c2e9d6e87d7",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/build.jsonl",
+      "bytes": 19155,
+      "sha256": "739e7d6e2942362e7ba223961f3b67cc531975ff69ef39b453030e96b4a920da",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/build.stderr",
+      "bytes": 59,
+      "sha256": "25b8a5afebbc6fc6e9faf54f15ef1c43912b3ede7ef13392988aa4e8998c701c",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1293,
+      "sha256": "18fb7bb3adcbf1cd62c5d1ce8a3b66b94bd34dcd09d607e9868ed2b823000bce",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/test-public_effects.log",
+      "bytes": 1608,
+      "sha256": "5a5b35cfc658014f6bcfa0085451a70d6621bed76266c8a3e75ad164ab334b03",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/rust-harnesses/test-rectangular_meanings.log",
+      "bytes": 697,
+      "sha256": "88765f2162dc6f3078f5734fe66f8ddb39b17c3f5979681970122e1b43a3c8f7",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measure-serial/stdout.log",
+      "bytes": 3931,
+      "sha256": "bf54d7a407a58492bc68b0a20400d89353bcb2da1219e4f29cd7740354ac32c9",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/measurement.json",
+      "bytes": 12589,
+      "sha256": "08d0da78958f6fecc733558e219139c4025697fb10dd41ab79f3f26d9d94dc98",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/warm-build.jsonl",
+      "bytes": 19174,
+      "sha256": "771f542ce9b322113564dd91ebbf6b0ef6443bcbb12711b0007d342deb4f70d2",
+      "mode": 420
+    },
+    {
+      "name": "observations/opt1/warm-build.stderr",
+      "bytes": 538,
+      "sha256": "eb9667559a55e99aaec7b9b16904c8dd415efd667d09aaded95d661ffa222c08",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/0/command.log",
+      "bytes": 187,
+      "sha256": "83690f357da2aa505eb03cb7e0bafacaebeac9023d9f192ea6f072cba7ae535e",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/1/command.log",
+      "bytes": 8186,
+      "sha256": "69c1d40ba29ed1ea629f4f07cebf115e765652b8e42ef14486abd3871e483246",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/2/command.log",
+      "bytes": 241,
+      "sha256": "7bc97d1fea59a7bb58c05bd4868f165f537382f5dbce12098f36740881ec25ef",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/3/command.log",
+      "bytes": 258,
+      "sha256": "1551c85d65bc52f8f945712746f84d558ffde272b7fa6392e12ed9782af8da4d",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/4/command.log",
+      "bytes": 267,
+      "sha256": "f104e680f055cabaf803b2628f418e29cb45458c54cbd6f34373e76907554983",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/5/command.log",
+      "bytes": 226,
+      "sha256": "b86a23a33f166597dbcefbd065829ef84763cb3d8ccecc684b5da5de7cccd55f",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/6/command.log",
+      "bytes": 1108,
+      "sha256": "8a08029ae2e403f3ea61175b0ce6c11f138b0b9dd2b5e6b0b7b1a893573b5af7",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v1/results.json",
+      "bytes": 9851,
+      "sha256": "fa7c4ab3f6f776b09031db91876f3a00c25a9c8583b67e91f573d99a2532e5ec",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/0/command.log",
+      "bytes": 187,
+      "sha256": "83690f357da2aa505eb03cb7e0bafacaebeac9023d9f192ea6f072cba7ae535e",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/1/command.log",
+      "bytes": 8186,
+      "sha256": "58c08329aabb50ce715f5854695b960ef219582d85b2540855f581131e634d53",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/10/command.log",
+      "bytes": 221,
+      "sha256": "a7ac13faa783c1a57010db95a40ed416f444343f4fe01e58e3f6ab2fc36ef9be",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/11/command.log",
+      "bytes": 1358,
+      "sha256": "6e8fccb4af687a0aab749332b674c56ecd314d33736a00a1d7a35bc77b945a8f",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/12/command.log",
+      "bytes": 239,
+      "sha256": "4a952986118f7a526c699902fea486b44b4b315855e6adef020ac2740c2dc3c0",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/13/command.log",
+      "bytes": 240,
+      "sha256": "dad88dd65cf5685382b8b9be61bb745de91d146e2e0070d407977587137c3b29",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/14/command.log",
+      "bytes": 236,
+      "sha256": "1892d6a1008a17bc62d9eb981fa8a3b78f3b52d98ab63f7a63e0d23ac867f72b",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/2/command.log",
+      "bytes": 241,
+      "sha256": "8c1072295fcde38c9d8810169f64a603eb7e4c22a09bedfa69cb1a5907fc8a51",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/3/command.log",
+      "bytes": 258,
+      "sha256": "72bd5977a939588fed6a1b4fbf065f1e22a719aa0ed4e25c1c2a18deb97a8add",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/4/command.log",
+      "bytes": 267,
+      "sha256": "33186bdca8a29138dcb737506dbba918a3aff5539af47a162e25fec93c984dd0",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/5/command.log",
+      "bytes": 226,
+      "sha256": "3f6d734911e91a9c8065a4dba44ff91dea5951ab6a621d5875acf837205bb62e",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/6/command.log",
+      "bytes": 368,
+      "sha256": "0fcc0740a9dd9635c907f2f51644b0707ea8f87f9c18ecf453462dcd3aeb199e",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/7/command.log",
+      "bytes": 246,
+      "sha256": "4e730f27e420fb0f4ecb7813bc86dd780ae1a38a2edd3a82f6884d073e6d8eb0",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/8/command.log",
+      "bytes": 231,
+      "sha256": "fc7d7b4229892c0ec6dc2c7012795ea578e2a9c44522a6dc918025737c3d4bab",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/9/command.log",
+      "bytes": 229,
+      "sha256": "ba4e1cf5d3e15282980f745b215f1ad77b348f576ea0cfdc230c1b2d6e694671",
+      "mode": 420
+    },
+    {
+      "name": "observations/preflight-v2/results.json",
+      "bytes": 13407,
+      "sha256": "19dc680bf90d5c3777534a74667b846d9fb1c1ca5f3aba52cf2fb2ceaf361056",
+      "mode": 420
+    },
+    {
+      "name": "observations/rust-harnesses/build.jsonl",
+      "bytes": 18447,
+      "sha256": "9065f59f68fbbf729c79e4544eb67455d6c604bb246451c3187dc90d4e549fe3",
+      "mode": 420
+    },
+    {
+      "name": "observations/rust-harnesses/build.stderr",
+      "bytes": 61,
+      "sha256": "33572c95e0d5351978ef86babceff63b651afb2e019ea494a172697beef650ba",
+      "mode": 420
+    },
+    {
+      "name": "observations/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1139,
+      "sha256": "d09b9a8ea49288aeea192ceb01f537bebab3a05aec1192b4d1a0ac608940d54d",
+      "mode": 420
+    },
+    {
+      "name": "observations/rust-harnesses/test-parser.log",
+      "bytes": 2439,
+      "sha256": "c802ae41722e1fb7b629921d00ba5df3a18e662aa880694d1f0ae2bf2f203933",
+      "mode": 420
+    },
+    {
+      "name": "observations/scheduler-first-direct.py",
+      "bytes": 10182,
+      "sha256": "b0528af1107f539987d1e47be54c52397651e26e9a208493a8eeb3a3804040c2",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/record.json",
+      "bytes": 1882,
+      "sha256": "2023da3f17593a1ca8f73eaffb87498ca5db5e13e130ba94d84b11d6f4bac7b1",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/rust-harnesses/build.jsonl",
+      "bytes": 18447,
+      "sha256": "afe4e35cdb23d868e6f01b03313bdbbbb59ae06e7ed3309331b7075681b7f56b",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/rust-harnesses/build.stderr",
+      "bytes": 61,
+      "sha256": "33572c95e0d5351978ef86babceff63b651afb2e019ea494a172697beef650ba",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/rust-harnesses/metadata.json",
+      "bytes": 26014,
+      "sha256": "a8a4d593cad1fa5d9a7bc3a83817fccd7a639ad4a477398258d6459e34cd7f6d",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/rust-harnesses/test-finite_empty_bits.log",
+      "bytes": 1295,
+      "sha256": "3e63ca4b9808ace59a2946502deea97383c4e8465cee7527e89ece06e9fc019b",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial-cargo/rust-harnesses/test-parser.log",
+      "bytes": 2573,
+      "sha256": "5eaf725085f5dc223a9fa31268b1e27307e12b105fc01bcc36d36592917a066f",
+      "mode": 420
+    },
+    {
+      "name": "observations/serial.json",
+      "bytes": 1615,
+      "sha256": "b5e95eb4be35f6341e1a7a2d743c481db58bf1559be9538a480f3cde592582f0",
+      "mode": 420
+    },
+    {
+      "name": "observations/warm-build.jsonl",
+      "bytes": 19157,
+      "sha256": "d287a3d9e1ef6ec1dcef53a4018d8e9a4c1b9b4697e201aa2fbc3ea780631140",
+      "mode": 420
+    },
+    {
+      "name": "observations/warm-build.stderr",
+      "bytes": 120,
+      "sha256": "5e496e29629990921f4c6d523f72498b1b933e0d6c299222ec2865f450940428",
+      "mode": 420
+    }
+  ]
+}

@@ -11,6 +11,13 @@ feature or proof gates and does not extend the alpha-only release approval.
 Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
 and exactness obligations retain their recorded scopes and status.
 
+- Share latest/MSRV validation steps and run complete native-gated Rust harness
+  selections with two bounded workers after a single build. Retain exact Cargo
+  inventories, executable hashes, per-target timing and partial failure records.
+  Apply the same scheduler to extracted-source distribution tests while keeping
+  offline builds, native skip refusal, all cases and existing deadlines. Preserve
+  original timeouts and bounded measurements; hosted speedup remains unverified.
+
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports
   receive migration guidance. Migrate active clients, corpus selections,

@@ -568,7 +568,8 @@ class SyntheticCommands:
         elif len(argv) > 1 and Path(argv[1]).name == "check_installation.py":
             output = json.dumps({"package": "qleisli", "version": "0.0.0-synthetic",
                                  "checks": ["synthetic-only"]}).encode()
-        if self.fail and argv[:2] == ["cargo", "test"] and "--all-targets" in argv:
+        if self.fail and "--all-targets" in argv and (argv[:2] == ["cargo", "test"]
+                or (len(argv) > 1 and Path(argv[1]).name == 'run_kernel_tests.py')):
             output, error, exit_code = b"synthetic partial stdout\n", b"synthetic test failure\n", 23
         kwargs["stdout"].write(output)
         kwargs["stderr"].write(error)
@@ -621,6 +622,14 @@ class ScratchTests(unittest.TestCase):
                             for path in driver.target_paths))
         self.assertTrue(driver.installed.is_relative_to(work))
         self.assertEqual(report["cargo_target"]["ownership"], "validator")
+        production = next(row for row in report['commands'] if 'run_rust_tests.py' in ' '.join(row['argv']))
+        argv = production['argv']
+        self.assertEqual(Path(production['cwd']), work / 'source')
+        self.assertEqual(Path(argv[1]), work / 'source/scripts/run_kernel_tests.py')
+        self.assertIn('--offline', argv)
+        self.assertIn('--all-targets', argv)
+        self.assertEqual(argv[argv.index('--workers') + 1], '2')
+        self.assertEqual(Path(argv[argv.index('--record') + 1]), Path(report['artifacts']) / 'logs/source-production/record.json')
         self.assert_durable_evidence(report)
 
     def test_failure_removes_owned_work_preserving_failure_and_evidence(self):

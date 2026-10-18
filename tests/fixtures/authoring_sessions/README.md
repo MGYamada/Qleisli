@@ -635,3 +635,8 @@ observations after implementation. All eight unchanged repaired projects match
 independent ordered distributions, including copied Bell outcomes. First
 failures remain intact; Raw native validity and source-step replay do not prove
 original AST preservation or eliminate the finite-project profile limitations.
+
+The [Rust CI scheduling experiment](ci-rust-parallel-v030/README.md) retains
+original sources, hosted timeouts, local preflight failure and same-source bounded
+measurements as inert bytes. Its retention regression never executes history;
+full candidate CI and native acceptance remain separate requirements.
