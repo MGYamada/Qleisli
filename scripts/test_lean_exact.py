@@ -304,6 +304,13 @@ def command(cmd, cwd, log, timeout=180):
     return run.stdout
 
 
+def driver_source(all_cases):
+    definitions = "\n".join(f"def case{i} : IO Unit := {lean_case(c)}" for i, c in enumerate(all_cases))
+    actions = ",".join(f"case{i}" for i in range(len(all_cases)))
+    return (LEAN + definitions +
+            f"\ndef main : IO Unit := do\n  for action in [{actions}] do action\n")
+
+
 def native(all_cases, log):
     command(["lake", "env", "lean", "--version"], ROOT / "lean-kernel", log)
     command(["lake", "env", "leanc", "--version"], ROOT / "lean-kernel", log)
@@ -311,12 +318,9 @@ def native(all_cases, log):
     command(["cc", "--version"], ROOT, log)
     with tempfile.TemporaryDirectory(prefix="qleisli-exact-native-") as directory:
         project = Path(directory)
-        definitions = "\n".join(f"def case{i} : IO Unit := {lean_case(c)}" for i, c in enumerate(all_cases))
-        actions = ",".join(f"case{i}" for i in range(len(all_cases)))
-        (project / "Main.lean").write_text(LEAN + definitions +
-            f"\ndef main : IO Unit := do\n  for action in [{actions}] do action\n")
-        binary = native_harness.build(project, log)
-        lean = [json.loads(line) for line in command([str(binary)], project, log).splitlines()]
+        (project / "Main.lean").write_text(driver_source(all_cases))
+        binary = native_harness.build(project, log, driver='lean-exact')
+        lean = [json.loads(line) for line in command(native_harness.argv(binary), project, log).splitlines()]
         (project / "Cargo.toml").write_text('[package]\nname="qleisli_exact_test"\nversion="0.0.0"\n'
             'edition="2024"\n[dependencies]\nqleisli={path=' + json.dumps(str(ROOT)) + '}\n'
             '[[bin]]\nname="exact-test"\npath="main.rs"\n')
@@ -481,7 +485,7 @@ def runtime_capacity_contract(all_cases, outcomes):
         named_capacity_probes=[dict(probe, actual=outcomes[all_cases.index(probe["input"])])
                                for probe in capacity_probes()],
         formal_equivalence_proved=False,
-        production_authority="Rust",
+        production_authority="Lean",
         production_transport_added=False,
     )
 
@@ -533,7 +537,7 @@ def main():
     report = dict(native_comparisons=len(all_cases), independent_rational_comparisons=count,
                   independent_matrix_comparisons=matrix_count,
                   detected_semantic_faults=faults,
-                  largest_arithmetic_matrix_dimension=4, production_authority="Rust",
+                  largest_arithmetic_matrix_dimension=4, production_authority="Lean",
                   cases_sha256=hashlib.sha256(json.dumps(all_cases).encode()).hexdigest(),
                   outcomes_sha256=hashlib.sha256(json.dumps(left, sort_keys=True).encode()).hexdigest(),
                   selected_actual_decisions=selected,

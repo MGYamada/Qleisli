@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add opt-in per-invocation native regression-driver consolidation with exact
+  original generated-source binding, explicit selectors and fresh standalone
+  fallback only when no shared selection is present. Default adoption and the
+  broader #223 performance/shadow criteria remain pending.
+
 - Prepare explicit complete Rust producer partitions from one canonical CI plan,
   with fresh native preparation and visible omissions. Run each toolchain's two
   complete partitions on separate runners and verify both artifact byte streams

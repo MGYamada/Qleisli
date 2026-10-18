@@ -16,6 +16,7 @@ import subprocess
 import sys
 import time
 import native_harness
+import native_driver_bundle
 from ci_runtime import (LEAN_TOOLCHAIN, RUST_TOOLCHAIN, execution_environment,
                         launch_command, record_command, run_task)
 
@@ -109,13 +110,21 @@ def verify_coverage(report: dict, tasks: list[dict], binding: dict, manifest_has
 
 
 def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeout: float,
-            environment: dict | None = None) -> list[dict]:
+            environment: dict | None = None, drivers=None) -> list[dict]:
     if workers not in (1, 2, 4):
         raise ValueError("workers must be 1, 2 or 4")
     results = []
     environment = execution_environment() if environment is None else environment
     if any(task.get("env", {}).keys() - TASK_ENVIRONMENT for task in tasks):
         raise ValueError("comparison environment is not in the reviewed allowlist")
+    def task_environment(task):
+        if drivers is not None and task['id'] in native_driver_bundle.MODULES:
+            path, checksum = drivers
+            return environment | {native_driver_bundle.BUNDLE_ENV: str(path),
+                                  native_driver_bundle.DIGEST_ENV: checksum,
+                                  native_driver_bundle.SELECTOR_ENV: task['id']}
+        return environment
+
     def record(result):
         results.append(result)
         print(f"{result['status']}: {result['id']} ({result['seconds']:.1f}s)", flush=True)
@@ -127,9 +136,9 @@ def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeou
     # A recorded failure still leaves all other selected groups to execute.
     for task in tasks:
         if task["id"] == "native-paths":
-            record(run_task(task, root, directory / task["id"], timeout, environment))
+            record(run_task(task, root, directory / task["id"], timeout, task_environment(task)))
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, environment): task
+        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, task_environment(task)): task
                    for task in tasks if task["id"] != "native-paths"}
         for future in as_completed(futures):
             record(future.result())
@@ -142,6 +151,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--plan", action="store_true", help="print exact commands without building or running them")
     parser.add_argument("--task", action="append", default=[], help="local reproduction of a named manifest group")
+    parser.add_argument("--shared-drivers", action="store_true",
+                        help="opt into a fresh regression-driver bundle; shadow validation is still required")
     args = parser.parse_args()
     if not args.plan and args.output is None:
         parser.error("--output is required when executing comparisons")
@@ -156,7 +167,12 @@ def main() -> int:
             created_output = True
         all_tasks = load_tasks(MANIFEST)
         tasks = select_tasks(all_tasks, args.task, os.environ.get("GITHUB_ACTIONS") == "true")
+        if native_driver_bundle.ENVIRONMENT & os.environ.keys():
+            raise ValueError('the native runner owns its fresh driver selection')
+        selected_drivers = native_driver_bundle.task_ids(tasks) if args.shared_drivers else []
         report.update(coverage="selected-local-groups" if args.task else "complete-native-manifest",
+                      driver_harness='shared-opt-in' if args.shared_drivers else 'fresh-standalone',
+                      selected_drivers=selected_drivers,
                       expected_ids=[task["id"] for task in tasks],
                       omitted_ids=[task["id"] for task in all_tasks if task not in tasks])
         if args.plan:
@@ -173,6 +189,13 @@ def main() -> int:
         build_path = args.output / "native-build.json"
         report["native_build_commands"] = []
         native_harness.prepare(build_path, report["native_build_commands"])
+        drivers = None
+        if args.shared_drivers:
+            report['driver_build_commands'] = []
+            drivers = native_driver_bundle.prepare(args.output / 'drivers', selected_drivers,
+                                                  report['driver_build_commands'], build_path)
+            report['driver_preparation'] = dict(status='prepared-not-executed',
+                                              record=str(drivers[0]), sha256=drivers[1])
         # Every source driver sees the same compiler before workers start. This
         # removes an implicit dependency on whichever comparison first happens
         # to run `cargo build`, while retaining fresh decisions in every test.
@@ -182,7 +205,7 @@ def main() -> int:
             raise ValueError("native comparison host build failed: " + report["host_build"]["log"])
         report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900,
                                   environment | {native_harness.BUILD_ENV: str(build_path),
-                                  "QLEISLI_KERNEL": str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")})
+                                  "QLEISLI_KERNEL": str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")}, drivers)
         native_harness.validate(build_path)
         if source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment) != binding or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != manifest_hash:
             raise ValueError("source or toolchain changed during comparisons")

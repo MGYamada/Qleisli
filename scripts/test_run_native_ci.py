@@ -18,6 +18,23 @@ from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch
 
 
 class NativeCI(unittest.TestCase):
+    def test_shared_driver_selection_is_confined_to_its_original_manifest_task(self):
+        observed = {}
+        tasks = [dict(id='lean-finite', commands=[['original-driver']]),
+                 dict(id='other-comparison', commands=[['original-other']])]
+
+        def run(task, root, directory, timeout, environment):
+            observed[task['id']] = environment
+            return dict(id=task['id'], status='passed', seconds=0, log=str(directory / 'command.log'))
+
+        with tempfile.TemporaryDirectory() as directory, patch.object(run_native_ci, 'run_task', side_effect=run):
+            execute(tasks, ROOT, Path(directory), 1, 900, {'original': 'environment'},
+                    (Path('/current/drivers.json'), 'a' * 64))
+        self.assertEqual(observed['other-comparison'], {'original': 'environment'})
+        self.assertEqual(observed['lean-finite']['original'], 'environment')
+        self.assertEqual(observed['lean-finite'][run_native_ci.native_driver_bundle.SELECTOR_ENV], 'lean-finite')
+        self.assertEqual(observed['lean-finite'][run_native_ci.native_driver_bundle.BUNDLE_ENV], '/current/drivers.json')
+
     def test_preflight_failure_records_failure_without_building_or_overwriting(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'run'
