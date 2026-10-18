@@ -122,8 +122,8 @@ def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeou
         if result["status"] != "passed":
             print(Path(result["log"]).read_text(), flush=True)
 
-    # This group performs serial source/native checks. Give it the runner alone
-    # before the pooled comparisons, retaining every command's existing timeout.
+    # Keep this group alone, including its shared-file prefix and bounded corpus
+    # pairs, before the pooled groups. Retain every command's existing timeout.
     # A recorded failure still leaves all other selected groups to execute.
     for task in tasks:
         if task["id"] == "native-paths":

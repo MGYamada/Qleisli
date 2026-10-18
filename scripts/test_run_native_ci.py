@@ -53,6 +53,14 @@ class NativeCI(unittest.TestCase):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 72)
         self.assertEqual(sum(len(task["commands"]) for task in tasks), 112)
+        paths = next(task for task in tasks if task['id'] == 'native-paths')
+        self.assertEqual(paths['commands'], [
+            ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--bin', 'qleisli'],
+            ['python3', 'scripts/test_native_verification.py', '--record', '{record}', '--workers', '2'],
+            ['cargo', '+1.98.1', 'test', '--test', 'native_paths', '--', '--include-ignored'],
+            ['python3', 'scripts/test_source_kernel.py'],
+            ['python3', 'scripts/test_interop_native.py', '--record', '{record}/interop-native.json'],
+        ])
         added = next(task for task in tasks if task['id'] == 'execution-view-encoding')
         self.assertEqual(added['commands'], [[
             'python3', 'scripts/run_native_lean_test.py',

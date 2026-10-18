@@ -775,7 +775,9 @@
           "python3",
           "scripts/test_native_verification.py",
           "--record",
-          "{record}"
+          "{record}",
+          "--workers",
+          "2"
         ],
         [
           "cargo",

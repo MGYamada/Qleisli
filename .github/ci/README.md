@@ -493,8 +493,8 @@ and target at the existing preparation point; only distribution selects a
 Rustup default. `native-bundle-smoke` runs acceptance and source checks against
 the same relocated checker. Packaging, the macOS CLI rebuild, optional interop,
 full-lane archive/upload and receipts remain explicit in their producer jobs.
-The bundle's native comparison keeps its shared-file prefix serial and runs at
-most two independent small-corpus pairs concurrently. Each pair retains both
+Both `native-paths` and the bundle comparison keep their shared-file prefix serial
+and run at most two independent small-corpus pairs concurrently. Each pair retains both
 environment-selected and explicitly selected CLI calls in that order, fresh
 native decisions, the same results comparison and the existing 70-second command
 deadline. Every selected case (currently 84 at at most four qubits) remains;
