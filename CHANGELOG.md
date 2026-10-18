@@ -55,6 +55,10 @@ and exactness obligations retain their recorded scopes and status.
   prereleases, build identifiers and safely quoted diagnostics. Effective qargo
   pairing and complete reproducibility records remain unfinished in #171.
 
+- Run the native-paths comparison group alone before the remaining worker pool,
+  retaining every command, source check and existing timeout. Flush VM-28 phase
+  and corpus progress for diagnosis if an outer runner terminates the command.
+
 - Split latest/MSRV native-gated Rust all-target testing into two explicit
   commands with complete, disjoint Cargo target inventory checks. Preserve all
   targets and subsequent checks with the existing per-command timeout and job

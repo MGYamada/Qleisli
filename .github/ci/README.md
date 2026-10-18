@@ -445,8 +445,12 @@ check every caller's preparation, coverage, cache and receipt wiring.
 Native comparisons require a clean checkout and the pinned tools. Without
 `--plan`, supply a new `--output` directory; `--task` selects named groups only
 for local reproduction and reports every omitted group. Hosted runs reject
-partial selection. A common Rust all-target build precedes parallel execution,
-so no source test depends on another worker having built the CLI first. Fresh
+partial selection. A common Rust all-target build precedes comparison execution,
+so no source test depends on another worker having built the CLI first. When
+selected, `native-paths` runs alone before the remaining groups use the worker
+pool. Its recorded failure does not skip the remaining groups. The 900-second
+per-command timeout, complete command inventory and acceptance checks remain
+unchanged; this ordering does not establish a hosted runtime bound. Fresh
 native decisions and independent oracles still execute for every selected test.
 Preflight failures retain a failed report without overwriting earlier runs.
 Every selected group is explicitly unexecuted until preparation succeeds;
@@ -482,7 +486,10 @@ and distinguish version rejection from malformed or semantically invalid frames.
 The native-paths group exercises the single Lean acceptance boundary through
 source, raw, QIRF, foreign and Python entry points. Environment selection and
 explicit kernel arguments use the same implementation; missing and incompatible
-checkers cannot fall back. Runtime Rust/MSRV/installation jobs first build and
+checkers cannot fall back. The VM-28 script flushes its current phase or corpus
+case, completed process count and elapsed time to stderr, retaining progress if an outer
+process-group timeout prevents its final JSON record. Runtime Rust/MSRV/installation
+jobs first build and
 audit the matching kernel, then set an absolute `QLEISLI_KERNEL` path.
 
 The native-acceptance group exercises immutable accepted handles, explicit
