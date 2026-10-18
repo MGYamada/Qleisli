@@ -206,7 +206,7 @@ class CIActions(unittest.TestCase):
         result, rows, parent = self.traced_shell('native-bundle-smoke', 'python3', environment)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(rows, [
-            dict(argv=['scripts/test_native_verification.py', '--kernel', kernel, '--record', record],
+            dict(argv=['scripts/test_native_verification.py', '--kernel', kernel, '--record', record, '--workers', '2'],
                  kernel='outer checker'),
             dict(argv=['scripts/test_source_kernel.py'], kernel=kernel),
         ])
@@ -233,7 +233,7 @@ class CIActions(unittest.TestCase):
                 self.assertEqual(len(rows), failed_call)
                 self.assertIsNone(parent)
                 self.assertEqual(rows[0]['argv'], ['scripts/test_native_verification.py',
-                    '--kernel', '/bundle/checker', '--record', '/records'])
+                    '--kernel', '/bundle/checker', '--record', '/records', '--workers', '2'])
                 if failed_call == 2:
                     self.assertEqual(rows[1], dict(argv=['scripts/test_source_kernel.py'],
                                                   kernel='/bundle/checker'))

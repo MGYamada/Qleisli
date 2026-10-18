@@ -58,6 +58,25 @@ class RustSchedulerTests(unittest.TestCase):
             data = base64.b64decode(row['base64'], validate=True)
             self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
             self.assertIn(row['mode'], (0o600, 0o644, 0o755))
+        path_bytes = (root / 'reference-parts-first.json').read_bytes()
+        self.assertEqual(hashlib.sha256(path_bytes).hexdigest(),
+                         '1ef75a8172cf199632d1adb13382bc3db349db59b5f0ec0993f28c70998bd617')
+        paths = json.loads(path_bytes)
+        self.assertEqual(paths['format'], 'qleisli.ci-reference-path-study')
+        self.assertEqual(paths['observation']['head'], '2b479e155acc100193362b311c74aae9e01eb60c')
+        self.assertTrue(paths['observation']['all_references_equal'])
+        self.assertEqual(paths['observation']['reached_sha256'],
+                         'e65dca6bd30f84e3d7f40d6afb6bde5058496fa076f669cc1ab752f2f9838d65')
+        for row in paths['records']:
+            data = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
+        input_bytes = (root / 'reference-input-first.json').read_bytes()
+        self.assertEqual(hashlib.sha256(input_bytes).hexdigest(),
+                         '9e77be3118908143a284c001e79d888c0d21331e20347c4930ff70fa9adc1166')
+        first_input = json.loads(input_bytes)
+        self.assertEqual(first_input['head'], '657b6dfa86515ad3b6bf389b5647df972ffa4302')
+        self.assertEqual(first_input['observations']['original'], {'result': True})
+        self.assertEqual(first_input['observations']['memoized']['exception'], 'TypeError')
         archive = (root / index['archive']['path']).read_bytes()
         self.assertEqual(hashlib.sha256(archive).hexdigest(), index['archive']['sha256'])
         records = json.loads(gzip.decompress(archive))['records']

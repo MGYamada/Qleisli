@@ -50,6 +50,28 @@ class ReferenceGraph(unittest.TestCase):
         for name in ["scripts/check_fixture_references.py", "scripts/test_check_fixture_references.py"]:
             self.assertEqual(self.missing({name: f'synthetic_path = "{path}"'}, {path}), {path})
 
+    def test_repeated_pattern_resolves_each_actual_snapshot_afresh(self):
+        contents = {'scripts/read.py': 'read("tests/fixtures/probe/*.qli")'}
+        for selected in ('first', 'second', 'first'):
+            source = f'tests/fixtures/probe/{selected}.qli'
+            orphan = f'tests/fixtures/probe/{selected}.json'
+            self.assertEqual(self.missing(contents, {source, orphan}), {orphan})
+
+    def test_long_strings_and_path_objects_keep_complete_glob_semantics(self):
+        path = 'tests/fixtures/' + 'x' * 5000 + '/input.qli'
+        self.assertTrue(check.glob_match(path, 'tests/fixtures/*/input.qli'))
+        self.assertTrue(check.glob_match(check.PurePosixPath(path), check.PurePosixPath(path)))
+        self.assertFalse(check.glob_match(path, 'tests/fixtures/*/nested/input.qli'))
+
+    def test_unhashable_string_subclasses_retain_ordinary_path_matching(self):
+        class PathString(str):
+            __hash__ = None
+
+        path = PathString('tests/fixtures/probe/input.qli')
+        pattern = PathString('tests/fixtures/probe/*.qli')
+        self.assertTrue(check.glob_match(path, pattern))
+        self.assertFalse(check.glob_match(path, PathString('tests/fixtures/other/*.qli')))
+
     def test_reachable_manifest_retains_relative_member_transitively(self):
         manifest = "tests/fixtures/probe/packet.json"
         contents = {"scripts/inspect.py": f'load("{manifest}")',

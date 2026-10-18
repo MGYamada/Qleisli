@@ -51,6 +51,10 @@
         ],
         [
           "python3",
+          "scripts/test_native_verification_scheduler.py"
+        ],
+        [
+          "python3",
           "scripts/test_ci_actions.py"
         ],
         [
