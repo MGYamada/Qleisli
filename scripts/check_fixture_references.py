@@ -79,10 +79,10 @@ def _cached_parts(name):
 
 def path_parts(name):
     """Reuse bounded immutable text only, never a reference or gate decision."""
-    if isinstance(name, str) and len(name) <= 4096:
+    if type(name) is str and len(name) <= 4096:
         return _cached_parts(name)
-    # Long strings and other existing PathLike inputs still receive the full
-    # ordinary parse. Cache bounds never become input or acceptance limits.
+    # Subclasses, long strings and other existing PathLike inputs still receive
+    # the full ordinary parse. Cache bounds never become acceptance limits.
     return PurePosixPath(name).parts
 
 

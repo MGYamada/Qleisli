@@ -1,0 +1,13 @@
+{
+  "head": "657b6dfa86515ad3b6bf389b5647df972ffa4302",
+  "source": "class PathString(str):\n    __hash__=None\npath=PathString(\"tests/fixtures/input.qli\")\npattern=\"tests/fixtures/*.qli\"\n",
+  "observations": {
+    "original": {
+      "result": true
+    },
+    "memoized": {
+      "exception": "TypeError",
+      "message": "unhashable type: 'PathString'"
+    }
+  }
+}

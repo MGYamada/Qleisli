@@ -63,6 +63,15 @@ class ReferenceGraph(unittest.TestCase):
         self.assertTrue(check.glob_match(check.PurePosixPath(path), check.PurePosixPath(path)))
         self.assertFalse(check.glob_match(path, 'tests/fixtures/*/nested/input.qli'))
 
+    def test_unhashable_string_subclasses_retain_ordinary_path_matching(self):
+        class PathString(str):
+            __hash__ = None
+
+        path = PathString('tests/fixtures/probe/input.qli')
+        pattern = PathString('tests/fixtures/probe/*.qli')
+        self.assertTrue(check.glob_match(path, pattern))
+        self.assertFalse(check.glob_match(path, PathString('tests/fixtures/other/*.qli')))
+
     def test_reachable_manifest_retains_relative_member_transitively(self):
         manifest = "tests/fixtures/probe/packet.json"
         contents = {"scripts/inspect.py": f'load("{manifest}")',

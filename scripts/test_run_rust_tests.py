@@ -70,6 +70,13 @@ class RustSchedulerTests(unittest.TestCase):
         for row in paths['records']:
             data = base64.b64decode(row['base64'], validate=True)
             self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], row['sha256']))
+        input_bytes = (root / 'reference-input-first.json').read_bytes()
+        self.assertEqual(hashlib.sha256(input_bytes).hexdigest(),
+                         '9e77be3118908143a284c001e79d888c0d21331e20347c4930ff70fa9adc1166')
+        first_input = json.loads(input_bytes)
+        self.assertEqual(first_input['head'], '657b6dfa86515ad3b6bf389b5647df972ffa4302')
+        self.assertEqual(first_input['observations']['original'], {'result': True})
+        self.assertEqual(first_input['observations']['memoized']['exception'], 'TypeError')
         archive = (root / index['archive']['path']).read_bytes()
         self.assertEqual(hashlib.sha256(archive).hexdigest(), index['archive']['sha256'])
         records = json.loads(gzip.decompress(archive))['records']

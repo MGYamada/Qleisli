@@ -153,13 +153,15 @@ reviewed reader rule with regressions; a source project's directory reference
 does not retain unrelated logs. This static check establishes retention
 reachability, not actual execution, assertion coverage or semantic authority.
 The inspector memoizes only immutable path-component tuples within its process,
-bounded to 32,768 strings of at most 4,096 characters. Longer strings and other
-PathLike values still receive the complete ordinary parse. Every Git snapshot,
+bounded to 32,768 plain strings of at most 4,096 characters. String subclasses,
+longer strings and other PathLike values still receive the complete ordinary parse. Every Git snapshot,
 reference edge and final decision is checked afresh; no file, graph or passing
 result is cached. The [bounded first study](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/reference-parts-first.json)
 compares the original and initial prototype on the same immutable snapshot:
 34.43 and 17.89 seconds, with all 9,986 reached paths equal. This is a warm macOS
 Python 3.14 observation, not a hosted full-CI speedup claim or semantic proof.
+The [first subclass counterexample](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/reference-input-first.json)
+retains the original match and the initial optimization's unhashable-input failure.
 Keep both size ceilings unchanged and run the ordinary immutable-tree budget
 gate after reviewed consolidation.
 
