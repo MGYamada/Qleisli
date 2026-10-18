@@ -366,22 +366,46 @@ or changed mappings without falling back to the historical source.
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
-The latest and MSRV Rust groups split all-target testing into two literal,
-sequential native-gated Cargo commands: ownership/source-IR correspondence,
-then every other integration target plus libraries, binaries, examples and
-benches. Before either command, `check_rust_test_partition.py` compares their
+The latest and MSRV Rust groups retain two literal native-gated selections:
+ownership/source-IR correspondence, then every other integration target plus
+libraries, binaries, examples and benches. Before either selection,
+`check_rust_test_partition.py` compares their
 positive selections with the same pinned Cargo's complete root-package
 metadata. Missing, extra, duplicate, overlapping or unreviewed target conventions
 fail; adding a target requires updating the explicit selection. The guard records
 the inventory and exact commands in the existing immutable command log. It does
-not execute tests or replace native validation. The separate ignored-dialect,
+not execute tests or replace native validation. `run_rust_tests.py` builds each
+selection once, checks every returned root-package harness against Cargo's
+metadata, and schedules at most two harnesses together. Cargo runs each harness
+with its normal runtime environment and unfiltered default arguments. Exact
+executable hashes, complete logs, elapsed times, failures, running targets and
+unstarted targets remain in the command artifact. A failed harness stops new
+submissions; every selected harness must pass before later checks can run.
+The outer process-group deadline also terminates worker/native descendants.
+One worker retains a fresh serial scheduling route for bounded comparisons.
+The separate ignored-dialect,
 catalog, documentation and doctest commands retain their existing coverage.
 
 Each command retains its 3,600-second timeout. Two commands provide more
 aggregate available test time than the former single invocation; this is not a
-speedup or preservation of an aggregate time cap. Job limits, required contexts,
+preservation of an aggregate time cap. Job limits, required contexts,
 case counts, existing skips and native gates remain unchanged. No passed
 partition substitutes for another, and failure retains later commands as not run.
+The [bounded experiment](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/README.md)
+measures the same 34 small-system tests at 24.17 seconds with the original
+selection and 16.68 seconds in the initial two-worker scheduler window. This is a warm development
+measurement, not a claim about hosted full-CI time. Optimization level 1 was
+measured separately and not adopted; compiler profiles remain unchanged.
+
+The shared `rust-suite` action owns the latest/MSRV source-contract and lint
+sequence. Only latest runs source semantics and the existing quick corpus profile.
+Producer jobs, pinned toolchains, native preparation, dependency archives,
+successful-evidence receipts and stable required contexts remain distinct.
+Distribution uses the same two-worker scheduler and native skip gate against
+the extracted complete source archive, offline in its existing caller-owned
+production target. It retains per-harness records under distribution logs;
+the extracted research suite, package, documentation and installation checks
+remain separate. No checkout test result replaces an extracted-source result.
 
 The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
 infrastructure regressions before the changes job can schedule heavy builds.

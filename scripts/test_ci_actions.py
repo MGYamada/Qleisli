@@ -277,10 +277,19 @@ class CIActions(unittest.TestCase):
         }
         for name, groups in expected.items():
             block = job(name)
-            self.assertEqual(re.findall(r'          group: ([\w-]+)', block), groups)
+            if name in ('check-rust', 'check-rust-msrv'):
+                profile = 'latest' if name == 'check-rust' else 'msrv'
+                self.assertIn('profile: ' + profile, action_step(block, 'rust-suite'))
+                self.assertNotIn('uses: ./.github/actions/source-check', block)
+                shared = action('rust-suite').replace('${{ inputs.profile }}', profile)
+                if profile == 'msrv':
+                    shared = re.sub(r"    - name: Run source semantics\n.*?(?=    - name:)", '', shared, flags=re.S)
+                self.assertEqual(re.findall(r'        group: ([\w-]+)', shared), groups)
+            else:
+                self.assertEqual(re.findall(r'          group: ([\w-]+)', block), groups)
+                self.assertEqual(block.count('uses: ./.github/actions/source-check'), len(groups))
             for group in groups:
                 self.assertIn(name, describe(group)['lanes'])
-            self.assertEqual(block.count('uses: ./.github/actions/source-check'), len(groups))
         for name in ('check-rust', 'check-rust-msrv', 'check-macos-source',
                      'check-interop', 'check-lean-kernel', 'check-distribution'):
             block = job(name)
@@ -296,6 +305,17 @@ class CIActions(unittest.TestCase):
         self.assertIn('group: native-runtime', native)
         self.assertIn("build: 'false'", native)  # The shared plan owns the single build/audit.
         self.assertIn('native-runtime-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}', native)
+
+    def test_shared_rust_suite_keeps_optional_coverage_artifacts_and_refusal(self):
+        shared = action('rust-suite')
+        self.assertIn("if: inputs.profile == 'latest'", shared)
+        self.assertIn('--quick --report "$RUNNER_TEMP/corpus.json"', shared)
+        self.assertIn("steps.corpus.outcome == 'failure'", shared)
+        self.assertIn('source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}', shared)
+        self.assertNotIn('continue-on-error', shared)
+        for profile in ('latest', 'msrv', 'unknown', 'latest; touch injected'):
+            result, _, _ = self.shell('rust-suite', dict(RUST_SUITE_PROFILE=profile))
+            self.assertEqual(result.returncode == 0, profile in ('latest', 'msrv'))
 
     def test_invalid_native_preparation_cannot_silently_skip_build(self):
         with tempfile.TemporaryDirectory() as directory:
