@@ -20,7 +20,8 @@ class SourceChecksTests(unittest.TestCase):
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
             'test_check_fixture_budget', 'test_check_fixture_references',
-            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition', 'test_run_rust_tests', 'test_ci_actions',
+            'test_ci_profiles', 'test_ci_source_checks', 'test_rust_test_partition',
+            'test_run_rust_tests', 'test_native_verification_scheduler', 'test_ci_actions',
             'test_check_release_ready',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel', 'test_run_kernel_tests')])

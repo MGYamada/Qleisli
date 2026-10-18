@@ -493,6 +493,16 @@ and target at the existing preparation point; only distribution selects a
 Rustup default. `native-bundle-smoke` runs acceptance and source checks against
 the same relocated checker. Packaging, the macOS CLI rebuild, optional interop,
 full-lane archive/upload and receipts remain explicit in their producer jobs.
+The bundle's native comparison keeps its shared-file prefix serial and runs at
+most two independent small-corpus pairs concurrently. Each pair retains both
+environment-selected and explicitly selected CLI calls in that order, fresh
+native decisions, the same results comparison and the existing 70-second command
+deadline. Every selected case (currently 84 at at most four qubits) remains;
+failure drains running pairs and records unstarted cases without success credit.
+Standalone comparison defaults to one worker. Reports retain input order and
+declare concurrency; they do not imply chronological execution across pairs.
+The [first serial source and complete macOS timing](../../tests/fixtures/authoring_sessions/ci-rust-parallel-v030/bundle-smoke-first.json.gz)
+remain inert history, distinct from current checking and any speedup measurement.
 Rust groups own their native preparation, so their setup action uses
 `prepare: 'false'`; the four other native consumers use the default preparation.
 The mathematical Lean job retains its separate model/full proof work.

@@ -4,6 +4,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import hashlib
 import json
 import os
@@ -30,6 +31,44 @@ def encoded(value):
 
 def packet(artifact, request=None):
     return envelope(b"QLV1" + len(artifact).to_bytes(4, "little") + len(request or b"").to_bytes(4, "little") + artifact + (request or b""))
+
+
+def compare_clients(clients, workers, compare, results):
+    """Bound independent pairs; keep failures and every unstarted case explicit."""
+    assert not results, 'corpus results must be fresh'
+    results.extend(dict(id=case['id'], status='not-run', observations=[])
+                   for case, _ in clients)
+
+    def check(index):
+        row = results[index]
+        try:
+            compare(clients[index], row['observations'])
+            row['status'] = 'passed'
+        except Exception as error:
+            row.update(status='failed', error=str(error))
+        return row
+
+    pending = iter(range(len(clients)))
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        running = {}
+        def submit():
+            index = next(pending, None)
+            if index is not None:
+                results[index]['status'] = 'running'
+                running[pool.submit(check, index)] = index
+        for _ in range(workers):
+            submit()
+        failed = False
+        while running:
+            done, _ = wait(running, return_when=FIRST_COMPLETED)
+            for future in done:
+                index = running.pop(future)
+                results[index] = future.result()
+                failed |= results[index]['status'] != 'passed'
+            if not failed:
+                for _ in done:
+                    submit()
+    return results
 
 
 def test_control_requests(kernel, run):
@@ -327,26 +366,29 @@ def main():
     parser.add_argument("--binary", type=Path, default=ROOT / "target/debug/qleisli")
     parser.add_argument("--kernel", type=Path, default=ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")
     parser.add_argument("--record", type=Path)
+    parser.add_argument("--workers", type=int, choices=(1, 2), default=1)
     args = parser.parse_args()
     binary, kernel = args.binary.resolve(), args.kernel.resolve()
     observations = []
+    corpus_results = []
     started = time.monotonic()
     environment = dict(os.environ, QLEISLI_KERNEL=str(kernel))
 
-    def run(command, expected=0, data=None):
+    def run(command, expected=0, data=None, *, sink=None):
         result = subprocess.run(list(map(str, command)), input=data, capture_output=True, timeout=70, cwd=ROOT, env=environment)
         row = dict(command=list(map(str, command)), exit_code=result.returncode,
                    stdout=result.stdout.decode(errors="replace"), stderr=result.stderr.decode(errors="replace"))
         if data is not None:
             row["input_sha256"] = hashlib.sha256(data).hexdigest()
-        observations.append(row)
+        (observations if sink is None else sink).append(row)
         assert (result.returncode == 0) == (expected == 0), row
         return result.stdout
 
     def progress(label):
         # Flush phase/case progress outside child output and the observation data,
         # so an outer process-group timeout still retains the last started scope.
-        print(f"VM-28: {label}; completed {len(observations)} process checks; "
+        count = len(observations) + sum(len(case['observations']) for case in corpus_results)
+        print(f"VM-28: {label}; completed {count} process checks; "
               f"elapsed {time.monotonic() - started:.1f}s", file=sys.stderr, flush=True)
 
     def native(artifact, request=None, accepted=True):
@@ -466,12 +508,17 @@ def main():
             progress("corpus manifest validation")
             cases = [case for case in check_manifest(ROOT / "corpus")["cases"]
                      if case["qubits"] <= 4]
-            for case in cases:
+            clients = [(case, current_project(case, ROOT / "corpus")) for case in cases]
+            def compare_client(client, rows):
+                case, source = client
                 progress("corpus " + case["id"])
-                source = current_project(case, ROOT / "corpus")
-                base = json.loads(run([binary, "run", source, "--format=json"]))
-                explicit = json.loads(run([binary, "run", source, "--format=json", selected]))
+                base = json.loads(run([binary, "run", source, "--format=json"], sink=rows))
+                explicit = json.loads(run([binary, "run", source, "--format=json", selected], sink=rows))
                 assert base == explicit, case["id"]
+            compare_clients(clients, args.workers, compare_client, corpus_results)
+            assert all(case['status'] == 'passed' for case in corpus_results), [
+                {key: value for key, value in case.items() if key != 'observations'}
+                for case in corpus_results if case['status'] != 'passed']
         progress("complete")
         status = "passed"
     except BaseException:
@@ -483,8 +530,14 @@ def main():
             (args.record / "native-validation.json").write_text(json.dumps(dict(
                 status=status, scope="single native acceptance through both selection mechanisms; not S05 or source preservation",
                 binaries={str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in [binary, kernel]},
-                observations=observations), indent=2) + "\n")
-    print(f"VM-28: {len(observations)} process checks, {len(cases)} small corpus clients; native acceptance required")
+                corpus_workers=args.workers,
+                observation_order="serial prefix, then corpus input order; each pair is sequential",
+                corpus=[{key: value for key, value in case.items() if key != 'observations'}
+                        for case in corpus_results],
+                observations=observations + [row for case in corpus_results
+                                             for row in case['observations']]), indent=2) + "\n")
+    count = len(observations) + sum(len(case['observations']) for case in corpus_results)
+    print(f"VM-28: {count} process checks, {len(cases)} small corpus clients; native acceptance required")
 
 
 if __name__ == "__main__":

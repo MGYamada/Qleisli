@@ -33,6 +33,8 @@ and exactness obligations retain their recorded scopes and status.
   Avoid repeated path tokenization in fixture-reference checks with bounded
   in-process storage; retain fresh blob reads, complete reference resolution
   and full checking of long inputs without caching validation results.
+  Run independent native-bundle corpus pairs with two bounded workers while
+  retaining each pair's selection order, all cases and fixed command deadlines.
 
 - Stage the #369/#167 cutover to typed, unqualified language primitives and
   ordinary checked gate, state and structure source. Retired foundation imports
