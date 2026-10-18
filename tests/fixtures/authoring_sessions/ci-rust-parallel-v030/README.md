@@ -26,3 +26,7 @@ decodes and hashes these bytes without executing historical commands. Current
 latest/MSRV, extracted-source, native, proof and packaging checks remain required
 on the final candidate. No case count, work limit, deadline, guarantee or release
 status is changed by the experiment.
+
+The later [rooted-retention failures](coverage-first.json.gz) preserve the actual
+hosted refusal and original README/consumer bytes at `8befdc78`. The consumer now
+reads this README explicitly; the inspector and its coverage rules are unchanged.

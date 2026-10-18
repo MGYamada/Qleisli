@@ -26,6 +26,14 @@ class RustSchedulerTests(unittest.TestCase):
     def test_retained_first_sources_and_observations_are_inert_exact_bytes(self):
         root = runner.ROOT / 'tests/fixtures/authoring_sessions/ci-rust-parallel-v030'
         index = json.loads((root / 'index.json').read_text())
+        self.assertIn('not a hosted full-CI benchmark', (root / 'README.md').read_text())
+        coverage_bytes = (root / 'coverage-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(coverage_bytes).hexdigest(),
+                         '100c8bc06a1eec06464374c231e427e1e1dab8cb4370a5f6752983b9071b8bc3')
+        coverage = json.loads(gzip.decompress(coverage_bytes))
+        self.assertEqual(coverage['first_head'], '8befdc78424c48b11e98917152ee7a7dd837261b')
+        self.assertEqual([row['structuredContent']['job']['id'] for row in coverage['observations']],
+                         [117622633631, 117622627615])
         archive = (root / index['archive']['path']).read_bytes()
         self.assertEqual(hashlib.sha256(archive).hexdigest(), index['archive']['sha256'])
         records = json.loads(gzip.decompress(archive))['records']
