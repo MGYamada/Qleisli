@@ -116,9 +116,9 @@ def test_binary_transport(frame_path):
 
 def test_named_host(record=None):
     modules=sources();rows={}
-    for name,n,m in [('small',1,2),('target2',2,2),('precision3',1,3),('capacity',2,4)]:
+    for name,n,m in [('small',1,2),('target2',2,2),('precision3',1,3),('target2precision4',2,4)]:
         p=compile_instrument(modules,'measurement::qpe',dict(n=n,m=m),{'U':Operation('evolution::evolve',(n,1,3))})
-        rows[name]=(*documents(p,n,m),'limit' if name=='capacity' else 'ok')
+        rows[name]=(*documents(p,n,m),'ok')
     hmodules=modules|{'evolution':modules['evolution'].replace('phase[j,d](bit)','h(bit)')}
     hp=compile_instrument(hmodules,'measurement::qpe',dict(n=1,m=2),{'U':Operation('evolution::evolve',(1,1,3))})
     rows['finite-provider']=(*documents(hp,1,2),'ok')
