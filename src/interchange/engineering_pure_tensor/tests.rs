@@ -287,7 +287,7 @@ fn programs(kernel: &Kernel) -> [AcceptedProgram; 6] {
 )]
 #[test]
 fn native_tensor_composes_component_bounds_without_parent_frobenius() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let programs = programs(&kernel);
     let request = request();
     assert!(
@@ -322,6 +322,7 @@ fn native_tensor_composes_component_bounds_without_parent_frobenius() {
     assert_eq!(
         subject
             .bind(Decision {
+                context: report.context,
                 subject: other,
                 exact_work: report.exact_work()
             })
@@ -337,7 +338,7 @@ fn native_tensor_composes_component_bounds_without_parent_frobenius() {
 )]
 #[test]
 fn changed_parent_component_total_budget_or_original_invalidates_the_claim() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let programs = programs(&kernel);
     let request = request();
     for epsilon in [
@@ -477,16 +478,21 @@ fn view_value(bytes: &[u8]) -> crate::interchange::execution_view::Value {
 #[test]
 fn lean_compares_every_typed_tensor_context_and_all_six_original_graphs() {
     use crate::interchange::execution_view::{self, Value as View};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let programs = programs(&kernel);
     let request = request();
     let subject = Subject::prepare(&kernel, programs.each_ref(), &request).unwrap();
     let packet = subject.packet().unwrap();
-    runtime::check(&subject.checker, packet.clone()).unwrap();
-    let original_len = u32::from_le_bytes(packet[8..12].try_into().unwrap()) as usize;
-    let graph_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
-    let graph_start = 24 + original_len;
-    let original = &packet[24..graph_start];
+    runtime::check(
+        &subject.checker,
+        packet.clone(),
+        crate::edition::Edition::E2026,
+    )
+    .unwrap();
+    let original_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
+    let graph_len = u32::from_le_bytes(packet[16..20].try_into().unwrap()) as usize;
+    let graph_start = 28 + original_len;
+    let original = &packet[28..graph_start];
     let description = view_value(&packet[graph_start..graph_start + graph_len]);
     for (slot, count) in [(1, 17), (2, 9), (3, 9), (4, 9), (5, 9), (6, 9), (7, 9)] {
         for field in 0..count {
@@ -501,6 +507,7 @@ fn lean_compares_every_typed_tensor_context_and_all_six_original_graphs() {
             fields[field] = View::Null;
             let graph = execution_view::encode(&mutation).unwrap();
             let (packet, _) = super::super::native_packet::encode(
+                crate::edition::Edition::E2026,
                 original,
                 Some(super::super::native_packet::View {
                     graph: &graph,
@@ -509,16 +516,21 @@ fn lean_compares_every_typed_tensor_context_and_all_six_original_graphs() {
             )
             .unwrap();
             assert_eq!(
-                runtime::check(&subject.checker, packet).unwrap_err().code,
+                runtime::check(&subject.checker, packet, crate::edition::Edition::E2026)
+                    .unwrap_err()
+                    .code,
                 "decoded_view",
                 "slot {slot} field {field}"
             );
         }
     }
-    let (inspection, _) = super::super::native_packet::encode(original, None).unwrap();
-    assert!(runtime::check(&subject.checker, inspection).is_err());
+    let (inspection, _) =
+        super::super::native_packet::encode(crate::edition::Edition::E2026, original, None)
+            .unwrap();
+    assert!(runtime::check(&subject.checker, inspection, crate::edition::Edition::E2026).is_err());
     let graph = &packet[graph_start..graph_start + graph_len];
     let (caller, _) = super::super::native_packet::encode(
+        crate::edition::Edition::E2026,
         original,
         Some(super::super::native_packet::View {
             graph,
@@ -526,6 +538,13 @@ fn lean_compares_every_typed_tensor_context_and_all_six_original_graphs() {
         }),
     )
     .unwrap();
-    assert!(runtime::check(&subject.checker, caller).is_err());
-    assert!(runtime::check(&subject.checker, original.to_vec()).is_err());
+    assert!(runtime::check(&subject.checker, caller, crate::edition::Edition::E2026).is_err());
+    assert!(
+        runtime::check(
+            &subject.checker,
+            original.to_vec(),
+            crate::edition::Edition::E2026
+        )
+        .is_err()
+    );
 }

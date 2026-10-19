@@ -730,6 +730,31 @@ impl super::project::QrateSource {
     }
 }
 
+impl Project {
+    /// Check the already captured source and edition without rereading its files.
+    pub fn check_report_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<ProjectCheckReport, Diagnostic> {
+        let (kernel, decisions) = kernel.recording();
+        let result = process_loaded_project_details(&self.root, self, false, Some(&kernel))
+            .map_err(Diagnostic::from_compile)?;
+        Ok(ProjectCheckReport::new(result, decisions.summary()))
+    }
+
+    /// Compile the same captured project with its explicit, matching native context.
+    pub fn compile_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<AcceptedProgram, Diagnostic> {
+        Ok(
+            process_loaded_project_with_kernel(&self.root, self, true, Some(kernel))
+                .map_err(Diagnostic::from_compile)?
+                .expect("required entry was compiled"),
+        )
+    }
+}
+
 fn process_loaded_project(
     root: &Path,
     project: &Project,
@@ -817,6 +842,17 @@ fn prepare_original_source<'ast>(
     root: &Path,
     project: &'ast Project,
 ) -> Result<PreparedSource<'ast>, CompileError> {
+    project.validate_edition_context().map_err(|failure| {
+        let (line, column) = failure.coordinates.unwrap_or((1, 1));
+        CompileError {
+            code: ErrorCode::Project,
+            path: failure.error.path,
+            span: failure.error.span,
+            line,
+            column,
+            message: failure.error.message,
+        }
+    })?;
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
     let (source, (occurrences, interface_naturals)) = check::program_with(
@@ -913,7 +949,7 @@ fn process_loaded_project_details(
     let kernel = kernel
         .cloned()
         .map(Ok)
-        .unwrap_or_else(crate::interchange::native::Kernel::selected)
+        .unwrap_or_else(|| crate::interchange::native::Kernel::selected(project.edition()))
         .map_err(|error| CompileError {
             code: ErrorCode::Project,
             path: root.into(),
@@ -922,6 +958,17 @@ fn process_loaded_project_details(
             column: 1,
             message: error.to_string(),
         })?;
+    if kernel.edition() != project.edition() {
+        return Err(CompileError {
+            code: ErrorCode::Project,
+            path: root.into(),
+            span: Span::default(),
+            line: 1,
+            column: 1,
+            message: "selected native kernel edition differs from the captured project edition"
+                .into(),
+        });
+    }
     let mut compiler = Compiler {
         kernel,
         project,
@@ -1171,6 +1218,41 @@ mod snapshot_tests {
     use super::*;
     use crate::frontend::project::{ModuleOrigin, SourceModule};
 
+    #[test]
+    fn source_preparation_rejects_a_substituted_edition_inventory() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/bell");
+        let original = Project::load_with_policy(&root, SourcePolicy::default()).unwrap();
+        assert!(prepare_original_source(&root, &original).is_ok());
+        for mutation in 0..5 {
+            let mut changed = original.clone();
+            match mutation {
+                0 => changed.root.push("replacement"),
+                1 => changed
+                    .modules
+                    .get_mut("main")
+                    .unwrap()
+                    .path
+                    .push("replacement"),
+                2 => changed.modules.get_mut("main").unwrap().origin = ModuleOrigin::Bundled,
+                3 => {
+                    changed.modules.remove("std::transform");
+                }
+                _ => {
+                    changed
+                        .modules
+                        .insert("other".into(), changed.modules["main"].clone());
+                }
+            }
+            let failure = prepare_original_source(&root, &changed).err().unwrap();
+            assert_eq!(failure.code, ErrorCode::Project);
+            assert!(
+                failure.message.contains("captured edition context"),
+                "{failure}"
+            );
+            assert!(changed.module_manifest("main").is_none() || mutation >= 3);
+        }
+    }
+
     fn project(extra: usize) -> Project {
         let mut modules = BTreeMap::new();
         for (name, bytes) in [("main", 100_000), ("unrelated", extra)] {
@@ -1192,6 +1274,9 @@ mod snapshot_tests {
             );
         }
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::new(),
             modules,
         }
@@ -1215,7 +1300,8 @@ mod snapshot_tests {
             })
             .collect();
         Compiler {
-            kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
+            kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
+                .expect("explicit test kernel"),
             project,
             source,
             interface_naturals,

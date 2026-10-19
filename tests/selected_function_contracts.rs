@@ -30,7 +30,10 @@ static NEGATIVE_H: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
 });
 
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native kernel"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native kernel"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 
 fn work() -> Budget {
@@ -38,7 +41,7 @@ fn work() -> Budget {
 }
 
 fn modules(sources: BTreeMap<String, String>) -> ElaboratedProgram {
-    ParsedProgram::parse(sources)
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources)
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -183,7 +186,10 @@ fn observing_specialization_checks_ordered_bits_zero_and_missing_checker() {
         checked.hierarchy_eligibility().unwrap(),
         qleisli::frontend::compile::HierarchyEligibility::Ineligible(_)
     ));
-    let missing = Kernel::new("/nonexistent-qleisli-instrument-checker");
+    let missing = Kernel::new(
+        "/nonexistent-qleisli-instrument-checker",
+        qleisli::edition::Edition::E2026,
+    );
     assert!(
         checked
             .lower_raw_with_kernel(&missing, &mut work())
@@ -313,9 +319,12 @@ fn pending_contracts_require_evidence_and_do_not_expand_hierarchy_entry_types() 
     assert_eq!(source.lower_raw().unwrap_err().code(), "contract");
     let checked = check(&source).unwrap();
     let proposal = checked.lower().unwrap();
-    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-        .check_against_native(proposal.payload(), proposal.comparison_request())
-        .unwrap();
+    hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    )
+    .check_against_native(proposal.payload(), proposal.comparison_request())
+    .unwrap();
     let raw = checked.lower_raw().unwrap();
     raw.validate_source_steps(&kernel().accept(raw.proposal()).unwrap())
         .unwrap();
@@ -427,7 +436,13 @@ fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
     let root = SourceRoot::new("");
     assert!(
         source
-            .check_function_contracts(&Kernel::new(root.0.join("absent-kernel")), &mut work())
+            .check_function_contracts(
+                &Kernel::new(
+                    root.0.join("absent-kernel"),
+                    qleisli::edition::Edition::E2026
+                ),
+                &mut work()
+            )
             .is_err()
     );
     assert_eq!(
@@ -440,7 +455,13 @@ fn absent_kernel_exhausted_budget_and_wrong_tree_fail_closed() {
     let wrong = "unitary fn implementation(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { q }
         unitary fn specified(q: Q<Bit>) -> Q<Bit> { q }
         pub unitary fn main(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { apply_contract(implementation,specified,q) }";
-    assert!(ParsedProgram::parse(BTreeMap::from([("main".into(), wrong.into())])).is_err());
+    assert!(
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), wrong.into())])
+        )
+        .is_err()
+    );
     assert!(compile_project(&SourceRoot::new(wrong).0).is_err());
 }
 
@@ -533,6 +554,7 @@ fn equal_matrix_receipt_cannot_replace_the_original_implementation_snapshot() {
     // Identity metadata is deliberately unchanged: neither names nor equality
     // of matrices proves that this H/H receipt binds the original HHH.as_str() body.
     let replacement = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         original.signature().clone(),
         original.specification().clone(),
         original.specification().clone(),

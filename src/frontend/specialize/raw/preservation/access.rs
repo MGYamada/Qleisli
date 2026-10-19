@@ -998,12 +998,15 @@ mod tests {
                 requires Applicable(U){{U(q)}}
              pub unitary fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[{operation}](q)}}"
         );
-        ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text)]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
     }
 
     #[test]

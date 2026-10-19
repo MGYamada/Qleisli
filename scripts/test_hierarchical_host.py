@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, inspection_lines
+from native_packet import envelope, parse_reply
 import time
 import tomllib
 
@@ -52,16 +52,17 @@ def main():
     cases.append(('schedule-reversed', good[:-20] + struct.pack('<5I', 4, 3, 2, 1, 0), 'invalid_ir'))
     start = time.monotonic()
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-pending', PRODUCT_VERSION], input=envelope(data) if data else b"",
+        result = subprocess.run([str(binary), '--hierarchy-pending', PRODUCT_VERSION], input=envelope('2026', data) if data else b"",
                                 capture_output=True, timeout=30)
-        lines = inspection_lines(result.stdout)
-        if lines[:2] == ['qleisli.hierarchy-pending 4', 'pending']:
+        reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-pending", scope="inspection")
+        lines = reply.payload
+        if reply.claim == 'pending':
             actual = 'pending'
-            assert result.returncode == 0 and lines[4] == '0', (name, lines)
+            assert result.returncode == 0 and lines[2] == '0', (name, lines)
         else:
-            assert lines[:2] == ['qleisli.hierarchy-pending 4', 'error'], (name, result)
-            assert result.returncode != 0 and len(lines) == 3, (name, result)
-            actual = lines[2]
+            assert reply.claim == 'error', (name, result)
+            assert result.returncode != 0 and len(lines) == 1, (name, result)
+            actual = reply.error
         assert actual == expected, (name, expected, actual)
     env = os.environ.copy()
     env['QLEISLI_HIERARCHY_KERNEL'] = str(binary)

@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, inspection_lines
+from native_packet import envelope, parse_reply
 import sys
 import tempfile
 import time
@@ -195,7 +195,7 @@ def host_cases(directory):
     # Malformed subprocess responses must never become checked request reports.
     finite=[i for i,p in enumerate(a['proofs']) if p['rule']['tag']=='finite']
     h=[p['implementation'] for p in a['proofs'] if p['rule']['tag']=='finite']
-    header=['qleisli.hierarchy-fourier-pending 4','pending','execution','1','0',str(len(finite)),*map(str,finite)]
+    header=['qleisli.native-result 3','pending','2026',PRODUCT_VERSION,'--hierarchy-fourier-pending','execution','1','0',str(len(finite)),*map(str,finite)]
     for name, tail in [('missing-h',['0']),('duplicate-h',['4',*map(str,[h[0]]*4)]),
                        ('outside-h',['4','99999',*map(str,h[1:])]),('nonleaf-h',['4',str(root),*map(str,h[1:])]),
                        ('too-many-h',['9']),('truncated-h',['4',str(h[0])])]:
@@ -224,15 +224,15 @@ def main():
         cases.append((name,replace_word(good,fields[field]+delta,value),expected))
     results=[];start=time.monotonic()
     for name,data,expected in cases:
-        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope(data) if data else b"",capture_output=True,timeout=30)
-        lines=inspection_lines(p.stdout);assert lines[:1]==['qleisli.hierarchy-fourier-pending 4'],(name,p)
-        actual='pending' if lines[1]=='pending' else lines[2]
+        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        reply=parse_reply(p.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-fourier-pending", scope="inspection");lines=reply.payload
+        actual='pending' if reply.claim=='pending' else reply.error
         assert actual==expected,(name,actual,expected)
         assert p.returncode==(0 if actual=='pending' else 1)
         if actual=='pending':
-            assert 0<int(lines[2])<=2000000
-            assert 0 < int(lines[3]) <= 10000000
-            assert lines[4]=='1' and lines[6]=='1'
+            assert 0<int(lines[0])<=2000000
+            assert 0 < int(lines[1]) <= 10000000
+            assert lines[2]=='1' and lines[4]=='1'
         results.append(dict(case=name,result=actual))
     with tempfile.TemporaryDirectory(prefix='qleisli-fourier-host-') as temp:
         directory=Path(temp);count=host_cases(directory)

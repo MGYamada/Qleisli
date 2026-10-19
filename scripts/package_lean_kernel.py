@@ -14,7 +14,7 @@ import subprocess
 import tempfile
 import time
 import tomllib
-from native_packet import envelope
+from native_packet import envelope, parse_reply
 
 from check_lean_kernel import check_kernel
 
@@ -119,15 +119,15 @@ def main(argv=None):
             request = json.dumps(dict(format="qleisli.request", version=1, signature=dict(tag="bit"),
                                       meaning=dict(tag="phase8", table=phases), source_snapshot=None)).encode()
             packet = b"QLV1" + len(artifact).to_bytes(4, "little") + len(request).to_bytes(4, "little") + artifact + request
-            packet = envelope(packet)
+            packet = envelope('2026', packet)
             result = subprocess.run([binary, "--qirf-native", PRODUCT_VERSION], input=packet, cwd=output,
                                     env=environment, capture_output=True, timeout=60)
-            lines = result.stdout.splitlines()
-            expected_prefix = [b"qleisli.qirf-native 2", b"accepted", b"inspection"] if accepted else [
-                b"qleisli.qirf-native 2", b"error", b"contract"]
+            reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION,
+                                mode="--qirf-native", scope="inspection")
             if (result.returncode != (0 if accepted else 1) or result.stderr
-                    or lines[:3] != expected_prefix
-                    or (len(lines) != 5 or lines[-1] != b"1" if accepted else len(lines) != 3)):
+                    or (reply.claim != "accepted" or len(reply.payload) != 2
+                        or not 0 <= int(reply.payload[0]) <= 10_000_000
+                        or reply.payload[1] != "1" if accepted else reply.error != "contract")):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
             logs.append(dict(command=["bin/" + binary.name, "--qirf-native", PRODUCT_VERSION], exit_code=result.returncode,
                              expected_acceptance=accepted, input_sha256=hashlib.sha256(packet).hexdigest(),
@@ -136,7 +136,7 @@ def main(argv=None):
                         validation=dict(lane=args.validation, fresh_replay=args.validation == "full",
                                         scope="native package only; Mathlib proof maintenance is a separate CI job"),
                         package_version=tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"],
-                        protocol="qleisli.qirf-native 2", toolchain=(package / "lean-toolchain").read_text().strip(),
+                        protocol="qleisli.native-result 3", toolchain=(package / "lean-toolchain").read_text().strip(),
                         platform=platform.system(), machine=platform.machine(), sources=sources,
                         files={p.relative_to(output).as_posix(): digest(p) for p in output.rglob("*") if p.is_file()},
                         checks=logs, authority="sole production acceptance implementation; no full S05/source/native-compiler proof")

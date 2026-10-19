@@ -16,9 +16,9 @@
 //! Running this example requires the matching checker selected by `QLEISLI_KERNEL`.
 //!
 //! ```no_run
-//! use qleisli::{interop::import_openqasm3, sim};
+//! use qleisli::{edition::Edition, interop::import_openqasm3, sim};
 //!
-//! let program = import_openqasm3(r#"
+//! let program = import_openqasm3(Edition::E2026, r#"
 //! OPENQASM 3.0;
 //! include "stdgates.inc";
 //! qubit q;
@@ -68,6 +68,7 @@
 //! and versioning policy.
 
 pub mod contract;
+pub mod edition;
 pub mod frontend;
 pub mod host;
 pub mod interchange;

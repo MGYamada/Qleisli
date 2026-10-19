@@ -21,8 +21,10 @@ fn finite_override_entry(entry: &str, exponent: u8) -> HierarchyProposal {
         .unwrap();
     let raw = source.lower_raw_operation_at(caller, "U").unwrap();
     let required = FiniteMeaning::phase(BasisType::Bit, vec![exponent, exponent]).unwrap();
-    let kernel =
-        native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
+    );
     let checked = raw
         .check_finite_meaning(&kernel, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -52,6 +54,7 @@ fn finite_override_entry(entry: &str, exponent: u8) -> HierarchyProposal {
 fn checked_finite_overrides_keep_actual_bytes_and_each_original_zero_interval() {
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     for (operation, exponent) in [
         ("scalar", 1),
@@ -121,6 +124,7 @@ fn a_zero_repeat_override_cannot_erase_its_original_dormant_source_child() {
     });
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     // Native validity of this complete graph cannot discharge the original
     // child of this particular zero repeat, even though the full phase is kept.
@@ -172,7 +176,7 @@ fn reference_meaning_override_retains_both_original_raw_and_actual_receipt_wrapp
         "unitary fn reference_scalar(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}meaning M:Bit=reference(reference_scalar);fn invoke[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}pub unitary fn entry(q:Q<Bit>)->Q<Bit>{invoke[scalar](q)}",
     );
     let executable = std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker");
-    let kernel = native::Kernel::new(executable.clone());
+    let kernel = native::Kernel::new(executable.clone(), crate::edition::Edition::E2026);
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
     let source = source
         .check_function_contracts(&kernel, &mut budget)
@@ -184,7 +188,7 @@ fn reference_meaning_override_retains_both_original_raw_and_actual_receipt_wrapp
     validate(&proposal).unwrap();
     assert!(!proposal.native_sources.is_empty());
     assert_eq!(proposal.zero_basis.len(), 2);
-    let native = hierarchical::Kernel::new(executable);
+    let native = hierarchical::Kernel::new(executable, crate::edition::Edition::E2026);
     native
         .check_against_native(proposal.payload(), proposal.comparison_request())
         .unwrap();
@@ -210,8 +214,10 @@ fn ordinary_meaning_bindings_without_basis_tables_do_not_retain_new_witnesses() 
     let source = elaborate(
         "classical fn phases(b:Bit)->(Bit,(Bit,Bit)){(1,(0,0))}meaning M:Bit=phase_by(phases);unitary fn plain(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}fn invoke[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}pub unitary fn entry(q:Q<Bit>)->Q<Bit>{invoke[plain](q)}",
     );
-    let kernel =
-        native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
+    );
     let checked = source
         .check_operation_meanings(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -230,7 +236,7 @@ fn reference_override_compares_complete_nested_receipt_snapshots_after_native_de
         "unitary fn actual_phase(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}unitary fn specified_phase(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}unitary fn nested(q:Q<Bit>)->Q<Bit>{let e=empty();consume_empty(e);apply_contract(actual_phase,specified_phase,q)}meaning M:Bit=reference(specified_phase);fn invoke[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}pub unitary fn entry(q:Q<Bit>)->Q<Bit>{invoke[nested](q)}",
     );
     let executable = std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker");
-    let kernel = native::Kernel::new(executable.clone());
+    let kernel = native::Kernel::new(executable.clone(), crate::edition::Edition::E2026);
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
     let source = source
         .check_function_contracts(&kernel, &mut budget)
@@ -241,7 +247,7 @@ fn reference_override_compares_complete_nested_receipt_snapshots_after_native_de
     let proposal = checked.lower_hierarchy().unwrap();
     validate(&proposal).unwrap();
     assert!(!proposal.native_sources.is_empty());
-    hierarchical::Kernel::new(executable)
+    hierarchical::Kernel::new(executable, crate::edition::Edition::E2026)
         .check_against_native(proposal.payload(), proposal.comparison_request())
         .unwrap();
 }
@@ -262,8 +268,10 @@ fn retained_witness_ceiling_rejects_before_extending_the_existing_aggregate() {
         .unwrap();
     let raw = source.lower_raw_operation_at(caller, "U").unwrap();
     let required = FiniteMeaning::phase(BasisType::Bit, vec![1, 1]).unwrap();
-    let kernel =
-        native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
+    );
     let checked = raw
         .check_finite_meaning(&kernel, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();

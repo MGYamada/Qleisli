@@ -10,11 +10,14 @@ use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
 fn prepare(source: &str, naturals: BTreeMap<String, u32>) -> Result<(), String> {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-        .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))
-        .and_then(|instance| instance.elaborate())
-        .map(|_| ())
-        .map_err(|e| e.to_string())
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))
+    .and_then(|instance| instance.elaborate())
+    .map(|_| ())
+    .map_err(|e| e.to_string())
 }
 
 fn python(cases: &[(String, BTreeMap<String, u32>)]) -> Vec<bool> {
@@ -108,12 +111,15 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
         " pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
-        let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let elaborated = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         let profile = elaborated.check_lowering_profile().unwrap_err();
         assert_eq!(profile.code(), "unsupported", "{profile}");
         assert_eq!(profile.module(), Some("main"));
@@ -123,12 +129,15 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         assert_eq!(profile, elaborated.lower().unwrap_err());
     }
     let source = "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
-    let preparation = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let preparation = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
     preparation.check_lowering_profile().unwrap();
     assert_eq!(
         preparation.definitions()[preparation.root()].effect(),
@@ -136,12 +145,15 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
     );
     assert!(preparation.lower().unwrap().is_instrument());
     let source = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
-    let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let elaborated = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
     elaborated.check_lowering_profile().unwrap();
     elaborated.lower().unwrap();
 }
@@ -234,7 +246,7 @@ fn corpus_modules() -> BTreeMap<String, String> {
 
 #[test]
 fn ghz_and_arithmetic_corpus_prepare_and_lower_through_rust() {
-    let program = ParsedProgram::parse(corpus_modules()).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, corpus_modules()).unwrap();
     for n in 0..=3 {
         for entry in [
             "controls::all_ones",
@@ -321,10 +333,10 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
         template.to_string(),
         template.replace("controlled(flip)(c,(a,b))", "(c,adjoint(flip)((a,b)))"),
     ] {
-        ParsedProgram::parse(BTreeMap::from([
-            ("main".into(), main),
-            ("dep".into(), provider.into()),
-        ]))
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), main), ("dep".into(), provider.into())]),
+        )
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -338,27 +350,33 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
         template.replace("controlled(flip)(c,(a,b))", "controlled(flip)(c,(a,(b,)))"),
     ] {
         assert!(
-            ParsedProgram::parse(BTreeMap::from([
-                ("main".into(), wrong),
-                ("dep".into(), provider.into())
-            ]))
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), wrong), ("dep".into(), provider.into())])
+            )
             .is_err()
         );
     }
     let classical = "pub unitary fn flip(a: Q<Bit>, b: Bit) -> (Q<Bit>,Bit) { (a,b) }";
     assert!(
-        ParsedProgram::parse(BTreeMap::from([
-            ("main".into(), template.into()),
-            ("dep".into(), classical.into())
-        ]))
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([
+                ("main".into(), template.into()),
+                ("dep".into(), classical.into())
+            ])
+        )
         .is_err()
     );
     let zero_owner = "pub unitary fn identity(q: Q<Bits<0>>) -> Q<Bits<0>> { q }";
     let zero_client = "use dep::identity; pub unitary fn f(c: Q<Bit>, q: Q<Bits<0>>) -> (Q<Bit>,Q<Bits<0>>) { controlled(identity)(c,q) }";
-    ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), zero_client.into()),
-        ("dep".into(), zero_owner.into()),
-    ]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), zero_client.into()),
+            ("dep".into(), zero_owner.into()),
+        ]),
+    )
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
     .unwrap()
@@ -369,20 +387,26 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     let copyable_unit = "pub unitary fn identity(q: Unit) -> Unit { q }";
     let unit_client = "use dep::identity; pub unitary fn f(c: Q<Bit>) -> Q<Bit> { let (c,()) = controlled(identity)(c,()); c }";
     assert!(
-        ParsedProgram::parse(BTreeMap::from([
-            ("main".into(), unit_client.into()),
-            ("dep".into(), copyable_unit.into())
-        ]))
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([
+                ("main".into(), unit_client.into()),
+                ("dep".into(), copyable_unit.into())
+            ])
+        )
         .is_err()
     );
     // Ordinary copyable-unit arguments remain supported; this restriction
     // concerns only the complete quantum target of operation constructors.
     let ordinary_unit_client =
         "use dep::identity; pub unitary fn f(c: Q<Bit>) -> Q<Bit> { let () = identity(()); c }";
-    ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), ordinary_unit_client.into()),
-        ("dep".into(), copyable_unit.into()),
-    ]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), ordinary_unit_client.into()),
+            ("dep".into(), copyable_unit.into()),
+        ]),
+    )
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
     .unwrap()
@@ -401,8 +425,9 @@ fn rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively()
         std::env::var_os("QLEISLI_KERNEL")
             .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
             .expect("select audited kernel"),
+        qleisli::edition::Edition::E2026,
     );
-    let program = ParsedProgram::parse(corpus_modules()).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, corpus_modules()).unwrap();
     let limits = ExecutionLimits {
         max_amplitudes: 256,
         max_steps: 1_000_000,

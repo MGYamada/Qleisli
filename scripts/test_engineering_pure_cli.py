@@ -75,7 +75,7 @@ def live(cli, kernel):
             nonlocal count
             request_bytes = (json.dumps(request, separators=(',', ':'), sort_keys=True) + '\n').encode()
             request_path.write_bytes(request_bytes)
-            args = [cli, 'engineering', 'compare-pure', str(artifact),
+            args = [cli, 'engineering', 'compare-pure', '--edition=2026', str(artifact),
                     '--against=' + str(request_path), '--lean-kernel=' + checker]
             if not text:
                 args.append('--format=json')
@@ -155,7 +155,7 @@ def live(cli, kernel):
         # Flags never select a fallback, source execution or artifact emission.
         for extra in [('--against=duplicate',), ('--format=json',), ('--output=out',), ('extra',)]:
             request_path.write_text(json.dumps(original))
-            result = subprocess.run([cli, 'engineering', 'compare-pure', str(artifact),
+            result = subprocess.run([cli, 'engineering', 'compare-pure', '--edition=2026', str(artifact),
                 '--against=' + str(request_path), '--format=json', '--lean-kernel=' + kernel,
                 *extra], capture_output=True, timeout=60, check=False)
             count += 1

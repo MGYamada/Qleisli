@@ -17,8 +17,10 @@ fn files(path: &Path, name: &str) -> (Vec<u8>, Vec<u8>, Vec<u8>) {
 #[ignore = "requires generated small fixtures and an audited native Lean kernel"]
 fn native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries() {
     let root = directory();
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("native kernel required"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("native kernel required"),
+        qleisli::edition::Edition::E2026,
+    );
     for line in std::fs::read_to_string(root.join("cases.txt"))
         .unwrap()
         .lines()
@@ -102,7 +104,7 @@ fn qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations() {
         )
         .unwrap();
         std::fs::set_permissions(&runtime, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let error = Kernel::new(&runtime)
+        let error = Kernel::new(&runtime, qleisli::edition::Edition::E2026)
             .check_qpe_instrument(&payload, &request, &candidate)
             .unwrap_err();
         assert_eq!(error.code, "format", "{}: {error}", entry.path().display());

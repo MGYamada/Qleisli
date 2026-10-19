@@ -26,7 +26,11 @@ macro_rules! source {
 }
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 fn elaborate(source: &str) -> ElaboratedProgram {
@@ -38,7 +42,10 @@ fn elaborate(source: &str) -> ElaboratedProgram {
 }
 
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("select the built native kernel"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("select the built native kernel"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 
 fn view(ty: &SourceType) -> String {
@@ -194,8 +201,11 @@ fn sized_exact_type_errors_are_distinct_from_profile_rejections() {
         source!("quantum-bit-vs-bits-one"),
         source!("unused-mismatch"),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "type", "{source}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end <= source.len());
@@ -317,8 +327,11 @@ fn sized_unit_patterns_consume_only_actual_unit_values() {
         "pub unitary fn f(q: Q<Bits<0>>) -> Unit { let () = q; () }",
         "pub unitary fn f(b: Bits<0>) -> Unit { let () = b; () }",
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "type", "{error}");
     }
 }
@@ -418,8 +431,11 @@ fn quantum_zero_axis_owners_still_cannot_be_copied_or_dropped() {
         source!("quantum-zero-drop"),
         source!("quantum-copy"),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "ownership", "{source}: {error}");
     }
 }
@@ -468,6 +484,7 @@ fn finite_words_and_selected_execution_profile_limits_remain_explicit() {
     let proposal = program.lower_raw().unwrap();
     let native = qleisli::interchange::native::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("select the built native kernel"),
+        qleisli::edition::Edition::E2026,
     );
     let checked = native.accept(proposal.proposal()).unwrap();
     proposal.validate_source_steps(&checked).unwrap();

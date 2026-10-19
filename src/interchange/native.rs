@@ -14,7 +14,9 @@ pub use reporting::NativeDecisionSummary;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use super::native_context::CheckedContext;
 use super::{Encoder, Error, Imported, Result, RootInterface, Version};
+use crate::edition::Edition;
 use crate::ir::RawProgram;
 
 /// Fresh native acceptance of immutable QIRF/request bytes. This report carries
@@ -24,13 +26,14 @@ use crate::ir::RawProgram;
 pub struct NativeChecked {
     subject: Arc<Subject>,
     exact_work: usize,
-    scope: super::native_packet::Scope,
+    context: CheckedContext,
 }
 
 /// Immutable invocation inputs, without an acceptance decision. Construction
 /// stays in this module; staged dependency caches retain this same allocation.
 #[derive(Debug)]
 pub(crate) struct Subject {
+    edition: Edition,
     artifact: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     checker: PathBuf,
@@ -38,6 +41,9 @@ pub(crate) struct Subject {
 }
 
 impl Subject {
+    pub(crate) fn edition(&self) -> Edition {
+        self.edition
+    }
     pub(crate) fn artifact(&self) -> &[u8] {
         &self.artifact
     }
@@ -47,6 +53,19 @@ impl Subject {
 }
 
 impl NativeChecked {
+    pub(crate) fn kernel(&self) -> Kernel {
+        Kernel {
+            edition: self.edition(),
+            executable: self.checker().to_owned(),
+            decisions: self.subject.decisions.clone(),
+        }
+    }
+    pub fn edition(&self) -> Edition {
+        self.context.edition()
+    }
+    pub fn mode(&self) -> &'static str {
+        self.context.mode()
+    }
     pub fn artifact(&self) -> &[u8] {
         self.subject.artifact()
     }
@@ -92,7 +111,7 @@ impl Prepared {
                 "native decision belongs to a different subject",
             ));
         }
-        if native.scope == super::native_packet::Scope::Inspection {
+        if native.context.scope() == super::native_packet::Scope::Inspection {
             return Err(Error::new(
                 "kernel",
                 "inspection does not authorize an execution view",
@@ -127,6 +146,7 @@ impl Prepared {
 /// An explicitly selected native checker; no PATH search or runtime download.
 #[derive(Clone, Debug)]
 pub struct Kernel {
+    edition: Edition,
     executable: PathBuf,
     decisions: Option<DecisionLog>,
 }
@@ -149,7 +169,7 @@ impl Kernel {
 
     /// Explicit environment selection for convenience APIs. No PATH search,
     /// development-tree guess, automatic download or Rust fallback is used.
-    pub fn selected() -> Result<Self> {
+    pub fn selected(edition: Edition) -> Result<Self> {
         let path = std::env::var_os("QLEISLI_KERNEL")
             .filter(|p| !p.is_empty())
             .ok_or_else(|| {
@@ -158,14 +178,20 @@ impl Kernel {
                     "select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL",
                 )
             })?;
-        Ok(Self::new(path))
+        Ok(Self::new(path, edition))
     }
 
-    pub fn new(executable: impl AsRef<Path>) -> Self {
+    pub fn new(executable: impl AsRef<Path>, edition: Edition) -> Self {
         Self {
+            edition,
             executable: executable.as_ref().to_owned(),
             decisions: None,
         }
+    }
+
+    /// Requested constitutional edition, independently of the selected executable.
+    pub fn edition(&self) -> Edition {
+        self.edition
     }
 
     /// Observe fresh successful native decisions for one diagnostic operation.
@@ -174,6 +200,7 @@ impl Kernel {
         let decisions = DecisionLog::new();
         (
             Self {
+                edition: self.edition,
                 executable: self.executable.clone(),
                 decisions: Some(decisions.clone()),
             },
@@ -215,6 +242,12 @@ impl Kernel {
     /// Check an existing source/foreign/host result with a freshly reconstructed
     /// artifact. All nested evidence and both branch arms reach the kernel.
     pub fn check_program(&self, program: &AcceptedProgram) -> Result<Checked> {
+        if program.edition() != self.edition {
+            return Err(Error::new(
+                "edition",
+                "accepted program belongs to a different edition",
+            ));
+        }
         self.verify(program.raw())
     }
 
@@ -238,7 +271,7 @@ impl Kernel {
         .map_err(|mut failure| {
             // An explanation is optional and cannot reverse Lean's rejection.
             if failure.code == "contract" {
-                if let Some((pointer, detail)) = rejected_contract_detail(program) {
+                if let Some((pointer, detail)) = rejected_contract_detail(self.edition, program) {
                     failure.message.push_str(": ");
                     failure.message.push_str(&detail);
                     failure.json_pointer = pointer;
@@ -312,6 +345,7 @@ impl Kernel {
         let checker = std::fs::canonicalize(&self.executable)
             .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
         Ok(Arc::new(Subject {
+            edition: self.edition,
             artifact: Arc::from(artifact),
             request: request.map(Arc::from),
             checker,
@@ -339,16 +373,22 @@ impl Kernel {
         if let Some(request) = request {
             packet.extend_from_slice(request);
         }
-        let (packet, scope) = super::native_packet::encode(&packet, view)?;
-        let native_exact_work =
-            runtime::check_mode(subject.checker(), packet, request.is_some(), mode, scope)?;
+        let (packet, scope) = super::native_packet::encode(subject.edition, &packet, view)?;
+        let decision = runtime::check_mode(
+            subject.checker(),
+            packet,
+            request.is_some(),
+            mode,
+            scope,
+            subject.edition,
+        )?;
         if let Some(decisions) = &subject.decisions {
             decisions.record(subject.checker(), mode, request.is_some(), scope);
         }
         Ok(NativeChecked {
             subject,
-            exact_work: native_exact_work,
-            scope,
+            exact_work: decision.exact_work,
+            context: decision.context,
         })
     }
 }
@@ -449,6 +489,9 @@ pub struct AcceptedProgram {
     source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
 }
 impl AcceptedProgram {
+    pub fn edition(&self) -> Edition {
+        self.native.edition()
+    }
     pub fn artifact(&self) -> &[u8] {
         self.native.artifact()
     }
@@ -523,10 +566,7 @@ impl AcceptedProgram {
         self
     }
     pub(crate) fn kernel(&self) -> Kernel {
-        Kernel {
-            executable: self.checker().to_owned(),
-            decisions: self.native.subject.decisions.clone(),
-        }
+        self.native.kernel()
     }
     pub(crate) fn retain_instruments(
         mut self,
@@ -653,9 +693,10 @@ impl Kernel {
     }
 }
 
-fn rejected_contract_detail(raw: &RawProgram) -> Option<(String, String)> {
+fn rejected_contract_detail(edition: Edition, raw: &RawProgram) -> Option<(String, String)> {
     use crate::ir::RawOp;
     fn visit(
+        edition: Edition,
         ops: &[RawOp],
         prefix: &str,
         budget: &mut crate::contract::exact::Budget,
@@ -674,6 +715,7 @@ fn rejected_contract_detail(raw: &RawProgram) -> Option<(String, String)> {
                 } if function.len().is_power_of_two() => {
                     let bits = function.len().trailing_zeros() as usize;
                     if let Err(diagnostic) = crate::contract::check_computed_diagnostic_with_budget(
+                        edition,
                         bits,
                         function,
                         use_steps,
@@ -688,8 +730,10 @@ fn rejected_contract_detail(raw: &RawProgram) -> Option<(String, String)> {
                 RawOp::ClassicalBranch {
                     then_ops, else_ops, ..
                 } => {
-                    if let Some(found) = visit(then_ops, &format!("{pointer}/then_ops"), budget)
-                        .or_else(|| visit(else_ops, &format!("{pointer}/else_ops"), budget))
+                    if let Some(found) =
+                        visit(edition, then_ops, &format!("{pointer}/then_ops"), budget).or_else(
+                            || visit(edition, else_ops, &format!("{pointer}/else_ops"), budget),
+                        )
                     {
                         return Some(found);
                     }
@@ -700,6 +744,7 @@ fn rejected_contract_detail(raw: &RawProgram) -> Option<(String, String)> {
         None
     }
     visit(
+        edition,
         &raw.operations,
         "/operations",
         &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
@@ -731,7 +776,7 @@ mod preparation_tests {
     )]
     #[test]
     fn binding_retains_predecision_root_and_every_dependency_allocation() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let mut bytes = artifact("non-topological-evidence-indices");
         let original = bytes.clone();
         let subject = kernel.subject(&bytes, None).unwrap();
@@ -770,7 +815,7 @@ mod preparation_tests {
     )]
     #[test]
     fn equal_bytes_from_another_fresh_invocation_cannot_bind_prepared_data() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let bytes = artifact("phase-graph");
         let subject = kernel.subject(&bytes, None).unwrap();
         let prepared = Prepared::new(Arc::clone(&subject)).unwrap();
@@ -791,7 +836,7 @@ mod preparation_tests {
     )]
     #[test]
     fn inspection_of_the_same_subject_cannot_authorize_execution() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let subject = kernel.subject(&artifact("phase-graph"), None).unwrap();
         let prepared = Prepared::new(Arc::clone(&subject)).unwrap();
         let native = Kernel::inspect_subject(subject, "--qirf-native").unwrap();
@@ -809,7 +854,7 @@ mod preparation_tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     fn divergent_actual_decoded_root_is_rejected_while_original_inspection_succeeds() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let subject = kernel.subject(&artifact("phase-graph"), None).unwrap();
         let mut prepared = Prepared::new(Arc::clone(&subject)).unwrap();
         let graph = Arc::get_mut(&mut prepared.decoded).unwrap();
@@ -839,7 +884,7 @@ mod preparation_tests {
     )]
     #[test]
     fn materialization_is_not_acceptance_and_native_rejections_stay_authoritative() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let mut value = json::parse(&artifact("hidden-discard-graph")).unwrap();
         let Value::Object(fields) = &mut value else {
             panic!("object")

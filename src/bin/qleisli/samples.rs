@@ -50,7 +50,7 @@ mod tests {
     )]
     #[test]
     fn aggregate_failure_does_not_return_earlier_shots() {
-        let p = qleisli::interchange::native::Kernel::selected()
+        let p = qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept_raw(RawProgram {
                 quantum_inputs: vec![],

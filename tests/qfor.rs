@@ -5,7 +5,11 @@ use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 #[cfg_attr(
@@ -33,9 +37,12 @@ fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
             repeated.payload(),
             "same source and bindings must elaborate deterministically"
         );
-        let accepted = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-            .check_against_native(proposal.payload(), proposal.comparison_request())
-            .unwrap();
+        let accepted = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        )
+        .check_against_native(proposal.payload(), proposal.comparison_request())
+        .unwrap();
         let output = accepted
             .execute_pure(
                 &input,
@@ -89,9 +96,12 @@ fn multiple_carried_owners_keep_the_complete_entangled_interface() {
             .unwrap()
             .lower()
             .unwrap();
-        let accepted = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-            .check_against_native(proposal.payload(), proposal.comparison_request())
-            .unwrap();
+        let accepted = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        )
+        .check_against_native(proposal.payload(), proposal.comparison_request())
+        .unwrap();
         let output = accepted
             .execute_pure(
                 &input,
@@ -138,9 +148,12 @@ fn zero_width_carry_does_not_erase_its_scalar_operator() {
         .unwrap()
         .lower()
         .unwrap();
-    let accepted = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-        .check_against_native(proposal.payload(), proposal.comparison_request())
-        .unwrap();
+    let accepted = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    )
+    .check_against_native(proposal.payload(), proposal.comparison_request())
+    .unwrap();
     let input = vec![[0.25, 0.5], [-0.75, 0.125]];
     let output = accepted
         .execute_pure(
@@ -201,8 +214,11 @@ fn ordinary_and_quantum_folds_have_distinct_staging_and_carry_rules() {
             "type",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{source}: {error}");
         assert!(error.message().contains(fragment), "{source}: {error}");
     }
@@ -215,7 +231,7 @@ fn ordinary_and_quantum_folds_have_distinct_staging_and_carry_rules() {
         .unwrap()
         .lower_raw()
         .unwrap();
-    let accepted = qleisli::interchange::native::Kernel::selected()
+    let accepted = qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();

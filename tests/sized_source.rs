@@ -8,7 +8,7 @@ fn sources(text: &str) -> BTreeMap<String, String> {
     BTreeMap::from([("main".into(), text.into())])
 }
 fn reject(text: &str, code: &str) {
-    let e = ParsedProgram::parse(sources(text)).unwrap_err();
+    let e = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text)).unwrap_err();
     assert_eq!(e.code(), code, "{e}");
     assert_eq!(e.module(), Some("main"));
     assert!(
@@ -21,14 +21,14 @@ fn reject(text: &str, code: &str) {
 fn sized_host_bindings_respect_module_visibility() {
     let public = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }";
     let private = public.strip_prefix("pub ").unwrap();
-    let program = ParsedProgram::parse(sources(private)).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(private)).unwrap();
     let error = program
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap_err();
     assert_eq!(error.code(), "visibility");
     assert_eq!(error.module(), Some("main"));
     assert!(error.message().contains("main::f is private"));
-    ParsedProgram::parse(sources(public))
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(public))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap();
@@ -38,10 +38,13 @@ fn sized_host_bindings_respect_module_visibility() {
             "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) {{ {body} }}"
         );
         for (provider, accepted) in [(public, true), (private, false)] {
-            let program = ParsedProgram::parse(BTreeMap::from([
-                ("main".into(), main.clone()),
-                ("nested::dep".into(), provider.into()),
-            ]))
+            let program = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([
+                    ("main".into(), main.clone()),
+                    ("nested::dep".into(), provider.into()),
+                ]),
+            )
             .unwrap();
             let result = program.instantiate(
                 "main::f",
@@ -114,7 +117,8 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
             "static comparison",
         ),
     ] {
-        let error = ParsedProgram::parse(sources(&source)).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap_err();
         assert_eq!(error.code(), "limit", "{error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().start >= prefix.len(), "{cause}: {error}");
@@ -125,7 +129,8 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
         assert!(error.message().contains(cause), "{error}");
         assert!(error.message().contains(obligation), "{error}");
     }
-    let error = ParsedProgram::parse(sources(&work_limit)).unwrap_err();
+    let error =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&work_limit)).unwrap_err();
     assert_eq!(error.code(), "limit", "{error}");
     assert_eq!(error.module(), Some("main"));
     assert_eq!(
@@ -147,10 +152,10 @@ fn substituted_size_overflow_points_to_the_caller_module() {
         i128::MAX,
         i128::MAX
     );
-    let error = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), main.clone()),
-        ("dep".into(), dep.into()),
-    ]))
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), main.clone()), ("dep".into(), dep.into())]),
+    )
     .unwrap_err();
     assert_eq!(error.code(), "limit");
     assert_eq!(error.module(), Some("main"));
@@ -233,7 +238,7 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
             String::new()
         };
         let source = format!("{import} pub {assertion} fn f({inputs}) -> {output} {{ {body} }}");
-        let prepared = ParsedProgram::parse(sources(&source))
+        let prepared = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -257,7 +262,8 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
         let name = path.rsplit("::").next().unwrap();
         let tail = body.split_once('(').unwrap().1;
         let bad = source.replace(body, &format!("{name}[0,0,0]({tail}"));
-        let error = ParsedProgram::parse(sources(&bad)).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&bad)).unwrap_err();
         assert_eq!(error.code(), "static", "{path}: {error}");
     }
 }
@@ -307,7 +313,7 @@ fn corpus_qpe_controlled_powers_require_the_ordinary_provider_capability() {
         .into_iter()
         .map(|(name, path)| (name, std::fs::read_to_string(path).unwrap()))
         .collect();
-    ParsedProgram::parse(original.clone()).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, original.clone()).unwrap();
     // An in-memory counterexample to the current corpus source: retain the
     // controlled powers and all module identities, but grant only application.
     // No corpus snapshot or upstream pin is changed, and no QFT is instantiated.
@@ -317,7 +323,7 @@ fn corpus_qpe_controlled_powers_require_the_ordinary_provider_capability() {
     let changed = estimation.replace("Controllable(U)", "Applicable(U)");
     let mut counterexample = original;
     counterexample.insert("estimation".into(), changed.clone());
-    let error = ParsedProgram::parse(counterexample).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, counterexample).unwrap_err();
     assert_eq!(error.code(), "access", "{error}");
     assert_eq!(error.module(), Some("estimation"));
     assert!(error.message().contains("Controllable"), "{error}");
@@ -411,12 +417,13 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
 #[test]
 fn guarded_subtraction_index_and_linear_normalization() {
     let valid = "  pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { let (a,b) = take_bit[n,n-1](q); put_bit[n,n-1](a,b) }";
-    ParsedProgram::parse(sources(valid)).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(valid)).unwrap();
     reject(&valid.replace(" requires n >= 1", ""), "size");
     reject(&valid.replace("take_bit[n,n-1]", "take_bit[n,n]"), "size");
-    ParsedProgram::parse(sources(
-        "pub unitary fn f[const n: Nat](q: Q<Bits<2*n+1>>) -> Q<Bits<n+n+1>> { q }",
-    ))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources("pub unitary fn f[const n: Nat](q: Q<Bits<2*n+1>>) -> Q<Bits<n+n+1>> { q }"),
+    )
     .unwrap();
     reject(
         "pub unitary fn f[const n: Nat](q: Q<Bits<n*n>>) -> Q<Bits<n*n>> { q }",
@@ -495,7 +502,12 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
         "dep".into(),
         "use main::f; pub unitary fn g(q: Q<Bit>) -> Q<Bit> { f(q) }".into(),
     );
-    assert_eq!(ParsedProgram::parse(modules).unwrap_err().code(), "cycle");
+    assert_eq!(
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
+            .unwrap_err()
+            .code(),
+        "cycle"
+    );
     reject(
         "pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { f[n](q) }",
         "cycle",
@@ -506,7 +518,9 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
         "unitary fn g(q: Q<Bit>) -> Q<Bit> { q }".into(),
     );
     assert_eq!(
-        ParsedProgram::parse(modules).unwrap_err().code(),
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
+            .unwrap_err()
+            .code(),
         "visibility"
     );
 }
@@ -517,22 +531,28 @@ fn forwarding_checks_callee_size_and_access_premises() {
         ("dep".into(), "pub unitary fn use_op[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { U(q) }".into()),
         ("main".into(), "use dep::use_op; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { use_op[n,U](q) }".into()),
     ]);
-    ParsedProgram::parse(ordered).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, ordered).unwrap();
     let dep = "pub unitary fn g[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controllable(U) { controlled(U)(c,q) }";
     let main = "use dep::g; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controllable(U) { g[n,U](c,q) }";
     let modules =
         |main: String| BTreeMap::from([("main".into(), main), ("dep".into(), dep.into())]);
-    ParsedProgram::parse(modules(main.into())).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, modules(main.into())).unwrap();
     assert_eq!(
-        ParsedProgram::parse(modules(main.replace(", Controllable(U)", "")))
-            .unwrap_err()
-            .code(),
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            modules(main.replace(", Controllable(U)", ""))
+        )
+        .unwrap_err()
+        .code(),
         "access"
     );
     assert_eq!(
-        ParsedProgram::parse(modules(main.replace("n >= 1, ", "")))
-            .unwrap_err()
-            .code(),
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            modules(main.replace("n >= 1, ", ""))
+        )
+        .unwrap_err()
+        .code(),
         "size"
     );
 }
@@ -540,11 +560,11 @@ fn forwarding_checks_callee_size_and_access_premises() {
 #[test]
 fn original_bytes_and_contextual_identifiers_are_retained() {
     let source = "// λ exact bytes\r\npub unitary fn f(Bits: Q<Bit>) -> Q<Bit> { Bits }\r\n";
-    let parsed = ParsedProgram::parse(sources(source)).unwrap();
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     assert_eq!(parsed.source("main"), Some(source));
     assert!(qleisli::frontend::parser::parse_module(source).is_ok());
     let source = "// λ\n pub unitary fn f(q: Q<Bit>) -> Q<Bit> { wrong(q) }";
-    let e = ParsedProgram::parse(sources(source)).unwrap_err();
+    let e = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     assert_eq!(e.code(), "name");
     assert_eq!(&source[e.span().start..e.span().end], "wrong");
 }
@@ -572,7 +592,11 @@ fn duplicate_declarations_and_inconsistent_premises_reject() {
 
 #[test]
 fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
-    ParsedProgram::parse(sources("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { ((q)) }")).unwrap();
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { ((q)) }"),
+    )
+    .unwrap();
     reject("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q; }", "ownership");
     reject("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { (q,) }", "parse");
     reject(
@@ -580,7 +604,7 @@ fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
         "parse",
     );
     let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controllable(U) { controlled(power(U,2^(n+1)))(c,q) }";
-    ParsedProgram::parse(sources(source)).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     reject(&source.replace("2^(n+1)", "2^n+1"), "parse");
     reject(&source.replace("2^(n+1)", "3^n"), "parse");
     reject(&source.replace("2^(n+1)", "n*n"), "unsupported");
@@ -681,12 +705,12 @@ fn preparation_limits_and_utf8_diagnostics_are_explicit() {
     let at_limit = (0..57)
         .map(|i| (format!("m{i}"), prefix.to_owned()))
         .collect();
-    ParsedProgram::parse(at_limit).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, at_limit).unwrap();
     for count in [58, 65] {
         let many = (0..count)
             .map(|i| (format!("m{i}"), prefix.to_owned()))
             .collect();
-        let error = ParsedProgram::parse(many).unwrap_err();
+        let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, many).unwrap_err();
         assert_eq!(error.code(), "limit");
         assert!(
             error
@@ -695,7 +719,7 @@ fn preparation_limits_and_utf8_diagnostics_are_explicit() {
         );
     }
     let text = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { α }";
-    let e = ParsedProgram::parse(sources(text)).unwrap_err();
+    let e = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text)).unwrap_err();
     assert_eq!(&text[e.span().start..e.span().end], "α");
     assert_eq!(e.code(), "parse");
     reject("/* unclosed", "parse");
@@ -713,7 +737,8 @@ fn file_loader_reuses_regular_file_and_byte_guards() {
 #[test]
 fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     let local_callee = " pub unitary fn f(h: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { yield h(q); }; (h,q) }";
-    let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
+    let error =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
     let name_start = local_callee.rfind("h(q)").unwrap();
@@ -727,13 +752,14 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     reject(bad, "ownership");
     // A returned local owner is legitimate; the outer consumed name stays moved.
     let good = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { if static 0 == 0 { let q = q; q } else { let q = q; q } }";
-    ParsedProgram::parse(sources(good)).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(good)).unwrap();
     let moved = "pub unitary fn f(q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let a = if static 0 == 0 { let q = q; q } else { let q = q; q }; (a,q) }";
     reject(moved, "ownership");
     let fold = "pub unitary fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { qfor static k in 0..1 carry pair = (q,r) { let (q,r) = pair; let a = if static k == 0 { let old = q; let q = r; old } else { let old = q; let q = r; old }; yield (a,q); } }";
     reject(fold, "ownership");
     let local_callee = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let h = q; let q = h; h(q) }";
-    let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
+    let error =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
     let name_start = local_callee.rfind("h(q)").unwrap();
@@ -749,7 +775,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
         "dep".into(),
         "pub unitary fn g(q: Q<Bit>) -> Q<Bit> { q }".into(),
     );
-    let error = ParsedProgram::parse(modules).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
     let name_start = local_callee.rfind("adjoint(g)(q)").unwrap() + "inverse(".len();
@@ -767,9 +793,9 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
 #[test]
 fn classical_shadows_restore_outer_bindings_in_branches_and_folds() {
     let branch = " pub unitary fn f(x: Bit) -> Bit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
-    ParsedProgram::parse(sources(branch)).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(branch)).unwrap();
     let fold = " pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
-    ParsedProgram::parse(sources(fold)).unwrap();
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(fold)).unwrap();
 }
 
 #[test]
@@ -945,10 +971,13 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
     let provider =
         " pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }";
     let main = "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }";
-    let program = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), main.into()),
-        ("dep".into(), provider.into()),
-    ]))
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("dep".into(), provider.into()),
+        ]),
+    )
     .unwrap();
     let operations = BTreeMap::from([(
         "U".into(),
@@ -967,10 +996,10 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
         let main = format!(
             "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controllable(U) {{ controlled(power({op},0))(c,q) }}"
         );
-        let program = ParsedProgram::parse(BTreeMap::from([
-            ("main".into(), main),
-            ("dep".into(), provider.into()),
-        ]))
+        let program = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), main), ("dep".into(), provider.into())]),
+        )
         .unwrap();
         let operations = BTreeMap::from([(
             "U".into(),
@@ -995,7 +1024,8 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
         doubling.push_str("let t = (t,t); ");
     }
     doubling.push_str("c }");
-    let program = ParsedProgram::parse(sources(&doubling)).unwrap();
+    let program =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&doubling)).unwrap();
     assert_eq!(
         program
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1006,7 +1036,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
         "limit"
     );
     let source = " pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
-    let program = ParsedProgram::parse(sources(source)).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     assert_eq!(
         program
             .instantiate("main::f", naturals(&[("n", 513)]), BTreeMap::new())
@@ -1050,7 +1080,7 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
     let nested = std::thread::Builder::new().stack_size(2 * 1024 * 1024).spawn(|| {
         let expr = "h(".repeat(16) + "f[n-1](q)" + &")".repeat(16);
         let text = format!(" pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> {{ if static n > 0 {{ {expr} }} else {{ q }} }}");
-        ParsedProgram::parse(sources(&text)).unwrap().instantiate("main::f", naturals(&[("n",8)]), BTreeMap::new()).unwrap().elaborate().unwrap_err()
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text)).unwrap().instantiate("main::f", naturals(&[("n",8)]), BTreeMap::new()).unwrap().elaborate().unwrap_err()
     }).unwrap().join().unwrap();
     assert_eq!(nested.code(), "limit");
     assert!(nested.message().contains("combined"));
@@ -1062,7 +1092,7 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
             "pub unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }".into(),
         ),
     ]);
-    let program = ParsedProgram::parse(modules).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
     let graph = program
         .instantiate("main::f", naturals(&[("n", 4)]), BTreeMap::new())
         .unwrap()
@@ -1085,7 +1115,8 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
     assert_eq!(e.code(), "limit");
     assert!(e.message().contains("calls"));
     let recursive = "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { if static n == 0 { q } else { f[n-1](q) } }";
-    let program = ParsedProgram::parse(sources(recursive)).unwrap();
+    let program =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(recursive)).unwrap();
     assert!(
         program
             .instantiate("main::f", naturals(&[("n", 8)]), BTreeMap::new())
@@ -1111,7 +1142,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
         ("skip".into(),"pub unitary fn skip[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }".into()),
         ("rotate".into()," pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }".into()),
     ]);
-    let program = ParsedProgram::parse(modules).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
     assert_eq!(
         program
             .instantiate("main::f", naturals(&[("j", 8), ("d", 3)]), BTreeMap::new())
@@ -1125,7 +1156,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
         ("main".into(),"use rotate::rotate; pub unitary fn f(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { controlled(power(rotate,0))(c,q) }".into()),
         ("rotate".into()," pub unitary fn rotate(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }".into()),
     ]);
-    let graph = ParsedProgram::parse(modules)
+    let graph = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1201,14 +1232,17 @@ fn delayed_fourier_source() -> String {
 }
 
 fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::compile::HierarchyProposal {
-    ParsedProgram::parse(BTreeMap::from([("fourier".into(), source.into())]))
-        .unwrap()
-        .instantiate("fourier::fourier", naturals(&[("n", n)]), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap()
-        .lower()
-        .unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("fourier".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate("fourier::fourier", naturals(&[("n", n)]), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap()
+    .lower()
+    .unwrap()
 }
 
 fn inverse_fourier_source_proposal(
@@ -1216,10 +1250,13 @@ fn inverse_fourier_source_proposal(
     n: u32,
 ) -> qleisli::frontend::compile::HierarchyProposal {
     let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n])(q) }";
-    ParsedProgram::parse(BTreeMap::from([
-        ("fourier".into(), source.into()),
-        ("client".into(), client.into()),
-    ]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("fourier".into(), source.into()),
+            ("client".into(), client.into()),
+        ]),
+    )
     .unwrap()
     .instantiate("client::inverse", naturals(&[("n", n)]), BTreeMap::new())
     .unwrap()
@@ -1245,7 +1282,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
             "exactly one Bits",
         ),
     ] {
-        let prepared = ParsedProgram::parse(sources(source))
+        let prepared = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1264,9 +1301,10 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     }
     // Preparation now has an explicit hierarchy path with empty readout; the
     // source remains Isometry rather than acquiring an observation effect.
-    let preparation = ParsedProgram::parse(sources(
-        "use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
-    ))
+    let preparation = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources("use std::state::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}"),
+    )
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
     .unwrap()
@@ -1284,8 +1322,11 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     assert!(preparation.lower().unwrap().is_instrument());
     // The public Isometry contract selects the existing empty-readout adapter;
     // the actual H body and Raw proposal remain Unitary.
-    let program =
-        ParsedProgram::parse(sources(" pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}")).unwrap();
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources(" pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}"),
+    )
+    .unwrap();
     assert_eq!(
         program.public_function_effect("main::f"),
         Some(qleisli::ir::Effect::Isometry)
@@ -1309,12 +1350,15 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
 
     // A public Observe contract over the same pure body still cannot select
     // either pure hierarchy profile, even when the implementation is visible.
-    let observing = ParsedProgram::parse(sources(" pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}"))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let observing = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources(" pub observe fn f(q:Q<Bit>)->Q<Bit>{h(q)}"),
+    )
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
     let error = observing.check_lowering_profile().unwrap_err();
     assert!(error.message().contains("matching checked public effect"));
     assert_eq!(
@@ -1327,7 +1371,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
 #[test]
 fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
     let prepare = |source: &str| {
-        ParsedProgram::parse(sources(source))
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1430,6 +1474,7 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
         std::env::var_os("QLEISLI_KERNEL")
             .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
             .expect("select audited kernel"),
+        qleisli::edition::Edition::E2026,
     );
     let limits = ExecutionLimits {
         max_amplitudes: 4096,
@@ -1514,6 +1559,7 @@ fn direct_finite_source_gates_preserve_entangled_h_x_references() {
         std::env::var_os("QLEISLI_KERNEL")
             .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
             .expect("select audited kernel"),
+        qleisli::edition::Edition::E2026,
     );
     let input = [[0.3, 0.2], [0.4, -0.1], [-0.2, 0.5], [0.1, 0.3]];
     for (body, expected_kind) in [
@@ -1525,7 +1571,7 @@ fn direct_finite_source_gates_preserve_entangled_h_x_references() {
         ("h(x(h(x(q))))", "ZX"),
     ] {
         let text = format!(" use std::gate::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {body} }}");
-        let p = ParsedProgram::parse(sources(&text))
+        let p = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1604,7 +1650,11 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
             .iter()
             .any(|m| m.crossed_events().contains(&0))
     );
-    let classical = ParsedProgram::parse(sources("pub unitary fn f(c: Bit) -> Bit { c }")).unwrap();
+    let classical = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        sources("pub unitary fn f(c: Bit) -> Bit { c }"),
+    )
+    .unwrap();
     assert_eq!(
         classical
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1617,7 +1667,7 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
         "unsupported"
     );
     let reversed = "   pub observe fn f(a: Q<Bit>, b: Q<Bit>) -> Bits<2> { let a = measure_z(a); let b = measure_z(b); let z = empty_bits(); let z = prepend_bit[0](a,z); prepend_bit[1](b,z) }";
-    let error = ParsedProgram::parse(sources(reversed))
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(reversed))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1688,6 +1738,7 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         std::env::var_os("QLEISLI_KERNEL")
             .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
             .expect("select audited kernel"),
+        qleisli::edition::Edition::E2026,
     );
     let limits = ExecutionLimits {
         max_amplitudes: 4096,
@@ -1861,7 +1912,7 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         "preservation"
     );
     // Zero-width owners remain present through structural consume/produce.
-    let empty=ParsedProgram::parse(sources("use std::structure::consume_empty; use std::structure::empty; pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { let () = consume_empty(q); empty() }")).unwrap().instantiate("main::f",BTreeMap::new(),BTreeMap::new()).unwrap().elaborate().unwrap().lower().unwrap();
+    let empty=ParsedProgram::parse(qleisli::edition::Edition::E2026, sources("use std::structure::consume_empty; use std::structure::empty; pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { let () = consume_empty(q); empty() }")).unwrap().instantiate("main::f",BTreeMap::new(),BTreeMap::new()).unwrap().elaborate().unwrap().lower().unwrap();
     let checked = kernel
         .check_against(empty.payload(), empty.comparison_request())
         .unwrap();
@@ -2022,7 +2073,8 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
         ] {
             let source = format!("// 日本語\r\n{open}{bad}x{close}{declaration}");
             let finite = lex(&source).unwrap_err();
-            let sized = ParsedProgram::parse(sources(&source)).unwrap_err();
+            let sized = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source))
+                .unwrap_err();
             assert_eq!(sized.code(), "parse");
             assert_eq!(sized.span(), finite.span, "{source:?}");
             assert_eq!(sized.message(), finite.message, "{source:?}");
@@ -2037,16 +2089,17 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
         format!("/* \u{200b} \u{feff} */{declaration}"),
         format!("{}λ{}{declaration}", "/*".repeat(64), "*/".repeat(64)),
     ] {
-        let parsed = ParsedProgram::parse(sources(&source)).unwrap();
+        let parsed =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap();
         assert_eq!(parsed.source("main"), Some(source.as_str()));
     }
     let source = format!("{}λ{}{declaration}", "/*".repeat(65), "*/".repeat(65));
-    let e = ParsedProgram::parse(sources(&source)).unwrap_err();
+    let e = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap_err();
     assert_eq!(e.code(), "parse");
     assert_eq!(e.message(), "comment nesting exceeds 64");
     assert_eq!((e.span().start, e.span().end), (0, 130));
     let source = "// 日本語\r\n/* α /* β */";
-    let e = ParsedProgram::parse(sources(source)).unwrap_err();
+    let e = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     assert_eq!(e.message(), "unterminated block comment");
     assert_eq!(&source[e.span().start..e.span().end], "/* α /* β */");
 }
@@ -2054,7 +2107,8 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
 #[test]
 fn common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics() {
     let source = "pub unitary fn fn(q: Q<Bit>) -> Q<Bit> { q }";
-    let sized = ParsedProgram::parse(sources(source)).unwrap_err();
+    let sized =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     let common = qleisli::frontend::parser::parse_module(source).unwrap_err();
     assert_eq!(
         (sized.span(), sized.message()),
@@ -2063,7 +2117,8 @@ fn common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics() {
     for digits in ["00", "01"] {
         let source =
             format!("// λ\r\npub unitary fn f(q: Q<Bits<{digits}>>) -> Q<Bits<0>> {{ q }}");
-        let e = ParsedProgram::parse(sources(&source)).unwrap_err();
+        let e =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap_err();
         assert_eq!(e.code(), "parse");
         assert_eq!(e.message(), "natural literal has a leading zero");
         assert_eq!(&source[e.span().start..e.span().end], digits);
@@ -2094,7 +2149,8 @@ fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
         ),
     ] {
         let ast = parse_module(&source).unwrap();
-        let sized = ParsedProgram::parse(sources(&source)).unwrap();
+        let sized =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap();
         assert_eq!(sized.syntax("main"), Some(&ast));
         assert_eq!(sized.source("main"), Some(source.as_str()));
         let root = common::SourceRoot::new(&source);
@@ -2111,7 +2167,7 @@ fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
     );
     let ast = parse_module(acyclic).unwrap();
     assert_eq!(ast.decls.len(), 2);
-    let parsed = ParsedProgram::parse(sources(acyclic)).unwrap();
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(acyclic)).unwrap();
     assert_eq!(parsed.syntax("main"), Some(&ast));
     for entry in ["main::f", "main::g"] {
         parsed
@@ -2122,7 +2178,7 @@ fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
     }
     let cycle = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}";
     assert_eq!(parse_module(cycle).unwrap().decls.len(), 2);
-    let error = ParsedProgram::parse(sources(cycle)).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(cycle)).unwrap_err();
     assert_eq!(error.code(), "cycle");
     assert!(error.message().contains("dependency cycle"));
 }
@@ -2170,7 +2226,7 @@ fn common_syntax_does_not_grant_missing_type_or_capability_support() {
     reject(source, "ownership");
     let source = "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{q}";
     let ast = parse_module(source).unwrap();
-    let parsed = ParsedProgram::parse(sources(source)).unwrap();
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     assert_eq!(parsed.syntax("main"), Some(&ast));
     let graph = parsed
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -2217,7 +2273,8 @@ fn contextual_controlled_and_reserved_words_have_one_classification() {
     ] {
         let source = format!("pub unitary fn {word}(q:Q<Bit>)->Q<Bit>{{q}}");
         let common = parse_module(&source).unwrap_err();
-        let sized = ParsedProgram::parse(sources(&source)).unwrap_err();
+        let sized =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap_err();
         assert_eq!(
             (sized.span(), sized.message()),
             (common.span, common.message.as_str())
@@ -2234,7 +2291,8 @@ fn existing_empty_sized_spellings_remain_common_syntax() {
         "pub unitary fn f(q:Q<Bit>,)->Q<Bit>{q}",
     ] {
         let ast = parse_module(source).unwrap();
-        let sized = ParsedProgram::parse(sources(source)).unwrap();
+        let sized =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
         assert_eq!(sized.syntax("main"), Some(&ast));
     }
     let source = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}";
@@ -2262,7 +2320,7 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
     send_sync::<ElaboratedProgram>();
 
     let source = "use std::gate::x; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
-    let original = ParsedProgram::parse(sources(source)).unwrap();
+    let original = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     let retained = original.clone();
     drop(original);
     // The AST has moved/cloned since indexing. Only owned numeric IDs/Table
@@ -2292,11 +2350,14 @@ fn common_lexical_static_substitution_uses_callee_binders_and_caller_values() {
     let main = "use helper::apply; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { apply[n,U](q) }";
     let helper = "pub unitary fn apply[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { U(q) }";
     let provider = "pub unitary fn keep[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
-    let parsed = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), main.into()),
-        ("helper".into(), helper.into()),
-        ("provider".into(), provider.into()),
-    ]))
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("helper".into(), helper.into()),
+            ("provider".into(), provider.into()),
+        ]),
+    )
     .unwrap();
     let instance = parsed
         .instantiate(
@@ -2345,8 +2406,11 @@ fn complete_parsing_and_source_errors_precede_selected_projection() {
             "parse",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("a".into(), a), ("z".into(), z)])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("a".into(), a), ("z".into(), z)]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), expected_code, "{error}");
         assert_eq!(error.module(), Some(expected_module), "{error}");
     }

@@ -65,6 +65,8 @@ def hierarchy (mode : CheckedHierarchy.Modes.Mode) (bytes : ByteArray) :
   return (input.scope,← hierarchyInput mode input)
 
 def errorCode : Gate.Error → String
+  | .edition => "edition"
+  | .version => "version"
   | .packet | .invalidView | .encoding => "format"
   | .decodedView => "decoded_view"
   | .native .limit | .hierarchy .limit _ => "limit"

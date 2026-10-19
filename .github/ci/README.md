@@ -389,6 +389,11 @@ repository's root `bin/` directory before testing the companion bundle.
 Run bundle and runtime validation using explicit paths to those four files,
 which must come from the same checked build.
 
+When executable implementations are available, also extract `qlt`, `qdb` and
+`qcp` into this same repository-root `bin/` directory and validate them using
+explicit paths. QLT, QDB and QCP remain planned until those implementations and
+their checks are available.
+
 ## Native comparisons (#206)
 
 Local reproduction uses the same command manifests as hosted checks:

@@ -106,7 +106,8 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
         let program = compile_project(&root.0).unwrap();
         for version in [Version::V1, Version::V2] {
             let bytes = interchange::export(&program, None, version).unwrap();
-            let imported = interchange::import(&bytes, None).unwrap();
+            let imported =
+                interchange::import(qleisli::edition::Edition::E2026, &bytes, None).unwrap();
             // Native work is charged for the complete original graph; source storage remains shared.
             assert!(
                 imported.exact_work <= qleisli::contract::DEFAULT_EXACT_WORK,
@@ -128,6 +129,7 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
         assert!(emitted.status.success(), "{emitted:?}");
         let verified = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&artifact)
             .output()
             .unwrap();
@@ -153,7 +155,7 @@ fn small_native_receipts_round_trip_shared_source() {
     let program = compile_project(&root.0).unwrap();
     for version in [Version::V1, Version::V2] {
         let bytes = interchange::export(&program, None, version).unwrap();
-        let imported = interchange::import(&bytes, None).unwrap();
+        let imported = interchange::import(qleisli::edition::Edition::E2026, &bytes, None).unwrap();
         assert_eq!(
             interchange::export(&imported.program, None, version).unwrap(),
             bytes
@@ -162,6 +164,7 @@ fn small_native_receipts_round_trip_shared_source() {
         std::fs::write(&artifact, &bytes).unwrap();
         let verified = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&artifact)
             .output()
             .unwrap();

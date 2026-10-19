@@ -494,10 +494,13 @@ mod tests {
 
     #[test]
     fn coherent_table_precharges_storage_and_combined_label_work() {
-        let program = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "pub unitary fn f(q:Q<Bit>)->Q<Bit>{basis q as x {not x}}".into(),
-        )]))
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "pub unitary fn f(q:Q<Bit>)->Q<Bit>{basis q as x {not x}}".into(),
+            )]),
+        )
         .unwrap();
         let id = program.checked.resolution.qualified("main::f").unwrap();
         let (_, function) = program.definition(id).unwrap();

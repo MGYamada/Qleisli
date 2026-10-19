@@ -6,7 +6,7 @@ import struct
 import subprocess
 from pathlib import Path
 import tomllib
-from native_packet import envelope
+from native_packet import envelope, parse_reply
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,26 +73,25 @@ def encode_readout(request, packet, budget=2000000):
     return bytes(writer.data)
 
 
-def inspect(kernel, kind, payload):
+def inspect(kernel, kind, payload, *, edition):
     if kind not in ('preparation', 'readout'):
         raise ValueError('unknown component')
-    return inspect_envelope(kernel, kind, envelope(payload))
+    return inspect_envelope(kernel, kind, envelope(edition, payload), edition=edition)
 
 
-def inspect_envelope(kernel, kind, packet):
+def inspect_envelope(kernel, kind, packet, *, edition):
     """Send explicit outer bytes, including deliberately malformed test inputs."""
     if kind not in ('preparation', 'readout'):
         raise ValueError('unknown component')
     run = subprocess.run([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=packet,
                          capture_output=True, timeout=60)
-    fields = run.stdout.decode('ascii').splitlines()
-    if len(fields) != 3 or fields[0] != f'qleisli.{kind}-result 2':
-        raise ValueError('malformed component response')
-    if fields[1] == 'checked' and run.returncode == 0 and fields[2].isascii() and fields[2].isdecimal():
-        work = int(fields[2])
+    reply = parse_reply(run.stdout, edition=edition, product=PRODUCT_VERSION,
+                        mode=f'--{kind}-check', scope='inspection')
+    if reply.claim == 'checked' and run.returncode == 0 and len(reply.payload) == 1:
+        work = int(reply.payload[0])
         if not 0 <= work <= 2000000:
             raise ValueError('component work out of range')
         return dict(status='checked', work=work)
-    if fields[1] == 'error' and run.returncode == 1 and fields[2] in ('format', 'limit', 'contract', 'invalid_ir'):
-        return dict(status=fields[2])
+    if reply.error is not None and run.returncode == 1:
+        return dict(status=reply.error)
     raise ValueError('inconsistent component response')

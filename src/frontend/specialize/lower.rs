@@ -107,6 +107,8 @@ impl HierarchyProposal {
         &self,
         checked: &crate::interchange::hierarchical::CheckedInstrument,
     ) -> Result<PreparationValidation> {
+        self.source
+            .require_edition(checked.reconstruction().edition())?;
         if checked.reconstruction().payload() != self.payload() {
             return Err(preservation::invalid(
                 "checked payload differs from source proposal",
@@ -125,6 +127,7 @@ impl HierarchyProposal {
         &self,
         checked: &crate::interchange::hierarchical::NativeChecked,
     ) -> Result<PreparationValidation> {
+        self.source.require_edition(checked.edition())?;
         if !checked.is_instrument() || checked.payload() != self.payload() {
             return Err(preservation::invalid(
                 "native checked instrument differs from source proposal",
@@ -156,9 +159,10 @@ impl HierarchyProposal {
         zero_basis::validate(original)?;
         let validation = preservation::validate(original)?;
         if self.fourier_transport.is_some() {
-            let checked = crate::interchange::hierarchical::Kernel::new(checker)
-                .check_instrument_native(original.payload(), original.comparison_request())
-                .map_err(|error| preservation::invalid(error.to_string()))?;
+            let checked =
+                crate::interchange::hierarchical::Kernel::new(checker, self.source.edition())
+                    .check_instrument_native(original.payload(), original.comparison_request())
+                    .map_err(|error| preservation::invalid(error.to_string()))?;
             if checked.checker() != checker {
                 return Err(preservation::invalid(
                     "original Fourier check changed the retained canonical checker path",

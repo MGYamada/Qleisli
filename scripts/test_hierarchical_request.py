@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, inspection_lines
+from native_packet import envelope, parse_reply
 import time
 import tomllib
 
@@ -172,17 +172,17 @@ def main():
     started = time.monotonic()
     observed = []
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-request-pending', PRODUCT_VERSION], input=envelope(data) if data else b"",
+        result = subprocess.run([str(binary), '--hierarchy-request-pending', PRODUCT_VERSION], input=envelope('2026', data) if data else b"",
                                 capture_output=True, timeout=30)
-        lines = inspection_lines(result.stdout)
-        assert lines[:1] == ['qleisli.hierarchy-request-pending 4'], (name, result)
-        if lines[1:2] == ['pending']:
+        reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-request-pending", scope="inspection")
+        lines = reply.payload
+        if reply.claim == 'pending':
             actual = 'pending'
-            assert result.returncode == 0 and len(lines) == 6 and lines[3:] == ['0','0','0'], (name, lines)
-            assert 0 < int(lines[2]) <= 2_000_000, (name, lines)
+            assert result.returncode == 0 and len(lines) == 4 and lines[1:] == ('0','0','0'), (name, lines)
+            assert 0 < int(lines[0]) <= 2_000_000, (name, lines)
         else:
-            assert result.returncode == 1 and lines[1:2] == ['error'] and len(lines) == 3, (name, result)
-            actual = lines[2]
+            assert result.returncode == 1 and reply.claim == 'error' and len(lines) == 1, (name, result)
+            actual = reply.error
         assert actual == expected, (name, expected, actual)
         observed.append({'case': name, 'result': actual})
     row_costs = test_row_costs()

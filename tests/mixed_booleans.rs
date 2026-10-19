@@ -25,7 +25,11 @@ fn source(category: &str, name: &str) -> String {
 }
 
 fn elaborate(source: &str, entry: &str, naturals: BTreeMap<String, u32>) -> ElaboratedProgram {
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let owned = parsed.clone();
     drop(parsed);
     owned
@@ -41,7 +45,10 @@ fn accept(graph: &ElaboratedProgram) -> AcceptedProgram {
         proposal.source().instantiation().program().source("main"),
         graph.instantiation().program().source("main")
     );
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let accepted = kernel.accept(proposal.proposal()).unwrap();
     assert_eq!(accepted.artifact(), proposal.payload());
     proposal.validate_source_steps(&accepted).unwrap();
@@ -246,6 +253,7 @@ fn pending_first_argument_keeps_entangled_owner_during_later_argument_measuremen
     // Request the exact X equation for the actual retained gate interval.
     // Source-step replay above and the numerical outcome oracle are separate.
     FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::Bit,
         RawProgram {
             quantum_inputs: vec![QuantumPort {
@@ -409,6 +417,7 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
         // not a circuit obtained from either source compiler or the common emitter.
         let expected = FiniteMeaning::phase(BasisType::Bit, vec![0, eighths]).unwrap();
         let evidence = FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Bit,
             accepted.raw().clone(),
             expected.target_ir().unwrap(),
@@ -437,12 +446,15 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
     // The source domain is j < 2^k, independently of whether modular reduction
     // could represent an equal operator. Do not broaden it at the Raw target.
     let invalid = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { phase[9,3](q) }";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), invalid.into())]))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), invalid.into())]),
+    )
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap_err();
     assert_eq!(error.code(), "limit", "{error}");
     assert_eq!(error.module(), Some("main"), "{error}");
     assert_eq!(
@@ -504,7 +516,11 @@ fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_ta
     );
     distribution(&accept(&provider), &[(&[true], 1.0)]);
     let text = source("counterexamples", "runtime-if");
-    let program = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.clone())]),
+    )
+    .unwrap();
     assert_eq!(program.source("main"), Some(text.as_str()));
     assert_eq!(program.syntax("main"), Some(&parse_module(&text).unwrap()));
     let error = program

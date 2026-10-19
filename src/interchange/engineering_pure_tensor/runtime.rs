@@ -3,67 +3,46 @@
 use std::path::Path;
 use std::time::Duration;
 
-use super::{Error, Result};
+use super::Result;
 
+#[cfg(test)]
 fn response(bytes: &[u8]) -> Result<usize> {
-    let text = std::str::from_utf8(bytes)
-        .map_err(|_| Error::format("invalid engineering response UTF-8"))?;
-    let lines: Vec<_> = text.split('\n').collect();
-    if lines.first() != Some(&"qleisli.engineering-pure-tensor-native 1") {
-        return Err(Error::format("unknown engineering response protocol"));
-    }
-    match lines.as_slice() {
-        [_, "error", code, ""] => {
-            let code = match *code {
-                "limit" => "limit",
-                "contract" => "contract",
-                "invalid_ir" => "invalid_ir",
-                "format" => "format",
-                "decoded_view" => "decoded_view",
-                "version" => "kernel",
-                _ => return Err(Error::format("unknown engineering rejection")),
-            };
-            Err(Error::new(
-                code,
-                if code == "kernel" {
-                    "native checker product version differs from the Rust package"
-                } else {
-                    "Lean engineering checker rejected the artifact/request; no fallback"
-                },
-            ))
-        }
-        [_, "engineering-checked", "execution", work, ""] => {
-            if work.is_empty()
-                || work.len() > 8
-                || !work.bytes().all(|b| b.is_ascii_digit())
-                || work.len() > 1 && work.starts_with('0')
-            {
-                return Err(Error::format("noncanonical engineering work count"));
-            }
-            let work: usize = work
-                .parse()
-                .map_err(|_| Error::format("invalid engineering work count"))?;
-            if work > crate::contract::DEFAULT_EXACT_WORK {
-                return Err(Error::format("engineering work bound disagrees"));
-            }
-            Ok(work)
-        }
-        _ => Err(Error::format("malformed/trailing engineering response")),
-    }
+    crate::interchange::native_context::engineering_response(
+        bytes,
+        crate::edition::Edition::E2026,
+        crate::interchange::native_context::Mode::EngineeringPureTensor,
+    )
+    .map(|value| value.exact_work)
 }
 
-pub(super) fn check(executable: &Path, packet: Vec<u8>) -> Result<usize> {
-    invoke(executable, packet, Duration::from_secs(60))
+pub(super) fn check(
+    executable: &Path,
+    packet: Vec<u8>,
+    edition: crate::edition::Edition,
+) -> Result<crate::interchange::native_context::WorkDecision> {
+    invoke_bound(executable, packet, Duration::from_secs(60), edition)
 }
 
+#[cfg(test)]
 fn invoke(executable: &Path, packet: Vec<u8>, timeout: Duration) -> Result<usize> {
+    invoke_bound(executable, packet, timeout, crate::edition::Edition::E2026)
+        .map(|value| value.exact_work)
+}
+
+fn invoke_bound(
+    executable: &Path,
+    packet: Vec<u8>,
+    timeout: Duration,
+    edition: crate::edition::Edition,
+) -> Result<crate::interchange::native_context::WorkDecision> {
+    let mode = crate::interchange::native_context::Mode::EngineeringPureTensor;
     crate::interchange::process::invoke(
         executable,
         packet,
-        "--engineering-pure-tensor-check",
+        mode.argument(),
         timeout,
         256,
-        response,
+        |bytes| crate::interchange::native_context::engineering_response(bytes, edition, mode),
     )
 }
 
@@ -73,12 +52,28 @@ mod tests {
 
     #[test]
     fn engineering_reply_is_strict_and_separate_from_exact_acceptance() {
-        let good = "qleisli.engineering-pure-tensor-native 1\nengineering-checked\nexecution\n42\n";
+        let good = format!(
+            "qleisli.native-result 3
+engineering-checked
+2026
+{}
+--engineering-pure-tensor-check
+execution
+42
+",
+            env!("CARGO_PKG_VERSION")
+        );
         assert_eq!(response(good.as_bytes()).unwrap(), 42);
         for bad in [
-            good.replace("native 1", "native 2"),
-            good.replace("pure-tensor-native", "pure-native"),
-            good.replace("pure-tensor-native", "instrument-native"),
+            good.replace("result 3", "result 2"),
+            good.replace(
+                "--engineering-pure-tensor-check",
+                "--engineering-pure-check",
+            ),
+            good.replace(
+                "--engineering-pure-tensor-check",
+                "--qirf-engineering-instrument-native",
+            ),
             good.replace("engineering-checked", "accepted"),
             good.replace("execution", "inspection"),
             good.replace("execution", "caller"),
@@ -89,18 +84,18 @@ mod tests {
             format!("{good}extra"),
             "qleisli.qirf-native 2\naccepted\nexecution\n42\n1\n".into(),
             "qleisli.qirf-native 1\naccepted\n42\n1\n".into(),
-            "qleisli.engineering-pure-tensor-native 1\nerror\nunknown\n".into(),
+            "qleisli.native-result 3\nerror\nunknown\n".into(),
         ] {
             assert!(response(bad.as_bytes()).is_err(), "{bad}");
         }
         assert_eq!(
-            response(b"qleisli.engineering-pure-tensor-native 1\nerror\ncontract\n")
+            response(b"qleisli.native-result 3\nerror\ncontract\n")
                 .unwrap_err()
                 .code,
             "contract"
         );
         assert_eq!(
-            response(b"qleisli.engineering-pure-tensor-native 1\nerror\nversion\n")
+            response(b"qleisli.native-result 3\nerror\nversion\n")
                 .unwrap_err()
                 .code,
             "kernel"
@@ -129,10 +124,10 @@ mod tests {
         }
         let _cleanup = Cleanup(directory.clone());
         let fixture = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/execution-view-binding/process-failure.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/process-failure.sh");
         for (case, expected) in [
             ("failed-acceptance", "format"),
-            ("contract", "format"),
+            ("contract", "contract"),
             ("large-output", "limit"),
             ("sleep", "limit"),
             ("inherited-pipe", "limit"),

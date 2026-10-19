@@ -115,7 +115,7 @@ def main():
                     cache="warm OS caches; fresh CLI/kernel processes; no persistent verifier",
                     controls="no concurrent jobs launched by the harness; no CPU pinning or control over external system load"),
         commands=dict(emit_ir=[str(binary), "emit-ir", "{source}", "--output={fresh_path}", "--format=json"],
-                      verify_ir=[str(binary), "verify-ir", "{identical_artifact}", "--format=json"],
+                      verify_ir=[str(binary), "verify-ir", "{identical_artifact}", "--edition=2026", "--format=json"],
                       explicit_extra=[f"--lean-kernel={kernel}"], cwd=str(ROOT)),
         cases=[],
     )
@@ -140,7 +140,7 @@ def main():
                 if action == "emit-ir":
                     command = [binary, action, ROOT / row["source"], f"--output={output}", "--format=json"]
                 else:
-                    command = [binary, action, artifacts[name], "--format=json"]
+                    command = [binary, action, artifacts[name], "--edition=2026", "--format=json"]
                 if route == "explicit":
                     command.append(f"--lean-kernel={selected_kernel}")
                 started = time.perf_counter_ns()

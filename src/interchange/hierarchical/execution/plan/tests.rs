@@ -12,8 +12,10 @@ fn capture_native_hierarchy_mode_plans() {
     let directory = std::path::PathBuf::from(
         std::env::var_os("QLEISLI_HIERARCHY_VIEW_CAPTURE").expect("capture directory"),
     );
-    let kernel =
-        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = crate::interchange::hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        crate::edition::Edition::E2026,
+    );
     let document = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/",
@@ -115,8 +117,10 @@ fn retained_plan_matches_independent_shared_hierarchy_descriptions() {
 )]
 #[test]
 fn native_and_compatibility_execution_keep_the_same_owned_plan() {
-    let kernel =
-        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = crate::interchange::hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        crate::edition::Edition::E2026,
+    );
     let artifact = include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/",
@@ -200,26 +204,29 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
 #[test]
 fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
     use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
-    let kernel =
-        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = crate::interchange::hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        crate::edition::Edition::E2026,
+    );
     let payload = include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/fixtures/verification_v022/hierarchy/h.qirh"
     ));
     let decoded = bridge::decode(payload).unwrap();
-    let prepared = Prepared::new(payload, None, None, false);
+    let prepared = Prepared::new(crate::edition::Edition::E2026, payload, None, None, false);
     let candidate = prepared.execution.as_ref().unwrap();
     let address = candidate.as_ref() as *const Plan;
     let description = candidate.view().unwrap();
     let response = runtime::check(
         kernel.executable(),
+        kernel.edition(),
         decoded.bridge,
         crate::interchange::hierarchical::Mode::Inspect,
         Some(&description),
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();
-    let report = NativeChecked::new(prepared, &response, false);
+    let report = NativeChecked::new(prepared, &response, false).unwrap();
     assert_eq!(address, report.execution().unwrap() as *const Plan);
     assert_eq!(description, report.execution().unwrap().view().unwrap());
     assert_eq!(report.payload(), payload);
@@ -232,8 +239,10 @@ fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
 #[test]
 fn non_executable_inspection_retains_its_original_prepared_failure() {
     use crate::interchange::hierarchical::{Prepared, runtime, validate_leaves};
-    let kernel =
-        crate::interchange::hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = crate::interchange::hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        crate::edition::Edition::E2026,
+    );
     // Preserve the first attempted control and real refusal. Classical ports
     // in a pure Meaning do not supply an accepted-but-unexecutable artifact.
     let first = json::parse(include_bytes!(concat!(
@@ -271,17 +280,18 @@ fn non_executable_inspection_retains_its_original_prepared_failure() {
         "/tests/fixtures/verification_v022/hierarchy/h.qirh"
     ));
     let decoded = bridge::decode(payload).unwrap();
-    let mut prepared = Prepared::new(payload, None, None, false);
+    let mut prepared = Prepared::new(crate::edition::Edition::E2026, payload, None, None, false);
     prepared.execution = Err(failure.clone());
     let response = runtime::check(
         kernel.executable(),
+        crate::edition::Edition::E2026,
         decoded.bridge,
         crate::interchange::hierarchical::Mode::Inspect,
         None,
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();
-    let mut native = NativeChecked::new(prepared, &response, false);
+    let mut native = NativeChecked::new(prepared, &response, false).unwrap();
     assert_eq!(native.payload(), payload);
     assert_eq!(native.execution().unwrap_err().code, failure.code);
     let message = failure.message;

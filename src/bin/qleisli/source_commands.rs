@@ -3,12 +3,9 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use qleisli::frontend::compile::{
-    ProjectCheckReport, check_project_report_with_kernel, compile_project_with_kernel,
-};
+use qleisli::frontend::compile::ProjectCheckReport;
 use qleisli::frontend::diagnostic::Diagnostic;
-use qleisli::frontend::project::{QrateSource, SourcePolicy};
-use qleisli::interchange::native::Kernel;
+use qleisli::frontend::project::{Project, QrateSource, SourcePolicy};
 use qleisli::sim::{Sample, SimulationError, SimulationLimits, run_closed};
 
 use super::options::Options;
@@ -57,17 +54,10 @@ impl Input {
         }
     }
 
-    fn check(&self, kernel: &Kernel) -> Result<ProjectCheckReport, Diagnostic> {
+    pub fn load_project(&self) -> Result<Project, Diagnostic> {
         match &self.root {
-            Root::Path(path) => check_project_report_with_kernel(path, self.policy, kernel),
-            Root::Qrate(selected) => selected.check_report_with_kernel(self.policy, kernel),
-        }
-    }
-
-    pub fn compile(&self, kernel: &Kernel) -> Result<qleisli::AcceptedProgram, Diagnostic> {
-        match &self.root {
-            Root::Path(path) => compile_project_with_kernel(path, self.policy, kernel),
-            Root::Qrate(selected) => selected.compile_with_kernel(self.policy, kernel),
+            Root::Path(path) => Project::load_with_policy(path, self.policy),
+            Root::Qrate(selected) => selected.load_with_policy(self.policy),
         }
     }
 }
@@ -94,21 +84,18 @@ impl From<Diagnostic> for Failure {
 }
 
 pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failure> {
+    let project = input.load_project()?;
     let kernel = options
-        .lean_kernel
-        .as_ref()
-        .map(Kernel::new)
-        .map(Ok)
-        .unwrap_or_else(Kernel::selected)
+        .kernel(project.edition())
         .map_err(|error| Diagnostic {
             code: error.code,
             message: error.message,
             primary: None,
         })?;
     if options.command == "check" {
-        return Ok(Success::Checked(input.check(&kernel)?));
+        return Ok(Success::Checked(project.check_report_with_kernel(&kernel)?));
     }
-    let program = input.compile(&kernel)?;
+    let program = project.compile_with_kernel(&kernel)?;
     if options.command == "sample" {
         let seed = options.seed.expect("parsed sample seed");
         let (shots, execution_steps) =

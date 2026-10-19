@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import textwrap
 import tomllib
 from check_verification_inventory import INVENTORY, test_names
 
@@ -18,7 +19,8 @@ PUBLICATION = 'tests/fixtures/releases/v0.2.9/publication.json'
 PUBLISHED_COMMIT = 'a77e68f4d3942cd75cb4c4710350aab9a99f8c8b'
 CONTRACT_PROOF = {
     'proof_scope': (
-        'ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. '
+        'NativeContext.run_contract_binding connects the explicit edition/product/scope decision to '
+        'ExecutionView.Native.contract_binding and its selected original/compare gate in QLV3. '
         'CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. '
         'Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded '
         'artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning '
@@ -59,7 +61,8 @@ CONTRACT_PROOF = {
 }
 ENGINEERING_PURE_PROOF = {
     'proof_scope': (
-        'CheckedEngineeringPure.run_binding retains the actual QLV2 execution packet, the original QLV1 '
+        'NativeContext.run_engineering_pure_binding connects the explicit edition/product/scope decision to '
+        'CheckedEngineeringPure.run_binding, which retains the actual QLV3 execution packet, the original QLV1 '
         'body/request bytes, both freshly decoded graphs and the exact QDV1 comparison. '
         'Protocol.EngineeringPure.checkRetained_bound connects those decoded fields to one shared-work '
         'engineering computation. NativeEngineeringPureProtocol.run_meaning and run_reference_square '
@@ -84,8 +87,9 @@ ENGINEERING_PURE_PROOF = {
 }
 ENGINEERING_INSTRUMENT_PROOF = {
     'proof_scope': (
-        'CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding retain the actual '
-        'QLV2 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed '
+        'NativeContext.run_engineering_instrument_binding connects the explicit edition/product/scope decision to '
+        'CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding, which retain the actual '
+        'QLV3 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed '
         'request and exact QDV1 comparison. Protocol.EngineeringInstrument.checkRetained_bound connects '
         'them to one continuous-work engineering check. NativeEngineeringInstrumentProtocol.run_meaning '
         'binds both original bodies/dependencies, exact Kraus completeness, untruncated dimensions, complete '
@@ -114,7 +118,8 @@ ENGINEERING_INSTRUMENT_PROOF = {
 
 ENGINEERING_PURE_TENSOR_PROOF = {
     'proof_scope': (
-        'CheckedEngineeringPureTensor.run_binding retains the actual execution-only QLV2 packet, '
+        'NativeContext.run_engineering_tensor_binding connects the explicit edition/product/scope decision to '
+        'CheckedEngineeringPureTensor.run_binding, which retains the actual execution-only QLV3 packet, '
         'original parent body/request bytes and exact QDV1 comparison of the typed context and six '
         'freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these '
         'fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning '
@@ -139,7 +144,8 @@ ENGINEERING_PURE_TENSOR_PROOF = {
 }
 
 
-ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'CheckedEngineeringOpenQasm.run_binding retains the actual execution-only QLV2 packet, '
+ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'NativeContext.run_engineering_target_binding connects the explicit edition/product/scope decision to '
+                'CheckedEngineeringOpenQasm.run_binding, which retains the actual execution-only QLV3 packet, '
                 'original target body/request bytes and exact QDV1 comparison of the full typed context, '
                 'literal target bytes, independently decoded ordered word, generated actual graph and '
                 'freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the '
@@ -173,7 +179,7 @@ def path_rule(classification, boundaries, modes, sources, tests):
 
 
 # Reviewed declarations/dispatch markers, not a proof of the code they describe.
-# Every inventory boundary and every Main.nativeMode must have an explicit rule.
+# Every inventory boundary and every NativeContext.Mode must have an explicit rule.
 PATHS = {
     'raw-proposal': path_rule('untrusted-proposal', 'raw qirf-native-v029', '', [
         ('src/interchange/native.rs', ['pub struct Proposal', 'pub fn from_raw(']),
@@ -192,7 +198,7 @@ PATHS = {
         ('src/contract/meaning.rs', ['pub fn check(', 'FunctionEvidence::']),
         ('src/frontend/compile/mod.rs', ['pub fn compile_project_with_kernel(', 'pub fn check_project_with_kernel(']),
         ('src/frontend/compile/lower/function_contract.rs', ['fn function_contract_evidence(', 'FunctionEvidence::check_retained_with_kernel']),
-        ('src/bin/qleisli/source_plan.rs', ['fn raw_execute(', 'native::Kernel::new(kernel).accept(proposal.proposal())', 'proposal.validate_source_steps(&checked)']),
+        ('src/bin/qleisli/source_plan.rs', ['fn raw_execute(', 'native::Kernel::new(kernel, proposal.source().edition()).accept(proposal.proposal())', 'proposal.validate_source_steps(&checked)']),
         ('src/interchange/mod.rs', ['pub fn import(', 'pub fn convert(']),
         ('src/interop/openqasm.rs', ['pub fn import_openqasm3_with_kernel(']),
         ('lean-kernel/Cli/Validity.lean', ['Native.ordinary bytes']),
@@ -336,8 +342,19 @@ PATHS = {
         ('tests/interop.rs', 'ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase'),
         ('tests/interop.rs', 'ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order')]),
     'source-configuration': path_rule('configuration', 'source-edition-configuration', '', [
-        ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(']),
-    ], [('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution')]),
+        ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(',
+         'pub fn from_modules(', 'pub fn module_manifest(', 'fn validate_edition_context(', 'fn charge_manifest(']),
+        ('src/frontend/project/manifest.rs', ['pub fn select(', 'pub fn manifest(', 'load_anchored_with_manifest']),
+        ('src/frontend/project/edition.rs', ['pub struct EditionManifest', 'fn read_anchored(', 'fn capture(']),
+        ('src/edition.rs', ['pub enum Edition', 'impl FromStr for Edition']),
+        ('src/frontend/compile/mod.rs', ['project.validate_edition_context()']),
+    ], [('tests/review_v021.rs', 'grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution'),
+        ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits'),
+        ('tests/editions.rs', 'nested_sources_keep_their_own_original_manifest_association'),
+        ('tests/editions.rs', 'explicit_in_memory_project_has_no_fabricated_file_manifest'),
+        ('tests/editions.rs', 'retained_manifest_bytes_share_the_existing_aggregate_capacity_once'),
+        ('src/frontend/compile/mod.rs', 'source_preparation_rejects_a_substituted_edition_inventory'),
+        ('src/edition.rs', 'only_an_explicit_supported_identity_parses')]),
     'hierarchy-configuration': path_rule('configuration', 'hierarchy-inspect', '', [
         ('src/interchange/hierarchical.rs', ['pub fn new(']),
     ], [('tests/hierarchical_host.rs', 'native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes')]),
@@ -518,8 +535,8 @@ PATHS = {
         ('src/interchange/engineering_pure.rs', ['pub struct DyadicBound', 'pub struct EngineeringPureRequest',
          'pub struct EngineeringPureReport', 'pub fn check_with_kernel(', 'pub fn check_serialized_with_kernel(',
          'Arc::ptr_eq(&self, &decision.subject)']),
-        ('src/interchange/engineering_pure/runtime.rs', ['fn response(', 'qleisli.engineering-pure-native 1',
-         '"--engineering-pure-check"', '"engineering-checked", "execution"']),
+        ('src/interchange/engineering_pure/runtime.rs', ['fn invoke_bound(', 'Mode::EngineeringPure',
+         'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
         ('src/interchange/execution_view/finite/engineering_pure.rs', ['pub(in crate::interchange) fn complete(',
          '"engineering-pure-request"', 'actual.execution_view_graph().write(w.writer)',
          'ideal.execution_view_graph().write(w.writer)']),
@@ -560,8 +577,8 @@ PATHS = {
         ('src/interchange/engineering_instrument.rs', ['pub struct EngineeringInstrumentRequest',
          'pub struct EngineeringInstrumentReport', 'pub fn check_with_kernel(', 'pub fn check_serialized_with_kernel(',
          'Arc::ptr_eq(&self, &decision.subject)', 'const CLAIM_KIND: &str = "engineering-instrument-bound"']),
-        ('src/interchange/engineering_instrument/runtime.rs', ['fn response(', 'qleisli.engineering-instrument-native 1',
-         '"--qirf-engineering-instrument-native"', '"engineering-checked", "execution"']),
+        ('src/interchange/engineering_instrument/runtime.rs', ['fn invoke_bound(', 'Mode::EngineeringInstrument',
+         'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
         ('src/interchange/execution_view/finite/engineering_instrument.rs', ['pub(in crate::interchange) fn complete(',
          '"engineering-instrument-request", 14', 'actual.execution_view_graph().write(w.writer)',
          'expected.execution_view_graph().write(w.writer)']),
@@ -621,8 +638,8 @@ PATHS['engineering-pure-tensor-check'] = path_rule(
             'Arc::ptr_eq(&self, &decision.subject)',
             'const CLAIM_KIND: &str = "engineering-pure-tensor-bound"']),
         ('src/interchange/engineering_pure_tensor/runtime.rs', [
-            'fn response(', 'qleisli.engineering-pure-tensor-native 1',
-            '"--engineering-pure-tensor-check"', '"engineering-checked", "execution"']),
+            'fn invoke_bound(', 'Mode::EngineeringPureTensor',
+            'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
         ('src/interchange/execution_view/finite/engineering_pure_tensor.rs', [
             'pub(in crate::interchange) fn complete(', '"engineering-pure-tensor-request", 16',
             'program.execution_view_graph().write(w.writer)']),
@@ -672,10 +689,8 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'target::Decoded::new(target)?',
    'const CLAIM_KIND: &str = "engineering-target-instrument-bound"']),
  ('src/interchange/engineering_openqasm/runtime.rs',
-  ['fn response(',
-   'qleisli.engineering-openqasm-native 1',
-   '"--engineering-openqasm-check"',
-   '"engineering-checked", "execution"']),
+  ['fn invoke_bound(', 'Mode::EngineeringOpenQasm',
+   'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
  ('src/interchange/engineering_openqasm/target.rs',
   ['const MAX_TARGET_BYTES: usize = 1024', 'const MAX_TARGET_GATES: usize = 8', 'fn operation(']),
  ('src/interchange/execution_view/finite/engineering_openqasm.rs',
@@ -854,20 +869,81 @@ PATHS['hierarchy-qpe']['tests'].extend(
 )
 
 NATIVE_DISPATCH = {
-    '--qirf-native': 'QleisliKernel.Cli.runValidity',
-    '--qirf-contract': '(QleisliKernel.Cli.runValidity true)',
-    '--engineering-openqasm-check': 'QleisliKernel.Cli.runEngineeringOpenQasm',
-    '--engineering-pure-check': 'QleisliKernel.Cli.runEngineeringPure',
-    '--engineering-pure-tensor-check': 'QleisliKernel.Cli.runEngineeringPureTensor',
-    '--qirf-engineering-instrument-native': 'QleisliKernel.Cli.runEngineeringInstrument',
-    '--hierarchy-pending': 'QleisliKernel.Cli.runHierarchy',
-    '--hierarchy-request-pending': 'QleisliKernel.Cli.runHierarchyRequest',
-    '--hierarchy-fourier-pending': 'QleisliKernel.Cli.runHierarchyFourier',
-    '--instrument-pending': 'QleisliKernel.Cli.runInstrument',
-    '--qpe-instrument-pending': 'QleisliKernel.Cli.runQpeInstrument',
-    '--readout-check': 'QleisliKernel.Cli.runReadout',
-    '--preparation-check': 'QleisliKernel.Cli.runPreparation',
+    '--qirf-native': '.ordinary',
+    '--qirf-contract': '.contract',
+    '--engineering-openqasm-check': '.engineeringOpenQasm',
+    '--engineering-pure-check': '.engineeringPure',
+    '--engineering-pure-tensor-check': '.engineeringPureTensor',
+    '--qirf-engineering-instrument-native': '.engineeringInstrument',
+    '--hierarchy-pending': '(.hierarchy .inspect)',
+    '--hierarchy-request-pending': '(.hierarchy .request)',
+    '--hierarchy-fourier-pending': '(.hierarchy .fourier)',
+    '--instrument-pending': '(.hierarchy .instrument)',
+    '--qpe-instrument-pending': '(.hierarchy .qpeInstrument)',
+    '--readout-check': '.readout',
+    '--preparation-check': '.preparation',
 }
+
+
+def check_native_dispatch(root):
+    """Review the complete current tables and their actual Main adapter.
+
+    This recognizes one explicit source shape, not arbitrary Lean semantics.
+    Extra clauses (including aliases without `--`), accepting defaults and
+    changed adapters require review even if source digests were refreshed.
+    """
+    def require(value, message):
+        if not value:
+            raise ValueError(message)
+
+    text = (root/'lean-kernel/Protocol/NativeContext.lean').read_text()
+
+    def equations(header, end):
+        require(text.count(header) == 1 and text.count(end) == 1,
+                'unreviewed native mode table structure')
+        body = text.split(header, 1)[1].split(end, 1)[0]
+        return [' '.join(line.split()) for line in body.splitlines() if line.strip()]
+
+    parsed = equations('def Mode.parse : String → Option Mode',
+                       'theorem Mode.parse_name ')
+    expected = [f'| "{flag}" => some {mode}' for flag, mode in NATIVE_DISPATCH.items()]
+    require(len(parsed) == len(expected) + 1 and parsed[-1] == '| _ => none'
+            and sorted(parsed[:-1]) == sorted(expected),
+            'unreviewed native mode coverage')
+    names = equations('def Mode.name : Mode → String',
+                      'def Mode.parse : String → Option Mode')
+    expected = [f'| {mode.removeprefix("(").removesuffix(")")} => "{flag}"'
+                for flag, mode in NATIVE_DISPATCH.items()]
+    require(sorted(names) == sorted(expected), 'unreviewed native mode names')
+
+    main = (root/'lean-kernel/Main.lean').read_text()
+    header = 'def main (args : List String) : IO UInt32 :='
+    require(main.count(header) == 1, 'unreviewed native dispatch structure')
+    body = main.split(header, 1)[1]
+    # Ignore only complete comment lines; do not erase `--` inside flag literals.
+    body = '\n'.join(line for line in body.splitlines()
+                     if not line.lstrip().startswith('--'))
+    expected = '''
+      match args with
+      | [mode, version] =>
+        match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
+        | some selected => QleisliKernel.Cli.runNativeContext selected version
+        | none => QleisliKernel.Cli.run mode version
+      | [mode] =>
+        match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
+        | some selected => QleisliKernel.Cli.runNativeContext selected ""
+        | none => QleisliKernel.Cli.usage
+      | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
+      | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement
+      | ["--layout", artifact, requirement] => QleisliKernel.Cli.runLayout artifact requirement
+      | ["--phase-dag", artifact, requirement] => QleisliKernel.Cli.runDag artifact requirement
+      | _ => QleisliKernel.Cli.usage
+    '''
+    require(textwrap.dedent(body).strip() == textwrap.dedent(expected).strip(),
+            'unreviewed native dispatch adapter')
+    return set(NATIVE_DISPATCH)
+
+
 for _id, _mode, _parser, _check, _test in [
     ('readout-component', '--readout-check', 'parseReadout', 'Readout.check', ('scripts/test_hierarchical_readout.py', 'test_native_branches')),
     ('preparation-component', '--preparation-check', 'parsePreparation', 'Preparation.check', ('scripts/test_hierarchical_preparation.py', 'test_zero_reference')),
@@ -1278,6 +1354,91 @@ ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/te
                                     'native_tensor_composes_component_bounds_without_parent_frobenius')
 
 ROUTES['engineering-openqasm'] = ('src/interchange/engineering_openqasm/tests.rs', 'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering')
+ROUTES['source-edition-configuration'] = ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits')
+
+
+PATHS['ordinary-acceptance']['source_bindings'].extend([
+    dict(path='src/frontend/compile/mod.rs', markers=[
+        'impl Project {', 'pub fn check_report_with_kernel(', 'pub fn compile_with_kernel(',
+        'kernel.edition() != project.edition()']),
+    dict(path='src/interchange/native.rs', markers=[
+        'pub fn selected(edition: Edition)', 'pub fn new(executable: impl AsRef<Path>, edition: Edition)',
+        'program.edition() != self.edition']),
+])
+PATHS['source-configuration']['source_bindings'].append(dict(
+    path='src/frontend/specialize.rs', markers=[
+        'pub fn edition(', 'pub fn module_manifest(', 'SourceFileSelection::select(&path)',
+        '"manifest changed during source loading"', '"mixed captured constitutional editions"']))
+PATHS['source-configuration']['tests'].append(dict(
+    path='tests/editions.rs', test='retained_project_checks_the_captured_manifest_without_later_reselection'))
+PATHS['foreign-export']['source_bindings'].extend([
+    dict(path='python/qleisli/__init__.py', markers=[
+        'def __init__(self, executable=None, *, edition,', 'edition: str',
+        'if selected != self.edition:', 'f"--expect-edition={selected}"',
+        'f"--edition={selected}"', 'edition=self.edition']),
+    dict(path='src/bin/qleisli/interop.rs', markers=[
+        '"--expect-edition="', 'project.edition()', 'expected_edition']),
+])
+PATHS['foreign-export']['tests'].extend([
+    dict(path='scripts/test_interop_native.py', test='test_source_edition_expectation_never_overrides_the_manifest'),
+    dict(path='scripts/test_interop_native.py', test='test_python_source_program_keeps_captured_manifest_context'),
+    dict(path='scripts/test_python_host.py', test='test_edition_is_required_concrete_and_never_selected_by_process'),
+    dict(path='scripts/test_python_host.py', test='test_source_expectation_and_raw_selection_are_distinct_arguments'),
+])
+
+# Main routes all native modes through this common adapter. The retained older
+# IO modules above remain in the source/audit inventory; their existence is not
+# evidence that Main dispatches through them.
+for _rule in PATHS.values():
+    if _rule['native_modes']:
+        _rule['source_bindings'].extend([
+            dict(path='lean-kernel/Cli/NativeContext.lean', markers=[
+                'def runNativeContext ', 'Protocol.NativeContext.run mode requestedProduct bytes',
+                'Protocol.NativeContext.reply mode work result left']),
+            dict(path='lean-kernel/Protocol/NativeContext.lean', markers=[
+                'def run ', 'guard (requestedProduct == productVersion) .version\n'
+                '  let input ← lift (Packet.read bytes)\n'
+                '  let value ← check mode bytes\n'
+                '  guard (decide (scope mode value = input.scope)) .packet\n'
+                '  return ⟨input.edition,input.scope,value⟩',
+                'theorem run_binding ', 'theorem run_edition ', 'def Mode.status ',
+                '"qleisli.native-result 3",mode.status,toString decision.edition.code,productVersion']),
+            dict(path='lean-kernel/Protocol/ExecutionView/Packet.lean', markers=[
+                'def header ', 'bytes.extract 0 4 != "QLV3".toUTF8',
+                'else if u32 bytes 4 != 2026 then .error .edition', 'theorem read_edition ']),
+        ])
+        _rule['tests'].extend([
+            dict(path='src/interchange/native_context.rs',
+                 test='every_mode_requires_its_own_explicit_context_and_claim_class'),
+            dict(path='src/interchange/native_context.rs',
+                 test='failures_have_no_success_context_and_legacy_frames_never_fall_back'),
+        ])
+    if any(mode not in {'--readout-check', '--preparation-check'}
+           for mode in _rule['native_modes']):
+        _rule['source_bindings'].append(dict(path='src/interchange/native_context.rs', markers=[
+            'pub(super) struct CheckedContext', 'pub(super) fn parse(',
+            'fields[1] != mode.status()', 'fields[2] != edition.as_str()',
+            'fields[3] != env!("CARGO_PKG_VERSION")', 'fields[4] != mode.argument()',
+            'fields[5] != scope.name()', '!mode.permits(scope)',
+        ]))
+
+for _id, _binding in {
+    'ordinary-acceptance': 'run_ordinary_root_safe',
+    'contract-acceptance': 'run_contract_binding',
+    'hierarchy-inspect': 'run_hierarchy_binding',
+    'hierarchy-request': 'run_hierarchy_binding',
+    'hierarchy-fourier': 'run_hierarchy_binding',
+    'hierarchy-instrument': 'run_hierarchy_binding',
+    'hierarchy-qpe': 'run_hierarchy_binding',
+    'engineering-pure-check': 'run_engineering_pure_binding',
+    'engineering-instrument-check': 'run_engineering_instrument_binding',
+    'engineering-pure-tensor-check': 'run_engineering_tensor_binding',
+    'engineering-openqasm-check': 'run_engineering_target_binding',
+    'readout-component': 'run_readout_binding',
+    'preparation-component': 'run_preparation_binding',
+}.items():
+    PATHS[_id]['source_bindings'].append(dict(
+        path='lean-kernel/Protocol/NativeContext/Bindings.lean', markers=['theorem ' + _binding + ' ']))
 
 
 def surface_identity(inventory):
@@ -1374,17 +1535,10 @@ def check(root, data=None, inventory=None):
         for test in rule['tests']:
             require((root/test['path']).is_file() and test['test'] in test_names(root/test['path']),
                     'missing production path regression: ' + test['path'] + ':' + test['test'])
-    # The entire explicit native dispatch list must be accounted for. Unknown
-    # additions and removals fail even when no public boundary changed yet.
-    main = (root/'lean-kernel/Main.lean').read_text()
-    require('private def nativeMode ' in main and '\ndef main ' in main,
-            'unreviewed native dispatch structure')
-    dispatch = main.split('private def nativeMode ', 1)[1].split('\ndef main ', 1)[0]
-    modes = re.findall(r'^\s*\| "(--[^"\n]+)" => ([^\n]+)', dispatch, re.M)
+    # Unknown dispatch additions/removals fail even before a public API changes.
+    modes = check_native_dispatch(root)
     reviewed_modes = [mode for rule in PATHS.values() for mode in rule['native_modes']]
-    require(len(modes) == len(dict(modes))
-            and dict(modes) == {mode: 'some ' + handler for mode, handler in NATIVE_DISPATCH.items()}
-            and set(dict(modes)) == set(reviewed_modes),
+    require(modes == set(reviewed_modes),
             'unreviewed native mode coverage')
     for row in entries:
         require(row['entry_points'] == boundaries[row['id']]['entry_points'], 'unreviewed public entry point')

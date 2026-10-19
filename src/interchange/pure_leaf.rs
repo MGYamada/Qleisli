@@ -159,13 +159,14 @@ impl CheckedPureLeaf {
 /// Freshly check the whole graph, original pure body and exact rectangular
 /// equation, including its Gram identity. The caller shares a bounded budget.
 pub fn check_pure(
+    edition: crate::edition::Edition,
     payload: &[u8],
     boundary: &PureBoundary,
     meaning: &Matrix,
     budget: &mut Budget,
 ) -> Result<CheckedPureLeaf> {
     check_with_kernel(
-        &super::native::Kernel::selected()?,
+        &super::native::Kernel::selected(edition)?,
         payload,
         boundary,
         meaning,

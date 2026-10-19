@@ -8,6 +8,9 @@ use std::fmt;
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
+
+use crate::edition::Edition;
 
 use super::ast::{self, FnKind, Span};
 use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
@@ -18,6 +21,7 @@ mod edition;
 mod manifest;
 mod source_file;
 
+pub use edition::EditionManifest;
 pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
 
 pub(super) fn check_bundled_manifest() -> Result<(), Diagnostic> {
@@ -61,7 +65,7 @@ impl BundledStd {
 
     /// Constitutional edition verified by the embedded manifest gate.
     pub fn edition(&self) -> &'static str {
-        super::CURRENT_EDITION
+        Edition::E2026.as_str()
     }
 
     /// Exact embedded manifest text, without reserialization or normalization.
@@ -82,7 +86,9 @@ impl BundledStd {
 
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
 /// most max(64, project_bytes / 1024) directory entries, including empty files.
-/// Entry accounting is separate from source bytes. The legacy adapter is
+/// Retained manifest text shares the aggregate project byte budget; each
+/// actually read manifest is charged once, independently of the source-file cap.
+/// Entry accounting is separate from input bytes. The legacy adapter is
 /// explicit; parser, evidence and lowering budgets are independent of this.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SourcePolicy {
@@ -108,6 +114,16 @@ struct SourceBudget {
 }
 
 impl SourceBudget {
+    fn charge_manifest(&mut self, path: &Path, bytes: u64) -> Result<(), LoadFailure> {
+        if let SourcePolicy::Bounded { project_bytes, .. } = self.policy {
+            let total = self.used.checked_add(bytes)
+                .filter(|total| *total <= project_bytes)
+                .ok_or_else(|| Self::limit(path, format!("project exceeds {project_bytes}-byte aggregate source and manifest limit")))?;
+            self.used = total;
+        }
+        Ok(())
+    }
+
     fn limit(path: &Path, message: impl Into<String>) -> LoadFailure {
         let mut failure = error(path, Span::default(), message);
         failure.code = "limit";
@@ -197,24 +213,65 @@ impl SourceBudget {
 }
 
 /// Read a single documentation source with explicit byte limits. Unlike project
-/// loading this does not include bundled modules, because none are loaded.
+/// loading this does not include bundled modules, because none are loaded. The
+/// retained selecting manifest still shares the aggregate input budget.
 pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic> {
-    // The single-file command accepts ordinary parent aliases such as /tmp on
-    // macOS. Resolve them before opening; never resolve the final source link.
-    let parent = path
-        .parent()
-        .filter(|p| !p.as_os_str().is_empty())
-        .unwrap_or(Path::new("."));
-    let resolved = fs::canonicalize(parent)
-        .map_err(|failure| io_error(path, failure).into_diagnostic())?
-        .join(path.file_name().ok_or_else(|| {
-            error(path, Span::default(), "source path has no file name").into_diagnostic()
-        })?);
-    edition::check_directory(resolved.parent().expect("resolved file has a parent"))
-        .map_err(LoadFailure::into_diagnostic)?;
-    SourceBudget { policy, used: 0 }
-        .read(&resolved)
-        .map_err(LoadFailure::into_diagnostic)
+    SourceFileSelection::select(path)?.read(policy)
+}
+
+/// One selected source path and its actual validated manifest. Selection is
+/// configuration/provenance only; it is not an atomic content snapshot.
+pub(crate) struct SourceFileSelection {
+    path: PathBuf,
+    manifest: EditionManifest,
+}
+
+impl SourceFileSelection {
+    pub(crate) fn select(path: &Path) -> Result<Self, Diagnostic> {
+        // The single-file command accepts ordinary parent aliases such as /tmp on
+        // macOS. Resolve them before opening; never resolve the final source link.
+        let parent = path
+            .parent()
+            .filter(|p| !p.as_os_str().is_empty())
+            .unwrap_or(Path::new("."));
+        let resolved = fs::canonicalize(parent)
+            .map_err(|failure| io_error(path, failure).into_diagnostic())?
+            .join(path.file_name().ok_or_else(|| {
+                error(path, Span::default(), "source path has no file name").into_diagnostic()
+            })?);
+        let manifest =
+            edition::read_directory(resolved.parent().expect("resolved file has a parent"))
+                .map_err(LoadFailure::into_diagnostic)?;
+        Ok(Self {
+            path: resolved,
+            manifest,
+        })
+    }
+
+    pub(crate) fn manifest(&self) -> &EditionManifest {
+        &self.manifest
+    }
+
+    pub(crate) fn read(&self, policy: SourcePolicy) -> Result<String, Diagnostic> {
+        let mut budget = SourceBudget { policy, used: 0 };
+        // Keep the initial sentinel-overflow refusal before retained manifest
+        // bytes reduce the remaining allowance.
+        if budget
+            .allowance(&self.path)
+            .map_err(LoadFailure::into_diagnostic)?
+            == Some(u64::MAX)
+        {
+            return Err(
+                SourceBudget::limit(&self.path, "source read limit overflow").into_diagnostic(),
+            );
+        }
+        budget
+            .charge_manifest(self.manifest.path(), self.manifest.source().len() as u64)
+            .map_err(LoadFailure::into_diagnostic)?;
+        budget
+            .read(&self.path)
+            .map_err(LoadFailure::into_diagnostic)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -256,6 +313,18 @@ pub struct Project {
     /// Local modules use root-relative names; bundled `std` source modules
     /// follow the same checks. Sealed quantum/observe primitives have no AST.
     pub modules: BTreeMap<String, SourceModule>,
+    pub(crate) edition_context: ProjectEdition,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) enum ProjectEdition {
+    Explicit(Edition),
+    Files {
+        root: PathBuf,
+        selected: Arc<EditionManifest>,
+        sources: BTreeMap<PathBuf, Arc<EditionManifest>>,
+        modules: BTreeMap<String, (PathBuf, ModuleOrigin)>,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -352,6 +421,103 @@ fn io_error(path: &Path, failure: std::io::Error) -> LoadFailure {
 }
 
 impl Project {
+    /// Construct untrusted in-memory modules with an explicit constitutional
+    /// selection. Compilation reconstructs their source judgments afresh.
+    /// This grants no manifest provenance, native acceptance or execution handle.
+    pub fn from_modules(
+        root: PathBuf,
+        modules: BTreeMap<String, SourceModule>,
+        edition: Edition,
+    ) -> Self {
+        Self {
+            root,
+            modules,
+            edition_context: ProjectEdition::Explicit(edition),
+        }
+    }
+
+    pub fn edition(&self) -> Edition {
+        match &self.edition_context {
+            ProjectEdition::Explicit(edition) => *edition,
+            ProjectEdition::Files { selected, .. } => selected.edition(),
+        }
+    }
+
+    /// Exact requested manifest associated with an originally loaded local
+    /// source. In-memory and embedded modules have no user-file manifest claim.
+    pub fn module_manifest(&self, name: &str) -> Option<&EditionManifest> {
+        let module = self.modules.get(name)?;
+        if module.origin != ModuleOrigin::Local {
+            return None;
+        }
+        match &self.edition_context {
+            ProjectEdition::Explicit(_) => None,
+            ProjectEdition::Files {
+                root,
+                sources,
+                modules,
+                ..
+            } if root == &self.root
+                && module.name == name
+                && modules.get(name).is_some_and(|(path, origin)| {
+                    path == &module.path && origin == &module.origin
+                }) =>
+            {
+                sources.get(&module.path).map(AsRef::as_ref)
+            }
+            ProjectEdition::Files { .. } => None,
+        }
+    }
+
+    pub(super) fn validate_edition_context(&self) -> Result<(), LoadFailure> {
+        if let ProjectEdition::Files {
+            root,
+            selected,
+            sources,
+            modules,
+        } = &self.edition_context
+        {
+            if self.root != *root {
+                return Err(error(
+                    &self.root,
+                    Span::default(),
+                    "source root differs from its captured edition context",
+                ));
+            }
+            if self.modules.len() != modules.len()
+                || self.modules.iter().any(|(name, module)| {
+                    module.name != *name
+                        || !modules.get(name).is_some_and(|(path, origin)| {
+                            path == &module.path && origin == &module.origin
+                        })
+                })
+            {
+                return Err(error(
+                    &self.root,
+                    Span::default(),
+                    "source inventory differs from its captured edition context",
+                ));
+            }
+            for module in self
+                .modules
+                .values()
+                .filter(|m| m.origin == ModuleOrigin::Local)
+            {
+                if sources
+                    .get(&module.path)
+                    .is_none_or(|manifest| manifest.edition() != selected.edition())
+                {
+                    return Err(error(
+                        &module.path,
+                        Span::default(),
+                        "source has no matching captured edition context",
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn public_name_hint(&self, name: &str, excluded: &str) -> String {
         if let Some(hint) = super::resolve::retired_public_name_hint(excluded, name) {
             return hint.to_owned();
@@ -425,6 +591,15 @@ impl Project {
         directory: &fs::File,
         policy: SourcePolicy,
     ) -> Result<Self, LoadFailure> {
+        Self::load_anchored_with_manifest(root, directory, policy, None)
+    }
+
+    fn load_anchored_with_manifest(
+        root: &Path,
+        directory: &fs::File,
+        policy: SourcePolicy,
+        selected: Option<Arc<EditionManifest>>,
+    ) -> Result<Self, LoadFailure> {
         let mut budget = SourceBudget { policy, used: 0 };
         budget.allowance(root)?;
         #[cfg(unix)]
@@ -445,7 +620,8 @@ impl Project {
         let root = root.to_path_buf();
         edition::check_bundled()?;
         let mut files = Vec::new();
-        collect_qli_files(&root, directory, &mut budget, &mut files)?;
+        let mut edition_context =
+            collect_qli_files(&root, directory, &mut budget, &mut files, selected)?;
         files.sort_by(|a, b| a.0.cmp(&b.0));
 
         let mut collection = source::Builder::default();
@@ -471,7 +647,7 @@ impl Project {
 
         // Consume the collection into the public mutable compatibility view;
         // compilation must inspect that view afresh, not a stale parallel cache.
-        let modules = collection
+        let modules: BTreeMap<_, _> = collection
             .finish()
             .into_entries()
             .map(|entry| {
@@ -491,7 +667,20 @@ impl Project {
                 (name, module)
             })
             .collect();
-        let mut project = Self { root, modules };
+        if let ProjectEdition::Files {
+            modules: retained, ..
+        } = &mut edition_context
+        {
+            *retained = modules
+                .iter()
+                .map(|(name, module)| (name.clone(), (module.path.clone(), module.origin)))
+                .collect();
+        }
+        let mut project = Self {
+            root,
+            modules,
+            edition_context,
+        };
         project.resolve_imports()?;
         Ok(project)
     }
@@ -593,24 +782,57 @@ fn collect_qli_files(
     anchor: &fs::File,
     budget: &mut SourceBudget,
     files: &mut Vec<(PathBuf, String)>,
-) -> Result<(), LoadFailure> {
+    selected: Option<Arc<EditionManifest>>,
+) -> Result<ProjectEdition, LoadFailure> {
     struct Directory {
         path: PathBuf,
         anchor: fs::File,
         entries: std::vec::IntoIter<std::ffi::OsString>,
+        manifest: Arc<EditionManifest>,
     }
     fn enter(
         path: PathBuf,
         anchor: fs::File,
         root: bool,
-        policy: SourcePolicy,
+        budget: &mut SourceBudget,
         entries_used: &mut u64,
+        inherited: Option<Arc<EditionManifest>>,
     ) -> Result<Directory, LoadFailure> {
-        edition::check_anchored(&path, &anchor, root)?;
+        let manifest = match edition::read_anchored(&path, &anchor)? {
+            Some(manifest) => {
+                budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+                Arc::new(manifest)
+            }
+            None => match &inherited {
+                Some(manifest) => Arc::clone(manifest),
+                None if root => {
+                    let manifest = edition::read_directory(path.parent().unwrap_or(&path))?;
+                    budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+                    Arc::new(manifest)
+                }
+                None => {
+                    return Err(error(
+                        &path,
+                        Span::default(),
+                        "missing inherited edition context",
+                    ));
+                }
+            },
+        };
+        if inherited
+            .as_ref()
+            .is_some_and(|parent| parent.edition() != manifest.edition())
+        {
+            return Err(error(
+                manifest.path(),
+                Span::default(),
+                "nested manifest has a different constitutional edition",
+            ));
+        }
         let mut entries = Vec::new();
         for entry in source_file::entries(&anchor, &path).map_err(|e| io_error(&path, e))? {
             let entry = entry.map_err(|e| io_error(&path, e))?;
-            if let SourcePolicy::Bounded { project_bytes, .. } = policy {
+            if let SourcePolicy::Bounded { project_bytes, .. } = budget.policy {
                 let maximum = (project_bytes / 1024).max(64);
                 *entries_used += 1;
                 if *entries_used > maximum {
@@ -627,16 +849,23 @@ fn collect_qli_files(
             path,
             anchor,
             entries: entries.into_iter(),
+            manifest,
         })
     }
     let mut entries_used = 0;
+    if let Some(manifest) = &selected {
+        budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+    }
     let directory = enter(
         root.to_owned(),
         anchor.try_clone().map_err(|e| io_error(root, e))?,
         true,
-        budget.policy,
+        budget,
         &mut entries_used,
+        selected.clone(),
     )?;
+    let selected = selected.unwrap_or_else(|| Arc::clone(&directory.manifest));
+    let mut sources = BTreeMap::new();
     // Hold only the active ancestor chain, not one handle per sibling directory.
     // Discovery is iterative so directory depth cannot exhaust the Rust stack.
     let mut stack = vec![directory];
@@ -659,18 +888,35 @@ fn collect_qli_files(
             source_file::Kind::Directory => {
                 let child = source_file::child(&directory.anchor, &directory.path, &name, true)
                     .map_err(|e| io_error(&path, e))?;
-                stack.push(enter(path, child, false, budget.policy, &mut entries_used)?);
+                let inherited = Arc::clone(&directory.manifest);
+                stack.push(enter(
+                    path,
+                    child,
+                    false,
+                    budget,
+                    &mut entries_used,
+                    Some(inherited),
+                )?);
             }
             source_file::Kind::File if path.extension().is_some_and(|ext| ext == "qli") => {
                 let file = source_file::child(&directory.anchor, &directory.path, &name, false)
                     .map_err(|e| io_error(&path, e))?;
                 let source = budget.read_open(&path, file)?;
+                sources.insert(path.clone(), Arc::clone(&directory.manifest));
                 files.push((path, source));
             }
-            _ => {} // QLT inherits the edition checked once above.
+            source_file::Kind::File if path.extension().is_some_and(|ext| ext == "qlt") => {
+                sources.insert(path, Arc::clone(&directory.manifest));
+            }
+            _ => {}
         }
     }
-    Ok(())
+    Ok(ProjectEdition::Files {
+        root: root.into(),
+        selected,
+        sources,
+        modules: BTreeMap::new(),
+    })
 }
 
 fn local_module_name(root: &Path, path: &Path) -> Result<String, LoadFailure> {

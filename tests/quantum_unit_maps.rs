@@ -28,7 +28,11 @@ fn source(name: &str) -> String {
     ))
 }
 fn parsed(text: &str) -> ParsedProgram {
-    let original = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let original = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     let cloned = original.clone();
     drop(original);
     assert_eq!(cloned.source("main"), Some(text));
@@ -43,14 +47,17 @@ fn elaborate(text: &str, entry: &str) -> ElaboratedProgram {
 }
 fn check_raw_steps(graph: &ElaboratedProgram) {
     let raw = graph.lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(raw.proposal())
         .unwrap();
     raw.validate_source_steps(&accepted).unwrap();
 }
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 fn limits() -> ExecutionLimits {
     ExecutionLimits {
@@ -397,7 +404,7 @@ fn exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients() {
             &input(0),
         );
         let raw = graph.lower_raw().unwrap();
-        let native = native::Kernel::selected().unwrap();
+        let native = native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
         let accepted = native.accept(raw.proposal()).unwrap();
         raw.validate_source_steps(&accepted).unwrap();
         let identity =
@@ -490,6 +497,7 @@ fn scalar_arguments_execute_once_and_finish_does_not_erase_phase() {
             let leaf = serialized.leaf();
             assert_eq!(leaf.boundary().signature(), &BasisType::Unit);
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 leaf.payload(),
                 leaf.boundary(),
                 &Matrix::new(1, 1, vec![Exact::phase(1)]).unwrap(),
@@ -709,8 +717,11 @@ fn isolated_wrong_types_and_arities_reject_before_argument_evaluation() {
         ),
     ] {
         let text = format!(" {declaration}");
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         located(&error, &text, code);
         if code == "static" {
             assert!(error.message().contains("static argument arity"));
@@ -729,8 +740,11 @@ fn every_isolated_owner_and_unused_zero_iteration_body_is_checked() {
         "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { qfor static k in 0..0 carry r=q { let ()=finish(r); yield r; } }",
     ] {
         let text = format!(" {declaration}");
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         located(&error, &text, "ownership");
     }
 }
@@ -738,7 +752,11 @@ fn every_isolated_owner_and_unused_zero_iteration_body_is_checked() {
 #[test]
 fn effects_are_not_hidden_by_the_ordinary_unit_argument_or_result() {
     let text = study("effect-violation");
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.clone())]),
+    )
+    .unwrap_err();
     located(&error, &text, "effect");
     let graph = elaborate(&study("observing-argument"), "main::f");
     let root = &graph.definitions()[graph.root()];
@@ -821,12 +839,15 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
         ("Q<(Bit,Unit)>", "(x,())", "x"),
     ] {
         let identity = format!("pub unitary fn f(q:{input})->{input}{{q}}");
-        let graph = ParsedProgram::parse(BTreeMap::from([("main".into(), identity)]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let graph = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), identity)]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         let body = &graph.definitions()[graph.root()];
         assert_eq!(body.inputs()[0].identity(), body.output().identity());
         assert!(body.output().fields().is_empty());
@@ -838,12 +859,15 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
             format!("pub unitary fn f(q:{input})->Q<Bit>{{basis q as {pattern} {{ {output} }}}}");
         // The explicit map consumes and returns an owner with a different
         // exact tree. Identity passage above performs no such conversion.
-        let graph = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let graph = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         let body = &graph.definitions()[graph.root()];
         assert_ne!(body.inputs()[0].ty(), body.output().ty());
         assert_ne!(body.inputs()[0].identity(), body.output().identity());
@@ -867,7 +891,7 @@ fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
     let text = " pub unitary fn main()->Q<Unit>{finish(global_phase_eighth(unit(())));unit(())}";
     let graph = elaborate(text, "main::main");
     let raw = graph.lower_raw().unwrap();
-    let native = native::Kernel::selected().unwrap();
+    let native = native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let accepted = native.accept(raw.proposal()).unwrap();
     raw.validate_source_steps(&accepted).unwrap();
     assert_eq!(accepted.raw().declared_effect, Effect::Unitary);
@@ -951,7 +975,7 @@ fn raw_unit_maps_preserve_controlled_scalar_interference_in_both_source_paths() 
     let text = "use std::state::init0;unitary fn scalar(q:Q<Unit>)->Q<Unit>{unit(finish(global_phase_eighth(q)))}pub observe fn main()->Bit{let(c,u)=controlled(power(scalar,4))(h(init0()),unit(()));finish(u);measure_z(h(c))}";
     let finite = compile_project(&common::SourceRoot::new(text).0).unwrap();
     let raw = elaborate(text, "main::main").lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(raw.proposal())
         .unwrap();

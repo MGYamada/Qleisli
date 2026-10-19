@@ -54,6 +54,7 @@ impl EngineeringOpenQasmRequest {
 
 #[derive(Debug)]
 struct Subject {
+    edition: crate::edition::Edition,
     actual: target::Decoded,
     ideal: AcceptedProgram,
     request: EngineeringOpenQasmRequest,
@@ -63,6 +64,7 @@ struct Subject {
 
 #[derive(Debug)]
 struct Decision {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
@@ -85,11 +87,15 @@ struct Decision {
 /// ```
 #[derive(Debug)]
 pub struct EngineeringOpenQasmReport {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
 
 impl EngineeringOpenQasmReport {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.context.edition()
+    }
     pub fn target_bytes(&self) -> &[u8] {
         self.subject.actual.original()
     }
@@ -154,9 +160,16 @@ impl Subject {
         for bytes in [ideal.artifact(), request_bytes.as_ref()] {
             check_input(bytes)?;
         }
+        if ideal.edition() != kernel.edition() {
+            return Err(Error::new(
+                "edition",
+                "engineering inputs belong to a different edition",
+            ));
+        }
         let checker = std::fs::canonicalize(kernel.checker_path())
             .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
         Ok(Arc::new(Self {
+            edition: kernel.edition(),
             actual,
             ideal: ideal.clone(),
             request: request.clone(),
@@ -183,6 +196,7 @@ impl Subject {
             &self.ideal,
         )?;
         let (packet, scope) = super::native_packet::encode(
+            self.edition,
             &original,
             Some(super::native_packet::View {
                 graph: &graph,
@@ -198,13 +212,14 @@ impl Subject {
     }
 
     fn bind(self: Arc<Self>, decision: Decision) -> Result<EngineeringOpenQasmReport> {
-        if !Arc::ptr_eq(&self, &decision.subject) {
+        if !Arc::ptr_eq(&self, &decision.subject) || decision.context.edition() != self.edition {
             return Err(Error::new(
                 "kernel",
                 "OpenQASM engineering decision belongs to a different subject",
             ));
         }
         Ok(EngineeringOpenQasmReport {
+            context: decision.context,
             subject: self,
             exact_work: decision.exact_work,
         })
@@ -224,10 +239,11 @@ pub fn check_with_kernel(
 }
 
 fn submit(subject: Arc<Subject>) -> Result<EngineeringOpenQasmReport> {
-    let exact_work = runtime::check(&subject.checker, subject.packet()?)?;
+    let native = runtime::check(&subject.checker, subject.packet()?, subject.edition)?;
     let decision = Decision {
         subject: Arc::clone(&subject),
-        exact_work,
+        exact_work: native.exact_work,
+        context: native.context,
     };
     subject.bind(decision)
 }
@@ -258,7 +274,7 @@ pub fn check(
     ideal: &AcceptedProgram,
     request: &EngineeringOpenQasmRequest,
 ) -> Result<EngineeringOpenQasmReport> {
-    check_with_kernel(&Kernel::selected()?, target, ideal, request)
+    check_with_kernel(&Kernel::selected(ideal.edition())?, target, ideal, request)
 }
 
 fn check_input(bytes: &[u8]) -> Result<()> {

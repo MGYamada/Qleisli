@@ -83,6 +83,7 @@ impl EngineeringPureTensorRequest {
 /// parent ideal, left actual, left ideal, right actual, right ideal.
 #[derive(Debug)]
 struct Subject {
+    edition: crate::edition::Edition,
     programs: [AcceptedProgram; 6],
     request: EngineeringPureTensorRequest,
     request_bytes: Arc<[u8]>,
@@ -91,6 +92,7 @@ struct Subject {
 
 #[derive(Debug)]
 struct Decision {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
@@ -110,11 +112,15 @@ struct Decision {
 /// ```
 #[derive(Debug)]
 pub struct EngineeringPureTensorReport {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
 
 impl EngineeringPureTensorReport {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.context.edition()
+    }
     /// Original bytes in the fixed order parent actual/ideal, left
     /// actual/ideal, right actual/ideal; never a re-encoded graph.
     pub fn artifacts(&self) -> [&[u8]; 6] {
@@ -190,9 +196,16 @@ impl Subject {
         {
             check_input(bytes)?;
         }
+        if programs.iter().any(|p| p.edition() != kernel.edition()) {
+            return Err(Error::new(
+                "edition",
+                "engineering inputs belong to a different edition",
+            ));
+        }
         let checker = std::fs::canonicalize(kernel.checker_path())
             .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
         Ok(Arc::new(Self {
+            edition: kernel.edition(),
             programs: programs.map(Clone::clone),
             request: request.clone(),
             request_bytes,
@@ -214,6 +227,7 @@ impl Subject {
             self.programs.each_ref(),
         )?;
         let (packet, scope) = super::native_packet::encode(
+            self.edition,
             &original,
             Some(super::native_packet::View {
                 graph: &graph,
@@ -227,13 +241,14 @@ impl Subject {
     }
 
     fn bind(self: Arc<Self>, decision: Decision) -> Result<EngineeringPureTensorReport> {
-        if !Arc::ptr_eq(&self, &decision.subject) {
+        if !Arc::ptr_eq(&self, &decision.subject) || decision.context.edition() != self.edition {
             return Err(Error::new(
                 "kernel",
                 "engineering tensor decision belongs to a different subject",
             ));
         }
         Ok(EngineeringPureTensorReport {
+            context: decision.context,
             subject: self,
             exact_work: decision.exact_work,
         })
@@ -252,10 +267,11 @@ pub fn check_with_kernel(
 }
 
 fn submit(subject: Arc<Subject>) -> Result<EngineeringPureTensorReport> {
-    let exact_work = runtime::check(&subject.checker, subject.packet()?)?;
+    let native = runtime::check(&subject.checker, subject.packet()?, subject.edition)?;
     let decision = Decision {
         subject: Arc::clone(&subject),
-        exact_work,
+        exact_work: native.exact_work,
+        context: native.context,
     };
     subject.bind(decision)
 }
@@ -291,7 +307,7 @@ pub fn check(
     programs: [&AcceptedProgram; 6],
     request: &EngineeringPureTensorRequest,
 ) -> Result<EngineeringPureTensorReport> {
-    check_with_kernel(&Kernel::selected()?, programs, request)
+    check_with_kernel(&Kernel::selected(programs[0].edition())?, programs, request)
 }
 
 fn check_input(bytes: &[u8]) -> Result<()> {

@@ -143,7 +143,7 @@ def test_zero_reference(rows, results):
 
 def test_preparation_transport(rows, results, kernel):
     for row in rows:
-        observed = inspect(kernel, 'preparation', encode_preparation(row['request'], row['packet'], row['budget']))
+        observed = inspect(kernel, 'preparation', encode_preparation(row['request'], row['packet'], row['budget']), edition='2026')
         assert observed['status'] == row['status'], (row['name'], observed)
         if row['status'] == 'checked':
             assert observed['work'] == int(results[row['name']][1])
@@ -152,10 +152,10 @@ def test_preparation_transport(rows, results, kernel):
     # An empty original cannot be wrapped by the valid-envelope helper. Send
     # the empty external frame itself so the actual native reader must refuse.
     from instrument_transport import inspect_envelope
-    assert inspect_envelope(kernel, 'preparation', b'')['status'] == 'format'
+    assert inspect_envelope(kernel, 'preparation', b'', edition='2026')['status'] == 'format'
     malformed = [b'QLZ2'+good[4:], good[:-1], good+b'\0', b'QLZ1'+struct.pack('<I', 100001)]
     for i, payload in enumerate(malformed):
-        assert inspect(kernel, 'preparation', payload)['status'] == ('format' if i < 3 else 'limit')
+        assert inspect(kernel, 'preparation', payload, edition='2026')['status'] == ('format' if i < 3 else 'limit')
     r['fresh'][0]['owner'] = 2**32
     try:
         encode_preparation(r, p)

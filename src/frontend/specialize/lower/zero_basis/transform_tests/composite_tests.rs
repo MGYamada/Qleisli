@@ -73,6 +73,7 @@ fn composite_zero_width_fields_preserve_their_distinct_owner_and_basis_trees() {
 fn native_valid_other_constructor_trees_cannot_replace_the_original_source() {
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     for (original, replacement, pair) in [
         ("then_op(scalar,had)", "then_op(had,scalar)", false),
@@ -109,6 +110,7 @@ fn native_execution_preserves_composite_full_phase_with_an_untouched_reference()
     use crate::interchange::hierarchical::execution::ExecutionLimits;
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     // Numerical execution is an engineering regression. The expected matrices
     // below are written independently; no full source-preservation claim follows.

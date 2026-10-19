@@ -275,7 +275,11 @@ fn common_parser_shares_documentation_attachment_with_sized_source() {
     let documented = parse_documented_module(source).unwrap();
     assert_eq!(documented.module_docs[0].text, " 日本語");
     assert_eq!(documented.declaration_docs[0][1].text, " α\nβ ");
-    let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let sized = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     assert_eq!(sized.source("main"), Some(source));
     assert_eq!(sized.syntax("main"), Some(&documented.syntax));
     // Sized source now uses the same declaration attachment boundary.
@@ -286,8 +290,11 @@ fn common_parser_shares_documentation_attachment_with_sized_source() {
             .message
             .contains("documentation")
     );
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), misplaced.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), misplaced.into())]),
+    )
+    .unwrap_err();
     let common = parse_module(misplaced).unwrap_err();
     assert_eq!(
         (error.span(), error.message()),

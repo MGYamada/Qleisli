@@ -25,7 +25,10 @@ macro_rules! first_source {
 }
 
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 
 #[cfg_attr(
@@ -54,12 +57,15 @@ fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
                 } else {
                     text.replace("{x(q)}", "{h(q)}")
                 };
-                let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                    .unwrap()
-                    .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-                    .unwrap()
-                    .elaborate()
-                    .unwrap();
+                let source = ParsedProgram::parse(
+                    qleisli::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text)]),
+                )
+                .unwrap()
+                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
                 let checked = source
                     .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
                 if !honest {
@@ -68,10 +74,12 @@ fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
                 }
                 assert!(checked.as_ref().unwrap().checked_bindings() >= 2);
                 let graph = checked.unwrap().lower_hierarchy().unwrap();
-                let accepted =
-                    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                        .check_against_native(graph.payload(), graph.comparison_request())
-                        .unwrap();
+                let accepted = hierarchical::Kernel::new(
+                    std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                    qleisli::edition::Edition::E2026,
+                )
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
                 let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
                 let expected = (0..4)
                     .map(|i| input[i ^ (count * outer % 2)])
@@ -119,12 +127,15 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
                 pub unitary fn implementation(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{helper[power(checked_op(leaf,One),{count})](q)}}
                 unitary fn run[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Applicable(U){{U(q)}}
                 pub unitary fn client(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{run[checked_op(implementation,M)](q)}}",count & 1, count >> 1);
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                .unwrap()
-                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap();
+            let source = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text)]),
+            )
+            .unwrap()
+            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
             let checked =
                 source.check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
             if !honest {
@@ -132,9 +143,12 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
                 continue;
             }
             let graph = checked.unwrap().lower_hierarchy().unwrap();
-            let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                .check_against_native(graph.payload(), graph.comparison_request())
-                .unwrap();
+            let accepted = hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
+            )
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
             let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
             let actual = accepted
                 .execute_pure(
@@ -182,12 +196,15 @@ fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
             } else {
                 text.replace("{x(q)}", "{q}")
             };
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                .unwrap()
-                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap();
+            let source = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text)]),
+            )
+            .unwrap()
+            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
             assert!(source.has_operation_meanings());
             assert_eq!(source.lower().unwrap_err().code(), "meaning");
             assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
@@ -201,9 +218,12 @@ fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
             }
             assert_eq!(checked.as_ref().unwrap().checked_bindings(), 1);
             let graph = checked.unwrap().lower_hierarchy().unwrap();
-            let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                .check_against_native(graph.payload(), graph.comparison_request())
-                .unwrap();
+            let accepted = hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
+            )
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
             // The unused provider must be checked without executing it. Its
             // annotation also survives a zero-count wrapper.
             let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
@@ -247,7 +267,7 @@ fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() 
           unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[checked_op(U,Flip)](q)}
           pub unitary fn client(q:Q<Bit>)->Q<Bit>{outer[checked_op(implementation,Identity)](q)}", false),
     ] {
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(),format!("{prelude}{body}"))]))
+        let source = ParsedProgram::parse(qleisli::edition::Edition::E2026, BTreeMap::from([("main".into(),format!("{prelude}{body}"))]))
             .unwrap().instantiate("main::client",BTreeMap::new(),BTreeMap::new())
             .unwrap().elaborate().unwrap();
         assert!(source.has_operation_meanings());
@@ -259,7 +279,7 @@ fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() 
             continue;
         }
         let graph = checked.unwrap().lower_hierarchy().unwrap();
-        let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+        let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap(), qleisli::edition::Edition::E2026)
             .check_against_native(graph.payload(), graph.comparison_request()).unwrap();
         let input = vec![[0.1,-0.2],[0.3,0.4],[-0.5,0.6],[0.7,-0.8]];
         let actual = accepted.execute_pure(&input,2,hierarchical::execution::ExecutionLimits {
@@ -334,20 +354,26 @@ fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
         meaning Eighth:Unit=phase_by(angle);
         unitary fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
         pub unitary fn client(q:Q<Unit>)->Q<Unit>{adjoint(checked_op(implementation,Eighth))(q)}";
-    let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .unwrap()
-        .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let source = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
+    .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
     let checked = source
         .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
     assert_eq!(checked.checked_bindings(), 1);
     let graph = checked.lower_hierarchy().unwrap();
-    let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-        .check_against_native(graph.payload(), graph.comparison_request())
-        .unwrap();
+    let accepted = hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    )
+    .check_against_native(graph.payload(), graph.comparison_request())
+    .unwrap();
     let input = vec![[0.3, 0.4], [-0.5, 0.6]];
     let actual = accepted
         .execute_pure(
@@ -409,12 +435,15 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
                 } else {
                     text.replace("join(b,a)", "join(a,b)")
                 };
-                let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                    .unwrap()
-                    .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-                    .unwrap()
-                    .elaborate()
-                    .unwrap();
+                let source = ParsedProgram::parse(
+                    qleisli::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text)]),
+                )
+                .unwrap()
+                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
                 let checked = source
                     .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
                 if !honest {
@@ -423,10 +452,12 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
                     continue;
                 }
                 let graph = checked.unwrap().lower_hierarchy().unwrap();
-                let accepted =
-                    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                        .check_against_native(graph.payload(), graph.comparison_request())
-                        .unwrap();
+                let accepted = hierarchical::Kernel::new(
+                    std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                    qleisli::edition::Edition::E2026,
+                )
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
                 let input = (0..8)
                     .map(|i| [(i + 1) as f64 / 7.0, (i as f64 - 2.0) / 11.0])
                     .collect::<Vec<_>>();
@@ -506,7 +537,11 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
             meaning M:{basis}={meaning};
             pub unitary fn implementation(q:Q<{basis}>)->Q<{basis}>{{{body}}}
             pub unitary fn client[const U:Op<{basis},M>](q:Q<{basis}>)->Q<{basis}> requires Applicable(U){{U(q)}}");
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text)])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text)]),
+        )
+        .unwrap();
         let source = parsed
             .instantiate(
                 "main::client",
@@ -532,9 +567,12 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
             .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap();
         let graph = all.lower_hierarchy().unwrap();
-        let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-            .check_against_native(graph.payload(), graph.comparison_request())
-            .unwrap();
+        let accepted = hierarchical::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        )
+        .check_against_native(graph.payload(), graph.comparison_request())
+        .unwrap();
         let input = if scalar {
             vec![[0.3, 0.4], [-0.5, 0.6]]
         } else {
@@ -581,8 +619,11 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
     );
     for (text, nested) in [(bit.as_str(), 2), (unit.as_str(), 1)] {
         for (entry, count) in [("outer", nested), ("unused", 1)] {
-            let parsed =
-                ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+            let parsed = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text.into())]),
+            )
+            .unwrap();
             let source = parsed
                 .instantiate(
                     &format!("main::{entry}"),
@@ -628,9 +669,12 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
                 .unwrap();
             assert_eq!(all.checked_bindings(), count);
             let graph = all.lower_hierarchy().unwrap();
-            let actual = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                .check_against_native(graph.payload(), graph.comparison_request())
-                .unwrap();
+            let actual = hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
+            )
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
             let input = if nested == 2 {
                 vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]]
             } else {
@@ -662,7 +706,10 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
                     .code(),
                 "limit"
             );
-            let missing = Kernel::new("/nonexistent/qleisli-native-checker");
+            let missing = Kernel::new(
+                "/nonexistent/qleisli-native-checker",
+                qleisli::edition::Edition::E2026,
+            );
             assert!(
                 source
                     .check_operation_meanings(&missing, &mut Budget::new(DEFAULT_EXACT_WORK))
@@ -678,19 +725,22 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
             )
         };
         for entry in ["outer", "unused"] {
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), wrong.clone())]))
-                .unwrap()
-                .instantiate(
-                    &format!("main::{entry}"),
-                    BTreeMap::new(),
-                    BTreeMap::from([(
-                        "U".into(),
-                        OperationBinding::new("main::implementation", BTreeMap::new()),
-                    )]),
-                )
-                .unwrap()
-                .elaborate()
-                .unwrap();
+            let source = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), wrong.clone())]),
+            )
+            .unwrap()
+            .instantiate(
+                &format!("main::{entry}"),
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::implementation", BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
             let error = source
                 .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
                 .unwrap_err();
@@ -711,19 +761,22 @@ fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
     let text = common::current_source_text(
         "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
     );
-    let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-        .unwrap()
-        .instantiate(
-            "main::outer",
-            BTreeMap::new(),
-            BTreeMap::from([(
-                "U".into(),
-                OperationBinding::new("main::implementation", BTreeMap::new()),
-            )]),
-        )
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let source = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text)]),
+    )
+    .unwrap()
+    .instantiate(
+        "main::outer",
+        BTreeMap::new(),
+        BTreeMap::from([(
+            "U".into(),
+            OperationBinding::new("main::implementation", BTreeMap::new()),
+        )]),
+    )
+    .unwrap()
+    .elaborate()
+    .unwrap();
     let error = source
         .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap_err();
@@ -742,16 +795,19 @@ fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     use qleisli::frontend::compile::OperationBinding;
     let common = "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
     let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([
-        (
-            "flip".into(),
-            format!("{common} classical fn f(b:Bit)->Bit{{not b}} {declaration}"),
-        ),
-        (
-            "identity".into(),
-            format!("{common} classical fn f(b:Bit)->Bit{{b}} {declaration}"),
-        ),
-    ]))
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            (
+                "flip".into(),
+                format!("{common} classical fn f(b:Bit)->Bit{{not b}} {declaration}"),
+            ),
+            (
+                "identity".into(),
+                format!("{common} classical fn f(b:Bit)->Bit{{b}} {declaration}"),
+            ),
+        ]),
+    )
     .unwrap();
     for module in ["flip", "identity"] {
         let source = parsed
@@ -855,7 +911,11 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
         (unit, "Minus", true),
         (wrong_unit.as_str(), "Minus", false),
     ] {
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap();
         let target = parsed
             .finite_meaning_target(&format!("main::{meaning}"))
             .unwrap();
@@ -912,7 +972,11 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
     let source = "use std::gate::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let flip = parsed.finite_meaning_target("main::Flip").unwrap();
     let identity = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
     for count in 0..=2 {
@@ -1003,7 +1067,11 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
     let scalar = "\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}\nunitary fn inner[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), scalar.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), scalar.into())]),
+    )
+    .unwrap();
     let minus = FiniteMeaning::phase(BasisType::Unit, vec![4]).unwrap();
     let identity = FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
     for count in 0..=2 {
@@ -1039,8 +1107,11 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     // Zero-count wrappers retain preflight of the original body. The now
     // supported inverse-X body passes; a finer phase remains unsupported.
     let unsupported = "use std::gate::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn)(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,0)](q)}";
-    let parsed =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), unsupported.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), unsupported.into())]),
+    )
+    .unwrap();
     let source = parsed
         .instantiate(
             "main::outer",
@@ -1065,19 +1136,22 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     let fine = unsupported
         .replace("use std::gate::x;", "")
         .replace("x(q)", "phase[1,4](q)");
-    let fine = ParsedProgram::parse(BTreeMap::from([("main".into(), fine)]))
-        .unwrap()
-        .instantiate(
-            "main::outer",
-            BTreeMap::new(),
-            BTreeMap::from([(
-                "U".into(),
-                OperationBinding::new("main::implementation", BTreeMap::new()),
-            )]),
-        )
-        .unwrap()
-        .elaborate()
-        .unwrap();
+    let fine = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), fine)]),
+    )
+    .unwrap()
+    .instantiate(
+        "main::outer",
+        BTreeMap::new(),
+        BTreeMap::from([(
+            "U".into(),
+            OperationBinding::new("main::implementation", BTreeMap::new()),
+        )]),
+    )
+    .unwrap()
+    .elaborate()
+    .unwrap();
     let caller = fine
         .definitions()
         .iter()
@@ -1119,8 +1193,11 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
         (scalar.as_str(), "Minus", true, BasisType::Unit),
         (wrong_scalar.as_str(), "Minus", false, BasisType::Unit),
     ] {
-        let parsed =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap();
         let target = parsed
             .finite_meaning_target(&format!("main::{name}"))
             .unwrap();
@@ -1156,6 +1233,7 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
         )
         .unwrap();
         let result = check_unitary(
+            qleisli::edition::Edition::E2026,
             proposal.payload(),
             &boundary,
             &required,
@@ -1189,9 +1267,13 @@ fn source_meaning_signature_effect_and_budget_guards_precede_native_io() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     let absent = std::path::Path::new("/private/tmp/qleisli-missing-source-meaning-test-checker");
     assert!(!absent.exists());
-    let kernel = Kernel::new(absent);
+    let kernel = Kernel::new(absent, qleisli::edition::Edition::E2026);
     let source = "pub unitary fn identity(q:Q<Bit>)->Q<Bit>{q} pub observe fn main()->Unit{()}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let raw = parsed
         .instantiate("main::identity", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1241,14 +1323,17 @@ fn source_meaning_signature_effect_and_budget_guards_precede_native_io() {
 #[test]
 fn finite_source_targets_preserve_product_tree_and_refuse_width_substitution() {
     use qleisli::contract::BasisType;
-    let parsed = ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        "classical fn identity(b:(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){b}
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([(
+            "main".into(),
+            "classical fn identity(b:(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){b}
          classical fn bits(b:Bits<1>)->Bits<1>{b}
          meaning Product:(Bit,(Unit,Bit))=permutation_by(identity);
          meaning Sized:Bits<1> = permutation_by(bits);"
-            .into(),
-    )]))
+                .into(),
+        )]),
+    )
     .unwrap();
     let target = parsed.finite_meaning_target("main::Product").unwrap();
     assert_eq!(
@@ -1282,7 +1367,11 @@ fn selected_preparation_rejects_unused_nonpermutation_meanings() {
     let source = "classical fn constant(b:Bit)->Bit{0}
         meaning Invalid:Bit=permutation_by(constant);
         pub observe fn main()->Unit{()}";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "meaning", "{error}");
     assert_eq!(error.module(), Some("main"));
     assert!(
@@ -1323,7 +1412,7 @@ fn selected_meaning_checks_follow_original_imports_and_forward_calls() {
                 .into(),
         ),
     ]);
-    let parsed = ParsedProgram::parse(modules).unwrap();
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
     parsed
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1344,7 +1433,7 @@ fn selected_meaning_checks_follow_original_imports_and_forward_calls() {
                 .into(),
         ),
     ]);
-    let error = ParsedProgram::parse(modules).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap_err();
     assert_eq!(error.code(), "meaning", "{error}");
     assert_eq!(error.module(), Some("main"));
     assert!(error.message().contains("inputs 0 and 1 both map to 0"));
@@ -1365,7 +1454,11 @@ fn selected_meaning_preparation_keeps_zero_width_and_product_type_tags() {
             meaning Id:{basis} = permutation_by(identity);
             pub observe fn main()->Unit{{()}}"
         );
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         parsed
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1382,7 +1475,11 @@ fn selected_meaning_preparation_keeps_zero_width_and_product_type_tags() {
             meaning Bad:{basis} = permutation_by(identity);
             pub observe fn main()->Unit{{()}}"
         );
-        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "type", "{error}");
     }
 }
@@ -1395,11 +1492,19 @@ fn selected_meaning_preparation_handles_scalar_phase_and_pattern_leaf_order() {
         classical fn swap((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(b,(u,a))}
         meaning Swap:(Bit,(Unit,Bit))=permutation_by(swap);
         pub observe fn main()->Unit{()}";
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let source = "classical fn duplicate((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(a,(u,a))}
         meaning Bad:(Bit,(Unit,Bit))=permutation_by(duplicate);
         pub observe fn main()->Unit{()}";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "meaning", "{error}");
     assert!(
         error.message().contains("inputs 0 and 2 both map to 0"),
@@ -1417,7 +1522,11 @@ fn finite(source: &str) -> AcceptedProgram {
 }
 
 fn elaborate(source: &str, entry: &str) -> ElaboratedProgram {
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let retained = parsed.clone();
     drop(parsed);
     assert_eq!(retained.source("main"), Some(source));
@@ -1465,7 +1574,11 @@ fn both_closed(source: &str, expected: &[bool]) -> ElaboratedProgram {
 }
 
 fn rejected_before_native(source: &str, selected: &str, finite: &str) {
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), selected, "{error}");
     assert_eq!(error.module(), Some("main"), "{error}");
     assert!(error.span().end > error.span().start, "{error}");
@@ -1473,8 +1586,12 @@ fn rejected_before_native(source: &str, selected: &str, finite: &str) {
     let root = SourceRoot::new(source);
     let absent = root.0.join("must-not-start-native");
     assert!(!absent.exists());
-    let error = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let error = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(error.code, finite, "{error:?}");
     let location = error.primary.expect("located finite source diagnostic");
     assert!(location.path.ends_with("main.qli"));
@@ -1485,7 +1602,11 @@ fn rejected_before_native(source: &str, selected: &str, finite: &str) {
 fn selected_elaboration_rejected(source: &str, entry: &str, code: &str, message: &str) {
     // Original source formation is separate from concrete injectivity/profile
     // checking. A valid total classical body need not define a coherent map.
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     // A selected root's projection is checked during instantiation; a helper's
     // unsupported projection is reached later while elaborating its caller.
     let error = match parsed.instantiate(entry, BTreeMap::new(), BTreeMap::new()) {
@@ -1856,10 +1977,13 @@ fn private_classical_helpers_resolve_lexically_and_cycles_remain_illegal() {
     let accepted =
         compile_project_with_kernel(&root.0, SourcePolicy::default(), &kernel()).unwrap();
     closed(&accepted, &[true]);
-    let parsed = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), main.into()),
-        ("helper".into(), helper.into()),
-    ]))
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("helper".into(), helper.into()),
+        ]),
+    )
     .unwrap();
     let graph = parsed
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -1869,15 +1993,22 @@ fn private_classical_helpers_resolve_lexically_and_cycles_remain_illegal() {
     closed(&accept(&graph), &[true]);
     let inaccessible = "use helper::private_flip; pub fn main() -> Bit { private_flip(0) }";
     root.write("main.qli", inaccessible);
-    let selected = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), inaccessible.into()),
-        ("helper".into(), helper.into()),
-    ]))
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), inaccessible.into()),
+            ("helper".into(), helper.into()),
+        ]),
+    )
     .unwrap_err();
     assert!(selected.to_string().contains("private"), "{selected}");
     let absent = root.0.join("must-not-start-native");
-    let error = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let error = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(error.code, "project", "{error:?}");
     assert!(error.message.contains("private"), "{error:?}");
     for source in [
@@ -1895,7 +2026,11 @@ fn meaning_is_still_a_static_target_and_not_an_ordinary_runtime_function() {
         meaning Id: Bit = permutation_by(identity);
         pub fn main() -> Bit { Id(0) }";
     rejected_before_native(source, "type", "type_mismatch");
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert!(error.to_string().contains("Meaning"), "{error}");
 }
 
@@ -1917,7 +2052,7 @@ fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_pha
         finite_leaf::{UnitaryBoundary, check_unitary},
     };
     use qleisli::ir::*;
-    let parsed = ParsedProgram::parse(BTreeMap::from([(
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, BTreeMap::from([(
         "main".into(),
         common::current_source_text(
         "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
@@ -1979,6 +2114,7 @@ fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_pha
         .unwrap();
         let boundary = UnitaryBoundary::new(BasisType::Bit, input, output).unwrap();
         let checked = check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &boundary,
             &independent,
@@ -2007,7 +2143,7 @@ fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phas
         finite_leaf::{UnitaryBoundary, check_unitary},
     };
     use qleisli::ir::*;
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), common::current_source_text(
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, BTreeMap::from([("main".into(), common::current_source_text(
         "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
     ))])).unwrap();
     let required = parsed.finite_meaning_target("main::Conditional").unwrap();
@@ -2076,6 +2212,7 @@ fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phas
         .unwrap();
         let boundary = UnitaryBoundary::new(signature.clone(), input, output).unwrap();
         let checked = check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &boundary,
             &independent,
@@ -2121,12 +2258,15 @@ fn generic_access_providers_check_original_requests_and_preserve_reference_phase
             } else {
                 original.replace(leaf, lie)
             };
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                .unwrap()
-                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap();
+            let source = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text)]),
+            )
+            .unwrap()
+            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
             let checked =
                 source.check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
             if !honest {
@@ -2136,9 +2276,12 @@ fn generic_access_providers_check_original_requests_and_preserve_reference_phase
             let checked = checked.unwrap();
             assert!(checked.checked_bindings() >= 2);
             let graph = checked.lower_hierarchy().unwrap();
-            let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                .check_against_native(graph.payload(), graph.comparison_request())
-                .unwrap();
+            let accepted = hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
+            )
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
             let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
             let actual = accepted
                 .execute_pure(
@@ -2202,12 +2345,15 @@ fn access_routing_and_nested_controls_match_independent_exact_and_reference_acti
             ),
         ),
     ] {
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-            .unwrap()
-            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let source = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap()
+        .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         let mut exact = vec![];
         for row in 0..4 {
             for column in 0..4 {
@@ -2243,6 +2389,7 @@ fn access_routing_and_nested_controls_match_independent_exact_and_reference_acti
         };
         let boundary = UnitaryBoundary::new(signature, input, output).unwrap();
         check_unitary(
+            qleisli::edition::Edition::E2026,
             proposal.payload(),
             &boundary,
             &exact,
@@ -2250,9 +2397,12 @@ fn access_routing_and_nested_controls_match_independent_exact_and_reference_acti
         )
         .unwrap();
         let graph = source.lower().unwrap();
-        let graph = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-            .check_against_native(graph.payload(), graph.comparison_request())
-            .unwrap();
+        let graph = hierarchical::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        )
+        .check_against_native(graph.payload(), graph.comparison_request())
+        .unwrap();
         let input = vec![
             [0.1, -0.2],
             [0.3, 0.4],

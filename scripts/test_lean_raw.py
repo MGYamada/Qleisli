@@ -482,17 +482,17 @@ def native(all_cases, log):
             if 'original_qirf' in c:
                 filename=f'source-{len(actions)}.qirf'
                 (project/filename).write_bytes(c['original_qirf'].encode('utf-8'))
-                statements.append('qleisli::interchange::native::Kernel::selected().expect("explicit native checker")'
+                statements.append('qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).expect("explicit native checker")'
                     '.check(include_bytes!('+json.dumps(filename)+'),None).ok()?;')
             if c['name']=='missing_dependency':continue
             for e in a['evidence']:
-                statements.append('receipts.push(std::sync::Arc::new(qleisli::contract::FunctionEvidence::check('+finite.rust_basis(e['signature'])+','+rust_program(e['implementation'])+','+rust_program(e['specification'])+',identity(),&mut b).ok()?));')
-            statements.append('let raw='+rust_program(p)+';let verified=qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw(raw.clone()).ok()?;')
+                statements.append('receipts.push(std::sync::Arc::new(qleisli::contract::FunctionEvidence::check(qleisli::edition::Edition::E2026,'+finite.rust_basis(e['signature'])+','+rust_program(e['implementation'])+','+rust_program(e['specification'])+',identity(),&mut b).ok()?));')
+            statements.append('let raw='+rust_program(p)+';let verified=qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).expect("explicit native checker").accept_raw(raw.clone()).ok()?;')
             unary=len(p['quantum_inputs'])==1 and len(p['quantum_outputs'])==1 and p['declared_effect']=='unitary'
             if unary:
                 bits=p['quantum_inputs'][0]['shape']['bits']
                 basis=['unit'] if bits==0 else ['pair','bit']*(bits-1)+['bit']
-                statements.append('let m=qleisli::contract::FunctionEvidence::check('+finite.rust_basis(basis)+',raw.clone(),raw,identity(),&mut b).ok()?;Some(Some(m.meaning().clone()))')
+                statements.append('let m=qleisli::contract::FunctionEvidence::check(qleisli::edition::Edition::E2026,'+finite.rust_basis(basis)+',raw.clone(),raw,identity(),&mut b).ok()?;Some(Some(m.meaning().clone()))')
             else:statements.append('let _=verified;Some(None)')
             actions.append('let result=(||{let mut b=Budget::new(10000000);let mut receipts:Vec<std::sync::Arc<qleisli::contract::FunctionEvidence>>=vec![];'+''.join(statements)+'})();show('+json.dumps(c['name'])+',result);')
         rust='''#![allow(unused_variables,unused_mut)]
@@ -508,7 +508,7 @@ fn main(){
         (project/'Cargo.toml').write_text('[package]\nname="qleisli_raw_test"\nversion="0.0.0"\nedition="2024"\n[dependencies]\nqleisli={path='+json.dumps(str(ROOT))+'}\n[[bin]]\nname="raw-test"\npath="main.rs"\n')
         (project/'main.rs').write_text(rust)
         stdout=exact.command(['cargo','run','--offline','--quiet'],project,log)
-        bindings.update(rust_binary_sha256=hashlib.sha256((project/'target/debug/raw-test').read_bytes()).hexdigest(),
+        bindings.update(rust_binary_sha256=hashlib.sha256(exact.cargo_binary(project, 'raw-test').read_bytes()).hexdigest(),
                         rust_stdout_sha256=hashlib.sha256(stdout.encode()).hexdigest())
         records={};decoder=json.JSONDecoder()
         while stdout.strip():

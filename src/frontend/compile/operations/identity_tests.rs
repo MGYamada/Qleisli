@@ -21,6 +21,7 @@ fn evidence() -> Arc<FunctionEvidence> {
     let raw = identity_raw();
     Arc::new(
         FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             BasisType::Unit,
             raw.clone(),
             raw,
@@ -158,6 +159,9 @@ fn explicit_meaning_reference_survives_equal_matrices_and_shared_child() {
     use crate::frontend::project::{ModuleOrigin, SourceModule};
     let text = "classical fn identity(u:Unit)->Unit{u}\nmeaning First:Unit=permutation_by(identity);\nmeaning Second:Unit=permutation_by(identity);";
     let project = Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),
@@ -201,7 +205,8 @@ fn explicit_meaning_reference_survives_equal_matrices_and_shared_child() {
 )]
 #[test]
 fn pure_descriptor_keeps_its_optional_inverse_issued_identity() {
-    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let leaf = Arc::new(
         crate::frontend::pure::check(
             &kernel,
@@ -275,6 +280,9 @@ fn registry_hit_charges_work_and_failure_does_not_register_a_miss() {
     use crate::frontend::project::{ModuleOrigin, SourceModule};
     let text = "unitary fn hold[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){U(q)}";
     let project = Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),
@@ -318,6 +326,9 @@ fn pure_descriptor_keeps_original_source_origin_even_with_the_same_native_leaf()
     use crate::frontend::project::{ModuleOrigin, SourceModule};
     let text = "unitary fn first(q:Q<Unit>)->Q<Unit>{q}\nunitary fn second(q:Q<Unit>)->Q<Unit>{q}";
     let project = Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),
@@ -339,7 +350,8 @@ fn pure_descriptor_keeps_original_source_origin_even_with_the_same_native_leaf()
         .resolution
         .qualified("main::second")
         .unwrap();
-    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let leaf = Arc::new(
         crate::frontend::pure::check(
             &kernel,

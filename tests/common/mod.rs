@@ -173,5 +173,6 @@ impl Drop for SourceRoot {
 pub(super) fn accept(
     raw: qleisli::ir::RawProgram,
 ) -> Result<qleisli::AcceptedProgram, qleisli::interchange::Error> {
-    qleisli::interchange::native::Kernel::selected()?.accept_raw(raw)
+    qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)?
+        .accept_raw(raw)
 }

@@ -39,20 +39,28 @@ fn byte_limits_identify_the_file_without_embedding_a_host_path() {
     let root = SourceRoot::new("");
     fs::create_dir(root.0.join("sub")).unwrap();
     root.write("sub/m.qli", "observe fn main()->Unit{()}");
-    for limit in ["--source-bytes=10", "--project-bytes=10"] {
+    let manifest_bytes = fs::metadata(root.0.join("Qargo.toml")).unwrap().len();
+    for (limit, path) in [
+        ("--source-bytes=10".to_owned(), "sub/m.qli"),
+        ("--project-bytes=10".to_owned(), "Qargo.toml"),
+        (
+            format!("--project-bytes={}", manifest_bytes + 10),
+            "sub/m.qli",
+        ),
+    ] {
         let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("check")
             .arg(&root.0)
-            .args([limit, "--format=json"])
+            .args([limit.as_str(), "--format=json"])
             .output()
             .unwrap();
         assert!(!result.status.success());
         let text = String::from_utf8(result.stdout).unwrap();
         assert!(text.contains("\"code\":\"limit\""), "{text}");
         assert!(
-            text.contains(
-                "\"primary\":{\"path\":\"sub/m.qli\",\"start\":0,\"end\":0,\"line\":1,\"column\":1}"
-            ),
+            text.contains(&format!(
+                "\"primary\":{{\"path\":\"{path}\",\"start\":0,\"end\":0,\"line\":1,\"column\":1}}"
+            )),
             "{text}"
         );
         assert!(!text.contains(root.0.to_str().unwrap()), "{text}");
@@ -108,6 +116,7 @@ fn interop_file_io_uses_the_closed_project_code() {
             .args(["interop", "check"])
             .arg(path)
             .arg("--input=qasm")
+            .arg("--edition=2026")
             .output()
             .unwrap();
         assert!(!result.status.success());

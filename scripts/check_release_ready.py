@@ -63,7 +63,7 @@ ROLES = {"implementation", "reference", "migration", "positive", "negative", "ju
          "production", "compatibility"}
 NATIVE_JOBS = {"check-macos-source": "aarch64-apple-darwin",
                "check-lean-kernel": "x86_64-unknown-linux-gnu"}
-IDENTITIES = {"edition": "2026", "qrate_schema": 2, "native_protocol": "qleisli.qirf-native 2"}
+IDENTITIES = {"edition": "2026", "qrate_schema": 2, "native_protocol": "qleisli.native-result 3"}
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 

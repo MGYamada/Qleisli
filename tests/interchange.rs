@@ -36,7 +36,7 @@ const BIT: &str = r#"{"tag":"bit"}"#;
 #[test]
 fn native_format_rejections_preserve_envelope_locations_without_granting_authority() {
     use qleisli::interchange::native::{Kernel, Proposal};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let proposal = Proposal::from_raw(&identity(), None, Version::V2, None).unwrap();
     let original = std::str::from_utf8(proposal.artifact()).unwrap();
     for replacement in ["null", "999999"] {
@@ -50,9 +50,12 @@ fn native_format_rejections_preserve_envelope_locations_without_granting_authori
             "Lean native checker rejected the artifact/request; no fallback"
         );
         // Diagnosing malformed bytes cannot bypass even an absent checker.
-        let unavailable = Kernel::new("/missing-explicit-native-kernel")
-            .check(malformed.as_bytes(), None)
-            .unwrap_err();
+        let unavailable = Kernel::new(
+            "/missing-explicit-native-kernel",
+            qleisli::edition::Edition::E2026,
+        )
+        .check(malformed.as_bytes(), None)
+        .unwrap_err();
         assert_eq!(unavailable.code, "io");
         assert!(unavailable.json_pointer.is_empty());
     }
@@ -109,6 +112,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
         std::fs::write(&req, request(shape, "permutation", "[0,1]")).unwrap();
         let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&path)
             .arg(format!("--against={}", req.display()))
             .arg("--format=json")
@@ -129,6 +133,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
     assert_ne!(bytes, changed);
     assert_eq!(
         interchange::import(
+            qleisli::edition::Edition::E2026,
             &changed,
             Some(&request(FLAT_UNIT_BIT_UNIT, "permutation", "[0,1]"))
         )
@@ -161,26 +166,38 @@ fn matching_types_are_required_independently_of_width_and_operator() {
         ] {
             let types = interface(ty);
             let bytes = interchange::export(&program, Some(&types), version).unwrap();
-            let result =
-                interchange::import(&bytes, Some(&request(matching, "permutation", "[0,1]")))
-                    .unwrap();
+            let result = interchange::import(
+                qleisli::edition::Edition::E2026,
+                &bytes,
+                Some(&request(matching, "permutation", "[0,1]")),
+            )
+            .unwrap();
             assert!(result.request_checked);
             assert_eq!(result.root_interface, Some(types.clone()));
             for wrong in others {
                 assert_eq!(
-                    interchange::import(&bytes, Some(&request(wrong, "permutation", "[0,1]")))
-                        .unwrap_err()
-                        .code,
+                    interchange::import(
+                        qleisli::edition::Edition::E2026,
+                        &bytes,
+                        Some(&request(wrong, "permutation", "[0,1]"))
+                    )
+                    .unwrap_err()
+                    .code,
                     "contract"
                 );
             }
             assert_eq!(
-                interchange::import(&bytes, Some(&request(matching, "phase8", "[0,1]")))
-                    .unwrap_err()
-                    .code,
+                interchange::import(
+                    qleisli::edition::Edition::E2026,
+                    &bytes,
+                    Some(&request(matching, "phase8", "[0,1]"))
+                )
+                .unwrap_err()
+                .code,
                 "contract"
             );
             let converted = interchange::convert(
+                qleisli::edition::Edition::E2026,
                 &bytes,
                 if version == Version::V1 {
                     Version::V2
@@ -190,18 +207,26 @@ fn matching_types_are_required_independently_of_width_and_operator() {
             )
             .unwrap();
             assert_eq!(
-                interchange::import(&converted, None)
+                interchange::import(qleisli::edition::Edition::E2026, &converted, None)
                     .unwrap()
                     .root_interface,
                 Some(types)
             );
         }
         let bytes = interchange::export(&program, None, version).unwrap();
-        assert!(!interchange::import(&bytes, None).unwrap().request_checked);
+        assert!(
+            !interchange::import(qleisli::edition::Edition::E2026, &bytes, None)
+                .unwrap()
+                .request_checked
+        );
         assert_eq!(
-            interchange::import(&bytes, Some(&request(BIT, "permutation", "[0,1]")))
-                .unwrap_err()
-                .code,
+            interchange::import(
+                qleisli::edition::Edition::E2026,
+                &bytes,
+                Some(&request(BIT, "permutation", "[0,1]"))
+            )
+            .unwrap_err()
+            .code,
             "contract"
         );
     }
@@ -210,6 +235,7 @@ fn matching_types_are_required_independently_of_width_and_operator() {
 fn shared_meaning() -> (AcceptedProgram, MeaningEvidence) {
     let target = FiniteMeaning::phase(BasisType::Bit, vec![0, 1]).unwrap();
     let evidence = MeaningEvidence::check(
+        qleisli::edition::Edition::E2026,
         target.target_ir().unwrap(),
         target,
         FunctionIdentity {
@@ -261,8 +287,12 @@ fn shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration() {
     let bytes = interchange::export_with_meanings(&program, Some(&types), &[evidence]).unwrap();
     let text = std::str::from_utf8(&bytes).unwrap();
     assert_eq!(text.matches(r#""tag":"meaning""#).count(), 1);
-    let imported =
-        interchange::import(&bytes, Some(&request(BIT, "permutation", "[0,1]"))).unwrap();
+    let imported = interchange::import(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        Some(&request(BIT, "permutation", "[0,1]")),
+    )
+    .unwrap();
     let RawOp::ApplyUnitary { steps, .. } = &imported.program.raw().operations[0] else {
         panic!()
     };
@@ -274,28 +304,39 @@ fn shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration() {
     };
     assert!(std::sync::Arc::ptr_eq(a, b));
     assert_eq!(
-        interchange::convert(&bytes, Version::V1).unwrap_err().code,
+        interchange::convert(qleisli::edition::Edition::E2026, &bytes, Version::V1)
+            .unwrap_err()
+            .code,
         "unsupported"
     );
     let tampered = text.replacen(r#""table":[0,1]"#, r#""table":[0,2]"#, 1);
     assert_eq!(
-        interchange::import(tampered.as_bytes(), None)
+        interchange::import(qleisli::edition::Edition::E2026, tampered.as_bytes(), None)
             .unwrap_err()
             .code,
         "contract"
     );
     let snapshot = request(BIT, "permutation", "[0,1]");
     let snapshot=String::from_utf8(snapshot).unwrap().replace("\"source_snapshot\":null",r#""source_snapshot":[{"path":"/not/a/file/../input.qli","text":"not executable source 🦀"}]"#);
-    interchange::import(&bytes, Some(snapshot.as_bytes())).unwrap();
+    interchange::import(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        Some(snapshot.as_bytes()),
+    )
+    .unwrap();
     let changed = text.replace("not executable source 🦀", "changed source");
     assert_eq!(
-        interchange::import(changed.as_bytes(), Some(snapshot.as_bytes()))
-            .unwrap_err()
-            .code,
+        interchange::import(
+            qleisli::edition::Edition::E2026,
+            changed.as_bytes(),
+            Some(snapshot.as_bytes())
+        )
+        .unwrap_err()
+        .code,
         "contract"
     );
     // Metadata is not a claim that Rust lowering preserves the source meaning.
-    interchange::import(changed.as_bytes(), None).unwrap();
+    interchange::import(qleisli::edition::Edition::E2026, changed.as_bytes(), None).unwrap();
 }
 
 #[cfg_attr(
@@ -331,6 +372,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
     std::fs::remove_file(root.0.join("main.qli")).unwrap();
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .arg("verify-ir")
+        .arg("--edition=2026")
         .arg(&path)
         .arg("--format=json")
         .output()
@@ -354,6 +396,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
         std::fs::write(&req, request(ty, "permutation", "[0,1]")).unwrap();
         let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&path)
             .arg(format!("--against={}", req.display()))
             .arg("--format=json")
@@ -401,7 +444,8 @@ fn fixed_size_algorithm_and_feedback_artifacts_preserve_distributions() {
         for version in [Version::V1, Version::V2] {
             let bytes = interchange::export(&program, None, version)
                 .unwrap_or_else(|e| panic!("{example}: {e}"));
-            let imported = interchange::import(&bytes, None).unwrap();
+            let imported =
+                interchange::import(qleisli::edition::Edition::E2026, &bytes, None).unwrap();
             let actual = run_closed(&imported.program, SimulationLimits::default()).unwrap();
             assert_eq!(actual, expected, "{example}");
         }
@@ -434,7 +478,12 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
     ] {
         assert!(text.contains(from));
         assert!(
-            interchange::import(text.replacen(from, to, 1).as_bytes(), None).is_err(),
+            interchange::import(
+                qleisli::edition::Edition::E2026,
+                text.replacen(from, to, 1).as_bytes(),
+                None
+            )
+            .is_err(),
             "{to}"
         );
     }
@@ -449,18 +498,26 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
         "invalid_ir"
     );
     assert_eq!(
-        interchange::import(&vec![b' '; (16 << 20) + 1], None)
-            .unwrap_err()
-            .code,
+        interchange::import(
+            qleisli::edition::Edition::E2026,
+            &vec![b' '; (16 << 20) + 1],
+            None
+        )
+        .unwrap_err()
+        .code,
         "limit"
     );
     assert_eq!(
-        interchange::import("[".repeat(10_000).as_bytes(), None)
-            .unwrap_err()
-            .code,
+        interchange::import(
+            qleisli::edition::Edition::E2026,
+            "[".repeat(10_000).as_bytes(),
+            None
+        )
+        .unwrap_err()
+        .code,
         "invalid_ir"
     );
-    assert!(interchange::import(&[0xff], None).is_err());
+    assert!(interchange::import(qleisli::edition::Edition::E2026, &[0xff], None).is_err());
 }
 
 #[cfg_attr(
@@ -470,7 +527,7 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
 #[test]
 fn native_bits_wire_atoms_keep_exact_tags_and_reject_malformed_widths() {
     use qleisli::interchange::native::{Kernel, Proposal};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for width in 0..=2 {
         let mut raw = identity();
         raw.quantum_inputs[0].wires = (0..width).map(WireId).collect();

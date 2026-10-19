@@ -138,7 +138,7 @@ fn native() -> Kernel {
         .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
         .expect("set QLEISLI_HIERARCHY_KERNEL to the built audited executable");
     assert!(std::path::Path::new(&path).is_file());
-    Kernel::new(path)
+    Kernel::new(path, qleisli::edition::Edition::E2026)
 }
 
 #[cfg_attr(
@@ -346,7 +346,10 @@ fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
 
 #[test]
 fn strict_json_rejects_before_starting_an_executable() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
     let malformed = [
         good.replacen("\"version\":1", "\"version\":1,\"version\":1", 1),
@@ -365,7 +368,10 @@ fn strict_json_rejects_before_starting_an_executable() {
 
 #[test]
 fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
     for bad in [
         good.replacen("\"children\":[0,1]", "\"children\":[0,2]", 1),
@@ -385,10 +391,13 @@ fn external_schema_ids_cannot_enable_registry_entries() {
         1,
     );
     assert_eq!(
-        Kernel::new("/nonexistent/qleisli-kernel")
-            .inspect(bad.as_bytes())
-            .unwrap_err()
-            .code,
+        Kernel::new(
+            "/nonexistent/qleisli-kernel",
+            qleisli::edition::Edition::E2026
+        )
+        .inspect(bad.as_bytes())
+        .unwrap_err()
+        .code,
         "contract"
     );
 }
@@ -671,7 +680,10 @@ fn power_request(count: u32, negative: bool, controlled: bool, pretty: bool) -> 
 
 #[test]
 fn independent_request_transport_rejects_flags_and_invalid_references() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let a = family(3, 3, false, true);
     let request = String::from_utf8(power_request(3, false, true, false)).unwrap();
     for bad in [
@@ -749,6 +761,7 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
     let boundary = UnitaryBoundary::new(BasisType::Bit, port(0), port(1)).unwrap();
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
     let leaf = check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
         &finite_program(),
         &boundary,
         &finite_matrix::encode(&h_matrix(false)).unwrap(),
@@ -922,7 +935,10 @@ fn instrument_request(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
 
 #[test]
 fn instrument_codec_rejects_malformed_fields_before_execution() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(instrument_payload(1, false, true)).unwrap();
     let request = String::from_utf8(instrument_request(1, false, true)).unwrap();
     for bad in [
@@ -1078,25 +1094,43 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
     let executable = scratch.0.join("runtime");
     let payload = instrument_payload(1, false, false);
     let request = instrument_request(1, false, false);
-    for body in [
-        "pending\n0\n0\n0\n",              // omitted actual finite proof
-        "pending\n0\n2\n0\n0\n0\n",        // duplicated actual proof
-        "pending\n0\n1\n0\n0\n",           // omitted requested finite equation
-        "pending\n0\n1\n0\n2\n2\n2\n",     // duplicated equation
-        "pending\n0\n1\n0\n1\n99\n",       // unknown equation
-        "pending\n0\n1\n0\n1\n2\nextra\n", // trailing response data
-        "pending\n01\n0\n0\n",             // noncanonical counter
-        "checked\n0\n0\n0\n",              // a claimed final result is not the protocol
+    for (claim, body) in [
+        ("pending", "0\n0\n0\n0\n"),              // omitted actual finite proof
+        ("pending", "0\n0\n2\n0\n0\n0\n"),        // duplicated actual proof
+        ("pending", "0\n0\n1\n0\n0\n"),           // omitted requested finite equation
+        ("pending", "0\n0\n1\n0\n2\n2\n2\n"),     // duplicated equation
+        ("pending", "0\n0\n1\n0\n1\n99\n"),       // unknown equation
+        ("pending", "0\n0\n1\n0\n1\n2\nextra\n"), // trailing response data
+        ("pending", "01\n0\n0\n0\n"),             // noncanonical counter
+        ("checked", "0\n0\n0\n0\n"),              // a claimed final result is not the protocol
     ] {
         let script = format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 4\n{}'\n",
-            body.replacen("pending\n0\n", "pending\nexecution\n0\n0\n", 1)
+            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.native-result 3\n{claim}\n2026\n{}\n--instrument-pending\nexecution\n{body}'\n",
+            env!("CARGO_PKG_VERSION")
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let error = Kernel::new(&executable)
-            .check_instrument(&payload, &request)
+        let kernel = Kernel::new(&executable, qleisli::edition::Edition::E2026);
+        // Check the complete obligation report before any separate finite-leaf
+        // invocation. A stale frame must not mask the intended payload fault.
+        let error = kernel
+            .check_instrument_native(&payload, &request)
             .unwrap_err();
         assert_eq!(error.code, "format", "{body}: {error}");
+        assert!(
+            !error.message.contains("unknown native response protocol")
+                && (claim != "pending" || !error.message.contains("native reply context")),
+            "payload mutations must reach the current protocol: {body:?}: {error}"
+        );
+        // The conditional reconstruction API must still reject every case;
+        // real finite-leaf reconstruction is covered by the native test above.
+        assert_eq!(
+            kernel
+                .check_instrument(&payload, &request)
+                .unwrap_err()
+                .code,
+            "format",
+            "{body}"
+        );
     }
 }

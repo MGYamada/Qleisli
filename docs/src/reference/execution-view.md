@@ -5,7 +5,7 @@ This is the implementation contract for
 data; it is separate from the QIRF artifact version and the native request/reply
 version. Encoding a description grants no acceptance authority.
 
-QLV2 connects these walkers and pure Lean gates to the production native
+QLV3 connects these walkers and pure Lean gates to the production native
 entry points. Finite execution prepares its actual graph, dependency caches
 and root metadata before submission. The comparison borrows those exact
 allocations; successful binding moves them into `AcceptedProgram` without
@@ -21,10 +21,11 @@ Compatibility reports additionally keep freshly checked finite-leaf handles.
 
 ## Native envelope cutover
 
-The #362 cutover uses `QLV2` as the external native envelope. Its six
-header fields are four magic bytes, a `u32` scope, three `u32` byte
+The #255 cutover extends #362 with `QLV3` as the external native envelope.
+Its seven header fields are four magic bytes, the explicit `u32` constitutional
+edition (2026), a `u32` scope, three `u32` byte
 lengths (original payload, graph view, caller view), and a `u32` alias count.
-Integers are little endian. The payloads follow in that order, followed by
+Integers are little endian. The payload begins at byte 28, followed by
 the alias indices as `u32`s.
 Exact EOF is required. The complete envelope is bounded by 64 MiB, the two
 views together by the existing QDV1 byte limit, and the alias count by 100,000.
@@ -42,14 +43,40 @@ hierarchy payload retains its original bridge encoding. These inner payloads
 are checked by the existing definitions. Neither is accepted as an unwrapped
 external request after cutover. No compatibility retry is permitted.
 
-Finite replies use `qleisli.qirf-native 2`; successful replies contain
-`accepted`, the checked scope name, exact work, and request-presence flag.
-Hierarchy replies increment their five `*-pending` versions from 3 to 4 and
-place the checked scope name immediately after `pending`; their work and
-obligation fields retain their meanings. Component response versions become
-2. Errors retain `error` and a code; a compared-view mismatch is
-`decoded_view`. A consumer must validate the response version and exact
-requested scope before granting use of its retained data.
+All thirteen native modes use `qleisli.native-result 3`. Successful replies
+contain, one per line: claim (`accepted`, `pending`, `engineering-checked` or
+`checked`), checked edition, compiled complete product version, canonical mode
+argument, checked scope, and the mode's unchanged payload fields. A final
+newline is required. Finite payloads retain exact work and the request-presence
+flag; hierarchy payloads retain structural/exact work and ordered obligations;
+engineering payloads retain exact work. Component payloads retain their
+original fields. These claims remain distinct.
+
+Errors contain only the header, `error`, the rejection code and final newline;
+they assert no successfully checked context. Hierarchy finite-decoder errors retain
+their existing classification: malformed/noncanonical finite descriptions are
+`format`, capacity failures are `limit`, and failed finite equations are
+`contract`. The common dispatcher preserves that profile-specific projection. An unsupported well-framed edition
+rejects as `edition`; a compared-view mismatch is `decoded_view`. Old external
+QLV2/QLV1 requests and old replies reject without compatibility retry. Consumers
+match edition, product, actual mode and requested scope before interpreting and
+fully consuming their own bounded payload. Edition alone identifies neither a
+checker implementation nor a completed constitutional proof.
+
+The actual Main adapter invokes one pure `Protocol.NativeContext.run` and its
+one reply projection. Its checked success bindings retain each original gate,
+execution/caller comparison and scoped decoded-root property. Rust kernels
+require an explicit edition; source commands derive it from the captured
+manifest. Raw `verify-ir`, engineering commands and QASM/QIRF interop require
+`--edition=2026`. Source inputs reject that override; interop source callers
+may assert `--expect-edition=2026`, which must agree with the captured manifest
+before kernel selection. Raw/foreign inputs reject that assertion.
+Python requires an explicit `Client(..., edition="2026")` or CLI `--edition=2026`;
+source calls use the expectation, and returned `Program` data retains its edition
+for every fresh raw check. No new result-envelope fields convey acceptance.
+The #255 migration still
+requires complete helper, ecosystem, current-evidence and CI validation before
+completion; this wire contract is not a release or broader proof claim.
 
 ## Byte grammar
 
@@ -208,7 +235,7 @@ The [graph vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d
 retain three original observing sentinels and add Unit interfaces, ordered
 mixed-width output ports, conservative effects and an evidence table whose
 first entry depends on its second. These remain bounded transport comparisons;
-the native QLV2 regression separately exercises their production binding.
+the native QLV3 regression separately exercises their production binding.
 
 ## Retained contract stages
 
@@ -268,7 +295,7 @@ Rust describes independently constructed typed values. Data mutations distinguis
 encodings, phase, both ports, equal-width type trees, source identity and axes.
 The [authoring record](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/README.md)
 describes both preserved refusals and their corrections.
-The QLV2 caller scope also binds the actual circuit steps and retained caches.
+The QLV3 caller scope also binds the actual circuit steps and retained caches.
 
 ## Pure complete contract comparison
 
@@ -298,7 +325,7 @@ retain eight independently authored graph descriptions covering every current
 contract kind and an observing reference with distinct owner/wire identities.
 The pure Lean gate refuses 1,152 individual scalar, empty-list and array-shape
 mutations over these valid original requests. The Rust tests also refuse missing
-or unexpected reference graphs. These pure checks are separate from the QLV2
+or unexpected reference graphs. These pure checks are separate from the QLV3
 native regressions and the caller/hierarchy bindings below. The walker alone
 issues no execution handle or constitutional guarantee.
 
@@ -318,7 +345,7 @@ the complete actual function description specified above. An index is proposed
 by the original encoder's canonical snapshot map. That lookup is not evidence
 that the actual body, matrix, circuit or descendants equal Lean's fresh result.
 The pure Lean attachment compares each emitted alias against that proposed
-original entry. Native QLV2 caller requests invoke this attachment before
+original entry. Native QLV3 caller requests invoke this attachment before
 issuing an execution handle from the compared descriptions.
 
 This extra traversal is necessary because the artifact encoder returns early
@@ -341,7 +368,7 @@ The [original branch refusal](https://github.com/MGYamada/Qleisli/blob/51be9c841
 retains the first invalid phi wire and real diagnostic; the regression rechecks
 that native refusal before exercising the corrected fresh-wire case.
 These tests add no production acceptance authority. Private unbound staging and
-hierarchy execution are checked separately through the QLV2 native entry points.
+hierarchy execution are checked separately through the QLV3 native entry points.
 
 ## Pure caller attachment
 
@@ -379,7 +406,7 @@ Mutations keep each native-valid original fixed and change only the supplied
 description or proposed alias indices. Exact and one-byte-short capacities
 exercise repeated-description accounting without large quantum instances.
 
-The native CLI invokes these gates for the QLV2 caller scope. The gate checks
+The native CLI invokes these gates for the QLV3 caller scope. The gate checks
 every emitted alias; correspondence of the collector with all objects actually
 consumed by execution remains a runtime-preservation assumption. The binding
 proofs do not prove the Rust collector or admit a constitutional guarantee.
@@ -470,7 +497,7 @@ poisons old transport storage. The `CheckedHierarchy.Modes` gate also retains
 the original fresh checks for independent root requests, named Fourier,
 instruments and named QPE instruments. Its binding theorems retain the original
 packet, actual finite matrices, independent pair/H checks and comparison with
-the plan derived from those same objects. The QLV2 CLI dispatches to these gates
+the plan derived from those same objects. The QLV3 CLI dispatches to these gates
 with a mandatory execution view when execution is requested. Production Rust
 describes and retains the same plan; the walker itself confers no acceptance.
 
@@ -564,7 +591,7 @@ The shared runner checks seven independently valid original artifacts against
 their correct views and 71 divergent candidates, including every graph field
 and retained evidence-cache fields. It separately covers malformed frames,
 native work refusal and an original optional request. These are tests of the
-pure comparison gate. The QLV2 native tests separately check finite, complete
+pure comparison gate. The QLV3 native tests separately check finite, complete
 contract, caller and all five hierarchy paths, including valid original inputs
 with divergent views and rejection of old external frames.
 

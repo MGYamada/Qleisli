@@ -517,8 +517,11 @@ impl Parser<'_> {
 
 /// Parse the bounded terminal subset and independently verify generated IR.
 /// No include file, external function or imported evidence is trusted/executed.
-pub fn import_openqasm3(source: &str) -> Result<AcceptedProgram, InteropError> {
-    let kernel = crate::interchange::native::Kernel::selected()
+pub fn import_openqasm3(
+    edition: crate::edition::Edition,
+    source: &str,
+) -> Result<AcceptedProgram, InteropError> {
+    let kernel = crate::interchange::native::Kernel::selected(edition)
         .map_err(|e| InteropError::new(InteropErrorKind::InvalidIr, e.to_string()))?;
     import_openqasm3_with_kernel(source, &kernel)
 }

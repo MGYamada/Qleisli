@@ -21,7 +21,8 @@ pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
         })
         .collect();
     Compiler {
-        kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
+        kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
+            .expect("explicit test kernel"),
         project,
         source,
         interface_naturals,
@@ -54,6 +55,9 @@ pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
 fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
     let text = " isometry fn make() -> Q<Unit> { let u = unit(()); u }";
     let project = Project {
+        edition_context: crate::frontend::project::ProjectEdition::Explicit(
+            crate::edition::Edition::E2026,
+        ),
         root: PathBuf::from("main.qli"),
         modules: BTreeMap::from([(
             "main".into(),

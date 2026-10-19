@@ -31,13 +31,53 @@ fn source_boundaries_count_utf8_bytes_before_decoding() {
 }
 
 #[test]
+fn single_file_aggregate_includes_the_retained_manifest_even_for_empty_source() {
+    for source in [
+        "",
+        "/// Keep the original owner.\npub unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }\n",
+    ] {
+        let root = SourceRoot::new(source);
+        let path = root.0.join("main.qli");
+        let manifest = root.0.join("Qargo.toml");
+        let source_bytes = source.len() as u64;
+        let manifest_bytes = std::fs::metadata(&manifest).unwrap().len();
+        let total = source_bytes + manifest_bytes;
+        let policy = |project_bytes| SourcePolicy::Bounded {
+            source_bytes: source_bytes.max(1),
+            project_bytes,
+        };
+        assert_eq!(read_source_file(&path, policy(total)).unwrap(), source);
+        for (limit, expected_path) in [
+            (total - 1, if source.is_empty() { &manifest } else { &path }),
+            (manifest_bytes - 1, &manifest),
+        ] {
+            let error = read_source_file(&path, policy(limit)).unwrap_err();
+            assert_eq!(error.code, "limit");
+            let location = error.primary.unwrap();
+            assert_eq!(location.path, std::fs::canonicalize(expected_path).unwrap());
+            assert_eq!((location.span.start, location.span.end), (0, 0));
+        }
+        assert_eq!(
+            read_source_file(&path, SourcePolicy::Legacy).unwrap(),
+            source
+        );
+    }
+}
+
+#[test]
 fn aggregate_includes_many_files_and_bundled_sources() {
     let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for i in 0..20 {
         root.write(&format!("m{i}.qli"), "// a small module\n");
     }
     let loaded = Project::load(&root.0).unwrap();
-    let total = loaded.modules.values().map(|m| m.source.len() as u64).sum();
+    // The retained manifest shares the aggregate budget with source modules.
+    let total = loaded
+        .modules
+        .values()
+        .map(|m| m.source.len() as u64)
+        .sum::<u64>()
+        + std::fs::metadata(root.0.join("Qargo.toml")).unwrap().len();
     assert!(
         loaded
             .modules

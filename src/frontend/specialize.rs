@@ -57,6 +57,8 @@ impl From<super::check::SourceError> for Error {
 /// preparation checks. Cloning this value does not create checked IR evidence.
 #[derive(Clone, Debug)]
 pub struct ParsedProgram {
+    edition: crate::edition::Edition,
+    manifests: Arc<BTreeMap<String, Arc<super::project::EditionManifest>>>,
     sources: Arc<SourceCollection>,
     checked: Arc<super::check::CheckedProgram>,
     // A concrete eligibility result for every original definition. Unsupported
@@ -67,6 +69,16 @@ pub struct ParsedProgram {
     meaning_targets: Arc<BTreeMap<DefId, meaning::TargetTable>>,
 }
 impl ParsedProgram {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.edition
+    }
+
+    /// Exact selecting manifest retained for a local module; in-memory modules
+    /// have an explicit API edition instead. Bundled std never selects it.
+    pub fn module_manifest(&self, module: &str) -> Option<&super::project::EditionManifest> {
+        self.manifests.get(module).map(Arc::as_ref)
+    }
+
     /// Describe one original finite Meaning as an untrusted mathematical target.
     /// This selects no provider, verifies no artifact and grants no execution.
     /// Exact Bits tags are unsupported by the legacy finite signature; they
@@ -123,15 +135,20 @@ impl ParsedProgram {
     /// Parse and check every supplied module, including unused imports and both
     /// arms of static branches. Imports must resolve within this complete map or
     /// to a primitive explicitly specified by this bounded profile.
-    pub fn parse(sources: BTreeMap<String, String>) -> Result<Self> {
+    pub fn parse(
+        edition: crate::edition::Edition,
+        sources: BTreeMap<String, String>,
+    ) -> Result<Self> {
         // Reject before constructing the path-bearing adapter map. The caller
         // may supply an oversized map; its count must not trigger another one.
         Self::supplied_module_count(sources.len())?;
         Self::parse_inputs(
+            edition,
             sources
                 .into_iter()
                 .map(|(name, text)| (name, (None, text)))
                 .collect(),
+            BTreeMap::new(),
         )
     }
 
@@ -164,7 +181,11 @@ impl ParsedProgram {
             })
     }
 
-    fn parse_inputs(sources: BTreeMap<String, (Option<PathBuf>, String)>) -> Result<Self> {
+    fn parse_inputs(
+        edition: crate::edition::Edition,
+        sources: BTreeMap<String, (Option<PathBuf>, String)>,
+        manifests: BTreeMap<String, Arc<super::project::EditionManifest>>,
+    ) -> Result<Self> {
         Self::supplied_module_count(sources.len())?;
         super::project::check_bundled_manifest().map_err(|e| {
             Error::new(
@@ -173,7 +194,22 @@ impl ParsedProgram {
                 e.message,
             )
         })?;
+        let mut seen = std::collections::BTreeSet::new();
         let mut total = 0usize;
+        for manifest in manifests.values() {
+            if manifest.edition() != edition {
+                return Err(Error::new(
+                    "edition",
+                    Span::default(),
+                    "mixed captured constitutional editions",
+                ));
+            }
+            if seen.insert(manifest.path()) {
+                total = total.checked_add(manifest.source().len()).ok_or_else(|| {
+                    Error::new("limit", Span::default(), "manifest byte count overflow")
+                })?;
+            }
+        }
         let mut collection = source::Builder::default();
         for (name, (path, source)) in sources {
             if !valid_module_name(&name) {
@@ -272,6 +308,8 @@ impl ParsedProgram {
             })
             .collect();
         Ok(Self {
+            edition,
+            manifests: Arc::new(manifests),
             sources: Arc::new(sources),
             checked: Arc::new(checked),
             projections: Arc::new(projections),
@@ -284,19 +322,12 @@ impl ParsedProgram {
     pub fn load(files: BTreeMap<String, PathBuf>) -> Result<Self> {
         Self::supplied_module_count(files.len())?;
         let mut sources = BTreeMap::new();
+        let mut manifests = BTreeMap::new();
+        let mut by_path: BTreeMap<PathBuf, Arc<super::project::EditionManifest>> = BTreeMap::new();
+        let mut edition = None;
         let mut total = Self::bundled_bytes()?;
         for (name, path) in files {
-            let remaining = MAX_TOTAL_BYTES.checked_sub(total).ok_or_else(|| {
-                Error::new("limit", Span::default(), "source byte count overflow")
-            })?;
-            let source = super::project::read_source_file(
-                &path,
-                super::project::SourcePolicy::Bounded {
-                    source_bytes: MAX_SOURCE_BYTES as u64,
-                    project_bytes: remaining as u64,
-                },
-            )
-            .map_err(|e| {
+            let selected = super::project::SourceFileSelection::select(&path).map_err(|e| {
                 Error::new(
                     e.code,
                     e.primary.map_or(Span::default(), |p| p.span),
@@ -304,6 +335,50 @@ impl ParsedProgram {
                 )
                 .in_module(&name)
             })?;
+            let manifest = selected.manifest();
+            let captured = if let Some(previous) = by_path.get(manifest.path()) {
+                if previous.as_ref() != manifest {
+                    return Err(Error::new(
+                        "edition",
+                        Span::default(),
+                        "manifest changed during source loading",
+                    )
+                    .in_module(&name));
+                }
+                Arc::clone(previous)
+            } else {
+                total = total.checked_add(manifest.source().len()).ok_or_else(|| {
+                    Error::new("limit", Span::default(), "manifest byte count overflow")
+                })?;
+                let captured = Arc::new(manifest.clone());
+                by_path.insert(manifest.path().into(), Arc::clone(&captured));
+                captured
+            };
+            if edition.is_some_and(|previous| previous != captured.edition()) {
+                return Err(Error::new(
+                    "edition",
+                    Span::default(),
+                    "mixed captured constitutional editions",
+                )
+                .in_module(&name));
+            }
+            edition = Some(captured.edition());
+            let remaining = MAX_TOTAL_BYTES.checked_sub(total).ok_or_else(|| {
+                Error::new("limit", Span::default(), "source byte count overflow")
+            })?;
+            let source = selected
+                .read(super::project::SourcePolicy::Bounded {
+                    source_bytes: MAX_SOURCE_BYTES as u64,
+                    project_bytes: remaining as u64,
+                })
+                .map_err(|e| {
+                    Error::new(
+                        e.code,
+                        e.primary.map_or(Span::default(), |p| p.span),
+                        e.message,
+                    )
+                    .in_module(&name)
+                })?;
             total = total.checked_add(source.len()).ok_or_else(|| {
                 Error::new("limit", Span::default(), "source byte count overflow")
             })?;
@@ -313,9 +388,17 @@ impl ParsedProgram {
                         .in_module(&name),
                 );
             }
+            manifests.insert(name.clone(), captured);
             sources.insert(name, (Some(path), source));
         }
-        Self::parse_inputs(sources)
+        let edition = edition.ok_or_else(|| {
+            Error::new(
+                "edition",
+                Span::default(),
+                "no source manifest selects an edition",
+            )
+        })?;
+        Self::parse_inputs(edition, sources, manifests)
     }
 
     fn collection_error(failure: source::Failure) -> Error {

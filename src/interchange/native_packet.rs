@@ -1,6 +1,7 @@
-//! QLV2 external framing; original profile bytes stay immutable inner inputs.
+//! QLV3 external framing; original profile bytes stay immutable inner inputs.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::{Error, Result};
+use crate::edition::Edition;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
@@ -30,7 +31,11 @@ pub(super) struct Caller {
     pub(super) indices: Vec<usize>,
 }
 
-pub(super) fn encode(original: &[u8], view: Option<View<'_>>) -> Result<(Vec<u8>, Scope)> {
+pub(super) fn encode(
+    edition: Edition,
+    original: &[u8],
+    view: Option<View<'_>>,
+) -> Result<(Vec<u8>, Scope)> {
     let (scope, graph, caller, indices) = match view {
         None => (Scope::Inspection, &[][..], &[][..], &[][..]),
         Some(View {
@@ -53,12 +58,16 @@ pub(super) fn encode(original: &[u8], view: Option<View<'_>>) -> Result<(Vec<u8>
     {
         return Err(Error::limit("native envelope exceeds component limits"));
     }
-    let total = 24 + original.len() + graph.len() + caller.len() + 4 * indices.len();
+    let total = [original.len(), graph.len(), caller.len(), 4 * indices.len()]
+        .into_iter()
+        .try_fold(28usize, |total, n| total.checked_add(n))
+        .ok_or_else(|| Error::limit("native envelope size overflow"))?;
     if total > 64 << 20 {
         return Err(Error::limit("native envelope exceeds 64 MiB"));
     }
     let mut packet = Vec::with_capacity(total);
-    packet.extend_from_slice(b"QLV2");
+    packet.extend_from_slice(b"QLV3");
+    packet.extend_from_slice(&edition.as_u32().to_le_bytes());
     for field in [
         scope as usize,
         original.len(),

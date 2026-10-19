@@ -11,6 +11,7 @@ import copy
 from fractions import Fraction
 import hashlib
 import json
+import os
 from pathlib import Path
 import random
 import struct
@@ -302,6 +303,15 @@ def command(cmd, cwd, log, timeout=180):
                     stderr=run.stderr))
     assert run.returncode == 0, run.stdout + run.stderr
     return run.stdout
+
+
+def cargo_binary(project, name):
+    """Locate the binary in Cargo's selected target, without creating another one."""
+    selected = os.environ.get('CARGO_TARGET_DIR')
+    target = Path(selected) if selected else Path('target')
+    if not target.is_absolute():
+        target = project / target
+    return target / 'debug' / name
 
 
 def driver_source(all_cases):

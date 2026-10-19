@@ -33,7 +33,7 @@ fn dormant_primitive_x_refuses_at_its_original_action_like_a_direct_call() {
 )]
 #[test]
 fn dormant_zero_width_primitive_actions_each_require_a_fresh_native_request() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for basis in ["Unit", "(Unit,Unit)"] {
         let source = |actions: &str| {
             format!(
@@ -77,7 +77,7 @@ fn dormant_primitive_owner_type_comes_from_the_referenced_parameter_identity() {
     let positive = "
         unitary fn unused[const U:Op<Unit>](bit:Q<Bit>,scalar:Q<Unit>)->(Q<Bit>,Q<Unit>)
         requires Applicable(U){global_phase_eighth(ctrl scalar);(bit,U(scalar))}";
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let report = check_project_report_with_kernel(
         &SourceRoot::new(positive).0,
         SourcePolicy::default(),

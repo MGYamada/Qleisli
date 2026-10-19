@@ -31,15 +31,18 @@ pub(super) const USAGE: &str = "usage:
   qleisli run <source-root> [--format=json] [source-options]
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
-  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
-  qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
-  qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
-  qleisli engineering compare-instrument ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]
-  qleisli engineering compare-openqasm3 TARGET --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli verify-ir <artifact-file> --edition=2026 [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-pure ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-pure-tensor ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-instrument ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
   qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]
-  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]
+  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf> --edition=2026 [--shots=N --seed=S] [--lean-kernel=PATH]
+  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]
   interop always returns JSON; qli input takes a project directory.
+  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.
+  Edition selects the constitutional regime, independently of the compiler release.
 source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate
   --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).
   Use an explicitly built/audited native kernel. No automatic download or fallback.
@@ -74,6 +77,7 @@ pub(super) struct Options {
     pub against: Option<PathBuf>,
     pub qrate: bool,
     pub lean_kernel: Option<PathBuf>,
+    pub edition: Option<qleisli::edition::Edition>,
 }
 
 /// Canonical unsigned decimal spelling; the caller supplies its range and type.
@@ -89,6 +93,26 @@ pub(super) fn natural<T: std::str::FromStr>(text: &str) -> Option<T> {
 }
 
 impl Options {
+    pub fn kernel(
+        &self,
+        edition: qleisli::edition::Edition,
+    ) -> Result<qleisli::interchange::native::Kernel, qleisli::interchange::Error> {
+        match &self.lean_kernel {
+            Some(path) => Ok(qleisli::interchange::native::Kernel::new(path, edition)),
+            None => qleisli::interchange::native::Kernel::selected(edition),
+        }
+    }
+
+    pub fn requested_edition(
+        &self,
+    ) -> Result<qleisli::edition::Edition, qleisli::interchange::Error> {
+        self.edition.ok_or_else(|| qleisli::interchange::Error {
+            code: "edition",
+            message: "raw verification requires --edition=2026; edition selects the constitutional regime, independently of the compiler release".into(),
+            json_pointer: String::new(),
+        })
+    }
+
     pub fn parse(args: &[OsString], json: bool) -> Option<Self> {
         let mut positional = Vec::new();
         let (mut format, mut legacy) = (false, false);
@@ -96,11 +120,15 @@ impl Options {
         let (mut output, mut against) = (None, None);
         let mut qrate = false;
         let mut lean_kernel = None;
+        let mut edition = None;
         for arg in args {
             match arg.to_str() {
                 Some("--format=json") if json && !format => format = true,
                 Some("--legacy-source-limits") if !legacy => legacy = true,
                 Some("--qrate") if !qrate => qrate = true,
+                Some(s) if s.starts_with("--edition=") && edition.is_none() => {
+                    edition = Some(s[10..].parse().ok()?);
+                }
                 Some(s)
                     if s.starts_with("--lean-kernel=") && lean_kernel.is_none() && s.len() > 14 =>
                 {
@@ -143,6 +171,7 @@ impl Options {
             || command == "verify-ir" && (legacy || source.is_some() || project.is_some())
             || matches!(command, "verify-ir" | "doc") && qrate
             || command == "doc" && lean_kernel.is_some()
+            || command != "verify-ir" && edition.is_some()
         {
             return None;
         }
@@ -171,6 +200,7 @@ impl Options {
             against,
             qrate,
             lean_kernel,
+            edition,
         })
     }
 }

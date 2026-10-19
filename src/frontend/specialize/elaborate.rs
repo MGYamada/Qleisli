@@ -646,9 +646,29 @@ pub enum HierarchyEligibility {
 }
 
 impl ElaboratedProgram {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.instance.program.edition()
+    }
+
+    pub(super) fn require_edition(&self, edition: crate::edition::Edition) -> Result<()> {
+        if edition != self.edition() {
+            return Err(error(
+                "edition",
+                Span::default(),
+                "checker context differs from the captured source edition",
+            ));
+        }
+        Ok(())
+    }
+
     /// Immutable original collection identity, not semantic acceptance.
     pub(super) fn same_witness_source(&self, other: &Self) -> bool {
-        Arc::ptr_eq(&self.definitions, &other.definitions)
+        self.edition() == other.edition()
+            && Arc::ptr_eq(
+                &self.instance.program.manifests,
+                &other.instance.program.manifests,
+            )
+            && Arc::ptr_eq(&self.definitions, &other.definitions)
             && Arc::ptr_eq(
                 &self.instance.program.sources,
                 &other.instance.program.sources,
@@ -3457,13 +3477,16 @@ mod access_role_tests {
     use crate::frontend::ast::QuantumAccess;
 
     fn source() -> ElaboratedProgram {
-        ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "use std::gate::cnot;
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "use std::gate::cnot;
              pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){
                  cnot(excl t,excl c);(c,t)}"
-                .into(),
-        )]))
+                    .into(),
+            )]),
+        )
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -3477,7 +3500,8 @@ mod access_role_tests {
     )]
     #[test]
     fn public_source_control_roles_reach_replay_as_obligations_not_authority() {
-        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let kernel =
+            crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
         for (basis, operation, expected) in [
             ("Bit", "h", Some("contract")),
             ("Bit", "z", None),
@@ -3492,12 +3516,15 @@ mod access_role_tests {
                 "{import}pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(ctrl q);q}}"
             );
             let prepare = |text: String| {
-                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                    .unwrap()
-                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                    .unwrap()
-                    .elaborate()
-                    .unwrap()
+                ParsedProgram::parse(
+                    crate::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text)]),
+                )
+                .unwrap()
+                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
             };
             let source = prepare(text.clone());
             let step = &source.definitions[source.root].steps[0];
@@ -3528,12 +3555,15 @@ mod access_role_tests {
                 "use std::gate::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){{cnot({roles});(c,t)}}"
             );
             let prepare = |text: String| {
-                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                    .unwrap()
-                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                    .unwrap()
-                    .elaborate()
-                    .unwrap()
+                ParsedProgram::parse(
+                    crate::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text)]),
+                )
+                .unwrap()
+                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
             };
             let source = prepare(text.clone());
             let step = &source.definitions[source.root].steps[0];
@@ -3561,7 +3591,8 @@ mod access_role_tests {
     )]
     #[test]
     fn transformed_source_replay_cannot_erase_control_obligations() {
-        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let kernel =
+            crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
         for (parameters, body) in [
             ("q:Q<Bit>", "adjoint(oracle)(q)"),
             ("c:Q<Bit>,q:Q<Bit>", "controlled(oracle)(c,q)"),
@@ -3575,12 +3606,15 @@ mod access_role_tests {
                 "unitary fn oracle(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}}pub unitary fn f({parameters})->{output}{{{body}}}"
             );
             let prepare = |text: String| {
-                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                    .unwrap()
-                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                    .unwrap()
-                    .elaborate()
-                    .unwrap()
+                ParsedProgram::parse(
+                    crate::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text)]),
+                )
+                .unwrap()
+                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
             };
             let source = prepare(text.clone());
             assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
@@ -3608,7 +3642,8 @@ mod access_role_tests {
     )]
     #[test]
     fn native_replay_checks_actual_call_sectors_instead_of_effect_annotation() {
-        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let kernel =
+            crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let mut source = source();
         let proposal = source.lower_raw().unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
@@ -3649,8 +3684,9 @@ mod access_role_tests {
     )]
     #[test]
     fn native_control_replay_checks_only_the_consumed_call_and_has_no_fallback() {
-        let kernel = crate::interchange::native::Kernel::selected().unwrap();
-        let mut source = ParsedProgram::parse(BTreeMap::from([(
+        let kernel =
+            crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
+        let mut source = ParsedProgram::parse(crate::edition::Edition::E2026, BTreeMap::from([(
             "main".into(),
             "use std::gate::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){h(excl c);cnot(excl c,excl t);(c,t)}".into(),
         )])).unwrap().instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -3671,7 +3707,10 @@ mod access_role_tests {
         )
         .unwrap();
         // An existing directory cannot be launched as a native checker.
-        let unavailable = crate::interchange::native::Kernel::new(env!("CARGO_MANIFEST_DIR"));
+        let unavailable = crate::interchange::native::Kernel::new(
+            env!("CARGO_MANIFEST_DIR"),
+            crate::edition::Edition::E2026,
+        );
         assert!(
             super::super::raw::validate_source_with_kernel(
                 &source,
@@ -3707,15 +3746,19 @@ mod access_role_tests {
     )]
     #[test]
     fn native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase() {
-        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let kernel =
+            crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
         for (basis, operation, expected) in [
             ("Bit", "h", Some("contract")),
             ("Unit", "global_phase_eighth", None),
         ] {
-            let mut source = ParsedProgram::parse(BTreeMap::from([(
-                "main".into(),
-                format!("pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(excl q);q}}"),
-            )]))
+            let mut source = ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([(
+                    "main".into(),
+                    format!("pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(excl q);q}}"),
+                )]),
+            )
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap()

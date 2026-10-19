@@ -16,7 +16,10 @@ const IMPORTS: &str = " use std::gate::z; use std::gate::x;
     ";
 
 fn parse(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
 }
 
 fn matrix(source: &str) -> Matrix {
@@ -49,7 +52,10 @@ fn matrix(source: &str) -> Matrix {
     );
     assert_eq!(receipt.specification().quantum_inputs.len(), 1);
     let ordinary = receipt.meaning().clone();
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let selected = parse(source)
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -114,7 +120,10 @@ fn reference_operation_bindings_retain_requests_in_raw_and_hierarchy() {
         matrix(&source),
         Matrix::new(2, 2, vec![s, s, s, s.neg().unwrap()]).unwrap()
     );
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let selected = parse(&source)
         .unwrap()
         .instantiate("main::quantum_client", BTreeMap::new(), BTreeMap::new())
@@ -127,9 +136,12 @@ fn reference_operation_bindings_retain_requests_in_raw_and_hierarchy() {
         .check_operation_meanings(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
     let hierarchy = checked.lower_hierarchy().unwrap();
-    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-        .check_against_native(hierarchy.payload(), hierarchy.comparison_request())
-        .unwrap();
+    hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    )
+    .check_against_native(hierarchy.payload(), hierarchy.comparison_request())
+    .unwrap();
     let wrong = source.replace("{h(h(h(q)))}", "{q}");
     assert_ne!(source, wrong);
     assert!(compile_project(&SourceRoot::new(&wrong).0).is_err());
@@ -367,11 +379,16 @@ fn reference_arguments_and_visibility_are_exact() {
         ])
     };
     assert_eq!(
-        ParsedProgram::parse(modules("")).unwrap_err().code(),
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, modules(""))
+            .unwrap_err()
+            .code(),
         "visibility"
     );
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
-    let source = ParsedProgram::parse(modules("pub"))
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
+    let source = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules("pub"))
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -382,7 +399,10 @@ fn reference_arguments_and_visibility_are_exact() {
     assert!(
         source
             .check_function_contracts(
-                &Kernel::new("/absent-qleisli-reference-kernel"),
+                &Kernel::new(
+                    "/absent-qleisli-reference-kernel",
+                    qleisli::edition::Edition::E2026
+                ),
                 &mut Budget::new(DEFAULT_EXACT_WORK)
             )
             .is_err()
@@ -423,7 +443,10 @@ fn reference_does_not_erase_unused_generic_or_zero_repeat_lying_contracts() {
             compile_project(&SourceRoot::new(&text).0).unwrap_err().code,
             qleisli::frontend::compile::ErrorCode::Contract
         );
-        let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        );
         let source = parse(&text)
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -483,7 +506,10 @@ fn scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner() {
         "fn implementation(q:Q<Unit>)->Q<Unit>{q}",
     );
     assert!(compile_project(&SourceRoot::new(&wrong).0).is_err());
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let selected = parse(&wrong)
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())

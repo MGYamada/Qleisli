@@ -30,6 +30,7 @@ pub(in crate::frontend::specialize) fn check(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<ElaboratedProgram> {
+    source.require_edition(kernel.edition())?;
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
             "limit",
@@ -755,7 +756,10 @@ mod tests {
             fn reference_h(q:Q<Bit>)->Q<Bit>{h(q)}
             meaning H:Bit=reference(reference_h);
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}";
-        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let kernel = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
         for body in [
             "fn client[const U:Op<Bit,H>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
              pub observe fn main()->Bit{measure_z(client[implementation](init0()))}",
@@ -763,14 +767,17 @@ mod tests {
             "pub observe fn main()->(Bit,Bit){let(c,q)=controlled(checked_op(implementation,H))(init0(),init0());(measure_z(c),measure_z(q))}",
         ] {
             let text = format!("{prefix}{body}");
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                .unwrap()
-                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap()
-                .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
-                .unwrap();
+            let source = ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text)]),
+            )
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
             let checked = source
                 .check_operation_meanings(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
                 .unwrap();
@@ -839,20 +846,27 @@ mod tests {
             fn implementation(q:Q<Bit>)->Q<Bit>{h(h(h(q)))}
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub observe fn main()->Bit{measure_z(apply_contract(implementation,specified,init0()))}";
-        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
-            .unwrap();
+        let kernel = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
         let proposal = source.lower_raw().unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         let mut changed = accepted.raw().clone();
         let receipt = source.contracts.values().next().unwrap().receipt.clone();
         let replacement = FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             receipt.signature().clone(),
             receipt.specification().clone(),
             receipt.specification().clone(),

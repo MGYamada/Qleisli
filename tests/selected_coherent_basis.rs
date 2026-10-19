@@ -5,12 +5,15 @@ use qleisli::frontend::compile::{ElaboratedProgram, ParsedProgram};
 use std::collections::BTreeMap;
 
 fn source(text: &str) -> ElaboratedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .unwrap()
-        .instantiate("main::f", Default::default(), Default::default())
-        .unwrap()
-        .elaborate()
-        .unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
+    .instantiate("main::f", Default::default(), Default::default())
+    .unwrap()
+    .elaborate()
+    .unwrap()
 }
 
 fn table(graph: &ElaboratedProgram) -> &[u16] {
@@ -63,19 +66,22 @@ fn selected_coherent_unit_empty_bits_and_product_trees_remain_exact() {
 
 #[test]
 fn selected_coherent_calls_use_original_imports_and_full_classical_bodies() {
-    let graph = ParsedProgram::parse(BTreeMap::from([
-        (
-            "labels".into(),
-            "pub classical fn twist((a,b):(Bit,Bit))->(Bit,Bit){(a xor b,b)}".into(),
-        ),
-        (
-            "main".into(),
-            "use labels::twist;
+    let graph = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            (
+                "labels".into(),
+                "pub classical fn twist((a,b):(Bit,Bit))->(Bit,Bit){(a xor b,b)}".into(),
+            ),
+            (
+                "main".into(),
+                "use labels::twist;
             classical fn nested(p:(Bit,Bit))->(Bit,Bit){twist(twist(p))}
             pub unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{basis q as p {nested(p)}}"
-                .into(),
-        ),
-    ]))
+                    .into(),
+            ),
+        ]),
+    )
     .unwrap()
     .instantiate("main::f", Default::default(), Default::default())
     .unwrap()
@@ -100,12 +106,15 @@ fn selected_coherent_injectivity_checks_every_label_and_ordinary_label_copying()
     graph.lower_raw().unwrap();
     for (basis, body) in [("Bit", "0"), ("(Bit,Bit)", "(a and b,b)")] {
         let pattern = if basis == "Bit" { "a" } else { "(a,b)" };
-        let parsed = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            format!(
-                "pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{basis q as {pattern} {{{body}}}}}"
-            ),
-        )]))
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                format!(
+                    "pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{basis q as {pattern} {{{body}}}}}"
+                ),
+            )]),
+        )
         .unwrap();
         let error = parsed
             .instantiate("main::f", Default::default(), Default::default())
@@ -161,7 +170,7 @@ fn selected_coherent_native_raw_and_replay_preserve_an_entangled_caller() {
             let a=basis a as x {not x}; (measure_z(a),measure_z(b))}",
     );
     let proposal = graph.lower_raw().unwrap();
-    let accepted = Kernel::selected()
+    let accepted = Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -206,7 +215,7 @@ fn exact_pair(
         fn specification(q:Q<{domain}>)->Q<{codomain}>{{{reference}}}
         {entry}"
     ));
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     // This checks every exact complex matrix entry of two separately authored
     // source bodies through fresh native decisions, including full codomain
     // shape. Agreement of a sampled distribution cannot satisfy this request.

@@ -29,7 +29,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 fn kernel() -> Kernel {
-    Kernel::selected().expect("set QLEISLI_KERNEL to the matching native checker")
+    Kernel::selected(qleisli::edition::Edition::E2026)
+        .expect("set QLEISLI_KERNEL to the matching native checker")
 }
 
 /// Every receipt reachable from a program, including nested receipts used by
@@ -464,6 +465,7 @@ fn named_receipt(
 ) -> Arc<FunctionEvidence> {
     Arc::new(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Bit,
             implementation,
             specification,
@@ -646,6 +648,7 @@ fn positive_evidence_coverage_reaches_every_retained_path() {
         // Check the complete decoded root against an independent 2x2 phase
         // table, including the selected branch and cleanup's logical action.
         let meaning = MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
             checked.program().raw().clone(),
             FiniteMeaning::phase(BasisType::Bit, vec![0, phase]).unwrap(),
             identity(),
@@ -716,8 +719,14 @@ fn qirf2_meaning_entries_execute_the_checked_table() {
         let target = target.unwrap();
         let bits = target.signature().bits().unwrap();
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let evidence = MeaningEvidence::check(implementation, target, identity(), &mut budget)
-            .unwrap_or_else(|e| panic!("{name}: {e:?}"));
+        let evidence = MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            implementation,
+            target,
+            identity(),
+            &mut budget,
+        )
+        .unwrap_or_else(|e| panic!("{name}: {e:?}"));
         let caller = circuit(
             bits,
             vec![CircuitStep {
@@ -775,7 +784,14 @@ fn a_wrong_table_is_rejected_before_any_receipt_exists() {
     // T claims the S table: the exact global/relative phase must be checked.
     let wrong = FiniteMeaning::phase(BasisType::Bit, vec![0, 2]).unwrap();
     assert!(
-        MeaningEvidence::check(gates(&[SingleGate::T]), wrong, identity(), &mut budget).is_err()
+        MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            gates(&[SingleGate::T]),
+            wrong,
+            identity(),
+            &mut budget
+        )
+        .is_err()
     );
     // CNOT with the control on the high bit is a different permutation.
     let high = FiniteMeaning::permutation(
@@ -784,5 +800,14 @@ fn a_wrong_table_is_rejected_before_any_receipt_exists() {
     )
     .unwrap();
     let low = circuit(2, vec![low_controlled(vec![1, 0], vec![0, 0])]);
-    assert!(MeaningEvidence::check(low, high, identity(), &mut budget).is_err());
+    assert!(
+        MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            low,
+            high,
+            identity(),
+            &mut budget
+        )
+        .is_err()
+    );
 }

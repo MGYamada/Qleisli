@@ -23,13 +23,16 @@ fn source(body: &str) -> String {
 }
 
 fn selected_at(text: &str, entry: &str) -> AcceptedProgram {
-    let program = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .unwrap()
-        .instantiate(entry, BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
+    .instantiate(entry, BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let proposal = program
         .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -70,7 +73,7 @@ fn finite(text: &str) -> (AcceptedProgram, String) {
             }
         })
         .expect("retained actual provider");
-    let program = Kernel::selected()
+    let program = Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept_raw(implementation)
         .unwrap();
@@ -100,6 +103,7 @@ fn independent_swap() -> RawProgram {
 
 fn compare(program: &AcceptedProgram, text: &str) -> Result<FunctionEvidence, ContractError> {
     FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::pair(BasisType::Bit, BasisType::Bit),
         program.raw().clone(),
         independent_swap(),

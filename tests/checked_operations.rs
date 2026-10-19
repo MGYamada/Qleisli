@@ -500,7 +500,10 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
             "use std::gate::x;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}unitary fn unused{signature}{{{body}}}"
         );
         assert!(check_project(&SourceRoot::new(&text).0).is_err(), "{text}");
-        assert!(ParsedProgram::parse(sources(&text)).is_err(), "{text}");
+        assert!(
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text)).is_err(),
+            "{text}"
+        );
     }
     let text = "unitary fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){controlled(power(U,0))(c,q)}";
     let error = check_project(&SourceRoot::new(text).0).unwrap_err();
@@ -629,7 +632,7 @@ fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
         unitary fn undo(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}
         pub observe fn main()->Bit{measure_z(h(undo(inverse(init0()))))}";
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
-    let selected = ParsedProgram::parse(sources(text))
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text))
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -637,8 +640,10 @@ fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
         .unwrap()
         .lower_raw()
         .unwrap();
-    let native =
-        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let native = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let accepted = native.accept(selected.proposal()).unwrap();
     selected.validate_source_steps(&accepted).unwrap();
     for distribution in [
@@ -659,7 +664,8 @@ fn canonical_inverse_checks_unused_zero_count_generic_access() {
             requires Applicable(U){{{body}}}"
         );
         let finite = check_project(&SourceRoot::new(&text).0).unwrap_err();
-        let selected = ParsedProgram::parse(sources(&text)).unwrap_err();
+        let selected =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text)).unwrap_err();
         assert!(finite.message.contains("Adjointable"), "{finite}");
         assert!(selected.message().contains("Adjointable"), "{selected}");
         let start = text.find(body).unwrap();
@@ -757,7 +763,8 @@ fn adjoint_construction_checks_access_before_outer_or_unused_descriptions() {
              unitary fn bad[const U:Op<{basis}>](q:Q<{runtime_basis}>)->Q<{runtime_basis}>
              requires {constraint}{{{body}}}"
         );
-        let selected = match ParsedProgram::parse(sources(&text)) {
+        let selected = match ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text))
+        {
             Err(error) => error,
             Ok(_) => panic!("adjoint construction accepted without its path: {text}"),
         };
@@ -777,9 +784,11 @@ fn adjoint_construction_checks_access_before_outer_or_unused_descriptions() {
             &format!("requires {constraint}"),
             &format!("requires {constraint},Adjointable(U)"),
         );
-        ParsedProgram::parse(sources(&supplied)).unwrap_or_else(|error| {
-            panic!("{supplied}\n{error}");
-        });
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&supplied)).unwrap_or_else(
+            |error| {
+                panic!("{supplied}\n{error}");
+            },
+        );
     }
 }
 
@@ -888,7 +897,8 @@ fn legacy_exact_word_is_rejected_in_identifier_and_constructor_positions() {
         assert_eq!(finite.code, "parse", "{finite:?}");
         retirement(&finite.message);
         assert_eq!(finite.primary.unwrap().span, span);
-        let selected = ParsedProgram::parse(sources(source)).unwrap_err();
+        let selected =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
         assert_eq!(selected.code(), "parse", "{selected}");
         assert_eq!(selected.module(), Some("main"));
         retirement(selected.message());
@@ -906,7 +916,7 @@ fn comments_and_longer_names_survive_but_the_new_constructor_is_reserved() {
     let root = SourceRoot::new(source);
     check_project(&root.0).unwrap();
     parse_documented_module(source).unwrap();
-    ParsedProgram::parse(sources(source))
+    ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source))
         .unwrap()
         .instantiate("main::checked_op2", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1155,7 +1165,8 @@ fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
         let source = format!("{PRELUDE}{body}");
         let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(error.code, finite_code, "{error}");
-        let selected = ParsedProgram::parse(sources(&source)).unwrap_err();
+        let selected =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&source)).unwrap_err();
         assert_eq!(selected.code(), common_code, "{selected}");
         assert!(
             !selected
@@ -1216,7 +1227,7 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
         ("x(z(x(q)))", false),
     ] {
         let text = source.replace("power(t,4)(q)", provider);
-        let source = ParsedProgram::parse(sources(&text))
+        let source = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text))
             .unwrap()
             .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1225,13 +1236,17 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
         assert!(source.has_operation_meanings());
         assert_eq!(source.lower().unwrap_err().code(), "meaning");
         let checked = source.check_operation_meanings(
-            &qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap()),
+            &qleisli::interchange::native::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
+            ),
             &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
         );
         if honest {
             let graph = checked.unwrap().lower_hierarchy().unwrap();
             qleisli::interchange::hierarchical::Kernel::new(
                 std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
             )
             .check_against_native(graph.payload(), graph.comparison_request())
             .unwrap();
@@ -1283,7 +1298,7 @@ fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
             pub observe fn main()->Bit{{measure_z(power(oracle,{count})(power(init0(),0)))}}"
         );
         let finite = compile_project(&SourceRoot::new(&text).0).unwrap();
-        let selected = ParsedProgram::parse(sources(&text))
+        let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -1291,10 +1306,11 @@ fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
             .unwrap()
             .lower_raw()
             .unwrap();
-        let accepted = qleisli::interchange::native::Kernel::selected()
-            .unwrap()
-            .accept(selected.proposal())
-            .unwrap();
+        let accepted =
+            qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
+                .unwrap()
+                .accept(selected.proposal())
+                .unwrap();
         selected.validate_source_steps(&accepted).unwrap();
         for program in [&finite, &accepted] {
             let distribution = run_closed(program, SimulationLimits::default()).unwrap();
@@ -1320,7 +1336,8 @@ fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
         let text = format!(
             "// 日本語\r\nunitary fn unused[const U:Op<Bit>]{signature} requires {access} {{{body}}}"
         );
-        let error = ParsedProgram::parse(sources(&text)).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&text)).unwrap_err();
         let wanted = if body.starts_with("controlled") {
             "Controllable"
         } else if body.starts_with("adjoint") {
@@ -1354,7 +1371,7 @@ fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
 fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     let text = "use std::gate::x; use std::state::init0;  unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}";
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
-    let raw = ParsedProgram::parse(sources(text))
+    let raw = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text))
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -1362,7 +1379,7 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
         .unwrap()
         .lower_raw()
         .unwrap();
-    let accepted = qleisli::interchange::native::Kernel::selected()
+    let accepted = qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(raw.proposal())
         .unwrap();
@@ -1376,7 +1393,7 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     let text = "use std::gate::x; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(oracle,4097)(q)}";
     assert!(compile_project(&SourceRoot::new(text).0).is_err());
     assert!(
-        ParsedProgram::parse(sources(text))
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text))
             .and_then(|program| program.instantiate("main::f", BTreeMap::new(), BTreeMap::new()))
             .and_then(|instance| instance.elaborate())
             .is_err()
@@ -1386,10 +1403,13 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     let root = SourceRoot::new(text);
     root.write("helper.qli", helper);
     check_project(&root.0).unwrap();
-    ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), text.into()),
-        ("helper".into(), helper.into()),
-    ]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), text.into()),
+            ("helper".into(), helper.into()),
+        ]),
+    )
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
     .unwrap()

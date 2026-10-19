@@ -59,6 +59,9 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
         if name == "sample" {
             command.args(["--shots=1", "--seed=1"]);
         }
+        if name == "verify-ir" {
+            command.arg("--edition=2026");
+        }
         if name == "emit-ir" {
             command.arg(format!("--output={}", artifact.display()));
         }

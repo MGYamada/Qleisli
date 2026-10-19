@@ -38,6 +38,9 @@ fn native_transport_failures_use_the_closed_v1_project_code() {
         if command == "sample" {
             process.args(["--shots=1", "--seed=1"]);
         }
+        if command == "verify-ir" {
+            process.arg("--edition=2026");
+        }
         if command == "emit-ir" {
             process.arg(format!(
                 "--output={}",
@@ -280,11 +283,24 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         .replace(
             verify_ir,
             &format!(concat!(
-                "{verify_ir}  qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
-                "  qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
-                "  qleisli engineering compare-instrument ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
-                "  qleisli engineering compare-openqasm3 TARGET --against=REQUEST [--lean-kernel=PATH] [--format=json]\n"
-            ), verify_ir = verify_ir),
+                "{verify_ir}  qleisli engineering compare-pure ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
+                "  qleisli engineering compare-pure-tensor ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
+                "  qleisli engineering compare-instrument ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]\n",
+                "  qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]\n"
+            ), verify_ir = verify_ir.replace("<artifact-file>", "<artifact-file> --edition=2026")),
+        )
+        .replace(
+            "<file|-> --input=<qasm|qirf|qli>",
+            "<file|-> --input=<qasm|qirf> --edition=2026",
+        )
+        .replace(
+            "  interop always returns JSON; qli input takes a project directory.\n",
+            concat!(
+                "  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]\n",
+                "  interop always returns JSON; qli input takes a project directory.\n",
+                "  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.\n",
+                "  Edition selects the constitutional regime, independently of the compiler release.\n"
+            ),
         )
         .replace(
             retired_documentation,

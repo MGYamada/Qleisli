@@ -5,7 +5,10 @@ use qleisli::interchange::hierarchical::Kernel;
 #[test]
 #[ignore = "run through scripts/test_sized_corpus.py with an audited native kernel"]
 fn inspect_source_produced_corpus() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let directory = std::path::PathBuf::from(std::env::var_os("QLEISLI_SIZED_CORPUS").unwrap());
     let manifest = std::fs::read_to_string(directory.join("cases.txt")).unwrap();
     for line in manifest.lines() {
@@ -36,7 +39,10 @@ fn inspect_source_produced_corpus() {
 #[test]
 #[ignore = "run through scripts/test_sized_qft.py with an audited native kernel"]
 fn check_source_fourier_contracts() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let directory = std::path::PathBuf::from(std::env::var_os("QLEISLI_SIZED_QFT").unwrap());
     let manifest = std::fs::read_to_string(directory.join("cases.txt")).unwrap();
     for line in manifest.lines() {
@@ -77,7 +83,10 @@ fn check_source_fourier_contracts() {
 #[test]
 #[ignore = "run through scripts/test_instrument_host.py with an audited native kernel"]
 fn check_source_instrument_contracts() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let directory = std::path::PathBuf::from(std::env::var_os("QLEISLI_SIZED_INSTRUMENT").unwrap());
     let manifest = std::fs::read_to_string(directory.join("cases.txt")).unwrap();
     for line in manifest.lines() {

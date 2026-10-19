@@ -39,7 +39,11 @@ fn source(name: &str) -> String {
 }
 
 fn parsed(text: &str) -> ParsedProgram {
-    let original = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let original = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     let cloned = original.clone();
     drop(original);
     assert_eq!(cloned.source("main"), Some(text));
@@ -55,7 +59,10 @@ fn elaborate(text: &str, entry: &str, naturals: BTreeMap<String, u32>) -> Elabor
 }
 
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 
 fn limits() -> ExecutionLimits {
@@ -352,8 +359,11 @@ fn retained_fourteen_sources_reach_type_and_owner_judgments() {
         ("wildcard-owner", "ownership"),
         ("zero-fold-invalid", "ownership"),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), study(name))])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), study(name))]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{name}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start, "{error}");
@@ -526,6 +536,7 @@ fn native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_
     assert_eq!(leaf.boundary().signature(), &BasisType::Unit);
     let required = Matrix::new(1, 1, vec![Exact::phase(1)]).unwrap();
     check_unitary(
+        qleisli::edition::Edition::E2026,
         leaf.payload(),
         leaf.boundary(),
         &required,
@@ -560,9 +571,13 @@ fn native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_
         None,
     )
     .unwrap();
-    native::Kernel::selected().unwrap().accept(&wrong).unwrap();
+    native::Kernel::selected(qleisli::edition::Edition::E2026)
+        .unwrap()
+        .accept(&wrong)
+        .unwrap();
     assert!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             wrong.artifact(),
             leaf.boundary(),
             &required,
@@ -873,8 +888,11 @@ fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
         ),
     ] {
         let text = format!(" {declaration}");
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
         assert!(error.message().contains(message), "{text}: {error}");
         assert_eq!(error.module(), Some("main"));
@@ -911,6 +929,7 @@ fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
     for (_, serialized) in reconstructed.leaves() {
         let leaf = serialized.leaf();
         check_unitary(
+            qleisli::edition::Edition::E2026,
             leaf.payload(),
             leaf.boundary(),
             &required,
@@ -938,8 +957,11 @@ fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
 #[test]
 fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
     for name in ["unused-invalid", "unused-zero-provider"] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source(name))])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source(name))]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "ownership", "{name}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start);
@@ -952,7 +974,7 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
             HierarchyEligibility::Eligible
         ));
         let raw = graph.lower_raw().unwrap();
-        let selected = native::Kernel::selected().unwrap();
+        let selected = native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
         let accepted = selected.accept(raw.proposal()).unwrap();
         raw.validate_source_steps(&accepted).unwrap();
         let target =
@@ -983,7 +1005,7 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
 fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
     let graph = elaborate(&study("id"), "main::f", BTreeMap::new());
     let proposal = graph.lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -1002,6 +1024,7 @@ fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
     .unwrap();
     let identity = Matrix::new(1, 1, vec![Exact::one()]).unwrap();
     let leaf = check_unitary(
+        qleisli::edition::Edition::E2026,
         proposal.payload(),
         &boundary,
         &identity,
@@ -1012,6 +1035,7 @@ fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
     let minus = Matrix::new(1, 1, vec![Exact::phase(4)]).unwrap();
     assert!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             proposal.payload(),
             &boundary,
             &minus,
@@ -1033,7 +1057,7 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
     ] {
         let graph = elaborate(&source(name), "main::f", BTreeMap::new());
         let proposal = graph.lower_raw().unwrap();
-        let accepted = native::Kernel::selected()
+        let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(proposal.proposal())
             .unwrap();
@@ -1059,6 +1083,7 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
             .collect();
         let required = Matrix::new(dimension, dimension, entries).unwrap();
         check_unitary(
+            qleisli::edition::Edition::E2026,
             proposal.payload(),
             &boundary,
             &required,
@@ -1076,6 +1101,7 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
         }
         assert!(
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 proposal.payload(),
                 &boundary,
                 &wrong,
@@ -1091,7 +1117,7 @@ fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
             panic!("exact monomial");
         };
         phases[0] = 0;
-        let wrong_accepted = native::Kernel::selected()
+        let wrong_accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept_raw(changed)
             .unwrap();
@@ -1111,7 +1137,7 @@ fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
     let finite = compile_project(&SourceRoot::new(text).0).unwrap();
     let graph = elaborate(text, "main::main", BTreeMap::new());
     let proposal = graph.lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -1146,7 +1172,7 @@ fn raw_nested_products_and_calls_keep_empty_owners_beside_a_live_bit() {
         -> (Q<Unit>, (Q<Bit>, Q<Unit>)) { (keep(a), (c, keep(b))) }";
     let graph = elaborate(text, "main::f", BTreeMap::new());
     let proposal = graph.lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -1239,7 +1265,11 @@ fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
             .into(),
     ] {
         assert!(
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).is_err(),
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text.clone())])
+            )
+            .is_err(),
             "{text}"
         );
     }
@@ -1296,7 +1326,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
             &expected,
         );
         let raw = source.lower_raw().unwrap();
-        let accepted = native::Kernel::selected()
+        let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(raw.proposal())
             .unwrap();
@@ -1347,7 +1377,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
     // Independently bind the entire actual Raw body to exact diag(1,-1).
     // The hierarchy graph's phase constructor is not a substitute for this
     // full 2x2 coefficient check, including global phase and ordered ports.
-    let raw_kernel = native::Kernel::selected().unwrap();
+    let raw_kernel = native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let raw_equation = |source: &ElaboratedProgram, honest: bool| {
         let raw = source.lower_raw().unwrap();
         let accepted = raw_kernel.accept(raw.proposal()).unwrap();
@@ -1361,6 +1391,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
         )
         .unwrap();
         let equation = check_unitary(
+            qleisli::edition::Edition::E2026,
             raw.proposal().artifact(),
             &boundary,
             &matrix,
@@ -1427,7 +1458,7 @@ fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
     let raw = elaborate(text, "main::main", BTreeMap::new())
         .lower_raw()
         .unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(raw.proposal())
         .unwrap();
@@ -1444,7 +1475,11 @@ fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
     ] {
         let text = format!("// 日本語\r\nuse std::gate::z; pub unitary fn f{signature}");
         assert!(
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).is_err(),
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text.clone())])
+            )
+            .is_err(),
             "{text}"
         );
         assert!(
@@ -1465,7 +1500,7 @@ fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit
     );
     let source = elaborate(&text, "main::main", BTreeMap::new());
     let raw = source.lower_raw().unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(raw.proposal())
         .unwrap();
@@ -1492,7 +1527,7 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
     let complete = elaborate(&original, "main::main", BTreeMap::new())
         .lower_raw()
         .unwrap();
-    let accepted = native::Kernel::selected()
+    let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(complete.proposal())
         .unwrap();
@@ -1550,7 +1585,7 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
                 &expected,
             );
             let raw = source.lower_raw().unwrap();
-            let accepted = native::Kernel::selected()
+            let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
                 .unwrap()
                 .accept(raw.proposal())
                 .unwrap();
@@ -1594,7 +1629,7 @@ fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action
             &expected,
         );
         let raw = source.lower_raw().unwrap();
-        let accepted = native::Kernel::selected()
+        let accepted = native::Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(raw.proposal())
             .unwrap();

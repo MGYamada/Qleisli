@@ -8,7 +8,11 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 #[cfg_attr(
@@ -34,6 +38,7 @@ fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
         let proposal = graph.lower().unwrap();
         let kernel = qleisli::interchange::hierarchical::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
         );
         let accepted = kernel
             .check_against_native(proposal.payload(), proposal.comparison_request())
@@ -87,6 +92,7 @@ fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() 
         let proposal = graph.lower().unwrap();
         let kernel = qleisli::interchange::hierarchical::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
         );
         let accepted = kernel
             .check_against_native(proposal.payload(), proposal.comparison_request())
@@ -155,14 +161,14 @@ fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
         ("left".into(), "static fn width[const n:Nat]()->Nat{n+1} pub fn left[const n:Nat]()->Bit{static let m=width[n]();if static m==n+1{1}else{0}}".into()),
         ("right".into(), "static fn width[const n:Nat]()->Nat{n+2} pub fn right[const n:Nat]()->Bit{static let m=width[n]();if static m==n+2{1}else{0}}".into()),
     ]);
-    let program = ParsedProgram::parse(modules.clone()).unwrap();
+    let program = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules.clone()).unwrap();
     let graph = program
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
         .elaborate()
         .unwrap();
     let proposal = graph.lower_raw().unwrap();
-    let accepted = qleisli::interchange::native::Kernel::selected()
+    let accepted = qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -176,7 +182,9 @@ fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
         "use left::width; pub observe fn main()->Bit{0}".into(),
     );
     assert_eq!(
-        ParsedProgram::parse(private).unwrap_err().code(),
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, private)
+            .unwrap_err()
+            .code(),
         "visibility"
     );
 }
@@ -199,8 +207,11 @@ fn helper_premises_are_required_at_the_original_call() {
         "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1} pub observe fn main()->Bit{static let n=previous[0]();0}",
         "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1} pub unitary fn f[const n:Nat]()->Bit{static let k=previous[n]();0}",
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "size", "{error}");
         assert!(check_project(&SourceRoot::new(source).0).is_err());
     }
@@ -258,8 +269,11 @@ fn runtime_dependencies_cycles_unused_invalid_bodies_and_arity_reject() {
             "static",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{source}: {error}");
         assert!(
             check_project(&SourceRoot::new(source).0).is_err(),
@@ -272,9 +286,12 @@ fn runtime_dependencies_cycles_unused_invalid_bodies_and_arity_reject() {
 fn normalized_and_concrete_helper_overflow_remain_capacity_failures() {
     let symbolic = "static fn invalid()->Nat{170141183460469231731687303715884105727+1} pub observe fn main()->Bit{0}";
     assert_eq!(
-        ParsedProgram::parse(BTreeMap::from([("main".into(), symbolic.into())]))
-            .unwrap_err()
-            .code(),
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), symbolic.into())])
+        )
+        .unwrap_err()
+        .code(),
         "limit"
     );
     let concrete =

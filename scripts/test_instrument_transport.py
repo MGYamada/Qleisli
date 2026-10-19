@@ -63,7 +63,7 @@ def encode(case):
 class InstrumentTransportTests(unittest.TestCase):
     def inspect(self, case, payload=None):
         with patch.object(transport.subprocess, 'run', side_effect=recorded_run):
-            return transport.inspect(KERNEL, case['kind'], encode(case) if payload is None else payload)
+            return transport.inspect(KERNEL, case['kind'], encode(case) if payload is None else payload, edition='2026')
 
     def test_matching_version_checks_both_components(self):
         for case in cases():
@@ -96,12 +96,12 @@ class InstrumentTransportTests(unittest.TestCase):
                     result = recorded_run([str(KERNEL), f'--{case["kind"]}-check', *suffix],
                                           input=encode(case), capture_output=True, timeout=60)
                     self.assertEqual(result.returncode, 1)
-                    self.assertEqual(result.stdout, b'qleisli.qirf-native 2\nerror\nversion\n')
+                    self.assertEqual(result.stdout, b'qleisli.native-result 3\nerror\nversion\n')
 
     def test_unknown_component_never_starts_the_kernel(self):
         with patch.object(transport.subprocess, 'run') as run:
             with self.assertRaisesRegex(ValueError, 'unknown component'):
-                transport.inspect(KERNEL, 'unknown', b'')
+                transport.inspect(KERNEL, 'unknown', b'', edition='2026')
             run.assert_not_called()
 
 

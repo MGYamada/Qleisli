@@ -6,6 +6,47 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Record the repository-root `bin/` deployment and explicit-path validation
+  policy for future `qlt`, `qdb` and `qcp` executables alongside the four
+  existing companion tools.
+
+- Retain explicit typed constitutional edition requests and exact selecting/
+  nested manifest bytes through filesystem project preparation; reject root
+  or module-inventory substitution. Retained configuration shares the existing
+  aggregate input budget. Propagate captured editions into explicitly bound
+  Rust kernels and QLV3 native decisions; strictly match edition, complete
+  product version, mode and scope in version-3 replies. Raw/foreign/engineering
+  commands require an explicit edition. Migrate native framing, generated Rust
+  clients and packaging helpers to the same explicit context; preserve existing
+  hierarchy diagnostic classifications. Require explicit Python client/CLI
+  editions and retain them in Program data; source interop assertions compare
+  the captured manifest without overriding it. Track the current native mode
+  tables, Main's actual adapter and wrapper-to-original checker bindings in
+  production coverage; reject extra aliases, altered layout and missing context
+  guards. Refresh current schema and scoped-guarantee evidence after both Lean
+  builds/audits, fresh kernel/Main replay and fixed type/Raw/Basis transport
+  checks; retain the admitted meanings and pending broader obligations.
+  Update Rustdoc and raw CLI/foreign-format test consumers to pass explicit
+  editions while preserving their original IO, contract and atomic-output checks.
+  Count retained manifest bytes in the aggregate-capacity regression oracle,
+  preserving the exact-boundary and one-byte-over-limit checks; pin its original
+  source and failures in the existing passive history-integrity reader.
+  Migrate diagnostic checker replies and direct rectangular pure-leaf request
+  tests to the current native envelope, retaining their refusal and mutation
+  checks without accepting legacy frames.
+  Update hierarchical rejection stand-ins and malformed-obligation replies
+  so current framing cannot hide the intended diagnostic/payload checks.
+  Review and synchronize the changed hierarchy comparison-harness source pin;
+  retain every original serialized comparison artifact and request.
+  Charge the retained selecting manifest before single-file documentation
+  reads, including empty sources; preserve exact aggregate boundaries and the
+  existing file-limit, explicit legacy and overflow refusals.
+  Document the separate edition/product/format coordinates and implemented
+  qargo std/configuration records, retaining pending distribution gates.
+  Complete ecosystem migration and CI under #255 remain pending.
+
+- Preserve the original native-edition source/diagnostic study as bounded inert
+  history with exact-byte integrity checks; edition propagation remains pending.
 - Add opt-in per-invocation native regression-driver consolidation with exact
   original generated-source binding, explicit selectors and fresh standalone
   fallback only when no shared selection is present. Default adoption and the

@@ -173,11 +173,13 @@ fn selected_source_identity_reaches_every_cli_consumer_and_rechecks_unused_sourc
                         "sample" if json => assert_eq!(text.matches("\"bits\":[true]").count(), 3),
                         "sample" => assert_eq!(text, "1\n1\n1\n"),
                         "emit-ir" => {
-                            let checked = qleisli::interchange::native::Kernel::selected()
-                                .unwrap()
-                                .check(&fs::read(&artifact).unwrap(), None)
-                                .unwrap()
-                                .into_program();
+                            let checked = qleisli::interchange::native::Kernel::selected(
+                                qleisli::edition::Edition::E2026,
+                            )
+                            .unwrap()
+                            .check(&fs::read(&artifact).unwrap(), None)
+                            .unwrap()
+                            .into_program();
                             let distribution = qleisli::sim::run_closed(
                                 &checked,
                                 qleisli::sim::SimulationLimits::default(),

@@ -31,15 +31,21 @@ static REBIND: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
 });
 
 fn refusal(source: &str, code: &str, span: Span, message: &str) {
-    let selected =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(selected.span(), span, "{selected}");
     assert!(selected.message().contains(message), "{selected}");
     let root = SourceRoot::new(source);
     let failure = check_project_with_kernel(
         &root.0,
         SourcePolicy::default(),
-        &Kernel::new(root.0.join("must-not-invoke-native")),
+        &Kernel::new(
+            root.0.join("must-not-invoke-native"),
+            qleisli::edition::Edition::E2026,
+        ),
     )
     .unwrap_err();
     assert_eq!(failure.code, code, "{failure:?}");
@@ -141,7 +147,11 @@ fn incomplete_qualified_paths_do_not_suggest_importing_a_module_as_a_function() 
 fn explicit_static_else_executes_only_the_selected_ordinary_arm() {
     for (predicate, expected) in [("1 == 1", true), ("1 == 0", false)] {
         let source = format!("observe fn main()->Bit{{if static {predicate} {{1}} else {{0}}}}");
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap();
         let program = compile_project(&SourceRoot::new(&source).0).unwrap();
         let outcomes =
             qleisli::sim::run_closed(&program, qleisli::sim::SimulationLimits::default()).unwrap();
@@ -200,7 +210,7 @@ fn selected_native_rejections_keep_one_category_and_fail_closed_in_text_and_json
     let checker = root.0.join("rejecting-checker");
     for code in ["invalid_ir", "limit"] {
         std::fs::write(&checker, format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf 'qleisli.qirf-native 2\\nerror\\n{code}\\n'\nexit 1\n"
+            "#!/bin/sh\ncat >/dev/null\nprintf 'qleisli.native-result 3\\nerror\\n{code}\\n'\nexit 1\n"
         )).unwrap();
         std::fs::set_permissions(&checker, std::fs::Permissions::from_mode(0o700)).unwrap();
         for json in [false, true] {

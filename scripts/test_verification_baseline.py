@@ -205,7 +205,7 @@ def source_comparisons(binary):
             original, current = path.read_bytes(), emitted.read_bytes()
             verifications = {}
             for label, artifact_path in [('historical', path), ('current', emitted)]:
-                stdout,_=invoke([binary,'verify-ir',artifact_path,'--format=json'])
+                stdout,_=invoke([binary,'verify-ir',artifact_path,'--edition=2026','--format=json'])
                 verified=json.loads(stdout,object_pairs_hook=unique)
                 if verified != dict(format='qleisli.result', version=1, command='verify-ir',
                                     outcome='ok', diagnostics=[], result=expected_scope):

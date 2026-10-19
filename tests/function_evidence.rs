@@ -87,6 +87,7 @@ fn flat(bits: u8, steps: Vec<CircuitStep>) -> RawProgram {
 
 fn check(bits: u8, implementation: RawProgram, specification: RawProgram) -> FunctionEvidence {
     FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         basis(bits),
         implementation,
         specification,
@@ -228,6 +229,7 @@ fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
     for candidate in [raw(1, vec![], 0), negative_h] {
         assert_eq!(
             FunctionEvidence::check(
+                qleisli::edition::Edition::E2026,
                 BasisType::Bit,
                 candidate,
                 reference.clone(),
@@ -249,8 +251,15 @@ fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
         )
     };
     assert_eq!(
-        FunctionEvidence::check(basis(2), on_axis(1), on_axis(0), identity(), &mut work())
-            .unwrap_err(),
+        FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
+            basis(2),
+            on_axis(1),
+            on_axis(0),
+            identity(),
+            &mut work()
+        )
+        .unwrap_err(),
         ContractError::EquationMismatch
     );
 }
@@ -284,6 +293,7 @@ fn attachment_requires_the_exact_expected_basis_tree() {
         assert_ne!(retained, substituted);
         let program = raw(bits as u8, vec![], 0);
         let receipt = FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             retained.clone(),
             program.clone(),
             program.clone(),
@@ -313,6 +323,7 @@ fn whole_function_comparison_retains_global_phase_including_unit() {
     assert_eq!(theorem.meaning(), &diagonal(&[4]));
     assert_eq!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             negative,
             raw(0, vec![], 0),
@@ -357,6 +368,7 @@ fn independent_output_reindexing_catches_a_reversed_join() {
     );
     assert_eq!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             basis(2),
             swapped,
             raw(2, vec![], 0),
@@ -553,6 +565,7 @@ fn zero_width_quantum_if_target_keeps_controlled_scalar_phase() {
     );
     let signature = BasisType::pair(BasisType::Bit, BasisType::Unit);
     let theorem = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         signature.clone(),
         implementation,
         raw(1, vec![gate(SingleGate::Z, 0, 1)], 1),
@@ -676,6 +689,7 @@ fn a_statically_unselected_invalid_arm_is_still_rejected() {
     );
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             basis(1),
             implementation,
             raw(1, vec![gate(SingleGate::X, 0, 1)], 1),
@@ -849,6 +863,7 @@ fn certified_computation_reuses_only_its_rechecked_logical_meaning() {
     }
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             basis(1),
             bad,
             raw(1, vec![gate(SingleGate::X, 0, 1)], 1),
@@ -1003,6 +1018,7 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
     let two = raw(0, vec![region(0, 1, 0), region(1, 2, 1)], 2);
     let mut measured = work();
     FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::Unit,
         one.clone(),
         raw(0, vec![], 0),
@@ -1012,6 +1028,7 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
     .unwrap();
     let one_cost = DEFAULT_EXACT_WORK - measured.remaining();
     FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::Unit,
         one,
         raw(0, vec![], 0),
@@ -1020,6 +1037,7 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
     )
     .unwrap();
     let error = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::Unit,
         two,
         raw(0, vec![], 0),
@@ -1079,6 +1097,7 @@ fn untrusted_function_trees_reject_without_recursive_cloning() {
                 // transport/type limit before any recursive clone or encoding.
                 assert!(matches!(
                     FunctionEvidence::check(
+                        qleisli::edition::Edition::E2026,
                         signature,
                         implementation,
                         specification,
@@ -1157,6 +1176,7 @@ fn branch_preflight_checks_both_functions_and_inactive_empty_arms() {
                     (empty, nested)
                 };
                 let result = FunctionEvidence::check(
+                    qleisli::edition::Edition::E2026,
                     BasisType::Unit,
                     implementation,
                     specification,
@@ -1187,6 +1207,7 @@ fn dependency_depth_and_expanded_execution_cost_are_bounded() {
     }
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             flat(0, vec![call(child, vec![], false)]),
             raw(0, vec![], 0),
@@ -1212,6 +1233,7 @@ fn dependency_depth_and_expanded_execution_cost_are_bounded() {
     }
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             flat(
                 0,
@@ -1235,6 +1257,7 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     missing.quantum_outputs.clear();
     assert!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             missing,
             specification.clone(),
@@ -1252,6 +1275,7 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     duplicate.quantum_outputs = vec![t(1)];
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             duplicate,
             specification,
@@ -1263,6 +1287,7 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     let observe = raw(1, vec![RawOp::Discard { input: t(0) }], 0);
     assert!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             basis(1),
             observe,
             raw(1, vec![], 0),
@@ -1273,6 +1298,7 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     );
     assert!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             raw(1, vec![], 0),
             raw(1, vec![], 0),
@@ -1285,6 +1311,7 @@ fn rejects_invalid_signatures_observation_and_zero_width_owner_loss() {
     classical.classical_inputs.push(c(0));
     assert!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             basis(1),
             classical,
             raw(1, vec![], 0),
@@ -1305,6 +1332,7 @@ fn rejects_untrusted_capacity_and_exhausted_shared_work() {
     excessive.sources[0].1 = "x".repeat(MAX_FUNCTION_SOURCE_BYTES);
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             raw(0, vec![], 0),
             raw(0, vec![], 0),
@@ -1317,6 +1345,7 @@ fn rejects_untrusted_capacity_and_exhausted_shared_work() {
     duplicate.sources.push(duplicate.sources[0].clone());
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             raw(0, vec![], 0),
             raw(0, vec![], 0),
@@ -1327,6 +1356,7 @@ fn rejects_untrusted_capacity_and_exhausted_shared_work() {
     ));
     assert_eq!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             raw(0, vec![], 0),
             raw(0, vec![], 0),
@@ -1339,6 +1369,7 @@ fn rejects_untrusted_capacity_and_exhausted_shared_work() {
     let excessive = flat(0, vec![monomial(&[], &[0], &[0]); 1025]);
     assert!(matches!(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Unit,
             excessive,
             raw(0, vec![], 0),

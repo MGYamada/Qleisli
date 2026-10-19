@@ -10,61 +10,67 @@ use crate::interchange::process::TransportLimits;
 pub(super) const REJECTION_MESSAGE: &str =
     "Lean native checker rejected the artifact/request; no fallback";
 
-#[cfg(test)]
-fn response(bytes: &[u8], requested: bool) -> Result<usize> {
-    response_bound(bytes, requested, Scope::Inspection)
+pub(super) struct Decision {
+    pub(super) context: crate::interchange::native_context::CheckedContext,
+    pub(super) exact_work: usize,
 }
 
-fn response_bound(bytes: &[u8], requested: bool, scope: Scope) -> Result<usize> {
-    let text =
-        std::str::from_utf8(bytes).map_err(|_| Error::format("invalid native response UTF-8"))?;
-    let lines: Vec<_> = text.split('\n').collect();
-    if lines.first() != Some(&"qleisli.qirf-native 2") {
-        return Err(Error::format("unknown native response protocol"));
-    }
-    match lines.as_slice() {
-        [_, "error", code, ""] => {
-            let code = match *code {
-                "limit" => "limit",
-                "contract" => "contract",
-                "invalid_ir" => "invalid_ir",
-                "format" => "format",
-                "decoded_view" => "decoded_view",
-                "version" => "kernel",
-                _ => return Err(Error::format("unknown native rejection")),
-            };
-            Err(Error::new(
+#[cfg(test)]
+fn response(bytes: &[u8], requested: bool) -> Result<usize> {
+    response_bound(
+        bytes,
+        requested,
+        Scope::Inspection,
+        crate::edition::Edition::E2026,
+        crate::interchange::native_context::Mode::Ordinary,
+    )
+    .map(|value| value.exact_work)
+}
+
+fn response_bound(
+    bytes: &[u8],
+    requested: bool,
+    scope: Scope,
+    edition: crate::edition::Edition,
+    mode: crate::interchange::native_context::Mode,
+) -> Result<Decision> {
+    use crate::interchange::native_context::{self, Reply};
+    let (context, payload) = match native_context::parse(bytes, edition, mode, scope)? {
+        Reply::Rejected(code) => {
+            let code = if code == "version" { "kernel" } else { code };
+            return Err(Error::new(
                 code,
                 if code == "kernel" {
                     "native checker product version differs from the Rust package"
                 } else {
                     REJECTION_MESSAGE
                 },
-            ))
+            ));
         }
-        [_, "accepted", checked_scope, work, flag, ""] => {
-            if *checked_scope != scope.name() {
-                return Err(Error::format("native execution scope disagrees"));
-            }
-            if work.is_empty()
-                || work.len() > 8
-                || !work.bytes().all(|b| b.is_ascii_digit())
-                || work.len() > 1 && work.starts_with('0')
-            {
-                return Err(Error::format("noncanonical native work count"));
-            }
-            let work: usize = work
-                .parse()
-                .map_err(|_| Error::format("invalid native work count"))?;
-            if work > 10_000_000 || *flag != if requested { "1" } else { "0" } {
-                return Err(Error::format(
-                    "native work bound or request coverage disagrees",
-                ));
-            }
-            Ok(work)
-        }
-        _ => Err(Error::format("malformed/trailing native response")),
+        Reply::Checked { context, payload } => (context, payload),
+    };
+    let [work, flag] = payload.as_slice() else {
+        return Err(Error::format("malformed/trailing native response"));
+    };
+    if work.is_empty()
+        || work.len() > 8
+        || !work.bytes().all(|b| b.is_ascii_digit())
+        || work.len() > 1 && work.starts_with('0')
+    {
+        return Err(Error::format("noncanonical native work count"));
     }
+    let work: usize = work
+        .parse()
+        .map_err(|_| Error::format("invalid native work count"))?;
+    if work > 10_000_000 || *flag != if requested { "1" } else { "0" } {
+        return Err(Error::format(
+            "native work bound or request coverage disagrees",
+        ));
+    }
+    Ok(Decision {
+        context,
+        exact_work: work,
+    })
 }
 
 pub(super) fn check_mode(
@@ -73,7 +79,8 @@ pub(super) fn check_mode(
     requested: bool,
     mode: &str,
     scope: Scope,
-) -> Result<usize> {
+    edition: crate::edition::Edition,
+) -> Result<Decision> {
     invoke_mode(
         executable,
         packet,
@@ -81,6 +88,7 @@ pub(super) fn check_mode(
         TransportLimits::FINITE,
         mode,
         scope,
+        edition,
     )
 }
 #[cfg(test)]
@@ -92,7 +100,9 @@ fn invoke(executable: &Path, packet: Vec<u8>, requested: bool, timeout: Duration
         TransportLimits::FINITE.with_timeout(timeout),
         "--qirf-native",
         Scope::Inspection,
+        crate::edition::Edition::E2026,
     )
+    .map(|value| value.exact_work)
 }
 fn invoke_mode(
     executable: &Path,
@@ -101,9 +111,20 @@ fn invoke_mode(
     limits: TransportLimits,
     mode: &str,
     scope: Scope,
-) -> Result<usize> {
-    limits.invoke(executable, packet, mode, |bytes| {
-        response_bound(bytes, requested, scope)
+    edition: crate::edition::Edition,
+) -> Result<Decision> {
+    let mode = crate::interchange::native_context::Mode::parse(mode)?;
+    if !matches!(
+        mode,
+        crate::interchange::native_context::Mode::Ordinary
+            | crate::interchange::native_context::Mode::Contract
+    ) {
+        return Err(Error::format(
+            "finite checking requires the ordinary or contract native mode",
+        ));
+    }
+    limits.invoke(executable, packet, mode.argument(), |bytes| {
+        response_bound(bytes, requested, scope, edition, mode)
     })
 }
 
@@ -113,12 +134,15 @@ mod tests {
 
     #[test]
     fn replies_bind_request_presence_and_reject_ambiguous_success() {
-        let good = "qleisli.qirf-native 2\naccepted\ninspection\n42\n0\n";
+        let good = format!(
+            "qleisli.native-result 3\naccepted\n2026\n{}\n--qirf-native\ninspection\n42\n0\n",
+            env!("CARGO_PKG_VERSION")
+        );
         assert_eq!(response(good.as_bytes(), false).unwrap(), 42);
         assert!(response(good.as_bytes(), true).is_err());
         for bad in [
             "qleisli.engineering-pure-native 1\nengineering-checked\nexecution\n42\n".into(),
-            good.replace("native 2", "native 1"),
+            good.replace("result 3", "result 2"),
             good.replace("42", "042"),
             good.replace("42", "10000001"),
             good.replace("\n0\n", "\ntrue\n"),
@@ -130,7 +154,7 @@ mod tests {
             assert!(response(bad.as_bytes(), false).is_err(), "{bad}");
         }
         assert_eq!(
-            response(b"qleisli.qirf-native 2\nerror\ncontract\n", false)
+            response(b"qleisli.native-result 3\nerror\ncontract\n", false)
                 .unwrap_err()
                 .code,
             "contract"
@@ -159,7 +183,7 @@ mod tests {
         }
         let _cleanup = Cleanup(directory.clone());
         let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/execution-view-binding/process-failure.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/process-failure.sh");
         // Immutable code avoids ETXTBSY from concurrent forked children that
         // temporarily inherit a fixture writer. Each link selects one case.
         for (case, code) in [

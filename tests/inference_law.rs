@@ -12,7 +12,11 @@ fn study(name: &str) -> String {
     ))
 }
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
     values.iter().map(|(n, v)| ((*n).into(), *v)).collect()
@@ -151,8 +155,11 @@ fn call_arity_names_ordered_static_parameters_without_guessing() {
         ("call-extra-operation", "[U: Op]", "2"),
     ] {
         let source = study(case);
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         static_error(
             &error,
             &["main::g", expected, &format!("received {actual}")],
@@ -177,8 +184,11 @@ fn expected_types_do_not_choose_physics_or_manufacture_access_and_effects() {
         ),
         (" pub unitary fn f(q:Q<Bit>)->Bit{measure_z(q)}", "effect"),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{error}");
     }
 }
@@ -190,7 +200,10 @@ fn expected_types_do_not_choose_physics_or_manufacture_access_and_effects() {
 #[test]
 fn explicit_identity_and_x_providers_retain_distinct_reference_actions() {
     let program = parsed(&study("operation-choice"));
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit checker"),
+        qleisli::edition::Edition::E2026,
+    );
     // Two blocks represent a retained two-dimensional external reference.
     // Coefficients and expected X permutation are specified independently.
     let input = vec![[0.2, -0.3], [0.4, 0.1], [-0.6, 0.2], [0.3, 0.5]];

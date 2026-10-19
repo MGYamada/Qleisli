@@ -37,7 +37,7 @@ and syntax compatibility.
 `native::Kernel` below means `interchange::native::Kernel`. Its ordinary
 `NativeChecked` retains the artifact, optional request, checker identity and
 reported work. `AcceptedProgram` retains its predecoded execution view only after a fresh
-QLV2 native comparison of that exact graph and its caches. Inspection alone
+QLV3 native comparison of that exact graph and its caches. Inspection alone
 does not authorize execution; [QDV1 and the envelope](execution-view.md) specify
 the compared data and scope. The hierarchy module has a **different** `NativeChecked` with
 its own payload/request/candidate and finite-obligation scope. Its dedicated
@@ -45,7 +45,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 
 | Entry path | Artifact or request actually checked | Actual checker | Existing proof and remaining gap |
 | --- | --- | --- | --- |
-| Source/project/qrate checks and compilation; raw IR; function/meaning evidence; QIRF import, export, conversion and `verify-ir`; foreign/Python imports | QLV2 envelope containing the original QLV1 QIRF/request packet and the actual retained execution view when execution is requested. Source, evidence and foreign adapters produce these bytes. | `native::Kernel` → `--qirf-native` → `Cli.runValidity` → `ExecutionView.Native.ordinary` → the original QIRF check and requested view comparison | `Qleisli.NativeValidity.check_sound` binds success to `VerifiedMeaning`; `check_scopeSafe` covers classical scope. Full ordinary EffectSound/CPTP, source/foreign translation, emitted-output and runtime preservation remain separate. |
+| Source/project/qrate checks and compilation; raw IR; function/meaning evidence; QIRF import, export, conversion and `verify-ir`; foreign/Python imports | QLV3 envelope containing the original QLV1 QIRF/request packet and the actual retained execution view when execution is requested. Source, evidence and foreign adapters produce these bytes. | `native::Kernel` → `--qirf-native` → `Protocol.NativeContext.run` → `ExecutionView.Native.ordinary` → the original QIRF check and requested view comparison | `Qleisli.NativeValidity.check_sound` binds success to `VerifiedMeaning`; `check_scopeSafe` covers classical scope. Full ordinary EffectSound/CPTP, source/foreign translation, emitted-output and runtime preservation remain separate. |
 | `CheckedContract::check`, its checked compositions, and `check_computed` | QIRF root and `qleisli.native-contract` encoded equation | `Kernel::check_encoded` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.checkContract` | `Protocol.NativeContract.check_acceptance` binds the original bytes, decoded request and actual checking states. `Qleisli.NativeContract.check_encoded_sound` / `encoded_meaning` connect success to original-root `BodyMeaning`, the exact Basis interface and requested encoded equation. `Wrapper.circuitMatrix_entries` proves the actual wrapper's coefficient equality with the original matrix; `encoded_reference` extends the equation to any reference amplitude function. Source/compiler, compiled I/O, runtime/export, clean-release and quantitative resource claims remain separate; these theorems are not ledger admissions. |
 | `finite_leaf::{check_unitary,check_serialized_unitary}` | QIRF root, signature, ordered input/output ports and exact matrix request | `Kernel::check_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Validity.checkRoot` and `Qirf.check` | `Qleisli.NativeContract.check_sound` / `leaf_meaning` compose native byte acceptance to original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix, signature and ordered ports. The output port is tied to an actual verification. `leaf_reference_laws` extends both whole-space inverse laws to every finite reference. Source/runtime and broader effect/clean-release claims remain separate. |
 | `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | `pure_leaf_meaning` binds fresh graph/root checking to the original body and exact Gram identity. `pure_leaf_reference` preserves inner products for arbitrary joint reference amplitudes. This grants neither inverse nor control access, source/runtime correspondence, target realization or quantitative resource evidence. |
@@ -61,8 +61,12 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 
 `lean-kernel/Main.lean` dispatches thirteen explicitly versioned native modes,
 including four mechanically separate engineering-only comparisons.
-`lean-kernel/Cli/Validity.lean` selects the ordinary or contract root;
-`lean-kernel/Cli/Hierarchical.lean` composes the dedicated hierarchy checks.
+`lean-kernel/Cli/NativeContext.lean` invokes the pure
+`Protocol.NativeContext.run` dispatcher and its single reply projection. It
+checks the original QLV3 edition and compiled product before applying each
+mode's existing gate; the strict version-3 reply binds that same context.
+The older IO adapters are unused and await retirement after replacement
+conformance coverage; they are not fallback entry points.
 `lean/Qleisli/NativeValidity.lean`, `lean/Qleisli/NativeContract.lean`,
 `lean/Qleisli/NativeHierarchy.lean` and `lean/Qleisli/Qirf.lean` contain the cited
 bridge theorems. The native executable,
@@ -130,7 +134,7 @@ Its complete field set is `format`, `version`, `kind`, `signature`, and `axes`.
 `signature` is the exact QIRF basis tree; `axes` is an ordered list of distinct
 physical bit positions in that interface. Extra fields, including a proposed
 matrix or producer success flag, reject. The inner QLV1 format and encoded/leaf request contracts remain unchanged;
-external calls require the QLV2 envelope and scope.
+external calls require the QLV3 envelope and scope.
 
 Lean checks the original graph, root, dependency evidence and identical
 input/output interface, reconstructs its actual action, checks whole-space

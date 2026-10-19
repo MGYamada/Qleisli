@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, inspection_lines
+from native_packet import envelope, parse_reply
 import tempfile
 import tomllib
 
@@ -73,14 +73,14 @@ def test_transport(kernel):
              ('oversized-nested-length', b'QLI1'+words([64*1024*1024+1]), 'limit')]
     cases.extend((f'truncated-{i}',good[:i],'format') for i in range(1,len(good)))
     for name, data, expected in cases:
-        run = subprocess.run([str(kernel),'--instrument-pending',PRODUCT_VERSION],input=envelope(data) if data else b"",capture_output=True,timeout=30)
-        lines = inspection_lines(run.stdout)
-        assert lines[:1] == ['qleisli.instrument-pending 4'], (name,run)
+        run = subprocess.run([str(kernel),'--instrument-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        reply = parse_reply(run.stdout, edition="2026", product=PRODUCT_VERSION, mode="--instrument-pending", scope="inspection")
+        lines = reply.payload
         if expected == 'pending':
-            assert run.returncode == 0 and lines[1] == 'pending' and lines[3:] == ['0','0','0'], (name,lines)
-            assert 0 < int(lines[2]) <= 2000000
+            assert run.returncode == 0 and reply.claim == 'pending' and lines[1:] == ('0','0','0'), (name,lines)
+            assert 0 < int(lines[0]) <= 2000000
         else:
-            assert run.returncode == 1 and lines[1:] == ['error',expected], (name,lines)
+            assert run.returncode == 1 and reply.error == expected, (name,lines)
     return len(cases)
 
 

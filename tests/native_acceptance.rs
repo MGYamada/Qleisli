@@ -75,7 +75,10 @@ fn bell(feed_forward: bool) -> RawProgram {
 }
 
 fn native() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 
 #[test]
@@ -89,7 +92,10 @@ fn proposals_are_untrusted_and_owned_and_missing_checkers_reject() {
     assert_eq!(proposal.request(), Some(b"untrusted request".as_slice()));
     assert!(Proposal::new(b"", None).is_err());
     assert!(Proposal::new(b"{}", Some(b"")).is_err());
-    let kernel = Kernel::new("/missing-explicit-native-kernel");
+    let kernel = Kernel::new(
+        "/missing-explicit-native-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     assert_eq!(kernel.accept(&proposal).unwrap_err().code, "io");
     let mut raw = bell(false);
     raw.operations.push(RawOp::Discard { input: TokenId(3) });

@@ -35,7 +35,7 @@ def live(cli, kernel):
             artifact, request_bytes = encoded(actual), encoded(data)
             artifact_path.write_bytes(artifact)
             request_path.write_bytes(request_bytes)
-            args = [cli, 'engineering', 'compare-pure-tensor', str(artifact_path),
+            args = [cli, 'engineering', 'compare-pure-tensor', '--edition=2026', str(artifact_path),
                     '--against=' + str(request_path), '--lean-kernel=' + checker]
             if not text:
                 args.insert(2 if flags_first else len(args), '--format=json')
@@ -139,7 +139,7 @@ def live(cli, kernel):
         artifact_path.write_bytes(encoded(actual))
         request_path.write_bytes(encoded(base))
         for extra in [('--against=duplicate',), ('--format=json',), ('--output=out',), ('extra',)]:
-            args = [cli, 'engineering', 'compare-pure-tensor', str(artifact_path),
+            args = [cli, 'engineering', 'compare-pure-tensor', '--edition=2026', str(artifact_path),
                     '--against=' + str(request_path), '--lean-kernel=' + kernel, '--format=json', *extra]
             result = subprocess.run(args, capture_output=True, timeout=60, check=False)
             calls += 1

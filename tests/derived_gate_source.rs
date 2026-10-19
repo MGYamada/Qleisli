@@ -135,6 +135,7 @@ fn request_ordered(
     };
     let proposal = Proposal::from_raw(raw, Some(&interface), Version::V2, None).unwrap();
     check_unitary(
+        qleisli::edition::Edition::E2026,
         proposal.artifact(),
         &boundary,
         expected,

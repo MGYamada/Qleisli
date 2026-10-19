@@ -9,8 +9,12 @@ use qleisli::interchange::native::Kernel;
 
 fn report(source: &str) -> ProjectCheckReport {
     let root = SourceRoot::new(source);
-    check_project_report_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-        .unwrap()
+    check_project_report_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap()
 }
 
 #[test]
@@ -129,7 +133,10 @@ fn operation_instantiations_stay_within_concrete_roots_and_selected_qrate() {
     );
     let selected = QrateSource::select(&root.0).unwrap();
     let checked = selected
-        .check_report_with_kernel(SourcePolicy::Legacy, &Kernel::selected().unwrap())
+        .check_report_with_kernel(
+            SourcePolicy::Legacy,
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+        )
         .unwrap();
     assert_eq!(checked.concrete_local_roots(), 3);
     assert_eq!(checked.entry_request_checked(), Some(false));

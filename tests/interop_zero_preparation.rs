@@ -262,7 +262,13 @@ fn exact_state(text: &str, amplitudes: &[Exact]) -> Result<(), ContractError> {
         &mut budget,
     )?;
     let contract = Contract::new(input, output, Matrix::identity(1)?, &mut budget)?;
-    CheckedContract::check(Circuit::new(physical, steps)?, contract, &mut budget).map(|_| ())
+    CheckedContract::check(
+        qleisli::edition::Edition::E2026,
+        Circuit::new(physical, steps)?,
+        contract,
+        &mut budget,
+    )
+    .map(|_| ())
 }
 
 #[cfg_attr(

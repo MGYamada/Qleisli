@@ -531,6 +531,8 @@ class SyntheticRelease(unittest.TestCase):
     def test_unknown_fields_duplicate_json_and_schema_coercions_reject(self):
         original=copy.deepcopy(self.acceptance)
         for field,value in [('version', True), ('identities', dict(checker.IDENTITIES,qrate_schema='2')),
+                            ('identities', dict(checker.IDENTITIES,native_protocol='qleisli.qirf-native 1')),
+                            ('identities', dict(checker.IDENTITIES,native_protocol='qleisli.qirf-native 2')),
                             ('command',['sh','arbitrary'])]:
             with self.subTest(field=field):
                 self.acceptance=copy.deepcopy(original); self.update_acceptance(lambda x:x.update({field:value})); self.reject('unknown|coordinates|exactly')

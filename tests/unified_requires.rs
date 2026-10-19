@@ -21,7 +21,11 @@ pub unitary fn forward[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
 requires Applicable(U), n <= 2, n >= 1 {generic[A,n,U](q)}";
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 fn naturals(name: &str, value: u32) -> BTreeMap<String, u32> {
@@ -55,7 +59,10 @@ fn mixed(program: &ParsedProgram, entry: &str, basis: &str, n: u32) -> Elaborate
 )]
 fn mixed_symbolic_forwarding_preserves_exact_basis_and_reference_coefficients() {
     let program = parsed(MIXED);
-    let kernel = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     // Unequal complex reference slices expose phase and axis changes. All
     // selected Basis trees below have one wire, but retain distinct types.
     let input = [[0.25, -0.5], [0.75, 1.0], [-1.25, 1.5], [1.75, -2.0]];
@@ -96,8 +103,11 @@ fn absent_numeric_or_access_obligations_reject_even_unused_or_empty_bodies() {
         "requires Applicable(U), n <= 2, n >= 1 {generic[A,n,U](q)}",
         "requires Applicable(U), n <= 2 {generic[A,n,U](q)}",
     );
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), missing_numeric.clone())]))
-        .unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), missing_numeric.clone())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "size");
     assert_eq!(error.module(), Some("main"));
     assert_eq!(
@@ -115,8 +125,11 @@ fn absent_numeric_or_access_obligations_reject_even_unused_or_empty_bodies() {
             "pub unitary fn unused[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
              requires n >= 1, n <= 2{grant} {{{body}}}"
         );
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "access", "{source}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().start >= source.find(body).unwrap());
@@ -137,8 +150,11 @@ fn simple_comparisons_commute_but_subtraction_requires_an_earlier_guard() {
         "n >= 1, n <= 2, Applicable(U)",
         "n-1 <= 1, n >= 1, Applicable(U)",
     );
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.clone())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "size");
     assert_eq!(&source[error.span().start..error.span().end], "n-1");
     assert!(error.message().contains("nonnegative guard"));
@@ -195,10 +211,13 @@ fn false_entry_and_provider_premises_precede_concrete_materialization() {
     let provider = "pub unitary fn gate[const m:Nat](q:Q<Bit>)->Q<Bit> requires m == 1 {q}";
     let main =
         "pub unitary fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}";
-    let program = ParsedProgram::parse(BTreeMap::from([
-        ("main".into(), main.into()),
-        ("providers".into(), provider.into()),
-    ]))
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("providers".into(), provider.into()),
+        ]),
+    )
     .unwrap();
     let error = program
         .instantiate(
@@ -233,8 +252,11 @@ fn invalid_arithmetic_and_unbounded_requirement_forms_do_not_gain_acceptance() {
     ] {
         let source =
             format!("pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit> requires {predicate} {{q}}");
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{source}: {error}");
     }
     let source = "pub unitary fn f[const n:Nat]()->Bit {static let next=n+1;0}";
@@ -331,7 +353,7 @@ fn requires_only_source_replacement_cannot_reuse_old_function_evidence() {
             .code(),
         "size"
     );
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let prepare = |program: &ParsedProgram| {
         program
             .instantiate("main::guarded", naturals("n", 2), BTreeMap::new())

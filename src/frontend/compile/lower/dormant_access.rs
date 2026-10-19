@@ -414,6 +414,9 @@ mod tests {
              requires Applicable(U){{{primitive}(ctrl q);U(q)}}"
         );
         Project {
+            edition_context: crate::frontend::project::ProjectEdition::Explicit(
+                crate::edition::Edition::E2026,
+            ),
             root: PathBuf::from("main.qli"),
             modules: BTreeMap::from([(
                 "main".into(),

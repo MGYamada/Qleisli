@@ -49,7 +49,7 @@ fn project(modules: &BTreeMap<String, String>) -> SourceRoot {
 fn effect_refusal(modules: BTreeMap<String, String>) {
     let finite = check_project(&project(&modules).0).unwrap_err();
     assert_eq!(finite.code, ErrorCode::Effect, "{finite}");
-    let selected = ParsedProgram::parse(modules).unwrap_err();
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap_err();
     assert_eq!(selected.code(), "effect", "{selected}");
 }
 
@@ -66,7 +66,8 @@ fn public_quantum_declarations_require_explicit_effects_even_without_quantum_por
         "pub fn f[const U:Op<Bit>](b:Bit)->Bit{b}",
     ] {
         let modules = BTreeMap::from([("main".into(), source.into())]);
-        let selected = ParsedProgram::parse(modules.clone()).unwrap_err();
+        let selected =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, modules.clone()).unwrap_err();
         assert_eq!(selected.code(), "effect", "{source}: {selected}");
         assert!(
             selected.message().contains("requires an explicit"),
@@ -102,10 +103,13 @@ fn external_quantum_annotation_needs_are_fixed_by_the_public_contract() {
             "use library::f;pub fn g(x:Bit)->Bit{f(x)}fn main()->Bit{g(0)}",
             &library,
         ));
-        let selected = ParsedProgram::parse(sources(
-            "use library::f;pub unitary fn g(x:Bit)->Bit{f(x)}fn main()->Bit{g(0)}",
-            &library,
-        ))
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            sources(
+                "use library::f;pub unitary fn g(x:Bit)->Bit{f(x)}fn main()->Bit{g(0)}",
+                &library,
+            ),
+        )
         .unwrap();
         for path in ["library::f", "library::local"] {
             assert_eq!(
@@ -127,7 +131,7 @@ fn external_quantum_annotation_needs_are_fixed_by_the_public_contract() {
 )]
 #[test]
 fn classical_public_interface_body_replacement_keeps_both_source_paths_stable() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for (body, internal_quantum) in PUBLIC_QUANTUM_PERMISSION_BODIES {
         let modules = sources(
             "use library::f;pub unitary fn g(x:Bit)->Bit{f(x)}fn main()->Bit{g(0)}",
@@ -135,7 +139,7 @@ fn classical_public_interface_body_replacement_keeps_both_source_paths_stable() 
         );
         let root = project(&modules);
         let finite = project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &kernel).unwrap();
-        let selected = ParsedProgram::parse(modules).unwrap();
+        let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
         for path in ["library::f", "library::local", "main::g"] {
             assert_eq!(
                 finite.function_effect(path),
@@ -254,7 +258,11 @@ fn host_selected_public_providers_use_public_bounds_even_when_unused() {
             "pub {effect} fn provider(q:Q<Bit>)->Q<Bit>{{q}}
             pub unitary fn main[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{q}}"
         );
-        let program = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let program = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         let fact = program.function_effect("main::provider").unwrap();
         assert_eq!(fact.inferred(), Effect::Unitary);
         assert_eq!(
@@ -281,7 +289,11 @@ fn host_selected_public_providers_use_public_bounds_even_when_unused() {
     // not expose that provider as a public callable declaration.
     let source = "observe fn provider(q:Q<Bit>)->Q<Bit>{q}
         pub unitary fn main[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}";
-    let program = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     assert_eq!(program.public_function_effect("main::provider"), None);
     program
         .instantiate(
@@ -328,11 +340,14 @@ fn plain_classical_inference_and_private_quantum_precision_are_retained() {
         fn private_quantum()->Unit{finish(unit(()))}
         pub fn main()->Unit{()}";
     let modules = BTreeMap::from([("main".into(), source.into())]);
-    let selected = ParsedProgram::parse(modules.clone()).unwrap();
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules.clone()).unwrap();
     let root = project(&modules);
-    let finite =
-        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-            .unwrap();
+    let finite = project_effects_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap();
     for name in ["ordinary", "explicit", "main"] {
         let path = format!("main::{name}");
         let fact = selected.function_effect(&path).unwrap();
@@ -369,9 +384,9 @@ fn public_observe_identity_retains_actual_unitary_raw_and_same_module_precision(
         pub unitary fn internal(q:Q<Bit>)->Q<Bit>{provider(q)}",
     );
     let root = project(&modules);
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let finite = project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &kernel).unwrap();
-    let selected = ParsedProgram::parse(modules).unwrap();
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
     for (path, internal, public) in [
         ("library::provider", Effect::Unitary, Effect::Observe),
         ("library::internal", Effect::Unitary, Effect::Unitary),
@@ -423,7 +438,7 @@ fn public_observe_identity_retains_actual_unitary_raw_and_same_module_precision(
 #[test]
 fn body_only_reset_keeps_the_public_contract_and_the_selected_unsupported_barrier() {
     let main = "use library::provider;pub observe fn entry(q:Q<Bit>)->Q<Bit>{provider(q)}";
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for (library, actual) in [(IDENTITY, Effect::Unitary), (RESET, Effect::Observe)] {
         let modules = sources(main, library);
         let root = project(&modules);
@@ -443,7 +458,7 @@ fn body_only_reset_keeps_the_public_contract_and_the_selected_unsupported_barrie
                 .inferred(),
             actual
         );
-        let selected = ParsedProgram::parse(modules).unwrap();
+        let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
         assert_eq!(
             selected.public_function_effect("library::provider"),
             Some(Effect::Observe)
@@ -495,7 +510,7 @@ fn provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate()
             library,
         );
         let root = project(&modules);
-        let selected = ParsedProgram::parse(modules).unwrap();
+        let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
         assert_eq!(
             selected.function_effect("main::entry").unwrap().inferred(),
             Effect::Isometry
@@ -503,7 +518,7 @@ fn provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate()
         let finite = project_effects_with_kernel(
             &root.0,
             SourcePolicy::Legacy,
-            &Kernel::selected().unwrap(),
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
         )
         .unwrap();
         assert_eq!(
@@ -516,7 +531,7 @@ fn provider_cache_order_keeps_external_isometry_bounds_and_actual_raw_separate()
             .elaborate()
             .unwrap();
         let proposal = elaborated.lower_raw().unwrap();
-        let accepted = Kernel::selected()
+        let accepted = Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(proposal.proposal())
             .unwrap();
@@ -533,7 +548,7 @@ fn observing_contract_source_acceptance_does_not_promise_a_supported_native_prof
         "pub observe fn provider(q:Q<Bit>)->Q<Bit>{q}
         pub observe fn reference(q:Q<Bit>)->Q<Bit>{q}",
     );
-    let selected = ParsedProgram::parse(modules).unwrap();
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap();
     assert_eq!(
         selected.function_effect("main::main").unwrap().inferred(),
         Effect::Observe
@@ -577,20 +592,20 @@ fn internal_pure_contract_remains_usable_under_broader_public_provider_bounds() 
     let finite = project_effects_with_kernel(
         &project(&modules).0,
         SourcePolicy::Legacy,
-        &Kernel::selected().unwrap(),
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
     )
     .unwrap();
     assert_eq!(
         finite.function_effect("main::entry").unwrap().inferred(),
         Effect::Unitary
     );
-    let elaborated = ParsedProgram::parse(modules)
+    let elaborated = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
         .unwrap()
         .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let checked = elaborated
         .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -620,14 +635,14 @@ fn dormant_external_observe_obligations_cannot_reuse_an_internal_pure_pair() {
     ] {
         // Original library obligations precede consumer obligations, so fresh
         // checking first obtains the valid internal pure pair for these IDs.
-        let elaborated = ParsedProgram::parse(sources(main, library))
+        let elaborated = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(main, library))
             .unwrap()
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
             .elaborate()
             .unwrap();
         let error = elaborated
-            .check_function_contracts(&Kernel::selected().unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK))
+            .check_function_contracts(&Kernel::selected(qleisli::edition::Edition::E2026).unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap_err();
         observing_profile_refusal(&error);
     }

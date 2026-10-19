@@ -184,6 +184,7 @@ fn assert_qif_matches_independent_extraction(
     // matrix from the independently maintained evidence extractor. That
     // extractor must not call the runtime compatibility adapter being tested.
     let evidence = FunctionEvidence::check(
+        crate::edition::Edition::E2026,
         basis(width),
         raw.clone(),
         raw.clone(),
@@ -362,7 +363,13 @@ fn generated_circuits_match_exact_amplitudes_adjoint_and_control_laws() {
             let encoding = Encoding::identity(basis(width)).unwrap();
             let contract =
                 Contract::new(encoding.clone(), encoding, matrix.clone(), &mut work()).unwrap();
-            let checked = CheckedContract::check(circuit, contract, &mut work()).unwrap();
+            let checked = CheckedContract::check(
+                crate::edition::Edition::E2026,
+                circuit,
+                contract,
+                &mut work(),
+            )
+            .unwrap();
             let controlled = checked.controlled(&mut work()).unwrap();
             let dimension = matrix.rows() * 2;
             let mut entries = vec![Exact::zero(); dimension * dimension];
@@ -617,6 +624,7 @@ fn physical_evidence(prefix: Vec<CircuitStep>) -> Arc<FunctionEvidence> {
     );
     Arc::new(
         FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             basis(2),
             implementation,
             specification,
@@ -643,7 +651,7 @@ fn physical_raw_auxiliary_execution_agrees_with_extracted_contracts() {
         let physical = evidence.implementation();
         // Validation is independent of the test-only ability to execute an
         // open raw function on a supplied vector.
-        crate::interchange::native::Kernel::selected()
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
             .unwrap()
             .accept_raw(physical.clone())
             .unwrap();
@@ -753,7 +761,7 @@ fn certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup()
     let mut invalid = evidence.implementation().clone();
     invalid.operations[1] = operation.clone();
     assert!(
-        crate::interchange::native::Kernel::selected()
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
             .unwrap()
             .accept_raw(invalid)
             .is_err(),

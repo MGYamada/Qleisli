@@ -36,8 +36,11 @@ fn static_value_source(case: &str) -> String {
 fn shared_value_error(source: &str, name: &str, code: &str, finite_code: &str, message: &str) {
     let start = source.rfind(name).unwrap();
     let end = start + name.len();
-    let selected =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(selected.code(), code, "{source}\n{selected}");
     assert_eq!(selected.module(), Some("main"));
     assert_eq!((selected.span().start, selected.span().end), (start, end));
@@ -48,8 +51,12 @@ fn shared_value_error(source: &str, name: &str, code: &str, finite_code: &str, m
     assert!(!absent.exists());
     // The common source judgment must reject before concrete eligibility or a
     // native child. A static name is not a consumed runtime quantum binding.
-    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let finite = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
     assert_eq!(finite.message, message);
     let location = finite.primary.unwrap();

@@ -13,7 +13,11 @@ fn read_current_fixture(path: impl AsRef<Path>) -> std::io::Result<String> {
 }
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 fn selected(source: &str, action: &str, basis: usize) -> String {
@@ -114,7 +118,13 @@ fn ordered_basis_formals_keep_codomain_and_scalar_phase() {
     amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [omega, omega]]);
     // The codomain cannot use a later kind binder even in an unused function.
     let wrong = "fn bad[const A:Basis,const U:Op<A -> B>,const B:Basis](q:Q<A>)->Q<A>{q}";
-    assert!(ParsedProgram::parse(BTreeMap::from([("main".into(), wrong.into())])).is_err());
+    assert!(
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), wrong.into())])
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -170,8 +180,11 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
         ("controlled", "type"),
     ] {
         let source = read_current_fixture(directory.join(format!("{name}.qli"))).unwrap();
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{name}: {error}");
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(
@@ -198,8 +211,11 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
             "type",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{error}");
     }
 }
@@ -234,9 +250,12 @@ fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
         amplitudes(&selected(&source("tensor"), "run", basis), &expected);
     }
     assert_eq!(
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source("wrong-middle"))]))
-            .unwrap_err()
-            .code(),
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source("wrong-middle"))])
+        )
+        .unwrap_err()
+        .code(),
         "type"
     );
 }
@@ -350,8 +369,10 @@ fn raw_constructors_check_refined_children_even_under_zero_repetition() {
             .unwrap()
     };
     let plain = elaborate(source);
-    let kernel =
-        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let raw = plain.lower_raw().unwrap();
     let accepted = kernel.accept(raw.proposal()).unwrap();
     raw.validate_source_steps(&accepted).unwrap();
@@ -362,8 +383,10 @@ fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     );
     let refined = elaborate(&source);
     assert_eq!(refined.lower().unwrap_err().code(), "meaning");
-    let kernel =
-        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let mut budget = qleisli::contract::exact::Budget::new(20_000);
     // Preserve the original false phase claim as a negative even though the
     // enclosing zero power produces the identity. No child claim is skipped.
@@ -404,8 +427,10 @@ fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel =
-        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
     let mut budget = qleisli::contract::exact::Budget::new(100_000);
     let checked = source
@@ -435,6 +460,7 @@ fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
         };
     }
     check_unitary(
+        qleisli::edition::Edition::E2026,
         raw.payload(),
         &boundary,
         &Matrix::new(4, 4, entries).unwrap(),
@@ -455,8 +481,11 @@ fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused(
     let source = common::current_source_text(
         "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
     );
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.clone())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(
         check_project(&SourceRoot::new(&source).0).unwrap_err().code,
@@ -539,8 +568,10 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
         &selected(&read("attempt-02", "tensor"), "run", 0),
         &[[0.0, 0.0], [1.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
     );
-    let kernel =
-        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     for (attempt, name) in [("attempt-01", "sequence"), ("attempt-02", "tensor")] {
         let source = parsed(&read(attempt, name))
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -645,7 +676,10 @@ fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order
     ];
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01");
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let extra = (
         "hidden-controlled-swap",
         pair(BasisType::Bit, pair(BasisType::Bit, BasisType::Bit)),
@@ -690,6 +724,7 @@ fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order
             entries[permutation[column] * dim + column] = Exact::phase(phases[column]);
         }
         check_unitary(
+            qleisli::edition::Edition::E2026,
             raw.payload(),
             &boundary,
             &Matrix::new(dim, dim, entries).unwrap(),
@@ -730,7 +765,10 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
     };
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01");
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     for (name, permutation, phases) in [
         ("valid-combined", [1, 0], [0, 4]),
         ("unused-valid", [0, 1], [0, 0]),
@@ -762,6 +800,7 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
             entries[permutation[column] * 2 + column] = Exact::phase(phases[column]);
         }
         check_unitary(
+            qleisli::edition::Edition::E2026,
             raw.payload(),
             &boundary,
             &Matrix::new(2, 2, entries).unwrap(),
@@ -775,7 +814,10 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
                 .code(),
             "limit"
         );
-        let missing = Kernel::new("/nonexistent/qleisli-refined-control-checker");
+        let missing = Kernel::new(
+            "/nonexistent/qleisli-refined-control-checker",
+            qleisli::edition::Edition::E2026,
+        );
         assert_eq!(
             checked
                 .lower_raw(&missing, &mut Budget::new(100_000))
@@ -920,8 +962,11 @@ fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
             "effect",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{error}");
     }
 }
@@ -934,7 +979,10 @@ fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
 fn direct_formal_adjoint_preserves_original_nested_meaning_obligations() {
     use qleisli::contract::exact::Budget;
     use qleisli::interchange::native::Kernel;
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     for (body, honest) in [("phase[1,1](q)", true), ("q", false)] {
         let source = format!(
             "

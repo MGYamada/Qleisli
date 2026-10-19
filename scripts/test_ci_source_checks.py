@@ -124,6 +124,7 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_stdlib_boundary_first.py'],
             ['python3', 'scripts/test_empty_basis_first.py'],
             ['python3', 'scripts/test_generic_dormant_first.py'],
+            ['python3', 'scripts/test_native_edition_first.py'],
         ])
         later = checks.plan('repository-integrity')
         self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)

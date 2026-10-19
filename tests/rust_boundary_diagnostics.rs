@@ -28,7 +28,8 @@ fn shared_rejection(
     span: Span,
     prefix: &str,
 ) -> String {
-    let common = ParsedProgram::parse(sources(source)).unwrap_err();
+    let common =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     assert_eq!(common.code(), common_code, "{source}\n{common}");
     assert_eq!(common.module(), Some("main"));
     assert_eq!(common.span(), span, "{source}\n{common}");
@@ -40,8 +41,12 @@ fn shared_rejection(
     // Use the public explicit gate, without changing process environment.
     // An accidental acceptance would reach the absent checker and report a
     // different category rather than the expected first source judgment.
-    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let finite = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
     assert_eq!(finite.message, common.message(), "{source}");
     let location = finite.primary.unwrap();
@@ -77,13 +82,13 @@ fn no_rust_name_hint(message: &str) {
 }
 
 fn common_and_finite(source: &str) -> ParsedProgram {
-    let common = ParsedProgram::parse(sources(source)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     check_project(&SourceRoot::new(source).0).unwrap();
     common
 }
 
 fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
-    let common = ParsedProgram::parse(sources(source)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     let program = compile_project(&SourceRoot::new(source).0).unwrap();
     let actual = run_closed(&program, SimulationLimits::default()).unwrap();
     let desired = BTreeMap::from([(vec![expected], 1.0)]);
@@ -219,7 +224,10 @@ fn rejected_closure_syntax_keeps_existing_depth_and_parameter_limits() {
     // them. A parsed AST is not callable execution authority.
     for body in ["||q", "|x:Bit|->Bit{x}"] {
         parse_module(&ordinary(body)).unwrap();
-        assert!(ParsedProgram::parse(sources(&ordinary(body))).is_err());
+        assert!(
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&ordinary(body)))
+                .is_err()
+        );
     }
     let parameters = (0..65).map(|i| format!("p{i}")).collect::<Vec<_>>();
     for count in [64, 65] {

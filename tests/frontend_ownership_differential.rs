@@ -243,8 +243,11 @@ fn compare_cases(cases: &[Case], start: usize) -> (usize, usize) {
         let index = start + offset;
         root.write("main.qli", &case.source);
         let finite = check_project(&root.0);
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), case.source.clone())]))
-            .map(|_| ());
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), case.source.clone())]),
+        )
+        .map(|_| ());
         // Preserve the complete reproduction context, but format it only when
         // an assertion fails. Both public paths still run for every case.
         let context = || {

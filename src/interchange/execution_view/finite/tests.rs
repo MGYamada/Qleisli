@@ -172,6 +172,7 @@ fn retained_evidence_caches_and_original_dependency_indices_are_read() {
     };
     let meaning = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();
     let receipt = MeaningEvidence::check(
+        crate::edition::Edition::E2026,
         meaning.target_ir().unwrap(),
         meaning,
         FunctionIdentity {
@@ -275,6 +276,7 @@ fn actual_retained_function_views_match_independent_cache_vectors() {
         };
         let receipt = Arc::new(
             FunctionEvidence::check(
+                crate::edition::Edition::E2026,
                 signature,
                 implementation,
                 specification,
@@ -327,7 +329,7 @@ fn complete_actual_graph_matches_original_indices_and_ordered_metadata() {
     let rows = json::parse(include_bytes!(
         "../../../../tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json"
     )).unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     for row in rows.array().unwrap() {
         let artifact = json::encode(row.field("artifact").unwrap()).unwrap();
         let accepted = kernel.check(&artifact, None).unwrap().into_program();

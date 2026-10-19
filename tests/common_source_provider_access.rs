@@ -25,7 +25,10 @@ macro_rules! source {
 }
 
 fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
 }
 
 fn finite(source: &str) -> qleisli::frontend::diagnostic::Diagnostic {
@@ -34,7 +37,12 @@ fn finite(source: &str) -> qleisli::frontend::diagnostic::Diagnostic {
     // An erroneous advance cannot execute this deliberately absent path.
     let absent = root.0.join("must-not-be-executed-native-kernel");
     assert!(!absent.exists());
-    check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent)).unwrap_err()
+    check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err()
 }
 
 fn common_source_valid(source: &str) {
@@ -50,7 +58,7 @@ fn ordinary_source_valid(source: &str) {
     check_project_with_kernel(
         &SourceRoot::new(source).0,
         SourcePolicy::default(),
-        &Kernel::selected().unwrap(),
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
     )
     .unwrap_or_else(|error| panic!("{source}\n{error:?}"));
 }

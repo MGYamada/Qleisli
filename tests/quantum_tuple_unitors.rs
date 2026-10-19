@@ -26,7 +26,11 @@ fn source(name: &str) -> String {
     ))
 }
 fn parsed(text: &str) -> ParsedProgram {
-    let first = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let first = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     let cloned = first.clone();
     drop(first);
     assert_eq!(cloned.source("main"), Some(text));
@@ -40,7 +44,10 @@ fn elaborate(text: &str, entry: &str) -> ElaboratedProgram {
         .unwrap()
 }
 fn kernel() -> Kernel {
-    Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    )
 }
 fn limits() -> ExecutionLimits {
     ExecutionLimits {
@@ -492,7 +499,11 @@ fn operation_request(entry: &str) -> Vec<u8> {
 }
 
 fn reject(text: &str, code: &str) {
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), code, "{text}: {error}");
     assert_eq!(error.module(), Some("main"));
     assert!(
@@ -968,7 +979,10 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     // The new structural Raw adapter must establish exact identity, rather
     // than merely stop returning its historical unsupported diagnostic.
     raw.check_finite_meaning(
-        &qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap()),
+        &qleisli::interchange::native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            qleisli::edition::Edition::E2026,
+        ),
         &target,
         &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
     )
@@ -988,7 +1002,8 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     );
     assert_eq!(definition.steps()[0].basis_table(), Some(&[0, 1][..]));
     let raw = coherent.lower_raw().unwrap();
-    let native = qleisli::interchange::native::Kernel::selected().unwrap();
+    let native =
+        qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let accepted = native.accept(raw.proposal()).unwrap();
     raw.validate_source_steps(&accepted).unwrap();
     let input = accepted.raw().quantum_inputs[0].clone();
@@ -1006,6 +1021,7 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     .unwrap();
     let identity = Matrix::identity(2).unwrap();
     let error = qleisli::interchange::pure_leaf::check_pure(
+        qleisli::edition::Edition::E2026,
         raw.payload(),
         &boundary,
         &identity,
@@ -1022,8 +1038,10 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     assert_eq!((finite.span.start, finite.span.end), (start, start + 2));
     assert_eq!(&historical[finite.span.start..finite.span.end], "do");
     assert_eq!(finite.message, format!("parse error: {migration}"));
-    let selected = match ParsedProgram::parse(BTreeMap::from([("main".into(), historical.clone())]))
-    {
+    let selected = match ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), historical.clone())]),
+    ) {
         Err(error) => error,
         Ok(_) => panic!("historical do/pure must reject instead of becoming accepted syntax"),
     };

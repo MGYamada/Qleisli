@@ -715,6 +715,7 @@ fn computed_blocks_keep_exact_native_phase_contracts() {
         .unwrap();
         for leaf in [receipt.implementation(), receipt.specification()] {
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 leaf.payload(),
                 leaf.boundary(),
                 &expected,
@@ -723,6 +724,7 @@ fn computed_blocks_keep_exact_native_phase_contracts() {
             .unwrap();
             assert!(
                 check_unitary(
+                    qleisli::edition::Edition::E2026,
                     leaf.payload(),
                     leaf.boundary(),
                     &wrong_phase,

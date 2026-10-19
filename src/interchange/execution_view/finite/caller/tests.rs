@@ -77,6 +77,7 @@ fn checked(implementation: RawProgram, name: &str) -> Arc<FunctionEvidence> {
         .unwrap();
     Arc::new(
         FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             BasisType::Bit,
             implementation,
             target,
@@ -109,7 +110,7 @@ fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
         .text()
         .unwrap();
     assert_eq!(
-        crate::interchange::native::Kernel::selected()
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
             .unwrap()
             .inspect(original.as_bytes(), None)
             .unwrap_err()
@@ -203,7 +204,7 @@ fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
             json::encode(row.field("artifact").unwrap()).unwrap(),
             "recipe {recipe}"
         );
-        let accepted = crate::interchange::native::Kernel::selected()
+        let accepted = crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
             .unwrap()
             .check(&artifact, None)
             .unwrap();
@@ -217,7 +218,7 @@ fn aliases_include_children_hidden_by_equal_snapshot_deduplication() {
             accepted.program().execution_view_description().unwrap(),
             expected_graph
         );
-        let result = crate::interchange::native::Kernel::selected()
+        let result = crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
             .unwrap()
             .inspect(&artifact, None);
         assert!(

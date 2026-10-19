@@ -347,6 +347,7 @@ fn caller_circuit_reads_actual_dependency_reference_and_literal_steps() {
     };
     let meaning = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();
     let receipt = MeaningEvidence::check(
+        crate::edition::Edition::E2026,
         meaning.target_ir().unwrap(),
         meaning,
         FunctionIdentity {
@@ -401,7 +402,8 @@ fn caller_circuit_reads_actual_dependency_reference_and_literal_steps() {
 )]
 #[test]
 fn complete_contract_views_bind_actual_and_independent_reference_graphs() {
-    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let cases = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/fixtures/verification_v030/execution-view-binding/complete-contract-vectors.json"

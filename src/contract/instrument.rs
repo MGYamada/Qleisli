@@ -356,7 +356,7 @@ mod tests {
     )]
     #[test]
     fn instrument_receipts_bind_original_bytes_and_fresh_call_decisions() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let raw = readout(false);
         let original = kernel.accept_raw(raw.clone()).unwrap();
         let pair = Arc::new(
@@ -413,7 +413,10 @@ mod tests {
             pair.check_call(&kernel, &wrong, &raw, ("main".into(), 10, 20), &mut work())
                 .is_err()
         );
-        let missing = Kernel::new("/nonexistent/qleisli-instrument-checker");
+        let missing = Kernel::new(
+            "/nonexistent/qleisli-instrument-checker",
+            crate::edition::Edition::E2026,
+        );
         assert!(matches!(
             pair.check_call(
                 &missing,
@@ -454,7 +457,7 @@ mod tests {
     )]
     #[test]
     fn instrument_wire_preserves_bits_zero_and_zero_owner_result_trees() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let raw = RawProgram {
             quantum_inputs: vec![QuantumPort {
                 token: TokenId(0),

@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "1bd0a9ba52ddd5918c413deff1c57a68cab79d0ac3d1a16f1cbe7563fe20d1c6",
+  "surface_sha256": "3ae5a94aaac5f77dee033faba55ebd3920fee728d602f4b21edd1a991b2d83fe",
   "groups": [
     {
       "id": "raw-core",
@@ -1140,7 +1140,8 @@
       "id": "raw",
       "entry_points": [
         "interchange::native::Kernel::{accept_raw,accept,check_raw,check_program}",
-        "RawProgram/RawOp untrusted Rust proposals"
+        "RawProgram/RawOp untrusted Rust proposals",
+        "interchange::native::Kernel::{new,selected}(explicit Edition); AcceptedProgram::edition"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -1255,7 +1256,7 @@
       "id": "qirf",
       "entry_points": [
         "interchange::{export,export_with_meanings,import,convert}",
-        "CLI emit-ir/verify-ir [--against=REQUEST]",
+        "CLI emit-ir; verify-ir --edition=2026 [--against=REQUEST]",
         "interchange::native::Kernel::{inspect,check_raw,check_with_meanings,convert}"
       ],
       "status": "native-execution",
@@ -1347,7 +1348,8 @@
         "compile/check_project_with_kernel",
         "QrateSource::{compile_with_kernel,check_with_kernel}",
         "compile::check_project_report_with_kernel",
-        "QrateSource::check_report_with_kernel"
+        "QrateSource::check_report_with_kernel",
+        "Project::{check_report_with_kernel,compile_with_kernel}"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -1401,7 +1403,7 @@
         "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir",
         "Python Client/Program from_openqasm/from_qir/from_ir/compile_project and check/run/sample/to_openqasm/to_qir",
         "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir --lean-kernel=PATH",
-        "Python Client(lean_kernel=PATH), Program methods and python -m qleisli --lean-kernel=PATH",
+        "Python Client(edition=\"2026\",lean_kernel=PATH), Program methods and python -m qleisli --lean-kernel=PATH",
         "interop::import_openqasm3_with_kernel"
       ],
       "status": "mixed-boundary",
@@ -1473,7 +1475,7 @@
     {
       "id": "hierarchy-inspect",
       "entry_points": [
-        "Kernel::new",
+        "Kernel::new(executable, Edition)",
         "Kernel::inspect",
         "Kernel::check_against (ordinary root and Fourier)",
         "Hierarchical.RoutedPower.inspect (Lean component only)"
@@ -1694,7 +1696,7 @@
     {
       "id": "sized-source-proposal",
       "entry_points": [
-        "ParsedProgram::parse",
+        "ParsedProgram::parse(Edition, modules)",
         "ParsedProgram::load",
         "ParsedProgram::instantiate",
         "Instantiation::elaborate",
@@ -1802,13 +1804,22 @@
         "Project::load",
         "Project::load_with_policy",
         "read_source_file",
-        "ParsedProgram::load"
+        "ParsedProgram::load",
+        "QrateSource::select",
+        "Project::from_modules",
+        "Project::module_manifest",
+        "ParsedProgram::{edition,module_manifest}",
+        "SourceFileSelection::select (private source adapter)"
       ],
       "status": "untrusted-host",
-      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
+      "blocker": "Native edition propagation/context mismatch rejection and its actual-path proofs under #255 remain unfinished. Other in-memory source/helper migrations, source/compiler/runtime preservation and broader S05/QS/PR/RS/EXACT duties remain open; frontend context is no native acceptance or guarantee.",
       "evidence": [
         "tests/review_v021.rs",
-        "tests/static_operations.rs"
+        "tests/static_operations.rs",
+        "tests/editions.rs",
+        "src/edition.rs",
+        "src/frontend/compile/mod.rs",
+        "tests/fixtures/authoring_sessions/native-edition-v030/README.md"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1825,8 +1836,8 @@
         "MIG-5"
       ],
       "route_test": {
-        "path": "tests/review_v021.rs",
-        "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+        "path": "tests/editions.rs",
+        "test": "qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits"
       },
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2348,7 +2359,7 @@
           "path": "src/bin/qleisli/source_plan.rs",
           "markers": [
             "fn raw_execute(",
-            "native::Kernel::new(kernel).accept(proposal.proposal())",
+            "native::Kernel::new(kernel, proposal.source().edition()).accept(proposal.proposal())",
             "proposal.validate_source_steps(&checked)"
           ]
         },
@@ -2477,6 +2488,70 @@
           "markers": [
             "&[implementation, specification, caller]",
             "RetainedIdentity::interned("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "impl Project {",
+            "pub fn check_report_with_kernel(",
+            "pub fn compile_with_kernel(",
+            "kernel.edition() != project.edition()"
+          ]
+        },
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "pub fn selected(edition: Edition)",
+            "pub fn new(executable: impl AsRef<Path>, edition: Edition)",
+            "program.edition() != self.edition"
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_ordinary_root_safe "
           ]
         }
       ],
@@ -2664,12 +2739,20 @@
         {
           "path": "tests/cli_sampling.rs",
           "test": "cli_new_default_has_an_explicit_legacy_escape"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
-      "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
-      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted. Newly eligible complete closed Basis/Nat/Op instances, nonzero ordinary/quantum registers and static-control roots use the same ordinary native gate; complete source type trees and observing schemas remain frontend/evidence obligations, not a new theorem admission.",
+      "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run .ordinary -> ExecutionView.Native.ordinary -> Protocol.Validity.check -> Qirf.Validity.inspect, with mandatory selected-scope QDV1 comparison and matched edition/product/mode/scope.",
+      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted. Newly eligible complete closed Basis/Nat/Op instances, nonzero ordinary/quantum registers and static-control roots use the same ordinary native gate; complete source type trees and observing schemas remain frontend/evidence obligations, not a new theorem admission. NativeContext.run_ordinary_root_safe preserves both original decoded-root predicates through actual context dispatch; run_edition connects the selected edition to the original QLV3 bytes.",
       "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem. Passing finite generic/register/dormant-control tests does not prove source lowering, effect/CPTP semantics, PR, quantitative RS or EXACT discharge."
     },
     {
@@ -2966,6 +3049,53 @@
             "let sources = self.compiler.retained_sources(",
             "&self.bindings,"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_contract_binding "
+          ]
         }
       ],
       "tests": [
@@ -3096,12 +3226,20 @@
         {
           "path": "tests/source_snapshots.rs",
           "test": "bound_pure_actual_retains_its_original_source_through_a_generic_provider"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project and supported selected Raw control calls with original-byte control requests through the same version-paired native mode; unsupported hierarchy/profile cases refuse",
-      "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> checkRetained (original result projection); instrument -> Protocol.InstrumentContract.check -> checkRetained -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
-      "proof_scope": "ExecutionView.Native.contract_binding connects the actual QLV2 entry to its selected original/compare gate. CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project and supported selected Raw ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; general source preservation, unsupported hierarchy/operator cases and wider alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
+      "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run .contract -> ExecutionView.Native.contract -> Protocol.NativeContract.checkRetained; instrument requests retain Protocol.InstrumentContract.checkRetained and both original graphs. Context and selected-scope QDV1 checks are mandatory.",
+      "proof_scope": "NativeContext.run_contract_binding connects the explicit edition/product/scope decision to ExecutionView.Native.contract_binding and its selected original/compare gate in QLV3. CheckedContract and CheckedCaller bind typed requests, both retained roots and caller caches to exact QDV1 comparisons. Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For pure-leaf requests, pure_leaf_meaning binds the original body, dependency graph, separate exact domain/codomain, ordered ports, requested matrix and exact Gram identity; pure_leaf_reference preserves inner products with arbitrary joint reference amplitudes. Ordinary and selected Raw adapters check actual emitted intervals against these requests; private original-body/source records grant neither an inverse API nor a source-preservation proof. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project and supported selected Raw ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; general source preservation, unsupported hierarchy/operator cases and wider alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Both concrete observing adapters freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Selected Raw replay checks the original implementation, input owner and ordered result before a fresh native equation; hierarchy and checker-free lowering refuse these calls. Full source preservation remains open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {
@@ -3214,6 +3352,25 @@
             "|| word[0].wires != word[1].wires",
             "|| word[0].wires != word[2].wires"
           ]
+        },
+        {
+          "path": "python/qleisli/__init__.py",
+          "markers": [
+            "def __init__(self, executable=None, *, edition,",
+            "edition: str",
+            "if selected != self.edition:",
+            "f\"--expect-edition={selected}\"",
+            "f\"--edition={selected}\"",
+            "edition=self.edition"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/interop.rs",
+          "markers": [
+            "\"--expect-edition=\"",
+            "project.edition()",
+            "expected_edition"
+          ]
         }
       ],
       "tests": [
@@ -3296,6 +3453,22 @@
         {
           "path": "tests/interop.rs",
           "test": "final_target_window_does_not_cross_fresh_preparation"
+        },
+        {
+          "path": "scripts/test_interop_native.py",
+          "test": "test_source_edition_expectation_never_overrides_the_manifest"
+        },
+        {
+          "path": "scripts/test_interop_native.py",
+          "test": "test_python_source_program_keeps_captured_manifest_context"
+        },
+        {
+          "path": "scripts/test_python_host.py",
+          "test": "test_edition_is_required_concrete_and_never_selected_by_process"
+        },
+        {
+          "path": "scripts/test_python_host.py",
+          "test": "test_source_expectation_and_raw_selection_are_distinct_arguments"
         }
       ],
       "entry_path": "interop::{export_openqasm3,export_qir_base}; corresponding CLI/Python exports",
@@ -3317,7 +3490,50 @@
           "markers": [
             "pub fn load(",
             "pub fn load_with_policy(",
-            "pub fn read_source_file("
+            "pub fn read_source_file(",
+            "pub fn from_modules(",
+            "pub fn module_manifest(",
+            "fn validate_edition_context(",
+            "fn charge_manifest("
+          ]
+        },
+        {
+          "path": "src/frontend/project/manifest.rs",
+          "markers": [
+            "pub fn select(",
+            "pub fn manifest(",
+            "load_anchored_with_manifest"
+          ]
+        },
+        {
+          "path": "src/frontend/project/edition.rs",
+          "markers": [
+            "pub struct EditionManifest",
+            "fn read_anchored(",
+            "fn capture("
+          ]
+        },
+        {
+          "path": "src/edition.rs",
+          "markers": [
+            "pub enum Edition",
+            "impl FromStr for Edition"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "project.validate_edition_context()"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize.rs",
+          "markers": [
+            "pub fn edition(",
+            "pub fn module_manifest(",
+            "SourceFileSelection::select(&path)",
+            "\"manifest changed during source loading\"",
+            "\"mixed captured constitutional editions\""
           ]
         }
       ],
@@ -3325,13 +3541,41 @@
         {
           "path": "tests/review_v021.rs",
           "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "nested_sources_keep_their_own_original_manifest_association"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "explicit_in_memory_project_has_no_fabricated_file_manifest"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "retained_manifest_bytes_share_the_existing_aggregate_capacity_once"
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "test": "source_preparation_rejects_a_substituted_edition_inventory"
+        },
+        {
+          "path": "src/edition.rs",
+          "test": "only_an_explicit_supported_identity_parses"
+        },
+        {
+          "path": "tests/editions.rs",
+          "test": "retained_project_checks_the_captured_manifest_without_later_reselection"
         }
       ],
-      "entry_path": "Project::{load,load_with_policy}, read_source_file, ParsedProgram::load",
-      "checked_artifact": "Files and schema-2 source-tree edition configuration",
+      "entry_path": "Filesystem Project/QrateSource/SourceFileSelection/ParsedProgram selection and explicit in-memory Project/ParsedProgram constructors; every local module retains its exact selecting manifest.",
+      "checked_artifact": "Requested typed edition, original captured manifest bytes and local file/module path-origin associations; no native accepted artifact.",
       "checker": "Host source/configuration checks; no semantic acceptance",
-      "proof_scope": "Source loader and edition regression tests only.",
-      "gaps": "Edition identifies the constitutional regime; loading neither checks quantum meaning nor discharges guarantees."
+      "proof_scope": "Configuration/source preparation regressions cover substitutions, exact retained bytes, no later reselection and aggregate capacity. NativeContext.run_edition separately proves original-envelope edition binding at the pure Lean dispatcher; host/source preservation is not proved.",
+      "gaps": "Complete ecosystem/helper migration and same-commit conformance remain pending under #255. Manifest capture is not an atomic filesystem snapshot or a source, execution, target or constitutional discharge."
     },
     {
       "id": "hierarchy-configuration",
@@ -4306,6 +4550,53 @@
             "theorem range_permutation",
             "theorem identity_structureValid"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_hierarchy_binding "
+          ]
         }
       ],
       "tests": [
@@ -4320,12 +4611,20 @@
         {
           "path": "tests/hierarchical_host.rs",
           "test": "native_actual_counts_premises_and_encodings_are_checked"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "hierarchical::Kernel::{inspect,inspect_native}",
-      "checked_artifact": "Dedicated hierarchy payload; no ordinary QLV1 root; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-pending -> Cli.runHierarchy -> Conditional.checkAll plus HierarchicalFinite.checkLeaves",
-      "proof_scope": "NativeHierarchy.conditional_derives and checkLeaves_semantics cover structural derivation and finite premises. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
+      "checked_artifact": "Dedicated hierarchy payload; no ordinary QLV1 root; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run (.hierarchy mode) -> ExecutionView.Native.hierarchy -> the original mode-specific structural/request/finite checks, with mandatory selected-scope QDV1 comparison.",
+      "proof_scope": "NativeHierarchy.conditional_derives and checkLeaves_semantics cover structural derivation and finite premises. NativeContext.run_hierarchy_binding connects the actual explicit-edition/product/scope dispatch to the selected original hierarchy gate and mandatory QDV1 comparison. This separate hierarchy report inherits no ordinary-root guarantee or broader constitutional discharge.",
       "gaps": "Dedicated hierarchical::NativeChecked/reconstructed report, not native::AcceptedProgram. Full analytic Operator bridge, source and execution preservation remain open."
     },
     {
@@ -4379,18 +4678,73 @@
           "markers": [
             "theorem checkLeaves_semantics"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_hierarchy_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/hierarchical_host.rs",
           "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_against,check_against_native}; sized pure checks",
-      "checked_artifact": "Hierarchy payload and composition request; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-request-pending -> Cli.runHierarchyRequest -> Root.checkAll plus checkLeaves/checkPairs",
-      "proof_scope": "NativeHierarchy.requested_pairs and checkLeaves_semantics retain explicit finite/structural premises. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
+      "checked_artifact": "Hierarchy payload and composition request; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run (.hierarchy mode) -> ExecutionView.Native.hierarchy -> the original mode-specific structural/request/finite checks, with mandatory selected-scope QDV1 comparison.",
+      "proof_scope": "NativeHierarchy.requested_pairs and checkLeaves_semantics retain explicit finite/structural premises. NativeContext.run_hierarchy_binding connects the actual explicit-edition/product/scope dispatch to the selected original hierarchy gate and mandatory QDV1 comparison. This separate hierarchy report inherits no ordinary-root guarantee or broader constitutional discharge.",
       "gaps": "Dedicated hierarchy report; producer comparison is only consistency, caller request changes scope but does not prove source preservation or full analytic semantics."
     },
     {
@@ -4444,18 +4798,73 @@
           "markers": [
             "theorem checkLeaves_semantics"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_hierarchy_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/sized_source.rs",
           "test": "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_against,check_against_native} Fourier request branch; sized Fourier checks",
-      "checked_artifact": "Hierarchy payload and Fourier request including Hadamard obligations; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --hierarchy-fourier-pending -> Cli.runHierarchyFourier -> FourierRoot.checkAll plus checkLeaves/checkHadamards",
-      "proof_scope": "NativeHierarchy.hadamard_semantics/checkHadamards_semantics and finite-leaf theorems. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
+      "checked_artifact": "Hierarchy payload and Fourier request including Hadamard obligations; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run (.hierarchy mode) -> ExecutionView.Native.hierarchy -> the original mode-specific structural/request/finite checks, with mandatory selected-scope QDV1 comparison.",
+      "proof_scope": "NativeHierarchy.hadamard_semantics/checkHadamards_semantics and finite-leaf theorems. NativeContext.run_hierarchy_binding connects the actual explicit-edition/product/scope dispatch to the selected original hierarchy gate and mandatory QDV1 comparison. This separate hierarchy report inherits no ordinary-root guarantee or broader constitutional discharge.",
       "gaps": "Named structure and finite obligations do not close full native analytic Operator/source/runtime composition."
     },
     {
@@ -4509,18 +4918,73 @@
           "markers": [
             "theorem checkLeaves_semantics"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_hierarchy_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/hierarchical_host.rs",
           "test": "native_instrument_binds_all_stages_and_reconstructs_finite_obligations"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_instrument,check_instrument_native}; sized instrument checks",
-      "checked_artifact": "Private instrument payload and preparation/evolution/readout request; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --instrument-pending -> Cli.runInstrument -> Instrument.checkAll plus checkLeaves/checkPairs",
-      "proof_scope": "Instrument.checkAll_stages/checkAll_boundary and native finite component theorems. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
+      "checked_artifact": "Private instrument payload and preparation/evolution/readout request; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run (.hierarchy mode) -> ExecutionView.Native.hierarchy -> the original mode-specific structural/request/finite checks, with mandatory selected-scope QDV1 comparison.",
+      "proof_scope": "Instrument.checkAll_stages/checkAll_boundary and native finite component theorems. NativeContext.run_hierarchy_binding connects the actual explicit-edition/product/scope dispatch to the selected original hierarchy gate and mandatory QDV1 comparison. This separate hierarchy report inherits no ordinary-root guarantee or broader constitutional discharge.",
       "gaps": "NativeChecked has instrument scope and retained bytes; full analytic composition, source and host runtime correspondence remain open."
     },
     {
@@ -4601,6 +5065,53 @@
             "match CircuitTrace.inspect artifact (atoms candidate) candidate.traceOrder",
             "theorem inspect_derives"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_hierarchy_binding "
+          ]
         }
       ],
       "tests": [
@@ -4619,12 +5130,20 @@
         {
           "path": "tests/hierarchical_qpe_host.rs",
           "test": "qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "hierarchical::Kernel::{check_qpe_instrument,check_qpe_instrument_native}; sized named-QPE checks",
-      "checked_artifact": "Instrument payload, named provider request and candidate binding; QLV2 compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
-      "checker": "Protocol.ExecutionView.Native dispatches the original independent checks and mandatory selected-scope QDV1 comparison; Main --qpe-instrument-pending -> Cli.runQpeInstrument -> QpeInstrument.checkAll plus checkLeaves/checkPairs/checkHadamards",
-      "proof_scope": "Named QPE structural and finite component results with explicit premises; bounded independent QPE tests. ExecutionView.Native binds the actual new packet to its selected pure gate; ordinary_root_safe preserves the original decoded-root ownership and classical scope. No broader guarantee is admitted.",
+      "checked_artifact": "Instrument payload, named provider request and candidate binding; QLV3 carries the explicit edition and compares the actual retained execution view in execution/caller scope and keeps inspection scope distinct",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run (.hierarchy mode) -> ExecutionView.Native.hierarchy -> the original mode-specific structural/request/finite checks, with mandatory selected-scope QDV1 comparison.",
+      "proof_scope": "Named QPE structural and finite component results with explicit premises; bounded independent QPE tests. NativeContext.run_hierarchy_binding connects the actual explicit-edition/product/scope dispatch to the selected original hierarchy gate and mandatory QDV1 comparison. This separate hierarchy report inherits no ordinary-root guarantee or broader constitutional discharge.",
       "gaps": "This dedicated report does not establish arbitrary source QPE meaning, the complete Operator bridge or runtime preservation."
     },
     {
@@ -4643,18 +5162,60 @@
             "Protocol.Hierarchical.parseReadout",
             "Hierarchical.Readout.check"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_readout_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "scripts/test_hierarchical_readout.py",
           "test": "test_native_branches"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "qleisli-kernel --readout-check",
-      "checked_artifact": "Private QLM1 readout request/packet",
-      "checker": "Cli.runReadout -> Protocol.Hierarchical.parseReadout -> Hierarchical.Readout.check",
-      "proof_scope": "Readout.check_reference/check_boundary retain their explicit reference and packet premises.",
+      "checked_artifact": "Explicit-edition QLV3 inspection envelope retaining the original QLM1 readout request/packet.",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run .readout -> the original component parser/check; inspection-only QLV3 and matched native-result 3 context.",
+      "proof_scope": "Readout.check_reference/check_boundary retain their explicit reference and packet premises. NativeContext.run_readout_binding retains the original packet, actual component check and unchanged work state; run_edition binds the edition to original envelope bytes.",
       "gaps": "A component report is not a complete program handle, full instrument composition or runtime guarantee."
     },
     {
@@ -4673,18 +5234,60 @@
             "Protocol.Hierarchical.parsePreparation",
             "Hierarchical.Preparation.check"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_preparation_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "scripts/test_hierarchical_preparation.py",
           "test": "test_zero_reference"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "qleisli-kernel --preparation-check",
-      "checked_artifact": "Private QLZ1 preparation request/packet",
-      "checker": "Cli.runPreparation -> Protocol.Hierarchical.parsePreparation -> Hierarchical.Preparation.check",
-      "proof_scope": "Preparation.check_reference/check_boundary retain their explicit reference and packet premises.",
+      "checked_artifact": "Explicit-edition QLV3 inspection envelope retaining the original QLZ1 preparation request/packet.",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run .preparation -> the original component parser/check; inspection-only QLV3 and matched native-result 3 context.",
+      "proof_scope": "Preparation.check_reference/check_boundary retain their explicit reference and packet premises. NativeContext.run_preparation_binding retains the original packet, actual component check and unchanged work state; run_edition binds the edition to original envelope bytes.",
       "gaps": "A component report is not a complete program handle, full instrument composition or runtime guarantee."
     },
     {
@@ -4798,6 +5401,47 @@
             "Node::Reference",
             "FunctionEvidence::check_retained_with_kernel",
             "original reference artifact is absent"
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
           ]
         }
       ],
@@ -4957,6 +5601,14 @@
         {
           "path": "src/frontend/specialize/elaborate.rs",
           "test": "native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "ElaboratedProgram::check_function_contracts, ElaboratedProgram::check_operation_meanings and RawSourceProposal::check_finite_meaning",
@@ -4995,10 +5647,10 @@
         {
           "path": "src/interchange/engineering_pure/runtime.rs",
           "markers": [
-            "fn response(",
-            "qleisli.engineering-pure-native 1",
-            "\"--engineering-pure-check\"",
-            "\"engineering-checked\", \"execution\""
+            "fn invoke_bound(",
+            "Mode::EngineeringPure",
+            "mode.argument()",
+            "native_context::engineering_response(bytes, edition, mode)"
           ]
         },
         {
@@ -5122,6 +5774,53 @@
             "theorem checked_tensor_reference_bound",
             "theorem checked_controlled_reference_bound"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_engineering_pure_binding "
+          ]
         }
       ],
       "tests": [
@@ -5156,12 +5855,20 @@
         {
           "path": "tests/engineering_pure_cli.rs",
           "test": "engineering_cli_checks_original_artifacts_and_reports_only_the_declared_bound"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "interchange::engineering_pure::{check,check_with_kernel,check_serialized_with_kernel}; engineering compare-pure CLI; separate allocation-bound Subject/Decision/EngineeringPureReport",
-      "checked_artifact": "Original actual QIRF bytes, original engineering request bytes and embedded original ideal QIRF text, strict closed pure engineering context, and typed QDV1 request plus both retained execution graphs in QLV2 execution scope",
-      "checker": "Main --engineering-pure-check -> Cli.runEngineeringPure -> CheckedEngineeringPure.run -> Protocol.EngineeringPure.checkRetained -> Qirf.EngineeringPure.check -> both unchanged PureLeaf.check gates and Engineering.Pure.checkMatrices, followed by exact typed QDV1 comparison; separate engineering response parser",
-      "proof_scope": "CheckedEngineeringPure.run_binding retains the actual QLV2 execution packet, the original QLV1 body/request bytes, both freshly decoded graphs and the exact QDV1 comparison. Protocol.EngineeringPure.checkRetained_bound connects those decoded fields to one shared-work engineering computation. NativeEngineeringPureProtocol.run_meaning and run_reference_square bind both original pure bodies, their own independent exact matrix equations and Gram checks to the phase-sensitive Euclidean operator inequality on every finite joint reference input. The sufficient witness is a bounded exact R8 Frobenius-square comparison. Separate pure composition lemmas require their stated isometry and ordered-interface premises; the native request profile remains single-component-v1. The private Rust engineering report retains both original artifacts, request bytes and selected checker path, and grants no exact cross-body equation or accepted-program conversion, including at epsilon zero.",
+      "checked_artifact": "Original actual QIRF bytes, original engineering request bytes and embedded original ideal QIRF text, strict closed pure engineering context, and typed QDV1 request plus both retained execution graphs in QLV3 execution scope",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run in its dedicated engineering mode -> the existing execution-only checked profile. native-result 3 retains engineering-checked and matching edition/product/mode/scope; no accepted-program conversion.",
+      "proof_scope": "NativeContext.run_engineering_pure_binding connects the explicit edition/product/scope decision to CheckedEngineeringPure.run_binding, which retains the actual QLV3 execution packet, the original QLV1 body/request bytes, both freshly decoded graphs and the exact QDV1 comparison. Protocol.EngineeringPure.checkRetained_bound connects those decoded fields to one shared-work engineering computation. NativeEngineeringPureProtocol.run_meaning and run_reference_square bind both original pure bodies, their own independent exact matrix equations and Gram checks to the phase-sensitive Euclidean operator inequality on every finite joint reference input. The sufficient witness is a bounded exact R8 Frobenius-square comparison. Separate pure composition lemmas require their stated isometry and ordered-interface premises; the native request profile remains single-component-v1. The private Rust engineering report retains both original artifacts, request bytes and selected checker path, and grants no exact cross-body equation or accepted-program conversion, including at epsilon zero.",
       "gaps": "This is an engineering check, not exact source correspondence, an inverse/control capability, cleanup evidence, an instrument bound, a target resource certificate or a constitutional guarantee admission. qirf-r8-pure-v1 names an IR profile, not a physical target. Source/compiler, decoder/walker, deployed-binary/native-compiler and runtime preservation remain separate. The selected checker path is not binary attestation. Native composition, instrument metrics, actual emitted-resource binding and separate sampling/algorithmic/numerical error claims remain open. This path does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
     },
     {
@@ -5194,10 +5901,10 @@
         {
           "path": "src/interchange/engineering_instrument/runtime.rs",
           "markers": [
-            "fn response(",
-            "qleisli.engineering-instrument-native 1",
-            "\"--qirf-engineering-instrument-native\"",
-            "\"engineering-checked\", \"execution\""
+            "fn invoke_bound(",
+            "Mode::EngineeringInstrument",
+            "mode.argument()",
+            "native_context::engineering_response(bytes, edition, mode)"
           ]
         },
         {
@@ -5358,6 +6065,53 @@
             "theorem tensor_gram",
             "theorem tensor_bound"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_engineering_instrument_binding "
+          ]
         }
       ],
       "tests": [
@@ -5400,12 +6154,20 @@
         {
           "path": "tests/engineering_instrument_cli.rs",
           "test": "instrument_cli_checks_residual_reference_maps_and_reports_only_declared_bounds"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "entry_path": "interchange::engineering_instrument::{check,check_with_kernel,check_serialized_with_kernel}; engineering compare-instrument CLI; separate allocation-bound Subject/Decision/EngineeringInstrumentReport",
-      "checked_artifact": "Original actual QIRF bytes, original strict 14-field instrument engineering request and embedded original expected QIRF text, full typed signatures/source identity/canonical epsilon/ordered majorants, QDV1 request and both retained graphs in QLV2 execution scope",
-      "checker": "Main --qirf-engineering-instrument-native -> Cli.runEngineeringInstrument -> Native.engineeringInstrument -> CheckedEngineeringInstrument.run -> Protocol.EngineeringInstrument.checkRetained -> Qirf.EngineeringInstrument.check -> both unchanged original-root/interface/Kraus gates and Engineering.Instrument.checkHistories, followed by exact QDV1 comparison; dedicated engineering response parser",
-      "proof_scope": "CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding retain the actual QLV2 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed request and exact QDV1 comparison. Protocol.EngineeringInstrument.checkRetained_bound connects them to one continuous-work engineering check. NativeEngineeringInstrumentProtocol.run_meaning binds both original bodies/dependencies, exact Kraus completeness, untruncated dimensions, complete signature equality and ordered public-output projections to CompleteAdjointBound on every finite joint reference and every public-outcome observable family. The sufficient exact R8 Choi coefficient majorants retain all unnormalized hidden histories and residual coherences; no probability-only or postselected comparison is used. Separate internal mathematical lemmas derive complete adjoint contraction from full Kraus Gram equations, pure-to-instrument 2-delta bounds from literal pure gaps and both isometry equations, and additive feed-forward/ordered tensor bounds with explicit reference-axis regrouping. Their complete component Gram and interface premises remain explicit. The native profile remains single-component-v1. Private Rust reports retain both original artifacts, request bytes and selected checker path; epsilon zero grants no exact accepted-program conversion.",
+      "checked_artifact": "Original actual QIRF bytes, original strict 14-field instrument engineering request and embedded original expected QIRF text, full typed signatures/source identity/canonical epsilon/ordered majorants, QDV1 request and both retained graphs in QLV3 execution scope",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run in its dedicated engineering mode -> the existing execution-only checked profile. native-result 3 retains engineering-checked and matching edition/product/mode/scope; no accepted-program conversion.",
+      "proof_scope": "NativeContext.run_engineering_instrument_binding connects the explicit edition/product/scope decision to CheckedEngineeringInstrument.run_binding and Native.engineeringInstrument_binding, which retain the actual QLV3 execution packet, original QLV1 body/request bytes, both freshly decoded graphs, full typed request and exact QDV1 comparison. Protocol.EngineeringInstrument.checkRetained_bound connects them to one continuous-work engineering check. NativeEngineeringInstrumentProtocol.run_meaning binds both original bodies/dependencies, exact Kraus completeness, untruncated dimensions, complete signature equality and ordered public-output projections to CompleteAdjointBound on every finite joint reference and every public-outcome observable family. The sufficient exact R8 Choi coefficient majorants retain all unnormalized hidden histories and residual coherences; no probability-only or postselected comparison is used. Separate internal mathematical lemmas derive complete adjoint contraction from full Kraus Gram equations, pure-to-instrument 2-delta bounds from literal pure gaps and both isometry equations, and additive feed-forward/ordered tensor bounds with explicit reference-axis regrouping. Their complete component Gram and interface premises remain explicit. The native profile remains single-component-v1. Private Rust reports retain both original artifacts, request bytes and selected checker path; epsilon zero grants no exact accepted-program conversion.",
       "gaps": "This engineering instrument check grants no exact source correspondence, pure phase agreement, inverse/control capability, cleanup, target-resource certificate or constitutional guarantee. qirf-r8-instrument-v1 is an IR profile, not a hardware realization. Independent composition lemmas do not establish original source/QIRF feed-forward or tensor preservation, native composed certificate generation/consumption or actual emitted-resource binding. Source/compiler, decoder/walker, native-compiler/deployed-binary and runtime preservation remain separate; checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime error categories are not claimed. Exact InstrumentContract acceptance remains separate and unchanged. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
     },
     {
@@ -5437,10 +6199,10 @@
         {
           "path": "src/interchange/engineering_pure_tensor/runtime.rs",
           "markers": [
-            "fn response(",
-            "qleisli.engineering-pure-tensor-native 1",
-            "\"--engineering-pure-tensor-check\"",
-            "\"engineering-checked\", \"execution\""
+            "fn invoke_bound(",
+            "Mode::EngineeringPureTensor",
+            "mode.argument()",
+            "native_context::engineering_response(bytes, edition, mode)"
           ]
         },
         {
@@ -5545,19 +6307,74 @@
             "theorem run_meaning",
             "theorem run_reference_bound"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_engineering_tensor_binding "
+          ]
         }
       ],
       "tests": [
         {
           "path": "src/interchange/engineering_pure_tensor/tests.rs",
           "test": "native_tensor_composes_component_bounds_without_parent_frobenius"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "id": "engineering-pure-tensor-check",
       "entry_path": "interchange::engineering_pure_tensor::{check,check_with_kernel,check_serialized_with_kernel}; explicit engineering compare-pure-tensor CLI; separate immutable Subject/Decision/EngineeringPureTensorReport",
-      "checked_artifact": "Original parent actual QIRF, original fourteen-field engineering request with embedded five other original texts, two ordered seven-field components and literal total budget; QLV2 execution-only typed QDV1 request and all six retained graphs",
-      "checker": "Main --engineering-pure-tensor-check -> Cli.runEngineeringPureTensor -> CheckedEngineeringPureTensor.run -> Protocol.EngineeringPureTensor.checkRetained -> Qirf.EngineeringPureTensor.check -> two fresh EngineeringPure component comparisons, both fresh parent PureLeaf checks, exact ordered tensor equations and literal checked budget sum -> exact QDV1 comparison; separate engineering-only response",
-      "proof_scope": "CheckedEngineeringPureTensor.run_binding retains the actual execution-only QLV2 packet, original parent body/request bytes and exact QDV1 comparison of the typed context and six freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning binds all six original bodies/dependencies, complete ordered type trees, exact matrix and Gram equations, both independently computed low-first parent tensors and canonical additive component budgets. NativeEngineeringPureTensorProtocol.run_meaning and run_reference_bound connect the actual native computation to the literal parent Euclidean operator bound for every finite external reference. The explicit total budget equals the checked sum; no whole-parent Frobenius inequality replaces composition. The private immutable Rust report retains all six artifacts, request and selected checker path, including at epsilon zero.",
+      "checked_artifact": "Original parent actual QIRF, original fourteen-field engineering request with embedded five other original texts, two ordered seven-field components and literal total budget; QLV3 execution-only typed QDV1 request and all six retained graphs",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run in its dedicated engineering mode -> the existing execution-only checked profile. native-result 3 retains engineering-checked and matching edition/product/mode/scope; no accepted-program conversion.",
+      "proof_scope": "NativeContext.run_engineering_tensor_binding connects the explicit edition/product/scope decision to CheckedEngineeringPureTensor.run_binding, which retains the actual execution-only QLV3 packet, original parent body/request bytes and exact QDV1 comparison of the typed context and six freshly decoded graphs. Protocol.EngineeringPureTensor.checkRetained_bound connects these fields to one continuous-work core execution. NativeEngineeringPureTensor.check_meaning binds all six original bodies/dependencies, complete ordered type trees, exact matrix and Gram equations, both independently computed low-first parent tensors and canonical additive component budgets. NativeEngineeringPureTensorProtocol.run_meaning and run_reference_bound connect the actual native computation to the literal parent Euclidean operator bound for every finite external reference. The explicit total budget equals the checked sum; no whole-parent Frobenius inequality replaces composition. The private immutable Rust report retains all six artifacts, request and selected checker path, including at epsilon zero.",
       "gaps": "Engineering-only ordered two-component tensor comparison; no exact cross-parent Meaning, accepted-program conversion, inverse/control access, cleanup, instrument bound, actual emitted-target/resource certificate or constitutional admission. Recursive/sequential/control and instrument native composition, source/compiler and emitted-target preservation, decoder/walker, native-compiler/deployed-binary and runtime correspondence remain separate. The IR target profile is not hardware and checker-path retention is not binary attestation. Sampling/algorithmic-resolution/numerical-runtime error categories remain unclaimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT."
     },
     {
@@ -5590,10 +6407,10 @@
         {
           "path": "src/interchange/engineering_openqasm/runtime.rs",
           "markers": [
-            "fn response(",
-            "qleisli.engineering-openqasm-native 1",
-            "\"--engineering-openqasm-check\"",
-            "\"engineering-checked\", \"execution\""
+            "fn invoke_bound(",
+            "Mode::EngineeringOpenQasm",
+            "mode.argument()",
+            "native_context::engineering_response(bytes, edition, mode)"
           ]
         },
         {
@@ -5743,6 +6560,53 @@
             "theorem run_meaning",
             "theorem run_complete_adjoint_bound"
           ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_engineering_target_binding "
+          ]
         }
       ],
       "tests": [
@@ -5765,13 +6629,21 @@
         {
           "path": "tests/engineering_openqasm_cli.rs",
           "test": "openqasm_cli_checks_literal_target_and_original_ideal_with_honest_scope"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
         }
       ],
       "id": "engineering-openqasm-check",
       "entry_path": "interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}; compare-openqasm3 CLI; separate immutable Subject/Decision/EngineeringOpenQasmReport",
-      "checked_artifact": "Literal actual canonical OpenQASM bytes and original fourteen-field engineering request containing the independent original ideal text; QLV2 execution-only QDV1 full typed context, target bytes, ordered word, generated actual graph and ideal original graph",
-      "checker": "Main --engineering-openqasm-check -> Cli.runEngineeringOpenQasm -> CheckedEngineeringOpenQasm.run -> Protocol.EngineeringOpenQasm.checkRetained -> independent canonical byte decode/generated actual graph and original ideal read -> Qirf.EngineeringOpenQasm.check -> fresh EngineeringInstrument complete original-body/Kraus/coefficient checks -> exact QDV1 comparison; separate engineering-only response",
-      "proof_scope": "CheckedEngineeringOpenQasm.run_binding retains the actual execution-only QLV2 packet, original target body/request bytes and exact QDV1 comparison of the full typed context, literal target bytes, independently decoded ordered word, generated actual graph and freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the original ideal read and target core to one continuous-work computation. Target.CanonicalOpenQasm.decode_original binds the literal target bytes; the independent Semantics.CanonicalTerminalQasm mapping retains and explicitly consumes the zero-width Unit owner. CanonicalOpenQasmGates.gate_matrix and gate_meaning bind all eight literal complex gate matrices before observation. NativeEngineeringOpenQasm.check_meaning and NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit signatures and ordered public outcomes to CompleteAdjointBound on every finite reference and observable at the caller's literal epsilon. The immutable private Rust report retains original target, ideal, request and selected checker path without an accepted-program conversion, including at epsilon zero.",
+      "checked_artifact": "Literal actual canonical OpenQASM bytes and original fourteen-field engineering request containing the independent original ideal text; QLV3 execution-only QDV1 full typed context, target bytes, ordered word, generated actual graph and ideal original graph",
+      "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run in its dedicated engineering mode -> the existing execution-only checked profile. native-result 3 retains engineering-checked and matching edition/product/mode/scope; no accepted-program conversion.",
+      "proof_scope": "NativeContext.run_engineering_target_binding connects the explicit edition/product/scope decision to CheckedEngineeringOpenQasm.run_binding, which retains the actual execution-only QLV3 packet, original target body/request bytes and exact QDV1 comparison of the full typed context, literal target bytes, independently decoded ordered word, generated actual graph and freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the original ideal read and target core to one continuous-work computation. Target.CanonicalOpenQasm.decode_original binds the literal target bytes; the independent Semantics.CanonicalTerminalQasm mapping retains and explicitly consumes the zero-width Unit owner. CanonicalOpenQasmGates.gate_matrix and gate_meaning bind all eight literal complex gate matrices before observation. NativeEngineeringOpenQasm.check_meaning and NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit signatures and ordered public outcomes to CompleteAdjointBound on every finite reference and observable at the caller's literal epsilon. The immutable private Rust report retains original target, ideal, request and selected checker path without an accepted-program conversion, including at epsilon zero.",
       "gaps": "Engineering-only canonical closed one-qubit target profile; the declared standard-gate mathematical meaning is an explicit specification assumption. This checks the target-bound complete-adjoint relation, not source/export preservation, exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional admission. Composition and synthesis/resource certificates, source/compiler/export correctness, decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
     }
   ]

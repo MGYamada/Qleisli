@@ -65,7 +65,7 @@ fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
     // Reconstruct the source-generated n-ary function evidence from both formats.
     for version in [Version::V1, Version::V2] {
         let bytes = interchange::export(&program, None, version).unwrap();
-        let imported = interchange::import(&bytes, None).unwrap();
+        let imported = interchange::import(qleisli::edition::Edition::E2026, &bytes, None).unwrap();
         assert_eq!(
             run_closed(&imported.program, SimulationLimits::default()).unwrap(),
             result

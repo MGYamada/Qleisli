@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope
+from native_packet import envelope, parse_reply
 import tomllib
 
 from test_hierarchical_artifact import ROOT, build_and_run
@@ -253,14 +253,14 @@ def bridge(request, packet, budget=2000000):
     return bytes(data)
 
 
-def inspect(kernel, payload):
-    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=envelope(payload) if payload else b"",
+def inspect(kernel, payload, *, edition):
+    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=envelope(edition, payload) if payload else b"",
                          capture_output=True, timeout=60)
-    fields = run.stdout.decode('ascii').splitlines()
-    assert len(fields) == 3 and fields[0] == 'qleisli.readout-result 2', (fields, run.stderr)
-    assert run.returncode == (0 if fields[1] == 'checked' else 1), (run.returncode, fields)
-    assert fields[1] in ('checked', 'error'), fields
-    return fields[1:]
+    reply = parse_reply(run.stdout, edition=edition, product=PRODUCT_VERSION,
+                        mode='--readout-check', scope='inspection')
+    assert run.returncode == (0 if reply.claim == 'checked' else 1), (run.returncode, reply)
+    assert len(reply.payload) == 1, reply
+    return [reply.claim, *reply.payload]
 
 
 def test_component_transport(rows, results, kernel):
@@ -272,7 +272,7 @@ def test_component_transport(rows, results, kernel):
             assert row['name'] == 'unbounded-label'
             overflow += 1
             continue
-        observed = inspect(kernel, payload)
+        observed = inspect(kernel, payload, edition='2026')
         expected = results[row['name']]
         assert observed == (expected[:2] if expected[0] == 'checked' else ['error', expected[0]]), row['name']
         checked += 1
@@ -282,7 +282,7 @@ def test_component_transport(rows, results, kernel):
                  b'QLM1'+struct.pack('<I', 100001),
                  b'QLM1'+struct.pack('<I', 0xFFFFFFFF)]
     for i, payload in enumerate(malformed):
-        assert inspect(kernel, payload) == ['error', 'format' if i < 4 else 'limit']
+        assert inspect(kernel, payload, edition='2026') == ['error', 'format' if i < 4 else 'limit']
     return dict(checked=checked, checked_u32_rejections=overflow, malformed=len(malformed))
 
 

@@ -176,14 +176,14 @@ def compare_rust(all_cases, project, log):
                 'self_dependency','forward_dependency','producer_accepted_rejected','producer_matrix_rejected'}: continue
         commands = []
         for entry, binding in zip(case['functions'], case['bindings']):
-            commands.append('let receipt=FunctionEvidence::check('+finite.rust_basis(entry['signature'])+','+
+            commands.append('let receipt=FunctionEvidence::check(qleisli::edition::Edition::E2026,'+finite.rust_basis(entry['signature'])+','+
                 raw.rust_program(entry['implementation'])+','+raw.rust_program(entry['specification'])+','+
                 rust_identity(entry['identity'])+',&mut budget).ok()?;')
             commands.append('receipt.check_binding(&'+finite.rust_basis(binding['signature'])+',&'+rust_identity(binding['identity'])+',&'+
                 raw.rust_program(binding['implementation'])+',&'+raw.rust_program(binding['specification'])+').ok()?;')
             commands.append('receipts.push(std::sync::Arc::new(receipt));')
         if len(case['functions']) != len(case['bindings']): commands.append('return None;')
-        if case['mode'] == 'structured': commands.append('qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw('+raw.rust_program(case['program'])+').ok()?;')
+        if case['mode'] == 'structured': commands.append('qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).expect("explicit native checker").accept_raw('+raw.rust_program(case['program'])+').ok()?;')
         commands.append('Some(receipts.iter().map(|r|(r.depth(),r.expanded_steps())).collect::<Vec<_>>())')
         actions.append('let result=(||{let mut budget=Budget::new(100000000);let mut receipts:Vec<std::sync::Arc<FunctionEvidence>>=vec![];'+''.join(commands)+'})();'+
             'println!("{} {} {:?}",'+json.dumps(case['name'])+',result.is_some(),result);')
@@ -234,7 +234,7 @@ def main():
         bindings=dict(native_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
             native_input_sha256=hashlib.sha256(payload.encode()).hexdigest(),
             native_stdout_sha256=hashlib.sha256(run.stdout.encode()).hexdigest(),
-            rust_binary_sha256=hashlib.sha256((project/'target/debug/raw-completion').read_bytes()).hexdigest(),
+            rust_binary_sha256=hashlib.sha256(exact.cargo_binary(project, 'raw-completion').read_bytes()).hexdigest(),
             rust_stdout_sha256=hashlib.sha256(rust_output.encode()).hexdigest())
     args.record.parent.mkdir(parents=True,exist_ok=True)
     report=dict(status='passed',native_cases=len(all_cases),rust_comparisons=len(rust),independent_matrices=matrices,

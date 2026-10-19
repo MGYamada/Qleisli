@@ -38,11 +38,11 @@ fn run(source: &str) -> std::collections::BTreeMap<Vec<bool>, f64> {
         assert!(equation.names().0.starts_with("main::"));
     }
     let expected = run_closed(&program, SimulationLimits::default()).unwrap();
-    let kernel = Kernel::selected().unwrap();
-    let selected = ParsedProgram::parse(std::collections::BTreeMap::from([(
-        "main".into(),
-        source.into(),
-    )]))
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        std::collections::BTreeMap::from([("main".into(), source.into())]),
+    )
     .unwrap()
     .instantiate("main::main", Default::default(), Default::default())
     .unwrap()
@@ -233,11 +233,11 @@ fn rectangular_reference_rejects_phase_observation_and_missing_inverse() {
             fn invoke[const U:Op<Unit -> Bit,Plus>](q:Q<Unit>)->Q<Bit> requires Applicable(U){{U(q)}} {extra}");
         let root = SourceRoot::new(&source);
         assert!(compile_project(&root.0).is_err(), "{source}");
-        let kernel = Kernel::selected().unwrap();
-        let selected = ParsedProgram::parse(std::collections::BTreeMap::from([(
-            "main".into(),
-            source.clone(),
-        )]))
+        let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            std::collections::BTreeMap::from([("main".into(), source.clone())]),
+        )
         .and_then(|program| {
             program.instantiate("main::main", Default::default(), Default::default())
         })

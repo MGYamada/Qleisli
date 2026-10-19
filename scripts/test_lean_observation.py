@@ -447,17 +447,17 @@ def native(records, log, lean_source=LEAN):
                 filename=f'source-{len(actions)}.qirf'
                 (project/filename).write_bytes(c['original_qirf'].encode('utf-8'))
                 actions.append('println!("{} {}",'+json.dumps(c['name'])+
-                    ',qleisli::interchange::native::Kernel::selected().expect("explicit native checker")'+
+                    ',qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).expect("explicit native checker")'+
                     '.check(include_bytes!('+json.dumps(filename)+'),None).is_ok());')
                 continue
             text=rust_program(c['artifact']['program'])
-            actions.append('println!("{} {}",'+json.dumps(c['name'])+',qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw('+text+').is_ok());')
+            actions.append('println!("{} {}",'+json.dumps(c['name'])+',qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).expect("explicit native checker").accept_raw('+text+').is_ok());')
         source='use qleisli::ir::*;\nfn main(){\n'+'\n'.join(actions)+'\n}\n'
         (project/'Cargo.toml').write_text('[package]\nname="qleisli_observation_test"\nversion="0.0.0"\nedition="2024"\n[dependencies]\nqleisli={path='+json.dumps(str(ROOT))+'}\n[[bin]]\nname="observation-test"\npath="main.rs"\n')
         (project/'main.rs').write_text(source)
         output=exact.command(['cargo','run','--offline','--quiet'],project,log)
         rust={line.split()[0]:line.split()[1]=='true' for line in output.splitlines()}
-        bindings.update(rust_binary_sha256=hashlib.sha256((project/'target/debug/observation-test').read_bytes()).hexdigest(),
+        bindings.update(rust_binary_sha256=hashlib.sha256(exact.cargo_binary(project, 'observation-test').read_bytes()).hexdigest(),
             rust_stdout_sha256=hashlib.sha256(output.encode()).hexdigest())
         return observed,rust,bindings
 

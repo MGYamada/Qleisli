@@ -36,7 +36,11 @@ fn reject(category: &str, name: &str, code: ErrorCode) {
 }
 
 fn parsed(input: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), input.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), input.into())]),
+    )
+    .unwrap()
 }
 
 #[cfg_attr(
@@ -102,8 +106,11 @@ fn empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths() {
         "ordinary-bits-zero",
     ] {
         let input = source("counterexamples", name);
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), input.clone())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), input.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(selected.code(), "type", "{name}: {selected}");
         assert!(
             selected
@@ -116,7 +123,7 @@ fn empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths() {
         let finite = qleisli::frontend::compile::check_project_with_kernel(
             &root.0,
             SourcePolicy::default(),
-            &native::Kernel::new(absent),
+            &native::Kernel::new(absent, qleisli::edition::Edition::E2026),
         )
         .unwrap_err();
         assert_eq!(finite.code, "type_mismatch", "{name}: {finite:?}");
@@ -271,7 +278,10 @@ fn coherent_control_exposes_unit_phase_for_lift_and_computed_pattern() {
 )]
 #[test]
 fn sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     for (category, name, input) in [
         ("attempt-01", "runtime-unit", vec![[0.2, 0.3], [-0.4, 0.7]]),
         (
@@ -318,8 +328,11 @@ fn sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule() {
         ("validation-sources", "sized-zero-owner"),
         ("validation-sources", "sized-nested-exact-mismatch"),
     ] {
-        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source(category, name))]))
-            .unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source(category, name))]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "type", "{name}: {error}");
     }
 }

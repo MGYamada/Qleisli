@@ -12,20 +12,25 @@ use qleisli::interchange::native::Kernel;
 
 use super::json::{artifact_diagnostic_json, envelope, quoted};
 
-const USAGE: &str = "qleisli engineering compare-pure ACTUAL --against=REQUEST [--lean-kernel=PATH] [--format=json]";
+const USAGE: &str = "qleisli engineering compare-pure ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]";
 
 pub(super) struct Options {
     pub(super) actual: PathBuf,
     pub(super) request: PathBuf,
     pub(super) checker: Option<PathBuf>,
+    pub(super) edition: Option<qleisli::edition::Edition>,
 }
 
 pub(super) fn parse(args: &[OsString], command: &str) -> Option<Options> {
     let mut positional = Vec::new();
     let (mut request, mut checker, mut json) = (None, None, false);
+    let mut edition = None;
     for arg in args {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
+            Some(text) if text.starts_with("--edition=") && edition.is_none() => {
+                edition = Some(text[10..].parse().ok()?);
+            }
             Some(text)
                 if text.starts_with("--against=") && text.len() > 10 && request.is_none() =>
             {
@@ -47,6 +52,7 @@ pub(super) fn parse(args: &[OsString], command: &str) -> Option<Options> {
         actual: positional[1].into(),
         request: request?,
         checker,
+        edition,
     })
 }
 
@@ -55,6 +61,15 @@ pub(super) fn error(code: &'static str, message: impl Into<String>) -> Error {
         code,
         message: message.into(),
         json_pointer: String::new(),
+    }
+}
+
+pub(super) fn kernel(options: &Options) -> Result<Kernel, Error> {
+    let edition = options.edition.ok_or_else(|| error("edition",
+        "engineering comparison requires --edition=2026; edition selects the constitutional regime, independently of the compiler release"))?;
+    match &options.checker {
+        Some(path) => Ok(Kernel::new(path, edition)),
+        None => Kernel::selected(edition),
     }
 }
 
@@ -118,12 +133,7 @@ pub(super) fn checker_text(path: &Path) -> String {
 fn execute(options: Options) -> Result<EngineeringPureReport, Error> {
     let actual = read(&options.actual)?;
     let request = read(&options.request)?;
-    let kernel = options
-        .checker
-        .as_ref()
-        .map(Kernel::new)
-        .map(Ok)
-        .unwrap_or_else(Kernel::selected)?;
+    let kernel = kernel(&options)?;
     check_serialized_with_kernel(&kernel, &actual, &request)
 }
 
