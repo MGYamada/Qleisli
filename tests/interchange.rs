@@ -112,6 +112,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
         std::fs::write(&req, request(shape, "permutation", "[0,1]")).unwrap();
         let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&path)
             .arg(format!("--against={}", req.display()))
             .arg("--format=json")
@@ -371,6 +372,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
     std::fs::remove_file(root.0.join("main.qli")).unwrap();
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .arg("verify-ir")
+        .arg("--edition=2026")
         .arg(&path)
         .arg("--format=json")
         .output()
@@ -394,6 +396,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
         std::fs::write(&req, request(ty, "permutation", "[0,1]")).unwrap();
         let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&path)
             .arg(format!("--against={}", req.display()))
             .arg("--format=json")

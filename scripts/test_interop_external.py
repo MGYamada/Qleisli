@@ -30,7 +30,8 @@ def run(*args):
 
 class ExternalFormats(unittest.TestCase):
     def emit(self, mode, path):
-        return run(OPTIONS.example, mode, str(path))
+        flags = ["--edition=2026"] if mode.startswith("qasm-") else []
+        return run(OPTIONS.example, mode, str(path), *flags)
 
     def check_qasm(self, text, expected_gates, measured_axes):
         program = openqasm3.parse(text)
@@ -103,7 +104,7 @@ class ExternalFormats(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "bad.qasm"
             path.write_text('OPENQASM 3.0; include "stdgates.inc"; qubit q; reset q; measure q; x q;')
-            result = subprocess.run([OPTIONS.example, "qasm-to-qir", str(path)], capture_output=True)
+            result = subprocess.run([OPTIONS.example, "qasm-to-qir", str(path), "--edition=2026"], capture_output=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(result.stdout, b"")
             self.assertIn(b"Unsupported", result.stderr)

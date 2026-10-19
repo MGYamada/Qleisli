@@ -116,6 +116,7 @@ fn interop_file_io_uses_the_closed_project_code() {
             .args(["interop", "check"])
             .arg(path)
             .arg("--input=qasm")
+            .arg("--edition=2026")
             .output()
             .unwrap();
         assert!(!result.status.success());

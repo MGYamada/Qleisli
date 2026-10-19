@@ -129,6 +129,7 @@ fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
         assert!(emitted.status.success(), "{emitted:?}");
         let verified = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&artifact)
             .output()
             .unwrap();
@@ -163,6 +164,7 @@ fn small_native_receipts_round_trip_shared_source() {
         std::fs::write(&artifact, &bytes).unwrap();
         let verified = Command::new(env!("CARGO_BIN_EXE_qleisli"))
             .arg("verify-ir")
+            .arg("--edition=2026")
             .arg(&artifact)
             .output()
             .unwrap();

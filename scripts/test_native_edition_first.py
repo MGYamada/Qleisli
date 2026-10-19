@@ -13,6 +13,70 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_consumer_observer_failures_remain_separate_from_product_results(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-observer-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '5a08506e3160bd169f55210b4fd7433dbdf0bd0f389eb4d398b2b446756414cc')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(39_942)
+        self.assertEqual(len(raw), 39_941)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'ebf48db7df4c6dc3e759bc568885cc0242ca000475256d8afe33a8aa70d73c15')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.edition-consumer-observer-failures', 1))
+        self.assertEqual(len(record['records']), 7)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        self.assertIn(b"No module named 'openqasm3'", data['interop-validator.stderr'])
+        self.assertIn(b"KeyError: 'structuredContent'", data['passive-reader-first.stderr'])
+        self.assertEqual(json.loads(data['interop-validator.json'])['command']['exit_code'], 1)
+        self.assertEqual(json.loads(data['passive-reader-first.json'])['exit_code'], 1)
+
+    def test_first_consumer_failures_preserve_sources_and_actual_diagnostics(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-validation-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'cefe8d9c6a2637892c4899a3c28422a9154e5541bce51ecb8f06fb4167642734')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(532_294)
+        self.assertEqual(len(raw), 532_293)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '4524d2f8189ff48530e13272827e156ee8d83742f6af60a7b22f135f637d9603')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.edition-consumer-first-observations', 1))
+        self.assertEqual(len(record['records']), 26)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644))
+        self.assertIn(b'error[E0061]', data['first-cargo.stderr'])
+        self.assertIn(b'Kernel::selected()', data['first-adapter.rs'])
+        self.assertIn(b'failed to select a version', data['normal-3.stderr'])
+        self.assertEqual(json.loads(data['first-clippy-context.json'])['command']['exit_code'], 101)
+        self.assertIn(b'import_openqasm3(r#', data['root-ci-before-0'])
+        for name, contents in data.items():
+            if name.startswith('pr423-ci-'):
+                diagnostic = json.loads(contents)
+                if 'structuredContent' in diagnostic:
+                    self.assertEqual(set(diagnostic), {'content', 'structuredContent'})
+                    diagnostic = diagnostic['structuredContent']
+                self.assertEqual(diagnostic['headRevision'], record['source_revisions']['qleisli'])
+                self.assertFalse(diagnostic['logTruncated'])
+
     def test_first_cli_context_failures_keep_invocation_and_consumer_errors_distinct(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/cli-validation-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

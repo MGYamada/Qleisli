@@ -22,6 +22,8 @@ development milestones from the scope of their evidence.
   guards. Refresh current schema and scoped-guarantee evidence after both Lean
   builds/audits, fresh kernel/Main replay and fixed type/Raw/Basis transport
   checks; retain the admitted meanings and pending broader obligations.
+  Update Rustdoc and raw CLI/foreign-format test consumers to pass explicit
+  editions while preserving their original IO, contract and atomic-output checks.
   Complete ecosystem migration and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert

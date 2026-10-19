@@ -6,9 +6,15 @@ use std::process::{Command, Output, Stdio};
 
 fn call(args: &[&str], input: &[u8]) -> Output {
     let reads_stdin = args.get(1) == Some(&"-");
-    let mut child = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .arg("interop")
-        .args(args)
+    let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+    command.arg("interop").args(args);
+    if args
+        .iter()
+        .any(|arg| matches!(*arg, "--input=qasm" | "--input=qirf"))
+    {
+        command.arg("--edition=2026");
+    }
+    let mut child = command
         .stdin(if reads_stdin {
             Stdio::piped()
         } else {
@@ -181,7 +187,12 @@ fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     let valid_file = root.0.join("valid.qirf");
     std::fs::write(&valid_file, &text).unwrap();
     let direct = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["verify-ir", valid_file.to_str().unwrap(), "--format=json"])
+        .args([
+            "verify-ir",
+            valid_file.to_str().unwrap(),
+            "--edition=2026",
+            "--format=json",
+        ])
         .output()
         .unwrap();
     let interop = call(
@@ -201,7 +212,12 @@ fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     let file = root.0.join("bad.qirf");
     std::fs::write(&file, malformed).unwrap();
     let direct = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["verify-ir", file.to_str().unwrap(), "--format=json"])
+        .args([
+            "verify-ir",
+            file.to_str().unwrap(),
+            "--edition=2026",
+            "--format=json",
+        ])
         .output()
         .unwrap();
     let interop = call(&["check", file.to_str().unwrap(), "--input=qirf"], b"");

@@ -1,5 +1,23 @@
 # Native edition first study
 
+The later [consumer validation history](consumer-validation-first.json.gz)
+retains 23 original source/diagnostic records and three explicitly derived
+context summaries (532,293 expanded archive bytes; SHA-256
+`cefe8d9c6a2637892c4899a3c28422a9154e5541bce51ecb8f06fb4167642734`).
+Complete repetitive routine source-hash inventories stay private; exact source
+commits, source-window digests and unrelated dirty-file identities remain bound.
+It separates qargo's missing-Edition compile errors, a Clippy invocation that
+lost its local source override, and exact-head PR #423 Rustdoc/CLI/foreign
+consumer failures. Hosted temporary input/artifact files were not collected;
+the original consumer sources and full returned logs are retained. The passive
+reader never executes history. Current native checks, full CI, packaging and
+installation remain separate from this record and from Issue completion.
+The separate [observer failures](consumer-observer-first.json.gz) retain seven
+records (39,941 expanded bytes; SHA-256
+`5a08506e3160bd169f55210b4fd7433dbdf0bd0f389eb4d398b2b446756414cc`).
+An incomplete Python validator environment and a passive reader's incorrect
+assumption about saved tool wrappers remain distinct from product failures.
+
 This informed manual study precedes implementation of [#255](https://github.com/MGYamada/Qleisli/issues/255)
 and the related [edition/release boundary #137](https://github.com/MGYamada/Qleisli/issues/137).
 No external model was invoked. The immutable [archive](first.json.gz) preserves

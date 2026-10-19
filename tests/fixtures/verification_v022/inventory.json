@@ -6936,7 +6936,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "16762a4a5b6483141571d898c53238805f1310a8e2416bafac29e90dbfec14a8",
+      "sha256": "c2f715587f38706155e78f2caeaf7074d9f1ff2cb21c1b982095faec65f84ad7",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -8107,7 +8107,7 @@
       "tests/sized_cli.rs": "e830e9c798975e447eb740b2343ef654e2395d523f5bb8fda25e23450de742d5",
       "tests/hierarchical_qpe_host.rs": "9a379e2e00bff2d712614b536e4b1ac350df37b81cbb275714d9c832e9f66c32",
       "scripts/test_qpe_instrument_host.py": "6a25e0f184ab5147ecf0474b0226140c3bce9613bd26c5194d8575eb3e5c9595",
-      "tests/connections.rs": "fcaff4e0ca4f5efe6a62ada25b0d1e415919082f1dfe33143f0f5aa5d6730b4a",
+      "tests/connections.rs": "e539fab33fae2ac0b03ec5cd2d1ad733bf3bbc5647d66ac1a5e7ee66ad1c44e8",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
