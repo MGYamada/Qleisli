@@ -8079,7 +8079,7 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "8c1946dfc94d2151fb5eea502f9c29e9d302947d33ed3cb98dfcbf03e66d05ee",
       "tests/verification_boundary.rs": "47a26dd39bc821af5662744fcc17fb4bb14e25a08fb81dba3bf870f935042dbd",
-      "tests/hierarchical_host.rs": "9511fda82c42cb8ba59b11538ddeb4f44a0d1adfbafc032adc4973314202bc80",
+      "tests/hierarchical_host.rs": "0dd5925dadd9cbaf556f0a91f409cbdbb3e3491776c2c1950e42df54e66070b8",
       "scripts/test_hierarchical_readout.py": "abd79039ba7b295cdaeab3ad8af382d45427345cf15af02047446591879f6239",
       "scripts/test_sized_qpe_readout.py": "45efca29dc5b785712a728bac2c5fcf7a082603b4ce6dc04e75af2b137d68a4f",
       "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
