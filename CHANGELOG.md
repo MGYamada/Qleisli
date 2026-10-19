@@ -19,8 +19,10 @@ development milestones from the scope of their evidence.
   the captured manifest without overriding it. Track the current native mode
   tables, Main's actual adapter and wrapper-to-original checker bindings in
   production coverage; reject extra aliases, altered layout and missing context
-  guards. Complete ecosystem migration,
-  current-evidence continuity and CI under #255 remain pending.
+  guards. Refresh current schema and scoped-guarantee evidence after both Lean
+  builds/audits, fresh kernel/Main replay and fixed type/Raw/Basis transport
+  checks; retain the admitted meanings and pending broader obligations.
+  Complete ecosystem migration and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert
   history with exact-byte integrity checks; edition propagation remains pending.

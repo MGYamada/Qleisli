@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "305329f229786e217b64c97d28798facf89ffc4169bfba2d7d67a3c6b301ce10",
+      "sha256": "7f15b67ebfe46d19c808cd8e96e81ae2df602c8c66587d75ae84dbe56698044a",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -161,8 +161,9 @@
         "lean-kernel/Cli/EngineeringPureTensor.lean": "30d21f0186860c54705d40b25fd61064d8baf992e2ec5375fe7b74cb48fc76f3",
         "lean-kernel/Cli/Finite.lean": "c513812b72f9752033159059fc145a246c30f59583ca24bee57481566b66b427",
         "lean-kernel/Cli/Hierarchical.lean": "a2106b3b29b702e0a87dad4803bff1b1c0ee97a757e438203fdf143e6db95e81",
+        "lean-kernel/Cli/NativeContext.lean": "35cfbed52db59b5a2d994cb16db9f015146c44dd9ea13bff51a5388f37be9f74",
         "lean-kernel/Cli/Validity.lean": "3e8f61ab8b707ba1e4f3f0614c0f6d80d7909bb0384ae8b944292bea8bb93880",
-        "lean-kernel/Main.lean": "d1d33ce7902ca66da7fcdfcbce25544b6a9701c097ba87c8411ddbc0725ef72f",
+        "lean-kernel/Main.lean": "0616fc1b58793c16942b9975cfddf5adb94476532573ea39a880caa77bc1c024",
         "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
         "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
         "lean-kernel/Protocol/EngineeringInstrument.lean": "d4e9dfdced0837199cb79b76bdb3fb2f7d1b3f989930a2b73ed8559d7171e804",
@@ -185,17 +186,19 @@
         "lean-kernel/Protocol/ExecutionView/EngineeringPureTensor.lean": "7d5698d58a694f9e671790ce55e95be08cda783a87e2e7cff96402223dd43cb4",
         "lean-kernel/Protocol/ExecutionView/Finite.lean": "5cb5e88c6d0d5096d615beb2b82042ace509757d934770dc3fc0951d701ceb91",
         "lean-kernel/Protocol/ExecutionView/Frame.lean": "b0d8b858f033d5401e4be5077898815d583d634e6d44b95e704802b1d6baca6b",
-        "lean-kernel/Protocol/ExecutionView/Gate.lean": "e9e181bb20bb7df2faf3abd27126c3338466455c4387fdf172428287f95279b5",
+        "lean-kernel/Protocol/ExecutionView/Gate.lean": "33d72e86b8ddfac2d9d19aacc43fd3c1b3328ebe9ebf727f8ed4a2cc59576e6b",
         "lean-kernel/Protocol/ExecutionView/Graph.lean": "29114cfeca63e1d888b33876c45560c4b846d644c21b38085bf3221dbf36a5d9",
         "lean-kernel/Protocol/ExecutionView/Hierarchy.lean": "a48ffca8d16d73835e24563c07592876d94c37b93a1b6fd76e16f22c9f042105",
-        "lean-kernel/Protocol/ExecutionView/Native.lean": "4286a265d41e3d86cf38bb91470365b9b2fbcf6e10d98c7f678f17fc6ac4d3fd",
-        "lean-kernel/Protocol/ExecutionView/Packet.lean": "caf281588d3f97163866257abdc0fb168cda9f5db5023c31bbbaa2e514bfdd7a",
+        "lean-kernel/Protocol/ExecutionView/Native.lean": "24ca8d0900fbd1655979f7505b570336626ba3268ae397850da78e7738a4cc7f",
+        "lean-kernel/Protocol/ExecutionView/Packet.lean": "80ea480ba073fb7e92db62e8b298ceba1815980532caba7c64b101c7549b2cd0",
         "lean-kernel/Protocol/ExecutionView.lean": "73667b112801aa8f48317f8d358721bdcc2a1266ad6b3d2007f0122e05a208c6",
         "lean-kernel/Protocol/FiniteCodec.lean": "1f7f3f9be8e2f692781b9aa7d548b923ae898adac88870a9cc5f1c256e910bc6",
         "lean-kernel/Protocol/Hierarchical.lean": "a098e44ed67362fe3ab388b19fb3abd7fc8d1381f9a38a000e93e9efe9cc59a3",
         "lean-kernel/Protocol/HierarchicalFinite.lean": "8d3231c6de519a0bc8ca9b4047a944ef5c1a6183be14323aafcb90b87647cc41",
         "lean-kernel/Protocol/InstrumentContract.lean": "f04dc1ed0a7ea2ad1922a3db3250e08511e30594eeed5b821099cdf0cdc54f5b",
         "lean-kernel/Protocol/Layout.lean": "4107974670f6da2fd205b90ddfb9f927b6b26cca98ec8e3685d04b59e4c683b6",
+        "lean-kernel/Protocol/NativeContext/Bindings.lean": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+        "lean-kernel/Protocol/NativeContext.lean": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
         "lean-kernel/Protocol/NativeContract.lean": "4be18feace681f3d94a5c6c3dd58238d90ff910fb2086feedb953ba81274e377",
         "lean-kernel/Protocol/Observation.lean": "2b443801de48698dffd94de3223a21f5b39d93d319d2694a1ef966ddcc384605",
         "lean-kernel/Protocol/Product.lean": "9e84a1fbc1ed5b13c961bb7134092146b660b86cd30d26a5d713e981da5ec5cf",
@@ -322,12 +325,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "e92c43a13b2b00703cf8c2c042a26f06d9b53b430c0f23ecfb15f7e5aa2e05ed",
+      "lean/schema-registry.json": "0f96a636ac4c5c8e0000376a12af79db7485a180eae13903c7650c4591bb2ddf",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "df3c190c5c79d06d2dc875b7637910cef0a91500596ab4a34d7ecd58b61c3691"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "5d5a21b4227fa3592a3c0e6f665ad66e1283b493b8830ab500bd2c2f39fbcb85"
     },
     "commands": [
       {
@@ -340,7 +343,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 22.756395417032763,
+        "seconds": 22.515871125040576,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -354,7 +357,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 68.274883458158,
+        "seconds": 76.53360891714692,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -365,7 +368,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after the explicit Bits basis representation extension. The fixed historical baseline and independent protected meanings are unchanged; a fixed typed legacy-basis/artifact embedding preserves the original decoded root and interfaces, and the current success theorems retain all original-byte quantifiers. This is not a new guarantee admission, full QS/PR/quantitative RS discharge, source/runtime correspondence proof, or release validation.",
+    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after explicit edition-aware QLV3 dispatch. The fixed historical semantic baseline, original byte/request/root witness, independent predicates and checked Raw/Basis transports retain their admitted meanings and premises. NativeContext.run_ordinary_root_safe links actual ordinary context success to the original accepted decoded root; both audited packages and fresh QleisliKernel/Main replay support the current source closure. This is not a new guarantee admission, human adequacy judgment, full QS/PR/quantitative RS/EXACT discharge, source/native-IO/runtime/target correspondence proof, or release approval. The separately recorded observed_native_build remains historical alpha data, not current binary attestation.",
     "native_binary_note": "The local native binary digest identifies the selected build observed here. It is a build record, not a portable binary identity or a proof of compiler/runtime correctness.",
     "observed_native_build": {
       "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
@@ -397,7 +400,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 8.969176582992077,
+      "seconds": 12.085158708970994,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -413,7 +416,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "305329f229786e217b64c97d28798facf89ffc4169bfba2d7d67a3c6b301ce10",
+    "source_revision_sha256": "7f15b67ebfe46d19c808cd8e96e81ae2df602c8c66587d75ae84dbe56698044a",
     "command": {
       "argv": [
         "lake",
