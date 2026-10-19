@@ -270,6 +270,21 @@ change that selection. Edition identity alone does not identify an executable
 checker version, a grammar, a complete acceptance predicate or a proof of all
 three obligations.
 
+Record the constitutional edition and complete product release as separate
+coordinates: for this development snapshot, `(2026, 0.3.0-beta)`. Qargo manifest
+schema 2, the QLV3 envelope and native-result schema 3 are distinct format
+revisions; none selects another constitutional edition. The
+[native decision](execution-view.md#native-envelope-cutover) binds the requested
+edition, compiled product version, canonical mode and checked scope to the
+actual checked subject. Those fields do not authenticate the native executable
+or establish source/runtime preservation.
+
+The [release records](../../../.github/ci/README.md) retain edition, product and
+format identities alongside the actual commit, artifacts, checker/proof scope
+and ledger identity. Version synchronization does not migrate an edition or
+constitute ratification. Release validation, source compatibility and a
+constitutional amendment retain their separate requirements.
+
 Constitutional continuity, source compatibility and continued implementation
 support are separate promises. Reducing the accepted language does not by
 itself weaken a safety implication, but may violate the release compatibility

@@ -214,8 +214,9 @@ Resolution/reproducibility and official release records must make the effective
 toolchain/std pairing unambiguous and reject stale/mismatched supported pairs.
 Source version synchronization and release assertions are necessary, but do not
 implement qargo resolution or turn matching version strings into semantic proof.
-The private embedded-manifest gate is implemented as described below; full
-qargo/resolved-pair binding remains unfinished.
+The embedded-manifest gate and qargo development records described below bind
+the linked pair. Official package/installation and release validation remain
+unfinished.
 
 ## Current adapter and remaining binding gaps
 
@@ -285,21 +286,36 @@ It performs no toolchain selection, source or native check, serialization or
 digest computation. It issues no accepted handle, semantic evidence,
 authenticated release identity or native binary attestation.
 
-Release synchronization includes `stdlib/Qargo.toml`, but the embedded gate
-implements no qargo resolver or pairing-record API. Full effective toolchain/std
-records and stale-content identity checks remain unfinished in
-[#171](https://github.com/MGYamada/Qleisli/issues/171). Exact version-string
-equality does not identify selected source contents. A source-root path,
-module-import graph, private source snapshot or successful check is not a
-complete resolved qrate graph.
+Release synchronization includes `stdlib/Qargo.toml`. The embedded gate does
+not resolve external qrates. The separate
+[qargo beta development contract](https://github.com/MGYamada/qargo/blob/bbce16aed2830eb52cc78ac4b8873e1817663736/docs/linked-qleisli-030.md)
+records the actual linked pair in version-2 `qargo.result` and
+`qargo.build-record`: `effective_std` contains the complete Qleisli/std versions,
+std edition, exact manifest digest, canonical module/source digests and a
+content identity. `source_configuration_id` separately binds captured source
+configuration. Nonempty checking retains one Project and its explicit edition;
+build metadata uses that same retained Project. Empty inputs retain no native
+acceptance claim. Reusing an artifact with changed versions, std contents,
+module inventory or configuration fails without overwriting it.
+
+These records describe observed inputs and checking; hashes are not publisher
+authentication or mathematical evidence. Dependency tables are unsupported;
+their diagnostic explains that canonical std comes with the linked Qleisli
+toolchain and another std version requires its matching toolchain. Ordinary
+qrate versions remain independent. Official registry/package/native
+installation and supported-host extraction checks remain open in
+[#171](https://github.com/MGYamada/Qleisli/issues/171). A source-root path,
+module-import graph, private source snapshot or successful check does not
+establish a complete resolved qrate graph.
 
 All ordinary `.qli` and `.qlt` source trees must explicitly select a concrete
 constitutional edition in schema-2 `[qrate].edition`, with no current/latest
 fallback. Updating the toolchain does not change that selection. The
 [QLV3 boundary](execution-view.md#native-envelope-cutover) carries that selection
 through native acceptance; raw and foreign callers must select it explicitly
-rather than deriving it from product version or std. Complete helper and qargo
-migration, conformance, current-evidence continuity and CI remain open in
+rather than deriving it from product version or std. The QLV3/helper migration
+and authorized qargo minimum are implemented; complete current-head conformance,
+CI and distribution validation remain open in
 [#255](https://github.com/MGYamada/Qleisli/issues/255), alongside
 [#137](https://github.com/MGYamada/Qleisli/issues/137). Product-version checks,
 source hashes and this chapter do not replace native checking or implement QLT.
