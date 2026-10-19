@@ -16,7 +16,7 @@ import subprocess
 import tarfile
 import tomllib
 
-from native_packet import envelope
+from native_packet import envelope, parse_reply
 from test_native_execution_protocol import qdv
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -418,21 +418,21 @@ def live(kernel, record=None):
 
     def invoke(name, target_bytes, data, success=False, view=None, packet=None, error=None, version=VERSION):
         if packet is None:
-            packet = envelope(inner(target_bytes, data), qdv(complete_view(target_bytes, data) if view is None else view))
+            packet = envelope('2026', inner(target_bytes, data), qdv(complete_view(target_bytes, data) if view is None else view))
         result = subprocess.run([str(kernel), MODE, version], input=packet, capture_output=True, timeout=60, check=False)
         rows.append(dict(name=name, exit_code=result.returncode, stdout=result.stdout.decode(),
             stderr=result.stderr.decode(), packet_sha256=digest(packet), packet_bytes=len(packet)))
         if record:
             (record / 'observations.json').write_text(json.dumps(dict(kernel_sha256=kernel_sha, records=rows), indent=2) + '\n')
-        fields = result.stdout.decode().splitlines()
-        assert not result.stderr and fields and fields[0] == HEADER, (name, result)
+        reply = parse_reply(result.stdout, edition='2026', product=VERSION, mode=MODE, scope='execution')
+        assert not result.stderr, (name, result)
         if success:
-            assert result.returncode == 0 and len(fields) == 4 and fields[1:3] == ['engineering-checked', 'execution'], (name, result)
-            assert 0 < int(fields[3]) <= 10_000_000, (name, fields)
+            assert result.returncode == 0 and reply.claim == 'engineering-checked', (name, result)
+            assert len(reply.payload) == 1 and 0 < int(reply.payload[0]) <= 10_000_000, (name, reply)
         else:
-            assert result.returncode == 1 and len(fields) == 3 and fields[1] == 'error', (name, result)
+            assert result.returncode == 1 and reply.error is not None, (name, result)
             if error:
-                assert fields[2] == error, (name, fields)
+                assert reply.error == error, (name, reply)
 
     actual, base = target(), request()
     good = complete_view(actual, base)
@@ -447,7 +447,7 @@ def live(kernel, record=None):
     spaced = copy.deepcopy(base)
     spaced['expected_artifact'] = '\n ' + spaced['expected_artifact'] + ' \n'
     invoke('original-ideal-and-request-whitespace', actual, spaced, True,
-           packet=envelope(inner(actual, request_bytes=b' ' + encoded(spaced) + b'\n'), qdv(complete_view(actual, spaced))))
+           packet=envelope('2026', inner(actual, request_bytes=b' ' + encoded(spaced) + b'\n'), qdv(complete_view(actual, spaced))))
     for name, value in hostile_targets():
         invoke('target-' + name, value, base, view=good)
     for field in base:
@@ -518,13 +518,13 @@ def live(kernel, record=None):
         invoke('qdv-target-data-' + str(slot), actual, base, view=view, error='decoded_view')
     original, graph = inner(actual, base), qdv(good)
     duplicate = b'{"epsilon":' + encoded(base['epsilon']) + b',' + encoded(base)[1:]
-    invoke('duplicate-request-field', actual, base, packet=envelope(inner(actual, request_bytes=duplicate), graph))
-    for name, packet in [('old-frame', original), ('inspection', envelope(original)),
-                         ('caller', envelope(original, graph, qdv(['caller-origin']))),
-                         ('trailing-byte', envelope(original, graph) + b'x'),
-                         ('truncated', envelope(original, graph)[:-1]),
-                         ('missing-request', envelope(inner(actual), graph)),
-                         ('oversized-request', envelope(inner(actual, request_bytes=b' ' * ((16 << 20) + 1)), graph))]:
+    invoke('duplicate-request-field', actual, base, packet=envelope('2026', inner(actual, request_bytes=duplicate), graph))
+    for name, packet in [('old-frame', original), ('inspection', envelope('2026', original)),
+                         ('caller', envelope('2026', original, graph, qdv(['caller-origin']))),
+                         ('trailing-byte', envelope('2026', original, graph) + b'x'),
+                         ('truncated', envelope('2026', original, graph)[:-1]),
+                         ('missing-request', envelope('2026', inner(actual), graph)),
+                         ('oversized-request', envelope('2026', inner(actual, request_bytes=b' ' * ((16 << 20) + 1)), graph))]:
         invoke(name, actual, base, packet=packet)
     invoke('product-version', actual, base, version='0.0.0', error='version')
     assert digest(kernel.read_bytes()) == kernel_sha

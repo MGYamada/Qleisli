@@ -123,7 +123,7 @@ def rust_compare(records, project, log):
         if not case.get('rust',True) or case['name'] in {'self_dependency','forward_dependency','producer_accepted_rejected','producer_matrix_rejected'}:continue
         commands=[]
         for entry,binding in zip(case['functions'],case['bindings']):
-            commands.append('let receipt=FunctionEvidence::check('+finite.rust_basis(entry['signature'])+','+
+            commands.append('let receipt=FunctionEvidence::check(qleisli::edition::Edition::E2026,'+finite.rust_basis(entry['signature'])+','+
                 observation.rust_program(entry['implementation'])+','+observation.rust_program(entry['specification'])+','+
                 completion.rust_identity(entry['identity'])+',&mut budget).ok()?;')
             commands.append('receipt.check_binding(&'+finite.rust_basis(binding['signature'])+',&'+completion.rust_identity(binding['identity'])+',&'+
@@ -185,7 +185,7 @@ def main():
                 dependencies.append(operator);matrices+=1
         bindings=dict(native_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
             native_input_sha256=hashlib.sha256(payload.encode()).hexdigest(),native_stdout_sha256=hashlib.sha256(run.stdout.encode()).hexdigest(),
-            rust_binary_sha256=hashlib.sha256((project/'target/debug/branch-functions').read_bytes()).hexdigest(),
+            rust_binary_sha256=hashlib.sha256(exact.cargo_binary(project, 'branch-functions').read_bytes()).hexdigest(),
             rust_stdout_sha256=hashlib.sha256(rust_output.encode()).hexdigest())
     args.record.write_text(json.dumps(dict(status='passed',native_cases=len(records),rust_comparisons=len(rust),
         native_boundary_differences=[dict(name=c['name'],component=c['expected'],native=c['native_expected'],reason=c['native_boundary']) for c in records if 'native_expected' in c],

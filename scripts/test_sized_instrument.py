@@ -88,13 +88,13 @@ def components(proposal, kernel):
     root = proposal['graph']['definitions'][proposal['graph']['entry']['implementation']]['interface']
     preparation = dict(initializations=proposal['initialization'], outputs=root['inputs'])
     required = dict(inputs=proposal['inputs'],fresh=proposal['initialized'])
-    initialized = inspect(kernel,'preparation',encode_preparation(required,preparation))
+    initialized = inspect(kernel,'preparation',encode_preparation(required,preparation), edition='2026')
     assert initialized['status'] == 'checked', initialized
     readout = proposal['readout']
     if readout is None:
         return dict(preparation_work=initialized['work'],readout_work=0)
     assert readout['inputs'] == root['outputs']
-    measured = inspect(kernel,'readout',encode_readout(readout,readout))
+    measured = inspect(kernel,'readout',encode_readout(readout,readout), edition='2026')
     assert measured['status'] == 'checked', measured
     return dict(preparation_work=initialized['work'],readout_work=measured['work'])
 

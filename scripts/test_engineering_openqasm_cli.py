@@ -42,7 +42,7 @@ def live(cli, kernel):
             target_path.write_bytes(actual)
             request_bytes = encoded(data) if request_bytes is None else request_bytes
             request_path.write_bytes(request_bytes)
-            args = [cli, 'engineering', 'compare-openqasm3', str(target_path),
+            args = [cli, 'engineering', 'compare-openqasm3', '--edition=2026', str(target_path),
                     '--against=' + str(request_path), '--lean-kernel=' + checker]
             if not text:
                 args.insert(2 if flags_first else len(args), '--format=json')
@@ -164,7 +164,7 @@ def live(cli, kernel):
         target_path.write_bytes(actual)
         request_path.write_bytes(encoded(base))
         for extra in (('--against=duplicate',), ('--format=json',), ('--output=out',), ('extra',)):
-            result = subprocess.run([cli, 'engineering', 'compare-openqasm3', str(target_path),
+            result = subprocess.run([cli, 'engineering', 'compare-openqasm3', '--edition=2026', str(target_path),
                 '--against=' + str(request_path), '--lean-kernel=' + kernel, '--format=json', *extra],
                 capture_output=True, timeout=60, check=False)
             calls += 1

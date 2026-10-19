@@ -3,7 +3,7 @@
   "tasks": [
     {
       "id": "execution-view-encoding",
-      "name": "Native QLV2 execution-view binding and independent data comparisons",
+      "name": "Native QLV3 execution-view binding and independent data comparisons",
       "commands": [
         [
           "python3",

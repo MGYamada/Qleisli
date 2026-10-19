@@ -116,7 +116,7 @@ def main():
                   (line.split('|', 1) for line in commands[-1]['stdout'].splitlines()))
     assert routes.keys() == entries.keys()
     for _, _, _, _, _, request, packet in entries.values():
-        assert inspect(kernel, bridge(request, packet))[0] == 'checked'
+        assert inspect(kernel, bridge(request, packet), edition='2026')[0] == 'checked'
     maximum, probes, faults = 0.0, 0, 0
     for name, (n, m, j, d, graph, _, _) in entries.items():
         evaluate, _ = circuit_action(graph)

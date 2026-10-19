@@ -346,7 +346,7 @@ def rust_graph(case):
     claim=rust_contract(entry['claim']);required=rust_contract(json.loads(case['required']))
     body=rust_circuit(entry['circuit'])
     return '(||{let claim='+claim+';let required='+required+';if claim!=required{return None;}'+ \
-      'let circuit='+body+'.ok()?;CheckedContract::check(circuit.clone(),claim,&mut b).ok()?;'+ \
+      'let circuit='+body+'.ok()?;CheckedContract::check(qleisli::edition::Edition::E2026,circuit.clone(),claim,&mut b).ok()?;'+ \
       'let actual=circuit.matrix(&mut b).ok()?;if !actual.is_isometry(&mut b).ok()?{return None;}Some(actual)})()'
 
 

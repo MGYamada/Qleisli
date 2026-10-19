@@ -15,7 +15,7 @@ class JsonPrescanHarness(unittest.TestCase):
         checked_response(dict(returncode=1, stdout='error\nno\n', stderr=''), False)
 
     def test_native_memory_probes_require_the_exact_schema_refusal(self):
-        reply = 'qleisli.qirf-native 2\nerror\ninvalid_ir\n'
+        reply = 'qleisli.native-result 3\nerror\ninvalid_ir\n'
         checked_response(dict(returncode=1, stdout=reply, stderr=''), True, native=True)
         for code, stdout in [(0, reply), (-9, reply), (1, reply + 'extra'),
                              (1, reply.replace('invalid_ir', 'format'))]:

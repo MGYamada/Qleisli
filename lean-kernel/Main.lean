@@ -4,6 +4,12 @@ import Protocol.ExecutionView.CheckedHierarchy
 import Protocol.ExecutionView.Contracts
 import Cli.Finite
 import Cli.NativeContext
+import Cli.Validity
+import Cli.Hierarchical
+import Cli.EngineeringPure
+import Cli.EngineeringPureTensor
+import Cli.EngineeringInstrument
+import Cli.EngineeringOpenQasm
 import Protocol.Product
 import Protocol.ExecutionView.CheckedFinite
 import Protocol.NativeContext.Bindings

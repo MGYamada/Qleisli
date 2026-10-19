@@ -2,7 +2,7 @@ import Lean
 import Protocol.ExecutionView.CheckedHierarchy
 
 /-! Compare real retained Rust plans in all five hierarchy modes. This is
-bounded cross-implementation evidence; the QLV2 CLI is exercised separately.
+bounded cross-implementation evidence; the QLV3 CLI is exercised separately.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 open Lean QleisliKernel.Protocol.ExecutionView
 open CheckedHierarchy.Modes
@@ -85,4 +85,4 @@ def main (args : List String) : IO Unit := do
       negatives := negatives+1
   unless positives == 5 && negatives == 3 do throw (IO.userError "missing native mode controls")
   IO.println ("hierarchy mode comparisons: 5 modes; 3 invalid originals; " ++
-    toString refusals ++ " divergent plans refused; pure-gate evidence; QLV2 CLI exercised separately")
+    toString refusals ++ " divergent plans refused; pure-gate evidence; QLV3 CLI exercised separately")

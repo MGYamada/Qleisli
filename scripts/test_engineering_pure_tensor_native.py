@@ -15,14 +15,13 @@ import subprocess
 import tarfile
 import tomllib
 
-from native_packet import envelope
+from native_packet import envelope, parse_reply
 from test_native_execution_protocol import qdv
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION = ROOT / 'tests/fixtures/authoring_sessions/engineering-pure-composition-v030'
 VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 MODE = '--engineering-pure-tensor-check'
-HEADER = 'qleisli.engineering-pure-tensor-native 1'
 FIXED = dict(format='qleisli.engineering-pure-tensor-request', version=1,
     claim_kind='engineering-pure-tensor-bound', metric='pure-euclidean-operator-norm-v1',
     checker_profile='tensor-additive-r8-pure-leaf-v1', target_profile='qirf-r8-pure-v1',
@@ -406,7 +405,7 @@ def pure_comparison(actual, leaf, ideal_artifact, ideal_leaf, domain, codomain, 
     context = ['engineering-pure-request', *[data[k] for k in list(FIXED)[:8]], basis_view(domain),
                basis_view(codomain), leaf_view(leaf), leaf_view(ideal_leaf), dyadic_view(data['epsilon']), data['expected_artifact']]
     view = ['engineering-pure', context, graph_view(actual, leaf), graph_view(ideal_artifact, ideal_leaf)]
-    return data, envelope(inner(actual, data), qdv(view))
+    return data, envelope('2026', inner(actual, data), qdv(view))
 
 
 def inner(actual, data, whitespace=False):
@@ -426,7 +425,7 @@ def live(kernel, record=None):
 
     def invoke(name, actual, data, success=False, view=None, packet=None, mode=MODE, error=None):
         if packet is None:
-            packet = envelope(inner(actual, data), qdv(complete_view(actual, data) if view is None else view))
+            packet = envelope('2026', inner(actual, data), qdv(complete_view(actual, data) if view is None else view))
         result = subprocess.run([str(kernel), mode, VERSION], input=packet,
                                 capture_output=True, timeout=60, check=False)
         row = dict(name=name, exit_code=result.returncode, stdout=result.stdout.decode(), stderr=result.stderr.decode(),
@@ -434,21 +433,21 @@ def live(kernel, record=None):
         rows.append(row)
         if record:
             (record / 'observations.json').write_text(json.dumps(dict(kernel_sha256=kernel_sha, records=rows), indent=2) + '\n')
-        fields = result.stdout.decode().splitlines()
-        assert not result.stderr and fields and fields[0] == (HEADER if mode == MODE else 'qleisli.engineering-pure-native 1'), (name, result)
+        reply = parse_reply(result.stdout, edition='2026', product=VERSION, mode=mode, scope='execution')
+        assert not result.stderr, (name, result)
         if success:
-            assert result.returncode == 0 and fields[1:3] == ['engineering-checked', 'execution'], (name, result)
-            assert len(fields) == 4 and 0 < int(fields[3]) <= 10_000_000, (name, fields)
+            assert result.returncode == 0 and reply.claim == 'engineering-checked', (name, result)
+            assert len(reply.payload) == 1 and 0 < int(reply.payload[0]) <= 10_000_000, (name, reply)
             leaves = [data['actual'], data['ideal']]
             if mode == MODE:
                 leaves += [data[s][l] for s in ('left', 'right') for l in ('actual', 'ideal')]
             for leaf in leaves:
                 independently_isometric(leaf['matrix'])
         else:
-            assert result.returncode == 1 and len(fields) == 3 and fields[1] == 'error', (name, result)
+            assert result.returncode == 1 and reply.error is not None, (name, result)
             if error:
-                assert fields[2] == error, (name, fields)
-        return fields
+                assert reply.error == error, (name, reply)
+        return reply
 
     actual, base = request()
     good_view = complete_view(actual, base)
@@ -468,7 +467,7 @@ def live(kernel, record=None):
         a, data = request(**options)
         invoke(name, a, data, True)
     invoke('whitespace-original-body-request', actual, base, True,
-           packet=envelope(inner(actual, base, True), qdv(good_view)))
+           packet=envelope('2026', inner(actual, base, True), qdv(good_view)))
     dependency = dependency_ideal(base)
     invoke('original-dependency-and-source-identity', actual, dependency, True)
     for index in (0, 1):
@@ -572,17 +571,17 @@ def live(kernel, record=None):
             view[graph][field] = ['substituted-graph-field']
             invoke('qdv-graph-' + str(graph) + '-field-' + str(field), actual, base, view=view, error='decoded_view')
     original, graph = inner(actual, base), qdv(good_view)
-    for name, packet in [('old-frame', original), ('inspection', envelope(original)),
-                         ('caller', envelope(original, graph, qdv(['caller-origin']))),
-                         ('trailing-byte', envelope(original, graph) + b'x'),
-                         ('truncated', envelope(original, graph)[:-1])]:
+    for name, packet in [('old-frame', original), ('inspection', envelope('2026', original)),
+                         ('caller', envelope('2026', original, graph, qdv(['caller-origin']))),
+                         ('trailing-byte', envelope('2026', original, graph) + b'x'),
+                         ('truncated', envelope('2026', original, graph)[:-1])]:
         invoke(name, actual, base, packet=packet)
-    oversized_header = b'QLV2' + struct.pack('<5I', 1, (64 << 20) + 1, len(graph), 0, 0) + original + graph
+    oversized_header = b'QLV3' + struct.pack('<6I', 2026, 1, (64 << 20) + 1, len(graph), 0, 0) + original + graph
     invoke('oversized-envelope-declaration', actual, base, packet=oversized_header)
     for name, a, r in [('oversized-original-file', b' ' * ((16 << 20) + 1), encoded(base)),
                        ('oversized-request-file', encoded(actual), b' ' * ((16 << 20) + 1))]:
         packet = b'QLV1' + struct.pack('<II', len(a), len(r)) + a + r
-        invoke(name, actual, base, packet=envelope(packet, graph))
+        invoke(name, actual, base, packet=envelope('2026', packet, graph))
     pure, pure_packet = pure_comparison(actual, base['actual'], json.loads(base['expected_artifact']),
         base['ideal'], pair(basis('bit'), basis('bit')), pair(basis('bit'), basis('bit')), Fraction(7, 8))
     invoke('whole-parent-frobenius-refuses-same-budget', actual, pure,

@@ -104,7 +104,7 @@ def checked_response(row, expected, native=False):
         raise ValueError(f"unexpected child stderr: {row}")
     if native:
         # Memory bodies are valid JSON but deliberately not QIRF envelopes.
-        if row['returncode'] != 1 or row['stdout'] != 'qleisli.qirf-native 2\nerror\ninvalid_ir\n':
+        if row['returncode'] != 1 or row['stdout'] != 'qleisli.native-result 3\nerror\ninvalid_ir\n':
             raise ValueError(f"unexpected native refusal (crashes are not rejections): {row}")
     elif expected:
         if row['returncode'] != 0 or row['stdout'] != 'accepted\n':
@@ -160,7 +160,7 @@ def main():
                         if boundary == 'parser':
                             row = measured([driver, path, 128])
                         else:
-                            packet = envelope(b'QLV1' + struct.pack('<II', size, 0) + payload)
+                            packet = envelope('2026', b'QLV1' + struct.pack('<II', size, 0) + payload)
                             row = measured([kernel, '--qirf-native', version], packet)
                         row.update(kind=kind, boundary=boundary, bytes=size,
                                    input_sha256=hashlib.sha256(payload).hexdigest(),

@@ -72,7 +72,7 @@ def main():
                     args.record.write_text(json.dumps(report, indent=2) + '\n')
                 return 1
         native_checks = hierarchy(kernel, captures)
-        print(f'QLV2 native hierarchy checks: {native_checks} passed', flush=True)
+        print(f'QLV3 native hierarchy checks: {native_checks} passed', flush=True)
         report.update(status='passed', modes=5, invalid_originals=3, native_checks=native_checks,
                       input_sha256=hashlib.sha256((ROOT / FIXTURE).read_bytes()).hexdigest(),
                       kernel_sha256=hashlib.sha256(kernel.read_bytes()).hexdigest(),

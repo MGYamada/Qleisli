@@ -79,3 +79,19 @@ heredoc and outer assertion traceback were observed but not captured as files;
 this archive makes no complete-harness claim. It is inert history, never a
 current test/proof result or #255 completion. Routine normal/MSRV validation
 logs remain outside fixtures; current-evidence continuity and full CI are pending.
+
+The [first helper diagnostics](native-helper-first.json.gz), SHA-256
+`aea25ce49107d31122f240b72937bd96189e4d27ebaae5bf0d2a0ada631ba50b`,
+retain 19 records (19,229 expanded archive bytes). They preserve the old QLV2
+helper's actual rejection, an unsupported CLI harness argument, four missing-
+edition invocation failures, and the production source-inventory refusal.
+Two separate QLV3 hierarchy requests retain the real diagnostic regression:
+noncanonical finite descriptions reported `invalid_ir` instead of the existing
+`format` classification. The repair preserves the original oracle and delegates
+error projection to the existing hierarchy classifier; it changes no acceptance.
+Four original committed sources are bound by exact Git references at
+`d38d27c0d37dd658441e53e53da7f341cd1dc608`, including the observed native source.
+The intermediate SourceKernel helper's full preimage and child CLI streams were
+not captured; its actual harness failure remains distinct from later successful
+checks. The passive reader never executes saved code or packets. This history
+does not establish current CI, continuity, proof discharge or #255 completion.

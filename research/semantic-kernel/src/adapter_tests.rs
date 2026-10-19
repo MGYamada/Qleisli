@@ -58,7 +58,7 @@ fn raw_hadamards_satisfy_a_separately_required_identity() {
         vec![gate(SingleGate::H, 0, 1), gate(SingleGate::H, 1, 2)],
         &[2],
     );
-    let imported = import_raw(program.clone()).unwrap();
+    let imported = import_raw(qleisli::edition::Edition::E2026, program.clone()).unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
         &mut graph,
@@ -87,11 +87,10 @@ fn raw_hadamards_satisfy_a_separately_required_identity() {
 
 #[test]
 fn graph_edits_and_a_different_implementation_root_are_rejected() {
-    let imported = import_raw(raw(
-        vec![port(0, &[0])],
-        vec![gate(SingleGate::Z, 0, 1)],
-        &[1],
-    ))
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(vec![port(0, &[0])], vec![gate(SingleGate::Z, 0, 1)], &[1]),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
@@ -147,7 +146,7 @@ fn physical_auxiliary_implementations_share_an_encoded_z_contract() {
         &[5, 6],
     );
     for program in [direct, auxiliary] {
-        let imported = import_raw(program).unwrap();
+        let imported = import_raw(qleisli::edition::Edition::E2026, program).unwrap();
         let mut graph = imported.graph().clone();
         let encoding = add(
             &mut graph,
@@ -173,11 +172,14 @@ fn physical_auxiliary_implementations_share_an_encoded_z_contract() {
 
 #[test]
 fn auxiliary_x_does_not_satisfy_zero_return() {
-    let imported = import_raw(raw(
-        vec![port(0, &[0]), port(1, &[1])],
-        vec![gate(SingleGate::X, 1, 2)],
-        &[0, 2],
-    ))
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(
+            vec![port(0, &[0]), port(1, &[1])],
+            vec![gate(SingleGate::X, 1, 2)],
+            &[0, 2],
+        ),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let encoding = add(
@@ -203,7 +205,7 @@ fn auxiliary_x_does_not_satisfy_zero_return() {
 #[test]
 fn output_order_is_a_semantic_transport_and_a_binding_dependency() {
     let program = raw(vec![port(0, &[9]), port(1, &[3])], vec![], &[1, 0]);
-    let imported = import_raw(program.clone()).unwrap();
+    let imported = import_raw(qleisli::edition::Edition::E2026, program.clone()).unwrap();
     assert_eq!(imported.output_wires(), &[WireId(3), WireId(9)]);
     let mut graph = imported.graph().clone();
     let identity = add(
@@ -255,7 +257,7 @@ fn split_join_and_nonadjacent_gate_axes_preserve_wire_order() {
         ],
         &[4],
     );
-    let imported = import_raw(program).unwrap();
+    let imported = import_raw(qleisli::edition::Edition::E2026, program).unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
         &mut graph,
@@ -314,7 +316,7 @@ fn scalar_phase_on_zero_wires_is_retained() {
         }],
         &[1],
     );
-    let imported = import_raw(program).unwrap();
+    let imported = import_raw(qleisli::edition::Edition::E2026, program).unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
         &mut graph,
@@ -343,25 +345,28 @@ fn scalar_phase_on_zero_wires_is_retained() {
 
 #[test]
 fn a_zero_controlled_scalar_phase_is_not_erased() {
-    let imported = import_raw(raw(
-        vec![port(0, &[11])],
-        vec![RawOp::ApplyUnitary {
-            input: TokenId(0),
-            output: TokenId(1),
-            steps: vec![CircuitStep {
-                controls: vec![BitControl {
-                    index: 0,
-                    when_one: false,
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(
+            vec![port(0, &[11])],
+            vec![RawOp::ApplyUnitary {
+                input: TokenId(0),
+                output: TokenId(1),
+                steps: vec![CircuitStep {
+                    controls: vec![BitControl {
+                        index: 0,
+                        when_one: false,
+                    }],
+                    action: CircuitAction::Monomial {
+                        indices: vec![],
+                        permutation: vec![0],
+                        phases: vec![4],
+                    },
                 }],
-                action: CircuitAction::Monomial {
-                    indices: vec![],
-                    permutation: vec![0],
-                    phases: vec![4],
-                },
             }],
-        }],
-        &[1],
-    ))
+            &[1],
+        ),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
@@ -410,11 +415,14 @@ fn ordinary_ownership_checks_reject_aliasing_and_missing_unit_owner() {
         &[1, 2],
     );
     assert!(matches!(
-        import_raw(aliased),
+        import_raw(qleisli::edition::Edition::E2026, aliased),
         Err(AdapterError::InvalidIr(_))
     ));
     assert!(matches!(
-        import_raw(raw(vec![port(0, &[])], vec![], &[])),
+        import_raw(
+            qleisli::edition::Edition::E2026,
+            raw(vec![port(0, &[])], vec![], &[])
+        ),
         Err(AdapterError::InvalidIr(_))
     ));
 }
@@ -431,12 +439,12 @@ fn unsupported_valid_pure_raw_operations_are_rejected_explicitly() {
         }],
         &[1],
     );
-    qleisli::interchange::native::Kernel::selected()
+    qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept_raw(basis_lift.clone())
         .unwrap();
     assert!(matches!(
-        import_raw(basis_lift),
+        import_raw(qleisli::edition::Edition::E2026, basis_lift),
         Err(AdapterError::Unsupported(_))
     ));
 }
@@ -446,7 +454,7 @@ fn large_multiport_identity_binds_without_dense_leaf_checking() {
     let inputs: Vec<_> = (0..128).map(|id| port(id, &[id + 300])).collect();
     let outputs: Vec<_> = (0..128).collect();
     let program = raw(inputs, vec![], &outputs);
-    let imported = import_raw(program).unwrap();
+    let imported = import_raw(qleisli::edition::Edition::E2026, program).unwrap();
     let graph = imported.graph();
     let identity = imported.implementation();
     let expected = Contract {
@@ -471,7 +479,11 @@ fn a_local_z_binds_to_actual_128_bit_raw_ir_with_only_a_one_bit_leaf() {
     let inputs: Vec<_> = (0..128).map(|id| port(id, &[id + 1000])).collect();
     let mut outputs: Vec<_> = (0..128).collect();
     outputs[0] = 200;
-    let imported = import_raw(raw(inputs, vec![gate(SingleGate::Z, 0, 200)], &outputs)).unwrap();
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(inputs, vec![gate(SingleGate::Z, 0, 200)], &outputs),
+    )
+    .unwrap();
     let mut graph = imported.graph().clone();
     // Independently require Z on the low bit and identity on the 127-bit
     // frame. The raw importer chooses exactly this physical tensor structure.
@@ -533,27 +545,33 @@ fn import_work_is_bounded_before_building_axis_transports() {
         .map(|id| gate(SingleGate::H, id + 1000, id + 1001))
         .collect();
     let oversized = raw(inputs, operations, &[]);
-    assert!(matches!(import_raw(oversized), Err(AdapterError::Limit(_))));
+    assert!(matches!(
+        import_raw(qleisli::edition::Edition::E2026, oversized),
+        Err(AdapterError::Limit(_))
+    ));
 }
 
 #[test]
 fn monomial_phase_is_applied_before_its_permutation() {
-    let imported = import_raw(raw(
-        vec![port(0, &[8])],
-        vec![RawOp::ApplyUnitary {
-            input: TokenId(0),
-            output: TokenId(1),
-            steps: vec![CircuitStep {
-                controls: vec![],
-                action: CircuitAction::Monomial {
-                    indices: vec![0],
-                    permutation: vec![1, 0],
-                    phases: vec![0, 1],
-                },
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(
+            vec![port(0, &[8])],
+            vec![RawOp::ApplyUnitary {
+                input: TokenId(0),
+                output: TokenId(1),
+                steps: vec![CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Monomial {
+                        indices: vec![0],
+                        permutation: vec![1, 0],
+                        phases: vec![0, 1],
+                    },
+                }],
             }],
-        }],
-        &[1],
-    ))
+            &[1],
+        ),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
@@ -600,18 +618,21 @@ fn monomial_phase_is_applied_before_its_permutation() {
 
 #[test]
 fn raw_toffoli_preserves_the_order_of_both_controls_and_the_target() {
-    let imported = import_raw(raw(
-        vec![port(0, &[12]), port(1, &[9]), port(2, &[7])],
-        vec![RawOp::Toffoli {
-            control_a: TokenId(0),
-            control_b: TokenId(1),
-            target: TokenId(2),
-            control_a_out: TokenId(3),
-            control_b_out: TokenId(4),
-            target_out: TokenId(5),
-        }],
-        &[3, 4, 5],
-    ))
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(
+            vec![port(0, &[12]), port(1, &[9]), port(2, &[7])],
+            vec![RawOp::Toffoli {
+                control_a: TokenId(0),
+                control_b: TokenId(1),
+                target: TokenId(2),
+                control_a_out: TokenId(3),
+                control_b_out: TokenId(4),
+                target_out: TokenId(5),
+            }],
+            &[3, 4, 5],
+        ),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(
@@ -654,18 +675,17 @@ fn malformed_tables_reject_before_importer_indexes_entries() {
         &[1],
     );
     assert!(matches!(
-        import_raw(program),
+        import_raw(qleisli::edition::Edition::E2026, program),
         Err(AdapterError::InvalidIr(_))
     ));
 }
 
 #[test]
 fn another_import_cannot_redefine_a_frozen_clients_z_requirement_as_x() {
-    let original = import_raw(raw(
-        vec![port(0, &[1])],
-        vec![gate(SingleGate::Z, 0, 1)],
-        &[1],
-    ))
+    let original = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(vec![port(0, &[1])], vec![gate(SingleGate::Z, 0, 1)], &[1]),
+    )
     .unwrap();
     let mut required_graph = original.graph().clone();
     let identity = add(
@@ -685,11 +705,10 @@ fn another_import_cannot_redefine_a_frozen_clients_z_requirement_as_x() {
 
     // The alternative import uses the same IDs and same wire/port shape. Its
     // own U = X and submitted u = X agree, but neither changes the client's Z.
-    let changed = import_raw(raw(
-        vec![port(0, &[1])],
-        vec![gate(SingleGate::X, 0, 1)],
-        &[1],
-    ))
+    let changed = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(vec![port(0, &[1])], vec![gate(SingleGate::X, 0, 1)], &[1]),
+    )
     .unwrap();
     let mut submitted = changed.graph().clone();
     assert_eq!(
@@ -719,11 +738,10 @@ fn another_import_cannot_redefine_a_frozen_clients_z_requirement_as_x() {
 
 #[test]
 fn an_imported_requirement_allows_additional_proof_terms() {
-    let imported = import_raw(raw(
-        vec![port(0, &[4])],
-        vec![gate(SingleGate::Z, 0, 1)],
-        &[1],
-    ))
+    let imported = import_raw(
+        qleisli::edition::Edition::E2026,
+        raw(vec![port(0, &[4])], vec![gate(SingleGate::Z, 0, 1)], &[1]),
+    )
     .unwrap();
     let mut graph = imported.graph().clone();
     let identity = add(

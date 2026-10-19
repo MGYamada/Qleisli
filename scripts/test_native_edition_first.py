@@ -13,6 +13,51 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_first_helper_refusals_retain_real_hierarchy_diagnostics(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/native-helper-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'aea25ce49107d31122f240b72937bd96189e4d27ebaae5bf0d2a0ada631ba50b')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(19_230)
+        self.assertEqual(len(raw), 19_229)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '21e9acde48e4d4d06728231730c6d3ff3f46274505d45920cebbe781a3819c89')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.native-edition-helper-first', 1))
+        self.assertEqual(len(record['records']), 19)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644))
+        first = json.loads(data['first.json'])
+        self.assertEqual(first['exit_code'], 1)
+        for path, digest in first['sources'].items():
+            self.assertEqual(record['source_refs'][path], dict(commit=first['head'], sha256=digest))
+        self.assertIn(b'qleisli.native-result 3\\nerror\\nformat\\n', data['first.stderr'])
+        self.assertEqual(json.loads(data['pure-cli.json'])['exit_code'], 2)
+        self.assertIn(b'unrecognized arguments: --kernel', data['pure-cli.stderr'])
+        self.assertEqual(json.loads(data['source-kernel-v4.json'])['exit_code'], 1)
+        self.assertIn(b'FAILED (failures=4)', data['source-kernel-v4.stderr'])
+        self.assertEqual(json.loads(data['coverage-first.json'])['exit_code'], 1)
+        self.assertIn(b'production source binding changed: src/bin/qleisli/source_plan.rs',
+                      data['coverage-first.stderr'])
+        observed = json.loads(data['hierarchy-error-first/observations.json'])
+        self.assertEqual([row['name'] for row in observed], ['invalid-actual', 'invalid-required'])
+        for row in observed:
+            prefix = 'hierarchy-error-first/' + row['name']
+            self.assertEqual((row['exit_code'], row['expected_retained_code']), (1, 'format'))
+            self.assertEqual(data[prefix + '.stdout'], b'qleisli.native-result 3\nerror\ninvalid_ir\n')
+            self.assertEqual(data[prefix + '.stderr'], b'')
+            self.assertTrue(data[prefix + '.input'].startswith(b'QLV3'))
+        self.assertIn('complete preimage and child CLI streams were not captured', record['classification'])
+
     def test_first_native_rust_integration_keeps_failures_and_separate_repairs(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/native-context-integration-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

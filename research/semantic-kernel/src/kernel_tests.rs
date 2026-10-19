@@ -802,7 +802,7 @@ fn adapter_matches_independent_exact_semantics_in_5425_control_and_phase_cases()
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
-        let imported = crate::adapter::import_raw(raw).unwrap();
+        let imported = crate::adapter::import_raw(qleisli::edition::Edition::E2026, raw).unwrap();
         // This private test access does not expose a global matrix API. Every
         // imported term here has at most three bits, under ordinary leaf limits.
         let mut checker = Checker::new(Limits::default());

@@ -249,10 +249,19 @@ structure Reply where
   success : Bool
   lines : List String
 
+def Mode.errorCode : Mode → Gate.Error → String
+  | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
+  | _, error => Native.errorCode error
+
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=
   match result with
-  | .error error => ⟨false,["qleisli.native-result 3","error",Native.errorCode error]⟩
+  | .error error => ⟨false,["qleisli.native-result 3","error",mode.errorCode error]⟩
   | .ok decision => ⟨true,successLines mode decision (work-left)⟩
+
+theorem reply_hierarchy_native_error (mode : CheckedHierarchy.Modes.Mode)
+    (error : QleisliKernel.Finite.Error) (work left : Nat) :
+    (reply (.hierarchy mode) work (.error (.native error)) left).lines =
+      ["qleisli.native-result 3","error",Protocol.HierarchicalFinite.errorCode error] := rfl
 
 theorem reply_success_context (mode : Mode) (decision : Decision mode) (work left : Nat) :
     (reply mode work (.ok decision) left).lines =

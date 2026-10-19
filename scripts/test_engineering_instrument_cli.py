@@ -105,7 +105,7 @@ def live(cli, kernel):
             artifact.write_bytes(actual)
             request_bytes = (json.dumps(data, separators=(',', ':'), sort_keys=True) + '\n').encode()
             request_path.write_bytes(request_bytes)
-            args = [cli, 'engineering', 'compare-instrument', str(artifact),
+            args = [cli, 'engineering', 'compare-instrument', '--edition=2026', str(artifact),
                     '--against=' + str(request_path), '--lean-kernel=' + checker]
             if not text:
                 args.insert(2 if flags_first else len(args), '--format=json')
@@ -177,7 +177,7 @@ def live(cli, kernel):
         invoke('unit-random', malformed, success=False)
         invoke('unit-random', unit, success=False, checker=str(directory / 'missing-kernel'))
         for extra in [('--against=duplicate',), ('--format=json',), ('--output=out',), ('extra',)]:
-            result = subprocess.run([cli, 'engineering', 'compare-instrument', str(artifact),
+            result = subprocess.run([cli, 'engineering', 'compare-instrument', '--edition=2026', str(artifact),
                 '--against=' + str(request_path), '--format=json', '--lean-kernel=' + kernel,
                 *extra], capture_output=True, timeout=60, check=False)
             calls += 1

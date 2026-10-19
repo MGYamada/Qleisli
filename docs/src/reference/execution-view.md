@@ -53,7 +53,10 @@ engineering payloads retain exact work. Component payloads retain their
 original fields. These claims remain distinct.
 
 Errors contain only the header, `error`, the rejection code and final newline;
-they assert no successfully checked context. An unsupported well-framed edition
+they assert no successfully checked context. Hierarchy finite-decoder errors retain
+their existing classification: malformed/noncanonical finite descriptions are
+`format`, capacity failures are `limit`, and failed finite equations are
+`contract`. The common dispatcher preserves that profile-specific projection. An unsupported well-framed edition
 rejects as `edition`; a compared-view mismatch is `decoded_view`. Old external
 QLV2/QLV1 requests and old replies reject without compatibility retry. Consumers
 match edition, product, actual mode and requested scope before interpreting and
