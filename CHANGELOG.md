@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Record the repository-root `bin/` deployment and explicit-path validation
+  policy for future `qlt`, `qdb` and `qcp` executables alongside the four
+  existing companion tools.
+
 - Retain explicit typed constitutional edition requests and exact selecting/
   nested manifest bytes through filesystem project preparation; reject root
   or module-inventory substitution. Retained configuration shares the existing
