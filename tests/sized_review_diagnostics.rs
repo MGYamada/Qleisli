@@ -84,7 +84,7 @@ fn rejecting_process(root: &SourceRoot, code: &str) -> std::path::PathBuf {
     root.write(
         "rejecting-kernel",
         &format!(
-            "#!/bin/sh\nprintf '%s\\n' \"$1\" > '{mode_file}'\n/bin/cat > /dev/null\ncase \"$1\" in\n  --hierarchy-request-pending) header='qleisli.hierarchy-request-pending 4' ;;\n  --instrument-pending) header='qleisli.instrument-pending 4' ;;\n  --qpe-instrument-pending) header='qleisli.qpe-instrument-pending 4' ;;\n  *) exit 99 ;;\nesac\nprintf '%s\\n' \"$header\" error {code}\nexit 1\n"
+            "#!/bin/sh\nprintf '%s\\n' \"$1\" > '{mode_file}'\n/bin/cat > /dev/null\ncase \"$1\" in\n  --hierarchy-request-pending|--instrument-pending|--qpe-instrument-pending) ;;\n  *) exit 99 ;;\nesac\nprintf '%s\\n' 'qleisli.native-result 3' error {code}\nexit 1\n"
         ),
     );
     let path = root.0.join("rejecting-kernel");

@@ -1,5 +1,20 @@
 # Native edition first study
 
+The [hierarchical consumer history](hierarchy-consumer-first.json.gz) retains
+13 records: the P1 review, original sources, actual diagnostic failure and a
+separate passing malformed-obligation test whose legacy header masked payload
+coverage. Two failed current-frame/context repair attempts remain distinct.
+The active stand-ins now use native-result 3. Malformed obligation reports
+must pass the current context check before their intended payload refusal;
+the conditional reconstruction refusal remains required as well. The actual
+small native instrument controls check both APIs and finite-leaf reconstruction.
+Both Rust versions pass the two diagnostic and three selected instrument tests
+and strict target Clippy; the other hierarchy cases are not credited here.
+The bounded passive reader pins all 353,780 expanded bytes and never executes
+saved observers, packets or commands. Transient generated files were not
+separately retained; their complete authored literals remain in the originals.
+Current-head CI/review and broader proof/release gates remain open.
+
 The separate [protocol consumer history](consumer-protocol-first.json.gz)
 retains eight original source/observer/result records, including both complete
 hosted diagnostic-test failures and two actual local pre-repair failures.

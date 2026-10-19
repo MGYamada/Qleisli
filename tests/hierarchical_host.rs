@@ -1094,25 +1094,43 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
     let executable = scratch.0.join("runtime");
     let payload = instrument_payload(1, false, false);
     let request = instrument_request(1, false, false);
-    for body in [
-        "pending\n0\n0\n0\n",              // omitted actual finite proof
-        "pending\n0\n2\n0\n0\n0\n",        // duplicated actual proof
-        "pending\n0\n1\n0\n0\n",           // omitted requested finite equation
-        "pending\n0\n1\n0\n2\n2\n2\n",     // duplicated equation
-        "pending\n0\n1\n0\n1\n99\n",       // unknown equation
-        "pending\n0\n1\n0\n1\n2\nextra\n", // trailing response data
-        "pending\n01\n0\n0\n",             // noncanonical counter
-        "checked\n0\n0\n0\n",              // a claimed final result is not the protocol
+    for (claim, body) in [
+        ("pending", "0\n0\n0\n0\n"),              // omitted actual finite proof
+        ("pending", "0\n0\n2\n0\n0\n0\n"),        // duplicated actual proof
+        ("pending", "0\n0\n1\n0\n0\n"),           // omitted requested finite equation
+        ("pending", "0\n0\n1\n0\n2\n2\n2\n"),     // duplicated equation
+        ("pending", "0\n0\n1\n0\n1\n99\n"),       // unknown equation
+        ("pending", "0\n0\n1\n0\n1\n2\nextra\n"), // trailing response data
+        ("pending", "01\n0\n0\n0\n"),             // noncanonical counter
+        ("checked", "0\n0\n0\n0\n"),              // a claimed final result is not the protocol
     ] {
         let script = format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 4\n{}'\n",
-            body.replacen("pending\n0\n", "pending\nexecution\n0\n0\n", 1)
+            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.native-result 3\n{claim}\n2026\n{}\n--instrument-pending\nexecution\n{body}'\n",
+            env!("CARGO_PKG_VERSION")
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let error = Kernel::new(&executable, qleisli::edition::Edition::E2026)
-            .check_instrument(&payload, &request)
+        let kernel = Kernel::new(&executable, qleisli::edition::Edition::E2026);
+        // Check the complete obligation report before any separate finite-leaf
+        // invocation. A stale frame must not mask the intended payload fault.
+        let error = kernel
+            .check_instrument_native(&payload, &request)
             .unwrap_err();
         assert_eq!(error.code, "format", "{body}: {error}");
+        assert!(
+            !error.message.contains("unknown native response protocol")
+                && (claim != "pending" || !error.message.contains("native reply context")),
+            "payload mutations must reach the current protocol: {body:?}: {error}"
+        );
+        // The conditional reconstruction API must still reject every case;
+        // real finite-leaf reconstruction is covered by the native test above.
+        assert_eq!(
+            kernel
+                .check_instrument(&payload, &request)
+                .unwrap_err()
+                .code,
+            "format",
+            "{body}"
+        );
     }
 }

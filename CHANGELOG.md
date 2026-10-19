@@ -34,6 +34,8 @@ development milestones from the scope of their evidence.
   Migrate diagnostic checker replies and direct rectangular pure-leaf request
   tests to the current native envelope, retaining their refusal and mutation
   checks without accepting legacy frames.
+  Update hierarchical rejection stand-ins and malformed-obligation replies
+  so current framing cannot hide the intended diagnostic/payload checks.
   Document the separate edition/product/format coordinates and implemented
   qargo std/configuration records, retaining pending distribution gates.
   Complete ecosystem migration and CI under #255 remain pending.

@@ -13,6 +13,54 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_hierarchy_consumers_keep_p1_failure_and_masked_pass_distinct(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/hierarchy-consumer-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'ed3fce1190a92fe71e2d5f1030bdb54703d6567fbc4d3eb3d6be185df1e50f3b')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(353_781)
+        self.assertEqual(len(raw), 353_780)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '671bebd5e5628d912213a8f3c200c336980f61b417c90763019dfb27ac735e31')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.hierarchical-protocol-consumer-first-observations', 1))
+        self.assertEqual(record['source_head'], '74e1149ae694c37f8233b0d4fe634a795a3e9776')
+        expected = {
+            'original/tests/sized_review_diagnostics.rs', 'original/tests/hierarchical_host.rs',
+            'original/tests/common/mod.rs', 'original/tests/Qargo.toml',
+            'capture-hierarchy-consumer-first.py', 'local-first.json',
+            'pr423-review-74e1149a.json',
+        }
+        expected.update(prefix + '/' + name
+                        for prefix in ('first-scope-repair', 'separate-inspection-attempt')
+                        for name in ('hierarchical_host.rs', 'validation.json', 'observer.py'))
+        self.assertEqual(set(record['records']), expected)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['mode'], 0o644)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        self.assertIn(b'qleisli.hierarchy-request-pending 4', data['original/tests/sized_review_diagnostics.rs'])
+        self.assertIn(b'qleisli.instrument-pending 4', data['original/tests/hierarchical_host.rs'])
+        local = json.loads(data['local-first.json'])
+        self.assertEqual(local['before'], local['after'])
+        self.assertEqual([row['exit_code'] for row in local['commands']], [101, 0])
+        self.assertIn('unknown native response protocol', local['commands'][0]['stderr'])
+        review = json.loads(data['pr423-review-74e1149a.json'])
+        thread, = review['threads']['review_threads']
+        self.assertEqual(thread['id'], 'PRRT_kwDOUr9rbs6t2YU7')
+        self.assertEqual(thread['comments'][0]['database_id'], 4312029386)
+        for prefix in ('first-scope-repair', 'separate-inspection-attempt'):
+            attempt = json.loads(data[prefix + '/validation.json'])
+            self.assertEqual([row['exit_code'] for row in attempt['commands']], [0, 101])
+            self.assertIn('native reply context disagrees', attempt['commands'][1]['stdout'])
+
     def test_protocol_consumers_preserve_original_frames_and_actual_failures(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-protocol-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),
