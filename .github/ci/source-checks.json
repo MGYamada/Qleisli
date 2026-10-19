@@ -79,6 +79,10 @@
         ],
         [
           "python3",
+          "scripts/test_native_driver_bundle.py"
+        ],
+        [
+          "python3",
           "scripts/test_package_lean_kernel.py"
         ],
         [

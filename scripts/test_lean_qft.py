@@ -53,11 +53,9 @@ def symbolic_path(result, width, input_value, choices):
     return bits, phase, result["hadamards"]
 
 
-def native(cases, log, semantic=False):
-    with tempfile.TemporaryDirectory(prefix="qleisli-qft-native-") as directory:
-        project = Path(directory)
-        rows = [f"({width}, {literal(word)}, {json.dumps(axes)})" for width, word, axes in cases]
-        source = '''import QleisliKernel.Qft
+def driver_source(cases, semantic=False):
+    rows = [f"({width}, {literal(word)}, {json.dumps(axes)})" for width, word, axes in cases]
+    source = '''import QleisliKernel.Qft
 open QleisliKernel
 set_option maxRecDepth 10000
 set_option maxHeartbeats 4000000
@@ -75,11 +73,17 @@ def main : IO Unit := do
       IO.println (matched ++ "#" ++ toString result.hadamards ++ "#" ++
         numbers result.wires ++ "#" ++ phases)
 '''
-        if semantic:
-            source = source.replace("Qft.matchCircuit", "Qft.matchCompiledCircuit")
-        (project / "Main.lean").write_text(source)
-        binary = native_harness.build(project, log)
-        run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=15)
+    if semantic:
+        source = source.replace("Qft.matchCircuit", "Qft.matchCompiledCircuit")
+    return source
+
+
+def native(cases, log, semantic=False):
+    with tempfile.TemporaryDirectory(prefix="qleisli-qft-native-") as directory:
+        project = Path(directory)
+        (project / "Main.lean").write_text(driver_source(cases, semantic))
+        binary = native_harness.build(project, log, driver=('lean-qft-semantic' if semantic else 'lean-qft'))
+        run = subprocess.run(native_harness.argv(binary), capture_output=True, text=True, timeout=15)
         log.append(dict(command=["qft-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
         assert run.returncode == 0, run.stderr
@@ -129,6 +133,51 @@ def source_check(binary, log):
     assert expected[1] < 0.1
 
 
+def driver_cases(small=False, semantic=False):
+    upper = 4 if small else 8
+    cases = [(m, template(m), list(reversed(range(m)))) for m in range(1, upper + 1)]
+    expected = [True] * len(cases)
+    # Template mutations, all still well-formed primitive circuits except explicit bounds below.
+    for width in range(2, upper + 1):
+        original, axes = template(width), list(reversed(range(width)))
+        wrong_phase = list(original)
+        ticks, controls = wrong_phase[1][1][0]
+        wrong_phase[1] = p([((256 - ticks) % 256, controls)])
+        reordered = [original[1], original[0], *original[2:]]
+        for word, output in [(wrong_phase, axes), (reordered, axes), (original[1:], axes),
+                             (original, list(range(width))), (original + [h(0)], axes)]:
+            cases.append((width, word, output)); expected.append(False)
+    if semantic:
+        # Equal phase polynomials with changed literal syntax.
+        for width in range(2, upper + 1):
+            word = template(width)
+            ticks, axes = word[1][1][0]
+            changed = [word[0], p([(ticks // 2, axes), (ticks // 2, axes)]), *word[2:]]
+            cases.append((width, changed, list(reversed(range(width))))); expected.append(True)
+        word = template(3)
+        word[1], word[2] = word[2], word[1]  # Adjacent diagonal phases commute.
+        cases.append((3, word, [2, 1, 0])); expected.append(True)
+    invalid_start = len(cases)
+    for width, word, axes in [(1, [h(1)], [0]), (1, [p([(256, [0])])], [0]),
+                             (1, [p([(16, [1])])], [0])]:
+        cases.append((width, word, axes)); expected.append(False)
+    cases += [(0, [], []), (9, [], list(range(9))), (1, [], [0])]
+    expected += [False] * 3
+    rng = random.Random(2909202602)
+    for _ in range(60):
+        width = rng.randrange(1, 4)
+        word = []
+        for _ in range(rng.randrange(1, 12)):
+            if rng.randrange(2):
+                word.append(h(rng.randrange(width)))
+            else:
+                word.append(p([(rng.randrange(256), sorted(rng.sample(range(width), rng.randrange(width + 1))))
+                               for _ in range(rng.randrange(5))]))
+        # Deliberately invalid final layout makes this a path-compiler-only case.
+        cases.append((width, word, [])); expected.append(False)
+    return cases, expected, invalid_start, rng, upper
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", type=Path)
@@ -142,47 +191,7 @@ def main():
         report["source_round_trip"] = True
         report["wrong_reversal_outcomes"] = 8
     else:
-        upper = 4 if args.small else 8
-        cases = [(m, template(m), list(reversed(range(m)))) for m in range(1, upper + 1)]
-        expected = [True] * len(cases)
-        # Template mutations, all still well-formed primitive circuits except explicit bounds below.
-        for width in range(2, upper + 1):
-            original, axes = template(width), list(reversed(range(width)))
-            wrong_phase = list(original)
-            ticks, controls = wrong_phase[1][1][0]
-            wrong_phase[1] = p([((256 - ticks) % 256, controls)])
-            reordered = [original[1], original[0], *original[2:]]
-            for word, output in [(wrong_phase, axes), (reordered, axes), (original[1:], axes),
-                                 (original, list(range(width))), (original + [h(0)], axes)]:
-                cases.append((width, word, output)); expected.append(False)
-        if args.semantic:
-            # Equal phase polynomials with changed literal syntax.
-            for width in range(2, upper + 1):
-                word = template(width)
-                ticks, axes = word[1][1][0]
-                changed = [word[0], p([(ticks // 2, axes), (ticks // 2, axes)]), *word[2:]]
-                cases.append((width, changed, list(reversed(range(width))))); expected.append(True)
-            word = template(3)
-            word[1], word[2] = word[2], word[1]  # Adjacent diagonal phases commute.
-            cases.append((3, word, [2, 1, 0])); expected.append(True)
-        invalid_start = len(cases)
-        for width, word, axes in [(1, [h(1)], [0]), (1, [p([(256, [0])])], [0]),
-                                 (1, [p([(16, [1])])], [0])]:
-            cases.append((width, word, axes)); expected.append(False)
-        cases += [(0, [], []), (9, [], list(range(9))), (1, [], [0])]
-        expected += [False] * 3
-        rng = random.Random(2909202602)
-        for _ in range(60):
-            width = rng.randrange(1, 4)
-            word = []
-            for _ in range(rng.randrange(1, 12)):
-                if rng.randrange(2):
-                    word.append(h(rng.randrange(width)))
-                else:
-                    word.append(p([(rng.randrange(256), sorted(rng.sample(range(width), rng.randrange(width + 1))))
-                                   for _ in range(rng.randrange(5))]))
-            # Deliberately invalid final layout makes this a path-compiler-only case.
-            cases.append((width, word, [])); expected.append(False)
+        cases, expected, invalid_start, rng, upper = driver_cases(args.small, args.semantic)
         outputs = native(cases, log, semantic=args.semantic)
         path_checks = phase_checks = 0
         for index, ((width, word, _), (matched, result)) in enumerate(zip(cases, outputs)):

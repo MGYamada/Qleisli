@@ -128,13 +128,11 @@ def schema_cases():
     return rows
 
 
-def native(cases, log):
-    with tempfile.TemporaryDirectory(prefix="qleisli-qpe-native-") as directory:
-        project=Path(directory)
-        rows=[plan_literal(item) for _,item,_ in cases]
-        schemas=schema_cases()
-        schema_rows=[f'({request}, {proposal})' for _,request,proposal,_ in schemas]
-        (project/"Main.lean").write_text('''import QleisliKernel.Schema
+def driver_source(cases):
+    rows=[plan_literal(item) for _,item,_ in cases]
+    schemas=schema_cases()
+    schema_rows=[f'({request}, {proposal})' for _,request,proposal,_ in schemas]
+    return ('''import QleisliKernel.Schema
 open QleisliKernel
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -164,8 +162,15 @@ def main : IO Unit := do
   for (request,proposal) in schemaCases do
     IO.println ("schema:" ++ toString (Schema.check request proposal).isSome)
 ''')
-        binary = native_harness.build(project, log)
-        run=subprocess.run([str(binary)],capture_output=True,text=True,timeout=30)
+
+
+def native(cases, log):
+    with tempfile.TemporaryDirectory(prefix="qleisli-qpe-native-") as directory:
+        project=Path(directory)
+        schemas=schema_cases()
+        (project/"Main.lean").write_text(driver_source(cases))
+        binary = native_harness.build(project, log, driver='lean-qpe')
+        run=subprocess.run(native_harness.argv(binary),capture_output=True,text=True,timeout=30)
         log.append(dict(command=["qpe-test"],exit=run.returncode,stderr=run.stderr,executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
         assert run.returncode==0,run.stderr
         lines=run.stdout.splitlines();assert len(lines)==len(cases)+len(schemas)

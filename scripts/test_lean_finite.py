@@ -357,9 +357,9 @@ def native(all_cases, log):
     with tempfile.TemporaryDirectory(prefix='qleisli-finite-native-') as directory:
         project=Path(directory)
         (project/'Main.lean').write_text(LEAN)
-        binary = native_harness.build(project, log)
+        binary = native_harness.build(project, log, driver='lean-finite')
         payload='\n'.join(dumps({k:v for k,v in c.items() if k not in {'oracle','expected','name'}}) for c in all_cases)+'\n'
-        run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
+        run=subprocess.run(native_harness.argv(binary),input=payload,text=True,capture_output=True,timeout=180)
         log.append(dict(command=['finite-test < original JSON requests'],exit=run.returncode,stderr=run.stderr))
         assert run.returncode==0,run.stderr
         lean=[json.loads(line) for line in run.stdout.splitlines()]
@@ -451,7 +451,7 @@ def main():
     report=dict(native_lean_cases=len(all_cases),native_rust_comparisons=len(rust),
         independent_rational_matrix_checks=mathematical,rejected_inputs=sum(not c['expected'] for c in all_cases),
         detected_graph_faults=faults,detected_semantic_faults=semantic_faults,
-        largest_circuit_qubits=3,production_authority='Rust',external_schemas_enabled=0,
+        largest_circuit_qubits=3,production_authority='Lean',external_schemas_enabled=0,
         remaining_premises=['RawProgram extraction/ownership/effects (VM-25/26)',
             'native transport/decoder correspondence'],
         budget_scope='Published matrix decoding, direct circuit and whole-space budgets compared exactly. Selected Rust CheckedContract API equations compare acceptance and full matrices; graph work additionally reads all maps, checks whole-space Gram and rechecks the root under one experimental aggregate budget. No production graph price change.',

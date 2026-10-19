@@ -466,9 +466,9 @@ def native(all_cases, log):
     with tempfile.TemporaryDirectory(prefix='qleisli-raw-native-') as directory:
         project=Path(directory)
         (project/'Main.lean').write_text(LEAN)
-        binary = native_harness.build(project, log)
+        binary = native_harness.build(project, log, driver='lean-raw')
         payload='\n'.join(finite.dumps({k:v for k,v in c.items() if k in {'artifact','required','budget'}}) for c in all_cases)+'\n'
-        run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
+        run=subprocess.run(native_harness.argv(binary),input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0,run.stderr
         bindings=dict(lean_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
                       lean_input_sha256=hashlib.sha256(payload.encode()).hexdigest(),

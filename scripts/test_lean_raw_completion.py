@@ -209,8 +209,8 @@ def main():
     with tempfile.TemporaryDirectory(prefix='qleisli-vm25-complete-') as directory:
         project = Path(directory)
         (project/'Main.lean').write_text(LEAN)
-        binary = native_harness.build(project, log)
-        run = subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
+        binary = native_harness.build(project, log, driver='lean-raw-completion')
+        run = subprocess.run(native_harness.argv(binary),input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0, run.stderr
         outputs = [json.loads(line) for line in run.stdout.splitlines()]
         assert len(outputs)==len(all_cases)
