@@ -1,5 +1,15 @@
 # Native edition first study
 
+The separate [capacity consumer history](consumer-capacity-first.json.gz)
+preserves the original test/helper/manifest, actual macOS CI failure and local
+reproduction before correcting the aggregate-byte oracle. Retained manifest
+bytes now count alongside local and bundled sources in the existing test;
+production limits and exact-boundary/one-byte-under checks are unchanged.
+Normal/MSRV runs pass all four existing capacity tests and strict Clippy.
+An initially canceled command with incomplete environment selection remains
+separate from those results. The archive is inert; full current-head CI and
+broader proof/release gates remain open.
+
 The later [consumer validation history](consumer-validation-first.json.gz)
 retains 23 original source/diagnostic records and three explicitly derived
 context summaries (532,293 expanded archive bytes; SHA-256

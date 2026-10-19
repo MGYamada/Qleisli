@@ -37,7 +37,13 @@ fn aggregate_includes_many_files_and_bundled_sources() {
         root.write(&format!("m{i}.qli"), "// a small module\n");
     }
     let loaded = Project::load(&root.0).unwrap();
-    let total = loaded.modules.values().map(|m| m.source.len() as u64).sum();
+    // The retained manifest shares the aggregate budget with source modules.
+    let total = loaded
+        .modules
+        .values()
+        .map(|m| m.source.len() as u64)
+        .sum::<u64>()
+        + std::fs::metadata(root.0.join("Qargo.toml")).unwrap().len();
     assert!(
         loaded
             .modules
