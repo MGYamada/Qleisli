@@ -8,7 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Protocol.ExecutionView.Gate
 
 inductive Error where
-  | packet | invalidView | native (error : Finite.Error) | encoding | decodedView
+  | packet | edition | version | invalidView | native (error : Finite.Error) | encoding | decodedView
   | hierarchy (kind : Hierarchical.Artifact.Error) (atNode : Option Hierarchical.Artifact.Ref)
   deriving BEq, DecidableEq, Repr
 
