@@ -13,6 +13,108 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_first_cli_context_failures_keep_invocation_and_consumer_errors_distinct(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/cli-validation-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '7893c5d121deaa888819d7ba60d9322d964fa2794b0d886a4c132db2f1217252')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(13_129)
+        self.assertEqual(len(raw), 13_128)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'e5627a9acb901a409fdf3bda3fc7814769d4c58330221dd3b9c8e1fe46ab70c1')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.cli-edition-first-validation', 1))
+        self.assertEqual(len(record['records']), 5)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644))
+        self.assertIn(b"No such file or directory: 'target/debug/qleisli'", data['cli-json.stderr'])
+        self.assertIn(b'raw verification requires --edition=2026', data['cli-json.stderr'])
+        self.assertEqual([row['exit_code'] for row in json.loads(data['validation-first.json'])], [0, 0, 1])
+        self.assertIn('omitted the documented positional absolute binary argument', record['classification'])
+
+    def test_first_python_validation_keeps_the_original_diagnostic_oracle_error(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/python-validation-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'a9a8c688af4a49b554a40cdb7ae56fe919c73fe2c0dd0d832c508121a9fff297')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(40_863)
+        self.assertEqual(len(raw), 40_862)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'ebd3fcce00d0c63a354f572f0a2f10ce9e15b295909dadedb7b7677942648abc')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.python-edition-first-validation', 1))
+        self.assertEqual(len(record['records']), 9)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644))
+        metadata = json.loads(data['interop-first-metadata.json'])
+        self.assertEqual((metadata['status'], metadata['tests'], metadata['skipped']), ('failed', 12, []))
+        self.assertIn(b'FAILED (failures=2)', data['interop-native.stderr'])
+        actual = json.loads(json.loads(data['manifest-unsupported-first.json'])['stdout'])
+        diagnostic = actual['diagnostics'][0]
+        self.assertEqual(diagnostic['code'], 'project')
+        self.assertEqual(diagnostic['primary']['path'], 'Qargo.toml')
+        self.assertIn('unsupported Qleisli edition "2027"', diagnostic['message'])
+        self.assertEqual(json.loads(data['source-after-build.json']), json.loads(data['source-after-tests.json']))
+        self.assertIn('Transient test-project files were not captured separately', record['classification'])
+
+    def test_first_python_context_sources_keep_sandbox_and_real_refusals_separate(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/python-context-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '762f4872db96fb3c4380549402af59d63a90043c7d0375ab35833c02640a7616')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(47_994)
+        self.assertEqual(len(raw), 47_993)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'e0e99516feed1b71f5697fef6bd3bb302c622702aa55892e3929069fb20f4a03')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']), ('qleisli.python-edition-first', 1))
+        self.assertEqual(len(record['records']), 32)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644))
+        for environment in ('sandbox', 'unrestricted'):
+            prefix = environment + '/'
+            self.assertEqual(data[prefix + 'before.json'], data[prefix + 'after.json'])
+            before = json.loads(data[prefix + 'before.json'])
+            for path, digest in before['sources'].items():
+                self.assertEqual(record['source_refs'][path], dict(commit=before['head'], sha256=digest))
+            observed = json.loads(data[prefix + 'observations.json'])
+            self.assertEqual(observed[0]['exception'], 'TypeError')
+            self.assertIn("unexpected keyword argument 'edition'", observed[0]['message'])
+            self.assertEqual([row['exit_code'] for row in observed[2:]], [0, 2, 1])
+            self.assertIn(b'edition="2026"', data[prefix + 'desired.py'])
+        sandbox = json.loads(data['sandbox/observations.json'])
+        actual = json.loads(data['unrestricted/observations.json'])
+        self.assertEqual(sandbox[1]['diagnostics'][0]['code'], 'connection')
+        self.assertIn('ps', sandbox[1]['message'])
+        self.assertEqual(actual[1]['diagnostics'][0]['code'], 'edition')
+        self.assertIn('--edition=2026', actual[1]['message'])
+        self.assertEqual(data['sandbox/project/main.qli'], data['unrestricted/project/main.qli'])
+        self.assertIn('not fresh build attestation', record['classification'])
+
     def test_first_helper_refusals_retain_real_hierarchy_diagnostics(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/native-helper-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

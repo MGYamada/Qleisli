@@ -10,6 +10,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input")
     parser.add_argument("--input", dest="format", choices=["qasm", "qir", "qirf", "qli"], required=True)
+    parser.add_argument("--edition", choices=["2026"], required=True,
+                        help="explicit constitutional edition; source manifests must agree")
     parser.add_argument("--action", choices=["check", "run", "sample", "emit-qasm", "emit-qir", "emit-ir"], default="check")
     parser.add_argument("--executable")
     parser.add_argument("--lean-kernel")
@@ -23,7 +25,7 @@ def main():
         parser.error("--shots and --seed require sample")
     status = 0
     try:
-        client = Client(args.executable, lean_kernel=args.lean_kernel)
+        client = Client(args.executable, edition=args.edition, lean_kernel=args.lean_kernel)
         if args.format == "qli":
             program = client.compile_project(args.input)
         else:

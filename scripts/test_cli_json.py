@@ -255,10 +255,10 @@ class JsonCliTests(unittest.TestCase):
         self.assertEqual(data["format"], "qleisli.finite-ir")
         self.assertEqual(data["version"], 2)
         (self.root / "main.qli").unlink()
-        self.assertEqual(self.invoke("verify-ir", artifact, "--format=json")["result"], artifact_scope)
+        self.assertEqual(self.invoke("verify-ir", artifact, "--edition=2026", "--format=json")["result"], artifact_scope)
         data["programs"][data["root"]]["classical_outputs"] = [4294967295]
         artifact.write_text(json.dumps(data), encoding="utf-8")
-        error = self.invoke("verify-ir", artifact, "--format=json", status=1)["diagnostics"][0]
+        error = self.invoke("verify-ir", artifact, "--edition=2026", "--format=json", status=1)["diagnostics"][0]
         self.assertEqual(error["code"], "invalid_ir")
         self.assertTrue(error["related"])
 

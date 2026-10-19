@@ -14,7 +14,9 @@ development milestones from the scope of their evidence.
   product version, mode and scope in version-3 replies. Raw/foreign/engineering
   commands require an explicit edition. Migrate native framing, generated Rust
   clients and packaging helpers to the same explicit context; preserve existing
-  hierarchy diagnostic classifications. Complete ecosystem migration,
+  hierarchy diagnostic classifications. Require explicit Python client/CLI
+  editions and retain them in Program data; source interop assertions compare
+  the captured manifest without overriding it. Complete ecosystem migration,
   current-evidence continuity and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert

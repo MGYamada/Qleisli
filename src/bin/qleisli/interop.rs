@@ -131,11 +131,17 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let (mut format, mut shots, mut seed, mut json) = (None, None, None, false);
     let mut checker = None;
     let mut edition: Option<qleisli::edition::Edition> = None;
+    let mut expected_edition: Option<qleisli::edition::Edition> = None;
     for arg in &args[2..] {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
             Some(s) if s.starts_with("--edition=") && edition.is_none() => {
                 edition = Some(s[10..].parse().map_err(
+                    |e: qleisli::edition::UnsupportedEdition| failure("edition", e.to_string()),
+                )?);
+            }
+            Some(s) if s.starts_with("--expect-edition=") && expected_edition.is_none() => {
+                expected_edition = Some(s[17..].parse().map_err(
                     |e: qleisli::edition::UnsupportedEdition| failure("edition", e.to_string()),
                 )?);
             }
@@ -184,9 +190,18 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
                 project_bytes: 16 << 20,
             },
         )?;
+        if expected_edition.is_some_and(|expected| expected != project.edition()) {
+            return Err(failure(
+                "edition",
+                "source manifest edition disagrees with the explicit caller expectation",
+            ));
+        }
         let kernel = selected_kernel(project.edition())?;
         project.compile_with_kernel(&kernel)?
     } else if matches!(format, "qasm" | "qirf") {
+        if expected_edition.is_some() {
+            return Err(usage());
+        }
         let edition = edition.ok_or_else(|| failure("edition",
             "raw/foreign input requires --edition=2026; edition selects the constitutional regime, independently of the compiler release"))?;
         load(format, root, &selected_kernel(edition)?)?

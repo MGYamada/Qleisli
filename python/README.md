@@ -8,13 +8,16 @@ checkout; Rust and Python registry publications are separate.
 For the beta prerelease, source metadata uses `0.3.0-beta`; Python packaging
 normalizes the wheel version to `0.3.0b0`.
 It does not embed Rust or require an LLVM installation. Install a local wheel,
-then select `Client(executable="/path/to/qleisli")`, set `QLEISLI_BIN`, or put
-`qleisli` on PATH. Prebuilt all-in-one platform wheels are not provided yet.
+then select `Client(executable="/path/to/qleisli", edition="2026")`.
+The executable may also come from `QLEISLI_BIN` or PATH; the constitutional
+edition is always an explicit constructor argument. Prebuilt all-in-one
+platform wheels are not provided yet.
 
 ```python
 from qleisli import Client
 
-client = Client(executable="target/debug/qleisli", lean_kernel="/path/to/qleisli-kernel")
+client = Client(executable="target/debug/qleisli", edition="2026",
+                lean_kernel="/path/to/qleisli-kernel")
 program = client.from_openqasm('''OPENQASM 3.0;
 include "stdgates.inc";
 qubit[2] q; bit[2] c; reset q;
@@ -26,7 +29,16 @@ print(program.to_qir())
 ```
 
 Use `compile_project(path)` for a `.qli` project and `from_ir(bytes)` for a
-QIRF artifact. `from_qir(text_or_bitcode)` requires the optional `qir` extra
+QIRF artifact. A source project's explicit manifest edition must agree with
+the client. Source checking uses the captured manifest and an
+`--expect-edition=2026` assertion; this never overrides the manifest. Raw and
+foreign inputs instead receive the explicit `--edition=2026` selection.
+Missing, floating and unsupported editions reject. `Client.edition` is
+read-only, and every `Program` retains its own immutable edition for subsequent
+fresh checks. Host objects remain untrusted data, not acceptance receipts.
+The existing `qleisli.result` v1 envelope and result fields are unchanged.
+
+`from_qir(text_or_bitcode)` requires the optional `qir` extra
 (PyQIR 0.12.5, MIT, with its LLVM dependency notices). It supports the declared
 QIR 2.0 Base terminal subset, not arbitrary LLVM or adaptive programs. The
 reader runs in a separate process and never executes imported code. All inputs
@@ -43,13 +55,13 @@ This contains ordinary descendants, not programs deliberately escaping their
 session. Non-POSIX systems currently reclaim the direct child only; complete
 process-tree containment there requires a platform job API.
 
-`python -m qleisli INPUT --input=qasm|qir|qirf|qli --action=check|run|sample|emit-qasm|emit-qir|emit-ir`
+`python -m qleisli INPUT --edition=2026 --input=qasm|qir|qirf|qli --action=check|run|sample|emit-qasm|emit-qir|emit-ir`
 provides a JSON command-line host. Sampling requires `--shots` and `--seed`.
 Each operation rechecks the actual artifact. Mutating a Python object or its
 serialized IR cannot create a trusted evidence handle.
 
 To select an independently built and audited Lean kernel, use
-`Client(executable="target/debug/qleisli", lean_kernel="/path/to/qleisli-kernel")`
+`Client(executable="target/debug/qleisli", edition="2026", lean_kernel="/path/to/qleisli-kernel")`
 or add `--lean-kernel=/path/to/qleisli-kernel` to the Python CLI. Every input path
 (including QIR text/bitcode) and every subsequent `Program` method then requires
 fresh native acceptance. Missing executables, rejection and malformed responses fail;

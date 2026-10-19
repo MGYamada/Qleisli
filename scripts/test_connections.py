@@ -24,7 +24,7 @@ EXE = os.environ.get("QLEISLI_BIN", str(ROOT / "target/debug/qleisli"))
 
 class Connections(unittest.TestCase):
     def setUp(self):
-        self.client = Client(EXE)
+        self.client = Client(EXE, edition="2026")
         self.qir = (FIXTURES / "independent.ll").read_text()
 
     @unittest.skipUnless(os.name == 'posix', 'POSIX session containment')
@@ -40,7 +40,7 @@ class Connections(unittest.TestCase):
             checker.chmod(0o700)
             try:
                 with self.assertRaises(QleisliError) as failure:
-                    Client(EXE, lean_kernel=checker, timeout=1).from_ir(artifact)
+                    Client(EXE, lean_kernel=checker, timeout=1, edition="2026").from_ir(artifact)
                 self.assertEqual(failure.exception.diagnostics[0]['code'], 'limit')
                 self.assertTrue(pidfile.exists(), 'timeout must reach the actual native checker')
                 pid = int(pidfile.read_text())
@@ -85,7 +85,7 @@ class Connections(unittest.TestCase):
             for path, executable in [(source.with_name("missing.qasm"), EXE),
                                      (source, str(source.with_name("missing-executable")))]:
                 result = subprocess.run([sys.executable, "-m", "qleisli", str(path),
-                    "--input=qasm", "--executable", executable], capture_output=True)
+                    "--input=qasm", "--edition=2026", "--executable", executable], capture_output=True)
                 self.assertEqual(result.returncode, 1)
                 self.assertEqual(json.loads(result.stdout)["diagnostics"][0]["code"], "project")
 
@@ -129,8 +129,8 @@ class Connections(unittest.TestCase):
             path = Path(directory) / "bad.qirf"
             path.write_text(json.dumps(artifact))
             diagnostics = []
-            for args in [["verify-ir", str(path), "--format=json"],
-                         ["interop", "check", str(path), "--input=qirf"]]:
+            for args in [["verify-ir", str(path), "--edition=2026", "--format=json"],
+                         ["interop", "check", str(path), "--input=qirf", "--edition=2026"]]:
                 result = subprocess.run([EXE, *args], capture_output=True)
                 self.assertEqual(result.returncode, 1)
                 diagnostics.append(json.loads(result.stdout)["diagnostics"])
@@ -139,14 +139,14 @@ class Connections(unittest.TestCase):
             source = '// λ🦀\r\nOPENQASM 3.0; include "stdgates.inc"; qubit q; bit c; reset q; mystery q; c = measure q;'
             qasm = Path(directory) / "bad.qasm"
             qasm.write_bytes(source.encode())
-            result = subprocess.run([EXE, "interop", "check", str(qasm), "--input=qasm"], capture_output=True)
+            result = subprocess.run([EXE, "interop", "check", str(qasm), "--input=qasm", "--edition=2026"], capture_output=True)
             direct = json.loads(result.stdout)["diagnostics"]
             location = direct[0]["primary"]
             start = source.encode().index(b"mystery")
             self.assertEqual(location, {"path": "bad.qasm", "start": start, "end": start + 7,
                                         "line": 2, "column": 64})
             # Python retains the complete structured envelope; no message parsing.
-            result = subprocess.run([EXE, "interop", "emit-ir", "-", "--input=qasm"], input=source.encode(), capture_output=True)
+            result = subprocess.run([EXE, "interop", "emit-ir", "-", "--input=qasm", "--edition=2026"], input=source.encode(), capture_output=True)
             direct_stdin = json.loads(result.stdout)["diagnostics"]
             with self.assertRaises(QleisliError) as error:
                 self.client.from_openqasm(source)
@@ -199,7 +199,7 @@ class Connections(unittest.TestCase):
             with self.subTest(mutated=mutated[:50]), self.assertRaises(QleisliError):
                 replace(p, artifact=mutated).run()
         with self.assertRaises(QleisliError):
-            Program(self.client, b"{}").to_qir()
+            Program(self.client, b"{}", "2026").to_qir()
 
     def test_qir_rejects_profile_cfg_calls_and_resources(self):
         cases = {
@@ -238,7 +238,7 @@ class Connections(unittest.TestCase):
 
     def test_rust_error_equivalence_and_atomic_failure(self):
         source = b"OPENQASM 3.0; qubit q;"
-        result = subprocess.run([EXE, "interop", "emit-ir", "-", "--input=qasm"], input=source, capture_output=True)
+        result = subprocess.run([EXE, "interop", "emit-ir", "-", "--input=qasm", "--edition=2026"], input=source, capture_output=True)
         self.assertEqual(result.returncode, 1)
         doc = json.loads(result.stdout)
         self.assertIsNone(doc["result"])
@@ -246,7 +246,7 @@ class Connections(unittest.TestCase):
             self.client.from_openqasm(source)
         self.assertEqual(error.exception.diagnostics, doc["diagnostics"])
         for flags in [["--input=qasm", "--input=qasm"], ["--input=qir"], ["--input=qasm", "--seed=0"]]:
-            result = subprocess.run([EXE, "interop", "check", "-", *flags], input=b"", capture_output=True)
+            result = subprocess.run([EXE, "interop", "check", "-", "--edition=2026", *flags], input=b"", capture_output=True)
             self.assertEqual(result.returncode, 2)
             self.assertIsNone(json.loads(result.stdout)["result"])
 
@@ -258,7 +258,7 @@ class Connections(unittest.TestCase):
         with self.assertRaises(QleisliError):
             self.client.from_openqasm(" " * ((1 << 20) + 1))
         result = subprocess.run([sys.executable, "-m", "qleisli", str(FIXTURES / "independent.ll"),
-                                 "--input=qir", "--action=run", "--executable", EXE], capture_output=True)
+                                 "--input=qir", "--edition=2026", "--action=run", "--executable", EXE], capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout)["result"], p.run())
 

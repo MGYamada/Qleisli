@@ -28,6 +28,12 @@ def _error(code, message):
                           "primary": None, "related": []}])
 
 
+def _checked_edition(value):
+    if type(value) is not str or value != "2026":
+        raise ValueError('edition must explicitly select the supported constitutional regime: "2026"')
+    return value
+
+
 def _document(data):
     def unique(pairs):
         result = {}
@@ -117,7 +123,8 @@ def _finish_process(process):
 
 
 class Client:
-    def __init__(self, executable=None, *, timeout=60, lean_kernel=None):
+    def __init__(self, executable=None, *, edition, timeout=60, lean_kernel=None):
+        self._edition = _checked_edition(edition)
         self.executable = os.fspath(executable or os.environ.get("QLEISLI_BIN", "qleisli"))
         if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0:
             raise ValueError("timeout must be finite and positive")
@@ -125,6 +132,10 @@ class Client:
         self.lean_kernel = None if lean_kernel is None else os.fsdecode(os.fspath(lean_kernel))
         if self.lean_kernel is not None and (not self.lean_kernel or "\0" in self.lean_kernel):
             raise ValueError("lean_kernel must be a nonempty executable path")
+
+    @property
+    def edition(self):
+        return self._edition
 
     def _process(self, args, data=None):
         try:
@@ -140,8 +151,17 @@ class Client:
         except (OSError, subprocess.SubprocessError) as e:
             raise _error("connection", str(e)) from e
 
-    def _call(self, action, format, *, data=None, path="-", shots=None, seed=None):
+    def _call(self, action, format, *, edition, data=None, path="-", shots=None, seed=None):
+        selected = _checked_edition(edition)
+        if selected != self.edition:
+            raise _error("edition", "program edition disagrees with the selected client")
         args = [self.executable, "interop", action, os.fspath(path), f"--input={format}"]
+        if format == "qli":
+            args.append(f"--expect-edition={selected}")
+        elif format in ("qasm", "qirf"):
+            args.append(f"--edition={selected}")
+        else:
+            raise ValueError("unknown connection input format")
         if self.lean_kernel is not None:
             args.append(f"--lean-kernel={self.lean_kernel}")
         if action == "sample":
@@ -170,19 +190,25 @@ class Client:
             raise _error("connection", "invalid Rust connection response") from e
 
     def from_openqasm(self, source):
-        data = self._call("emit-ir", "qasm", data=_bytes(source, 1 << 20))["text"]
-        return Program(self, data.encode("utf-8"))
+        return self._from_openqasm(source, self.edition)
+
+    def _from_openqasm(self, source, edition):
+        data = self._call("emit-ir", "qasm", edition=edition, data=_bytes(source, 1 << 20))["text"]
+        return Program(self, data.encode("utf-8"), edition)
 
     def from_ir(self, artifact):
+        edition = self.edition
         data = _bytes(artifact, 16 << 20)
-        self._call("check", "qirf", data=data)
-        return Program(self, data)
+        self._call("check", "qirf", edition=edition, data=data)
+        return Program(self, data, edition)
 
     def compile_project(self, path):
-        data = self._call("emit-ir", "qli", path=Path(path).resolve())["text"]
-        return Program(self, data.encode("utf-8"))
+        edition = self.edition
+        data = self._call("emit-ir", "qli", edition=edition, path=Path(path).resolve())["text"]
+        return Program(self, data.encode("utf-8"), edition)
 
     def from_qir(self, source):
+        edition = _checked_edition(self.edition)
         data = _bytes(source, 1 << 20)
         # Use this installation's reader, without adding the caller's cwd to
         # the child's import path. Keep the environment's optional PyQIR extra.
@@ -196,16 +222,21 @@ class Client:
                 raise ValueError("invalid reader output")
         except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("qir", "QIR reader failed or returned an invalid response") from e
-        return self.from_openqasm(qasm)
+        return self._from_openqasm(qasm, edition)
 
 
 @dataclass(frozen=True)
 class Program:
     client: Client
     artifact: bytes
+    edition: str
+
+    def __post_init__(self):
+        _checked_edition(self.edition)
 
     def _call(self, action, **kwargs):
-        return self.client._call(action, "qirf", data=_bytes(self.artifact, 16 << 20), **kwargs)
+        return self.client._call(action, "qirf", edition=self.edition,
+                                 data=_bytes(self.artifact, 16 << 20), **kwargs)
 
     def check(self):
         return self._call("check")

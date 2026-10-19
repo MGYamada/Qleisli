@@ -95,3 +95,39 @@ The intermediate SourceKernel helper's full preimage and child CLI streams were
 not captured; its actual harness failure remains distinct from later successful
 checks. The passive reader never executes saved code or packets. This history
 does not establish current CI, continuity, proof discharge or #255 completion.
+
+The [first Python context study](python-context-first.json.gz), SHA-256
+`762f4872db96fb3c4380549402af59d63a90043c7d0375ab35833c02640a7616`,
+retains 32 records (47,993 expanded archive bytes): one-bit desired Python,
+QLI and QASM sources, the observer, and five observations in each environment.
+The desired explicit constructor was absent; the new source-expectation flag
+was unsupported. The first sandbox run could not execute `ps` for descendant
+cleanup and obscured the raw-client result. A separately authorized unrestricted
+run retains the actual missing-edition diagnostic. Both first histories stay
+intact, including the successful ordinary manifest-based source emission.
+Four committed implementation sources are bound at
+`0e4fd2601d187a674f8865fd8729f05e2a462b19`; observed prior binary digests are
+not fresh build attestation. Passive byte checking executes no saved observer,
+program or packet, and supplies no current acceptance or preservation proof.
+
+The [first Python validation](python-validation-first.json.gz), SHA-256
+`a9a8c688af4a49b554a40cdb7ae56fe919c73fe2c0dd0d832c508121a9fff297`,
+retains nine records (40,862 expanded archive bytes), including the test
+preimage and both real assertion failures. The two new tests incorrectly
+expected CLI-option diagnostic code `edition` for unsupported manifest
+declarations. The existing source classifier reports `project` with a
+`Qargo.toml` span; production classification stays unchanged. A focused actual
+observation, complete-report metadata/digest and stable source/binary windows
+remain separate from later tests. Transient test-project files were not captured
+separately; their authored literals remain in the saved harness. This is passive
+history, not a new native-checker failure, successful full validation or proof.
+
+The [first CLI validation](cli-validation-first.json.gz), SHA-256
+`7893c5d121deaa888819d7ba60d9322d964fa2794b0d886a4c132db2f1217252`,
+retains five records (13,128 expanded archive bytes). The observer omitted the
+documented absolute binary argument for the changed-directory test; separately,
+the current raw `verify-ir` consumer omitted its explicit edition. The original
+test source is referenced at `0e4fd2601d187a674f8865fd8729f05e2a462b19`.
+Temporary project/artifact files were not separately captured. Both actual
+diagnostics remain inert, distinct from successful Python/QIR checks, later
+consumer migration and final CI or proof obligations.

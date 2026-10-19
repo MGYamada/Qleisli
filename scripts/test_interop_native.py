@@ -14,6 +14,7 @@ from current_source_fixtures import current_source_fixture
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +24,7 @@ from qleisli import Client, QleisliError
 FIXTURES = ROOT / "tests/fixtures/interop"
 BINARY = ROOT / "target/debug/qleisli"
 KERNEL = ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel"
+VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 ACTIONS = ("check", "run", "sample", "emit-ir", "emit-qasm", "emit-qir")
 OBSERVATIONS = []
 ENV = os.environ | {"PYTHONPATH": str(ROOT / "python")}
@@ -43,7 +45,7 @@ class PublicNative(unittest.TestCase):
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="qleisli-interop-native-")
         cls.directory = Path(cls.temporary.name)
-        cls.artifact = Client(BINARY).from_openqasm((FIXTURES / "bell.qasm").read_bytes()).artifact
+        cls.artifact = Client(BINARY, edition="2026").from_openqasm((FIXTURES / "bell.qasm").read_bytes()).artifact
         cls.artifact_path = cls.directory / "bell.qirf"
         cls.artifact_path.write_bytes(cls.artifact)
         cls.inputs = [("qasm", FIXTURES / "bell.qasm"),
@@ -55,6 +57,8 @@ class PublicNative(unittest.TestCase):
 
     def cli(self, action, format, path="-", *, kernel=None, data=None, extra=(), expected=0):
         args = [BINARY, "interop", action, path, f"--input={format}"]
+        if format in ("qasm", "qirf"):
+            args.append("--edition=2026")
         if kernel is not None:
             args.append(f"--lean-kernel={kernel}")
         if action == "sample":
@@ -109,10 +113,10 @@ class PublicNative(unittest.TestCase):
 
     def test_missing_rejecting_and_failed_native_block_every_output(self):
         kernels = [self.directory / "absent",
-                   self.fake_kernel("reject", "qleisli.qirf-native 2\nerror\ncontract\n", 1),
-                   self.fake_kernel("capacity", "qleisli.qirf-native 2\nerror\nlimit\n", 1),
-                   self.fake_kernel("failed", "qleisli.qirf-native 2\naccepted\nexecution\n0\n0\n", 1),
-                   self.fake_kernel("malformed", "qleisli.qirf-native 2\naccepted\nexecution\n0\n0\ntrailing\n")]
+                   self.fake_kernel("reject", "qleisli.native-result 3\nerror\ncontract\n", 1),
+                   self.fake_kernel("capacity", "qleisli.native-result 3\nerror\nlimit\n", 1),
+                   self.fake_kernel("failed", f"qleisli.native-result 3\naccepted\n2026\n{VERSION}\n--qirf-native\nexecution\n0\n0\n", 1),
+                   self.fake_kernel("malformed", f"qleisli.native-result 3\naccepted\n2026\n{VERSION}\n--qirf-native\nexecution\n0\n0\ntrailing\n")]
         for kernel in kernels:
             for format, path in self.inputs:
                 for action in ACTIONS:
@@ -165,8 +169,66 @@ class PublicNative(unittest.TestCase):
         for flags in [("--lean-kernel=",), (f"--lean-kernel={KERNEL}", f"--lean-kernel={KERNEL}")]:
             self.cli("check", "qasm", data=b"OPENQASM 3.0;", extra=flags, expected=2)
 
+    def test_source_edition_expectation_never_overrides_the_manifest(self):
+        project = self.directory / 'edition-expectation'
+        project.mkdir()
+        (project / 'main.qli').write_text('use std::state::init0;\nobserve fn main() -> Bit { measure_z(init0()) }\n')
+        manifest = project / 'Qargo.toml'
+        manifest.write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
+        for action in ACTIONS:
+            with self.subTest(action=action):
+                self.assertEqual(self.cli(action, 'qli', project),
+                                 self.cli(action, 'qli', project, extra=['--expect-edition=2026']))
+        for flags in (['--edition=2026'], ['--edition=2026', '--expect-edition=2026'],
+                      ['--expect-edition=2026', '--expect-edition=2026']):
+            self.cli('check', 'qli', project, extra=flags, expected=2)
+        self.cli('check', 'qirf', self.artifact_path, extra=['--expect-edition=2026'], expected=2)
+        for value in ('', 'latest', '2027'):
+            document = self.cli('check', 'qli', project, extra=['--expect-edition=' + value], expected=1)
+            self.assertEqual(document['diagnostics'][0]['code'], 'edition')
+        manifest.write_text('schema-version = 2\n[qrate]\nedition = "2027"\n')
+        marker = self.directory / 'unexpected-edition-checker'
+        checker = self.directory / 'must-not-check-invalid-edition'
+        checker.write_text(f'#!{sys.executable}\nfrom pathlib import Path\nPath({str(marker)!r}).touch()\nraise SystemExit(9)\n')
+        checker.chmod(0o700)
+        document = self.cli('check', 'qli', project, kernel=checker,
+                            extra=['--expect-edition=2026'], expected=1)
+        # Source declaration failures retain the existing project diagnostic,
+        # distinct from an unsupported command-line edition parameter.
+        diagnostic = document['diagnostics'][0]
+        self.assertEqual(diagnostic['code'], 'project')
+        self.assertIn('unsupported Qleisli edition "2027"', diagnostic['message'])
+        self.assertEqual(diagnostic['primary']['path'], 'Qargo.toml')
+        self.assertFalse(marker.exists())
+
+    def test_python_source_program_keeps_captured_manifest_context(self):
+        project = self.directory / 'captured-edition'
+        project.mkdir()
+        (project / 'main.qli').write_text('use std::state::init0;\nobserve fn main() -> Bit { measure_z(init0()) }\n')
+        manifest = project / 'Qargo.toml'
+        manifest.write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
+        snapshot = self.cli('emit-ir', 'qli', project)['result']['text'].encode()
+        forwarder = self.directory / 'manifest-mutating-checker'
+        forwarder.write_text(f'#!{sys.executable}\nimport pathlib,subprocess,sys\n'
+                             'packet = sys.stdin.buffer.read()\n'
+                             f'pathlib.Path({str(manifest)!r}).write_text(\'schema-version = 2\\n[qrate]\\nedition = "2027"\\n\')\n'
+                             f'result = subprocess.run([{str(KERNEL)!r}, *sys.argv[1:]], input=packet, capture_output=True)\n'
+                             'sys.stdout.buffer.write(result.stdout)\nsys.stderr.buffer.write(result.stderr)\nsys.exit(result.returncode)\n')
+        forwarder.chmod(0o700)
+        program = Client(BINARY, edition='2026', lean_kernel=forwarder).compile_project(project)
+        self.assertEqual(program.edition, '2026')
+        self.assertEqual(program.artifact, snapshot)
+        self.assertIn('"2027"', manifest.read_text())
+        program.check()  # Fresh raw checking uses the retained explicit edition.
+        with self.assertRaises(QleisliError) as failure:
+            Client(BINARY, edition='2026', lean_kernel=KERNEL).compile_project(project)
+        diagnostic = failure.exception.diagnostics[0]
+        self.assertEqual(diagnostic['code'], 'project')
+        self.assertIn('unsupported Qleisli edition "2027"', diagnostic['message'])
+        self.assertEqual(diagnostic['primary']['path'], 'Qargo.toml')
+
     def test_python_imports_and_every_program_method_use_selected_kernel(self):
-        base, selected = Client(BINARY), Client(BINARY, lean_kernel=KERNEL)
+        base, selected = Client(BINARY, edition="2026"), Client(BINARY, lean_kernel=KERNEL, edition="2026")
         constructors = [lambda c: c.from_openqasm((FIXTURES / "bell.qasm").read_bytes()),
                         lambda c: c.compile_project(current_source_fixture(FIXTURES / "terminal")),
                         lambda c: c.from_ir(self.artifact)]
@@ -176,23 +238,23 @@ class PublicNative(unittest.TestCase):
                                    ("to_openqasm", {}), ("to_qir", {})]:
                 with self.subTest(method=method):
                     self.assertEqual(getattr(a, method)(**kwargs), getattr(b, method)(**kwargs))
-                    blocked = replace(b, client=Client(BINARY, lean_kernel=self.directory / "absent"))
+                    blocked = replace(b, client=Client(BINARY, lean_kernel=self.directory / "absent", edition="2026"))
                     with self.assertRaises(QleisliError):
                         getattr(blocked, method)(**kwargs)
             with self.assertRaises(QleisliError):
-                construct(Client(BINARY, lean_kernel=self.directory / "absent"))
+                construct(Client(BINARY, lean_kernel=self.directory / "absent", edition="2026"))
         for value in ("", b"", "bad\0path"):
             with self.subTest(value=value), self.assertRaises(ValueError):
-                Client(BINARY, lean_kernel=value)
+                Client(BINARY, lean_kernel=value, edition="2026")
 
     def test_python_program_does_not_cache_prior_acceptance(self):
         forwarder = self.directory / "replaced-kernel"
         forwarder.write_text(f"#!{sys.executable}\nimport os, sys\n"
                             f"os.execv({str(KERNEL)!r}, [{str(KERNEL)!r}, *sys.argv[1:]])\n")
         forwarder.chmod(0o700)
-        program = Client(BINARY, lean_kernel=forwarder).from_ir(self.artifact)
-        self.fake_kernel("replaced-kernel", "qleisli.qirf-native 2\nerror\ninvalid_ir\n", 1)
-        malformed = replace(program, client=Client(BINARY, lean_kernel=KERNEL), artifact=b"{}")
+        program = Client(BINARY, lean_kernel=forwarder, edition="2026").from_ir(self.artifact)
+        self.fake_kernel("replaced-kernel", "qleisli.native-result 3\nerror\ninvalid_ir\n", 1)
+        malformed = replace(program, client=Client(BINARY, lean_kernel=KERNEL, edition="2026"), artifact=b"{}")
         for current in (program, malformed):
             for method, kwargs in [("check", {}), ("run", {}), ("sample", dict(shots=8, seed=7)),
                                    ("to_openqasm", {}), ("to_qir", {})]:
@@ -207,10 +269,10 @@ class PublicNative(unittest.TestCase):
         self.assertIsNone(module.verify())
         for data in (source, module.bitcode):
             with self.subTest(bitcode=isinstance(data, bytes)):
-                self.assertEqual(Client(BINARY).from_qir(data).run(),
-                                 Client(BINARY, lean_kernel=KERNEL).from_qir(data).run())
+                self.assertEqual(Client(BINARY, edition="2026").from_qir(data).run(),
+                                 Client(BINARY, lean_kernel=KERNEL, edition="2026").from_qir(data).run())
                 with self.assertRaises(QleisliError):
-                    Client(BINARY, lean_kernel=self.directory / "absent").from_qir(data)
+                    Client(BINARY, lean_kernel=self.directory / "absent", edition="2026").from_qir(data)
 
     def test_python_cli_actions_preserve_failure_envelopes(self):
         inputs = list(self.inputs)
@@ -219,7 +281,7 @@ class PublicNative(unittest.TestCase):
         for format, path in inputs:
             for action in ACTIONS:
                 args = [sys.executable, "-m", "qleisli", path, f"--input={format}",
-                        f"--action={action}", f"--executable={BINARY}"]
+                        "--edition=2026", f"--action={action}", f"--executable={BINARY}"]
                 if action == "sample":
                     args.extend(["--shots=8", "--seed=7"])
                 with self.subTest(format=format, action=action):

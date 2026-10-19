@@ -68,7 +68,13 @@ one reply projection. Its checked success bindings retain each original gate,
 execution/caller comparison and scoped decoded-root property. Rust kernels
 require an explicit edition; source commands derive it from the captured
 manifest. Raw `verify-ir`, engineering commands and QASM/QIRF interop require
-`--edition=2026`. Source inputs reject that override. The #255 migration still
+`--edition=2026`. Source inputs reject that override; interop source callers
+may assert `--expect-edition=2026`, which must agree with the captured manifest
+before kernel selection. Raw/foreign inputs reject that assertion.
+Python requires an explicit `Client(..., edition="2026")` or CLI `--edition=2026`;
+source calls use the expectation, and returned `Program` data retains its edition
+for every fresh raw check. No new result-envelope fields convey acceptance.
+The #255 migration still
 requires complete helper, ecosystem, current-evidence and CI validation before
 completion; this wire contract is not a release or broader proof claim.
 
