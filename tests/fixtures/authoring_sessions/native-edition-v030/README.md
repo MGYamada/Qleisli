@@ -1,5 +1,19 @@
 # Native edition first study
 
+The separate [protocol consumer history](consumer-protocol-first.json.gz)
+retains eight original source/observer/result records, including both complete
+hosted diagnostic-test failures and two actual local pre-repair failures.
+The diagnostic checker stand-in still replied in the old protocol; the direct
+rectangular pure-leaf test still framed its requests as QLV2. Current consumers
+now use native-result 3 and explicit edition-2026 QLV3, retaining the same
+refusal categories, text/JSON checks and independent malformed-request cases.
+Both actual Rust versions pass all 18 existing tests and strict target Clippy.
+Transient generated project/checker files were not separately retained; their
+complete authored literals remain in the original test sources. The bounded
+reader pins all 271,530 expanded bytes without executing saved code or packets.
+Production checks, historical fixtures and work/size limits are unchanged;
+new-head CI/review and broader proof/release gates remain open.
+
 The separate [capacity consumer history](consumer-capacity-first.json.gz)
 preserves the original test/helper/manifest, actual macOS CI failure and local
 reproduction before correcting the aggregate-byte oracle. Retained manifest

@@ -13,6 +13,50 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_protocol_consumers_preserve_original_frames_and_actual_failures(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-protocol-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'e0d6ae059456cded68910a4712e6c91cfc24058c36f73b81a43d14d71596def7')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(271_531)
+        self.assertEqual(len(raw), 271_530)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '20aa6affd0f22052e2f17a23a9e77a587c9f202baec9e8f1c45d3830fec22093')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.native-protocol-consumer-first-observations', 1))
+        self.assertEqual(record['source_head'], 'bd90461908b71388e658e0399cb30ca99a693a47')
+        self.assertEqual(set(record['records']), {
+            'original/tests/common_authoring_diagnostics.rs', 'original/tests/pure_leaf.rs',
+            'original/tests/common/mod.rs', 'original/tests/Qargo.toml',
+            'capture-consumer-protocol-first.py', 'local-first.json',
+            'msrv117966292246-first.json', 'distribution117966292261-first.json',
+        })
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['mode'], 0o644)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        self.assertIn(b'qleisli.qirf-native 2', data['original/tests/common_authoring_diagnostics.rs'])
+        self.assertIn(b'let mut outer = b"QLV2"', data['original/tests/pure_leaf.rs'])
+        local = json.loads(data['local-first.json'])
+        self.assertEqual(local['before'], local['after'])
+        self.assertEqual(local['before']['head'], record['source_head'])
+        self.assertEqual([row['exit_code'] for row in local['commands']], [101, 101])
+        self.assertIn('unknown native response protocol', local['commands'][0]['stderr'])
+        self.assertIn('request 0:', local['commands'][1]['stderr'])
+        for name in ('msrv117966292246-first.json', 'distribution117966292261-first.json'):
+            hosted = json.loads(data[name])['structuredContent']
+            self.assertEqual(hosted['headRevision'], record['source_head'])
+            self.assertEqual(hosted['job']['conclusion'], 'failure')
+            self.assertFalse(hosted['logTruncated'])
+            self.assertIn('unknown native response protocol', hosted['log'])
+
     def test_capacity_history_keeps_the_first_oracle_and_actual_failures(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-capacity-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

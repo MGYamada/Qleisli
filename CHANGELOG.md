@@ -31,6 +31,9 @@ development milestones from the scope of their evidence.
   Count retained manifest bytes in the aggregate-capacity regression oracle,
   preserving the exact-boundary and one-byte-over-limit checks; pin its original
   source and failures in the existing passive history-integrity reader.
+  Migrate diagnostic checker replies and direct rectangular pure-leaf request
+  tests to the current native envelope, retaining their refusal and mutation
+  checks without accepting legacy frames.
   Document the separate edition/product/format coordinates and implemented
   qargo std/configuration records, retaining pending distribution gates.
   Complete ecosystem migration and CI under #255 remain pending.

@@ -385,8 +385,15 @@ fn every_native_request_is_decoded_strictly_again() {
         packet.extend_from_slice(&(request.len() as u32).to_le_bytes());
         packet.extend_from_slice(&bytes);
         packet.extend_from_slice(request.as_bytes());
-        let mut outer = b"QLV2".to_vec();
-        for field in [0u32, packet.len() as u32, 0, 0, 0] {
+        let mut outer = b"QLV3".to_vec();
+        for field in [
+            qleisli::edition::Edition::E2026.as_u32(),
+            0,
+            packet.len() as u32,
+            0,
+            0,
+            0,
+        ] {
             outer.extend_from_slice(&field.to_le_bytes());
         }
         outer.extend_from_slice(&packet);
