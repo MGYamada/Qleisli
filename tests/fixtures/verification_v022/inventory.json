@@ -5132,7 +5132,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "3f5680a87bea63b8a6a51202c585441a8000a82a840075ea600503dad6257695",
+      "sha256": "47b70f9c8a1078a3d0230fc237bc7590ee84f6a2c4f0260a1cfa9ffc0d66eed4",
       "group": "source",
       "surface": {
         "declarations": [

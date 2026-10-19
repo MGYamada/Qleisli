@@ -1,5 +1,13 @@
 # VM-22: frozen verification boundaries
 
+The single-file documentation budget repair reviews the project loader's
+current source pin. It charges the already captured selecting manifest before
+source reading, retaining the public API, legacy policy and initial overflow
+refusal. Both Rust versions pass all five capacity tests and strict Clippy;
+seven actual CLI observations retain successful Markdown while rejecting the
+two prior aggregate-budget counterexamples. No native acceptance or Lean
+definition, serialized comparison artifact, request or historical result changes.
+
 The current native-protocol consumer repair deliberately updates only the
 `tests/hierarchical_host.rs` comparison-source pin after reviewing its changed
 fault test. Current reply context must no longer mask missing/duplicate payload

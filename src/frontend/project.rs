@@ -213,7 +213,8 @@ impl SourceBudget {
 }
 
 /// Read a single documentation source with explicit byte limits. Unlike project
-/// loading this does not include bundled modules, because none are loaded.
+/// loading this does not include bundled modules, because none are loaded. The
+/// retained selecting manifest still shares the aggregate input budget.
 pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic> {
     SourceFileSelection::select(path)?.read(policy)
 }
@@ -252,7 +253,22 @@ impl SourceFileSelection {
     }
 
     pub(crate) fn read(&self, policy: SourcePolicy) -> Result<String, Diagnostic> {
-        SourceBudget { policy, used: 0 }
+        let mut budget = SourceBudget { policy, used: 0 };
+        // Keep the initial sentinel-overflow refusal before retained manifest
+        // bytes reduce the remaining allowance.
+        if budget
+            .allowance(&self.path)
+            .map_err(LoadFailure::into_diagnostic)?
+            == Some(u64::MAX)
+        {
+            return Err(
+                SourceBudget::limit(&self.path, "source read limit overflow").into_diagnostic(),
+            );
+        }
+        budget
+            .charge_manifest(self.manifest.path(), self.manifest.source().len() as u64)
+            .map_err(LoadFailure::into_diagnostic)?;
+        budget
             .read(&self.path)
             .map_err(LoadFailure::into_diagnostic)
     }

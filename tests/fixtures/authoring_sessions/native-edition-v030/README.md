@@ -1,5 +1,18 @@
 # Native edition first study
 
+The [single-file manifest budget history](single-doc-manifest-first.json.gz)
+retains nine records, including the P2 review, exact first documented source,
+manifest, loader/test preimages and seven actual CLI observations. The source
+plus its selecting manifest exceeded two requested aggregate budgets, but the
+old reader succeeded. Those successes remain intact as counterexamples.
+The repaired reader charges retained manifest bytes before source bytes,
+including an empty source, without changing file-byte limits, explicit Legacy
+behavior or the initial overflow refusal. Both actual Rust versions pass five
+capacity tests and strict Clippy; seven fresh CLI calls reject the two prior
+counterexamples and preserve all three successful Markdown outputs. The
+bounded reader pins 80,986 expanded bytes without executing saved source,
+commands or observers. Current-head CI/review and proof/release gates remain open.
+
 The [hierarchical consumer history](hierarchy-consumer-first.json.gz) retains
 13 records: the P1 review, original sources, actual diagnostic failure and a
 separate passing malformed-obligation test whose legacy header masked payload

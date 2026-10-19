@@ -13,6 +13,48 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_single_file_budget_keeps_the_original_over_budget_successes(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/single-doc-manifest-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         '7557c91b687b08dc2eed76d6686e756279f54ac24d0e5e41feaf75cdb01b267e')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(80_987)
+        self.assertEqual(len(raw), 80_986)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'fff691a7411f2b3393db9e05a6511daa3376b2e1b5f22e8af0d150a7f05c9099')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.single-file-manifest-budget-first-observations', 1))
+        self.assertEqual(record['source_head'], 'e67da70f1ccd1573ee5d20ec87fe83af0a52b965')
+        self.assertEqual(set(record['records']), {
+            'main.qli', 'Qargo.toml', 'report.json',
+            'original/src/frontend/project.rs', 'original/tests/source_capacities.rs',
+            'original/tests/common/mod.rs', 'original/tests/Qargo.toml',
+            'capture-single-doc-manifest-first.py', 'pr423-review-e67da70f.json',
+        })
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['mode'], 0o644)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        first = json.loads(data['report.json'])
+        self.assertEqual(first['before'], first['after'])
+        self.assertEqual(first['before']['head'], record['source_head'])
+        self.assertEqual((first['source_bytes'], first['manifest_bytes']),
+                         (len(data['main.qli']), len(data['Qargo.toml'])))
+        self.assertEqual([row['exit_code'] for row in first['commands']], [0, 0, 0, 0, 1, 1, 0])
+        self.assertEqual([row['label'] for row in first['commands']
+                          if row['exit_code'] != row['expected_exit_code']],
+                         ['total-one-less', 'source-only-total'])
+        review = json.loads(data['pr423-review-e67da70f.json'])['structuredContent']
+        self.assertTrue(any(thread['id'] == 'PRRT_kwDOUr9rbs6t20RL'
+                            for thread in review['review_threads']))
+
     def test_hierarchy_consumers_keep_p1_failure_and_masked_pass_distinct(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/hierarchy-consumer-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

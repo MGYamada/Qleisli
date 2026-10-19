@@ -38,6 +38,9 @@ development milestones from the scope of their evidence.
   so current framing cannot hide the intended diagnostic/payload checks.
   Review and synchronize the changed hierarchy comparison-harness source pin;
   retain every original serialized comparison artifact and request.
+  Charge the retained selecting manifest before single-file documentation
+  reads, including empty sources; preserve exact aggregate boundaries and the
+  existing file-limit, explicit legacy and overflow refusals.
   Document the separate edition/product/format coordinates and implemented
   qargo std/configuration records, retaining pending distribution gates.
   Complete ecosystem migration and CI under #255 remain pending.
