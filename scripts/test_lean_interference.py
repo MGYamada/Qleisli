@@ -106,10 +106,13 @@ def cases():
     return result
 
 
-def native_normalize(words, log):
-    with tempfile.TemporaryDirectory(prefix="qleisli-interference-native-") as directory:
-        project = Path(directory)
-        (project / "Main.lean").write_text('''import QleisliKernel.Interference
+def driver_words(small=None):
+    small = cases() if small is None else small
+    return [word for _, word in small] + [[h(15)] * 4096, [h(1000000), h(1000000)]]
+
+
+def driver_source(words):
+    return ('''import QleisliKernel.Interference
 open QleisliKernel.Interference
 set_option maxRecDepth 20000
 set_option maxHeartbeats 4000000
@@ -123,8 +126,14 @@ def main : IO Unit := do
   for word in cases do
     IO.println (String.intercalate "|" ((normalize word).map encode))
 ''')
-        binary = native_harness.build(project, log)
-        run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=15)
+
+
+def native_normalize(words, log):
+    with tempfile.TemporaryDirectory(prefix="qleisli-interference-native-") as directory:
+        project = Path(directory)
+        (project / "Main.lean").write_text(driver_source(words))
+        binary = native_harness.build(project, log, driver='lean-interference')
+        run = subprocess.run(native_harness.argv(binary), capture_output=True, text=True, timeout=15)
         log.append(dict(command=["interference-test"], exit=run.returncode,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), stderr=run.stderr))
         assert run.returncode == 0, run.stderr
@@ -172,8 +181,7 @@ def main():
         report["type_correct_wrong_source_outcomes"] = 2
     else:
         small = cases()
-        large = [[h(15)] * 4096, [h(1000000), h(1000000)]]
-        actual = native_normalize([word for _, word in small] + large, log)
+        actual = native_normalize(driver_words(small), log)
         assert actual[-2:] == [[], []]
         comparisons = 0
         max_error = 0.0

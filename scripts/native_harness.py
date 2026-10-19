@@ -6,6 +6,7 @@ Standalone comparisons build their dependency before compiling their driver.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import hashlib
+from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
@@ -69,9 +70,33 @@ def validate(path):
     return data
 
 
-def build(project, log, timeout=240):
+@dataclass(frozen=True)
+class Driver:
+    path: Path
+    selector: str
+
+    def __str__(self):
+        return str(self.path)
+
+    def read_bytes(self):
+        return self.path.read_bytes()
+
+
+def argv(binary):
+    return [str(binary), binary.selector] if isinstance(binary, Driver) else [str(binary)]
+
+
+def build(project, log, timeout=240, *, driver=None):
+    """Select an explicitly bound regression driver, or compile freshly."""
+    import native_driver_bundle
+    if native_driver_bundle.ENVIRONMENT & os.environ.keys():
+        return native_driver_bundle.selected(project, log, driver)
+    return compile_driver(project, log, timeout)
+
+
+def compile_driver(project, log, timeout=240, *, binding=None):
     """Compile fresh Main.lean; return its executable without running or accepting it."""
-    binding = os.environ.get(BUILD_ENV)
+    binding = binding or os.environ.get(BUILD_ENV)
     if binding:
         data = validate(Path(binding))
         log.append(dict(native_build=str(binding), library_sha256=data['products'][str(LIBRARY.relative_to(ROOT))]))

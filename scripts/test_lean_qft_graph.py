@@ -217,11 +217,9 @@ def suite():
     return cases
 
 
-def native(cases, log):
-    with tempfile.TemporaryDirectory(prefix="qleisli-qft-graph-") as directory:
-        project = Path(directory)
-        rows = [case_literal(item, probes) for _, item, _, probes in cases]
-        (project / "Main.lean").write_text('''import QleisliKernel.QftGraph
+def driver_source(cases):
+    rows = [case_literal(item, probes) for _, item, _, probes in cases]
+    return ('''import QleisliKernel.QftGraph
 open QleisliKernel
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -246,8 +244,14 @@ def main : IO Unit := do
           line := line ++ "#" ++ String.intercalate "," ([output,state.phase,state.hadamards].map toString)
       IO.println line
 ''')
-        binary = native_harness.build(project, log)
-        run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=30)
+
+
+def native(cases, log):
+    with tempfile.TemporaryDirectory(prefix="qleisli-qft-graph-") as directory:
+        project = Path(directory)
+        (project / "Main.lean").write_text(driver_source(cases))
+        binary = native_harness.build(project, log, driver='lean-qft-graph')
+        run = subprocess.run(native_harness.argv(binary), capture_output=True, text=True, timeout=30)
         log.append(dict(command=["graph-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
         assert run.returncode == 0, run.stderr

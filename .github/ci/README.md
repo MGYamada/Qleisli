@@ -75,6 +75,45 @@ the final tree. Splitting reviewable work must retain every required check and
 protected source, proof, evidence and history; deleting them to shrink a PR is
 not authorized by this rule.
 
+## Optional native test-driver consolidation
+
+The experimental `run_native_ci.py --shared-drivers` option implements the
+bounded driver slice of [#223](https://github.com/MGYamada/Qleisli/issues/223).
+It prepares one fresh executable for the eleven existing driver commands,
+then each original test explicitly selects its driver and runs its original
+inputs, assertions and independent Python/Rust oracles. The generated original
+Lean bodies retain exact byte identities. Preparation reports
+`prepared-not-executed`; compilation alone supplies no successful test result.
+The other comparison commands keep their ordinary execution path.
+
+Preparation records/checks complete invocation inputs before and after the
+build. Every selection binds all project Python generation code, the task and
+check manifests, freshly regenerated original Main bytes, current native
+source/library products/toolchain and actual executable bytes. The full runner
+retains its complete source checks; testcase payloads and independent oracles
+always run freshly. Missing, unknown, incomplete,
+stale or altered explicit selections fail without fallback. Without a shared
+selection, a standalone driver compiles freshly. Old prototype records reject.
+This shares compiled test code
+only within an invocation; it caches no test results or cross-run executables.
+
+The default runner and hosted workflows continue to use fresh standalone
+drivers pending equivalent execution, coverage and representative timing/shadow
+evidence. The 72-group/112-command manifest, cases, seeds, timeouts, work limits,
+actual-definition proofs, policy audits and full release/manual replay remain.
+Use the existing clean-checkout and pinned-tool requirements, for example:
+
+```sh
+python3 scripts/run_native_ci.py --shared-drivers --output "$qleisli_validation_dir/native-shared"
+```
+
+Named local `--task` reproduction retains explicit omitted-group reporting;
+hosted comparisons still require every group. Driver selectors and records are
+test interfaces only, not production acceptance paths, proof discharges or
+release approval. The exact/finite comparison reports identify the actual
+native Lean production authority; their Rust implementations remain independent
+comparators and untrusted host computations.
+
 ## Size budgets
 
 The maintainer requested recurrence protection for generated fixtures. The

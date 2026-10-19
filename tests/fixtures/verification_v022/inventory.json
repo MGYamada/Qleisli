@@ -3760,25 +3760,25 @@
     },
     {
       "path": "scripts/test_lean_branch_function.py",
-      "sha256": "fa6f1c1778200d662ffe6c48b4a6e64069a3fad2048f084a6a31a7175735827b",
+      "sha256": "98d32c01aa527423a04c8b1d9d18616a01d88aa3b4036a2b3fb74f7b29ea29e6",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "bd48e6f32cbbbc75099febaa41fd2f8501c2802791366c6b6ea5f83022f7353c",
+      "sha256": "c77ff551150bd57e80582b9ffa0a1ced8dfeebdd9148a6e5c857270893b0cbcf",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "085ebb83fda7f0a1fe5c28433e5b8cc704e7a86b5282c0883b701d3b275030cf",
+      "sha256": "c576f22fb150e6e29dd9a0bc7dfc19a245b0d85fa54799b2051c9f503c76477a",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw_completion.py",
-      "sha256": "495c1e340da7c27e37ae21ab716f68734565db8ce171e3d4ed03d0f28c8adaff",
+      "sha256": "4268630c7ad22ccb97446c11dd63b301c94c742d64bf7b0021251060dee8f9d3",
       "group": "raw-core",
       "surface": null
     },
@@ -7033,6 +7033,18 @@
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "scripts/native_harness.py",
+      "sha256": "f42989e2d35de2ffe2ffbdf5a620c7c531672967ce5860846d24d897b4016cf8",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "scripts/native_driver_bundle.py",
+      "sha256": "e1986073bcd899d37e9550fae07c586e7cd509930bb3111ba62cb086d0d35f11",
+      "group": "raw-core",
+      "surface": null
     }
   ],
   "boundaries": [

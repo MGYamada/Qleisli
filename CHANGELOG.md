@@ -19,6 +19,11 @@ development milestones from the scope of their evidence.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert
   history with exact-byte integrity checks; edition propagation remains pending.
+- Add opt-in per-invocation native regression-driver consolidation with exact
+  original generated-source binding, explicit selectors and fresh standalone
+  fallback only when no shared selection is present. Default adoption and the
+  broader #223 performance/shadow criteria remain pending.
+
 - Prepare explicit complete Rust producer partitions from one canonical CI plan,
   with fresh native preparation and visible omissions. Run each toolchain's two
   complete partitions on separate runners and verify both artifact byte streams
