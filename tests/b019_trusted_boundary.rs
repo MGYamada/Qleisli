@@ -56,6 +56,7 @@ fn every_two_bit_permutation_retains_phase_under_control_axis_transport_and_adjo
                         };
                         let evidence = Arc::new(
                             FunctionEvidence::check(
+                                qleisli::edition::Edition::E2026,
                                 pair.clone(),
                                 raw.clone(),
                                 raw,

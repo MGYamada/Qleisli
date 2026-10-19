@@ -146,14 +146,17 @@ fn native_failure_diagnostics_preserve_codes_profile_and_producer_or_caller_scop
         for code in ["limit", "contract", "invalid_ir", "format"] {
             let root = SourceRoot::new(source);
             let fake = rejecting_process(&root, code);
-            let proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-                .unwrap()
-                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap()
-                .lower()
-                .unwrap();
+            let proposal = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.into())]),
+            )
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap();
             std::fs::write(
                 root.0.join("caller-request.json"),
                 proposal.comparison_request(),

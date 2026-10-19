@@ -21,8 +21,11 @@ fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
             format!("{supported} {unsupported}"),
         ] {
             let source = format!("use std::state::init0;  {declarations}");
-            let program =
-                ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+            let program = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.clone())]),
+            )
+            .unwrap();
             let graph = program
                 .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
                 .unwrap()
@@ -56,10 +59,13 @@ fn explicit_modules_finish_parsing_before_profile_eligibility() {
     let malformed = include_str!(
         "fixtures/authoring_sessions/common-source-collection-v030/attempt-01/profile-before-late-parse/z_malformed.qli"
     );
-    let error = ParsedProgram::parse(BTreeMap::from([
-        ("a_basis".into(), basis.clone()),
-        ("z_malformed".into(), malformed.into()),
-    ]))
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("a_basis".into(), basis.clone()),
+            ("z_malformed".into(), malformed.into()),
+        ]),
+    )
     .unwrap_err();
     assert_eq!(error.module(), Some("z_malformed"));
     assert_eq!(error.code(), "parse");
@@ -67,10 +73,13 @@ fn explicit_modules_finish_parsing_before_profile_eligibility() {
     // Complete original parsing now exposes the same retained malformed EOF.
     assert_eq!((error.span().start, error.span().end), (114, 114));
 
-    let error = ParsedProgram::parse(BTreeMap::from([
-        ("a_malformed".into(), malformed.into()),
-        ("z_basis".into(), basis),
-    ]))
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("a_malformed".into(), malformed.into()),
+            ("z_basis".into(), basis),
+        ]),
+    )
     .unwrap_err();
     assert_eq!(error.module(), Some("a_malformed"));
     assert_eq!(error.code(), "parse");

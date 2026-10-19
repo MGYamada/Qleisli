@@ -151,12 +151,14 @@ pub struct MeaningEvidence {
 
 impl MeaningEvidence {
     pub fn check(
+        edition: crate::edition::Edition,
         implementation: RawProgram,
         target: FiniteMeaning,
         identity: FunctionIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
         Self::check_retained(
+            edition,
             implementation,
             target,
             RetainedIdentity::Owned(identity),
@@ -165,12 +167,13 @@ impl MeaningEvidence {
     }
 
     pub(crate) fn check_retained(
+        edition: crate::edition::Edition,
         implementation: RawProgram,
         target: FiniteMeaning,
         identity: RetainedIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        let kernel = crate::interchange::native::Kernel::selected()
+        let kernel = crate::interchange::native::Kernel::selected(edition)
             .map_err(|e| ContractError::InvalidCircuit(e.to_string()))?;
         Self::check_retained_with_kernel(&kernel, implementation, target, identity, budget)
     }

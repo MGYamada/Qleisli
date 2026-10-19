@@ -139,7 +139,11 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
             None,
         ),
     ] {
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap();
         let fact = parsed
             .function_effect(&format!("main::{diagnostic}"))
             .unwrap();
@@ -156,7 +160,8 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
             .unwrap()
             .lower_raw()
             .unwrap();
-        let checker = qleisli::interchange::native::Kernel::new(kernel());
+        let checker =
+            qleisli::interchange::native::Kernel::new(kernel(), qleisli::edition::Edition::E2026);
         let accepted = checker.accept(raw.proposal()).unwrap();
         raw.validate_source_steps(&accepted).unwrap();
         assert_eq!(accepted.raw().declared_effect, Effect::Isometry);
@@ -199,12 +204,19 @@ fn retired_iso_reports_one_exact_migration_span_before_native_checking() {
     use qleisli::frontend::project::SourcePolicy;
     use qleisli::interchange::native::Kernel;
     let source = "// λ\r\niso fn f() -> Unit { () }";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "parse");
     assert_eq!(&source[error.span().start..error.span().end], "iso");
     assert!(error.message().contains("was renamed to `isometry`"));
     let root = SourceRoot::new(source);
-    let missing = Kernel::new(root.0.join("absent-kernel"));
+    let missing = Kernel::new(
+        root.0.join("absent-kernel"),
+        qleisli::edition::Edition::E2026,
+    );
     let diagnostic =
         check_project_with_kernel(&root.0, SourcePolicy::default(), &missing).unwrap_err();
     assert_eq!(diagnostic.code, "parse");
@@ -213,10 +225,13 @@ fn retired_iso_reports_one_exact_migration_span_before_native_checking() {
     assert_eq!(&source[location.span.start..location.span.end], "iso");
     assert_eq!(diagnostic.message, error.message());
     // Trivia and longer ordinary identifiers are not retired source tokens.
-    ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        "/* iso fn */ fn isotope(iso_value: Bit) -> Bit { iso_value }".into(),
-    )]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([(
+            "main".into(),
+            "/* iso fn */ fn isotope(iso_value: Bit) -> Bit { iso_value }".into(),
+        )]),
+    )
     .unwrap();
 }
 
@@ -227,8 +242,11 @@ fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() 
         "tests/fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli",
     );
     let observing = observing.as_str();
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), observing.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), observing.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "effect");
     assert!(error.message().contains("body effect `Observe`"));
     assert_eq!(
@@ -238,7 +256,11 @@ fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() 
         ErrorCode::Effect
     );
     let pure = "pub isometry fn main(q:Q<Bit>)->Q<Bit>{q}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), pure.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), pure.into())]),
+    )
+    .unwrap();
     let fact = parsed.function_effect("main::main").unwrap();
     assert_eq!(fact.inferred(), Effect::Unitary);
     assert_eq!(fact.asserted(), Some(Effect::Isometry));
@@ -257,7 +279,11 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
         pub isometry fn entry(q:Q<(Unit,Bit)>)->Q<Bit>{
             let(u,b)=split(q);finish(u);global_phase_eighth(b)
         }";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     let fact = parsed.function_effect("main::entry").unwrap();
     assert_eq!(fact.inferred(), Effect::Unitary);
     assert_eq!(fact.public_effect(), Some(Effect::Isometry));
@@ -276,7 +302,7 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
     ));
 
     let raw = elaborated.lower_raw().unwrap();
-    let accepted = native::Kernel::new(kernel())
+    let accepted = native::Kernel::new(kernel(), qleisli::edition::Edition::E2026)
         .accept(raw.proposal())
         .unwrap();
     raw.validate_source_steps(&accepted).unwrap();
@@ -284,7 +310,7 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
     assert_eq!(accepted.derived_effect(), Effect::Unitary);
     let hierarchy = elaborated.lower().unwrap();
     assert!(hierarchy.is_instrument());
-    let checked = hierarchical::Kernel::new(kernel())
+    let checked = hierarchical::Kernel::new(kernel(), qleisli::edition::Edition::E2026)
         .check_instrument_native(hierarchy.payload(), hierarchy.comparison_request())
         .unwrap();
     hierarchy
@@ -329,7 +355,11 @@ fn public_isometry_uses_empty_readout_without_reclassifying_its_unitary_body() {
     // A public Observe bound still cannot select either pure hierarchy
     // adapter merely because its concrete implementation happens to be pure.
     let observing = source.replace("pub isometry fn", "pub observe fn");
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), observing)])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), observing)]),
+    )
+    .unwrap();
     assert_eq!(
         parsed.public_function_effect("main::entry"),
         Some(Effect::Observe)
@@ -390,7 +420,11 @@ fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() 
         "retained-unit",
     ] {
         let source = std::fs::read_to_string(fixture(name)).unwrap();
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         assert_eq!(
             parsed.function_effect("main::entry").unwrap().inferred(),
             Effect::Isometry,
@@ -408,7 +442,11 @@ fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() 
         }
     }
     let source = std::fs::read_to_string(fixture("pure-control")).unwrap();
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source)]),
+    )
+    .unwrap();
     assert_eq!(
         parsed.function_effect("main::entry").unwrap().inferred(),
         Effect::Unitary
@@ -514,7 +552,11 @@ fn isometry_cli_sampling_requires_actual_observation() {
 #[test]
 fn public_observe_contract_does_not_select_a_sharper_pure_hierarchy() {
     let source = std::fs::read_to_string(fixture("empty-classical")).unwrap();
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source)]),
+    )
+    .unwrap();
     assert_eq!(
         parsed.function_effect("main::entry").unwrap().inferred(),
         Effect::Isometry

@@ -730,6 +730,31 @@ impl super::project::QrateSource {
     }
 }
 
+impl Project {
+    /// Check the already captured source and edition without rereading its files.
+    pub fn check_report_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<ProjectCheckReport, Diagnostic> {
+        let (kernel, decisions) = kernel.recording();
+        let result = process_loaded_project_details(&self.root, self, false, Some(&kernel))
+            .map_err(Diagnostic::from_compile)?;
+        Ok(ProjectCheckReport::new(result, decisions.summary()))
+    }
+
+    /// Compile the same captured project with its explicit, matching native context.
+    pub fn compile_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<AcceptedProgram, Diagnostic> {
+        Ok(
+            process_loaded_project_with_kernel(&self.root, self, true, Some(kernel))
+                .map_err(Diagnostic::from_compile)?
+                .expect("required entry was compiled"),
+        )
+    }
+}
+
 fn process_loaded_project(
     root: &Path,
     project: &Project,
@@ -924,7 +949,7 @@ fn process_loaded_project_details(
     let kernel = kernel
         .cloned()
         .map(Ok)
-        .unwrap_or_else(crate::interchange::native::Kernel::selected)
+        .unwrap_or_else(|| crate::interchange::native::Kernel::selected(project.edition()))
         .map_err(|error| CompileError {
             code: ErrorCode::Project,
             path: root.into(),
@@ -933,6 +958,17 @@ fn process_loaded_project_details(
             column: 1,
             message: error.to_string(),
         })?;
+    if kernel.edition() != project.edition() {
+        return Err(CompileError {
+            code: ErrorCode::Project,
+            path: root.into(),
+            span: Span::default(),
+            line: 1,
+            column: 1,
+            message: "selected native kernel edition differs from the captured project edition"
+                .into(),
+        });
+    }
     let mut compiler = Compiler {
         kernel,
         project,
@@ -1264,7 +1300,8 @@ mod snapshot_tests {
             })
             .collect();
         Compiler {
-            kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
+            kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
+                .expect("explicit test kernel"),
             project,
             source,
             interface_naturals,

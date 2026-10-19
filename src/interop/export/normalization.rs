@@ -538,7 +538,7 @@ mod tests {
     )]
     #[test]
     fn final_target_native_equations_share_full_receipts_and_preserve_all_columns() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let accepted = kernel.accept_raw(unary(3, vec![])).unwrap();
         let original = accepted.raw().clone();
         let mut state = State::for_program(&accepted);
@@ -779,7 +779,13 @@ mod tests {
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let encoding = Encoding::identity(basis.clone()).unwrap();
         let contract = Contract::new(encoding.clone(), encoding, meaning, &mut budget).unwrap();
-        CheckedContract::check(Circuit::new(basis, steps).unwrap(), contract, &mut budget).unwrap();
+        CheckedContract::check(
+            crate::edition::Edition::E2026,
+            Circuit::new(basis, steps).unwrap(),
+            contract,
+            &mut budget,
+        )
+        .unwrap();
     }
 
     #[cfg_attr(
@@ -794,7 +800,7 @@ mod tests {
         }];
         let original: VecDeque<_> = hzh(controls, 1).into();
         let replacement = candidate(&original).unwrap();
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         for mutation in 0..3 {
             let mut changed = original.clone();
             match mutation {
@@ -829,9 +835,10 @@ mod tests {
     )]
     #[test]
     fn actual_retained_hzh_and_adjoint_preserve_all_columns_controls_and_reference() {
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let original = unary(1, hzh(vec![], 0));
         let evidence = FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             BasisType::Bits(1),
             original.clone(),
             original,

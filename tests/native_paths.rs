@@ -5,7 +5,10 @@ fn raw_transport_rejects_excessive_nesting_before_serialization() {
     use qleisli::contract::BasisType;
     use qleisli::interchange::{RootInterface, Version};
     use qleisli::ir::{ClassicalId, Effect, RawOp, RawProgram};
-    let kernel = Kernel::new("/missing-explicit-native-kernel");
+    let kernel = Kernel::new(
+        "/missing-explicit-native-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let mut program = RawProgram {
         quantum_inputs: vec![],
         classical_inputs: vec![],
@@ -48,7 +51,10 @@ fn raw_transport_rejects_excessive_nesting_before_serialization() {
 )]
 #[test]
 fn native_report_retains_the_exact_artifact_request_and_reconstructed_program() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let mut bytes = include_bytes!("fixtures/verification_v022/finite/t.v2.qirf").to_vec();
     let mut request = br#"{"format":"qleisli.request","version":1,"signature":{"tag":"bit"},"meaning":{"tag":"phase8","table":[0,1]},"source_snapshot":null}"#.to_vec();
     let checked = kernel.check(&bytes, Some(&request)).unwrap();
@@ -74,9 +80,14 @@ fn raw_exports_conversions_and_native_reports_share_the_original_byte_gate() {
     use qleisli::contract::BasisType;
     use qleisli::interchange::{self, RootInterface, Version};
     use qleisli::ir::{RawOp, TokenId};
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let bytes = include_bytes!("fixtures/verification_v022/finite/t.v2.qirf");
-    let program = interchange::import(bytes, None).unwrap().program;
+    let program = interchange::import(qleisli::edition::Edition::E2026, bytes, None)
+        .unwrap()
+        .program;
     let request = br#"{"format":"qleisli.request","version":1,"signature":{"tag":"bit"},"meaning":{"tag":"phase8","table":[0,1]},"source_snapshot":null}"#;
     let interface = RootInterface {
         input: BasisType::Bit,

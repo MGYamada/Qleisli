@@ -33,16 +33,19 @@ mod tests {
 
     #[test]
     fn retained_targets_use_original_definition_identity_and_survive_clone() {
-        let program = ParsedProgram::parse(BTreeMap::from([
-            (
-                "left".into(),
-                "classical fn f(b:Bit)->Bit{not b} meaning M:Bit=permutation_by(f);".into(),
-            ),
-            (
-                "right".into(),
-                "classical fn f(b:Bit)->Bit{b} meaning M:Bit=permutation_by(f);".into(),
-            ),
-        ]))
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([
+                (
+                    "left".into(),
+                    "classical fn f(b:Bit)->Bit{not b} meaning M:Bit=permutation_by(f);".into(),
+                ),
+                (
+                    "right".into(),
+                    "classical fn f(b:Bit)->Bit{b} meaning M:Bit=permutation_by(f);".into(),
+                ),
+            ]),
+        )
         .unwrap();
         let retained = program.clone();
         drop(program);
@@ -59,9 +62,11 @@ mod tests {
 
     #[test]
     fn retained_targets_keep_zero_width_tags_axis_order_and_scalar_phase() {
-        let program = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "classical fn unit(u:Unit)->Unit{u}
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "classical fn unit(u:Unit)->Unit{u}
              classical fn bits(u:Bits<0>)->Bits<0>{u}
              classical fn minus(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
              classical fn swap((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(b,(u,a))}
@@ -69,8 +74,9 @@ mod tests {
              meaning B:Bits<0> = permutation_by(bits);
              meaning Minus:Unit=phase_by(minus);
              meaning Swap:(Bit,(Unit,Bit))=permutation_by(swap);"
-                .into(),
-        )]))
+                    .into(),
+            )]),
+        )
         .unwrap();
         assert_eq!(target(&program, "main::U").basis, Ty::unit());
         assert_eq!(target(&program, "main::B").basis, Ty::bits(0));
@@ -95,9 +101,11 @@ mod tests {
 
     #[test]
     fn composite_targets_keep_forward_identity_phase_wrap_and_exact_product_tree() {
-        let program = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "meaning ZX:Bit=compose(Z,X);
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "meaning ZX:Bit=compose(Z,X);
              meaning XZ:Bit=compose(X,Z);
              meaning Both:(Bit,Bit)=tensor(Z,X);
              meaning PhaseProduct:(Unit,Bit)=tensor(Scalar,X);
@@ -107,8 +115,9 @@ mod tests {
              classical fn z(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
              classical fn x(b:Bit)->Bit{not b}
              classical fn s(u:Unit)->(Bit,(Bit,Bit)){(0,(1,1))}"
-                .into(),
-        )]))
+                    .into(),
+            )]),
+        )
         .unwrap();
         // Literal independent tables: Z then X differs from X then Z by -1.
         for (name, permutation, phases) in [
@@ -130,27 +139,30 @@ mod tests {
 
     #[test]
     fn composite_imports_keep_distinct_original_targets_and_contextual_names() {
-        let program = ParsedProgram::parse(BTreeMap::from([
-            (
-                "left".into(),
-                "classical fn compose(b:Bit)->Bit{not b}
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([
+                (
+                    "left".into(),
+                    "classical fn compose(b:Bit)->Bit{not b}
                 pub meaning M:Bit=permutation_by(compose);"
-                    .into(),
-            ),
-            (
-                "right".into(),
-                "classical fn tensor(b:Bit)->Bit{b}
+                        .into(),
+                ),
+                (
+                    "right".into(),
+                    "classical fn tensor(b:Bit)->Bit{b}
                 pub meaning Other:Bit=permutation_by(tensor);"
-                    .into(),
-            ),
-            (
-                "main".into(),
-                "use left::M;
+                        .into(),
+                ),
+                (
+                    "main".into(),
+                    "use left::M;
                 meaning Composite:Bit=compose(M,Other);
                 use right::Other;"
-                    .into(),
-            ),
-        ]))
+                        .into(),
+                ),
+            ]),
+        )
         .unwrap();
         let actual = target(&program, "main::Composite")
             .finite(Span::default())
@@ -165,7 +177,7 @@ mod tests {
     )]
     #[test]
     fn retained_target_does_not_authorize_an_unused_lying_provider() {
-        let program = ParsedProgram::parse(BTreeMap::from([(
+        let program = ParsedProgram::parse(crate::edition::Edition::E2026, BTreeMap::from([(
             "main".into(),
             "classical fn flip(b:Bit)->Bit{not b}
              meaning Flip:Bit=permutation_by(flip);
@@ -190,6 +202,7 @@ mod tests {
         assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
         let kernel = crate::interchange::native::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+            crate::edition::Edition::E2026,
         );
         let error = source
             .check_operation_meanings(

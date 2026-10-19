@@ -138,6 +138,7 @@ fn check_action(case: &str, signature: BasisType, truth: &[u16]) {
     )
     .unwrap();
     let evidence = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         signature,
         actual,
         target.target_ir().unwrap(),

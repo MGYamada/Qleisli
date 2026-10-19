@@ -285,7 +285,7 @@ mod tests {
             (name.into(), body)
         })
         .collect();
-        ParsedProgram::parse(modules)
+        ParsedProgram::parse(crate::edition::Edition::E2026, modules)
             .unwrap()
             .instantiate(
                 "measurement::qpe",
@@ -427,7 +427,12 @@ mod tests {
             let body = definition.field("body").unwrap();
             assert_eq!(body.field("tag").unwrap().text().unwrap(), "leaf");
             let program = body.field("program").unwrap().text().unwrap();
-            let imported = crate::interchange::import(program.as_bytes(), None).unwrap();
+            let imported = crate::interchange::import(
+                crate::edition::Edition::E2026,
+                program.as_bytes(),
+                None,
+            )
+            .unwrap();
             assert!(matches!(
                 imported.program.raw().operations.as_slice(),
                 [crate::ir::RawOp::Gate {
@@ -447,6 +452,7 @@ mod tests {
             std::env::var_os("QLEISLI_KERNEL")
                 .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
                 .expect("kernel path"),
+            crate::edition::Edition::E2026,
         );
         let delayed = current_source_text(
             "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
@@ -560,6 +566,7 @@ mod tests {
             std::env::var_os("QLEISLI_KERNEL")
                 .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
                 .expect("kernel path"),
+            crate::edition::Edition::E2026,
         );
         for (n, m) in [(1, 1), (1, 2), (2, 2)] {
             let p = source(n, m, 1);

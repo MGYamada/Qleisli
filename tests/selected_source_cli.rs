@@ -502,16 +502,19 @@ fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
     let h = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(phase[3,2](h(phase[3,2](h(phase[3,2](q)))))) }";
     let x = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(phase[7,3](h(phase[1,1](h(phase[7,3](q)))))) }";
     let request_for = |source: &str| {
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .lower()
-            .unwrap()
-            .comparison_request()
-            .to_vec()
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap()
+        .comparison_request()
+        .to_vec()
     };
     // Fix H independently before creating either CLI candidate. The X request
     // is inspected only to establish the complete lowered transport shell;

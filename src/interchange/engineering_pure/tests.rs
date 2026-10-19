@@ -214,7 +214,7 @@ fn pair(kernel: &Kernel) -> (AcceptedProgram, AcceptedProgram, EngineeringPureRe
 )]
 #[test]
 fn native_bound_retains_original_bodies_and_zero_stays_engineering() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let (actual, ideal, request) = pair(&kernel);
     let report = check_with_kernel(&kernel, &actual, &ideal, &request).unwrap();
     assert_eq!(report.actual_artifact(), actual.artifact());
@@ -252,6 +252,7 @@ fn native_bound_retains_original_bodies_and_zero_stays_engineering() {
     let other = Subject::prepare(&kernel, &actual, &ideal, &request).unwrap();
     assert_eq!(
         one.bind(Decision {
+            context: report.context,
             subject: other,
             exact_work: report.exact_work()
         })
@@ -267,7 +268,7 @@ fn native_bound_retains_original_bodies_and_zero_stays_engineering() {
 )]
 #[test]
 fn native_refuses_tight_bounds_stale_meanings_phase_and_owner_substitution() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let (actual, ideal, original) = pair(&kernel);
     let mut changed = original.clone();
     changed.epsilon = DyadicBound::new(1, 1).unwrap();
@@ -355,15 +356,20 @@ fn view_value(bytes: &[u8]) -> crate::interchange::execution_view::Value {
 #[test]
 fn every_typed_context_and_both_original_graph_fields_are_compared_by_lean() {
     use crate::interchange::execution_view::{self, Value as View};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let (actual, ideal, request) = pair(&kernel);
     let subject = Subject::prepare(&kernel, &actual, &ideal, &request).unwrap();
     let packet = subject.packet().unwrap();
-    runtime::check(&subject.checker, packet.clone()).unwrap();
-    let original_len = u32::from_le_bytes(packet[8..12].try_into().unwrap()) as usize;
-    let graph_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
-    let graph_start = 24 + original_len;
-    let original = &packet[24..graph_start];
+    runtime::check(
+        &subject.checker,
+        packet.clone(),
+        crate::edition::Edition::E2026,
+    )
+    .unwrap();
+    let original_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
+    let graph_len = u32::from_le_bytes(packet[16..20].try_into().unwrap()) as usize;
+    let graph_start = 28 + original_len;
+    let original = &packet[28..graph_start];
     let description = view_value(&packet[graph_start..graph_start + graph_len]);
     for (slot, count) in [(1, 15), (2, 9), (3, 9)] {
         for field in 0..count {
@@ -378,6 +384,7 @@ fn every_typed_context_and_both_original_graph_fields_are_compared_by_lean() {
             fields[field] = View::Null;
             let graph = execution_view::encode(&mutation).unwrap();
             let (packet, _) = crate::interchange::native_packet::encode(
+                crate::edition::Edition::E2026,
                 original,
                 Some(crate::interchange::native_packet::View {
                     graph: &graph,
@@ -386,17 +393,22 @@ fn every_typed_context_and_both_original_graph_fields_are_compared_by_lean() {
             )
             .unwrap();
             assert_eq!(
-                runtime::check(&subject.checker, packet).unwrap_err().code,
+                runtime::check(&subject.checker, packet, crate::edition::Edition::E2026)
+                    .unwrap_err()
+                    .code,
                 "decoded_view",
                 "slot {slot} field {field}"
             );
         }
     }
     // Engineering cannot authorize inspection or caller-alias scopes.
-    let (inspection, _) = crate::interchange::native_packet::encode(original, None).unwrap();
-    assert!(runtime::check(&subject.checker, inspection).is_err());
+    let (inspection, _) =
+        crate::interchange::native_packet::encode(crate::edition::Edition::E2026, original, None)
+            .unwrap();
+    assert!(runtime::check(&subject.checker, inspection, crate::edition::Edition::E2026).is_err());
     let graph = &packet[graph_start..graph_start + graph_len];
     let (caller, _) = crate::interchange::native_packet::encode(
+        crate::edition::Edition::E2026,
         original,
         Some(crate::interchange::native_packet::View {
             graph,
@@ -404,8 +416,15 @@ fn every_typed_context_and_both_original_graph_fields_are_compared_by_lean() {
         }),
     )
     .unwrap();
-    assert!(runtime::check(&subject.checker, caller).is_err());
-    assert!(runtime::check(&subject.checker, original.to_vec()).is_err());
+    assert!(runtime::check(&subject.checker, caller, crate::edition::Edition::E2026).is_err());
+    assert!(
+        runtime::check(
+            &subject.checker,
+            original.to_vec(),
+            crate::edition::Edition::E2026
+        )
+        .is_err()
+    );
 }
 
 #[cfg_attr(
@@ -415,7 +434,7 @@ fn every_typed_context_and_both_original_graph_fields_are_compared_by_lean() {
 #[test]
 fn hidden_observation_reset_and_discard_cannot_receive_pure_engineering_labels() {
     use crate::ir::{ClassicalId, Effect, RawOp, RawProgram};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let ideal_raw = RawProgram {
         quantum_inputs: vec![port(4, &[])],
         classical_inputs: vec![],
@@ -489,6 +508,7 @@ fn hidden_observation_reset_and_discard_cannot_receive_pure_engineering_labels()
             original.extend_from_slice(artifact.artifact());
             original.extend_from_slice(&request_bytes);
             let (packet, _) = crate::interchange::native_packet::encode(
+                crate::edition::Edition::E2026,
                 &original,
                 Some(crate::interchange::native_packet::View {
                     graph: &graph,
@@ -496,7 +516,12 @@ fn hidden_observation_reset_and_discard_cannot_receive_pure_engineering_labels()
                 }),
             )
             .unwrap();
-            let failure = runtime::check(kernel.checker_path(), packet).unwrap_err();
+            let failure = runtime::check(
+                kernel.checker_path(),
+                packet,
+                crate::edition::Edition::E2026,
+            )
+            .unwrap_err();
             assert_ne!(failure.code, "decoded_view");
             assert!(
                 check_serialized_with_kernel(&kernel, artifact.artifact(), &request_bytes).is_err()
@@ -512,7 +537,7 @@ fn hidden_observation_reset_and_discard_cannot_receive_pure_engineering_labels()
 #[test]
 fn rectangular_original_preparations_are_compared_at_their_distinct_ports() {
     use crate::ir::{Effect, RawOp, RawProgram, SingleGate};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let actual_boundary =
         PureBoundary::new(BasisType::Unit, BasisType::Bit, port(0, &[]), port(2, &[7])).unwrap();
     let ideal_boundary =

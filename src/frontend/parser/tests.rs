@@ -78,10 +78,13 @@ fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
 }
 
 fn prepare(source: &str, naturals: BTreeMap<String, u32>) {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-        .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))
-        .and_then(|instance| instance.elaborate())
-        .unwrap_or_else(|error| panic!("{source}\n{error}"));
+    ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))
+    .and_then(|instance| instance.elaborate())
+    .unwrap_or_else(|error| panic!("{source}\n{error}"));
 }
 
 #[test]
@@ -145,10 +148,13 @@ fn contextual_naturals_pass_through_specialization_and_operation_counts() {
             let client = format!(
                 "use dep::identity; pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> {{ identity[{argument}](q) }}"
             );
-            ParsedProgram::parse(BTreeMap::from([
-                ("dep".into(), provider.into()),
-                ("main".into(), client.clone()),
-            ]))
+            ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([
+                    ("dep".into(), provider.into()),
+                    ("main".into(), client.clone()),
+                ]),
+            )
             .and_then(|p| {
                 p.instantiate(
                     "main::f",
@@ -163,8 +169,11 @@ fn contextual_naturals_pass_through_specialization_and_operation_counts() {
             let source = format!(
                 "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Applicable(U), Adjointable(U) {{ adjoint(power(U,{count}))(q) }}"
             );
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())]))
-                .unwrap_or_else(|error| panic!("{source}\n{error}"));
+            ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.clone())]),
+            )
+            .unwrap_or_else(|error| panic!("{source}\n{error}"));
         }
     }
 }
@@ -176,7 +185,10 @@ fn contextual_natural_syntax_does_not_resolve_an_unbound_name() {
             "pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"
         );
         parse_module(&source).unwrap();
-        let error = match ParsedProgram::parse(BTreeMap::from([("main".into(), source)])) {
+        let error = match ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        ) {
             Err(error) => error,
             Ok(_) => panic!("the preparation profile must reject an unbound natural"),
         };

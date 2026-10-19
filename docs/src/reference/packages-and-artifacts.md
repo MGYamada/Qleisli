@@ -257,9 +257,13 @@ inherited references share its bytes. Per-source and per-manifest limits remain
 separate. Trees near the former source-only aggregate limit may need less input
 data. The explicit Legacy loader remains outside that aggregate byte limit.
 
-These are requested frontend contexts. Native edition propagation and its
-independent mismatch checks remain unfinished under #255; this capture does
-not prove the verifier checked an edition. Source file contents may still
+These captures are requested contexts, not acceptance evidence. Checked
+`Project` methods use those retained bytes without reloading configuration;
+`ParsedProgram::load` likewise captures each selected module's actual manifest.
+Manifest-free `ParsedProgram::parse(edition, modules)` requires an explicit
+`edition::Edition`. Every native kernel is bound to an explicit edition and
+validates it against the fresh QLV3 response before issuing a handle. The full
+#255 migration and validation remain unfinished. Source file contents may still
 change concurrently during loading. It is not a filesystem-content
 snapshot or a complete resolved dependency/configuration identity. Other targets
 retain their documented filesystem trust assumption. Immutable retained program
@@ -291,14 +295,14 @@ complete resolved qrate graph.
 
 All ordinary `.qli` and `.qlt` source trees must explicitly select a concrete
 constitutional edition in schema-2 `[qrate].edition`, with no current/latest
-fallback. Updating the toolchain does not change that selection. However, the
-current filesystem edition check is frontend configuration. End-to-end
-manifest-edition→artifact→authoritative-native-acceptance binding, mismatch
-rejection and the explicit manifest-free/snippet API rule remain open in
+fallback. Updating the toolchain does not change that selection. The
+[QLV3 boundary](execution-view.md#native-envelope-cutover) carries that selection
+through native acceptance; raw and foreign callers must select it explicitly
+rather than deriving it from product version or std. Complete helper and qargo
+migration, conformance, current-evidence continuity and CI remain open in
 [#255](https://github.com/MGYamada/Qleisli/issues/255), alongside
 [#137](https://github.com/MGYamada/Qleisli/issues/137). Product-version checks,
-source hashes and this chapter do not supply that missing binding or a QLT
-implementation.
+source hashes and this chapter do not replace native checking or implement QLT.
 
 The six boundary issues retain their individual acceptance and regression duties;
 this chapter does not close their umbrella or complete a qrate ecosystem. The

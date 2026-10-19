@@ -9,7 +9,11 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 #[cfg_attr(
@@ -35,6 +39,7 @@ fn aliases_normalize_sizes_and_generic_instances_without_runtime_values() {
         let proposal = graph.lower().unwrap();
         let kernel = qleisli::interchange::hierarchical::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+            qleisli::edition::Edition::E2026,
         );
         let accepted = kernel
             .check_against_native(proposal.payload(), proposal.comparison_request())
@@ -84,7 +89,7 @@ fn fold_bounds_and_per_iteration_aliases_match_independent_parity() {
             .elaborate()
             .unwrap();
         let proposal = graph.lower_raw().unwrap();
-        let accepted = Kernel::selected()
+        let accepted = Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(proposal.proposal())
             .unwrap();
@@ -120,8 +125,11 @@ fn exact_nat_and_concrete_capacity_failures_remain_distinct() {
     assert_eq!(error.code(), "limit");
     let overflow =
         "pub observe fn main()->Bit{static let n=170141183460469231731687303715884105727+1;0}";
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), overflow.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), overflow.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "limit");
 }
 
@@ -138,7 +146,11 @@ fn runtime_capture_scope_escape_dead_body_shadow_and_invalid_arithmetic_reject()
         "pub unitary fn f[const n:Nat,const m:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{static let k=n*m;q} observe fn main()->Bit{0}",
     ] {
         assert!(
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).is_err(),
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.into())])
+            )
+            .is_err(),
             "{source}"
         );
         assert!(
@@ -160,6 +172,7 @@ fn static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold() {
     let program = parsed(source);
     let kernel = qleisli::interchange::hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
     );
     for n in 0..=3 {
         for rounds in [0, 1, 3] {

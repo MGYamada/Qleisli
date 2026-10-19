@@ -11,7 +11,11 @@ use std::collections::BTreeMap;
 mod common;
 
 fn parsed(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 fn types(name: &str, ty: &str) -> BTreeMap<String, BasisBinding> {
     BTreeMap::from([(name.into(), BasisBinding::parse(ty).unwrap())])
@@ -105,8 +109,11 @@ fn all_first_opaque_rejections_reach_their_actual_rules_before_binding() {
         ("forward-kind", "type"),
         ("unknown-basis", "type"),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), study(name))])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), study(name))]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{name}: {error}");
         assert_eq!(error.module(), Some("main"));
     }
@@ -125,9 +132,12 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
             "pub unitary fn unused[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A>{{{body}}} pub unitary fn good(q:Q<Bit>)->Q<Bit>{{q}}"
         );
         assert_eq!(
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-                .unwrap_err()
-                .code(),
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source)])
+            )
+            .unwrap_err()
+            .code(),
             "access"
         );
     }
@@ -136,7 +146,13 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
         "pub unitary fn f[const A:Basis](q:Q<A>)->Q<A>{let A=q;A}",
         "pub unitary fn f[const A:Basis,const B:Basis](q:Q<A>)->Q<B>{q}",
     ] {
-        assert!(ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).is_err());
+        assert!(
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.into())])
+            )
+            .is_err()
+        );
     }
 }
 
@@ -315,8 +331,10 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
 )]
 #[test]
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
-    let kernel =
-        Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let source = "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
     let p = parsed(source);
     for (ty, provider, width) in [("Bit", "main::flip", 1), ("Unit", "main::scalar", 0)] {
@@ -442,6 +460,7 @@ fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
                 let checked = elaborated.check_operation_meanings(
                     &qleisli::interchange::native::Kernel::new(
                         std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                        qleisli::edition::Edition::E2026,
                     ),
                     &mut Budget::new(DEFAULT_EXACT_WORK),
                 );
@@ -459,9 +478,12 @@ fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
                     continue;
                 }
                 let graph = checked.unwrap().lower_hierarchy().unwrap();
-                let accepted = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
-                    .check_against_native(graph.payload(), graph.comparison_request())
-                    .unwrap();
+                let accepted = Kernel::new(
+                    std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                    qleisli::edition::Edition::E2026,
+                )
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
                 let input = (0..(2 << width))
                     .map(|i| [(i + 1) as f64 / 7.0, (i as f64 - 2.0) / 11.0])
                     .collect::<Vec<_>>();

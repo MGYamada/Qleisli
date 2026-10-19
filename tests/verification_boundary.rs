@@ -281,6 +281,7 @@ fn frozen_finite_artifacts_match_independent_phase_exact_requests() {
             .unwrap();
             let artifact = frozen(&format!("{}.{tag}.qirf", case.name), &artifact);
             check_serialized_unitary(
+                qleisli::edition::Edition::E2026,
                 &artifact,
                 &case.boundary,
                 &request,
@@ -289,18 +290,25 @@ fn frozen_finite_artifacts_match_independent_phase_exact_requests() {
             .unwrap();
             assert_eq!(
                 check_serialized_unitary(
+                    qleisli::edition::Edition::E2026,
                     &artifact,
                     &case.boundary,
                     &wrong,
-                    &mut Budget::new(DEFAULT_EXACT_WORK)
+                    &mut Budget::new(DEFAULT_EXACT_WORK),
                 )
                 .unwrap_err()
                 .code,
                 "contract"
             );
             assert!(
-                check_serialized_unitary(&artifact, &case.boundary, &request, &mut Budget::new(0))
-                    .is_err()
+                check_serialized_unitary(
+                    qleisli::edition::Edition::E2026,
+                    &artifact,
+                    &case.boundary,
+                    &request,
+                    &mut Budget::new(0)
+                )
+                .is_err()
             );
         }
     }
@@ -362,10 +370,11 @@ fn frozen_request_rejects_axis_identity_type_and_domain_changes() {
     ] {
         assert_eq!(
             check_serialized_unitary(
+                qleisli::edition::Edition::E2026,
                 &artifact,
                 &boundary,
                 &request,
-                &mut Budget::new(DEFAULT_EXACT_WORK)
+                &mut Budget::new(DEFAULT_EXACT_WORK),
             )
             .unwrap_err()
             .code,
@@ -377,10 +386,11 @@ fn frozen_request_rejects_axis_identity_type_and_domain_changes() {
         .replace("zeta8-dyadic-v1", "phase256-word-v1");
     assert_eq!(
         check_serialized_unitary(
+            qleisli::edition::Edition::E2026,
             &artifact,
             &case.boundary,
             wrong_domain.as_bytes(),
-            &mut Budget::new(DEFAULT_EXACT_WORK)
+            &mut Budget::new(DEFAULT_EXACT_WORK),
         )
         .unwrap_err()
         .code,

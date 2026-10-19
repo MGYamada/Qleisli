@@ -115,7 +115,7 @@ pass without requiring every search algorithm to migrate.
 
 ### Per-invocation execution binding (v0.3.0-beta, #362)
 
-The QLV2 native envelope binds the actual retained Rust execution data to
+The QLV3 native envelope binds the actual retained Rust execution data to
 Lean's freshly decoded and checked data by exact QDV1 byte comparison. It
 covers finite graphs and dependency caches, typed finite contracts and both
 instrument roots, original raw caller aliases, and all five hierarchy modes'
@@ -131,7 +131,7 @@ compilation, transport and numerical simulation implement their definitions.
 Tests exercise these links; the Rust walkers and runtime are not proved.
 Hierarchy bridge construction, source lowering, emitted target preservation,
 and general hierarchy operator semantics retain their separate obligations.
-QLV2 success is formally connected to the original decoded-root ownership
+QLV3 success is formally connected to the original decoded-root ownership
 and classical-scope properties; this preserves their admitted scope and does
 not admit a new guarantee or discharge broader QS, PR, RS or EXACT duties.
 

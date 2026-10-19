@@ -21,6 +21,7 @@ fn evidence() -> Arc<FunctionEvidence> {
     let raw = identity_raw();
     Arc::new(
         FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             BasisType::Unit,
             raw.clone(),
             raw,
@@ -204,7 +205,8 @@ fn explicit_meaning_reference_survives_equal_matrices_and_shared_child() {
 )]
 #[test]
 fn pure_descriptor_keeps_its_optional_inverse_issued_identity() {
-    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let leaf = Arc::new(
         crate::frontend::pure::check(
             &kernel,
@@ -348,7 +350,8 @@ fn pure_descriptor_keeps_original_source_origin_even_with_the_same_native_leaf()
         .resolution
         .qualified("main::second")
         .unwrap();
-    let kernel = crate::interchange::native::Kernel::selected().unwrap();
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let leaf = Arc::new(
         crate::frontend::pure::check(
             &kernel,

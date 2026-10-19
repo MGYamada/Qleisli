@@ -26,7 +26,8 @@ fn shared_rejection(
 ) {
     let start = source.rfind(located).unwrap();
     let span = Span::new(start, start + located.len());
-    let selected = ParsedProgram::parse(sources(source)).unwrap_err();
+    let selected =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     assert_eq!(selected.code(), common_code, "{source}\n{selected}");
     assert_eq!(selected.module(), Some("main"));
     assert_eq!(selected.span(), span, "{source}\n{selected}");
@@ -37,8 +38,12 @@ fn shared_rejection(
     assert!(!absent.exists());
     // Configure the existing public gate explicitly. An accidental acceptance
     // would reach the missing checker and fail with a different diagnostic.
-    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let finite = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
     assert_eq!(finite.message, message);
     let location = finite.primary.unwrap();
@@ -61,7 +66,8 @@ fn ordinary_calls_are_complete_first_order_calls_in_both_source_paths() {
         pub unitary fn client(q:Q<Bit>)->(Bit,Q<Bit>){{pair(1,q)}}"
     );
     check_project(&SourceRoot::new(&complete).0).unwrap();
-    let prepared = ParsedProgram::parse(sources(&complete)).unwrap();
+    let prepared =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(&complete)).unwrap();
     prepared
         .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -158,7 +164,7 @@ fn reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner()
             let a=exact(a);
             (measure_z(h(a)),measure_z(h(r)))
         }";
-    let common = ParsedProgram::parse(sources(source)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     assert_eq!(
         common.function_effect("main::twice").unwrap().inferred(),
         Effect::Unitary

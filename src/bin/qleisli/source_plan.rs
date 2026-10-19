@@ -284,7 +284,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
         qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK);
     let source = if source.has_function_contracts() {
         source.check_function_contracts(
-            &native::Kernel::new(kernel_path(options)?),
+            &native::Kernel::new(kernel_path(options)?, source.edition()),
             &mut source_budget,
         )?
     } else {
@@ -327,7 +327,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
         }
         // Full Raw capability checking is mandatory. A failure is final.
         let proposal = if source.has_operation_meanings() {
-            let kernel = native::Kernel::new(kernel_path(options)?);
+            let kernel = native::Kernel::new(kernel_path(options)?, source.edition());
             source
                 .check_operation_meanings(&kernel, &mut source_budget)?
                 .lower_raw(&kernel, &mut source_budget)?
@@ -336,7 +336,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             source.lower_raw()?
         } else {
             source.lower_raw_with_kernel(
-                &native::Kernel::new(kernel_path(options)?),
+                &native::Kernel::new(kernel_path(options)?, source.edition()),
                 &mut source_budget,
             )?
         };
@@ -372,7 +372,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
     let proposal = if source.has_operation_meanings() {
         source
             .check_operation_meanings(
-                &native::Kernel::new(kernel_path(options)?),
+                &native::Kernel::new(kernel_path(options)?, source.edition()),
                 &mut source_budget,
             )?
             .lower_hierarchy()?
@@ -415,7 +415,8 @@ fn kernel_path(options: &Options) -> Result<PathBuf> {
         })
 }
 fn raw_execute(options: &Options, proposal: &RawSourceProposal, kernel: PathBuf) -> Result<String> {
-    let checked = native::Kernel::new(kernel).accept(proposal.proposal())?;
+    let checked =
+        native::Kernel::new(kernel, proposal.source().edition()).accept(proposal.proposal())?;
     proposal.validate_source_steps(&checked)?;
     let result = match options.command.as_str() {
         "check" => fields(
@@ -456,7 +457,7 @@ fn hierarchy_execute(
     let source = proposal.source().instantiation();
     let isometry = source.program().public_function_effect(source.entry())
         == Some(qleisli::ir::Effect::Isometry);
-    let kernel = hierarchical::Kernel::new(kernel);
+    let kernel = hierarchical::Kernel::new(kernel, proposal.source().edition());
     let limits = ExecutionLimits {
         max_amplitudes: 1 << 20,
         max_steps: 10_000_000,

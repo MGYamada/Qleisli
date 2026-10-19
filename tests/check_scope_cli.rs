@@ -12,6 +12,9 @@ use std::process::{Command, Output, Stdio};
 fn cli(command: &str, path: &Path, json: bool) -> Output {
     let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
     process.arg(command).arg(path);
+    if command == "verify-ir" {
+        process.arg("--edition=2026");
+    }
     if json {
         process.arg("--format=json");
     }
@@ -165,7 +168,7 @@ fn partial_meaning_requests_do_not_become_an_entry_request() {
 }
 
 fn identity_artifact(root: &SourceRoot) -> PathBuf {
-    let program = Kernel::selected()
+    let program = Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept_raw(RawProgram {
             quantum_inputs: vec![QuantumPort {
@@ -202,6 +205,16 @@ fn identity_artifact(root: &SourceRoot) -> PathBuf {
 fn artifact_success_distinguishes_absent_matching_and_wrong_requests() {
     let root = SourceRoot::new("observe fn main()->Bit{0}");
     let artifact = identity_artifact(&root);
+    for edition in [None, Some("latest"), Some("2027")] {
+        let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        process.arg("verify-ir").arg(&artifact);
+        if let Some(edition) = edition {
+            process.arg(format!("--edition={edition}"));
+        }
+        let output = process.output().unwrap();
+        assert!(!output.status.success(), "{output:?}");
+        assert!(String::from_utf8_lossy(&output.stderr).contains("edition"));
+    }
     for json in [false, true] {
         let text = success(cli("verify-ir", &artifact, json));
         assert!(
@@ -219,10 +232,14 @@ fn artifact_success_distinguishes_absent_matching_and_wrong_requests() {
         for (table, accepted) in [("[0,1]", true), ("[1,0]", false)] {
             root.write("request.json", &format!(r#"{{"format":"qleisli.request","version":1,"signature":{{"tag":"bit"}},"meaning":{{"tag":"permutation","table":{table}}},"source_snapshot":null}}"#));
             let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
-            process.arg("verify-ir").arg(&artifact).arg(format!(
-                "--against={}",
-                root.0.join("request.json").display()
-            ));
+            process
+                .arg("verify-ir")
+                .arg(&artifact)
+                .arg("--edition=2026")
+                .arg(format!(
+                    "--against={}",
+                    root.0.join("request.json").display()
+                ));
             if json {
                 process.arg("--format=json");
             }

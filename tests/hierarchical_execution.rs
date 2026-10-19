@@ -12,6 +12,7 @@ fn kernel() -> Kernel {
         std::env::var_os("QLEISLI_KERNEL")
             .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
             .expect("select the built, audited kernel"),
+        qleisli::edition::Edition::E2026,
     )
 }
 fn coefficients(path: &Path) -> Vec<[f64; 2]> {

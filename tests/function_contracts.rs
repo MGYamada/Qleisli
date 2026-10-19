@@ -222,10 +222,10 @@ fn observing_reference_source_replacement_requires_a_fresh_equation() {
 fn pure_contracts_still_reject_equal_width_non_endomorphic_basis_trees() {
     let source = "fn reshape(q: Q<Bit>) -> Q<(Bit,Unit)> { basis q as value { (value,()) } }
         fn unused(q: Q<Bit>) -> Q<(Bit,Unit)> { apply_contract(reshape,reshape,q) }";
-    let error = qleisli::frontend::compile::ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        source.into(),
-    )]))
+    let error = qleisli::frontend::compile::ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
     .unwrap_err();
     assert_eq!(error.code(), "type");
     assert!(error.to_string().contains("same exact Q<A> output"));
@@ -783,10 +783,10 @@ fn exact_source_types_declared_effects_and_ordinary_targets_are_required() {
     );
     // This test remains common-checking only; concrete native equations are
     // covered by the separate native contract tests above.
-    let parsed = qleisli::frontend::compile::ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        ordinary.clone(),
-    )]))
+    let parsed = qleisli::frontend::compile::ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), ordinary.clone())]),
+    )
     .unwrap_or_else(|error| panic!("{ordinary}\n{error}"));
     assert_eq!(
         parsed.function_effect("main::client").unwrap().inferred(),

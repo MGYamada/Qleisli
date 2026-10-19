@@ -471,6 +471,7 @@ fn former_computed_hh_boundary_has_the_independent_exact_identity_meaning() {
     )
     .unwrap();
     check_unitary(
+        qleisli::edition::Edition::E2026,
         proposal.artifact(),
         &boundary,
         &Matrix::identity(2).unwrap(),

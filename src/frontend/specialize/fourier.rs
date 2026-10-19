@@ -916,16 +916,19 @@ mod tests {
         let old = "fourier[static n: Nat]";
         assert_eq!(text.matches(old).count(), 1);
         let text = text.replacen(old, "fourier[const n: Nat]", 1);
-        ParsedProgram::parse(BTreeMap::from([("fourier".into(), text)]))
-            .unwrap()
-            .instantiate(
-                "fourier::fourier",
-                BTreeMap::from([("n".into(), width)]),
-                BTreeMap::new(),
-            )
-            .unwrap()
-            .elaborate()
-            .unwrap()
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("fourier".into(), text)]),
+        )
+        .unwrap()
+        .instantiate(
+            "fourier::fourier",
+            BTreeMap::from([("n".into(), width)]),
+            BTreeMap::new(),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap()
     }
     fn factor(source: &ElaboratedProgram) -> (Lower<'_>, usize, usize) {
         let mut lower = Lower {
@@ -995,7 +998,9 @@ mod tests {
                 .unwrap()
                 .text()
                 .unwrap();
-            let imported = interchange::import(program.as_bytes(), None).unwrap();
+            let imported =
+                interchange::import(crate::edition::Edition::E2026, program.as_bytes(), None)
+                    .unwrap();
             assert_eq!(
                 imported.program.raw().operations,
                 [RawOp::Gate {

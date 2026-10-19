@@ -153,10 +153,10 @@ fn missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliarie
                 location.column,
                 source[..start].rsplit('\n').next().unwrap().chars().count() + 1
             );
-            let selected = ParsedProgram::parse(std::collections::BTreeMap::from([(
-                "implementation".into(),
-                source.clone(),
-            )]))
+            let selected = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                std::collections::BTreeMap::from([("implementation".into(), source.clone())]),
+            )
             .unwrap_err();
             assert_eq!(selected.code(), "ownership", "{name}: {selected}");
             assert_eq!(selected.module(), Some("implementation"));

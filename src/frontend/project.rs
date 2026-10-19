@@ -215,22 +215,47 @@ impl SourceBudget {
 /// Read a single documentation source with explicit byte limits. Unlike project
 /// loading this does not include bundled modules, because none are loaded.
 pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic> {
-    // The single-file command accepts ordinary parent aliases such as /tmp on
-    // macOS. Resolve them before opening; never resolve the final source link.
-    let parent = path
-        .parent()
-        .filter(|p| !p.as_os_str().is_empty())
-        .unwrap_or(Path::new("."));
-    let resolved = fs::canonicalize(parent)
-        .map_err(|failure| io_error(path, failure).into_diagnostic())?
-        .join(path.file_name().ok_or_else(|| {
-            error(path, Span::default(), "source path has no file name").into_diagnostic()
-        })?);
-    edition::check_directory(resolved.parent().expect("resolved file has a parent"))
-        .map_err(LoadFailure::into_diagnostic)?;
-    SourceBudget { policy, used: 0 }
-        .read(&resolved)
-        .map_err(LoadFailure::into_diagnostic)
+    SourceFileSelection::select(path)?.read(policy)
+}
+
+/// One selected source path and its actual validated manifest. Selection is
+/// configuration/provenance only; it is not an atomic content snapshot.
+pub(crate) struct SourceFileSelection {
+    path: PathBuf,
+    manifest: EditionManifest,
+}
+
+impl SourceFileSelection {
+    pub(crate) fn select(path: &Path) -> Result<Self, Diagnostic> {
+        // The single-file command accepts ordinary parent aliases such as /tmp on
+        // macOS. Resolve them before opening; never resolve the final source link.
+        let parent = path
+            .parent()
+            .filter(|p| !p.as_os_str().is_empty())
+            .unwrap_or(Path::new("."));
+        let resolved = fs::canonicalize(parent)
+            .map_err(|failure| io_error(path, failure).into_diagnostic())?
+            .join(path.file_name().ok_or_else(|| {
+                error(path, Span::default(), "source path has no file name").into_diagnostic()
+            })?);
+        let manifest =
+            edition::read_directory(resolved.parent().expect("resolved file has a parent"))
+                .map_err(LoadFailure::into_diagnostic)?;
+        Ok(Self {
+            path: resolved,
+            manifest,
+        })
+    }
+
+    pub(crate) fn manifest(&self) -> &EditionManifest {
+        &self.manifest
+    }
+
+    pub(crate) fn read(&self, policy: SourcePolicy) -> Result<String, Diagnostic> {
+        SourceBudget { policy, used: 0 }
+            .read(&self.path)
+            .map_err(LoadFailure::into_diagnostic)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

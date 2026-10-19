@@ -1618,14 +1618,17 @@ mod tests {
     use crate::frontend::compile::ParsedProgram;
     fn proposal() -> HierarchyProposal {
         let source = " use std::state::init0;    pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .lower()
-            .unwrap()
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap()
     }
     fn rejects(p: &HierarchyProposal) {
         assert_eq!(validate(p).unwrap_err().code(), "preservation");
@@ -1658,18 +1661,22 @@ mod tests {
             fn specified(q:Q<Bit>)->Q<Bit>{h(q)}
             pub isometry fn main(q:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=apply_contract(implementation,specified,q);(q,init0())}";
         let path = std::env::var_os("QLEISLI_KERNEL").unwrap();
-        let kernel = native::Kernel::new(&path);
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
-            .unwrap();
+        let kernel = native::Kernel::new(&path, crate::edition::Edition::E2026);
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .check_function_contracts(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
         let checked = source.contracts.values().next().unwrap();
         let receipt = &checked.receipt;
         let replacement = FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             receipt.signature().clone(),
             receipt.specification().clone(),
             receipt.specification().clone(),
@@ -1696,7 +1703,7 @@ mod tests {
         let replacement = std::str::from_utf8(replacement.artifact()).unwrap();
         let mut proposal = source.lower().unwrap();
         assert_eq!(validate(&proposal).unwrap().movements, 1);
-        hierarchical::Kernel::new(&path)
+        hierarchical::Kernel::new(&path, crate::edition::Edition::E2026)
             .check_instrument_native(proposal.payload(), proposal.comparison_request())
             .unwrap();
         let mut replaced = 0;
@@ -1716,7 +1723,7 @@ mod tests {
             }
         });
         assert_eq!(replaced, 1);
-        hierarchical::Kernel::new(&path)
+        hierarchical::Kernel::new(&path, crate::edition::Edition::E2026)
             .check_instrument_native(proposal.payload(), proposal.comparison_request())
             .unwrap();
         let error = validate(&proposal).unwrap_err();
@@ -1732,14 +1739,17 @@ mod tests {
         let source = current_source_text(
             "tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli",
         );
-        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-            .unwrap()
-            .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .lower()
-            .unwrap();
+        let valid = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap()
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap();
         validate(&valid).unwrap();
         let split = valid
             .events
@@ -1894,18 +1904,22 @@ mod tests {
                      let b = measure_z(q); prepend_bit[0](b, empty_bits())
                  }}"
             );
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-                .unwrap()
-                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap()
-                .lower()
-                .unwrap()
+            ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source)]),
+            )
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap()
         };
         let native = Kernel::new(
             std::env::var_os("QLEISLI_KERNEL")
                 .expect("explicit native checker for Unit-map mutant"),
+            crate::edition::Edition::E2026,
         );
         let valid = make("", "unit(())", "finish(u)");
         validate(&valid).unwrap();
@@ -1996,14 +2010,17 @@ mod tests {
             pub observe fn f(q:Q<Bit>,z:Q<((Unit,Unit),(Unit,Unit))>)->(Bits<1>,Q<((Unit,Unit),(Unit,Unit))>){
                 let q=h(q); let b=measure_z(q); (prepend_bit[0](b,empty_bits()),z)
             }";
-        let proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .lower()
-            .unwrap();
+        let proposal = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap();
         let event = &proposal.events[0];
         let step = &proposal.source.definitions()[event.definition].steps()[event.step];
         assert_eq!(step.primitive_kind(), Some(Primitive::H));
@@ -2112,18 +2129,22 @@ mod tests {
                      let b = measure_z(q); prepend_bit[0](b, empty_bits())
                  }}"
             );
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-                .unwrap()
-                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap()
-                .lower()
-                .unwrap()
+            ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source)]),
+            )
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap()
         };
         let native = Kernel::new(
             std::env::var_os("QLEISLI_KERNEL")
                 .expect("explicit native checker for product-map mutant"),
+            crate::edition::Edition::E2026,
         );
         let valid = make("", "join(u,q)", "split(p)");
         validate(&valid).unwrap();

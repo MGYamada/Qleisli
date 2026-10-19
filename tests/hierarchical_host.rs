@@ -138,7 +138,7 @@ fn native() -> Kernel {
         .or_else(|| std::env::var_os("QLEISLI_HIERARCHY_KERNEL"))
         .expect("set QLEISLI_HIERARCHY_KERNEL to the built audited executable");
     assert!(std::path::Path::new(&path).is_file());
-    Kernel::new(path)
+    Kernel::new(path, qleisli::edition::Edition::E2026)
 }
 
 #[cfg_attr(
@@ -346,7 +346,10 @@ fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
 
 #[test]
 fn strict_json_rejects_before_starting_an_executable() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
     let malformed = [
         good.replacen("\"version\":1", "\"version\":1,\"version\":1", 1),
@@ -365,7 +368,10 @@ fn strict_json_rejects_before_starting_an_executable() {
 
 #[test]
 fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
     for bad in [
         good.replacen("\"children\":[0,1]", "\"children\":[0,2]", 1),
@@ -385,10 +391,13 @@ fn external_schema_ids_cannot_enable_registry_entries() {
         1,
     );
     assert_eq!(
-        Kernel::new("/nonexistent/qleisli-kernel")
-            .inspect(bad.as_bytes())
-            .unwrap_err()
-            .code,
+        Kernel::new(
+            "/nonexistent/qleisli-kernel",
+            qleisli::edition::Edition::E2026
+        )
+        .inspect(bad.as_bytes())
+        .unwrap_err()
+        .code,
         "contract"
     );
 }
@@ -671,7 +680,10 @@ fn power_request(count: u32, negative: bool, controlled: bool, pretty: bool) -> 
 
 #[test]
 fn independent_request_transport_rejects_flags_and_invalid_references() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let a = family(3, 3, false, true);
     let request = String::from_utf8(power_request(3, false, true, false)).unwrap();
     for bad in [
@@ -749,6 +761,7 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
     let boundary = UnitaryBoundary::new(BasisType::Bit, port(0), port(1)).unwrap();
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
     let leaf = check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
         &finite_program(),
         &boundary,
         &finite_matrix::encode(&h_matrix(false)).unwrap(),
@@ -922,7 +935,10 @@ fn instrument_request(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
 
 #[test]
 fn instrument_codec_rejects_malformed_fields_before_execution() {
-    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let k = Kernel::new(
+        "/nonexistent/qleisli-kernel",
+        qleisli::edition::Edition::E2026,
+    );
     let good = String::from_utf8(instrument_payload(1, false, true)).unwrap();
     let request = String::from_utf8(instrument_request(1, false, true)).unwrap();
     for bad in [
@@ -1094,7 +1110,7 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let error = Kernel::new(&executable)
+        let error = Kernel::new(&executable, qleisli::edition::Edition::E2026)
             .check_instrument(&payload, &request)
             .unwrap_err();
         assert_eq!(error.code, "format", "{body}: {error}");

@@ -273,7 +273,7 @@ fn exported(kernel: &Kernel, hadamard: bool) -> Vec<u8> {
 #[test]
 fn native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering()
 {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let actual = exported(&kernel, false);
     assert_eq!(actual, text(""));
     let ideal = ideal(&kernel, SingleGate::H);
@@ -313,6 +313,7 @@ fn native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_
     assert_eq!(
         subject
             .bind(Decision {
+                context: report.context,
                 subject: changed_target,
                 exact_work: report.exact_work()
             })
@@ -328,7 +329,7 @@ fn native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_
 )]
 #[test]
 fn altered_original_ideal_tight_bound_or_cell_witness_refuses_without_fallback() {
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let actual = exported(&kernel, false);
     let ideal = ideal(&kernel, SingleGate::H);
     for changed in [
@@ -399,17 +400,22 @@ fn view_value(bytes: &[u8]) -> crate::interchange::execution_view::Value {
 #[test]
 fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs() {
     use crate::interchange::execution_view::{self, Value as View};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let actual = exported(&kernel, false);
     let ideal = ideal(&kernel, SingleGate::H);
     let request = nonzero_request();
     let subject = Subject::prepare(&kernel, &actual, &ideal, &request).unwrap();
     let packet = subject.packet().unwrap();
-    runtime::check(&subject.checker, packet.clone()).unwrap();
-    let original_len = u32::from_le_bytes(packet[8..12].try_into().unwrap()) as usize;
-    let graph_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
-    let graph_start = 24 + original_len;
-    let original = &packet[24..graph_start];
+    runtime::check(
+        &subject.checker,
+        packet.clone(),
+        crate::edition::Edition::E2026,
+    )
+    .unwrap();
+    let original_len = u32::from_le_bytes(packet[12..16].try_into().unwrap()) as usize;
+    let graph_len = u32::from_le_bytes(packet[16..20].try_into().unwrap()) as usize;
+    let graph_start = 28 + original_len;
+    let original = &packet[28..graph_start];
     let description = view_value(&packet[graph_start..graph_start + graph_len]);
     for (slot, count) in [(1, 15), (4, 9), (5, 9)] {
         for field in 0..count {
@@ -430,6 +436,7 @@ fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs(
             };
             let graph = execution_view::encode(&mutation).unwrap();
             let (packet, _) = super::super::native_packet::encode(
+                crate::edition::Edition::E2026,
                 original,
                 Some(super::super::native_packet::View {
                     graph: &graph,
@@ -438,7 +445,9 @@ fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs(
             )
             .unwrap();
             assert_eq!(
-                runtime::check(&subject.checker, packet).unwrap_err().code,
+                runtime::check(&subject.checker, packet, crate::edition::Edition::E2026)
+                    .unwrap_err()
+                    .code,
                 "decoded_view",
                 "slot {slot} field {field}"
             );
@@ -452,6 +461,7 @@ fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs(
         root[slot] = View::Null;
         let graph = execution_view::encode(&mutation).unwrap();
         let (packet, _) = super::super::native_packet::encode(
+            crate::edition::Edition::E2026,
             original,
             Some(super::super::native_packet::View {
                 graph: &graph,
@@ -460,14 +470,19 @@ fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs(
         )
         .unwrap();
         assert_eq!(
-            runtime::check(&subject.checker, packet).unwrap_err().code,
+            runtime::check(&subject.checker, packet, crate::edition::Edition::E2026)
+                .unwrap_err()
+                .code,
             "decoded_view"
         );
     }
-    let (inspection, _) = super::super::native_packet::encode(original, None).unwrap();
-    assert!(runtime::check(&subject.checker, inspection).is_err());
+    let (inspection, _) =
+        super::super::native_packet::encode(crate::edition::Edition::E2026, original, None)
+            .unwrap();
+    assert!(runtime::check(&subject.checker, inspection, crate::edition::Edition::E2026).is_err());
     let graph = &packet[graph_start..graph_start + graph_len];
     let (caller, _) = super::super::native_packet::encode(
+        crate::edition::Edition::E2026,
         original,
         Some(super::super::native_packet::View {
             graph,
@@ -475,6 +490,13 @@ fn native_binds_literal_target_gate_word_typed_context_and_both_original_graphs(
         }),
     )
     .unwrap();
-    assert!(runtime::check(&subject.checker, caller).is_err());
-    assert!(runtime::check(&subject.checker, original.to_vec()).is_err());
+    assert!(runtime::check(&subject.checker, caller, crate::edition::Edition::E2026).is_err());
+    assert!(
+        runtime::check(
+            &subject.checker,
+            original.to_vec(),
+            crate::edition::Edition::E2026
+        )
+        .is_err()
+    );
 }

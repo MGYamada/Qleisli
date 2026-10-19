@@ -28,7 +28,8 @@ fn shared_rejection(
     span: Span,
     prefix: &str,
 ) -> String {
-    let common = ParsedProgram::parse(sources(source)).unwrap_err();
+    let common =
+        ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap_err();
     assert_eq!(common.code(), common_code, "{source}\n{common}");
     assert_eq!(common.module(), Some("main"));
     assert_eq!(common.span(), span, "{source}\n{common}");
@@ -39,8 +40,12 @@ fn shared_rejection(
     assert!(!absent.exists());
     // No process-global environment override: source refusal must precede an
     // accidental native invocation, which would instead fail at this path.
-    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
-        .unwrap_err();
+    let finite = check_project_with_kernel(
+        &root.0,
+        SourcePolicy::default(),
+        &Kernel::new(absent, qleisli::edition::Edition::E2026),
+    )
+    .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
     assert_eq!(finite.message, common.message(), "{source}");
     let location = finite.primary.unwrap();
@@ -53,11 +58,11 @@ fn shared_rejection(
 }
 
 fn checked_finite_effects(source: &str, expected: &[(&str, Effect)]) {
-    let common = ParsedProgram::parse(sources(source)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(source)).unwrap();
     let finite = project_effects_with_kernel(
         &SourceRoot::new(source).0,
         SourcePolicy::default(),
-        &Kernel::selected().unwrap(),
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
     )
     .unwrap();
     for (name, effect) in expected {
@@ -174,7 +179,7 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
     );
     let generic = "fn default[const A:Basis](q:Q<A>)->Q<A>{q}\n\
         pub unitary fn client(q:Q<Bit>)->Q<Bit>{default[type(Bit)](q)}";
-    let common = ParsedProgram::parse(sources(generic)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(generic)).unwrap();
     for name in ["default", "client"] {
         assert_eq!(
             common
@@ -249,7 +254,7 @@ fn false_unitary_assertions_cannot_hide_default_named_preparation() {
 fn explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults() {
     let explicit = " fn default()->Q<Unit>{unit(())}\n\
         pub unitary fn client()->Unit{finish(default())}";
-    let common = ParsedProgram::parse(sources(explicit)).unwrap();
+    let common = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(explicit)).unwrap();
     for name in ["default", "client"] {
         assert_eq!(
             common

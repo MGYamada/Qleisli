@@ -21,7 +21,8 @@ pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
         })
         .collect();
     Compiler {
-        kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
+        kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
+            .expect("explicit test kernel"),
         project,
         source,
         interface_naturals,

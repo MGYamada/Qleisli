@@ -11,6 +11,7 @@ pub mod finite_matrix;
 pub mod hierarchical;
 pub(crate) mod json;
 pub mod native;
+mod native_context;
 mod native_packet;
 pub mod pure_leaf;
 
@@ -782,8 +783,12 @@ pub(crate) fn function_snapshot_key(
 }
 
 /// Fresh native acceptance of complete QIRF/request bytes. Source labels are data.
-pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
-    native::Kernel::selected()?
+pub fn import(
+    edition: crate::edition::Edition,
+    bytes: &[u8],
+    request: Option<&[u8]>,
+) -> Result<Imported> {
+    native::Kernel::selected(edition)?
         .check(bytes, request)
         .map(|checked| checked.imported)
 }
@@ -963,10 +968,14 @@ fn decode_subject(subject: &Arc<native::Subject>, budget: &mut Budget) -> Result
 
 /// Checked format migration preserves exact root metadata and source ordering.
 /// V2 meaning entries cannot be converted to V1 by this adapter.
-pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>> {
-    import(bytes, None)?;
+pub fn convert(
+    edition: crate::edition::Edition,
+    bytes: &[u8],
+    version: Version,
+) -> Result<Vec<u8>> {
+    import(edition, bytes, None)?;
     let output = convert_proposal(bytes, version)?;
-    import(&output, None)?;
+    import(edition, &output, None)?;
     Ok(output)
 }
 

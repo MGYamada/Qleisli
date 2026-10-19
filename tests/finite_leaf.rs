@@ -85,7 +85,14 @@ fn reconstruct_hadamard_in_both_formats_and_bind_complete_bytes() {
         let b = boundary();
         let target = hadamard();
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let checked = check_unitary(&bytes, &b, &target, &mut budget).unwrap();
+        let checked = check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &b,
+            &target,
+            &mut budget,
+        )
+        .unwrap();
         assert_eq!(
             checked.exact_work(),
             DEFAULT_EXACT_WORK - budget.remaining()
@@ -96,7 +103,14 @@ fn reconstruct_hadamard_in_both_formats_and_bind_complete_bytes() {
         assert_eq!(checked.meaning(), &target);
         bytes.push(b' '); // Same parsed program, different immutable artifact binding.
         assert!(!checked.matches(&bytes, &b, &target));
-        let again = check_unitary(&bytes, &b, &target, &mut budget).unwrap();
+        let again = check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &b,
+            &target,
+            &mut budget,
+        )
+        .unwrap();
         assert_ne!(again.payload(), checked.payload());
         assert_eq!(again.meaning(), checked.meaning());
     }
@@ -131,9 +145,17 @@ fn independently_specified_cnot_and_final_axis_order() {
     let bytes = packet(raw(port(0, &[7, 19]), ops, 5), ty.clone(), Version::V2);
     let b = UnitaryBoundary::new(ty.clone(), port(0, &[7, 19]), port(5, &[7, 19])).unwrap();
     let target = permutation(&[0, 3, 2, 1]); // First field is the low control bit.
-    check_unitary(&bytes, &b, &target, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+    check_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &b,
+        &target,
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &b,
             &permutation(&[0, 1, 3, 2]),
@@ -169,6 +191,7 @@ fn independently_specified_cnot_and_final_axis_order() {
     let wrong = UnitaryBoundary::new(ty, port(0, &[7, 19]), port(3, &[7, 19])).unwrap();
     let swap = permutation(&[0, 2, 1, 3]);
     check_unitary(
+        qleisli::edition::Edition::E2026,
         &swapped,
         &correct,
         &swap,
@@ -177,6 +200,7 @@ fn independently_specified_cnot_and_final_axis_order() {
     .unwrap();
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &swapped,
             &wrong,
             &swap,
@@ -208,9 +232,15 @@ fn type_tree_owner_and_wire_mutations_are_not_dimension_equality() {
         UnitaryBoundary::new(BasisType::Bit, port(0, &[7]), port(1, &[8])).unwrap(),
     ] {
         assert_eq!(
-            check_unitary(&bytes, &b, &target, &mut Budget::new(DEFAULT_EXACT_WORK))
-                .unwrap_err()
-                .code,
+            check_unitary(
+                qleisli::edition::Edition::E2026,
+                &bytes,
+                &b,
+                &target,
+                &mut Budget::new(DEFAULT_EXACT_WORK)
+            )
+            .unwrap_err()
+            .code,
             "contract"
         );
     }
@@ -218,6 +248,7 @@ fn type_tree_owner_and_wire_mutations_are_not_dimension_equality() {
         interchange::export(&accept(gate(SingleGate::H)).unwrap(), None, Version::V2).unwrap();
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &no_types,
             &boundary(),
             &target,
@@ -257,9 +288,17 @@ fn phase_on_unit_and_zero_width_owner_are_retained() {
     );
     let b = UnitaryBoundary::new(BasisType::Unit, port(0, &[]), port(1, &[])).unwrap();
     let minus = Matrix::new(1, 1, vec![Exact::integer(-1)]).unwrap();
-    check_unitary(&bytes, &b, &minus, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+    check_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &b,
+        &minus,
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &b,
             &Matrix::identity(1).unwrap(),
@@ -271,9 +310,15 @@ fn phase_on_unit_and_zero_width_owner_are_retained() {
     );
     let ghost = UnitaryBoundary::new(BasisType::Unit, port(0, &[]), port(2, &[])).unwrap();
     assert_eq!(
-        check_unitary(&bytes, &ghost, &minus, &mut Budget::new(DEFAULT_EXACT_WORK))
-            .unwrap_err()
-            .code,
+        check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &ghost,
+            &minus,
+            &mut Budget::new(DEFAULT_EXACT_WORK)
+        )
+        .unwrap_err()
+        .code,
         "contract"
     );
 }
@@ -286,6 +331,7 @@ fn phase_on_unit_and_zero_width_owner_are_retained() {
 fn embedded_receipts_are_reconstructed_before_leaf_equality() {
     let evidence = Arc::new(
         FunctionEvidence::check(
+            qleisli::edition::Edition::E2026,
             BasisType::Bit,
             gate(SingleGate::H),
             gate(SingleGate::H),
@@ -319,6 +365,7 @@ fn embedded_receipts_are_reconstructed_before_leaf_equality() {
         Version::V2,
     );
     check_unitary(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &boundary(),
         &hadamard(),
@@ -329,6 +376,7 @@ fn embedded_receipts_are_reconstructed_before_leaf_equality() {
     assert!(text.contains("\"h\""));
     let forged = text.replacen("\"h\"", "\"x\"", 1);
     let error = check_unitary(
+        qleisli::edition::Edition::E2026,
         forged.as_bytes(),
         &boundary(),
         &hadamard(),
@@ -348,25 +396,52 @@ fn shared_exact_budget_is_not_reset_for_each_leaf() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
     let b = boundary();
     let target = hadamard();
-    let cost = check_unitary(&bytes, &b, &target, &mut Budget::new(DEFAULT_EXACT_WORK))
-        .unwrap()
-        .exact_work();
+    let cost = check_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &b,
+        &target,
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap()
+    .exact_work();
     assert!(cost > 0);
     let mut exactly = Budget::new(cost * 2);
     for _ in 0..2 {
-        check_unitary(&bytes, &b, &target, &mut exactly).unwrap();
+        check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &b,
+            &target,
+            &mut exactly,
+        )
+        .unwrap();
     }
     assert_eq!(exactly.remaining(), 0);
     let mut short = Budget::new(cost * 2 - 1);
-    check_unitary(&bytes, &b, &target, &mut short).unwrap();
+    check_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &b,
+        &target,
+        &mut short,
+    )
+    .unwrap();
     assert_eq!(
-        check_unitary(&bytes, &b, &target, &mut short)
-            .unwrap_err()
-            .code,
+        check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &b,
+            &target,
+            &mut short
+        )
+        .unwrap_err()
+        .code,
         "limit"
     );
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &b,
             &target,
@@ -389,6 +464,7 @@ fn malformed_payload_matrix_and_outside_six_bit_boundary_reject() {
     text.insert_str(1, "\"verified\":true,");
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             text.as_bytes(),
             &boundary(),
             &hadamard(),
@@ -416,6 +492,7 @@ fn malformed_payload_matrix_and_outside_six_bit_boundary_reject() {
     ] {
         assert_eq!(
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 &bytes,
                 &boundary(),
                 &bad,
@@ -472,6 +549,7 @@ fn classical_phi_output_uses_verified_fresh_axes() {
     let wrong = UnitaryBoundary::new(BasisType::Bit, port(0, &[7]), port(3, &[7])).unwrap();
     let target = permutation(&[1, 0]);
     check_unitary(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &correct,
         &target,
@@ -480,6 +558,7 @@ fn classical_phi_output_uses_verified_fresh_axes() {
     .unwrap();
     assert_eq!(
         check_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &wrong,
             &target,
@@ -499,6 +578,7 @@ fn six_bit_identity_stays_within_the_finite_matrix_boundary() {
     let b = UnitaryBoundary::new(ty.clone(), input.clone(), input.clone()).unwrap();
     let bytes = packet(raw(input, vec![], 0), ty, Version::V2);
     let checked = check_unitary(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &b,
         &Matrix::identity(64).unwrap(),
@@ -517,6 +597,7 @@ fn fresh_process_child() {
     let bytes = std::fs::read(path).unwrap();
     // The required boundary and H matrix are independent of the transported IR.
     check_unitary(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &boundary(),
         &hadamard(),
@@ -580,7 +661,14 @@ fn serialized_meaning_retains_both_byte_strings_and_exact_work() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
     let description = finite_matrix::encode(&hadamard()).unwrap();
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-    let checked = check_serialized_unitary(&bytes, &boundary(), &description, &mut budget).unwrap();
+    let checked = check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &boundary(),
+        &description,
+        &mut budget,
+    )
+    .unwrap();
     assert_eq!(
         checked.exact_work(),
         DEFAULT_EXACT_WORK - budget.remaining()
@@ -592,7 +680,14 @@ fn serialized_meaning_retains_both_byte_strings_and_exact_work() {
     let mut changed = description.clone();
     changed.push(b' ');
     assert!(!checked.matches(&bytes, &boundary(), &changed));
-    let again = check_serialized_unitary(&bytes, &boundary(), &changed, &mut budget).unwrap();
+    let again = check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &boundary(),
+        &changed,
+        &mut budget,
+    )
+    .unwrap();
     assert_eq!(again.leaf().meaning(), checked.leaf().meaning());
     let mut changed_program = bytes.clone();
     changed_program.push(b' ');
@@ -625,6 +720,7 @@ fn serialized_equations_reject_phase_shape_and_authority_flag_mutations() {
         let description = finite_matrix::encode(&bad).unwrap();
         assert_eq!(
             check_serialized_unitary(
+                qleisli::edition::Edition::E2026,
                 &bytes,
                 &boundary(),
                 &description,
@@ -639,6 +735,7 @@ fn serialized_equations_reject_phase_shape_and_authority_flag_mutations() {
     let flagged = good.replacen('{', "{\"checked\":true,", 1);
     assert_eq!(
         check_serialized_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &boundary(),
             flagged.as_bytes(),
@@ -652,6 +749,7 @@ fn serialized_equations_reject_phase_shape_and_authority_flag_mutations() {
     padded.resize(16 << 20, b' ');
     assert_eq!(
         check_serialized_unitary(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &boundary(),
             &padded,
@@ -672,6 +770,7 @@ fn serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves() {
     let bytes = packet(gate(SingleGate::H), BasisType::Bit, Version::V2);
     let description = finite_matrix::encode(&hadamard()).unwrap();
     let work = check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &boundary(),
         &description,
@@ -680,12 +779,25 @@ fn serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves() {
     .unwrap()
     .exact_work();
     let mut budget = Budget::new(work + 15);
-    check_serialized_unitary(&bytes, &boundary(), &description, &mut budget).unwrap();
+    check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &boundary(),
+        &description,
+        &mut budget,
+    )
+    .unwrap();
     assert_eq!(budget.remaining(), 15);
     assert_eq!(
-        check_serialized_unitary(&bytes, &boundary(), &description, &mut budget)
-            .unwrap_err()
-            .code,
+        check_serialized_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &boundary(),
+            &description,
+            &mut budget
+        )
+        .unwrap_err()
+        .code,
         "limit"
     );
 }
@@ -699,6 +811,7 @@ fn fresh_serialized_process_child() {
     let payload = std::fs::read(root.join("implementation.json")).unwrap();
     let description = std::fs::read(root.join("meaning.json")).unwrap();
     check_serialized_unitary(
+        qleisli::edition::Edition::E2026,
         &payload,
         &boundary(),
         &description,

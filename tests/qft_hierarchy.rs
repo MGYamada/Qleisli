@@ -14,7 +14,10 @@ fn reconstruct_bound_hadamard_requests() {
 
     let directory = std::env::var_os("QLEISLI_HADAMARD_FIXTURES").unwrap();
     let directory = std::path::Path::new(&directory);
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let mut budgets = BTreeMap::new();
     for width in 1..=8 {
         let payload = std::fs::read(directory.join(format!("qft-{width}.json"))).unwrap();
@@ -59,7 +62,13 @@ fn reconstruct_bound_hadamard_requests() {
         .unwrap();
         let bytes = std::fs::read(directory.join(file)).unwrap();
         let budget = budgets.get_mut(&width).unwrap();
-        match check_unitary(&bytes, &boundary, &expected, budget) {
+        match check_unitary(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &boundary,
+            &expected,
+            budget,
+        ) {
             Ok(checked) => {
                 assert_eq!(*outcome, "ok", "{name}");
                 assert!(checked.matches(&bytes, &boundary, &expected));
@@ -81,7 +90,10 @@ fn reconstruct_bound_hadamard_requests() {
 #[test]
 #[ignore = "run through scripts/test_hierarchical_qft.py with an audited kernel"]
 fn inspect_authored_qft_hierarchies() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let directory = std::env::var_os("QLEISLI_QFT_FIXTURES").unwrap();
     let shared = std::env::var("QLEISLI_QFT_CONSTRUCTION").unwrap() == "shared-gradient";
     let widths: &[usize] = if shared {
@@ -157,7 +169,10 @@ fn inspect_authored_qft_hierarchies() {
 #[test]
 #[ignore = "run through scripts/test_hierarchical_fourier_host.py with an audited kernel"]
 fn native_fourier_request_faults() {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     let directory = std::path::PathBuf::from(std::env::var_os("QLEISLI_FOURIER_FIXTURES").unwrap());
     let manifest = std::fs::read_to_string(directory.join("cases.txt")).unwrap();
     for line in manifest.lines() {
@@ -179,7 +194,7 @@ fn native_fourier_request_faults() {
         let selected = if executable.is_empty() {
             kernel.clone()
         } else {
-            Kernel::new(directory.join(executable))
+            Kernel::new(directory.join(executable), qleisli::edition::Edition::E2026)
         };
         match selected.check_against_native(&payload, &request) {
             Ok(native) => {

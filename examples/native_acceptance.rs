@@ -23,7 +23,9 @@ fn main() -> std::process::ExitCode {
             return std::process::ExitCode::from(2);
         }
     };
-    match Proposal::new(&bytes, request.as_deref()).and_then(|p| Kernel::new(&args[0]).accept(&p)) {
+    match Proposal::new(&bytes, request.as_deref())
+        .and_then(|p| Kernel::new(&args[0], qleisli::edition::Edition::E2026).accept(&p))
+    {
         Ok(_) => {
             println!("accepted");
             std::process::ExitCode::SUCCESS

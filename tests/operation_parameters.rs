@@ -563,8 +563,11 @@ fn retired_static_headers_reject_at_both_source_entry_points() {
     ] {
         let root = SourceRoot::new(source);
         let project = check_project(&root.0).unwrap_err();
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(project.code, ErrorCode::Project);
         assert_eq!(selected.code(), "parse");
         assert!(project.message.contains(selected.message()));
@@ -588,8 +591,11 @@ fn retired_operation_spellings_reject_at_both_source_entry_points() {
         let source = format!("pub unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
         let root = SourceRoot::new(&source);
         let project = check_project(&root.0).unwrap_err();
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(project.code, ErrorCode::Project);
         assert_eq!(selected.code(), "parse");
         assert!(project.message.contains(selected.message()));
@@ -659,7 +665,11 @@ fn direct_arrows_keep_their_principal_effect_before_static_arrow_extension() {
         ("endomorphic-control", Effect::Unitary),
     ] {
         let source = arrow_study(name);
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         assert_eq!(
             parsed.function_effect("main::main").unwrap().inferred(),
             effect,
@@ -685,8 +695,11 @@ fn an_equal_dimension_unitor_is_not_an_endomorphic_static_provider() {
     let source = arrow_study("endomorphic-unitor-refusal");
     let files = SourceRoot::new(&source);
     let project = check_project(&files.0).unwrap_err();
-    let selected =
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.clone())]),
+    )
+    .unwrap_err();
     assert_eq!(project.code, ErrorCode::TypeMismatch);
     assert_eq!(selected.code(), "type");
     assert_eq!(project.message, selected.message());
@@ -712,7 +725,10 @@ fn composed_meanings_check_actual_providers_in_both_public_paths() {
     use qleisli::frontend::compile::ParsedProgram;
     use qleisli::interchange::native::Kernel;
     use std::collections::BTreeMap;
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+        qleisli::edition::Edition::E2026,
+    );
     for (name, valid) in [
         ("compose", true),
         ("compose-wrong-order", false),
@@ -724,12 +740,15 @@ fn composed_meanings_check_actual_providers_in_both_public_paths() {
         let source = composition_study(name, "attempt-03");
         let root = SourceRoot::new(&composition_study(name, "attempt-02"));
         let finite = check_project(&root.0);
-        let selected = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         // The unchanged evidence gate must run before hierarchy emission.
         assert_eq!(selected.lower().unwrap_err().code(), "meaning");
         let checked = selected.check_operation_meanings(
@@ -743,6 +762,7 @@ fn composed_meanings_check_actual_providers_in_both_public_paths() {
             let proposal = checked.lower_hierarchy().unwrap();
             qleisli::interchange::hierarchical::Kernel::new(
                 std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                qleisli::edition::Edition::E2026,
             )
             .check_against_native(proposal.payload(), proposal.comparison_request())
             .unwrap();
@@ -771,7 +791,11 @@ fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
         );
         let root = SourceRoot::new(&source);
         let finite = check_project(&root.0).unwrap_err();
-        let selected = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap_err();
         assert_eq!(finite.message, selected.message());
         assert_ne!(selected.code(), "parse");
     }

@@ -64,3 +64,18 @@ retains 13 source/report/log records (1,039,731 expanded archive bytes).
 It preserves the later MSRV lint, source/route inventory refusals and the
 old source-only capacity diagnostic expectation. That native attempt passed
 51/52 cases and stopped before MSRV; its partial result is not completion.
+
+The [native/Rust integration record](native-context-integration-first.json.gz),
+SHA-256 `e5ac7bbfe3c03d951e57879ad668f29585e5233cb4a8b96bb22f1c56500b16fb`,
+retains 113 records (2,204,865 expanded archive bytes). Prototype Lean proof
+failures, first Rust API compilation failures and two stale negative-frame
+mutations remain distinct from later checks. Thirteen small CLI observations
+retain actual source/manifest bytes and local binary/input windows. The first
+component counterexample accidentally changed both request and actual through
+shared Python objects; its two accepts remain intact. Eight separate corrected
+calls use independent copies, retain the actual unchanged packet and reject
+changed requests, unsupported editions and wrong scope. The initial component
+heredoc and outer assertion traceback were observed but not captured as files;
+this archive makes no complete-harness claim. It is inert history, never a
+current test/proof result or #255 completion. Routine normal/MSRV validation
+logs remain outside fixtures; current-evidence continuity and full CI are pending.

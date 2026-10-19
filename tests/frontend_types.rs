@@ -4,7 +4,11 @@ use qleisli::frontend::parser::parse_module;
 use std::collections::BTreeMap;
 
 fn parsed(text: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
 }
 fn signature(ty: &SourceType) -> String {
     if ty.kind() == "tuple" {
@@ -126,7 +130,11 @@ fn symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics() {
             "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`",
         ),
     ] {
-        let e = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let e = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(e.code(), "type");
         assert_eq!(e.message(), message);
     }
@@ -145,7 +153,11 @@ fn common_basis_empty_constructor_uses_its_exact_ordinary_signature() {
     }
     // Matching physical width grants no implicit conversion to the Unit basis.
     let source = " pub unitary fn f(q:Q<Unit>)->Q<Unit>{basis q as () {empty_bits()}}";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "type");
     assert!(
         error
@@ -193,8 +205,11 @@ fn common_basis_empty_constructor_does_not_admit_other_calls_or_local_capture() 
             "unbound basis value",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{source}: {error}");
         assert!(error.message().contains(message), "{source}: {error}");
         assert_eq!(error.module(), Some("main"));

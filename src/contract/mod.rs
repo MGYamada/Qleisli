@@ -529,13 +529,15 @@ struct ContractProposal {
 
 impl CheckedContract {
     fn accept_proposal(
+        kernel: &crate::interchange::native::Kernel,
         proposal: ContractProposal,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        Self::accept_proposal_diagnostic(proposal, budget).map_err(|error| error.error)
+        Self::accept_proposal_diagnostic(kernel, proposal, budget).map_err(|error| error.error)
     }
 
     fn accept_proposal_diagnostic(
+        kernel: &crate::interchange::native::Kernel,
         proposal: ContractProposal,
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
@@ -549,8 +551,7 @@ impl CheckedContract {
                 ContractError::InvalidCircuit(error.to_string())
             }
         };
-        let result = crate::interchange::native::Kernel::selected()
-            .and_then(|kernel| kernel.check_encoded(&proposal.circuit, &proposal.contract));
+        let result = kernel.check_encoded(&proposal.circuit, &proposal.contract);
         let native = match result {
             Ok(native) => native,
             Err(error) => {
@@ -597,14 +598,17 @@ impl CheckedContract {
 
     /// Exact matrix leaf: all input columns and physical output rows are checked.
     pub fn check(
+        edition: crate::edition::Edition,
         circuit: Circuit,
         contract: Contract,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        Self::check_diagnostic(circuit, contract, budget).map_err(|diagnostic| diagnostic.error)
+        Self::check_diagnostic(edition, circuit, contract, budget)
+            .map_err(|diagnostic| diagnostic.error)
     }
 
     pub(crate) fn check_diagnostic(
+        edition: crate::edition::Edition,
         circuit: Circuit,
         contract: Contract,
         budget: &mut Budget,
@@ -614,14 +618,24 @@ impl CheckedContract {
                 ContractError::Type("circuit type does not match the physical encodings").into(),
             );
         }
-        Self::accept_proposal_diagnostic(ContractProposal { circuit, contract }, budget)
+        Self::accept_proposal_diagnostic(
+            &crate::interchange::native::Kernel::selected(edition)
+                .map_err(|e| ContractError::InvalidCircuit(e.to_string()))?,
+            ContractProposal { circuit, contract },
+            budget,
+        )
     }
 
     /// Submit an identity proposal with the caller's encoding to Lean.
-    pub fn identity(encoding: Encoding) -> Result<Self, ContractError> {
+    pub fn identity(
+        edition: crate::edition::Edition,
+        encoding: Encoding,
+    ) -> Result<Self, ContractError> {
         let mut work = Budget::new(DEFAULT_EXACT_WORK);
         let budget = &mut work;
         Self::accept_proposal(
+            &crate::interchange::native::Kernel::selected(edition)
+                .map_err(|e| ContractError::InvalidCircuit(e.to_string()))?,
             ContractProposal {
                 circuit: Circuit::new(encoding.physical.clone(), vec![])?,
                 contract: Contract {
@@ -663,6 +677,9 @@ impl CheckedContract {
             debug_assert_eq!(evidence.circuit.basis, evidence.contract.input.physical);
             debug_assert_eq!(evidence.circuit.basis, evidence.contract.output.physical);
         }
+        if self.native.edition() != next.native.edition() {
+            return Err(ContractError::EvidenceMismatch);
+        }
         if self.contract.output != next.contract.input {
             return Err(ContractError::Type(
                 "sequential contracts require exactly matching middle encoding",
@@ -676,6 +693,7 @@ impl CheckedContract {
             .cloned()
             .collect();
         Self::accept_proposal(
+            &self.native.kernel(),
             ContractProposal {
                 circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
                 contract: Contract {
@@ -693,6 +711,9 @@ impl CheckedContract {
 
     /// First operand occupies the low tensor axes. This does not assert separability.
     pub fn tensor(&self, other: &Self, budget: &mut Budget) -> Result<Self, ContractError> {
+        if self.native.edition() != other.native.edition() {
+            return Err(ContractError::EvidenceMismatch);
+        }
         let physical = BasisType::pair(self.circuit.basis.clone(), other.circuit.basis.clone());
         physical.bits()?;
         let mut steps = self.circuit.steps.clone();
@@ -708,6 +729,7 @@ impl CheckedContract {
                 })
             };
         Self::accept_proposal(
+            &self.native.kernel(),
             ContractProposal {
                 circuit: Circuit::new(physical.clone(), steps)?,
                 contract: Contract {
@@ -734,6 +756,7 @@ impl CheckedContract {
         let mut steps = self.circuit.steps.clone();
         invert_steps(&mut steps);
         Self::accept_proposal(
+            &self.native.kernel(),
             ContractProposal {
                 circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
                 contract: Contract {
@@ -783,6 +806,7 @@ impl CheckedContract {
             }
         }
         Self::accept_proposal(
+            &self.native.kernel(),
             ContractProposal {
                 circuit: Circuit::new(physical, steps)?,
                 contract: Contract {
@@ -822,27 +846,44 @@ fn remapped(steps: &[CircuitStep], offset: usize) -> Vec<CircuitStep> {
 /// This IR-level boundary knows widths; the source checker additionally checks
 /// exact source type trees and the two body ownerships, including `Q<Unit>`.
 pub fn check_computed(
+    edition: crate::edition::Edition,
     source_bits: usize,
     function: &[u16],
     use_steps: &[CircuitStep],
     logical_steps: &[CircuitStep],
 ) -> Result<(), ContractError> {
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-    check_computed_with_budget(source_bits, function, use_steps, logical_steps, &mut budget)
+    check_computed_with_budget(
+        edition,
+        source_bits,
+        function,
+        use_steps,
+        logical_steps,
+        &mut budget,
+    )
 }
 
 pub(crate) fn check_computed_with_budget(
+    edition: crate::edition::Edition,
     source_bits: usize,
     function: &[u16],
     use_steps: &[CircuitStep],
     logical_steps: &[CircuitStep],
     budget: &mut Budget,
 ) -> Result<(), ContractError> {
-    check_computed_diagnostic_with_budget(source_bits, function, use_steps, logical_steps, budget)
-        .map_err(|diagnostic| diagnostic.error)
+    check_computed_diagnostic_with_budget(
+        edition,
+        source_bits,
+        function,
+        use_steps,
+        logical_steps,
+        budget,
+    )
+    .map_err(|diagnostic| diagnostic.error)
 }
 
 pub(crate) fn check_computed_diagnostic_with_budget(
+    edition: crate::edition::Edition,
     source_bits: usize,
     function: &[u16],
     use_steps: &[CircuitStep],
@@ -851,12 +892,20 @@ pub(crate) fn check_computed_diagnostic_with_budget(
 ) -> Result<(), ContractDiagnostic> {
     let available = budget.remaining().min(DEFAULT_EXACT_WORK);
     let mut local = Budget::new(available);
-    let result = check_computed_inner(source_bits, function, use_steps, logical_steps, &mut local);
+    let result = check_computed_inner(
+        edition,
+        source_bits,
+        function,
+        use_steps,
+        logical_steps,
+        &mut local,
+    );
     budget.charge(available - local.remaining())?;
     result
 }
 
 fn check_computed_inner(
+    edition: crate::edition::Edition,
     source_bits: usize,
     function: &[u16],
     use_steps: &[CircuitStep],
@@ -892,7 +941,7 @@ fn check_computed_inner(
     let encoding = Encoding::new(data, physical, Matrix::new(2 * dim, dim, entries)?, budget)?;
     let meaning = logical.matrix(budget)?;
     let contract = Contract::new(encoding.clone(), encoding, meaning, budget)?;
-    CheckedContract::check_diagnostic(implementation, contract, budget)?;
+    CheckedContract::check_diagnostic(edition, implementation, contract, budget)?;
     Ok(())
 }
 
@@ -937,9 +986,17 @@ mod tests {
         }];
         let mut public_budget = Budget::new(DEFAULT_EXACT_WORK);
         let mut diagnostic_budget = Budget::new(DEFAULT_EXACT_WORK);
-        let error = check_computed_with_budget(1, &[0, 1], &use_steps, &[], &mut public_budget)
-            .unwrap_err();
+        let error = check_computed_with_budget(
+            crate::edition::Edition::E2026,
+            1,
+            &[0, 1],
+            &use_steps,
+            &[],
+            &mut public_budget,
+        )
+        .unwrap_err();
         let diagnostic = check_computed_diagnostic_with_budget(
+            crate::edition::Edition::E2026,
             1,
             &[0, 1],
             &use_steps,
@@ -957,9 +1014,15 @@ mod tests {
         );
 
         let mut exhausted = Budget::new(0);
-        let diagnostic =
-            check_computed_diagnostic_with_budget(1, &[0, 1], &use_steps, &[], &mut exhausted)
-                .unwrap_err();
+        let diagnostic = check_computed_diagnostic_with_budget(
+            crate::edition::Edition::E2026,
+            1,
+            &[0, 1],
+            &use_steps,
+            &[],
+            &mut exhausted,
+        )
+        .unwrap_err();
         assert_eq!(
             diagnostic.error,
             ContractError::Arithmetic(ExactError::WorkLimit)

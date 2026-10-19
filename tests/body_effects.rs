@@ -62,7 +62,11 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite.code, ErrorCode::Effect, "{finite}");
         explanation(&finite.message, inferred, asserted);
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap_err();
         assert_eq!(sized.code(), "effect", "{sized}");
         explanation(sized.message(), inferred, asserted);
     }
@@ -79,7 +83,11 @@ fn private_broad_assertions_preserve_same_module_precision() {
             "{prefix}fn g(q:Q<Bit>)->Q<Bit>{{q}} pub unitary fn f(q:Q<Bit>)->Q<Bit>{{g(q)}}"
         );
         check_project(&SourceRoot::new(&source).0).unwrap();
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         let fact = sized.function_effect("main::g").unwrap();
         assert_eq!(fact.inferred(), Effect::Unitary);
         assert_eq!(fact.public_effect(), None);
@@ -145,10 +153,17 @@ fn cli_text_and_json_explain_the_semantic_limit_without_tracker_links() {
 fn immutable_metadata_and_documentation_use_the_checked_source_bytes() {
     let original = "/// A broader assertion is separate from the inferred fact.\nobserve fn f(q:Q<Bit>)->Q<Bit>{q}";
     let root = SourceRoot::new(original);
-    let finite =
-        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-            .unwrap();
-    let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), original.into())])).unwrap();
+    let finite = project_effects_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap();
+    let sized = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), original.into())]),
+    )
+    .unwrap();
     // Mutating the input file cannot rebind either immutable checked report.
     root.write("main.qli", "unitary fn f(q:Q<Bit>)->Bit{missing(q)}");
     for text in [
@@ -171,8 +186,12 @@ fn immutable_metadata_and_documentation_use_the_checked_source_bytes() {
     assert!(source_only.contains("Source documentation only"));
     assert!(!source_only.contains("Inferred quantum effect"));
     assert!(
-        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-            .is_err()
+        project_effects_with_kernel(
+            &root.0,
+            SourcePolicy::Legacy,
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap()
+        )
+        .is_err()
     );
 }
 
@@ -187,14 +206,21 @@ fn all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects() {
             "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/{case}/main.qli"
         ));
         let source = std::fs::read_to_string(common::current_namespace_fixture(&original)).unwrap();
-        let sized =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap();
         assert_eq!(
             sized.function_effect("main::f").unwrap().inferred(),
             Effect::Observe
         );
         let asserted = source.replace("pub observe fn f", "pub unitary fn f");
-        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), asserted)])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), asserted)]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "effect");
         explanation(error.message(), "Observe", "Unitary");
     }
@@ -230,7 +256,7 @@ fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
         let finite = project_effects_with_kernel(
             &root.0,
             SourcePolicy::Legacy,
-            &Kernel::selected().unwrap(),
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
         )
         .unwrap();
         assert_eq!(
@@ -254,8 +280,11 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
         "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/primitive-like-local-name/main.qli",
     );
     for module in ["main", "library::ordinary", "user::nested"] {
-        let sized =
-            ParsedProgram::parse(BTreeMap::from([(module.into(), source.clone())])).unwrap();
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([(module.into(), source.clone())]),
+        )
+        .unwrap();
         assert_eq!(
             sized
                 .function_effect(&format!("{module}::f"))
@@ -265,8 +294,11 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
         );
     }
     // The reserved std namespace cannot be injected as a sized source module.
-    let error =
-        ParsedProgram::parse(BTreeMap::from([("std::ordinary".into(), source)])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("std::ordinary".into(), source)]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), "module");
     for (source, code) in [
         (
@@ -288,7 +320,11 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
             "cycle",
         ),
     ] {
-        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{error}");
     }
 }
@@ -300,9 +336,12 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
 #[test]
 fn derived_stdlib_exports_explicit_checked_public_effects() {
     let root = SourceRoot::new("fn main()->Unit{()}");
-    let report =
-        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-            .unwrap();
+    let report = project_effects_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap();
     for (module, functions, effect) in [
         (
             "transform",
@@ -343,9 +382,12 @@ fn derived_stdlib_exports_explicit_checked_public_effects() {
         "arithmetic.qli",
         include_str!("../examples/order_finding/arithmetic.qli"),
     );
-    let report =
-        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-            .unwrap();
+    let report = project_effects_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap();
     for name in ["increment2", "add2", "mul2_mod15"] {
         let fact = report
             .function_effect(&format!("arithmetic::{name}"))
@@ -387,7 +429,10 @@ fn same_module_operation_providers_preserve_precision_and_cannot_hide_measuremen
     ] {
         let source = format!("{provider}{apply}");
         let finite = check_project(&SourceRoot::new(&source).0);
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]));
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        );
         if accepted {
             finite.unwrap();
             assert_eq!(
@@ -427,7 +472,11 @@ fn host_selected_providers_distinguish_unsupported_effects_from_shape_errors() {
             "type",
         ),
     ] {
-        let program = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let program = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         let error = program
             .instantiate(
                 "main::entry",
@@ -514,10 +563,14 @@ fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
         let finite = project_effects_with_kernel(
             &root.0,
             SourcePolicy::Legacy,
-            &Kernel::selected().unwrap(),
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
         )
         .unwrap();
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        let sized = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
         for (name, effect) in [
             ("a", Effect::Unitary),
             ("b", Effect::Isometry),
@@ -538,7 +591,11 @@ fn private_wrapper_suggestions_do_not_require_an_effect_annotation() {
         "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
     );
     // X is ordinary checked source now; it is no longer a sealed-provider refusal.
-    let ordinary = ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+    let ordinary = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.clone())]),
+    )
+    .unwrap();
     assert_eq!(
         ordinary.function_effect("main::f").unwrap().inferred(),
         Effect::Unitary
@@ -560,7 +617,11 @@ fn private_wrapper_suggestions_do_not_require_an_effect_annotation() {
         "fn wrapped_gate(q:Q<Bit>)->Q<Bit>{{h(q)}}\n{}",
         primitive.replace("apply[h]", "apply[wrapped_gate]")
     );
-    let wrapped = ParsedProgram::parse(BTreeMap::from([("main".into(), wrapped)])).unwrap();
+    let wrapped = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), wrapped)]),
+    )
+    .unwrap();
     let effect = wrapped.function_effect("main::wrapped_gate").unwrap();
     assert_eq!(effect.inferred(), Effect::Unitary);
     assert_eq!(effect.asserted(), None);

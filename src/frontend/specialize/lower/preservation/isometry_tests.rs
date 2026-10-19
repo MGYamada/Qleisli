@@ -49,17 +49,23 @@ fn source(name: &str) -> String {
     }
 }
 fn lower(text: &str) -> HierarchyProposal {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .unwrap()
-        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap()
-        .lower()
-        .unwrap()
+    ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
+    .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap()
+    .lower()
+    .unwrap()
 }
 fn kernel() -> hierarchical::Kernel {
-    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
+    )
 }
 fn limits() -> hierarchical::execution::ExecutionLimits {
     hierarchical::execution::ExecutionLimits {

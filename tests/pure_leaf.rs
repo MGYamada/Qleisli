@@ -74,6 +74,7 @@ fn proposal(raw: &RawProgram, boundary: &PureBoundary, version: Version) -> Vec<
 
 fn check(raw: &RawProgram, boundary: &PureBoundary, meaning: &Matrix) -> bool {
     check_pure(
+        qleisli::edition::Edition::E2026,
         &proposal(raw, boundary, Version::V2),
         boundary,
         meaning,
@@ -94,7 +95,14 @@ fn original_preparation_and_complete_receipt_binding() {
         let mut bytes = proposal(&raw, &boundary, version);
         let matrix = plus();
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let checked = check_pure(&bytes, &boundary, &matrix, &mut budget).unwrap();
+        let checked = check_pure(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &boundary,
+            &matrix,
+            &mut budget,
+        )
+        .unwrap();
         assert_eq!(checked.program().raw(), &raw);
         assert_eq!(checked.meaning(), &matrix);
         assert_eq!(checked.boundary(), &boundary);
@@ -113,10 +121,24 @@ fn original_preparation_and_complete_receipt_binding() {
             version,
         )
         .unwrap();
-        check_pure(&exported, &boundary, &matrix, &mut budget).unwrap();
+        check_pure(
+            qleisli::edition::Edition::E2026,
+            &exported,
+            &boundary,
+            &matrix,
+            &mut budget,
+        )
+        .unwrap();
         bytes.push(b' ');
         assert!(!checked.matches(&bytes, &boundary, &matrix));
-        check_pure(&bytes, &boundary, &matrix, &mut budget).unwrap();
+        check_pure(
+            qleisli::edition::Edition::E2026,
+            &bytes,
+            &boundary,
+            &matrix,
+            &mut budget,
+        )
+        .unwrap();
     }
 }
 
@@ -174,6 +196,7 @@ fn distinct_equal_width_type_trees_and_zero_width_owners() {
         PureBoundary::new(BasisType::Bit, BasisType::Bit, port(0, &[7]), port(2, &[7])).unwrap();
     assert!(
         check_pure(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &wrong_tree,
             &identity,
@@ -231,6 +254,7 @@ fn preparation_tensor_preserves_axes_and_every_input_column() {
     let bytes = proposal(&raw, &boundary, Version::V2);
     assert!(
         check_pure(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &wrong_order,
             &matrix,
@@ -293,6 +317,7 @@ fn mismatched_ports_dimensions_and_exhausted_budgets_fail_closed() {
         let wrong = PureBoundary::new(BasisType::Unit, BasisType::Bit, input, output).unwrap();
         assert!(
             check_pure(
+                qleisli::edition::Edition::E2026,
                 &bytes,
                 &wrong,
                 &plus(),
@@ -303,6 +328,7 @@ fn mismatched_ports_dimensions_and_exhausted_budgets_fail_closed() {
     }
     assert!(
         check_pure(
+            qleisli::edition::Edition::E2026,
             &bytes,
             &b,
             &Matrix::identity(2).unwrap(),
@@ -311,7 +337,16 @@ fn mismatched_ports_dimensions_and_exhausted_budgets_fail_closed() {
         .is_err()
     );
     for work in [0, 1, DEFAULT_EXACT_WORK + 1] {
-        assert!(check_pure(&bytes, &b, &plus(), &mut Budget::new(work)).is_err());
+        assert!(
+            check_pure(
+                qleisli::edition::Edition::E2026,
+                &bytes,
+                &b,
+                &plus(),
+                &mut Budget::new(work)
+            )
+            .is_err()
+        );
     }
 }
 
@@ -323,7 +358,14 @@ fn mismatched_ports_dimensions_and_exhausted_budgets_fail_closed() {
 fn every_native_request_is_decoded_strictly_again() {
     let b = boundary();
     let bytes = proposal(&preparation(), &b, Version::V2);
-    let checked = check_pure(&bytes, &b, &plus(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+    let checked = check_pure(
+        qleisli::edition::Edition::E2026,
+        &bytes,
+        &b,
+        &plus(),
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
     let request = std::str::from_utf8(checked.program().request().unwrap()).unwrap();
     let requests = [
         request.to_owned(),
@@ -385,6 +427,7 @@ fn fresh_dependency_body_check_rejects_substitution_and_stale_evidence() {
     );
     gate.declared_effect = Effect::Unitary;
     let evidence = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
         BasisType::Bit,
         gate.clone(),
         gate,
@@ -414,6 +457,7 @@ fn fresh_dependency_body_check_rejects_substitution_and_stale_evidence() {
     };
     let bytes = proposal(&root, &boundary(), Version::V2);
     let checked = check_pure(
+        qleisli::edition::Edition::E2026,
         &bytes,
         &boundary(),
         &plus(),
@@ -429,6 +473,7 @@ fn fresh_dependency_body_check_rejects_substitution_and_stale_evidence() {
         assert!(!checked.matches(altered.as_bytes(), &boundary(), &plus()));
         assert!(
             check_pure(
+                qleisli::edition::Edition::E2026,
                 altered.as_bytes(),
                 &boundary(),
                 &plus(),

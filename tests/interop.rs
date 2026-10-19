@@ -40,7 +40,7 @@ fn raw(ops: Vec<RawOp>, outputs: Vec<ClassicalId>) -> AcceptedProgram {
 )]
 #[test]
 fn independent_bell_and_gate_fixtures_are_verified() {
-    let bell = import_openqasm3(BELL).unwrap();
+    let bell = import_openqasm3(qleisli::edition::Edition::E2026, BELL).unwrap();
     close(probability(&bell, &[false, false]), 0.5);
     close(probability(&bell, &[true, true]), 0.5);
     assert!(bell.raw().operations.iter().all(|op| matches!(
@@ -52,11 +52,11 @@ fn independent_bell_and_gate_fixtures_are_verified() {
             | RawOp::MeasureZ { .. }
             | RawOp::Discard { .. }
     )));
-    let gates = import_openqasm3(GATES).unwrap();
+    let gates = import_openqasm3(qleisli::edition::Edition::E2026, GATES).unwrap();
     for program in [&bell, &gates] {
         let canonical = export_openqasm3(program).unwrap();
         assert!(canonical.contains("reset q;"));
-        let roundtrip = import_openqasm3(&canonical).unwrap();
+        let roundtrip = import_openqasm3(qleisli::edition::Edition::E2026, &canonical).unwrap();
         let before = run_closed(program, SimulationLimits::default()).unwrap();
         let after = run_closed(&roundtrip, SimulationLimits::default()).unwrap();
         for (bits, p) in &before {
@@ -74,7 +74,7 @@ fn independent_bell_and_gate_fixtures_are_verified() {
 )]
 #[test]
 fn control_axes_and_classical_order_do_not_follow_measurement_order() {
-    let p = import_openqasm3(&source("qubit[3] q; bit a; bit[2] b; reset q; x q[2]; cx q[2], q[0]; b[1] = measure q[0]; a = measure q[1]; b[0] = measure q[2];")).unwrap();
+    let p = import_openqasm3(qleisli::edition::Edition::E2026, &source("qubit[3] q; bit a; bit[2] b; reset q; x q[2]; cx q[2], q[0]; b[1] = measure q[0]; a = measure q[1]; b[0] = measure q[2];")).unwrap();
     close(probability(&p, &[false, true, true]), 1.0);
     let exported = export_openqasm3(&p).unwrap();
     assert!(exported.contains("c[0] = measure q[1];\nc[1] = measure q[2];\nc[2] = measure q[0];"));
@@ -89,9 +89,10 @@ fn control_axes_and_classical_order_do_not_follow_measurement_order() {
 )]
 #[test]
 fn exact_phase_interference_and_hidden_terminal_results() {
-    let cr = import_openqasm3(&source(
-        "// comment\rqubit q; bit c; reset q; x q; c = measure q;",
-    ))
+    let cr = import_openqasm3(
+        qleisli::edition::Edition::E2026,
+        &source("// comment\rqubit q; bit c; reset q; x q; c = measure q;"),
+    )
     .unwrap();
     close(probability(&cr, &[true]), 1.0);
     for gates in [
@@ -100,15 +101,19 @@ fn exact_phase_interference_and_hidden_terminal_results() {
         "h q; t q; t q; t q; t q; h q;",
         "y q;",
     ] {
-        let p = import_openqasm3(&source(&format!(
-            "qubit q; bit c; reset q; {gates} c = measure q;"
-        )))
+        let p = import_openqasm3(
+            qleisli::edition::Edition::E2026,
+            &source(&format!("qubit q; bit c; reset q; {gates} c = measure q;")),
+        )
         .unwrap();
         close(probability(&p, &[true]), 1.0);
     }
-    let p = import_openqasm3(&source(
-        "qubit[2] q; bit c; reset q; h q[0]; cx q[0], q[1]; measure q[0]; c = measure q[1];",
-    ))
+    let p = import_openqasm3(
+        qleisli::edition::Edition::E2026,
+        &source(
+            "qubit[2] q; bit c; reset q; h q[0]; cx q[0], q[1]; measure q[0]; c = measure q[1];",
+        ),
+    )
     .unwrap();
     close(probability(&p, &[false]), 0.5);
     close(probability(&p, &[true]), 0.5);
@@ -118,7 +123,7 @@ fn exact_phase_interference_and_hidden_terminal_results() {
             .iter()
             .any(|op| matches!(op, RawOp::Discard { .. }))
     );
-    let p = import_openqasm3("OPENQASM 3.0;").unwrap();
+    let p = import_openqasm3(qleisli::edition::Edition::E2026, "OPENQASM 3.0;").unwrap();
     close(probability(&p, &[]), 1.0);
     assert!(
         export_qir_base(&p)
@@ -168,7 +173,7 @@ fn invalid_source_is_rejected_with_original_locations() {
     ];
     for body in cases {
         let text = source(body);
-        let err = import_openqasm3(&text).expect_err(body);
+        let err = import_openqasm3(qleisli::edition::Edition::E2026, &text).expect_err(body);
         let span = err.span.expect(body);
         assert!(span.start <= span.end && span.end <= text.len(), "{body}");
     }
@@ -183,15 +188,18 @@ fn invalid_source_is_rejected_with_original_locations() {
         "OPENQASM 3.0; include \"../../secret\";",
         "OPENQASM 3.0; qubit q; reset q; h q;",
     ] {
-        assert!(import_openqasm3(text).is_err(), "{text}");
+        assert!(
+            import_openqasm3(qleisli::edition::Edition::E2026, text).is_err(),
+            "{text}"
+        );
     }
     let text = source("// 日本語\r\nqubit q; reset q; mystery q;");
-    let err = import_openqasm3(&text).unwrap_err();
+    let err = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap_err();
     assert_eq!(err.span.unwrap().start, text.find("mystery").unwrap());
     // Every truncated prefix must return an error or a complete accepted program,
     // never panic or reinterpret an unfinished declaration as valid ownership.
     for (end, _) in BELL.char_indices() {
-        let _ = import_openqasm3(&BELL[..end]);
+        let _ = import_openqasm3(qleisli::edition::Edition::E2026, &BELL[..end]);
     }
 }
 
@@ -201,7 +209,11 @@ fn invalid_source_is_rejected_with_original_locations() {
 )]
 #[test]
 fn import_limits_are_checked_before_expansion() {
-    let err = import_openqasm3(&" ".repeat(MAX_OPENQASM_BYTES + 1)).unwrap_err();
+    let err = import_openqasm3(
+        qleisli::edition::Edition::E2026,
+        &" ".repeat(MAX_OPENQASM_BYTES + 1),
+    )
+    .unwrap_err();
     assert_eq!(err.kind, InteropErrorKind::Limit);
     for body in [
         "qubit[13] q;",
@@ -209,24 +221,28 @@ fn import_limits_are_checked_before_expansion() {
         "qubit[99999999999999999999999999999] q;",
     ] {
         assert_eq!(
-            import_openqasm3(&source(body)).unwrap_err().kind,
+            import_openqasm3(qleisli::edition::Edition::E2026, &source(body))
+                .unwrap_err()
+                .kind,
             InteropErrorKind::Limit
         );
     }
     let prefix = "qubit q; reset q; ";
     let allowed = source(&format!("{prefix}{}measure q;", "h q;".repeat(8)));
-    import_openqasm3(&allowed).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &allowed).unwrap();
     assert_eq!(
-        import_openqasm3(&source(&format!(
-            "{prefix}{}measure q;",
-            "h q;".repeat(4097)
-        )))
+        import_openqasm3(
+            qleisli::edition::Edition::E2026,
+            &source(&format!("{prefix}{}measure q;", "h q;".repeat(4097)))
+        )
         .unwrap_err()
         .kind,
         InteropErrorKind::Limit
     );
     assert_eq!(
-        import_openqasm3(&";".repeat(65_537)).unwrap_err().kind,
+        import_openqasm3(qleisli::edition::Edition::E2026, &";".repeat(65_537))
+            .unwrap_err()
+            .kind,
         InteropErrorKind::Limit
     );
 }
@@ -237,7 +253,7 @@ fn import_limits_are_checked_before_expansion() {
 )]
 #[test]
 fn valid_ir_can_still_be_unrepresentable_in_the_target() {
-    let p = import_openqasm3(BELL).unwrap();
+    let p = import_openqasm3(qleisli::edition::Edition::E2026, BELL).unwrap();
     let mut duplicated = p.raw().clone();
     duplicated
         .classical_outputs
@@ -328,10 +344,14 @@ fn qli_frontend_and_qir_profile_contract() {
     let p = qleisli::frontend::compile::compile_project(&project).unwrap();
     let qasm = export_openqasm3(&p).unwrap();
     close(
-        probability(&import_openqasm3(&qasm).unwrap(), &[true, true]),
+        probability(
+            &import_openqasm3(qleisli::edition::Edition::E2026, &qasm).unwrap(),
+            &[true, true],
+        ),
         0.5,
     );
-    let qir = export_qir_base(&import_openqasm3(GATES).unwrap()).unwrap();
+    let qir = export_qir_base(&import_openqasm3(qleisli::edition::Edition::E2026, GATES).unwrap())
+        .unwrap();
     for expected in [
         "define i64 @main() #0",
         "\nentry:",
@@ -420,7 +440,10 @@ fn export_tracks_reordered_owners_and_control_phase() {
     assert!(text.contains("cx q[0], q[1];"));
     assert!(text.contains("c[0] = measure q[1];"));
     close(
-        probability(&import_openqasm3(&text).unwrap(), &[true, true]),
+        probability(
+            &import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap(),
+            &[true, true],
+        ),
         1.0,
     );
     if let RawOp::ApplyUnitary { steps, .. } = &mut p.operations[4] {
@@ -428,7 +451,10 @@ fn export_tracks_reordered_owners_and_control_phase() {
     }
     let negative = export_openqasm3(&accept(p.clone()).unwrap()).unwrap();
     close(
-        probability(&import_openqasm3(&negative).unwrap(), &[false, true]),
+        probability(
+            &import_openqasm3(qleisli::edition::Edition::E2026, &negative).unwrap(),
+            &[false, true],
+        ),
         1.0,
     );
     assert!(export_qir_base(&accept(p.clone()).unwrap()).is_ok());
@@ -638,7 +664,13 @@ fn exact_target_matrix(
     )?;
     let encoding = Encoding::new(logical, physical.clone(), embedding, &mut budget)?;
     let contract = Contract::new(encoding.clone(), encoding, meaning, &mut budget)?;
-    CheckedContract::check(Circuit::new(physical, steps)?, contract, &mut budget).map(|_| ())
+    CheckedContract::check(
+        qleisli::edition::Edition::E2026,
+        Circuit::new(physical, steps)?,
+        contract,
+        &mut budget,
+    )
+    .map(|_| ())
 }
 
 #[cfg_attr(
@@ -666,7 +698,7 @@ fn ordinary_contract_export_preserves_t_phase_and_nested_adjoint() {
                 .unwrap()
                 .contains(&format!("call void @__quantum__qis__{qis}("))
         );
-        import_openqasm3(&text).unwrap();
+        import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
         exact_target(&text, &[0, exponent]).unwrap();
         assert!(exact_target(&text, &[0, 0]).is_err());
         assert!(
@@ -694,7 +726,7 @@ fn ordinary_contract_export_keeps_reference_axes_and_reordered_owners() {
     let text = export_openqasm3(&program).unwrap();
     assert!(has_contract(&program));
     assert!(text.contains("t q[1];"), "{text}");
-    import_openqasm3(&text).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
     exact_target(&text, &[0, 0, 1, 1]).unwrap();
     assert!(exact_target(&text.replace("t q[1];", "t q[0];"), &[0, 0, 1, 1]).is_err());
 
@@ -706,7 +738,7 @@ fn ordinary_contract_export_keeps_reference_axes_and_reordered_owners() {
     let text = export_openqasm3(&program).unwrap();
     assert!(has_contract(&program));
     assert!(text.contains("t q[0];"), "{text}");
-    import_openqasm3(&text).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
     exact_target(&text, &[0, 1, 0, 1, 0, 1, 0, 1]).unwrap();
     assert!(
         exact_target(
@@ -735,7 +767,7 @@ fn controlled_ordinary_contract_export_returns_scratch_exactly() {
         let text = export_openqasm3(&program).unwrap();
         assert!(has_contract(&program));
         assert_eq!(literal_target(&text).0, 3, "one clean synthesis qubit");
-        import_openqasm3(&text).unwrap();
+        import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
         exact_target(&text, &expected).unwrap();
         assert!(exact_target(&text.replace("t q[2];\n", ""), &expected).is_err());
         let uncompute = text
@@ -777,7 +809,7 @@ fn adjacent_contract_phases_merge_before_assigning_workspace() {
         2,
         "adjacent even phase needs no synthesis qubit: {text}"
     );
-    import_openqasm3(&text).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
     exact_target(&text, &[0, 0, 0, 2]).unwrap();
 }
 
@@ -831,6 +863,7 @@ fn uncontrolled_unit_contract_phase_is_not_erased_by_export() {
         let matrix = Matrix::new(1, 1, vec![Exact::phase(phase)]).unwrap();
         assert_eq!(
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 proposal.artifact(),
                 &boundary,
                 &matrix,
@@ -866,7 +899,7 @@ fn ordinary_contract_adjoint_reverses_noncommuting_body_order() {
     assert!(has_contract(&program));
     let text = export_openqasm3(&program).unwrap();
     assert!(text.contains("h q[0];\ntdg q[0];"), "{text}");
-    import_openqasm3(&text).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
     // (H T)^dagger = T^dagger H, including every complex coefficient.
     let scale = Exact::inv_sqrt2();
     let phase = Exact::phase(7).mul(scale).unwrap();
@@ -925,7 +958,7 @@ fn ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase() {
                 .unwrap()
                 .contains(&format!("call void @__quantum__qis__{qis}("))
         );
-        import_openqasm3(&text).unwrap();
+        import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
         let dimension = 1usize << width;
         // Independent full-column specification: flip the final physical axis
         // iff all preceding controls are one; no scalar-phase quotient.
@@ -1021,7 +1054,7 @@ fn ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order() {
             .count(),
         3
     );
-    import_openqasm3(&text).unwrap();
+    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
     let permutation = [0, 2, 1, 3];
     let expected = Matrix::new(
         4,

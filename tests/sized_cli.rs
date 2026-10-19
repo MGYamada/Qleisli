@@ -327,14 +327,17 @@ fn sized_cli_separates_producer_consistency_from_independent_requests() {
     );
     let h = " pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
     let x = "use std::gate::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
-    let h_proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), h.into())]))
-        .unwrap()
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap()
-        .lower()
-        .unwrap();
+    let h_proposal = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), h.into())]),
+    )
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap()
+    .lower()
+    .unwrap();
     let files = common::SourceRoot::new(h);
     std::fs::write(
         files.0.join("h.request.json"),

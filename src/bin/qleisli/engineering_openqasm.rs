@@ -10,23 +10,17 @@ use qleisli::interchange::Error;
 use qleisli::interchange::engineering_openqasm::{
     EngineeringOpenQasmReport, check_serialized_with_kernel,
 };
-use qleisli::interchange::native::Kernel;
 
 use super::engineering::{Options, checker_text, error, fail_for_command, parse, read};
 use super::json::{artifact_diagnostic_json, envelope, quoted};
 
 const COMMAND: &str = "engineering compare-openqasm3";
-const USAGE: &str = "qleisli engineering compare-openqasm3 TARGET --against=REQUEST [--lean-kernel=PATH] [--format=json]";
+const USAGE: &str = "qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]";
 
 fn execute(options: Options) -> Result<EngineeringOpenQasmReport, Error> {
     let actual = read_target(&options.actual)?;
     let request = read(&options.request)?;
-    let kernel = options
-        .checker
-        .as_ref()
-        .map(Kernel::new)
-        .map(Ok)
-        .unwrap_or_else(Kernel::selected)?;
+    let kernel = super::engineering::kernel(&options)?;
     check_serialized_with_kernel(&kernel, &actual, &request)
 }
 

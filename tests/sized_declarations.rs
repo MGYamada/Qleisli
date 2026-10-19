@@ -27,14 +27,17 @@ fn sources(case: &str) -> BTreeMap<String, String> {
 
 fn prepare(case: &str) -> ParsedProgram {
     // Retained declaration identities must survive moving and cloning the owner.
-    let parsed = ParsedProgram::parse(sources(case)).unwrap();
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(case)).unwrap();
     let cloned = parsed.clone();
     drop(parsed);
     cloned
 }
 
 fn execute(proposal: &HierarchyProposal, input: &[[f64; 2]]) -> Vec<[f64; 2]> {
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let checked = kernel
         .check_against_native(proposal.payload(), proposal.comparison_request())
         .unwrap();
@@ -194,7 +197,7 @@ fn private_siblings_are_providers_but_not_host_entries_or_external_imports() {
         .unwrap_err();
     assert_eq!(error.code(), "visibility", "{error}");
     let inputs = sources("private-import");
-    let error = ParsedProgram::parse(inputs.clone()).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, inputs.clone()).unwrap_err();
     assert_eq!(error.code(), "visibility", "{error}");
     assert_eq!(error.module(), Some("main"));
     assert_eq!(
@@ -212,7 +215,8 @@ fn every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds() 
         ("zero-fold-capture", "ownership"),
     ] {
         let inputs = sources(case);
-        let error = ParsedProgram::parse(inputs.clone()).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, inputs.clone()).unwrap_err();
         assert_eq!(error.code(), code, "{case}: {error}");
         assert_eq!(error.module(), Some("main"));
         assert!(
@@ -226,7 +230,7 @@ fn every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds() 
 #[test]
 fn first_invalid_sibling_follows_source_order_not_sorted_definition_identity() {
     let inputs = sources("source-order-errors");
-    let error = ParsedProgram::parse(inputs.clone()).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, inputs.clone()).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
     assert!(error.span().start > inputs["main"].find("fn z_bad").unwrap());
@@ -244,7 +248,8 @@ fn sibling_and_unused_provider_cycles_do_not_become_self_recursion() {
         "unused-provider-cycle",
         "nondecreasing-recursion",
     ] {
-        let error = ParsedProgram::parse(sources(case)).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(case)).unwrap_err();
         assert_eq!(error.code(), "cycle", "{case}: {error}");
         assert_eq!(error.module(), Some("main"));
     }
@@ -286,7 +291,8 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
         ("rename", "parse", "expected `;`"),
     ] {
         let inputs = sources(case);
-        let error = ParsedProgram::parse(inputs.clone()).unwrap_err();
+        let error =
+            ParsedProgram::parse(qleisli::edition::Edition::E2026, inputs.clone()).unwrap_err();
         assert_eq!(error.code(), code, "{case}: {error}");
         assert!(error.message().contains(message), "{case}: {error}");
         assert_eq!(error.module(), Some("main"));
@@ -311,7 +317,11 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
     let inverse = "pub unitary fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjointable(U){adjoint(U)(q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(inverse).0).unwrap();
-    ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), inverse.into())]),
+    )
+    .unwrap();
 
     // Both finite spellings reach the same declared Controlled slot. The
     // canonical application below also drives the independent native oracle.
@@ -339,8 +349,11 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
         [(inverse, "main::inverse", 2), (control, "main::control", 4)]
     {
         let source = format!("{provider}{declaration}");
-        let program =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+        let program = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap();
         let elaborated = program
             .instantiate(
                 entry,
@@ -407,8 +420,11 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
             "controlled(U)(c,q)",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "access", "{error}");
         assert_eq!(
             error.message(),
@@ -476,8 +492,11 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
             (finite_error.span.start, finite_error.span.end),
             (start, start + use_text.len())
         );
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "access", "{error}");
         assert_eq!(
             error.message(),
@@ -509,8 +528,11 @@ fn duplicate_adjoint_and_controlled_slots_share_the_requirement_location() {
             (finite_error.span.start, finite_error.span.end),
             (second, second + access.len())
         );
-        let selected_error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        let selected_error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap_err();
         assert_eq!(selected_error.code(), "access", "{selected_error}");
         assert_eq!(
             selected_error.message(),

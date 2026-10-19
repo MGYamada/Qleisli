@@ -112,10 +112,6 @@ pub(super) fn read_anchored(
     capture(&path, source).map(Some)
 }
 
-pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
-    read_directory(directory).map(|_| ())
-}
-
 pub(super) fn read_directory(directory: &Path) -> Result<EditionManifest, LoadFailure> {
     for ancestor in directory.ancestors() {
         let path = ancestor.join("Qargo.toml");

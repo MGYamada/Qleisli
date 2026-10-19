@@ -96,18 +96,14 @@ pub(super) fn execute(
     input: &super::source_commands::Input,
     json: bool,
 ) -> Result<Success, Failure> {
-    let kernel = options
-        .lean_kernel
-        .as_ref()
-        .map(interchange::native::Kernel::new)
-        .map(Ok)
-        .unwrap_or_else(interchange::native::Kernel::selected)?;
     if options.command == "emit-ir" {
+        let project = input.load_project()?;
+        let kernel = options.kernel(project.edition())?;
         let output = options.output.as_ref().expect("parsed output path");
         let label = output
             .to_str()
             .ok_or_else(|| io_error("output path is not valid UTF-8"))?;
-        let program = input.compile(&kernel)?;
+        let program = project.compile_with_kernel(&kernel)?;
         let report = ArtifactReport::new(&program);
         if json {
             // JSON cannot name a non-UTF-8 checker faithfully. Refuse before
@@ -117,6 +113,7 @@ pub(super) fn execute(
         write_new(output, program.artifact())?;
         Ok(Success::Emitted(label.into(), report))
     } else {
+        let kernel = options.kernel(options.requested_edition()?)?;
         let bytes = read(input.path())?;
         let request = options.against.as_deref().map(read).transpose()?;
         let checked = kernel.check(&bytes, request.as_deref())?;

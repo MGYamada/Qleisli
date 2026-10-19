@@ -103,6 +103,7 @@ impl CheckedSourceMeanings<'_> {
         kernel: &native::Kernel,
         budget: &mut Budget,
     ) -> Result<RawSourceProposal> {
+        self.source.require_edition(kernel.edition())?;
         if self.source.has_control_obligations() {
             return lower_refined_with_control(self.source, kernel, budget);
         }
@@ -143,6 +144,7 @@ fn check_operation_meanings_selected<'a>(
     budget: &mut Budget,
     selected: Option<&BTreeSet<usize>>,
 ) -> Result<CheckedSourceMeanings<'a>> {
+    source.require_edition(kernel.edition())?;
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
             "limit",
@@ -418,6 +420,7 @@ impl RawSourceProposal {
         required: &'a FiniteMeaning,
         budget: &mut Budget,
     ) -> Result<SourceMeaningCheck<'a>> {
+        self.source.require_edition(kernel.edition())?;
         let root = self.definition();
         let error = |code, message: String| {
             let path = root.path();
@@ -537,6 +540,7 @@ impl RawSourceProposal {
     /// steps. This issues no execution handle and proves no AST-to-step theorem.
     /// No independent general source meaning is requested by Raw validity.
     pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()> {
+        self.source.require_edition(accepted.edition())?;
         if accepted.artifact() != self.payload() || accepted.request().is_some() {
             return Err(Error::new(
                 "preservation",
@@ -1897,6 +1901,7 @@ pub(super) fn lower_with_kernel(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<RawSourceProposal> {
+    source.require_edition(kernel.edition())?;
     let checked;
     let source = if source.has_function_contracts() && source.require_function_contracts().is_err()
     {
@@ -2436,13 +2441,19 @@ mod tests {
         let text = current_source_text(
             "tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli",
         );
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
-        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text)]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+        let kernel = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let checked = source
             .check_operation_meanings(&kernel, &mut budget)
@@ -2466,13 +2477,19 @@ mod tests {
     #[test]
     fn finite_meaning_replay_charges_control_sectors_to_the_callers_budget() {
         let text = "use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
-        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+        let kernel = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
         let raw = source
             .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap();
@@ -2506,12 +2523,15 @@ mod tests {
     #[test]
     fn raw_meaning_intervals_reject_a_fresh_valid_leaf_for_another_action() {
         let elaborate = |text: &str| {
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-                .unwrap()
-                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap()
+            ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text.into())]),
+            )
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
         };
         let source = elaborate(
             "use std::gate::x; classical fn flip(b:Bit)->Bit{not b}
@@ -2519,7 +2539,10 @@ mod tests {
             fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
             pub unitary fn main(q:Q<Bit>)->Q<Bit>{apply[checked_op(direct,X)](q)}",
         );
-        let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let checker = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
         let checked = source
             .check_operation_meanings(&checker, &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap();
@@ -2564,7 +2587,10 @@ mod tests {
     )]
     #[test]
     fn transformed_raw_meanings_reject_genuine_identity_evidence_for_other_substeps() {
-        let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let checker = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            crate::edition::Edition::E2026,
+        );
         let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01");
         for name in [
@@ -2583,12 +2609,15 @@ mod tests {
                     })
                     .join(format!("{name}.qli")),
             );
-            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
-                .unwrap()
-                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-                .unwrap()
-                .elaborate()
-                .unwrap();
+            let source = ParsedProgram::parse(
+                crate::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), text)]),
+            )
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
             let checked = source
                 .check_operation_meanings(&checker, &mut Budget::new(DEFAULT_EXACT_WORK))
                 .unwrap();
@@ -2662,11 +2691,12 @@ mod tests {
         use crate::frontend::compile::{BasisBinding, OperationBinding};
         use crate::interchange::{hierarchical, json};
         use hierarchical::execution::ExecutionLimits;
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(),
+        let parsed = ParsedProgram::parse(crate::edition::Edition::E2026, BTreeMap::from([("main".into(),
             "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))} unitary fn inner[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)} pub unitary fn outer[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=2{inner[A,power(U,k)](q)}".into())])).unwrap();
         let executable = std::env::var_os("QLEISLI_KERNEL").expect("matching native checker");
-        let checker = native::Kernel::new(executable.clone());
-        let hierarchy_checker = hierarchical::Kernel::new(executable);
+        let checker = native::Kernel::new(executable.clone(), crate::edition::Edition::E2026);
+        let hierarchy_checker =
+            hierarchical::Kernel::new(executable, crate::edition::Edition::E2026);
         for (basis, provider) in [("Bit", "main::flip"), ("Unit", "main::scalar")] {
             for count in 0..=2 {
                 let source = parsed
@@ -2819,7 +2849,7 @@ mod tests {
     #[test]
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
         use crate::frontend::compile::OperationBinding;
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(),
+        let source = ParsedProgram::parse(crate::edition::Edition::E2026, BTreeMap::from([("main".into(),
             "use std::gate::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q} pub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,2)](q)}".into())]))
             .unwrap().instantiate("main::outer", BTreeMap::new(), BTreeMap::from([("U".into(), OperationBinding::new("main::flip", BTreeMap::new()))])).unwrap().elaborate().unwrap();
         let caller = source
@@ -2836,6 +2866,7 @@ mod tests {
         let required = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();
         let checker = native::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+            crate::edition::Edition::E2026,
         );
         finite_leaf::check_with_kernel(
             &checker,
@@ -2859,10 +2890,13 @@ mod tests {
     )]
     #[test]
     fn source_meaning_gate_rejects_a_native_valid_replaced_provider() {
-        let source = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
-        )]))
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "use std::gate::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
+            )]),
+        )
         .unwrap()
         .instantiate("main::implementation", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -2896,6 +2930,7 @@ mod tests {
         .unwrap();
         let kernel = native::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+            crate::edition::Edition::E2026,
         );
         let matrix = required
             .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
@@ -2924,14 +2959,17 @@ mod tests {
     fn raw_source_replay_rejects_noncommuting_gate_reordering() {
         use crate::ir::SingleGate;
         let text = "use std::gate::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{h(excl q);z(excl q);q}";
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-            .unwrap()
-            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         let proposal = source.lower_raw().unwrap();
-        let kernel = native::Kernel::selected().unwrap();
+        let kernel = native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         preservation::validate(&source, accepted.raw()).unwrap();
         let mut wrong = accepted.raw().clone();
@@ -2973,12 +3011,15 @@ mod tests {
     }
 
     fn example() -> ElaboratedProgram {
-        ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "unitary fn f((a,b): (Bit,Bit)) -> (Bit,Bit,Bit) { (not a, a and b, a xor b) }\n\
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "unitary fn f((a,b): (Bit,Bit)) -> (Bit,Bit,Bit) { (not a, a and b, a xor b) }\n\
              pub observe fn main() -> (Bit,Bit,Bit) { f((1,1)) }"
-                .into(),
-        )]))
+                    .into(),
+            )]),
+        )
         .unwrap()
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
         .unwrap()
@@ -2996,6 +3037,7 @@ mod tests {
         let proposal = source.lower_raw().unwrap();
         let kernel = native::Kernel::new(
             std::env::var_os("QLEISLI_KERNEL").expect("select the matching native checker"),
+            crate::edition::Edition::E2026,
         );
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         proposal.validate_source_steps(&accepted).unwrap();

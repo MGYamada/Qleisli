@@ -16,10 +16,10 @@ unitary fn scalar(q:Q<Bit>)->Q<Bit>{
 
 /// Elaborate the exact retained ordinary source using the production frontend.
 fn elaborate(entry: &str) -> ElaboratedProgram {
-    ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        format!("{HELPERS}{entry}"),
-    )]))
+    ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), format!("{HELPERS}{entry}"))]),
+    )
     .unwrap()
     .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
     .unwrap()
@@ -244,6 +244,7 @@ fn native_valid_count_mutation_cannot_replace_the_original_repeat_source() {
     let valid = lower("pub unitary fn entry(q:Q<Bit>)->Q<Bit>{power(scalar,2)(q)}");
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     kernel
         .check_against_native(valid.payload(), valid.comparison_request())
@@ -271,6 +272,7 @@ fn native_valid_count_mutation_cannot_replace_the_original_repeat_source() {
 fn native_comparison_checks_the_actual_named_transform_payloads() {
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     for entry in [
         "pub unitary fn entry(q:Q<Bit>)->Q<Bit>{power(scalar,0)(q)}",
@@ -361,6 +363,7 @@ fn native_valid_identity_cannot_replace_the_original_zero_repeat_child_root() {
     });
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     kernel.inspect(wrong.payload()).unwrap();
     assert!(
@@ -409,6 +412,7 @@ fn operation_rename_rejects_wrong_length_permutations_before_decoding_entries() 
 fn native_valid_direction_and_polarity_changes_remain_different_source_actions() {
     let kernel = hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
     );
     let valid = lower("pub unitary fn entry(q:Q<Bit>)->Q<Bit>{adjoint(scalar)(q)}");
     let inverse = node_with_tag(&valid, "inverse");
@@ -473,13 +477,16 @@ fn public_isometry_repetition_retains_its_effect_refusal() {
         let main = format!(
             "use provider::zero;fn invoke[const U:Op<Unit -> Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){{U(q)}}pub isometry fn entry(q:Q<Unit>)->Q<Unit>{{invoke[{operation}](q)}}"
         );
-        let error = match ParsedProgram::parse(BTreeMap::from([
-            (
-                "provider".into(),
-                "pub isometry fn zero(q:Q<Unit>)->Q<Unit>{basis q as label {()}}".into(),
-            ),
-            ("main".into(), main.clone()),
-        ])) {
+        let error = match ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([
+                (
+                    "provider".into(),
+                    "pub isometry fn zero(q:Q<Unit>)->Q<Unit>{basis q as label {()}}".into(),
+                ),
+                ("main".into(), main.clone()),
+            ]),
+        ) {
             Err(error) => error,
             Ok(_) => {
                 panic!("public Isometry provider unexpectedly passed the frontend effect gate")
@@ -512,12 +519,15 @@ fn materialized_unitary_repetition_before_preparation_retains_its_profile_refusa
         let source = format!(
             "unitary fn zero(q:Q<Unit>)->Q<Unit>{{basis q as label {{()}}}} isometry fn prepare(q:Q<Unit>)->Q<Bit>{{basis q as label {{0}}}} fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){{U(q)}} pub isometry fn entry(q:Q<Unit>)->Q<Bit>{{invoke[then_op({repeated},prepare)](q)}}"
         );
-        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
-            .unwrap()
-            .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap();
+        let source = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap()
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
         assert!(
             source
                 .definitions()

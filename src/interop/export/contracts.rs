@@ -271,6 +271,7 @@ mod tests {
             declared_effect: Effect::Unitary,
         };
         FunctionEvidence::check(
+            crate::edition::Edition::E2026,
             BasisType::Unit,
             raw.clone(),
             raw,

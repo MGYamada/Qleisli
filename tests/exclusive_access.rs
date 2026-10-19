@@ -94,7 +94,7 @@ fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
         unitary fn pair(a:Q<Unit>,b:Q<(Unit,Unit)>)->(Q<Unit>,Q<(Unit,Unit)>){
             let a=scalar(a);(a,b)
         }";
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let check = |source: &str| {
         qleisli::frontend::compile::check_project_report_with_kernel(
             &SourceRoot::new(source).0,
@@ -126,7 +126,7 @@ fn dormant_zero_width_ctrl_keeps_exact_owner_forests_and_fresh_requests() {
 fn dormant_ctrl_uses_physical_axis_order_after_a_zero_width_owner() {
     let base = "use std::gate::x;
         unitary fn pair(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){(a,x(b))}";
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let check = |source: &str| {
         qleisli::frontend::compile::check_project_report_with_kernel(
             &SourceRoot::new(source).0,
@@ -199,7 +199,11 @@ fn dormant_unbound_ctrl_actual_stays_conditional_until_its_real_binding() {
 }
 
 fn selected(source: &str) -> ParsedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
 }
 
 #[test]
@@ -241,7 +245,7 @@ fn checked_raw(source: &str, entry: &str) -> qleisli::interchange::native::Accep
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let proposal = source
         .lower_raw_with_kernel(
             &kernel,
@@ -343,8 +347,11 @@ fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
         let body_start = text.len() - body.len() - 1;
         let start = body_start + body.match_indices(rejected).nth(occurrence).unwrap().0;
         let expected_span = (start, start + rejected.len());
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "ownership", "{text}: {error}");
         assert!(
             error
@@ -385,7 +392,7 @@ fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
 #[test]
 fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let ordinary = "pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}";
     let baseline = selected(ordinary)
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -445,7 +452,7 @@ fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
         assert_eq!(
             source
                 .lower_raw_with_kernel(
-                    &Kernel::new(env!("CARGO_MANIFEST_DIR")),
+                    &Kernel::new(env!("CARGO_MANIFEST_DIR"), qleisli::edition::Edition::E2026),
                     &mut Budget::new(DEFAULT_EXACT_WORK)
                 )
                 .unwrap_err()
@@ -481,7 +488,7 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
         let text = format!("use std::gate::z;{body}pub unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}");
         let source = selected(&text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap().elaborate().unwrap();
-        let error = source.lower_raw_with_kernel(&Kernel::selected().unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err();
+        let error = source.lower_raw_with_kernel(&Kernel::selected(qleisli::edition::Edition::E2026).unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
         if body.contains("checked_op(identity,Flip)") {
             assert!(error.message().contains("original Meaning"), "{error}");
@@ -490,16 +497,19 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
             assert!(["h(ctrl ", "z(ctrl "].iter().any(|prefix| text[error.span().start..error.span().end].starts_with(prefix)), "{error}");
         }
     }
-    let parsed = ParsedProgram::parse(BTreeMap::from([
-        (
-            "main".into(),
-            "pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}".into(),
-        ),
-        (
-            "helper".into(),
-            "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}".into(),
-        ),
-    ]))
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            (
+                "main".into(),
+                "pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}".into(),
+            ),
+            (
+                "helper".into(),
+                "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}".into(),
+            ),
+        ]),
+    )
     .unwrap();
     let error = parsed
         .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -507,7 +517,7 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
         .elaborate()
         .unwrap()
         .lower_raw_with_kernel(
-            &Kernel::selected().unwrap(),
+            &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
             &mut Budget::new(DEFAULT_EXACT_WORK),
         )
         .unwrap_err();
@@ -527,7 +537,7 @@ fn selected_control_requires_checker_and_one_bounded_budget() {
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for limit in [0, 1, DEFAULT_EXACT_WORK + 1] {
         assert_eq!(
             source
@@ -537,7 +547,7 @@ fn selected_control_requires_checker_and_one_bounded_budget() {
             "limit"
         );
     }
-    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
+    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"), qleisli::edition::Edition::E2026);
     assert_eq!(
         source
             .lower_raw_with_kernel(&unavailable, &mut Budget::new(DEFAULT_EXACT_WORK))
@@ -605,7 +615,7 @@ fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_provi
             .unwrap();
         let error = source
             .lower_raw_with_kernel(
-                &Kernel::selected().unwrap(),
+                &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
                 &mut Budget::new(DEFAULT_EXACT_WORK),
             )
             .unwrap_err();
@@ -651,7 +661,7 @@ fn updated_owners_survive_nested_blocks_calls_and_measurement() {
             .unwrap()
             .lower_raw()
             .unwrap();
-        let concrete = Kernel::selected()
+        let concrete = Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(proposal.proposal())
             .unwrap();
@@ -684,6 +694,7 @@ fn global_calls_preserve_exact_coefficient_and_external_reference() {
         .unwrap();
     let kernel = qleisli::interchange::hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
     );
     let accepted = kernel
         .check_against_native(proposal.payload(), proposal.comparison_request())
@@ -750,7 +761,11 @@ fn overlap_spent_owner_wrong_interface_and_nonunitary_calls_refuse() {
             "{source}"
         );
         assert!(
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).is_err(),
+            ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.clone())])
+            )
+            .is_err(),
             "{source}"
         );
     }
@@ -838,7 +853,7 @@ fn finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls() {
             .unwrap();
         let error = source
             .lower_raw_with_kernel(
-                &Kernel::selected().unwrap(),
+                &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
                 &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
             )
             .unwrap_err();
@@ -887,7 +902,7 @@ fn finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase() {
     assert_eq!(raw.raw().quantum_inputs.len(), 1);
     assert!(raw.raw().quantum_inputs[0].wires.is_empty());
     let root = SourceRoot::new(source);
-    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
+    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"), qleisli::edition::Edition::E2026);
     let error = qleisli::frontend::compile::check_project_with_kernel(
         &root.0,
         qleisli::frontend::project::SourcePolicy::default(),
@@ -932,6 +947,7 @@ fn zero_width_owner_keeps_phase_and_cannot_be_duplicated() {
         .unwrap();
     let kernel = qleisli::interchange::hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
     );
     let accepted = kernel
         .check_against_native(proposal.payload(), proposal.comparison_request())
@@ -955,7 +971,13 @@ fn zero_width_owner_keeps_phase_and_cannot_be_duplicated() {
     let source = "unitary fn pair(q:Q<Unit>,r:Q<Unit>)->(Q<Unit>,Q<Unit>){(q,r)}
         pub unitary fn f(q:Q<Unit>)->Q<Unit>{pair(excl q,excl q);q}";
     assert!(check_project(&SourceRoot::new(source).0).is_err());
-    assert!(ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).is_err());
+    assert!(
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())])
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -984,8 +1006,11 @@ fn exact_owner_shape_and_actual_body_effect_are_required() {
         );
         let finite = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite.code, finite_code, "{source}\n{finite}");
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(selected.code(), selected_code, "{source}\n{selected}");
         if selected_code == "type" {
             assert!(selected.message().contains("exclusive call must return"));
@@ -1029,7 +1054,7 @@ fn reassembled_owner_and_callee_binders_do_not_restore_old_snapshot() {
         .unwrap()
         .lower_raw()
         .unwrap();
-    let concrete = Kernel::selected()
+    let concrete = Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -1140,7 +1165,10 @@ fn indexed_places_check_symbolic_bounds_and_ordered_selected_types() {
         "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{static let k=1;h(excl q[k]);h(excl q[0]);q}",
         "unitary fn id(r:Q<Bits<0>>)->Q<Bits<0>>{r}pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{id(excl q[0..0]);q}",
     ] {
-        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]));
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        );
         assert!(parsed.is_ok(), "{text}: {parsed:?}");
         assert_eq!(parsed.unwrap().source("main"), Some(text));
     }
@@ -1168,8 +1196,11 @@ fn indexed_places_refuse_unproved_bounds_overlap_and_changed_interfaces() {
         let text = format!(
             "use std::gate::cnot;unitary fn range(r:Q<Bits<1>>)->Q<Bits<1>>{{r}}unitary fn range_pair(a:Q<Bits<2>>,b:Q<Bits<1>>)->(Q<Bits<2>>,Q<Bits<1>>){{(a,b)}}unitary fn change(r:Q<Bit>)->(Q<Bit>,Unit){{(r,())}}pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{{body}}}"
         );
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
         if body.contains("170141183460469231731687303715884105727") {
             assert_eq!(
@@ -1205,8 +1236,11 @@ fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
         ),
     ] {
         let text = program.to_owned();
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
     }
 }
@@ -1225,7 +1259,7 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
         .elaborate()
         .unwrap();
     let proposal = source.lower_raw().unwrap();
-    let accepted = Kernel::selected()
+    let accepted = Kernel::selected(qleisli::edition::Edition::E2026)
         .unwrap()
         .accept(proposal.proposal())
         .unwrap();
@@ -1250,13 +1284,19 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
 #[test]
 fn symbolic_place_overlap_requires_original_binder_guards() {
     let text = "use std::gate::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<N,J<N {cnot(ctrl q[I],excl q[J]);q}";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .expect_err("disjointness is not implied by independent bounds");
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .expect_err("disjointness is not implied by independent bounds");
     assert_eq!(error.code(), "ownership");
     assert_eq!(&text[error.span().start..error.span().end], "excl q[J]");
     let text = "pub unitary fn f[const N:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{let N=0;h(excl q[N]);q}";
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-        .expect_err("runtime shadow is not a static index");
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .expect_err("runtime shadow is not a static index");
     assert_eq!(error.code(), "name", "{error}");
 }
 
@@ -1267,7 +1307,7 @@ fn symbolic_place_overlap_requires_original_binder_guards() {
 #[test]
 fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for n in 1..=3 {
         for k in 0..n {
             for (gate, flip) in [("x(excl q[K]);", true), ("z(ctrl q[K]);", false)] {
@@ -1348,7 +1388,7 @@ fn selected_indexed_places_preserve_exact_axis_phase_and_reference() {
 #[test]
 fn joint_places_reassemble_updated_values_in_original_axis_order() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for (call, control, target) in [
         ("cnot(ctrl q[0],excl q[2]);", 0, 2),
         ("cnot(ctrl q[2],excl q[0]);", 2, 0),
@@ -1434,7 +1474,7 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
 #[test]
 fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for start in 0..3 {
         for end in start + 1..=3 {
             for phase in [false, true] {
@@ -1492,7 +1532,7 @@ fn selected_place_control_rechecks_bound_provider_and_shared_work() {
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
     source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
     let spent = DEFAULT_EXACT_WORK - budget.remaining();
@@ -1504,7 +1544,7 @@ fn selected_place_control_rechecks_bound_provider_and_shared_work() {
             .code(),
         "limit"
     );
-    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
+    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"), qleisli::edition::Edition::E2026);
     assert_eq!(
         source
             .lower_raw_with_kernel(&unavailable, &mut Budget::new(DEFAULT_EXACT_WORK))
@@ -1535,7 +1575,7 @@ fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     let text = "use std::gate::x;pub unitary fn main[const R:Nat](q:Q<Bits<3>>)->Q<Bits<3>> requires R<=3 {x(excl q[2]);qfor static k in 0..R carry r=q {x(excl r[k]);let u=if static k==0 {x(excl r[2]);()}else{()};yield r;}}";
     let parsed = selected(text);
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for rounds in 0..=3 {
         let source = parsed
             .instantiate(
@@ -1572,7 +1612,7 @@ fn selected_places_mix_distinct_whole_parents_and_selected_owners() {
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let proposal = source
         .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -1610,7 +1650,7 @@ fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() 
             .unwrap()
             .elaborate()
             .unwrap();
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
         let proposal = source
             .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap();
@@ -1638,7 +1678,7 @@ fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() 
 #[test]
 fn selected_place_replay_rejects_native_valid_paired_partition_faults() {
     use qleisli::ir::RawOp;
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for (ty, place) in [("Bit", "q[1]"), ("Bits<1>", "q[1..2]")] {
         let text = format!(
             "unitary fn same(x:Q<{ty}>)->Q<{ty}>{{x}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{same(excl {place});q}}"
@@ -1695,7 +1735,7 @@ fn selected_place_inverse_keeps_original_phase_axis() {
         .unwrap()
         .elaborate()
         .unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let proposal = source
         .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
         .unwrap();
@@ -1720,7 +1760,7 @@ fn selected_place_inverse_keeps_original_phase_axis() {
 #[test]
 fn slices_keep_empty_views_and_scalar_phase_during_joint_access() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     for calls in [
         "global_phase_eighth(ctrl q[0..3]);",
         "pair(ctrl q[0..3],ctrl q[1..1]);",
@@ -1797,6 +1837,7 @@ fn closed_static_branches_and_empty_fold_thread_updated_carry() {
     let parsed = selected(source);
     let kernel = qleisli::interchange::hierarchical::Kernel::new(
         std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
     );
     let input = vec![[0.25, -0.5], [0.75, 0.125], [-0.25, 0.375], [0.5, -0.625]];
     for rounds in 0..=3 {
@@ -1857,7 +1898,7 @@ fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
             .unwrap()
             .elaborate()
             .unwrap();
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
         let proposal = source
             .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
             .unwrap();
@@ -1884,7 +1925,7 @@ fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
 #[test]
 fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     // Every position at these small widths, including both empty end pieces
     // and the zero-width remainder at width one. These expected equations are
     // built from label bits, independently of either source or IR routing.
@@ -2006,7 +2047,7 @@ fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order
         .elaborate()
         .unwrap();
     let proposal = source.lower_raw().unwrap();
-    let kernel = Kernel::selected().unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
     let accepted = kernel.accept(proposal.proposal()).unwrap();
     proposal.validate_source_steps(&accepted).unwrap();
     for fault in 0..3 {
@@ -2074,7 +2115,7 @@ fn selected_generic_register_access_retains_original_static_bounds() {
             .elaborate()
             .unwrap();
         let proposal = source.lower_raw().unwrap();
-        let accepted = Kernel::selected()
+        let accepted = Kernel::selected(qleisli::edition::Edition::E2026)
             .unwrap()
             .accept(proposal.proposal())
             .unwrap();
@@ -2090,10 +2131,10 @@ fn selected_generic_register_access_retains_original_static_bounds() {
             .is_err()
     );
     assert!(
-        ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            text.replace(" requires K<N", "")
-        )]))
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.replace(" requires K<N", ""))])
+        )
         .is_err()
     );
     assert_eq!(original.source("main"), Some(text));
@@ -2117,7 +2158,7 @@ fn selected_register_access_keeps_zero_width_phase_and_inverse_axis() {
     ] {
         let source = selected(text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap().elaborate().unwrap();
-        let kernel = Kernel::selected().unwrap();
+        let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
         let proposal = source.lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
         let target = FiniteMeaning::phase(BasisType::Bits(n), phases).unwrap();
         proposal.check_finite_meaning(&kernel, &target, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();

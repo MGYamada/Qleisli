@@ -80,6 +80,7 @@ fn request(actual: &RawProgram, basis: BasisType, expected: &Matrix) {
     )
     .unwrap();
     check_unitary(
+        qleisli::edition::Edition::E2026,
         proposal.artifact(),
         &boundary,
         expected,
@@ -372,6 +373,7 @@ fn compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use() {
     // producer's matrix proposal or source/receipt strings.
     for leaf in [actual, canonical] {
         check_unitary(
+            qleisli::edition::Edition::E2026,
             leaf.payload(),
             leaf.boundary(),
             &phase_matrix(&[0, 5]),
@@ -380,6 +382,7 @@ fn compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use() {
         .unwrap();
         assert!(
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 leaf.payload(),
                 leaf.boundary(),
                 &phase_matrix(&[0, 0]),
@@ -389,6 +392,7 @@ fn compact_205_ordinary_t_actions_bind_complete_body_to_exact_emitted_use() {
         );
         assert!(
             check_unitary(
+                qleisli::edition::Edition::E2026,
                 leaf.payload(),
                 leaf.boundary(),
                 &phase_matrix(&[4, 1]),

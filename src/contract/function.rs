@@ -230,18 +230,31 @@ impl fmt::Debug for FunctionEvidence {
 }
 
 impl FunctionEvidence {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.subject.edition()
+    }
+
     pub fn check(
+        edition: crate::edition::Edition,
         signature: BasisType,
         implementation: RawProgram,
         specification: RawProgram,
         identity: FunctionIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        Self::check_diagnostic(signature, implementation, specification, identity, budget)
-            .map_err(|diagnostic| diagnostic.error)
+        Self::check_diagnostic(
+            edition,
+            signature,
+            implementation,
+            specification,
+            identity,
+            budget,
+        )
+        .map_err(|diagnostic| diagnostic.error)
     }
 
     pub(crate) fn check_diagnostic(
+        edition: crate::edition::Edition,
         signature: BasisType,
         implementation: RawProgram,
         specification: RawProgram,
@@ -249,6 +262,7 @@ impl FunctionEvidence {
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
         Self::check_retained_diagnostic(
+            edition,
             signature,
             implementation,
             specification,
@@ -258,13 +272,14 @@ impl FunctionEvidence {
     }
 
     pub(crate) fn check_retained_diagnostic(
+        edition: crate::edition::Edition,
         signature: BasisType,
         implementation: RawProgram,
         specification: RawProgram,
         identity: RetainedIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
-        let kernel = crate::interchange::native::Kernel::selected().map_err(native_error)?;
+        let kernel = crate::interchange::native::Kernel::selected(edition).map_err(native_error)?;
         Self::check_retained_with_kernel(
             &kernel,
             signature,
@@ -1356,6 +1371,7 @@ mod snapshot_tests {
 
     fn check(sources: Arc<Vec<(String, String)>>) -> Result<FunctionEvidence, ContractDiagnostic> {
         FunctionEvidence::check_retained_diagnostic(
+            crate::edition::Edition::E2026,
             BasisType::Unit,
             raw(),
             raw(),
@@ -1439,6 +1455,7 @@ mod snapshot_tests {
         for work in [0, 99_999] {
             assert!(
                 FunctionEvidence::check_retained_diagnostic(
+                    crate::edition::Edition::E2026,
                     BasisType::Unit,
                     raw(),
                     raw(),
@@ -1454,6 +1471,7 @@ mod snapshot_tests {
             .push(RawOp::Discard { input: TokenId(0) });
         assert!(
             FunctionEvidence::check_retained_diagnostic(
+                crate::edition::Edition::E2026,
                 BasisType::Unit,
                 invalid,
                 raw(),
@@ -1472,6 +1490,7 @@ mod snapshot_tests {
         phase.quantum_outputs = vec![TokenId(1)];
         assert_eq!(
             FunctionEvidence::check_retained_diagnostic(
+                crate::edition::Edition::E2026,
                 BasisType::Unit,
                 phase,
                 raw(),
@@ -1580,6 +1599,7 @@ mod snapshot_tests {
             );
             let receipt = Arc::new(
                 FunctionEvidence::check_retained_diagnostic(
+                    crate::edition::Edition::E2026,
                     BasisType::Unit,
                     raw(),
                     raw(),
@@ -1659,6 +1679,7 @@ mod snapshot_tests {
         let before = budget.remaining();
         for _ in 0..2 {
             FunctionEvidence::check_retained_diagnostic(
+                crate::edition::Edition::E2026,
                 BasisType::Unit,
                 raw(),
                 raw(),
@@ -1671,11 +1692,12 @@ mod snapshot_tests {
         let mut exhausted = Budget::new(0);
         assert!(
             FunctionEvidence::check_retained_diagnostic(
+                crate::edition::Edition::E2026,
                 BasisType::Unit,
                 raw(),
                 raw(),
                 RetainedIdentity::shared("i".into(), "s".into(), sources),
-                &mut exhausted
+                &mut exhausted,
             )
             .is_err()
         );

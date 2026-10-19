@@ -37,7 +37,7 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
             })
             .collect();
         assert_eq!(Project::load(&root).is_ok(), finite, "finite load: {case}");
-        let selected = ParsedProgram::parse(sources);
+        let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources);
         assert_eq!(selected.is_ok(), sized, "sized check: {case}");
         match case {
             "moved-local-shadows-import" | "declaration-call-cycle" => {
@@ -74,21 +74,24 @@ fn unused_concrete_declaration_still_requires_native_eligible_effects() {
 
 #[test]
 fn same_named_host_providers_keep_distinct_definition_and_instance_identity() {
-    let program = ParsedProgram::parse(BTreeMap::from([
-        (
-            "main".into(),
-            "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}"
-                .into(),
-        ),
-        (
-            "a".into(),
-            " pub unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}".into(),
-        ),
-        (
-            "b".into(),
-            "use std::gate::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
-        ),
-    ]))
+    let program = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            (
+                "main".into(),
+                "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}"
+                    .into(),
+            ),
+            (
+                "a".into(),
+                " pub unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}".into(),
+            ),
+            (
+                "b".into(),
+                "use std::gate::x; pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
+            ),
+        ]),
+    )
     .unwrap();
     let mut proposals = Vec::new();
     for path in ["a::gate", "b::gate", "a::gate"] {

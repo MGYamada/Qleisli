@@ -21,7 +21,10 @@ unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 
 fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
 }
 
 fn both_source_checks(source: &str) {

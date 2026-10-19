@@ -13,6 +13,44 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_first_native_rust_integration_keeps_failures_and_separate_repairs(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/native-context-integration-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'e5ac7bbfe3c03d951e57879ad668f29585e5233cb4a8b96bb22f1c56500b16fb')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(2_204_866)
+        self.assertEqual(len(raw), 2_204_865)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         'b180a032ce33dc1c26fbcd77cd3240d0fe33c00dcbb8f6d2c5ee0df0f9910b98')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.native-edition-first-integration', 1))
+        self.assertEqual(len(record['records']), 113)
+        data = {}
+        for name, row in record['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            self.assertIn(row['mode'], (0o600, 0o644, 0o755))
+        self.assertEqual(json.loads(data['rust/check-first.json'])['exit_code'], 101)
+        self.assertIn(b'15 passed; 2 failed; 0 ignored', data['rust/runtime-tests.stdout'])
+        cli = json.loads(data['cli-first/observations.json'])
+        self.assertEqual(len(cli), 13)
+        self.assertEqual([row['exit_code'] for row in cli],
+                         [0] * 6 + [1] * 3 + [0, 1, 0, 2])
+        self.assertEqual(data['cli-first/before.json'], data['cli-first/after.json'])
+        first = json.loads(data['component-alias-first/observations.json'])
+        self.assertEqual([row['exit_code'] for row in first], [0, 0])
+        fixed = json.loads(data['component-followup/observations.json'])
+        self.assertEqual([row['exit_code'] for row in fixed], [0, 1, 1, 1] * 2)
+        for row in fixed:
+            self.assertTrue(row['stdout'].startswith('qleisli.native-result 3\n'))
+        self.assertIn('not captured as files', record['classification'])
+
     def test_first_migration_refusals_do_not_claim_a_completed_native_run(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/context-migration-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

@@ -5,18 +5,24 @@ use crate::frontend::compile::ParsedProgram;
 use crate::interchange::hierarchical;
 
 fn elaborate(source: &str) -> ElaboratedProgram {
-    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-        .unwrap()
-        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap()
+    ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap()
 }
 fn lower(source: &str) -> HierarchyProposal {
     elaborate(source).lower().unwrap()
 }
 fn kernel() -> hierarchical::Kernel {
-    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
+    hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        crate::edition::Edition::E2026,
+    )
 }
 fn map(value: &mut Value) -> &mut BTreeMap<String, Value> {
     let Value::Object(fields) = value else {

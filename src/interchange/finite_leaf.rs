@@ -183,13 +183,14 @@ impl CheckedSerializedUnitaryLeaf {
 /// host must additionally bind this result to its actual pending request and
 /// share payload/work limits across all requests in that artifact.
 pub fn check_serialized_unitary(
+    edition: crate::edition::Edition,
     payload: &[u8],
     boundary: &UnitaryBoundary,
     description: &[u8],
     budget: &mut Budget,
 ) -> Result<CheckedSerializedUnitaryLeaf> {
     check_serialized_with_kernel(
-        &super::native::Kernel::selected()?,
+        &super::native::Kernel::selected(edition)?,
         payload,
         boundary,
         description,
@@ -221,13 +222,14 @@ pub(super) fn check_serialized_with_kernel(
 /// exact whole-space matrix. The caller shares one bounded budget across leaves.
 /// Neither the expected matrix nor the declared effect alone is evidence.
 pub fn check_unitary(
+    edition: crate::edition::Edition,
     payload: &[u8],
     boundary: &UnitaryBoundary,
     meaning: &Matrix,
     budget: &mut Budget,
 ) -> Result<CheckedUnitaryLeaf> {
     check_with_kernel(
-        &super::native::Kernel::selected()?,
+        &super::native::Kernel::selected(edition)?,
         payload,
         boundary,
         meaning,

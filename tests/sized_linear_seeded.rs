@@ -53,7 +53,12 @@ fn seeded_generic_size_implications_agree_with_concrete_enumeration() {
             expression(input),
             expression(output)
         );
-        if ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).is_err() {
+        if ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .is_err()
+        {
             continue;
         }
         accepted_programs += 1;

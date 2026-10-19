@@ -15,8 +15,12 @@ use qleisli::sim::{SimulationLimits, run_closed};
 
 fn report(source: &str) -> qleisli::frontend::compile::ProjectCheckReport {
     let root = SourceRoot::new(source);
-    check_project_report_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
-        .unwrap_or_else(|error| panic!("{error:?}\n{source}"))
+    check_project_report_with_kernel(
+        &root.0,
+        SourcePolicy::Legacy,
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
+    )
+    .unwrap_or_else(|error| panic!("{error:?}\n{source}"))
 }
 
 fn nested_equation_decisions(source: &str) {
@@ -323,7 +327,10 @@ fn nonzero_and_generic_register_declarations_reach_finite_checking() {
 fn missing_native_checker_cannot_accept_a_newly_eligible_empty_register_root() {
     let root =
         SourceRoot::new("pub unitary fn identity(q:Q<Bits<0>>)->Q<Bits<0>>{q} fn main()->Unit{()}");
-    let kernel = Kernel::new(root.0.join("absent-native-checker"));
+    let kernel = Kernel::new(
+        root.0.join("absent-native-checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let error = compile_project_with_kernel(&root.0, SourcePolicy::Legacy, &kernel).unwrap_err();
     assert_eq!(error.code, "project", "{error:?}");
 }

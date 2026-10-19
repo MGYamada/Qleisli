@@ -2129,6 +2129,9 @@ pub(super) fn check_subject_with_meanings(
     control_work: &mut crate::contract::exact::Budget,
     meanings: &[super::CheckedMeaning],
 ) -> Result<Vec<crate::contract::instrument::InstrumentCall>> {
+    if let Some(kernel) = kernel {
+        source.require_edition(kernel.edition())?;
+    }
     let definition = source
         .definitions()
         .get(subject)
@@ -2506,12 +2509,15 @@ mod tests {
     use crate::ir::QuantumPort;
 
     fn elaborate(text: &str, entry: &str) -> ElaboratedProgram {
-        ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
-            .unwrap()
-            .instantiate(entry, BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap()
+        .instantiate(entry, BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
     }
 
     #[cfg_attr(
@@ -2568,10 +2574,13 @@ mod tests {
         assert!(error.message().contains("value cells"));
         assert!(emitter.raw.operations.is_empty());
         assert!(emitter.raw.registers.is_empty());
-        let parsed = ParsedProgram::parse(BTreeMap::from([(
-            "main".into(),
-            "pub unitary fn f(b:Bits<9>)->Bits<9>{b}".into(),
-        )]))
+        let parsed = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                "pub unitary fn f(b:Bits<9>)->Bits<9>{b}".into(),
+            )]),
+        )
         .unwrap();
         let error = parsed
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -2581,7 +2590,10 @@ mod tests {
     }
 
     fn kernel() -> Kernel {
-        Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("select the matching native checker"))
+        Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("select the matching native checker"),
+            crate::edition::Edition::E2026,
+        )
     }
 
     fn checked(source: &ElaboratedProgram, raw: RawProgram) -> AcceptedProgram {

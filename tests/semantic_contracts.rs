@@ -175,6 +175,7 @@ fn meaning(basis: BasisType, logical: Matrix) -> Contract {
 
 fn certify(basis: BasisType, steps: Vec<CircuitStep>, logical: Matrix) -> CheckedContract {
     CheckedContract::check(
+        qleisli::edition::Edition::E2026,
         Circuit::new(basis.clone(), steps).unwrap(),
         meaning(basis, logical),
         &mut work(),
@@ -204,6 +205,7 @@ fn primitive_evidence_preserves_exact_phase() {
     let global_minus = Circuit::new(BasisType::Bit, vec![monomial(&[], &[0], &[4])]).unwrap();
     assert_eq!(
         CheckedContract::check(
+            qleisli::edition::Edition::E2026,
             global_minus,
             meaning(BasisType::Bit, Matrix::identity(2).unwrap()),
             &mut work()
@@ -221,14 +223,29 @@ fn primitive_evidence_preserves_exact_phase() {
 fn computed_phase_hh_and_simultaneous_x_use_the_same_equation() {
     // f(a,b) = a and not b exposes axis and predicate changes.
     check_computed(
+        qleisli::edition::Edition::E2026,
         2,
         &[0, 1, 0, 0],
         &[phase(2, 4)],
         &[monomial(&[0, 1], &[0, 1, 2, 3], &[0, 4, 0, 0])],
     )
     .unwrap();
-    check_computed(1, &[0, 1], &[h(1), h(1)], &[]).unwrap();
-    check_computed(1, &[0, 1], &[x(0), x(1)], &[x(0)]).unwrap();
+    check_computed(
+        qleisli::edition::Edition::E2026,
+        1,
+        &[0, 1],
+        &[h(1), h(1)],
+        &[],
+    )
+    .unwrap();
+    check_computed(
+        qleisli::edition::Edition::E2026,
+        1,
+        &[0, 1],
+        &[x(0), x(1)],
+        &[x(0)],
+    )
+    .unwrap();
 }
 
 #[cfg_attr(
@@ -238,15 +255,22 @@ fn computed_phase_hh_and_simultaneous_x_use_the_same_equation() {
 #[test]
 fn computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate() {
     assert_eq!(
-        check_computed(1, &[0, 1], &[x(1)], &[]),
-        Err(ContractError::EquationMismatch)
-    );
-    assert_eq!(
-        check_computed(1, &[0, 1], &[x(0), x(1)], &[]),
+        check_computed(qleisli::edition::Edition::E2026, 1, &[0, 1], &[x(1)], &[]),
         Err(ContractError::EquationMismatch)
     );
     assert_eq!(
         check_computed(
+            qleisli::edition::Edition::E2026,
+            1,
+            &[0, 1],
+            &[x(0), x(1)],
+            &[]
+        ),
+        Err(ContractError::EquationMismatch)
+    );
+    assert_eq!(
+        check_computed(
+            qleisli::edition::Edition::E2026,
             2,
             &[0, 0, 1, 0],
             &[phase(2, 4)],
@@ -256,6 +280,7 @@ fn computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate() {
     );
     assert_eq!(
         check_computed(
+            qleisli::edition::Edition::E2026,
             2,
             &[0, 1, 0, 0],
             &[phase(2, 4)],
@@ -264,7 +289,13 @@ fn computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate() {
         Err(ContractError::EquationMismatch)
     );
     assert_eq!(
-        check_computed(1, &[0, 1], &[phase(1, 4)], &[phase(0, 1)]),
+        check_computed(
+            qleisli::edition::Edition::E2026,
+            1,
+            &[0, 1],
+            &[phase(1, 4)],
+            &[phase(0, 1)]
+        ),
         Err(ContractError::EquationMismatch)
     );
 }
@@ -279,12 +310,13 @@ fn encodings_and_logical_maps_must_be_isometric() {
         &mut work(),
     )
     .unwrap();
-    assert!(CheckedContract::identity(bad_encoding).is_err());
+    assert!(CheckedContract::identity(qleisli::edition::Edition::E2026, bad_encoding).is_err());
     let encoding = Encoding::identity(BasisType::Bit).unwrap();
     let proposed =
         Contract::new(encoding.clone(), encoding, repeated_columns, &mut work()).unwrap();
     assert!(
         CheckedContract::check(
+            qleisli::edition::Edition::E2026,
             Circuit::new(BasisType::Bit, vec![]).unwrap(),
             proposed,
             &mut work()
@@ -312,7 +344,8 @@ fn entry_requires_exact_coordinates_even_for_the_same_image() {
         &mut work(),
     )
     .unwrap();
-    let theorem = CheckedContract::identity(identity.clone()).unwrap();
+    let theorem =
+        CheckedContract::identity(qleisli::edition::Edition::E2026, identity.clone()).unwrap();
     assert_eq!(theorem.check_entry(Some(&identity)).unwrap(), &identity);
     assert_eq!(
         theorem.check_entry(None),
@@ -324,7 +357,10 @@ fn entry_requires_exact_coordinates_even_for_the_same_image() {
             Err(ContractError::EvidenceMismatch)
         );
         assert!(matches!(
-            theorem.then(&CheckedContract::identity(other).unwrap(), &mut work()),
+            theorem.then(
+                &CheckedContract::identity(qleisli::edition::Edition::E2026, other).unwrap(),
+                &mut work()
+            ),
             Err(ContractError::Type(_))
         ));
     }
@@ -344,11 +380,15 @@ fn exact_basis_tree_is_not_erased_by_equal_dimensions() {
         Err(ContractError::EvidenceMismatch)
     );
     assert!(matches!(
-        theorem.then(&CheckedContract::identity(other).unwrap(), &mut work()),
+        theorem.then(
+            &CheckedContract::identity(qleisli::edition::Edition::E2026, other).unwrap(),
+            &mut work()
+        ),
         Err(ContractError::Type(_))
     ));
     assert!(matches!(
         CheckedContract::check(
+            qleisli::edition::Edition::E2026,
             Circuit::new(bit_unit, vec![x(0)]).unwrap(),
             theorem.contract().clone(),
             &mut work()
@@ -387,12 +427,17 @@ fn sequential_proofs_use_application_order() {
 fn tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference() {
     let e = copy_encoding();
     let encoded_phase = CheckedContract::check(
+        qleisli::edition::Edition::E2026,
         Circuit::new(pair(), vec![phase(1, 1)]).unwrap(),
         Contract::new(e.clone(), e, diagonal(&[0, 1]), &mut work()).unwrap(),
         &mut work(),
     )
     .unwrap();
-    let reference = CheckedContract::identity(Encoding::identity(BasisType::Bit).unwrap()).unwrap();
+    let reference = CheckedContract::identity(
+        qleisli::edition::Edition::E2026,
+        Encoding::identity(BasisType::Bit).unwrap(),
+    )
+    .unwrap();
     let theorem = encoded_phase.tensor(&reference, &mut work()).unwrap();
     assert_eq!(theorem.contract().logical(), &diagonal(&[0, 1, 0, 1]));
     let bell = matrix(4, 1, |row, _| {
@@ -461,6 +506,7 @@ fn non_surjective_logical_isometry_cannot_be_adjointed_or_controlled() {
     let input = Encoding::new(BasisType::Unit, BasisType::Bit, zero.clone(), &mut work()).unwrap();
     let output = Encoding::identity(BasisType::Bit).unwrap();
     let theorem = CheckedContract::check(
+        qleisli::edition::Edition::E2026,
         Circuit::new(BasisType::Bit, vec![]).unwrap(),
         Contract::new(input, output, zero, &mut work()).unwrap(),
         &mut work(),
@@ -484,6 +530,7 @@ fn non_surjective_logical_isometry_cannot_be_adjointed_or_controlled() {
 fn controlled_encoded_phase_preserves_the_identity_arm() {
     let e = copy_encoding();
     let theorem = CheckedContract::check(
+        qleisli::edition::Edition::E2026,
         Circuit::new(pair(), vec![phase(1, 1)]).unwrap(),
         Contract::new(e.clone(), e, diagonal(&[0, 1]), &mut work()).unwrap(),
         &mut work(),
@@ -513,6 +560,7 @@ fn changed_encoding_blocks_control_even_when_the_logical_map_is_square() {
     let input = Encoding::identity(BasisType::Bit).unwrap();
     let output = Encoding::new(BasisType::Bit, BasisType::Bit, flip(), &mut work()).unwrap();
     let theorem = CheckedContract::check(
+        qleisli::edition::Edition::E2026,
         Circuit::new(BasisType::Bit, vec![x(0)]).unwrap(),
         Contract::new(input, output, Matrix::identity(2).unwrap(), &mut work()).unwrap(),
         &mut work(),
@@ -546,9 +594,22 @@ fn unit_has_scalar_phase_and_a_distinct_owned_type() {
         controlled.circuit().basis(),
         &BasisType::pair(BasisType::Bit, BasisType::Unit)
     );
-    check_computed(0, &[1], &[phase(0, 4)], &[monomial(&[], &[0], &[4])]).unwrap();
+    check_computed(
+        qleisli::edition::Edition::E2026,
+        0,
+        &[1],
+        &[phase(0, 4)],
+        &[monomial(&[], &[0], &[4])],
+    )
+    .unwrap();
     assert_eq!(
-        check_computed(0, &[1], &[phase(0, 4)], &[]),
+        check_computed(
+            qleisli::edition::Edition::E2026,
+            0,
+            &[1],
+            &[phase(0, 4)],
+            &[]
+        ),
         Err(ContractError::EquationMismatch)
     );
 }
@@ -609,6 +670,7 @@ fn malformed_circuits_never_become_checked_evidence() {
         if let Ok(proposal) = Circuit::new(pair(), vec![step]) {
             assert!(
                 CheckedContract::check(
+                    qleisli::edition::Edition::E2026,
                     proposal,
                     meaning(pair(), Matrix::identity(4).unwrap()),
                     &mut work()
@@ -646,6 +708,7 @@ fn capacity_and_shared_work_exhaustion_fail_closed() {
     );
     assert_eq!(
         CheckedContract::check(
+            qleisli::edition::Edition::E2026,
             theorem.circuit().clone(),
             theorem.contract().clone(),
             &mut Budget::new(0)
@@ -654,15 +717,15 @@ fn capacity_and_shared_work_exhaustion_fail_closed() {
         ContractError::Arithmetic(ExactError::WorkLimit)
     );
     assert!(matches!(
-        check_computed(6, &[], &[], &[]),
+        check_computed(qleisli::edition::Edition::E2026, 6, &[], &[], &[]),
         Err(ContractError::Limit(_))
     ));
     assert!(matches!(
-        check_computed(1, &[0], &[], &[]),
+        check_computed(qleisli::edition::Edition::E2026, 1, &[0], &[], &[]),
         Err(ContractError::Type(_))
     ));
     assert!(matches!(
-        check_computed(1, &[0, 2], &[], &[]),
+        check_computed(qleisli::edition::Edition::E2026, 1, &[0, 2], &[], &[]),
         Err(ContractError::Type(_))
     ));
 }

@@ -179,7 +179,7 @@ qleisli engineering compare-pure ACTUAL --against=REQUEST --lean-kernel=PATH --f
 containing the separate original ideal artifact, both independently specified
 matrices and ordered ports, common complete domain/codomain type trees and a
 closed canonical nonnegative dyadic budget. Each file is bounded to 16 MiB;
-the QLV2 envelope retains its existing 64 MiB limit. The exact finite-matrix
+the QLV3 envelope retains its existing 64 MiB limit. The exact finite-matrix
 carrier remains R8; no arbitrary-angle syntax or coefficient extension follows.
 
 The request has exactly these fields:
@@ -280,7 +280,7 @@ components, altered profiles, noncanonical or open budgets, a stale total
 budget, false body matrices or parent tensor equations, and arithmetic/work
 exhaustion refuse. Existing per-file, envelope, matrix and work limits apply.
 
-The dedicated QLV2 invocation accepts execution scope only. Lean compares its
+The dedicated QLV3 invocation accepts execution scope only. Lean compares its
 freshly decoded typed request and all six graphs with the retained Rust QDV1
 view in parent-actual, parent-ideal, left-actual, left-ideal, right-actual,
 right-ideal order. The private Rust report binds the immutable artifacts,
@@ -353,7 +353,7 @@ labels, matrices, probabilities or success flags replace reconstruction.
 
 The Rust request uses validated `InstrumentSignature`/`InstrumentResult` data,
 and its private `EngineeringInstrumentReport` retains both immutable artifacts,
-the original request and selected checker path. The native QLV2 invocation
+the original request and selected checker path. The native QLV3 invocation
 accepts execution scope only and compares both fresh graphs, signatures,
 identity and complete budget/witness data with the Rust execution view.
 Inspection, caller scopes, old outer frames, cross-kind replies and
@@ -453,7 +453,7 @@ coefficient majorant. The complete-adjoint bound covers every finite external
 reference and joint observable, without branch normalization.
 
 The native `--engineering-openqasm-check` mode accepts execution scope only.
-Its QLV2 body contains literal target bytes; its QDV1 comparison binds the typed
+Its QLV3 body contains literal target bytes; its QDV1 comparison binds the typed
 request, original byte array, ordered word, generated actual graph and original
 ideal graph. Decoding is charged before traversal and shares remaining work
 with the ideal reader, exact instrument reconstruction and metric check.

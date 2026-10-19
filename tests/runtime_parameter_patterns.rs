@@ -66,7 +66,11 @@ fn validation(name: &str) -> String {
 }
 
 fn parsed(input: &str) -> ParsedProgram {
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), input.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), input.into())]),
+    )
+    .unwrap();
     let cloned = parsed.clone();
     drop(parsed);
     assert_eq!(cloned.source("main"), Some(input));
@@ -80,7 +84,11 @@ fn finite_reject(input: &str, code: ErrorCode) {
 }
 
 fn sized_reject(input: &str, code: &str) {
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), input.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), input.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), code, "{error}");
     assert_eq!(error.module(), Some("main"));
     assert!(error.span().end > error.span().start, "{error}");
@@ -91,7 +99,10 @@ fn execute(
     input: &[[f64; 2]],
 ) -> Vec<[f64; 2]> {
     let proposal = program.lower().unwrap();
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let accepted = kernel
         .check_against_native(proposal.payload(), proposal.comparison_request())
         .unwrap();

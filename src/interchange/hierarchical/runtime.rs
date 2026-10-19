@@ -33,14 +33,19 @@ impl Mode {
             Self::QpeInstrument => "--qpe-instrument-pending",
         }
     }
-    fn header(self) -> &'static str {
+    fn context(self) -> crate::interchange::native_context::Mode {
+        use crate::interchange::native_context::Mode as ContextMode;
         match self {
-            Self::Inspect => "qleisli.hierarchy-pending 4",
-            Self::Request => "qleisli.hierarchy-request-pending 4",
-            Self::Fourier => "qleisli.hierarchy-fourier-pending 4",
-            Self::Instrument => "qleisli.instrument-pending 4",
-            Self::QpeInstrument => "qleisli.qpe-instrument-pending 4",
+            Self::Inspect => ContextMode::Hierarchy,
+            Self::Request => ContextMode::HierarchyRequest,
+            Self::Fourier => ContextMode::HierarchyFourier,
+            Self::Instrument => ContextMode::Instrument,
+            Self::QpeInstrument => ContextMode::QpeInstrument,
         }
+    }
+    #[cfg(test)]
+    fn header(self) -> &'static str {
+        "qleisli.native-result 3"
     }
     fn transport_limits(self) -> TransportLimits {
         match self {
@@ -52,6 +57,7 @@ impl Mode {
     }
 }
 pub(super) struct Response {
+    pub(super) context: crate::interchange::native_context::CheckedContext,
     pub(super) checker: PathBuf,
     pub(super) work: usize,
     pub(super) exact_work: usize,
@@ -62,58 +68,46 @@ pub(super) struct Response {
 
 #[cfg(test)]
 fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
-    response_bound(bytes, mode, Scope::Inspection, Path::new(""))
+    response_bound(
+        bytes,
+        mode,
+        Scope::Inspection,
+        Path::new(""),
+        crate::edition::Edition::E2026,
+    )
 }
 
-fn response_bound(bytes: &[u8], mode: Mode, scope: Scope, checker: &Path) -> Result<Response> {
-    // Main rejects a product-version mismatch before dispatching to a mode,
-    // using the common failure frame. Only this exact failure is recognized;
-    // a generic success frame never authorizes hierarchical reconstruction.
-    if bytes == b"qleisli.qirf-native 2\nerror\nversion\n" {
-        return Err(Error::new(
-            "version",
-            format!(
-                "Lean {}: native checker product version does not match {}",
-                mode.description(),
-                env!("CARGO_PKG_VERSION")
-            ),
-        ));
-    }
-    let text =
-        std::str::from_utf8(bytes).map_err(|_| Error::format("invalid runtime response UTF-8"))?;
-    let mut lines = text.split('\n');
-    if lines.next() != Some(mode.header()) {
-        return Err(Error::format("unknown runtime response"));
-    }
-    match lines.next() {
-        Some("pending") => {}
-        Some("error") => {
-            let code = match lines.next() {
-                Some("limit") => "limit",
-                Some("contract") => "contract",
-                Some("invalid_ir") => "invalid_ir",
-                Some("format") => "format",
-                Some("decoded_view") => "decoded_view",
-                _ => return Err(Error::format("unknown runtime failure")),
-            };
-            if lines.next() != Some("") || lines.next().is_some() {
-                return Err(Error::format("trailing runtime failure data"));
-            }
-            let detail = if code == "limit" {
-                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000 and shared exact-work allowance is 10000000; required work is unavailable in the native failure reply"
+fn response_bound(
+    bytes: &[u8],
+    mode: Mode,
+    scope: Scope,
+    checker: &Path,
+    edition: crate::edition::Edition,
+) -> Result<Response> {
+    use crate::interchange::native_context::{self, Reply};
+    let (context, payload) = match native_context::parse(bytes, edition, mode.context(), scope)? {
+        Reply::Checked { context, payload } => (context, payload),
+        Reply::Rejected(code) => {
+            let detail = if code == "version" {
+                format!(
+                    "native checker product version does not match {}",
+                    env!("CARGO_PKG_VERSION")
+                )
+            } else if code == "limit" {
+                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000 and shared exact-work allowance is 10000000; required work is unavailable in the native failure reply".to_owned()
+            } else if code == "edition" {
+                "the native checker does not support the requested constitutional edition"
+                    .to_owned()
             } else {
-                "the native checker rejected the artifact or request"
+                "the native checker rejected the artifact or request".to_owned()
             };
             return Err(Error::new(
                 code,
                 format!("Lean {}: {detail}", mode.description()),
             ));
         }
-        _ => return Err(Error::format("unknown runtime response status")),
-    }
-    if lines.next() != Some(scope.name()) {
-        return Err(Error::format("native execution scope disagrees"));
-    }
+    };
+    let mut lines = payload.into_iter();
     let integer = |s: Option<&str>, maximum: usize| -> Result<usize> {
         let s = s.ok_or_else(|| Error::format("truncated runtime response"))?;
         if s.is_empty()
@@ -161,10 +155,11 @@ fn response_bound(bytes: &[u8], mode: Mode, scope: Scope, checker: &Path) -> Res
     } else {
         Vec::new()
     };
-    if lines.next() != Some("") || lines.next().is_some() {
+    if lines.next().is_some() {
         return Err(Error::format("trailing runtime response data"));
     }
     Ok(Response {
+        context,
         checker: checker.to_owned(),
         work,
         exact_work,
@@ -176,11 +171,13 @@ fn response_bound(bytes: &[u8], mode: Mode, scope: Scope, checker: &Path) -> Res
 
 pub(super) fn check(
     executable: &Path,
+    edition: crate::edition::Edition,
     bytes: Vec<u8>,
     mode: Mode,
     view: Option<&[u8]>,
 ) -> Result<Response> {
     let (bytes, scope) = native_packet::encode(
+        edition,
         &bytes,
         view.map(|graph| View {
             graph,
@@ -191,7 +188,7 @@ pub(super) fn check(
         .map_err(|error| Error::new("io", format!("cannot start Lean native checker: {error}")))?;
     mode.transport_limits()
         .invoke(&checker, bytes, mode.argument(), |bytes| {
-            response_bound(bytes, mode, scope, &checker)
+            response_bound(bytes, mode, scope, &checker, edition)
         })
 }
 
@@ -208,7 +205,7 @@ mod response_diagnostics_tests {
             Mode::Instrument,
             Mode::QpeInstrument,
         ] {
-            let error = response_indices(b"qleisli.qirf-native 2\nerror\nversion\n", mode)
+            let error = response_indices(b"qleisli.native-result 3\nerror\nversion\n", mode)
                 .err()
                 .unwrap();
             assert_eq!(error.code, "version");
@@ -230,7 +227,7 @@ mod response_diagnostics_tests {
     }
 
     #[test]
-    fn native_v4_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
+    fn native_context_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
         for mode in [
             Mode::Inspect,
             Mode::Fourier,
@@ -249,16 +246,18 @@ mod response_diagnostics_tests {
                 "0\n"
             };
             let valid = format!(
-                "{}\npending\ninspection\n12\n36\n0\n{pairs}{suffix}",
-                mode.header()
+                "{}\npending\n2026\n{}\n{}\ninspection\n12\n36\n0\n{pairs}{suffix}",
+                mode.header(),
+                env!("CARGO_PKG_VERSION"),
+                mode.argument()
             );
             let response = response_indices(valid.as_bytes(), mode).unwrap();
             assert_eq!(response.work, 12);
             assert_eq!(response.exact_work, 36);
             for malformed in [
-                valid.replacen("pending 4", "pending 1", 1),
-                valid.replacen("pending 4", "pending 2", 1),
-                valid.replacen("pending 4", "pending 3", 1),
+                valid.replacen("result 3", "result 0", 1),
+                valid.replacen("result 3", "result 1", 1),
+                valid.replacen("result 3", "result 2", 1),
                 valid.replacen("inspection", "execution", 1),
                 valid.replacen("\n36\n", "\n10000001\n", 1),
                 valid.replacen("\n36\n", "\n036\n", 1),
@@ -276,7 +275,7 @@ mod response_diagnostics_tests {
         // inherited write descriptors can cause Linux ETXTBSY even after the
         // parent's write has closed. This immutable fixture varies via stdin.
         let executable = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/execution-view-binding/framing-rejection.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/framing-rejection.sh");
         for mode in [
             Mode::Inspect,
             Mode::Request,
@@ -328,11 +327,7 @@ mod response_diagnostics_tests {
                 ] {
                     let error = response_indices(malformed.as_bytes(), mode).err().unwrap();
                     assert_eq!(error.code, "format");
-                    assert!(
-                        error.message.contains("runtime failure data"),
-                        "{}",
-                        error.message
-                    );
+                    assert!(error.message.contains("native"), "{}", error.message);
                 }
             }
         }
@@ -358,8 +353,10 @@ mod response_diagnostics_tests {
                 ""
             };
             let reply = format!(
-                "{}\npending\ninspection\n42\n{}2\n0\n9\n{pairs}{hadamards}",
+                "{}\npending\n2026\n{}\n{}\ninspection\n42\n{}2\n0\n9\n{pairs}{hadamards}",
                 mode.header(),
+                env!("CARGO_PKG_VERSION"),
+                mode.argument(),
                 "36\n"
             );
             let response = response_indices(reply.as_bytes(), mode).unwrap();
@@ -407,7 +404,7 @@ mod response_diagnostics_tests {
             assert!(error.message.contains("2000000"));
             assert!(error.message.contains("required work is unavailable"));
         }
-        let reply = b"qleisli.qpe-instrument-pending 4\nerror\ncontract\n";
+        let reply = b"qleisli.native-result 3\nerror\ncontract\n";
         let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
         assert_eq!(error.code, "contract");
         assert!(!error.message.contains("capacity"));
@@ -450,7 +447,7 @@ mod checker_path_tests {
         let other = std::fs::canonicalize(other).unwrap();
         let alias = directory.join("checker-alias");
         symlink(&original, &alias).unwrap();
-        let kernel = Kernel::new(&alias);
+        let kernel = Kernel::new(&alias, crate::edition::Edition::E2026);
         let inputs = json::parse(include_bytes!(
             "../../../tests/fixtures/verification_v030/execution-view-binding/hierarchy-mode-inputs.json"
         ))

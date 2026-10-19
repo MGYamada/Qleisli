@@ -5,9 +5,8 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use qleisli::AcceptedProgram;
-use qleisli::frontend::compile::compile_project_with_kernel;
 use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
-use qleisli::frontend::project::SourcePolicy;
+use qleisli::frontend::project::{Project, SourcePolicy};
 use qleisli::interchange;
 use qleisli::interchange::native::Kernel;
 use qleisli::interop::{self, InteropErrorKind};
@@ -108,15 +107,6 @@ fn load(format: &str, path: &Path, kernel: &Kernel) -> Result<AcceptedProgram, F
             .map_err(artifact);
     }
     match format {
-        "qli" if path != Path::new("-") => compile_project_with_kernel(
-            path,
-            SourcePolicy::Bounded {
-                source_bytes: 1 << 20,
-                project_bytes: 16 << 20,
-            },
-            kernel,
-        )
-        .map_err(Failure::Diagnostic),
         "qasm" => {
             let data = bytes(path, interop::MAX_OPENQASM_BYTES)?;
             let text =
@@ -139,13 +129,19 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let action = args[0].to_str().ok_or_else(usage)?;
     *root = PathBuf::from(&args[1]);
     let (mut format, mut shots, mut seed, mut json) = (None, None, None, false);
-    let mut kernel = None;
+    let mut checker = None;
+    let mut edition: Option<qleisli::edition::Edition> = None;
     for arg in &args[2..] {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
+            Some(s) if s.starts_with("--edition=") && edition.is_none() => {
+                edition = Some(s[10..].parse().map_err(
+                    |e: qleisli::edition::UnsupportedEdition| failure("edition", e.to_string()),
+                )?);
+            }
             Some(s) if s.starts_with("--input=") && format.is_none() => format = Some(&s[8..]),
-            Some(s) if s.starts_with("--lean-kernel=") && kernel.is_none() && s.len() > 14 => {
-                kernel = Some(Kernel::new(&s[14..]));
+            Some(s) if s.starts_with("--lean-kernel=") && checker.is_none() && s.len() > 14 => {
+                checker = Some(PathBuf::from(&s[14..]));
             }
             Some(s) if s.starts_with("--shots=") && shots.is_none() => {
                 shots = Some(natural(&s[8..]).ok_or_else(usage)?)
@@ -171,11 +167,32 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
         // Match the source loader's absolute identities for JSON source spans.
         *root = std::fs::canonicalize(&*root).unwrap_or_else(|_| root.clone());
     }
-    let kernel = kernel
-        .map(Ok)
-        .unwrap_or_else(Kernel::selected)
-        .map_err(artifact)?;
-    let loaded = load(format, root, &kernel)?;
+    let selected_kernel = |edition| -> Result<Kernel, Failure> {
+        match &checker {
+            Some(path) => Ok(Kernel::new(path, edition)),
+            None => Kernel::selected(edition).map_err(artifact),
+        }
+    };
+    let loaded = if format == "qli" {
+        if edition.is_some() || root == Path::new("-") {
+            return Err(usage());
+        }
+        let project = Project::load_with_policy(
+            root,
+            SourcePolicy::Bounded {
+                source_bytes: 1 << 20,
+                project_bytes: 16 << 20,
+            },
+        )?;
+        let kernel = selected_kernel(project.edition())?;
+        project.compile_with_kernel(&kernel)?
+    } else if matches!(format, "qasm" | "qirf") {
+        let edition = edition.ok_or_else(|| failure("edition",
+            "raw/foreign input requires --edition=2026; edition selects the constitutional regime, independently of the compiler release"))?;
+        load(format, root, &selected_kernel(edition)?)?
+    } else {
+        return Err(usage());
+    };
     let program = &loaded;
     let text = match action {
         "check" => {

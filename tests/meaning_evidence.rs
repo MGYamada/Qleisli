@@ -70,8 +70,14 @@ fn complete_target_columns_include_unit_nested_trees_and_low_bit_control() {
     let low = FiniteMeaning::permutation(pair.clone(), vec![0, 3, 2, 1]).unwrap();
     let high = FiniteMeaning::permutation(pair, vec![0, 1, 3, 2]).unwrap();
     assert_eq!(
-        MeaningEvidence::check(high.target_ir().unwrap(), low, identity(), &mut budget())
-            .unwrap_err(),
+        MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            high.target_ir().unwrap(),
+            low,
+            identity(),
+            &mut budget()
+        )
+        .unwrap_err(),
         ContractError::EquationMismatch
     );
 }
@@ -84,8 +90,14 @@ fn complete_target_columns_include_unit_nested_trees_and_low_bit_control() {
 fn retained_target_rejects_stale_source_raw_axes_phase_and_exact_tree() {
     let target = FiniteMeaning::phase(BasisType::Bit, vec![0, 4]).unwrap();
     let raw = target.target_ir().unwrap();
-    let evidence =
-        MeaningEvidence::check(raw.clone(), target.clone(), identity(), &mut budget()).unwrap();
+    let evidence = MeaningEvidence::check(
+        qleisli::edition::Edition::E2026,
+        raw.clone(),
+        target.clone(),
+        identity(),
+        &mut budget(),
+    )
+    .unwrap();
     evidence.check_binding(&raw, &target, &identity()).unwrap();
     let mut changed = identity();
     changed.sources[0].1.push('!');
@@ -153,6 +165,7 @@ fn malformed_meanings_and_budget_exhaustion_cannot_issue_receipts() {
     );
     assert!(
         MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
             target.target_ir().unwrap(),
             target,
             identity(),
@@ -175,12 +188,25 @@ fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
         // including the zero-wire owner. It cannot be discarded as identity.
         let target = FiniteMeaning::phase(basis.clone(), vec![1; dimension]).unwrap();
         let raw = target.target_ir().unwrap();
-        let evidence =
-            MeaningEvidence::check(raw.clone(), target.clone(), identity(), &mut budget()).unwrap();
+        let evidence = MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            raw.clone(),
+            target.clone(),
+            identity(),
+            &mut budget(),
+        )
+        .unwrap();
         evidence.check_binding(&raw, &target, &identity()).unwrap();
         let false_target = FiniteMeaning::phase(basis, vec![0; dimension]).unwrap();
         assert_eq!(
-            MeaningEvidence::check(raw, false_target, identity(), &mut budget()).unwrap_err(),
+            MeaningEvidence::check(
+                qleisli::edition::Edition::E2026,
+                raw,
+                false_target,
+                identity(),
+                &mut budget()
+            )
+            .unwrap_err(),
             ContractError::EquationMismatch,
         );
     }
@@ -200,12 +226,19 @@ fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
         assert_eq!(atomic.bits().unwrap(), same_width_tree.bits().unwrap());
         let target = FiniteMeaning::phase(atomic, vec![1; dimension]).unwrap();
         let raw = target.target_ir().unwrap();
-        let evidence =
-            MeaningEvidence::check(raw.clone(), target.clone(), identity(), &mut budget()).unwrap();
+        let evidence = MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
+            raw.clone(),
+            target.clone(),
+            identity(),
+            &mut budget(),
+        )
+        .unwrap();
         let substituted = FiniteMeaning::phase(same_width_tree, vec![1; dimension]).unwrap();
         // This alternative is itself valid, but cannot substitute its basis
         // identity for the original immutable target of an accepted receipt.
         MeaningEvidence::check(
+            qleisli::edition::Edition::E2026,
             substituted.target_ir().unwrap(),
             substituted.clone(),
             identity(),
@@ -227,6 +260,7 @@ fn bits_receipts_preserve_atomic_identity_and_reject_false_phase() {
 fn controlled_bits_zero_phase_is_an_exact_relative_phase() {
     let scalar = FiniteMeaning::phase(BasisType::Bits(0), vec![1]).unwrap();
     let evidence = MeaningEvidence::check(
+        qleisli::edition::Edition::E2026,
         scalar.target_ir().unwrap(),
         scalar,
         identity(),
@@ -270,7 +304,13 @@ fn controlled_bits_zero_phase_is_an_exact_relative_phase() {
             &mut budget(),
         )
         .unwrap();
-        CheckedContract::check(circuit.clone(), contract, &mut budget()).unwrap();
+        CheckedContract::check(
+            qleisli::edition::Edition::E2026,
+            circuit.clone(),
+            contract,
+            &mut budget(),
+        )
+        .unwrap();
         let false_identity = Contract::new(
             encoding.clone(),
             encoding,
@@ -279,7 +319,13 @@ fn controlled_bits_zero_phase_is_an_exact_relative_phase() {
         )
         .unwrap();
         assert_eq!(
-            CheckedContract::check(circuit, false_identity, &mut budget()).unwrap_err(),
+            CheckedContract::check(
+                qleisli::edition::Edition::E2026,
+                circuit,
+                false_identity,
+                &mut budget()
+            )
+            .unwrap_err(),
             ContractError::EquationMismatch,
         );
     }

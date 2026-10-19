@@ -9,7 +9,11 @@ development milestones from the scope of their evidence.
 - Retain explicit typed constitutional edition requests and exact selecting/
   nested manifest bytes through filesystem project preparation; reject root
   or module-inventory substitution. Retained configuration shares the existing
-  aggregate input budget. Native edition propagation under #255 remains pending.
+  aggregate input budget. Propagate captured editions into explicitly bound
+  Rust kernels and QLV3 native decisions; strictly match edition, complete
+  product version, mode and scope in version-3 replies. Raw/foreign/engineering
+  commands require an explicit edition. Complete helper/ecosystem migration,
+  current-evidence continuity and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert
   history with exact-byte integrity checks; edition propagation remains pending.

@@ -33,13 +33,18 @@ fn forbidden_exits_have_original_locations_and_structured_alternatives() {
                 assert!(error.message.contains(reason), "{error}");
                 assert!(error.message.contains("final expression"), "{error}");
                 assert!(error.message.contains("every quantum owner"), "{error}");
-                let selected =
-                    ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))
-                        .unwrap_err();
+                let selected = ParsedProgram::parse(
+                    qleisli::edition::Edition::E2026,
+                    BTreeMap::from([("main".into(), text.clone())]),
+                )
+                .unwrap_err();
                 assert_eq!(selected.code(), "parse");
                 assert_eq!(selected.span(), error.span);
                 let root = SourceRoot::new(&text);
-                let absent = Kernel::new(root.0.join("not-executed-kernel"));
+                let absent = Kernel::new(
+                    root.0.join("not-executed-kernel"),
+                    qleisli::edition::Edition::E2026,
+                );
                 let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &absent)
                     .unwrap_err();
                 assert_eq!(finite.code, "parse");
@@ -67,13 +72,17 @@ fn ordinary_names_comments_and_inequality_never_become_runtime_exits() {
         tokens[1].kind,
         qleisli::frontend::lexer::TokenKind::NotEqual
     );
-    let selected = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let selected = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     assert!(selected.function_effect("main::forward").is_some());
     let root = SourceRoot::new(text);
     check_project_with_kernel(
         &root.0,
         SourcePolicy::default(),
-        &Kernel::selected().unwrap(),
+        &Kernel::selected(qleisli::edition::Edition::E2026).unwrap(),
     )
     .unwrap();
     for kind in ["unitary", "isometry", "observe"] {
@@ -146,15 +155,21 @@ fn final_branches_cannot_drop_or_exchange_unaccounted_quantum_owners() {
     ] {
         let text = format!("{text}\nobserve fn main()->Bit{{1}}");
         parse_module(&text).unwrap();
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.clone())]),
+        )
+        .unwrap_err();
         assert_ne!(selected.code(), "parse");
         assert_ne!(selected.code(), "unsupported");
         let root = SourceRoot::new(&text);
         let finite = check_project_with_kernel(
             &root.0,
             SourcePolicy::default(),
-            &Kernel::new(root.0.join("not-executed-kernel")),
+            &Kernel::new(
+                root.0.join("not-executed-kernel"),
+                qleisli::edition::Edition::E2026,
+            ),
         )
         .unwrap_err();
         assert_ne!(finite.code, "parse");
@@ -183,14 +198,20 @@ fn static_range_arithmetic_and_shape_refuse_before_native_acceptance() {
         ),
     ] {
         parse_module(text).unwrap();
-        let selected =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap_err();
+        let selected = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap_err();
         assert_eq!(selected.code(), selected_code);
         let root = SourceRoot::new(text);
         let finite = check_project_with_kernel(
             &root.0,
             SourcePolicy::default(),
-            &Kernel::new(root.0.join("not-executed-kernel")),
+            &Kernel::new(
+                root.0.join("not-executed-kernel"),
+                qleisli::edition::Edition::E2026,
+            ),
         )
         .unwrap_err();
         assert_eq!(finite.code, finite_code, "{}", finite.message);
@@ -217,7 +238,11 @@ fn explicit_alternatives_keep_correlated_owners_and_host_limits_stay_separate() 
             let (tag,a)=choose(b,a);
             (b,tag,measure_z(a),measure_z(r))
         }";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     // The common body judgment succeeds. The selected lowering's existing
     // runtime-if restriction is a preparation refusal, not an execution edge.
     let error = parsed

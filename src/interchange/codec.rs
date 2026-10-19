@@ -137,6 +137,7 @@ mod tests {
     fn every_frozen_raw_operation_and_action_preserves_its_fields() {
         let target = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();
         let receipt = MeaningEvidence::check(
+            crate::edition::Edition::E2026,
             target.target_ir().unwrap(),
             target,
             FunctionIdentity {

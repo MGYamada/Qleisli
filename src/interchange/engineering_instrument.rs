@@ -103,6 +103,7 @@ impl EngineeringInstrumentRequest {
 
 #[derive(Debug)]
 struct Subject {
+    edition: crate::edition::Edition,
     actual: AcceptedProgram,
     ideal: AcceptedProgram,
     request: EngineeringInstrumentRequest,
@@ -112,6 +113,7 @@ struct Subject {
 
 #[derive(Debug)]
 struct Decision {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
@@ -135,11 +137,15 @@ struct Decision {
 /// ```
 #[derive(Debug)]
 pub struct EngineeringInstrumentReport {
+    context: super::native_context::CheckedContext,
     subject: Arc<Subject>,
     exact_work: usize,
 }
 
 impl EngineeringInstrumentReport {
+    pub fn edition(&self) -> crate::edition::Edition {
+        self.context.edition()
+    }
     pub fn actual_artifact(&self) -> &[u8] {
         self.subject.actual.artifact()
     }
@@ -208,9 +214,19 @@ impl Subject {
                 ));
             }
         }
+        if [actual, ideal]
+            .iter()
+            .any(|p| p.edition() != kernel.edition())
+        {
+            return Err(Error::new(
+                "edition",
+                "engineering inputs belong to a different edition",
+            ));
+        }
         let checker = std::fs::canonicalize(kernel.checker_path())
             .map_err(|e| Error::new("io", format!("cannot resolve Lean checker: {e}")))?;
         Ok(Arc::new(Self {
+            edition: kernel.edition(),
             actual: actual.clone(),
             ideal: ideal.clone(),
             request: request.clone(),
@@ -234,6 +250,7 @@ impl Subject {
             &self.ideal,
         )?;
         let (packet, scope) = super::native_packet::encode(
+            self.edition,
             &original,
             Some(super::native_packet::View {
                 graph: &graph,
@@ -249,13 +266,14 @@ impl Subject {
     }
 
     fn bind(self: Arc<Self>, decision: Decision) -> Result<EngineeringInstrumentReport> {
-        if !Arc::ptr_eq(&self, &decision.subject) {
+        if !Arc::ptr_eq(&self, &decision.subject) || decision.context.edition() != self.edition {
             return Err(Error::new(
                 "kernel",
                 "engineering instrument decision belongs to a different subject",
             ));
         }
         Ok(EngineeringInstrumentReport {
+            context: decision.context,
             subject: self,
             exact_work: decision.exact_work,
         })
@@ -274,10 +292,11 @@ pub fn check_with_kernel(
 }
 
 fn submit(subject: Arc<Subject>) -> Result<EngineeringInstrumentReport> {
-    let exact_work = runtime::check(&subject.checker, subject.packet()?)?;
+    let native = runtime::check(&subject.checker, subject.packet()?, subject.edition)?;
     let decision = Decision {
         subject: Arc::clone(&subject),
-        exact_work,
+        exact_work: native.exact_work,
+        context: native.context,
     };
     subject.bind(decision)
 }
@@ -312,7 +331,7 @@ pub fn check(
     ideal: &AcceptedProgram,
     request: &EngineeringInstrumentRequest,
 ) -> Result<EngineeringInstrumentReport> {
-    check_with_kernel(&Kernel::selected()?, actual, ideal, request)
+    check_with_kernel(&Kernel::selected(actual.edition())?, actual, ideal, request)
 }
 
 fn dyadic_value(value: DyadicBound) -> Value {

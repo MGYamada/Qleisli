@@ -11,7 +11,11 @@ use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 fn elaborate(source: &str, entry: &str, naturals: BTreeMap<String, u32>) -> ElaboratedProgram {
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
     // Retained source and owned lexical identities must survive the original
     // parsed value's lifetime, including helper calls and specialization.
     let retained = parsed.clone();
@@ -30,7 +34,10 @@ fn accept(graph: &ElaboratedProgram) -> AcceptedProgram {
         proposal.source().instantiation().program().source("main"),
         graph.instantiation().program().source("main")
     );
-    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
     let accepted = kernel.accept(proposal.proposal()).unwrap();
     assert_eq!(accepted.artifact(), proposal.payload());
     assert!(accepted.request().is_none());
@@ -55,7 +62,11 @@ fn both_closed(source: &str, expected: &[bool]) -> ElaboratedProgram {
 }
 
 fn sized_reject(source: &str, code: &str) {
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap_err();
     assert_eq!(error.code(), code, "{error}");
     assert_eq!(error.module(), Some("main"), "{error}");
     assert!(error.span().end > error.span().start, "{error}");
@@ -526,10 +537,13 @@ fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
 #[test]
 fn ordinary_basis_substitutions_keep_register_and_product_tags() {
     use qleisli::frontend::compile::BasisBinding;
-    let parsed = ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        "pub unitary fn f[const A:Basis](b:A)->A{b}".into(),
-    )]))
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([(
+            "main".into(),
+            "pub unitary fn f[const A:Basis](b:A)->A{b}".into(),
+        )]),
+    )
     .unwrap();
     for (ty, width) in [
         ("Unit", 0),
@@ -591,7 +605,11 @@ fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
         unitary fn provider[const B:Basis](q:Q<B>)->Q<B>{
         let b=prepend_bit[1](0,prepend_bit[0](1,empty_bits()));let _=copy(b);q}
         pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)}";
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    let parsed = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap();
     for ty in ["Unit", "Bits<0>", "Bits<1>", "Bits<2>"] {
         let binding = BasisBinding::parse(ty).unwrap();
         let graph = parsed
@@ -650,16 +668,22 @@ fn register_type_coercions_and_quantum_copy_drop_still_reject() {
         "pub unitary fn f(b:Bits<2>)->(Bit,Bit){b}",
         "pub unitary fn f(b:(Bits<0>,Bit))->(Unit,Bit){b}",
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "type", "{error}");
     }
     for source in [
         "pub unitary fn f(q:Q<Bits<0>>)->(Q<Bits<0>>,Q<Bits<0>>){(q,q)}",
         "pub unitary fn f(q:Q<Bits<1>>)->Unit{let _=q;()}",
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
         assert_eq!(error.code(), "ownership", "{error}");
     }
 }

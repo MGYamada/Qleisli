@@ -302,10 +302,13 @@ mod visibility_tests {
 
     #[test]
     fn private_definitions_remain_visible_in_their_own_module() {
-        let program = ParsedProgram::parse(BTreeMap::from([(
-            "local".into(),
-            "unitary fn f(q: Q<Bit>) -> Q<Bit> { q }".into(),
-        )]))
+        let program = ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([(
+                "local".into(),
+                "unitary fn f(q: Q<Bit>) -> Q<Bit> { q }".into(),
+            )]),
+        )
         .unwrap();
         let span = Span::default();
         assert!(visible_definition(&program, "local::f", Some("local"), span).is_ok());

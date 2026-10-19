@@ -601,14 +601,17 @@ mod tests {
         proposal_with_source(SOURCE)
     }
     fn proposal_with_source(source: &str) -> HierarchyProposal {
-        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
-            .unwrap()
-            .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
-            .unwrap()
-            .lower()
-            .unwrap()
+        ParsedProgram::parse(
+            crate::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap()
+        .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap()
     }
 
     #[test]
@@ -654,8 +657,10 @@ mod tests {
     )]
     #[test]
     fn native_original_and_factored_fixed_fourier_keep_complex_reference_and_full_phase() {
-        let kernel =
-            Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+            crate::edition::Edition::E2026,
+        );
         let proposal = proposal();
         let original = &proposal.fourier_transport.as_ref().unwrap().original;
         let checked = kernel
@@ -703,8 +708,10 @@ mod tests {
     )]
     #[test]
     fn native_valid_x_cannot_replace_the_retained_fixed_fourier_h() {
-        let kernel =
-            Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"));
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+            crate::edition::Edition::E2026,
+        );
         let mut changed = proposal();
         let mut work = REPLAY_WORK;
         let (actual, _, _) = graph(&changed.graph, &mut work).unwrap();
@@ -804,7 +811,7 @@ mod tests {
         }
         let proposal = proposal();
         assert!(proposal.fourier_transport.is_some());
-        let kernel = Kernel::new(&executable);
+        let kernel = Kernel::new(&executable, crate::edition::Edition::E2026);
         let checked = kernel
             .check_instrument_native(proposal.payload(), proposal.comparison_request())
             .unwrap();

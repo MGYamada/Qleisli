@@ -11,6 +11,42 @@ use std::{collections::BTreeMap, fs, process::Command};
 const SOURCE: &str = "observe fn main() -> Bit { 1 }";
 
 #[test]
+fn selected_modules_keep_the_manifest_that_supplied_their_explicit_edition() {
+    use qleisli::edition::Edition;
+    let root = SourceRoot::new(SOURCE);
+    let original = fs::read_to_string(root.0.join("Qargo.toml")).unwrap();
+    let program =
+        ParsedProgram::load(BTreeMap::from([("main".into(), root.0.join("main.qli"))])).unwrap();
+    root.write("Qargo.toml", "schema-version=2\n[qrate]\nedition='2027'\n");
+    assert_eq!(program.edition(), Edition::E2026);
+    assert_eq!(program.module_manifest("main").unwrap().source(), original);
+    assert!(program.module_manifest("std::gate").is_none());
+    assert!(
+        ParsedProgram::load(BTreeMap::from([("main".into(), root.0.join("main.qli"),)])).is_err()
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn retained_project_checks_the_captured_manifest_without_later_reselection() {
+    use qleisli::{edition::Edition, interchange::native::Kernel};
+    let root = SourceRoot::new(SOURCE);
+    let project = Project::load(&root.0).unwrap();
+    let original = project.module_manifest("main").unwrap().source().to_owned();
+    let kernel = Kernel::selected(project.edition()).unwrap();
+    root.write("Qargo.toml", "schema-version=2\n[qrate]\nedition='2027'\n");
+    project.check_report_with_kernel(&kernel).unwrap();
+    let accepted = project.compile_with_kernel(&kernel).unwrap();
+    assert_eq!(accepted.edition(), Edition::E2026);
+    assert_eq!(kernel.edition(), accepted.edition());
+    assert_eq!(project.module_manifest("main").unwrap().source(), original);
+    assert!(Project::load(&root.0).is_err());
+}
+
+#[test]
 fn qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits() {
     use qleisli::edition::Edition;
     use qleisli::frontend::project::QrateSource;

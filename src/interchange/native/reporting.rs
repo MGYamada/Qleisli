@@ -204,7 +204,7 @@ mod tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     fn successful_invocations_include_cloned_and_reconstructed_kernels_only_in_their_scope() {
-        let selected = Kernel::selected().unwrap();
+        let selected = Kernel::selected(crate::edition::Edition::E2026).unwrap();
         let (kernel, log) = selected.recording();
         let (separate, separate_log) = kernel.recording();
         let program = kernel.check(ARTIFACT, None).unwrap().into_program();
@@ -234,6 +234,7 @@ mod tests {
             .replace("[0,1]", "[0,4]");
         assert!(clone.inspect(ARTIFACT, Some(wrong.as_bytes())).is_err());
         let missing = Kernel {
+            edition: selected.edition(),
             executable: PathBuf::from("/nonexistent/qleisli-observer-checker"),
             decisions: Some(log.clone()),
         };
@@ -293,7 +294,7 @@ mod tests {
         let b = std::fs::canonicalize(b).unwrap();
         let link = directory.join("selected");
         symlink(&a, &link).unwrap();
-        let (kernel, log) = Kernel::new(&link).recording();
+        let (kernel, log) = Kernel::new(&link, crate::edition::Edition::E2026).recording();
         let program = kernel.check(ARTIFACT, None).unwrap().into_program();
         assert_eq!(program.checker(), a);
         std::fs::remove_file(&link).unwrap();

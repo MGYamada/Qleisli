@@ -8,8 +8,8 @@ use std::path::Path;
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args = std::env::args_os().skip(1).collect::<Vec<_>>();
-    if args.len() != 2 {
-        return Err("usage: interop <qasm-check|qasm-run|qasm-canonical|qasm-to-qir|qli-to-qasm|qli-to-qir> <path>".into());
+    if !(2..=3).contains(&args.len()) {
+        return Err("usage: interop <qasm-check|qasm-run|qasm-canonical|qasm-to-qir|qli-to-qasm|qli-to-qir> <path> [--edition=2026 (required for QASM)]".into());
     }
     let mode = args[0].to_str().ok_or("mode must be UTF-8")?;
     if !matches!(
@@ -19,6 +19,20 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("unknown interop mode".into());
     }
     let path = Path::new(&args[1]);
+    let edition = if mode.starts_with("qasm-") {
+        Some(
+            args.get(2)
+                .and_then(|value| value.to_str())
+                .and_then(|value| value.strip_prefix("--edition="))
+                .ok_or("QASM input requires an explicit --edition=2026 constitutional regime")?
+                .parse::<qleisli::edition::Edition>()?,
+        )
+    } else {
+        if args.len() != 2 {
+            return Err("source input selects its edition from Qargo.toml".into());
+        }
+        None
+    };
     let program = if mode.starts_with("qli-") {
         compile_project(path)?
     } else {
@@ -29,7 +43,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         if bytes.len() > MAX_OPENQASM_BYTES {
             return Err("OpenQASM input exceeds 1 MiB".into());
         }
-        import_openqasm3(std::str::from_utf8(&bytes)?)?
+        import_openqasm3(
+            edition.ok_or("QASM edition is absent")?,
+            std::str::from_utf8(&bytes)?,
+        )?
     };
     let text = match mode {
         "qasm-check" => "verified terminal-profile IR\n".to_owned(),
