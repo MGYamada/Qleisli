@@ -13,6 +13,47 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class FirstNativeEdition(unittest.TestCase):
+    def test_capacity_history_keeps_the_first_oracle_and_actual_failures(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-capacity-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'f838c733283878a32b1be03f16190f49748dce7bd8b3d46f9752a5d7d0ed8bd0')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(93_122)
+        self.assertEqual(len(raw), 93_121)
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '60ab92b384799800eebfc5eb1d0dd08b3d05a11b335afa1c7b6d4c49f3cf4eb9')
+        record = json.loads(raw)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.capacity-consumer-first-observations', 1))
+        self.assertEqual(record['source_head'], '4f3cff5c914ff83f2103102698a559d5648166d2')
+        self.assertEqual(set(record['records']), {
+            'original/tests/source_capacities.rs', 'original/tests/common/mod.rs',
+            'original/tests/Qargo.toml', 'source-capacity-ci-first.json',
+            'source-capacity-local-first.json', 'observe-capacity-before.py',
+            'validate-capacity-after.py', 'source-capacity-validation.json',
+        })
+        data = {}
+        for name, row in record['records'].items():
+            data[name] = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(data[name]), hashlib.sha256(data[name]).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        self.assertIn(b'let total = loaded.modules.values().map(|m| m.source.len() as u64).sum();',
+                      data['original/tests/source_capacities.rs'])
+        hosted = json.loads(data['source-capacity-ci-first.json'])
+        self.assertEqual(hosted['headRevision'], record['source_head'])
+        self.assertEqual(hosted['job']['conclusion'], 'failure')
+        self.assertFalse(hosted['logTruncated'])
+        self.assertIn('policy(total)).is_ok()', hosted['log'])
+        first = json.loads(data['source-capacity-local-first.json'])
+        self.assertEqual(first['exit_code'], 101)
+        self.assertTrue(first['source_unchanged'])
+        repaired = json.loads(data['source-capacity-validation.json'])
+        self.assertTrue(repaired['source_unchanged'])
+        self.assertEqual([row['label'] for row in repaired['commands']],
+                         ['normal-tests', 'normal-clippy', 'msrv-tests', 'msrv-clippy'])
+        self.assertEqual([row['exit_code'] for row in repaired['commands']], [0, 0, 0, 0])
+        self.assertEqual(record['separate_observer_attempt']['exit_code'], 130)
+
     def test_consumer_observer_failures_remain_separate_from_product_results(self):
         stored = (ROOT / 'tests/fixtures/authoring_sessions/native-edition-v030/consumer-observer-first.json.gz').read_bytes()
         self.assertEqual(hashlib.sha256(stored).hexdigest(),

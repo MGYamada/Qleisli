@@ -29,7 +29,8 @@ development milestones from the scope of their evidence.
   Update Rustdoc and raw CLI/foreign-format test consumers to pass explicit
   editions while preserving their original IO, contract and atomic-output checks.
   Count retained manifest bytes in the aggregate-capacity regression oracle,
-  preserving the exact-boundary and one-byte-over-limit checks.
+  preserving the exact-boundary and one-byte-over-limit checks; pin its original
+  source and failures in the existing passive history-integrity reader.
   Complete ecosystem migration and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert
