@@ -279,7 +279,7 @@ edition, compiled product version, canonical mode and checked scope to the
 actual checked subject. Those fields do not authenticate the native executable
 or establish source/runtime preservation.
 
-The [release records](../../../.github/ci/README.md) retain edition, product and
+The [release records](https://github.com/MGYamada/Qleisli/blob/b7e472b3a06d177be8f6adc4fd910680573d25d9/.github/ci/README.md) retain edition, product and
 format identities alongside the actual commit, artifacts, checker/proof scope
 and ledger identity. Version synchronization does not migrate an edition or
 constitute ratification. Release validation, source compatibility and a
