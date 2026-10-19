@@ -96,17 +96,18 @@ ENGINEERING_INSTRUMENT_BOUNDARY = {
         'QIRF text. No supplied outcome labels, matrices, probabilities or success flags.'
     ),
     'binding': (
-        'One execution-only QLV2 invocation retains original actual QIRF and request bytes, freshly decodes '
+        'One explicit-edition execution-only QLV3 invocation retains original actual QIRF and request bytes, freshly decodes '
         'both original graphs, checks both full interfaces and complete Kraus reconstructions, then checks '
         'the coefficient bound and exact typed QDV1 equality for the full request and both retained graphs. '
         'Private allocation-bound report has no exact accepted-program/Meaning, pure-phase, inverse/control, '
         'cleanup or resource conversion; epsilon zero retains the same engineering claim kind.'
     ),
     'encoding': (
-        'QLV2 execution scope with QLV1 original body/request and independently walked QDV1 '
+        'QLV3 execution scope and explicit edition with QLV1 original body/request and independently walked QDV1 '
         'engineering-instrument-request/engineering-instrument records; distinct '
-        'qleisli.engineering-instrument-native 1 / engineering-checked / execution response. '
-        'Inspection/caller scope, old outer QLV1 and other native response kinds reject.'
+        'qleisli.native-result 3 / engineering-checked / --qirf-engineering-instrument-native / execution response, '
+        'matching the invoked edition and complete product version. Inspection/caller scope, old outer '
+        'QLV1/QLV2 and other native modes or claim kinds reject.'
     ),
     'domain': (
         'Existing bounded R8 observing instruments with one quantum input owner, empty classical inputs, '
@@ -116,7 +117,7 @@ ENGINEERING_INSTRUMENT_BOUNDARY = {
         'lemmas do not certify original source/QIRF composition or a native composed request.'
     ),
     'limits': (
-        'Unchanged 16 MiB per-file/request and 64 MiB QLV2 envelope/view limits, existing six-bit dense '
+        'Unchanged 16 MiB per-file/request and 64 MiB QLV3 envelope/view limits, existing six-bit dense '
         'reconstruction, i128 canonical dyadics with denominator exponent at most 126, one shared 10M '
         'native checker-work budget and 60s process timeout. Checker work is not emitted resource cost.'
     ),
@@ -148,7 +149,7 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
         'canonical nonnegative total epsilon exactly equal to the checked component sum.'
     ),
     'binding': (
-        'One execution-only QLV2 invocation freshly decodes six original artifacts and checks each '
+        'One explicit-edition execution-only QLV3 invocation freshly decodes six original artifacts and checks each '
         'dependency order, full ordered interface, body matrix and exact Gram equation. Both parent '
         'matrices must equal independently computed low-first tensors. Component inequalities and '
         'exact budget addition share one work chain; no whole-parent Frobenius substitution. QDV1 '
@@ -157,10 +158,11 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
         'including epsilon zero.'
     ),
     'encoding': (
-        'QLV2 execution scope with original QLV1 parent body/request; QDV1 engineering-pure-tensor '
+        'QLV3 execution scope and explicit edition with original QLV1 parent body/request; QDV1 engineering-pure-tensor '
         'record contains typed request and parent actual/ideal, left actual/ideal, right actual/ideal '
-        'graphs in that order. Distinct qleisli.engineering-pure-tensor-native 1 / engineering-checked '
-        '/ execution response; old outer frames, inspection/caller scope and cross-kind replies reject.'
+        'graphs in that order. Distinct qleisli.native-result 3 / engineering-checked / --engineering-pure-tensor-check '
+        '/ execution response, matching the invoked edition and complete product version; old outer '
+        'frames, inspection/caller scope and cross-mode or cross-kind replies reject.'
     ),
     'domain': (
         'Exactly two bounded rectangular R8 pure comparisons with exact phase, original dependencies, '
@@ -170,7 +172,7 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
         'preservation remain separate.'
     ),
     'limits': (
-        'Unchanged 16 MiB per-file/request, 64 MiB QLV2 envelope/view, dimension-64 exact matrices, '
+        'Unchanged 16 MiB per-file/request, 64 MiB QLV3 envelope/view, dimension-64 exact matrices, '
         'i128 canonical dyadics with denominator exponent at most 126, one shared 10M checker-work '
         'budget and 60s process timeout. Checker work is not program/target execution-resource cost.'
     ),
@@ -200,7 +202,7 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
             'Unit -> classical Bit. Original independent ideal QIRF text, source identity, canonical '
             'nonnegative closed dyadic epsilon and ordered unsquared coefficient majorants remain explicit; '
             'no producer matrices or success flags.',
- 'binding': 'The original QLV1 body contains literal target bytes. One execution-only QLV2 invocation '
+ 'binding': 'The original QLV1 body contains literal target bytes. One explicit-edition execution-only QLV3 invocation '
             'independently decodes that canonical byte sequence, constructs its actual Raw graph with an '
             'explicit zero-width Unit input owner consumed before preparation, freshly reads/checks the '
             'original ideal and dependencies, and checks both complete Kraus instruments and the coefficient '
@@ -208,11 +210,12 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
             'gate word, generated actual graph and original ideal graph. A private allocation-bound report '
             'grants no exact accepted-program, source/export, control/inverse, cleanup, resource or '
             'constitutional conversion, including epsilon zero.',
- 'encoding': 'QLV2 execution scope with original QLV1 literal target body/request and QDV1 '
+ 'encoding': 'QLV3 execution scope and explicit edition with original QLV1 literal target body/request and QDV1 '
              'engineering-openqasm record containing typed request, literal byte array, ordered gate-name '
              'array, generated actual graph and original ideal graph. Distinct '
-             'qleisli.engineering-openqasm-native 1 / engineering-checked / execution response; '
-             'inspection/caller scope, old outer frames and cross-kind replies reject.',
+             'qleisli.native-result 3 / engineering-checked / --engineering-openqasm-check / execution response, '
+             'matching the invoked edition and complete product version; inspection/caller scope, old '
+             'outer frames and cross-mode or cross-kind replies reject.',
  'domain': 'Canonical closed one-qubit OpenQASM 3.0: fixed stdgates.inc declaration, one qubit and one '
            'classical Bit, explicit reset, at most eight h/x/y/z/s/sdg/t/tdg gates and one terminal ordered '
            'measurement. The decoder loads no includes. Independent word-to-Raw meaning data reuse existing '

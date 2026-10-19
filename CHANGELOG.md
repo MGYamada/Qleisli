@@ -16,7 +16,10 @@ development milestones from the scope of their evidence.
   clients and packaging helpers to the same explicit context; preserve existing
   hierarchy diagnostic classifications. Require explicit Python client/CLI
   editions and retain them in Program data; source interop assertions compare
-  the captured manifest without overriding it. Complete ecosystem migration,
+  the captured manifest without overriding it. Track the current native mode
+  tables, Main's actual adapter and wrapper-to-original checker bindings in
+  production coverage; reject extra aliases, altered layout and missing context
+  guards. Complete ecosystem migration,
   current-evidence continuity and CI under #255 remain pending.
 
 - Preserve the original native-edition source/diagnostic study as bounded inert

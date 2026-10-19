@@ -288,7 +288,7 @@ class ProductionCoverage(unittest.TestCase):
             with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'path|route'):
                 coverage.check(coverage.ROOT, data, self.inventory)
 
-    def check_changed_source(self, name, old, new):
+    def check_changed_source(self, name, old, new, checker=None):
         read = Path.read_text
         selected = coverage.ROOT/name
         self.assertIn(old, selected.read_text())
@@ -296,18 +296,85 @@ class ProductionCoverage(unittest.TestCase):
             text = read(path, *args, **kwargs)
             return text.replace(old, new, 1) if path == selected else text
         with patch.object(Path, 'read_text', altered):
-            coverage.check(coverage.ROOT, self.data, self.inventory)
+            if checker is None:
+                coverage.check(coverage.ROOT, self.data, self.inventory)
+            else:
+                checker(coverage.ROOT)
+
+    def test_current_native_dispatch_uses_all_thirteen_canonical_modes(self):
+        self.assertEqual(coverage.check_native_dispatch(coverage.ROOT),
+                         {mode for row in self.data['paths'] for mode in row['native_modes']})
 
     def test_new_removed_and_redirected_native_modes_reject(self):
-        line = '| "--qirf-native" => some QleisliKernel.Cli.runValidity'
+        line = '| "--qirf-native" => some .ordinary'
         replacements = (
             line + '\n  | "--new-mode" => none',
+            line + '\n  | "native-alias" => some .ordinary',
+            line + '\n  ' + line,
             '',
-            '| "--qirf-native" => some (QleisliKernel.Cli.runValidity true)',
+            '| "--qirf-native" => some .contract',
         )
         for replacement in replacements:
             with self.subTest(replacement=replacement), self.assertRaisesRegex(ValueError, 'native mode'):
-                self.check_changed_source('lean-kernel/Main.lean', line, replacement)
+                self.check_changed_source('lean-kernel/Protocol/NativeContext.lean', line, replacement,
+                                          coverage.check_native_dispatch)
+
+    def test_accepting_default_or_inconsistent_mode_name_rejects(self):
+        for old, new in (
+            ('| _ => none', '| _ => some .ordinary'),
+            ('| .ordinary => "--qirf-native"', '| .ordinary => "--alias"'),
+            ('def Mode.parse : String → Option Mode',
+             'private def parseOther : String → Option Mode'),
+        ):
+            with self.subTest(new=new), self.assertRaisesRegex(ValueError, 'native mode'):
+                self.check_changed_source('lean-kernel/Protocol/NativeContext.lean', old, new,
+                                          coverage.check_native_dispatch)
+
+    def test_native_main_cannot_bypass_context_or_missing_version_check(self):
+        for old, new in (
+            ('QleisliKernel.Cli.runNativeContext selected version',
+             'QleisliKernel.Cli.runValidity version'),
+            ('QleisliKernel.Cli.runNativeContext selected ""',
+             'QleisliKernel.Cli.runNativeContext selected "0.3.0-beta"'),
+            ('| [mode, version] =>', '| [mode, version] =>\n    return 0\n  | [mode, version] =>'),
+            ('    | none => QleisliKernel.Cli.run mode version',
+             '  | none => QleisliKernel.Cli.run mode version'),
+            ('| _ => QleisliKernel.Cli.usage', '| _ => pure 0'),
+        ):
+            with self.subTest(new=new), self.assertRaisesRegex(ValueError, 'native dispatch'):
+                self.check_changed_source('lean-kernel/Main.lean', old, new,
+                                          coverage.check_native_dispatch)
+
+    def test_native_context_guards_and_original_bindings_are_required(self):
+        for path, markers in (
+            ('lean-kernel/Protocol/NativeContext.lean', [
+                'guard (requestedProduct == productVersion) .version',
+                'let input ← lift (Packet.read bytes)\n  let value ← check mode bytes',
+                'guard (decide (scope mode value = input.scope)) .packet',
+                'theorem run_edition ',
+            ]),
+            ('lean-kernel/Protocol/ExecutionView/Packet.lean', [
+                'else if u32 bytes 4 != 2026 then .error .edition',
+            ]),
+            ('src/interchange/native_context.rs', [
+                'fields[1] != mode.status()', 'fields[2] != edition.as_str()',
+                'fields[3] != env!("CARGO_PKG_VERSION")',
+                'fields[4] != mode.argument()', 'fields[5] != scope.name()',
+                '!mode.permits(scope)',
+            ]),
+            ('lean-kernel/Protocol/NativeContext/Bindings.lean', [
+                'theorem run_ordinary_root_safe ', 'theorem run_contract_binding ',
+                'theorem run_hierarchy_binding ', 'theorem run_engineering_pure_binding ',
+                'theorem run_engineering_tensor_binding ',
+                'theorem run_engineering_instrument_binding ',
+                'theorem run_engineering_target_binding ',
+                'theorem run_readout_binding ', 'theorem run_preparation_binding ',
+            ]),
+        ):
+            for marker in markers:
+                self.assertEqual((coverage.ROOT/path).read_text().count(marker), 1)
+                with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                    self.check_changed_source(path, marker, 'removed binding')
 
     def test_missing_bound_source_or_checker_declaration_reject(self):
         selected = coverage.ROOT/'lean-kernel/Protocol/NativeContract.lean'
