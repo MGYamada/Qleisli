@@ -4,6 +4,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Scope notes: "tests/fixtures/authoring_sessions/finite-adts-v030/README.md".
 # Original bytes: "tests/fixtures/authoring_sessions/finite-adts-v030/first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/index.json".
+# Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
 import hashlib
 import io
 import json
