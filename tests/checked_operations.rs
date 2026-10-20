@@ -1415,6 +1415,27 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     .unwrap()
     .elaborate()
     .unwrap();
-    // Direct qualified runtime calls remain outside the existing grammar.
-    assert!(parse_module("unitary fn power(q:Q<Bit>)->Q<Bit>{q} pub unitary fn f(q:Q<Bit>)->Q<Bit>{main::power(q)}").is_err());
+    // Qualification selects an ordinary declaration under the #58 contract;
+    // its name does not turn this one-argument call into the power constructor.
+    let text =
+        "unitary fn power(q:Q<Bit>)->Q<Bit>{q} pub unitary fn f(q:Q<Bit>)->Q<Bit>{main::power(q)}";
+    check_project(&SourceRoot::new(text).0).unwrap();
+    let selected = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources(text))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    assert!(
+        selected
+            .definitions()
+            .iter()
+            .any(|definition| definition.path() == "main::power")
+    );
+    let raw = selected.lower_raw().unwrap();
+    let accepted = qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026)
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
 }

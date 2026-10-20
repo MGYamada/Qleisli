@@ -18,7 +18,6 @@ const REJECTED: &[(&str, &str)] = &[
     ("meaning_pair_predicate", "type_mismatch"),
     ("product_association", "type_mismatch"),
     ("sealed_provider", "type_mismatch"),
-    ("missing_import", "unknown_name"),
     ("spent_owner", "ownership"),
     ("aliased_owner", "ownership"),
     ("dropped_owner", "ownership"),
@@ -96,6 +95,23 @@ fn message_distribution(tail: &[bool]) -> Vec<(Vec<bool>, f64)> {
             (bits, 0.25)
         })
         .collect()
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn historical_missing_import_uses_default_prelude_and_explicit_optout() {
+    // Keep the historical filename and original bytes. The default form is now
+    // valid; a separately constructed explicit-mode source retains the refusal.
+    let original = fixture("rejected/missing_import");
+    distribution(&execute(&SourceRoot::new(&original)), &[(vec![false], 1.0)]);
+    let explicit = format!("#![no_implicit_prelude]\n{original}");
+    let error = check_project_diagnostic(&SourceRoot::new(&explicit).0).unwrap_err();
+    assert_eq!(error.code, "unknown_name");
+    let location = error.primary.expect("explicit-mode source has a location");
+    assert_eq!(&explicit[location.span.start..location.span.end], "init0");
 }
 
 #[cfg_attr(
@@ -613,6 +629,7 @@ fn every_source_fixture_belongs_to_an_exercised_case() {
     // These original limitation fixtures now have positive semantic tests.
     expected.insert("rejected/static_nat".into());
     expected.insert("rejected/auxiliary_hh".into());
+    expected.insert("rejected/missing_import".into());
     for name in [
         "teleport_missing_phase",
         "teleport_swapped_message",
