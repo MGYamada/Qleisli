@@ -350,6 +350,7 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
         "std::basis",
         "std::gate",
         "std::measurement",
+        "std::prelude",
         "std::reflection",
         "std::state",
         "std::structure",
