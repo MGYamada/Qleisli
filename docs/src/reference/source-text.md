@@ -44,12 +44,12 @@ these diagnostic forms grant neither. See the
 
 One private source collection retains complete original bytes, common AST and
 provenance. Filesystem entries retain their selected path; in-memory entries
-carry no invented file or manifest. Both loaders add the fixed registry's seven
+carry no invented file or manifest. Both loaders add the fixed registry's eight
 ordinary source modules and validate its edition-2026 manifest. Both loaders
 apply their byte policies to bundled bytes before copying or parsing;
 placement under `std::` supplies no checking exemption. The selected loader
-also reserves all seven bundled module slots. It accepts 1 through 57 supplied
-modules: the seven bundles count toward its
+also reserves all eight bundled module slots. It accepts 1 through 56 supplied
+modules: the eight bundles count toward its
 64-module ceiling and its 1 MiB aggregate byte limit. Its 64 KiB/module limit
 also applies. Finite bounded and explicit legacy byte-loading policies remain
 separate; this unit does not make an unbounded byte loader bounded.
@@ -485,8 +485,9 @@ does not erase the computation that produced its argument.
 ## Declaration resolution and current profiles
 
 Unqualified calls resolve lexical runtime/static bindings first, then ordinary
-same-module declarations or explicit imports, and only then a language primitive
-when the spelling is genuinely unbound. A moved binding, wrong callable category
+same-module declarations or explicit imports, then the six derived names in
+the [ordinary prelude](prelude.md), and only then a language primitive when the
+spelling is genuinely unbound. A moved binding, wrong callable category
 or failed ordinary type/effect/access check remains the selected use and error;
 there is no fallback. The canonical primitive identities and complete migration
 of the 27 retired qualified entries are in the
@@ -535,14 +536,16 @@ retry through a same-named global declaration.
 `src/frontend/resolve.rs` and `resolve/locals.rs` retain canonical declaration,
 lexical-use and original-span associations. The common typed primitive catalog
 has 13 bare typed identities; finite and selected concrete emitters retain
-their profile-specific adapters. The seven ordinary bundled modules undergo the same common
-judgment as caller source. No ambient standard-library discovery, replacement
-of reserved `std` modules or new alias/re-export syntax is admitted here.
+their profile-specific adapters. The eight ordinary bundled modules undergo the same common
+judgment as caller source. Transparent `pub use`, root-qualified references and
+the explicit prelude opt-out follow the [prelude/import contract](prelude.md).
+There is no ambient standard-library discovery or replacement of reserved `std`
+modules; `as`, glob and relative imports remain unsupported.
 Source facts, concrete capability and independent native acceptance remain
-separate responsibilities. Remaining lowering and namespace integration is
-tracked in [#32](https://github.com/MGYamada/Qleisli/issues/32),
-[#41](https://github.com/MGYamada/Qleisli/issues/41) and
-[#65](https://github.com/MGYamada/Qleisli/issues/65).
+separate responsibilities. Remaining lowering integration is tracked in
+[#32](https://github.com/MGYamada/Qleisli/issues/32); the current prelude/import
+integration and its conformance evidence are tracked in
+[#58](https://github.com/MGYamada/Qleisli/issues/58).
 
 ## Migration and evidence
 

@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "3ae5a94aaac5f77dee033faba55ebd3920fee728d602f4b21edd1a991b2d83fe",
+  "surface_sha256": "443a5afa4d3ac21f5fda0fd0e998b793a14f47fc963406e4f394cbb159914dae",
   "groups": [
     {
       "id": "raw-core",
@@ -207,7 +207,12 @@
         "stdlib/src/structure.qli",
         "scripts/test_generic_dormant_first.py",
         "tests/computed_derived_source.rs",
-        "src/frontend/compile/lower/computed_phase.rs"
+        "src/frontend/compile/lower/computed_phase.rs",
+        "src/frontend/resolve/exports.rs",
+        "stdlib/src/prelude.qli",
+        "tests/shared_resolution/prelude.rs",
+        "scripts/test_prelude_first.py",
+        "docs/src/reference/prelude.md"
       ],
       "proof_gates": [
         "S05-C1",
@@ -826,7 +831,12 @@
         "src/frontend/specialize/elaborate/basis.rs",
         "scripts/test_empty_basis_first.py",
         "src/frontend/specialize/lower/zero_basis/tests.rs",
-        "src/frontend/specialize/lower/preservation/isometry_tests.rs"
+        "src/frontend/specialize/lower/preservation/isometry_tests.rs",
+        "src/frontend/resolve/exports.rs",
+        "stdlib/src/prelude.qli",
+        "tests/shared_resolution/prelude.rs",
+        "scripts/test_prelude_first.py",
+        "docs/src/reference/prelude.md"
       ],
       "proof_gates": [
         "S05-C1",

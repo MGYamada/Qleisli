@@ -8,6 +8,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::ast::{FnKind, Module, Span};
 
+mod exports;
 pub(super) mod locals;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -36,11 +37,22 @@ pub(super) struct Declaration {
 struct ModuleNames {
     name: String,
     declarations: BTreeMap<String, DefId>,
+    exports: BTreeMap<String, ExportBinding>,
+    no_implicit_prelude: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct ExportBinding {
+    target: DefId,
+    /// Next source module in this exact public path. Retain resolver inputs
+    /// without copying an entire transitive chain into every cached alias.
+    next: ModuleId,
 }
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct Scope {
     pub imports: BTreeMap<String, Target>,
+    import_modules: BTreeMap<String, ModuleId>,
     pub edges: Vec<(ModuleId, Span)>,
 }
 
@@ -62,6 +74,8 @@ pub(super) enum FailureKind {
     Collision(String),
     Duplicate(String),
     DuplicateImport(String),
+    ExportCycle(String),
+    PreludePrimitive(String),
 }
 
 #[derive(Clone, Debug)]
@@ -107,7 +121,7 @@ impl Resolution {
             declarations: Vec::new(),
             scopes: BTreeMap::new(),
         };
-        for (name, ast) in ordered {
+        for (&name, &ast) in &ordered {
             charge(ast.span, 1)?;
             let module = ModuleId(result.modules.len());
             let mut names = BTreeMap::new();
@@ -146,12 +160,16 @@ impl Resolution {
                     .and_then(|n| n.checked_add(2))
                     .unwrap_or(usize::MAX),
             )?;
+            charge(ast.span, 2)?;
             result.names.insert(name.into(), module);
             result.modules.push(ModuleNames {
                 name: name.into(),
                 declarations,
+                exports: BTreeMap::new(),
+                no_implicit_prelude: ast.no_implicit_prelude,
             });
         }
+        exports::prepare(&mut result, &ordered, &mut charge)?;
         Ok(result)
     }
 
@@ -186,11 +204,19 @@ impl Resolution {
         let owner = self
             .module(module)
             .ok_or_else(|| FailureKind::MissingModule(module.into()))?;
-        self.local(owner, name)
+        self.member(owner, name)
             .ok_or_else(|| FailureKind::MissingName {
                 module: module.into(),
                 name: name.into(),
             })
+    }
+    fn member(&self, module: ModuleId, name: &str) -> Option<DefId> {
+        self.local(module, name).or_else(|| {
+            self.modules[module.0]
+                .exports
+                .get(name)
+                .map(|binding| binding.target)
+        })
     }
     /// An absent requester is a host entry selection, with no module privilege.
     pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool {
@@ -204,6 +230,9 @@ impl Resolution {
         self.scopes.insert(module, scope);
     }
     pub fn lookup(&self, module: ModuleId, name: &str) -> Option<Target> {
+        if name.contains("::") {
+            return self.lookup_visible(module, name).ok().flatten();
+        }
         self.local(module, name)
             .map(Target::Declaration)
             .or_else(|| {
@@ -211,7 +240,82 @@ impl Resolution {
                     .get(&module)
                     .and_then(|scope| scope.imports.get(name).copied())
             })
+            .or_else(|| {
+                if self.modules[module.0].no_implicit_prelude {
+                    return None;
+                }
+                let prelude = self.module("std::prelude")?;
+                self.modules[prelude.0]
+                    .exports
+                    .get(name)
+                    .map(|binding| Target::Declaration(binding.target))
+            })
             .or_else(|| PrimitiveId::lookup_unbound(name).map(Target::Primitive))
+    }
+
+    /// Qualified references use the module namespace and original visibility,
+    /// with no lexical, prelude or primitive fallback after a failed selection.
+    pub fn lookup_visible(
+        &self,
+        caller: ModuleId,
+        name: &str,
+    ) -> Result<Option<Target>, FailureKind> {
+        if let Some((module, item)) = name.rsplit_once("::") {
+            if super::primitive::retired_name_hint(module, item).is_some() {
+                return Err(FailureKind::UnknownPrimitive {
+                    module: module.into(),
+                    name: item.into(),
+                });
+            }
+            let id = self.qualified(name)?;
+            if !self.visible(id, Some(caller)) {
+                return Err(FailureKind::Private(name.into()));
+            }
+            Ok(Some(Target::Declaration(id)))
+        } else {
+            Ok(self.lookup(caller, name))
+        }
+    }
+
+    /// Visit the exact source modules used to resolve one original global use.
+    /// Canonical declaration identity does not erase an implicit opening or
+    /// explicit reexport chain from the source/dependency snapshot.
+    pub fn visit_name_sources<E>(
+        &self,
+        caller: ModuleId,
+        name: &str,
+        mut visit: impl FnMut(ModuleId) -> Result<(), E>,
+    ) -> Result<(), E> {
+        let (owner, item) = if let Some((module, item)) = name.rsplit_once("::") {
+            (self.module(module), item)
+        } else if self.local(caller, name).is_some() {
+            (Some(caller), name)
+        } else if let Some(owner) = self
+            .scopes
+            .get(&caller)
+            .and_then(|s| s.import_modules.get(name))
+        {
+            (Some(*owner), name)
+        } else if !self.modules[caller.0].no_implicit_prelude {
+            (
+                self.module("std::prelude")
+                    .filter(|owner| self.modules[owner.0].exports.contains_key(name)),
+                name,
+            )
+        } else {
+            (None, name)
+        };
+        let Some(mut owner) = owner else {
+            return Ok(());
+        };
+        loop {
+            visit(owner)?;
+            match self.modules[owner.0].exports.get(item) {
+                Some(binding) => owner = binding.next,
+                None => break,
+            }
+        }
+        Ok(())
     }
 
     /// Source name resolution has one policy and one fixed typed primitive catalog.
@@ -303,7 +407,7 @@ impl Resolution {
                 charge(usage.span, self.module_name(caller).len() + 1)?;
                 return Err(failure(FailureKind::MissingModule(module), usage.span));
             };
-            let Some(id) = self.local(owner, &last.text) else {
+            let Some(id) = self.member(owner, &last.text) else {
                 charge(
                     last.span,
                     self.module_name(caller).len() + last.text.len() + 1,
@@ -351,7 +455,11 @@ impl Resolution {
                     last.span,
                 ));
             }
-            charge(last.span, last.text.len() + 1)?;
+            charge(
+                last.span,
+                last.text.len().saturating_mul(2).saturating_add(2),
+            )?;
+            scope.import_modules.insert(last.text.clone(), owner);
             scope.imports.insert(last.text.clone(), target);
         }
         Ok(scope)
@@ -517,7 +625,12 @@ mod tests {
     fn constructed_empty_import_is_a_located_error() {
         let span = Span::new(9, 12);
         let ast = Module {
-            uses: vec![UseDecl { path: vec![], span }],
+            no_implicit_prelude: false,
+            uses: vec![UseDecl {
+                public: false,
+                path: vec![],
+                span,
+            }],
             decls: vec![],
             span,
         };

@@ -7,6 +7,8 @@ use super::documentation::DocComment;
 pub enum TokenKind {
     Ident(String),
     Use,
+    Hash,
+    HeaderBang,
     Meaning,
     Static,
     Op,
@@ -142,6 +144,8 @@ impl TokenKind {
         match self {
             Self::Ident(_) => "identifier",
             Self::Use => "`use`",
+            Self::Hash => "`#`",
+            Self::HeaderBang => "`!` after `#`",
             Self::Meaning => "`meaning`",
             Self::Static => "`static`",
             Self::Op => "`Op`",
@@ -293,6 +297,7 @@ fn scan(
             },
             Kind::Eof => TokenKind::Eof,
             Kind::Punctuation(ch) => match ch {
+                '#' => TokenKind::Hash,
                 '(' => TokenKind::LParen,
                 '[' => TokenKind::LBracket,
                 ']' => TokenKind::RBracket,
@@ -307,6 +312,9 @@ fn scan(
                 '=' if scanner.join(&mut token, '=') => TokenKind::EqualEqual,
                 '=' => TokenKind::Equals,
                 '!' if scanner.join(&mut token, '=') => TokenKind::NotEqual,
+                '!' if tokens.last().is_some_and(|t| t.kind == TokenKind::Hash) => {
+                    TokenKind::HeaderBang
+                }
                 '.' if scanner.join(&mut token, '.') => TokenKind::DotDot,
                 '+' => TokenKind::Plus,
                 '*' => TokenKind::Star,

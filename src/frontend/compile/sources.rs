@@ -266,7 +266,14 @@ impl<'a> Collector<'a, '_> {
         for usage in table.resolved_uses() {
             self.charge(2)?;
             match usage.target {
-                ResolvedUse::Global(Target::Declaration(next)) => self.root(next, None)?,
+                ResolvedUse::Global(Target::Declaration(next)) => {
+                    self.charge(usage.name.len().saturating_add(1))?;
+                    let resolution = &self.compiler.source.resolution;
+                    resolution.visit_name_sources(record.module, &usage.name, |owner| {
+                        self.source(resolution.module_name(owner), None)
+                    })?;
+                    self.root(next, None)?;
+                }
                 ResolvedUse::Global(Target::Primitive(_)) => {}
                 ResolvedUse::Local(id) if table.try_binder(id).is_some() => {}
                 _ => {

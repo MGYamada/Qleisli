@@ -1,5 +1,16 @@
 # VM-22: frozen verification boundaries
 
+The #58 prelude integration reviews fourteen changed frontend source pins and
+adds the ordinary export resolver and `stdlib/src/prelude.qli`. The two new
+lexer tokens describe only the leading module header. The public AST records
+module opt-out and import visibility; qualified references and fallible lexical
+lookup retain original targets, public effects and source/export dependencies.
+The small current native conformance cases compare complete instruments and
+independent exact gate meanings rather than issued receipt-ID equality.
+This source inventory change adds no language primitive, Raw/Lean constructor,
+native acceptance route or budget. Historical packets, comparison artifacts and
+requests and both protected scoped guarantees retain their original identities.
+
 The single-file documentation budget repair reviews the project loader's
 current source pin. It charges the already captured selecting manifest before
 source reading, retaining the public API, legacy policy and initial overflow

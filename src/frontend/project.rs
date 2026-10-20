@@ -725,6 +725,10 @@ impl Project {
                 format!("name `{name}` collides with another declaration or import")
             }
             FailureKind::Duplicate(name) => format!("duplicate declaration `{name}`"),
+            FailureKind::ExportCycle(path) => format!("public reexport cycle at `{path}`"),
+            FailureKind::PreludePrimitive(name) => {
+                format!("std::prelude cannot reexport language primitive spelling `{name}`")
+            }
         };
         source_error(&self.modules[&failure.module], failure.span, message)
     }

@@ -124,10 +124,27 @@ impl Parser {
     }
 
     fn module(&mut self, source_len: usize) -> Result<Module, ParseError> {
+        let no_implicit_prelude = self.consume(&TokenKind::Hash).is_some();
+        if no_implicit_prelude {
+            self.expect(&TokenKind::HeaderBang)?;
+            self.expect(&TokenKind::LBracket)?;
+            self.expect_word("no_implicit_prelude")?;
+            self.expect(&TokenKind::RBracket)?;
+        }
         let mut uses = Vec::new();
         let mut decls = Vec::new();
         while !self.at(&TokenKind::Eof) {
-            if self.at(&TokenKind::Use) {
+            if self.at(&TokenKind::Hash) {
+                return Err(self.error(
+                    "`#![no_implicit_prelude]` may occur only once before imports and declarations",
+                ));
+            } else if self.at(&TokenKind::Use)
+                || (self.at(&TokenKind::Pub)
+                    && self
+                        .tokens
+                        .get(self.pos + 1)
+                        .is_some_and(|t| t.kind == TokenKind::Use))
+            {
                 uses.extend(self.use_decl()?);
             } else if self.at(&TokenKind::Pub)
                 || self.at(&TokenKind::Classical)
@@ -145,6 +162,7 @@ impl Parser {
             }
         }
         Ok(Module {
+            no_implicit_prelude,
             uses,
             decls,
             span: Span::new(0, source_len),
@@ -152,12 +170,17 @@ impl Parser {
     }
 
     fn use_decl(&mut self) -> Result<Vec<UseDecl>, ParseError> {
-        let start = self.expect(&TokenKind::Use)?.span.start;
+        let public = self.consume(&TokenKind::Pub);
+        let start = public
+            .as_ref()
+            .map_or(self.current().span.start, |t| t.span.start);
+        self.expect(&TokenKind::Use)?;
         let paths = self.use_tree(&[])?;
         let end = self.expect(&TokenKind::Semicolon)?.span.end;
         Ok(paths
             .into_iter()
             .map(|path| UseDecl {
+                public: public.is_some(),
                 path,
                 span: Span::new(start, end),
             })
@@ -258,16 +281,16 @@ impl Parser {
             let body = if self.word("reference") {
                 self.bump();
                 self.expect(&TokenKind::LParen)?;
-                let function = self.ident()?;
+                let function = self.reference_name()?;
                 self.expect(&TokenKind::RParen)?;
                 FnBody::MeaningReference { function }
             } else if self.word("compose") || self.word("tensor") {
                 let tensor = self.word("tensor");
                 self.bump();
                 self.expect(&TokenKind::LParen)?;
-                let first = self.ident()?;
+                let first = self.reference_name()?;
                 self.expect(&TokenKind::Comma)?;
-                let second = self.ident()?;
+                let second = self.reference_name()?;
                 self.expect(&TokenKind::RParen)?;
                 if tensor {
                     FnBody::MeaningTensor {
@@ -285,7 +308,7 @@ impl Parser {
                     false
                 };
                 self.expect(&TokenKind::LParen)?;
-                let function = self.ident()?;
+                let function = self.reference_name()?;
                 self.expect(&TokenKind::RParen)?;
                 FnBody::Meaning {
                     permutation,
@@ -375,7 +398,7 @@ impl Parser {
                         None
                     };
                     let meaning = if self.consume(&TokenKind::Comma).is_some() {
-                        Some(self.ident()?)
+                        Some(self.reference_name()?)
                     } else {
                         None
                     };
@@ -637,11 +660,11 @@ impl Parser {
         self.expect(&TokenKind::LParen)?;
         let kind = match constructor.kind {
             TokenKind::BindOp => {
-                let implementation = self.ident()?;
+                let implementation = self.reference_name()?;
                 self.expect(&TokenKind::Comma)?;
                 StaticOpKind::Bind {
                     implementation,
-                    meaning: self.ident()?,
+                    meaning: self.reference_name()?,
                 }
             }
             TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp => {
@@ -766,6 +789,15 @@ impl Parser {
                     },
                 };
                 parser.bump();
+                let (kind, name_span) = if let NatKind::Name(name) = kind {
+                    let reference = parser.reference_tail(Ident {
+                        text: name,
+                        span: token.span,
+                    })?;
+                    (NatKind::Name(reference.text), reference.span)
+                } else {
+                    (kind, token.span)
+                };
                 if let NatKind::Name(ref name) = kind {
                     // f[n] without () remains an operation specialization.
                     let call = if parser.at(&TokenKind::LBracket) {
@@ -796,7 +828,7 @@ impl Parser {
                     if call {
                         let callee = Ident {
                             text: name.clone(),
-                            span: token.span,
+                            span: name_span,
                         };
                         let mut arguments = Vec::new();
                         if parser.consume(&TokenKind::LBracket).is_some() {
@@ -818,7 +850,7 @@ impl Parser {
                         );
                     }
                 }
-                Self::natural_node(kind, token.span)
+                Self::natural_node(kind, name_span)
             }
         })
     }
@@ -1614,11 +1646,11 @@ impl Parser {
         self.expect(&TokenKind::LBrace)?;
         self.expect(&TokenKind::Zero)?;
         self.expect(&TokenKind::FatArrow)?;
-        let zero = self.ident()?;
+        let zero = self.reference_name()?;
         self.expect(&TokenKind::Comma)?;
         self.expect(&TokenKind::One)?;
         self.expect(&TokenKind::FatArrow)?;
-        let one = self.ident()?;
+        let one = self.reference_name()?;
         let end = self.expect(&TokenKind::RBrace)?;
         Ok(Expr {
             kind: ExprKind::QuantumIf {
@@ -1697,9 +1729,9 @@ impl Parser {
         self.expect(&TokenKind::LParen)?;
         let source = self.expr()?;
         self.expect(&TokenKind::Comma)?;
-        let function = self.ident()?;
+        let function = self.reference_name()?;
         let logical = if self.consume(&TokenKind::Comma).is_some() {
-            Some(self.ident()?)
+            Some(self.reference_name()?)
         } else {
             None
         };
@@ -1738,9 +1770,9 @@ impl Parser {
 
     fn apply_contract(&mut self, start: Span) -> Result<Expr, ParseError> {
         self.expect(&TokenKind::LParen)?;
-        let implementation = self.ident()?;
+        let implementation = self.reference_name()?;
         self.expect(&TokenKind::Comma)?;
-        let specification = self.ident()?;
+        let specification = self.reference_name()?;
         self.expect(&TokenKind::Comma)?;
         let input = Box::new(self.expr()?);
         let end = self.expect(&TokenKind::RParen)?;
@@ -1810,50 +1842,7 @@ impl Parser {
     }
 
     fn named_expr(&mut self) -> Result<Expr, ParseError> {
-        let ident = self.ident()?;
-        if self.at(&TokenKind::DoubleColon) {
-            let mut path = ident.text.clone();
-            let mut last = ident.text.as_str();
-            let mut end = self.current().span;
-            let mut position = self.pos;
-            while self
-                .tokens
-                .get(position)
-                .is_some_and(|t| t.kind == TokenKind::DoubleColon)
-            {
-                let Some(token) = self.tokens.get(position + 1) else {
-                    break;
-                };
-                let segment = match &token.kind {
-                    TokenKind::Ident(name) => name.as_str(),
-                    TokenKind::Basis if path == "std" => "basis",
-                    TokenKind::Observe if path == "std" => "observe",
-                    TokenKind::Classical if path == "std" => "classical",
-                    _ => break,
-                };
-                path.push_str("::");
-                path.push_str(segment);
-                last = segment;
-                end = token.span;
-                position += 2;
-            }
-            let message = if self
-                .tokens
-                .get(position)
-                .is_some_and(|t| t.kind == TokenKind::DoubleColon)
-            {
-                end = self.tokens[position].span;
-                "qualified call paths are unsupported in expressions; use a complete `use module::function;` import and call its unqualified name".into()
-            } else {
-                format!(
-                    "qualified call paths are unsupported in expressions; import the function with `use {path};` and call its unqualified name `{last}`"
-                )
-            };
-            return Err(ParseError {
-                message,
-                span: ident.span.cover(end),
-            });
-        }
+        let ident = self.reference_name()?;
         // Explain already-invalid early-return syntax without reserving the
         // ordinary identifier or turning an ordinary return(q) call into exit.
         if ident.text == "return"
@@ -2078,7 +2067,7 @@ impl Parser {
             return Err(self.error("Bit literal must be 0 or 1"));
         }
         if let TokenKind::Ident(_) = self.current().kind {
-            let ident = self.ident()?;
+            let ident = self.reference_name()?;
             if self.consume(&TokenKind::LParen).is_some() {
                 let mut args = Vec::new();
                 if !self.at(&TokenKind::RParen) {
@@ -2162,6 +2151,39 @@ impl Parser {
             }
             _ => Err(self.error("expected an identifier")),
         }
+    }
+
+    fn reference_name(&mut self) -> Result<Ident, ParseError> {
+        let name = self.ident()?;
+        self.reference_tail(name)
+    }
+
+    fn reference_tail(&mut self, mut name: Ident) -> Result<Ident, ParseError> {
+        while self.consume(&TokenKind::DoubleColon).is_some() {
+            let segment = if name.text == "std"
+                && matches!(
+                    self.current().kind,
+                    TokenKind::Basis | TokenKind::Observe | TokenKind::Classical
+                ) {
+                let token = self.bump();
+                Ident {
+                    text: match token.kind {
+                        TokenKind::Basis => "basis",
+                        TokenKind::Observe => "observe",
+                        TokenKind::Classical => "classical",
+                        _ => unreachable!("matched std module keyword"),
+                    }
+                    .into(),
+                    span: token.span,
+                }
+            } else {
+                self.ident()?
+            };
+            name.text.push_str("::");
+            name.text.push_str(&segment.text);
+            name.span = name.span.cover(segment.span);
+        }
+        Ok(name)
     }
 
     fn ident(&mut self) -> Result<Ident, ParseError> {

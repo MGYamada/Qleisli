@@ -1,3 +1,8 @@
+The [prelude first study](prelude-v030/README.md) retains nineteen complete first
+projects and twenty-four actual observations before implicit opening, opt-out,
+reexports or qualified calls exist. Parser/name refusals remain distinct from
+the explicit native controls and actual effect/collision/static errors.
+
 The [native-edition first study](native-edition-v030/README.md) retains 791 first
 files and the original 757-member index without rewriting either. Usage and
 entry-point failures remain distinct from manifest refusals and seven bounded

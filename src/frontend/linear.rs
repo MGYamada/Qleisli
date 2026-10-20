@@ -221,7 +221,7 @@ mod substitution_tests {
             let index = Index::new_budgeted(
                 id,
                 declaration,
-                |_| None,
+                |_, _| Ok(None),
                 |_, _| Ok::<_, std::convert::Infallible>(()),
             )
             .unwrap();

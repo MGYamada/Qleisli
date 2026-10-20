@@ -81,6 +81,16 @@ pub(crate) fn attach(
         module_docs: vec![],
     };
     let mut seen_outer = false;
+    // A module header is not a declaration. Inner module documentation may
+    // precede it or follow its closing bracket, before the first source item.
+    let after_header = if result.syntax.no_implicit_prelude {
+        tokens
+            .iter()
+            .position(|token| token.kind == TokenKind::RBracket)
+            .map(|i| i + 1)
+    } else {
+        None
+    };
     let mut remaining_import_doc_copies = MAX_IMPORT_DOC_COPIES;
     let mut remaining_import_doc_bytes = MAX_IMPORT_DOC_BYTES;
     for comment in comments {
@@ -120,7 +130,7 @@ pub(crate) fn attach(
                 }
             }
             DocStyle::Inner => {
-                if next == 0 && !seen_outer {
+                if (next == 0 || Some(next) == after_header) && !seen_outer {
                     result.module_docs.push(comment);
                 } else if let Some(&index) = next
                     .checked_sub(1)

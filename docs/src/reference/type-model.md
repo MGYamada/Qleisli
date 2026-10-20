@@ -369,7 +369,7 @@ earlier parameters. Runtime values never determine static sizes or providers.
 
 The mandatory common source judgment covers every original declaration,
 owner/effect rule, capability, dependency and static branch, including private
-and unused declarations, both arms, zero-iteration bodies and all seven ordinary
+and unused declarations, both arms, zero-iteration bodies and all eight ordinary
 bundled modules. A source-semantic error precedes concrete profile eligibility.
 Specialization then checks closed substitutions, exact type trees, provider
 identity, premises and aggregate work. Numeric and operation obligations share
@@ -886,7 +886,7 @@ errors identify the removed prefix. This namespace retirement does not complete
 the remaining grammar/CLI migration.
 Directory/qrate and explicit-module inputs retain their loader/provenance and
 concrete consumer differences, but both first check every complete original
-and the seven bundled ordinary sources through the same judgment. Finite then
+and the eight bundled ordinary sources through the same judgment. Finite then
 requires its concrete declarations to fit its profile; selected input seeks
 native acceptance only for the requested concrete specialization. Native
 results distinguish those scopes and do not certify every possible

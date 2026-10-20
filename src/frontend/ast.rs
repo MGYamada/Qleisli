@@ -22,12 +22,16 @@ impl Span {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Ident {
+    /// One identifier, or a root-qualified declaration reference. Declaration
+    /// and binder positions are parsed as unqualified identifiers only.
     pub text: String,
     pub span: Span,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Module {
+    /// The leading module header disables only implicit ordinary prelude lookup.
+    pub no_implicit_prelude: bool,
     pub uses: Vec<UseDecl>,
     pub decls: Vec<Decl>,
     pub span: Span,
@@ -35,6 +39,8 @@ pub struct Module {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UseDecl {
+    /// Public imports reexport the original public declaration, not a wrapper.
+    pub public: bool,
     /// The final segment is the imported name; preceding segments name its module.
     pub path: Vec<Ident>,
     pub span: Span,
