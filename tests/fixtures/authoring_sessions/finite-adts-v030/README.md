@@ -79,3 +79,15 @@ typed native transport are integrated. All other #64/#195 criteria remain open.
 Normal and MSRV checks use the same existing debug0 target sequentially. Native
 test skips, filtered library cases and unperformed companion/hosted checks are
 reported explicitly; no new native acceptance or Issue completion is claimed.
+
+The [name-resolution first history](resolution-first.tar.xz),
+[index](resolution-index.json) and [current checks](resolution-validation.json)
+retain the first compile's eight missing category cases and its original
+changed sources, including the new nominal module. Later explicit refusals
+prevent type names from acquiring callable/provider access. Shared original
+registration and import/reexport resolution retain type categories, visibility,
+AST indices, alias-source chains and canonical declaration spans. Empty enums,
+duplicate members and function/type name collisions reject at original names.
+This is name integration, not finite type-tree elaboration or source typing.
+Normal/MSRV tests and all-target compilation pass in separate stable windows;
+native skips and pending type/native/companion integration remain explicit.

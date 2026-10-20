@@ -10,11 +10,14 @@ use super::ast::{FnKind, Module, Span};
 
 mod exports;
 pub(super) mod locals;
+mod nominal;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct ModuleId(usize);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct DefId(usize);
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) struct TypeId(usize);
 
 pub(super) use super::primitive::PrimitiveId;
 
@@ -22,6 +25,7 @@ pub(super) use super::primitive::PrimitiveId;
 pub(super) enum Target {
     Declaration(DefId),
     Primitive(PrimitiveId),
+    Type(TypeId),
 }
 
 #[derive(Clone, Debug)]
@@ -33,17 +37,27 @@ pub(super) struct Declaration {
     pub kind: FnKind,
 }
 
+/// Original nominal declaration identity inside one retained source collection.
+/// It is neither a function nor a persistent evidence/cache identifier.
+#[derive(Clone, Debug)]
+pub(super) struct TypeDeclaration {
+    pub module: ModuleId,
+    pub name: (String, String),
+    pub ast_index: usize,
+    pub public: bool,
+}
+
 #[derive(Clone, Debug)]
 struct ModuleNames {
     name: String,
-    declarations: BTreeMap<String, DefId>,
+    declarations: BTreeMap<String, Target>,
     exports: BTreeMap<String, ExportBinding>,
     no_implicit_prelude: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
 struct ExportBinding {
-    target: DefId,
+    target: Target,
     /// Next source module in this exact public path. Retain resolver inputs
     /// without copying an entire transitive chain into every cached alias.
     next: ModuleId,
@@ -61,6 +75,7 @@ pub(super) struct Resolution {
     modules: Vec<ModuleNames>,
     names: BTreeMap<String, ModuleId>,
     declarations: Vec<Declaration>,
+    types: Vec<TypeDeclaration>,
     scopes: BTreeMap<ModuleId, Scope>,
 }
 
@@ -76,6 +91,9 @@ pub(super) enum FailureKind {
     DuplicateImport(String),
     ExportCycle(String),
     PreludePrimitive(String),
+    NotFunction(String),
+    EmptyEnum(String),
+    DuplicateMember { owner: String, member: String },
 }
 
 #[derive(Clone, Debug)]
@@ -119,6 +137,7 @@ impl Resolution {
             modules: Vec::new(),
             names: BTreeMap::new(),
             declarations: Vec::new(),
+            types: Vec::new(),
             scopes: BTreeMap::new(),
         };
         for (&name, &ast) in &ordered {
@@ -126,21 +145,51 @@ impl Resolution {
             let module = ModuleId(result.modules.len());
             let mut names = BTreeMap::new();
             // Diagnose the second declaration in source order before sorting.
-            for (index, decl) in ast.decls.iter().enumerate() {
-                charge(decl.name.span, 1)?;
-                if names.contains_key(&decl.name.text) {
-                    charge(decl.name.span, name.len() + decl.name.text.len() + 1)?;
+            let mut functions = ast.decls.iter().enumerate().peekable();
+            let mut types = ast.type_decls.iter().enumerate().peekable();
+            while functions.peek().is_some() || types.peek().is_some() {
+                let is_type = types.peek().is_some_and(|(_, ty)| {
+                    functions
+                        .peek()
+                        .is_none_or(|(_, fun)| ty.span.start < fun.span.start)
+                });
+                let (index, ident) = if is_type {
+                    let (index, decl) = types.next().expect("peeked type declaration");
+                    (index, &decl.name)
+                } else {
+                    let (index, decl) = functions.next().expect("peeked function declaration");
+                    (index, &decl.name)
+                };
+                charge(ident.span, 1)?;
+                if names.contains_key(&ident.text) {
+                    charge(ident.span, name.len() + ident.text.len() + 1)?;
                     return Err(E::from(Failure {
                         module: name.into(),
-                        span: decl.name.span,
-                        kind: FailureKind::Duplicate(decl.name.text.clone()),
+                        span: ident.span,
+                        kind: FailureKind::Duplicate(ident.text.clone()),
                     }));
                 }
-                charge(decl.name.span, decl.name.text.len() + 1)?;
-                names.insert(decl.name.text.clone(), index);
+                charge(ident.span, ident.text.len() + 1)?;
+                if is_type {
+                    nominal::check_members(name, &ast.type_decls[index], &mut charge)?;
+                }
+                names.insert(ident.text.clone(), (index, is_type));
             }
             let mut declarations = BTreeMap::new();
-            for (decl_name, ast_index) in names {
+            for (decl_name, (ast_index, is_type)) in names {
+                if is_type {
+                    let decl = &ast.type_decls[ast_index];
+                    let id = TypeId(result.types.len());
+                    charge(decl.name.span, name.len() + decl_name.len() + 2)?;
+                    result.types.push(TypeDeclaration {
+                        module,
+                        name: (name.into(), decl_name.clone()),
+                        ast_index,
+                        public: decl.public,
+                    });
+                    declarations.insert(decl_name, Target::Type(id));
+                    continue;
+                }
                 let decl = &ast.decls[ast_index];
                 let id = DefId(result.declarations.len());
                 charge(decl.name.span, name.len() + decl_name.len() + 2)?;
@@ -151,7 +200,7 @@ impl Resolution {
                     public: decl.public,
                     kind: decl.kind,
                 });
-                declarations.insert(decl_name, id);
+                declarations.insert(decl_name, Target::Declaration(id));
             }
             charge(
                 ast.span,
@@ -182,6 +231,26 @@ impl Resolution {
     pub fn declaration(&self, id: DefId) -> &Declaration {
         &self.declarations[id.0]
     }
+    pub fn type_declaration(&self, id: TypeId) -> &TypeDeclaration {
+        &self.types[id.0]
+    }
+    pub fn target_module(&self, target: Target) -> Option<ModuleId> {
+        match target {
+            Target::Declaration(id) => Some(self.declaration(id).module),
+            Target::Type(id) => Some(self.type_declaration(id).module),
+            Target::Primitive(_) => None,
+        }
+    }
+    pub fn target_visible(&self, target: Target, requester: Option<ModuleId>) -> bool {
+        match target {
+            Target::Declaration(id) => self.visible(id, requester),
+            Target::Type(id) => {
+                let declaration = self.type_declaration(id);
+                declaration.public || requester == Some(declaration.module)
+            }
+            Target::Primitive(_) => false,
+        }
+    }
     /// Fallible original identity lookup; never recover a declaration by name.
     pub fn try_declaration(&self, id: DefId) -> Option<&Declaration> {
         self.declarations.get(id.0)
@@ -193,6 +262,12 @@ impl Resolution {
             .map(|(i, d)| (DefId(i), d))
     }
     pub fn local(&self, module: ModuleId, name: &str) -> Option<DefId> {
+        match self.local_target(module, name)? {
+            Target::Declaration(id) => Some(id),
+            _ => None,
+        }
+    }
+    pub fn local_target(&self, module: ModuleId, name: &str) -> Option<Target> {
         self.modules[module.0].declarations.get(name).copied()
     }
     pub fn path(&self, id: DefId) -> String {
@@ -200,6 +275,12 @@ impl Resolution {
         format!("{module}::{name}")
     }
     pub fn qualified(&self, path: &str) -> Result<DefId, FailureKind> {
+        match self.qualified_target(path)? {
+            Target::Declaration(id) => Ok(id),
+            _ => Err(FailureKind::NotFunction(path.into())),
+        }
+    }
+    pub fn qualified_target(&self, path: &str) -> Result<Target, FailureKind> {
         let (module, name) = path.rsplit_once("::").ok_or(FailureKind::InvalidPath)?;
         let owner = self
             .module(module)
@@ -210,8 +291,8 @@ impl Resolution {
                 name: name.into(),
             })
     }
-    fn member(&self, module: ModuleId, name: &str) -> Option<DefId> {
-        self.local(module, name).or_else(|| {
+    fn member(&self, module: ModuleId, name: &str) -> Option<Target> {
+        self.local_target(module, name).or_else(|| {
             self.modules[module.0]
                 .exports
                 .get(name)
@@ -233,8 +314,7 @@ impl Resolution {
         if name.contains("::") {
             return self.lookup_visible(module, name).ok().flatten();
         }
-        self.local(module, name)
-            .map(Target::Declaration)
+        self.local_target(module, name)
             .or_else(|| {
                 self.scopes
                     .get(&module)
@@ -248,7 +328,7 @@ impl Resolution {
                 self.modules[prelude.0]
                     .exports
                     .get(name)
-                    .map(|binding| Target::Declaration(binding.target))
+                    .map(|binding| binding.target)
             })
             .or_else(|| PrimitiveId::lookup_unbound(name).map(Target::Primitive))
     }
@@ -267,11 +347,11 @@ impl Resolution {
                     name: item.into(),
                 });
             }
-            let id = self.qualified(name)?;
-            if !self.visible(id, Some(caller)) {
+            let target = self.qualified_target(name)?;
+            if !self.target_visible(target, Some(caller)) {
                 return Err(FailureKind::Private(name.into()));
             }
-            Ok(Some(Target::Declaration(id)))
+            Ok(Some(target))
         } else {
             Ok(self.lookup(caller, name))
         }
@@ -288,7 +368,7 @@ impl Resolution {
     ) -> Result<(), E> {
         let (owner, item) = if let Some((module, item)) = name.rsplit_once("::") {
             (self.module(module), item)
-        } else if self.local(caller, name).is_some() {
+        } else if self.local_target(caller, name).is_some() {
             (Some(caller), name)
         } else if let Some(owner) = self
             .scopes
@@ -372,7 +452,8 @@ impl Resolution {
             let path = format!("{module}::{}", last.text);
             // Every self-import collides with its same-module declaration,
             // including private declarations; direct private lookup stays legal.
-            if module == self.module_name(caller) && self.local(caller, &last.text).is_some() {
+            if module == self.module_name(caller) && self.local_target(caller, &last.text).is_some()
+            {
                 charge(
                     last.span,
                     self.module_name(caller)
@@ -420,14 +501,17 @@ impl Resolution {
                     last.span,
                 ));
             };
-            if !self.visible(id, None) {
+            if !self.target_visible(id, None) {
                 charge(last.span, self.module_name(caller).len() + 1)?;
                 return Err(failure(FailureKind::Private(path), last.span));
             }
             charge(usage.span, 1)?;
-            scope.edges.push((self.declaration(id).module, usage.span));
-            let target = Target::Declaration(id);
-            if self.local(caller, &last.text).is_some() {
+            scope.edges.push((
+                self.target_module(id).expect("registered import target"),
+                usage.span,
+            ));
+            let target = id;
+            if self.local_target(caller, &last.text).is_some() {
                 charge(
                     last.span,
                     self.module_name(caller)

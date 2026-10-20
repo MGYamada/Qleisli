@@ -715,6 +715,9 @@ impl<'a> Program<'a> {
                     // require independent exact semantic evidence.
                 }
                 ObligationKind::CertifiedClean { logical } => match logical {
+                    OperationIdentity::Global(resolve::Target::Type(_)) => {
+                        return Err(failure().in_module(&interface.module));
+                    }
                     OperationIdentity::Global(resolve::Target::Declaration(id)) => {
                         provider(*id, crate::ir::Effect::Unitary)?
                     }
@@ -767,6 +770,16 @@ pub(super) fn program_with<'a, R>(
         remaining: Cell::new(limits.work),
         limits,
     });
+    let mut resolution = Resolution::new_budgeted(
+        modules.iter().map(|(name, module)| (*name, *module)),
+        |span, cells| budget.charge(span, cells),
+    )?;
+    for (name, module) in &modules {
+        let owner = resolution.module(name).expect("registered source module");
+        let imports =
+            resolution.imports_budgeted(owner, module, |span, cells| budget.charge(span, cells))?;
+        resolution.set_scope_budgeted(owner, imports, |span, cells| budget.charge(span, cells))?;
+    }
     // Do not erase parsed nominal declarations while the shared source judgment
     // and typed native transport are still being integrated (#64).
     for (name, module) in &modules {
@@ -779,10 +792,6 @@ pub(super) fn program_with<'a, R>(
             ).in_module(name));
         }
     }
-    let resolution = Resolution::new_budgeted(
-        modules.iter().map(|(name, module)| (*name, *module)),
-        |span, cells| budget.charge(span, cells),
-    )?;
     let mut program = Program {
         helpers: Rc::new(BTreeMap::new()),
         modules,

@@ -288,6 +288,11 @@ impl<'a> Collector<'a, '_> {
                     self.root(next, None)?;
                 }
                 ResolvedUse::Global(Target::Primitive(_)) => {}
+                ResolvedUse::Global(Target::Type(_)) => {
+                    return self.refusal(
+                        "nominal type dependencies require canonical carrier elaboration",
+                    );
+                }
                 ResolvedUse::Local(id) if table.try_binder(id).is_some() => {}
                 _ => {
                     return self

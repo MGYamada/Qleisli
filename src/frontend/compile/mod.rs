@@ -348,6 +348,10 @@ impl<'a> Compiler<'a> {
         match self.locals().usage(name).target {
             ResolvedUse::Global(Target::Declaration(id)) => Ok(Callee::User(id)),
             ResolvedUse::Global(Target::Primitive(id)) => Ok(Callee::Primitive(id)),
+            ResolvedUse::Global(Target::Type(_)) => Err(self.error(
+                module,name.span,ErrorCode::TypeMismatch,
+                "a type declaration is not a function",
+            )),
             ResolvedUse::Local(_) | ResolvedUse::Unresolved => Err(self.error(
                 module,
                 name.span,

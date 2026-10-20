@@ -450,6 +450,17 @@ impl ParsedProgram {
                 "name",
                 format!("std::prelude cannot reexport language primitive spelling `{name}`"),
             ),
+            FailureKind::NotFunction(name) => {
+                ("type", format!("`{name}` is a type, not a function"))
+            }
+            FailureKind::EmptyEnum(name) => (
+                "type",
+                format!("finite enum `{name}` must have at least one variant"),
+            ),
+            FailureKind::DuplicateMember { owner, member } => (
+                "type",
+                format!("duplicate member `{member}` in type `{owner}`"),
+            ),
         };
         Error::new(code, failure.span, message).in_module(&failure.module)
     }

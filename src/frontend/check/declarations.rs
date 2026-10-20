@@ -11,6 +11,9 @@ pub(super) fn resolution_error(f: Failure) -> SourceError {
     let code = match &f.kind {
         FailureKind::InvalidPath | FailureKind::MissingModule(_) => "module",
         FailureKind::Private(_) => "visibility",
+        FailureKind::NotFunction(_)
+        | FailureKind::EmptyEnum(_)
+        | FailureKind::DuplicateMember { .. } => "type",
         _ => "name",
     };
     let message = match f.kind {
@@ -37,6 +40,13 @@ pub(super) fn resolution_error(f: Failure) -> SourceError {
         FailureKind::PreludePrimitive(name) => {
             format!("std::prelude cannot reexport language primitive spelling `{name}`")
         }
+        FailureKind::NotFunction(name) => format!("`{name}` is a type, not a function"),
+        FailureKind::EmptyEnum(name) => {
+            format!("finite enum `{name}` must have at least one variant")
+        }
+        FailureKind::DuplicateMember { owner, member } => {
+            format!("duplicate member `{member}` in type `{owner}`")
+        }
     };
     SourceError::new(code, f.span, message).in_module(&f.module)
 }
@@ -47,14 +57,6 @@ impl From<Failure> for SourceError {
 }
 
 pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
-    for (name, module) in &p.modules {
-        let owner = p.resolution.module(name).expect("registered source module");
-        let imports = p
-            .resolution
-            .imports_budgeted(owner, module, |span, cells| p.budget.charge(span, cells))?;
-        p.resolution
-            .set_scope_budgeted(owner, imports, |span, cells| p.budget.charge(span, cells))?;
-    }
     for (name, module) in &p.modules {
         let owner = p.resolution.module(name).expect("registered source module");
         for declaration in &module.decls {

@@ -10,6 +10,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Declaration history: "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-index.json".
 # Declaration checks: "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-validation.json".
+# Name-resolution history: "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-index.json".
+# Name checks: "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-validation.json".
 # Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
 import hashlib
 import io
@@ -172,6 +175,26 @@ class FirstFiniteDeclarations(unittest.TestCase):
         self.assertIn(b'needlessly taken reference of left operand', self.data['repair-01/lint.stderr'])
         self.assertIn(b'35 passed; 0 failed', self.data['repair-01/integration.stdout'])
         self.assertIn(b'4 passed; 0 failed', self.data['repair-01/integration.stdout'])
+
+
+class FirstNominalResolution(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('resolution-index.json', 'resolution-first.tar.xz',
+            '4373a1a8dc7fa01116cac763d9ffbdd26d45700f83cc9c1accd6f76ecde8cedc',
+            601404, 'd37ed321b00f82428748e9998e339e6c0f49154f1de795cd4a45cda49ec99f64', 6_964_921)
+
+    def test_new_type_category_requires_explicit_consumers_before_it_compiles(self):
+        self.assertEqual(len(self.data), 10)
+        report = json.loads(self.data['report.json'])
+        self.assertTrue(report['source_unchanged'])
+        self.assertEqual(report['before'], report['after'])
+        self.assertFalse(report['pass'])
+        self.assertEqual([row['exit_code'] for row in report['commands']], [101])
+        self.assertEqual(self.data['compile.stderr'].count(b'error[E0004]'), 8)
+        self.assertIn(b'non-exhaustive patterns', self.data['compile.stderr'])
+        self.assertIn(b'Target::Type', self.data['compile.stderr'])
+        self.assertIn(b'fn check_members', self.data['source/src/frontend/resolve/nominal.rs.txt'])
 
 
 if __name__ == '__main__':

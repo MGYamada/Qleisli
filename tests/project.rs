@@ -6,6 +6,42 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use qleisli::frontend::compile::{ErrorCode, check_project};
 use qleisli::frontend::project::{ImportOrigin, ModuleOrigin, Project, ProjectError};
 
+#[test]
+fn nominal_imports_keep_original_type_metadata_through_public_reexports() {
+    use qleisli::frontend::ast::FnKind;
+    use qleisli::frontend::project::ImportKind;
+    let root = TempRoot::new();
+    root.write(
+        "main.qli",
+        "use alias::Tri; use leaf::f; fn main()->Unit{()}",
+    );
+    root.write("alias.qli", "pub use leaf::Tri;");
+    let leaf = "pub enum Tri { A, B, C } pub fn f()->Unit{()}";
+    root.write("leaf.qli", leaf);
+    let project = Project::load(root.path()).unwrap();
+    let imported = &project.module("main").unwrap().imports["Tri"];
+    assert_eq!(imported.kind, ImportKind::Type);
+    assert_eq!(imported.module, "leaf");
+    assert_eq!(imported.name, "Tri");
+    assert_eq!(imported.origin, ImportOrigin::Local);
+    assert_eq!(
+        &leaf[imported.declaration_span.start..imported.declaration_span.end],
+        "pub enum Tri { A, B, C }"
+    );
+    let function = &project.module("main").unwrap().imports["f"];
+    assert_eq!(function.kind, ImportKind::Function(FnKind::Inferred));
+    assert_eq!(
+        &leaf[function.declaration_span.start..function.declaration_span.end],
+        "pub fn f()->Unit{()}"
+    );
+    assert!(
+        check_project(root.path())
+            .unwrap_err()
+            .message
+            .contains("typed native transport")
+    );
+}
+
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
 struct TempRoot {

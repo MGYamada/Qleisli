@@ -79,6 +79,22 @@ explicitly reject modules containing these declarations, including unused
 ones, before concrete lowering or native invocation. A parsed `Q<Named>` does
 not establish a legal quantum interface or provide execution evidence.
 
+Nominal names already participate in the common module/import/reexport
+resolver as a distinct collection-local type category. Transparent reexports
+retain the original declaration and visibility; source-path traversal retains
+each alias module. The conservative initial profile requires an unambiguous
+binding per module/import spelling. Function/type collisions, empty enums and
+duplicate variant/field names reject at the original offending name. These
+name checks do not establish record-field types, privacy or recursive-type
+validity. Callable and operation consumers reject a type target.
+
+The Rust `Project` view labels `ResolvedImport.kind` as
+`ImportKind::Function(FnKind)` or `ImportKind::Type`. Its `declaration_span`
+points to the original declaration in the canonical `module`; `span` remains
+the importing occurrence. Rust callers that previously consumed a bare
+`FnKind` must match the import category explicitly. Project loading and this
+descriptive metadata do not grant source acceptance or a native handle.
+
 Each declaration retains its whole original span, body span and ordered
 variants/fields. Named type paths retain all qualified segments and their byte
 span. Type/member documentation attaches to those original occurrences;

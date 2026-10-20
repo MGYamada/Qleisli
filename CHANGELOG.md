@@ -19,6 +19,10 @@ development milestones from the scope of their evidence.
   qualified type paths, spans and documentation in the common AST. Reserve
   `enum`/`struct`; explicitly reject production source containing these parsed
   declarations until canonical type elaboration and typed native transport exist.
+  Register type names in the common resolver with a separate category and
+  original visibility through imports/reexports. Reject empty enums, duplicate
+  members and cross-category name collisions; retain canonical declaration spans
+  in Project import metadata. Callable consumers cannot treat types as providers.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.
