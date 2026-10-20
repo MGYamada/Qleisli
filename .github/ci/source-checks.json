@@ -161,6 +161,10 @@
         [
           "python3",
           "scripts/test_native_edition_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_prelude_first.py"
         ]
       ],
       "prepare": []

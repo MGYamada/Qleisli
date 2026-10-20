@@ -33,6 +33,10 @@ pub(super) fn resolution_error(f: Failure) -> SourceError {
             format!("name `{name}` collides with another declaration or import")
         }
         FailureKind::Duplicate(name) => format!("duplicate declaration `{name}`"),
+        FailureKind::ExportCycle(path) => format!("public reexport cycle at `{path}`"),
+        FailureKind::PreludePrimitive(name) => {
+            format!("std::prelude cannot reexport language primitive spelling `{name}`")
+        }
     };
     SourceError::new(code, f.span, message).in_module(&f.module)
 }
@@ -61,7 +65,17 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
             let index = Index::new_budgeted(
                 id,
                 declaration,
-                |name| p.resolution.lookup(owner, name),
+                |reference, span| {
+                    p.resolution
+                        .lookup_visible(owner, reference)
+                        .map_err(|kind| {
+                            resolution_error(Failure {
+                                module: name.to_string(),
+                                span,
+                                kind,
+                            })
+                        })
+                },
                 |span, cells| p.budget.charge(span, cells),
             )
             .map_err(|e: SourceError| e.in_module(name))?;

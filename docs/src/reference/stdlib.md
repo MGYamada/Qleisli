@@ -102,9 +102,12 @@ including `std::basis`, have no primitive privilege.
 
 ## Current interfaces and contracts
 
-The seven bundled ordinary modules expose twenty-five public definitions and five
+The eight bundled ordinary modules expose twenty-five public definitions, six
+transparent prelude reexports and five
 private helpers for a classical predicate, scalar phase, parameterized phase,
 packed CNOT and fixed Bit identity.
+The [prelude and import quick reference](prelude.md#quick-reference) lists the
+six original derived members, their lookup priority and explicit opt-out.
 Contract identifiers retain their existing meanings after the
 move; they are not constitutional ledger entries or verification badges.
 
@@ -246,7 +249,7 @@ retained in `tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/`
 
 ## Checking and later structure
 
-All seven modules, their private/unused declarations and caller source undergo
+All eight modules, their private/unused declarations and caller source undergo
 the same mandatory common-source judgment. Concrete lowering and fresh native
 acceptance remain separate stages with profile-specific support. A path grants
 no sealed status, body-derived effect, independent exact Meaning, provider

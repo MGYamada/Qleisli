@@ -108,20 +108,25 @@ fn missing_else_points_at_its_if_including_static_nested_and_eof_cases() {
 }
 
 #[test]
-fn qualified_expression_paths_suggest_the_actual_import_at_the_original_path() {
-    for path in [
-        "std::observe::measure_z",
-        "helper::nested::f",
-        "std::classical::parity",
+fn qualified_refusals_keep_the_original_target_and_retired_path_guidance() {
+    // Preserve the first source's actual earlier import refusal separately.
+    let start = QUALIFIED.find("init0").unwrap();
+    refusal(
+        QUALIFIED,
+        "project",
+        Span::new(start, start + 5),
+        "std::state::init0",
+    );
+    for (path, code, module) in [
+        ("std::observe::measure_z", "unknown_name", "std::observe"),
+        ("helper::nested::f", "project", "helper::nested"),
+        ("std::classical::parity", "project", "std::classical"),
     ] {
-        let source = QUALIFIED.replace("std::observe::measure_z", path);
+        let source = QUALIFIED
+            .replace("use std::quantum::init0;", "use std::state::init0;")
+            .replace("std::observe::measure_z", path);
         let start = source.find(path).unwrap();
-        refusal(
-            &source,
-            "parse",
-            Span::new(start, start + path.len()),
-            &format!("import the function with `use {path};`"),
-        );
+        refusal(&source, code, Span::new(start, start + path.len()), module);
     }
 }
 
@@ -130,13 +135,34 @@ fn incomplete_qualified_paths_do_not_suggest_importing_a_module_as_a_function() 
     for path in ["std::", "std::observe::", "helper::nested::"] {
         let source = format!("fn f()->Bit{{{path}}}");
         let error = parse_module(&source).unwrap_err();
-        assert!(
-            error
-                .message
-                .contains("use a complete `use module::function;` import")
-        );
+        assert!(error.message.contains("complete the `module::item` path"));
         assert_eq!(&source[error.span.start..error.span.end], path);
     }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ordinary_nested_qualified_call_needs_no_import_repair() {
+    let source = "pub observe fn main()->Bit{measure_z(helper::nested::f(init0()))}";
+    let helper = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{x(q)}";
+    ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), source.into()),
+            ("helper::nested".into(), helper.into()),
+        ]),
+    )
+    .unwrap();
+    let root = SourceRoot::new(source);
+    std::fs::create_dir(root.0.join("helper")).unwrap();
+    root.write("helper/nested.qli", helper);
+    let program = compile_project(&root.0).unwrap();
+    let outcomes =
+        qleisli::sim::run_closed(&program, qleisli::sim::SimulationLimits::default()).unwrap();
+    assert!((outcomes[&vec![true]] - 1.0).abs() < 1e-12);
 }
 
 #[cfg_attr(
@@ -178,7 +204,7 @@ fn live_quantum_rebinding_quotes_the_owner_and_keeps_the_ownership_refusal() {
 fn source_refusals_use_one_category_in_cli_text_and_json() {
     for (source, code) in [
         (MISSING_ELSE.as_str(), "parse"),
-        (QUALIFIED, "parse"),
+        (QUALIFIED, "project"),
         (REBIND.as_str(), "ownership"),
     ] {
         let root = SourceRoot::new(source);

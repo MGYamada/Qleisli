@@ -12,6 +12,16 @@ complete for production acceptance implementation; release validation and proof
 completion remain separate. The [cutover record](cutover/README.md) supersedes
 the historical [first accepted-handle slice](native/README.md).
 
+The v0.3.0-beta prelude review updates the current inventory to 45 groups,
+24 public boundaries and 311 constructor variants. The source additions are
+two lexer tokens, explicit module-header/import metadata, qualified lookup,
+bounded transparent reexports and retained resolution sources. The ordinary
+`std::prelude` body and shared-resolution tests cover both project and selected
+source consumers. The native paths, capacities, proof gates, cutover gates and
+coverage blockers retain their scopes. This source-surface update supplies no
+new acceptance authority, guarantee admission or source-preservation proof;
+the older counts above describe the original VM29 checkpoint.
+
 | Selected path | Actual implementation |
 | --- | --- |
 | Rust raw IR, QIRF versions/meaning entries/conversion | `native::Kernel::{verify,check_raw,check_program,check_with_meanings,convert}`; each accepted handle binds the native decision's original bytes. |

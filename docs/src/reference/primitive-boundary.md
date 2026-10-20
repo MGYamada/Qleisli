@@ -37,7 +37,9 @@ Unqualified callable resolution has this order:
    declaration determines the use under the usual visibility and collision
    rules. Its signature, public effect, access requirements and body obligations
    apply even when its spelling matches a primitive.
-3. Only a genuinely unbound spelling may resolve to the corresponding typed
+3. The [derived prelude](prelude.md) supplies its six original public declarations
+   unless this module opts out. It cannot reexport a bare primitive spelling.
+4. Only a genuinely unbound spelling may resolve to the corresponding typed
    language primitive. An unknown name remains a name error.
 
 This is a lexical rule, not overload selection by argument type. A failed type,
@@ -49,8 +51,8 @@ its name cannot grant Hadamard meaning. A moved local `h` still shadows both.
 
 Primitives are not imports, prelude declarations, reserved identifiers or hidden
 aliases. Call `h(q)` or `global_phase_eighth(q)` without a `use`. Ordinary gates
-and state/structure definitions require ordinary declarations or explicit
-imports. The four former compiler foundation namespaces `std::quantum`,
+and state/structure definitions use ordinary declarations, imports or qualified
+references; six common derived members are also in the prelude. The four former compiler foundation namespaces `std::quantum`,
 `std::observe`, `std::registers` and `std::classical` have no callable entries or
 compatibility aliases. Importing a retired path rejects with migration guidance;
 that guidance is never a lookup path. The bare name `phase_eighth` is not an
@@ -234,10 +236,11 @@ target-realization or quantitative resource theorem.
 
 ## Ordinary library and module resolution
 
-`src/frontend/source.rs::BundledRegistry` embeds **seven ordinary source
-modules with twenty-five public definitions** and five private helpers for
+`src/frontend/source.rs::BundledRegistry` embeds **eight ordinary source
+modules with twenty-five public definitions**, six transparent prelude reexports
+and five private helpers for
 reflection, scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
-Both loaders retain all seven complete original sources
+Both loaders retain all eight complete original sources
 and their fixed manifest. They receive normal common declaration, type, owner,
 access, dependency and effect checking rather than a compiler-import exception.
 Concrete materialization and native checking occur under the actual consumer's
@@ -253,6 +256,7 @@ specialization:
 | `std::state`, `stdlib/src/state.qli` | `init0`, `reset` | Ordinary explicit singleton-to-Bit preparation and observing discard/preparation; original owner, phase and complete reference instrument retained. |
 | `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `empty`, `consume_empty` | Structural two-axis map `[1,0]`, exact phase +1, with reversed output axes and no physical gate instruction. Explicit zero-width Bits owner introduction/elimination use singleton basis maps. Generic register/permutation interfaces remain unsupported. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
+| `std::prelude`, `stdlib/src/prelude.qli` | Reexports `id`, `x`, `z`, `t`, `cnot`, `init0` | Original ordinary declarations, not new bodies, primitives, effects or evidence authority. |
 
 The [semantic namespace Reference](stdlib.md) gives every mathematical module's
 admission rule, exact public interfaces and migration mapping. `std::routines`
@@ -283,14 +287,15 @@ The retired foundation catalogs expose no importable entries. Unknown or retired
 paths reject; bare primitive lookup occurs only after lexical and ordinary
 resolution leave the name unbound. Ordinary bundles retain their provenance and original ASTs,
 with bundled bytes checked under each loader's byte policy before
-parsing/copying. The selected loader additionally reserves all seven bundled
+parsing/copying. The selected loader additionally reserves all eight bundled
 module slots and counts their bytes toward its aggregate limit. The finite
 loader retains its separate bounded and explicit legacy byte policies and
 local filesystem discovery limits. No ambient source replacement or checking
 exemption follows from
 `ModuleOrigin::Bundled`. Resolution, original source identity, concrete
-materialization and independent acceptance remain separate duties; new
-alias/re-export syntax in #65 is not admitted here.
+materialization and independent acceptance remain separate duties. The
+[prelude contract](prelude.md) admits transparent public reexports, not `as`,
+glob or relative imports.
 
 ## Generic acceptance and library-owned algorithms
 

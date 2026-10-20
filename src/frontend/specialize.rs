@@ -443,6 +443,13 @@ impl ParsedProgram {
                 ("name", format!("ambiguous imported name {name}"))
             }
             FailureKind::Duplicate(name) => ("name", format!("duplicate declaration {name}")),
+            FailureKind::ExportCycle(path) => {
+                ("name", format!("public reexport cycle at `{path}`"))
+            }
+            FailureKind::PreludePrimitive(name) => (
+                "name",
+                format!("std::prelude cannot reexport language primitive spelling `{name}`"),
+            ),
         };
         Error::new(code, failure.span, message).in_module(&failure.module)
     }

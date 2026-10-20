@@ -1264,6 +1264,7 @@ mod snapshot_tests {
                     path: PathBuf::from(format!("{name}.qli")),
                     source,
                     ast: Module {
+                        no_implicit_prelude: false,
                         uses: vec![],
                         decls: vec![],
                         span: Span::default(),

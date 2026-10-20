@@ -313,7 +313,7 @@ impl<'ast> Index<'ast> {
     pub fn new_budgeted<E>(
         definition: DefId,
         declaration: &'ast Decl,
-        global: impl Fn(&str) -> Option<Target>,
+        global: impl Fn(&str, Span) -> Result<Option<Target>, E>,
         mut charge: impl FnMut(Span, usize) -> Result<(), E>,
     ) -> Result<Self, E> {
         // Root scope/frame storage, token heap and both retained token handles
@@ -1037,7 +1037,7 @@ impl<'ast> Task<'ast> {
 
 impl<'ast, F, C, E> Builder<'ast, F, C>
 where
-    F: Fn(&str) -> Option<Target>,
+    F: Fn(&str, Span) -> Result<Option<Target>, E>,
     C: FnMut(Span, usize) -> Result<(), E>,
 {
     fn scope(&self) -> ScopeId {
@@ -1162,10 +1162,12 @@ where
             definition: self.index.table.definition,
             ordinal: self.index.table.uses.len(),
         };
-        let global = (self.global)(name);
-        let target = self
-            .names
-            .get(name)
+        let global = (self.global)(name, span)?;
+        // A qualified path selects the module namespace even for constructed
+        // syntax; no lexical spelling can capture it or supply a fallback.
+        let qualified = name.contains("::");
+        let local = (!qualified).then(|| self.names.get(name)).flatten();
+        let target = local
             .copied()
             .map(ResolvedUse::Local)
             .or_else(|| global.map(ResolvedUse::Global))
@@ -1176,7 +1178,9 @@ where
             scope: self.scope(),
             target,
             global,
-            static_parameter: self.static_parameters.get(name).copied(),
+            static_parameter: (!qualified)
+                .then(|| self.static_parameters.get(name).copied())
+                .flatten(),
         });
         Ok(id)
     }
@@ -1580,9 +1584,12 @@ mod tests {
         declaration: &Decl,
         global: impl Fn(&str) -> Option<Target>,
     ) -> Index<'_> {
-        Index::new_budgeted(definition, declaration, global, |_, _| {
-            Ok::<_, std::convert::Infallible>(())
-        })
+        Index::new_budgeted(
+            definition,
+            declaration,
+            |name, _| Ok(global(name)),
+            |_, _| Ok::<_, std::convert::Infallible>(()),
+        )
         .unwrap_or_else(|never| match never {})
     }
 
@@ -1868,7 +1875,7 @@ mod tests {
         );
         let mut builder = Builder {
             index: original,
-            global: |_: &str| None,
+            global: |_: &str, _: Span| Ok(None),
             charge: |_, cells| {
                 assert_eq!(cells, 4, "metadata, address, borrowed node and region head");
                 Err(())
@@ -2018,7 +2025,7 @@ mod tests {
         let before = original.region_links.len();
         let mut builder = Builder {
             index: original,
-            global: |_: &str| None,
+            global: |_: &str, _: Span| Ok(None),
             charge: |_, cells| {
                 assert_eq!(cells, 1);
                 Err(())
@@ -2438,7 +2445,7 @@ mod tests {
         let result = Index::new_budgeted(
             DefId(0),
             &module.decls[0],
-            |_| {
+            |_, _| {
                 panic!("must not resolve before the initial reservation");
             },
             |span, cells| {

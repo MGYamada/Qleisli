@@ -441,8 +441,9 @@ complete repeated provider and require their actual additional access.
 
 Only an unqualified two-stage `power(...)(...)` denotes this runtime form.
 Ordinary single-stage `power(a, b)`, declarations and module imports retain
-normal resolution. Direct qualified runtime calls remain outside the existing
-grammar. Static-operation argument positions interpret `power`
+normal resolution. Root-qualified ordinary references/calls follow the common
+[module lookup](prelude.md); qualification does not select this special runtime
+constructor. Static-operation argument positions interpret `power`
 explicitly as the constructor. The finite profile evaluates symbolic counts and
 `2^e` with complete original natural bindings and checked u32 intermediates.
 Every nested count must fit `0..=4096`, including inside an outer zero, subject

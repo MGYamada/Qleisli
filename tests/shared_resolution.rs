@@ -1,5 +1,7 @@
 //! Shared source judgments retain explicit loader policies and concrete limits.
 mod common;
+#[path = "shared_resolution/prelude.rs"]
+mod prelude;
 use qleisli::frontend::{
     compile::{ErrorCode, check_project},
     compile::{OperationBinding, ParsedProgram},

@@ -106,7 +106,7 @@ impl<'a> Scanner<'a> {
                 self.bump();
             }
             Kind::Numeral
-        } else if "[]{}(),;:<>+-*=^|!.".contains(ch) {
+        } else if "[]{}(),;:<>+-*=^|!.#".contains(ch) {
             Kind::Punctuation(ch)
         } else {
             return Err(ScanError {
@@ -124,7 +124,7 @@ impl<'a> Scanner<'a> {
     /// scanned here: `: /* text */ :` must never become `::`.
     pub fn join(&mut self, token: &mut Token, suffix: char) -> bool {
         debug_assert!(matches!(token.kind, Kind::Punctuation(_)));
-        debug_assert!(suffix.is_ascii() && "[]{}(),;:<>+-*=^|!.".contains(suffix));
+        debug_assert!(suffix.is_ascii() && "[]{}(),;:<>+-*=^|!.#".contains(suffix));
         debug_assert_eq!(token.span.end, self.pos);
         if self.peek() == Some(suffix) {
             self.bump();

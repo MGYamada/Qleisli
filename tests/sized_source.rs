@@ -350,6 +350,7 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
         "std::basis",
         "std::gate",
         "std::measurement",
+        "std::prelude",
         "std::reflection",
         "std::state",
         "std::structure",
@@ -701,12 +702,12 @@ fn preparation_limits_and_utf8_diagnostics_are_explicit() {
         &format!("pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {nested} }}"),
         "limit",
     );
-    // Seven ordinary bundled modules consume their actual fixed-cap slots.
-    let at_limit = (0..57)
+    // Eight ordinary bundled modules consume their actual fixed-cap slots.
+    let at_limit = (0..56)
         .map(|i| (format!("m{i}"), prefix.to_owned()))
         .collect();
     ParsedProgram::parse(qleisli::edition::Edition::E2026, at_limit).unwrap();
-    for count in [58, 65] {
+    for count in [57, 65] {
         let many = (0..count)
             .map(|i| (format!("m{i}"), prefix.to_owned()))
             .collect();
@@ -715,7 +716,7 @@ fn preparation_limits_and_utf8_diagnostics_are_explicit() {
         assert!(
             error
                 .message()
-                .contains("7 bundled modules count toward 64")
+                .contains("8 bundled modules count toward 64")
         );
     }
     let text = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { α }";
