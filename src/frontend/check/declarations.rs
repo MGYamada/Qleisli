@@ -86,6 +86,7 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
         }
     }
     static_helpers::prepare(p)?;
+    nominal::prepare(p)?;
     for (name, module) in &p.modules {
         let owner = p.resolution.module(name).expect("registered source module");
         for declaration in &module.decls {
@@ -209,6 +210,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         })?;
     let mut scope = Scope {
         helpers: Rc::clone(&p.helpers),
+        nominals: Rc::clone(&p.nominals),
         naturals,
         bases: BTreeMap::new(),
         operations: BTreeMap::new(),
@@ -449,6 +451,7 @@ pub(super) fn scope(
 ) -> Result<Scope> {
     let mut scope = Scope {
         helpers: Rc::clone(helpers),
+        nominals: Rc::new(BTreeMap::new()),
         naturals: BTreeMap::new(),
         bases: BTreeMap::new(),
         operations: BTreeMap::new(),

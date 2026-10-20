@@ -72,12 +72,15 @@ generic std APIs and source-preservation proofs remain separate work in
 
 The parser retains fieldless `enum Name { A, B, ... }` and named
 `struct Name { field: Type, ... }` declarations, optionally preceded by `pub`.
-Record fields may retain their own `pub` marker. This is syntax metadata:
-canonical nominal type elaboration, field privacy, constructors, `match` and
-typed native transport are not yet implemented. Both production source paths
-explicitly reject modules containing these declarations, including unused
-ones, before concrete lowering or native invocation. A parsed `Q<Named>` does
-not establish a legal quantum interface or provide execution evidence.
+Record fields retain their own `pub` marker. The common frontend elaborates
+these into ordinary nominal type trees, with original module/declaration/source
+identity, variant order and complete ordered field types. Signatures retain
+both `T` and `Q<T>` without reducing nominal identity to physical width.
+Constructors, field access/privacy enforcement, `match` and typed native
+transport remain pending. Both production source paths explicitly reject
+modules containing these declarations, including unused ones, after common
+type/interface preparation and before concrete lowering or native invocation.
+These frontend facts provide no execution evidence or accepted handle.
 
 Nominal names already participate in the common module/import/reexport
 resolver as a distinct collection-local type category. Transparent reexports
@@ -85,8 +88,18 @@ retain the original declaration and visibility; source-path traversal retains
 each alias module. The conservative initial profile requires an unambiguous
 binding per module/import spelling. Function/type collisions, empty enums and
 duplicate variant/field names reject at the original offending name. These
-name checks do not establish record-field types, privacy or recursive-type
-validity. Callable and operation consumers reject a type target.
+name checks precede finite field elaboration. Fields must be ordinary finite
+types: unknown, recursive, non-type and quantum-owned fields reject. Closed
+field sizes reuse the existing Nat-helper arithmetic and premise checks;
+this adds no general `const<T>`. A local ordered Basis binder cannot fall back
+to a global enum. Callable and operation consumers reject a type target.
+
+For nominal elaboration, complete retained module sources must parse to the
+supplied ASTs. The check also inspects original enum/struct tokens, so deleting
+AST declarations cannot hide them. Comments and identifier substrings are not
+declarations. Non-nominal constructed-AST consumers retain their existing
+boundary. This original-byte check is not a general source-preservation theorem
+or the pending source/native evidence/cache binding.
 
 The Rust `Project` view labels `ResolvedImport.kind` as
 `ImportKind::Function(FnKind)` or `ImportKind::Type`. Its `declaration_span`

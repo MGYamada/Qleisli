@@ -13,6 +13,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Name-resolution history: "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-index.json".
 # Name checks: "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-validation.json".
+# Type history: "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-index.json".
+# Type checks: "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-validation.json".
 # Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
 import hashlib
 import io
@@ -195,6 +198,43 @@ class FirstNominalResolution(unittest.TestCase):
         self.assertIn(b'non-exhaustive patterns', self.data['compile.stderr'])
         self.assertIn(b'Target::Type', self.data['compile.stderr'])
         self.assertIn(b'fn check_members', self.data['source/src/frontend/resolve/nominal.rs.txt'])
+
+
+class FirstNominalElaboration(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('elaboration-index.json', 'elaboration-first.tar.xz',
+            'e8587e18de7233799a4313e7aa49a7cc853fe442c8dc847ebf39a38542cc6d80',
+            737456, 'e899297cfb3b1fe6ad609eaed1f5b9fe38f955efa6cfaf0629d79c4c4335ea16', 10_294_380)
+
+    def test_initial_compile_failures_are_not_passing_type_or_native_checks(self):
+        self.assertEqual(len(self.data), 101)
+        report = json.loads(self.data['first/report.json'])
+        self.assertFalse(report['pass'])
+        self.assertTrue(report['source_unchanged'])
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual([row['exit_code'] for row in report['commands']], [101])
+        self.assertEqual(self.data['first/check.stderr'].count(b'error[E0004]'), 15)
+        self.assertEqual(self.data['first/check.stderr'].count(b'error[E0284]'), 1)
+
+    def test_original_nat_call_mistake_and_strict_lint_refusal_remain_failed_attempts(self):
+        first = json.loads(self.data['repair-01/observation-summary.json'])
+        lint = json.loads(self.data['repair-02/observation-summary.json'])
+        self.assertFalse(first['pass'])
+        self.assertFalse(lint['pass'])
+        self.assertEqual([row['exit_code'] for row in first['commands']], [0, 101])
+        self.assertEqual([row['exit_code'] for row in lint['commands']], [0, 0, 0, 101])
+        self.assertIn(b'previous(3)', self.data['repair-01/source/src/frontend/check/nominal/tests.rs.txt'])
+        self.assertIn(b'expected `)`, found natural number', self.data['repair-01/unit.stdout'])
+        self.assertIn(b'clippy::map_entry', self.data['repair-02/lint.stderr'])
+
+    def test_original_ast_deletion_counterexample_is_retained_before_the_repair(self):
+        report = json.loads(self.data['removed-type/observation-summary.json'])
+        self.assertFalse(report['pass'])
+        self.assertTrue(report['source_unchanged'])
+        self.assertEqual([row['exit_code'] for row in report['commands']], [101])
+        self.assertIn(b'syntax.type_decls.clear()', self.data['removed-type/source/src/frontend/check/nominal/tests.rs.txt'])
+        self.assertIn(b'deleting AST declarations must not bypass original-source validation', self.data['removed-type/unit.stdout'])
 
 
 if __name__ == '__main__':

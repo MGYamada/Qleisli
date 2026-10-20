@@ -573,7 +573,7 @@ fn supported(ty: &SourceType) -> bool {
         Kind::Unit | Kind::Bit | Kind::Bits(_) => true,
         Kind::Q(basis) => basis_supported(basis),
         Kind::Tuple(fields) => fields.iter().all(supported),
-        Kind::Parameter(_) => false,
+        Kind::Parameter(_) | Kind::Nominal(_) => false,
     }
 }
 fn basis_supported(basis: &SourceType) -> bool {
@@ -608,7 +608,9 @@ fn atom_count(ty: &SourceType) -> usize {
         Kind::Unit => 0,
         Kind::Bit | Kind::Bits(_) | Kind::Q(_) => 1,
         Kind::Tuple(fields) => fields.iter().map(atom_count).sum(),
-        Kind::Parameter(_) => unreachable!("preflighted closed finite source type"),
+        Kind::Parameter(_) | Kind::Nominal(_) => {
+            unreachable!("preflighted legacy closed finite source type")
+        }
     }
 }
 fn effect(source: &ElaboratedProgram, subject: usize) -> Effect {

@@ -13,16 +13,22 @@ development milestones from the scope of their evidence.
   forests, logical cardinalities and retained public effects. Reject code
   leakage, phase/axis/dependency faults, false Unitary labels and hidden
   observation; retain zero-width owners. Preserve first compile/audit failures.
-  Ordinary ADT syntax, canonical source typing, native typed-interface transport
+  Ordinary ADT values/match, source preservation and native typed-interface transport
   and qmatch remain unfinished; no native mode or public language form is enabled.
   Retain fieldless enum and named-record declaration syntax, member visibility,
   qualified type paths, spans and documentation in the common AST. Reserve
   `enum`/`struct`; explicitly reject production source containing these parsed
-  declarations until canonical type elaboration and typed native transport exist.
+  declarations until typed native transport is connected.
   Register type names in the common resolver with a separate category and
   original visibility through imports/reexports. Reject empty enums, duplicate
   members and cross-category name collisions; retain canonical declaration spans
   in Project import metadata. Callable consumers cannot treat types as providers.
+  Elaborate ordinary nominal field trees and T/Q<T> signatures in the common
+  frontend, retaining original bytes, enum order, field visibility and exact
+  trees. Reject unknown/recursive/quantum-owned fields and reuse existing bounded
+  Nat helpers for closed sizes. Check original declaration tokens as well as ASTs
+  to prevent deletion from bypassing source identity. Keep constructed non-ADT
+  AST consumers at their existing boundary; no source-preservation proof follows.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

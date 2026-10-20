@@ -497,7 +497,7 @@ impl Checker<'_, '_> {
                 }
                 Some(total)
             }
-            Kind::Parameter(_) => None,
+            Kind::Parameter(_) | Kind::Nominal(_) => None,
             Kind::Q(_) => {
                 return Err(SourceError::new(
                     "type",

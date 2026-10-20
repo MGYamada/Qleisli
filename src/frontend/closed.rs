@@ -292,7 +292,7 @@ fn validate_closed_basis(
     let mut pending = vec![ty];
     while let Some(node) = pending.pop() {
         match &node.kind {
-            Kind::Parameter(_) => {
+            Kind::Parameter(_) | Kind::Nominal(_) => {
                 return Err(SourceError::new(
                     "type",
                     span,

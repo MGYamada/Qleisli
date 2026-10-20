@@ -1,0 +1,272 @@
+{
+  "format": "qleisli.nominal-elaboration-validation",
+  "version": 1,
+  "base_commit": "5a70f8fb0e380c76c8794e9917e1671d22ec4455",
+  "source_files": {
+    "src/frontend/check.rs": "cbd8ba20584dce744bf9a0031febc038ed54f51bdc5c7216e3b98f2fa355479c",
+    "src/frontend/check/body.rs": "7c64c513076801406f795500c8991e84100f84937c2f218aeb24d63dec9b9925",
+    "src/frontend/check/body/operations.rs": "70e0cbc7a79a8ec544b5ba20055d9ea05b277445c3d14fec591012f4890a77a0",
+    "src/frontend/check/body/special.rs": "7abc1dae6a96f95349fa918a3dbceb4b8bb57f619da52153ee316568a32f6779",
+    "src/frontend/check/declarations.rs": "1318752f39ec64c30c5b2994544d833edba5b24940e0fc1abf56b2b3e3a77a94",
+    "src/frontend/check/nominal.rs": "8bab54d17573bcdffa3cc2221f196b921fcc0b4675d4372b5a5babd6b8431afc",
+    "src/frontend/check/nominal/tests.rs": "985725d18816f3393b526444c1e2e1b84969cacb950f1b56d4c2cd068f1793f5",
+    "src/frontend/check/normalize.rs": "edeb26e79ace3296505dcc4844d49de719c0e45f196f03fa62261c25331a1368",
+    "src/frontend/check/static_helpers.rs": "6a04a73ec651e221835abe355e2ef34e87b271691d0a5f65d407cb049ddc11a2",
+    "src/frontend/closed.rs": "e575ae322d866bfbffb9a2db8c678c90ccca6d3e54b76f67ec281abf57f954d3",
+    "src/frontend/compile/instances/closure.rs": "524c6b4d11a1a749e684a8f5f936c71cca9c1e3e0ab67ba26cb587d70bc00a60",
+    "src/frontend/compile/lower/mod.rs": "e1671b50b0b12ef28c73b553cd5727ac3653a1ee83ba71f4ee35e14d6a1d24fc",
+    "src/frontend/compile/mod.rs": "fb1f027145a6620f09c9e57f71d2524b90bd6d3c4cf1b078b1c2440c3cc2c0d3",
+    "src/frontend/compile/types.rs": "afed714e1aa655de66dc244d1a5187204391c7f02bb73a1d79914f1ee75e08df",
+    "src/frontend/specialize.rs": "0499071f4f19c7e7c93fea62ad62e310614d3dd63dbd44200ac2d2c8549e4b85",
+    "src/frontend/specialize/elaborate.rs": "56335d683512df61718225a8a6af3112a15426fbbac37f13119bd1ba7138dd43",
+    "src/frontend/specialize/lower.rs": "d7d303197d3d495e1dc676b221eb38968113b0b8d51bfeda560cb97d9e91abd3",
+    "src/frontend/specialize/raw.rs": "bb0eee469451e0126e4a643f42ba801bbd7d3dae450f9923cd1b531a1e6eff37",
+    "src/frontend/specialize/raw/preservation.rs": "4e91ac89e4990827fc712205a467d987937f7304ed3e56f736d9148bb56bb1f2",
+    "src/frontend/types.rs": "a1f14c22a70ce3e8d26500b9ae63b810f0f67f7a5cee47984a78f1bfc362f2ec",
+    "src/frontend/types/nominal.rs": "a7d7ba2f35b36d257d3346d288c9c01f4a0da450e5f4f8e96bb9af72d1538cdc",
+    "tests/source_collection.rs": "3bcd8fe88b219e3eb305aa2c0a86cd94b098bca78f4ae5dbe9b762d0645f8e4a"
+  },
+  "reports": [
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-elaboration-v7-validation/report.json",
+      "sha256": "21f53f338672acd493c477c7e1a01d2289110b0cb3988fc894823f6c89364cc2",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 28.565410624956712
+        },
+        {
+          "label": "unit",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 7.3754326668567955
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 17.778961083153263
+        },
+        {
+          "label": "lint",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "clippy",
+            "--locked",
+            "--offline",
+            "--lib",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.9217832919675857
+        },
+        {
+          "label": "native-snapshot",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::snapshot_tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 7.7033338327892125
+        },
+        {
+          "label": "format",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.155443999916315
+        }
+      ],
+      "summaries": {
+        "check.stdout": [],
+        "native-snapshot.stdout": [
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 457 filtered out; finished in 0.20s"
+        ],
+        "unit.stdout": [
+          "test result: ok. 211 passed; 0 failed; 115 ignored; 0 measured; 137 filtered out; finished in 0.54s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+        ],
+        "format.stdout": [],
+        "lint.stdout": []
+      }
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-elaboration-msrv-v2-validation/report.json",
+      "sha256": "2f06483abbd68f9f2bbfcf2024cbf2bb031df0c3a3ffdd4d18e9a377ef746eb0",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 30.694068667013198
+        },
+        {
+          "label": "unit",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 8.898947790963575
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 17.500647749984637
+        },
+        {
+          "label": "native-snapshot",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::snapshot_tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 8.986573874950409
+        }
+      ],
+      "summaries": {
+        "check.stdout": [],
+        "native-snapshot.stdout": [
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 457 filtered out; finished in 0.19s"
+        ],
+        "unit.stdout": [
+          "test result: ok. 211 passed; 0 failed; 115 ignored; 0 measured; 137 filtered out; finished in 0.59s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s"
+        ]
+      }
+    }
+  ],
+  "first_history": {
+    "members": 101,
+    "archive_sha256": "e899297cfb3b1fe6ad609eaed1f5b9fe38f955efa6cfaf0629d79c4c4335ea16",
+    "index_sha256": "e8587e18de7233799a4313e7aa49a7cc853fe442c8dc847ebf39a38542cc6d80",
+    "expanded_file_bytes": 10294380
+  },
+  "actual_scope": [
+    "Common nominal Type trees retain complete original module/declaration/source bytes, enum order, record names/visibility and complete field types; collection-local TypeIds are not evidence identities.",
+    "Canonical imports/reexports resolve ordinary finite field types. Topological preparation rejects unknown, recursive, non-type and quantum-owned fields. Closed sizes reuse the existing Nat-helper arithmetic and premise checks, without general const<T>.",
+    "Common signatures classify T and Q<T>, preserving exact nominal trees and zero-width owners. Equality, size substitution/closure and bounded type walks retain full field trees and metadata. Equal physical widths do not identify carriers.",
+    "Both original AST and actual original enum/struct tokens trigger full source-pair validation. Deleting AST declarations cannot hide them; comments/substrings do not create declarations. Non-nominal constructed-AST consumers retain their prior boundary, without a general source-preservation claim.",
+    "Normal1.98.1 and sequential MSRV1.85 pass211 relevant library and66 integration cases each;115library+1integration native-gated ignores and137library filters remain explicit. Each additionally passes6 focused native-enabled snapshot/metadata/constructed-pattern cases,457filtered; no maximum quantum case is run. Both all-target compile; normal strict lint and format pass.",
+    "The production nominal gate remains after canonical type/interface elaboration and before bodies/concrete lowering/native invocation. Existing physical-only consumers explicitly refuse Nominal; no width erasure or new native accepted handle is enabled."
+  ],
+  "unchanged": {
+    "selected_native": "23d2567e1591ec4779fc99e0b4739c799790c03c03936be47e47d458aab31755",
+    "companion_sources_and_four_dirty_files": true,
+    "lean_source_revision": "dfda3910159bf9c3433fac7ad8a3a77b053c83415115e4c79e05b37ecd98cf9e"
+  },
+  "remaining": [
+    "Ordinary enum/record constructors, field access/privacy enforcement and exhaustive match; ownership/body checking for the actual new forms.",
+    "Canonical source/type-only/host dependencies through versioned native/QDV transport, logical encoding and private accepted handles.",
+    "Coherent qmatch, actual public execution/fault validation, companion minimum compatibility/bin restaging, latest-head hosted CI/review and full criterion audit."
+  ],
+  "skipped": [
+    "Ignored/filtered cases remain as reported; focused native cases do not execute all native tests or cover new typed native acceptance.",
+    "No Lean/proof source change, so previous shared build/audit/replay is not repeated. Source identity is not fresh proof replay.",
+    "No new target/cache/worktree/agent, dependency/version/capacity change, maximum quantum case, hosted CI/review, companion rebuild/bin restaging, tag/release/publication or guarantee admission."
+  ],
+  "scope_limit": "Untrusted common type elaboration only, not completed ADT support or source-preservation proof. All #64 checkboxes remain open; broader QS/PR/RS/EXACT and source/runtime/target obligations remain pending."
+}

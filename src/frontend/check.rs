@@ -6,6 +6,7 @@
 
 mod body;
 mod declarations;
+mod nominal;
 mod normalize;
 pub(super) mod plans;
 pub(super) mod primitive;
@@ -19,7 +20,7 @@ use super::effects::{
 };
 pub(super) use super::linear::{Context, Linear};
 use super::resolve::locals::{BinderKey, Index, Table};
-use super::resolve::{self, DefId, Resolution};
+use super::resolve::{self, DefId, Resolution, TypeId};
 use super::types::{Kind, Type};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -28,6 +29,7 @@ use std::sync::Arc;
 
 pub(super) type Ty = Type<Linear>;
 pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
+type NominalTypes = Rc<BTreeMap<TypeId, Ty>>;
 #[derive(Debug)]
 pub(super) struct StaticHelper {
     pub parameters: Vec<BinderKey>,
@@ -109,6 +111,10 @@ pub(super) fn type_size_budgeted<N>(
             }
             charge(span, fields.len())?;
             pending.extend(fields.iter().rev().map(|field| (field, level + 1)));
+        }
+        if let Kind::Nominal(nominal) = &node.kind {
+            charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+            pending.extend(nominal.fields().rev().map(|field| (field, level + 1)));
         }
     }
     Ok(size)
@@ -250,6 +256,10 @@ impl Budget {
                     }
                     self.charge(span, fields.len())?;
                     pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
+                }
+                Kind::Nominal(nominal) => {
+                    self.charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+                    pending.extend(nominal.fields().rev().map(|field| (field, depth + 1)));
                 }
                 _ => {}
             }
@@ -439,6 +449,7 @@ struct Binding {
 }
 struct Scope {
     helpers: StaticHelpers,
+    nominals: NominalTypes,
     naturals: BTreeMap<BinderKey, Linear>,
     bases: BTreeMap<BinderKey, Ty>,
     operations: BTreeMap<BinderKey, Operation>,
@@ -491,6 +502,7 @@ impl Scope {
         budget.charge(span, 1)?;
         Ok(Self {
             helpers: Rc::clone(&self.helpers),
+            nominals: Rc::clone(&self.nominals),
             naturals,
             bases,
             operations,
@@ -504,6 +516,8 @@ impl Scope {
 
 struct Program<'a> {
     helpers: StaticHelpers,
+    nominals: NominalTypes,
+    sources: BTreeMap<&'a str, &'a str>,
     modules: BTreeMap<&'a str, &'a ast::Module>,
     resolution: Resolution,
     indices: BTreeMap<DefId, Index<'a>>,
@@ -753,6 +767,7 @@ impl<'a> Program<'a> {
     }
 }
 
+#[cfg(test)]
 pub(super) fn program_with<'a, R>(
     modules: BTreeMap<&'a str, &'a ast::Module>,
     limits: SourceLimits,
@@ -766,34 +781,33 @@ pub(super) fn program_with<'a, R>(
         &Budget,
     ) -> Result<R>,
 ) -> Result<(CheckedProgram, R)> {
+    // AST-only unit tests cannot establish a nominal origin without original bytes.
+    program_with_sources(modules, BTreeMap::new(), limits, finish)
+}
+
+fn prepare_program<'a>(
+    modules: BTreeMap<&'a str, &'a ast::Module>,
+    sources: BTreeMap<&'a str, &'a str>,
+    limits: SourceLimits,
+) -> Result<Program<'a>> {
     let budget = Rc::new(Budget {
         remaining: Cell::new(limits.work),
         limits,
     });
+    nominal::validate_originals(&modules, &sources, &budget)?;
     let mut resolution = Resolution::new_budgeted(
         modules.iter().map(|(name, module)| (*name, *module)),
         |span, cells| budget.charge(span, cells),
     )?;
     for (name, module) in &modules {
         let owner = resolution.module(name).expect("registered source module");
-        let imports =
-            resolution.imports_budgeted(owner, module, |span, cells| budget.charge(span, cells))?;
-        resolution.set_scope_budgeted(owner, imports, |span, cells| budget.charge(span, cells))?;
-    }
-    // Do not erase parsed nominal declarations while the shared source judgment
-    // and typed native transport are still being integrated (#64).
-    for (name, module) in &modules {
-        budget.charge(module.span, module.type_decls.len())?;
-        if let Some(declaration) = module.type_decls.first() {
-            return Err(SourceError::new(
-                "unsupported",
-                declaration.span,
-                "finite type declarations require canonical source elaboration and typed native transport",
-            ).in_module(name));
-        }
+        let imports = resolution.imports_budgeted(owner, module, |s, c| budget.charge(s, c))?;
+        resolution.set_scope_budgeted(owner, imports, |s, c| budget.charge(s, c))?;
     }
     let mut program = Program {
         helpers: Rc::new(BTreeMap::new()),
+        nominals: Rc::new(BTreeMap::new()),
+        sources,
         modules,
         resolution,
         indices: BTreeMap::new(),
@@ -805,6 +819,39 @@ pub(super) fn program_with<'a, R>(
         budget,
     };
     declarations::prepare(&mut program)?;
+    Ok(program)
+}
+
+pub(super) fn program_with_sources<'a, R>(
+    modules: BTreeMap<&'a str, &'a ast::Module>,
+    sources: BTreeMap<&'a str, &'a str>,
+    limits: SourceLimits,
+    finish: impl FnOnce(
+        &Resolution,
+        &BTreeMap<DefId, Interface>,
+        &StaticHelpers,
+        &BTreeMap<DefId, FunctionEffect>,
+        &[DefId],
+        &mut BTreeMap<DefId, Index<'a>>,
+        &Budget,
+    ) -> Result<R>,
+) -> Result<(CheckedProgram, R)> {
+    let mut program = prepare_program(modules, sources, limits)?;
+    // Do not erase parsed nominal declarations while the shared source judgment
+    // and typed native transport are still being integrated (#64).
+    for (name, module) in &program.modules {
+        program
+            .budget
+            .charge(module.span, module.type_decls.len())?;
+        if let Some(declaration) = module.type_decls.first() {
+            return Err(SourceError::new(
+                "unsupported",
+                declaration.span,
+                "finite type declarations require typed native transport before source execution",
+            )
+            .in_module(name));
+        }
+    }
     let mut bodies = BTreeMap::new();
     let mut edges = BTreeMap::new();
     // Canonical DefId order deliberately does not choose declaration diagnostics.
@@ -1015,6 +1062,11 @@ pub(super) fn close_type_budgeted(
                 }
                 charge(span, fields.len())?;
                 pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
+                1
+            }
+            Kind::Nominal(nominal) => {
+                charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+                pending.extend(nominal.fields().rev().map(|field| (field, depth + 1)));
                 1
             }
             Kind::Q(child) => {

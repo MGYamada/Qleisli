@@ -33,7 +33,7 @@ fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route
         assert_eq!(error.code, "unsupported");
         assert_eq!(
             error.message,
-            "finite type declarations require canonical source elaboration and typed native transport"
+            "finite type declarations require typed native transport before source execution"
         );
     }
     let error = ParsedProgram::parse(

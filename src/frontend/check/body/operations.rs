@@ -349,6 +349,7 @@ impl Checker<'_, '_> {
         }
         let mut target = Scope {
             helpers: Rc::clone(&scope.helpers),
+            nominals: Rc::clone(&scope.nominals),
             naturals: BTreeMap::new(),
             bases: BTreeMap::new(),
             operations: BTreeMap::new(),

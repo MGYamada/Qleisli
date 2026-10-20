@@ -267,8 +267,12 @@ impl ParsedProgram {
             .iter()
             .map(|(name, source)| (name, source.syntax()))
             .collect();
-        let (checked, (projections, meaning_targets)) = super::check::program_with(
+        let (checked, (projections, meaning_targets)) = super::check::program_with_sources(
             originals,
+            sources
+                .iter()
+                .map(|(name, source)| (name, source.text()))
+                .collect(),
             super::check::SourceLimits::selected(),
             |resolution, interfaces, helpers, _, order, indices, budget| {
                 let meaning_targets =

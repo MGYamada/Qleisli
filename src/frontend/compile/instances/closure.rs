@@ -220,6 +220,14 @@ impl Compiler<'_> {
             conditional_size: false,
         };
         match &value.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal source types require typed native transport",
+                ));
+            }
             Kind::Unit => {}
             Kind::Bit => {
                 measure.known_bits = 1;
@@ -436,6 +444,14 @@ impl Compiler<'_> {
     ) -> Result<Ty, CompileError> {
         self.tick(module, span)?;
         Ok(match &value.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal source types require typed native transport",
+                ));
+            }
             Kind::Unit => Ty::unit(),
             Kind::Bit => Ty::bit(),
             Kind::Bits(original) => Ty::bits(size(self, original)?.0.ok_or_else(|| {

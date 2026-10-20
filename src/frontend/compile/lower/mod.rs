@@ -283,6 +283,14 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         self.compiler.tick(module, span)?;
         Ok(match &ty.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal input requires typed native transport",
+                ));
+            }
             Kind::Unit => Value::Unit,
             Kind::Bit => {
                 let id = self.classical();

@@ -238,6 +238,7 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         .iter()
         .any(|formal| matches!(formal.kind, StaticKind::Operation { .. }));
     let mut scope = declarations::scope(interface, &p.helpers, &p.budget, declaration.span)?;
+    scope.nominals = Rc::clone(&p.nominals);
     let index = &p.indices[&id];
     for (parameter, ty) in declaration.params.iter().zip(&interface.params) {
         bind(

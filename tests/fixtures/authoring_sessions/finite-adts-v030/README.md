@@ -91,3 +91,30 @@ duplicate members and function/type name collisions reject at original names.
 This is name integration, not finite type-tree elaboration or source typing.
 Normal/MSRV tests and all-target compilation pass in separate stable windows;
 native skips and pending type/native/companion integration remain explicit.
+
+The [type-elaboration history](elaboration-first.tar.xz),
+[index](elaboration-index.json) and [current checks](elaboration-validation.json)
+retain 101 original records: first Rust sources/compile diagnostics, the mistaken
+Nat call spelling, strict lint refusal and an AST-deletion counterexample.
+All remain failed observations. The archive is passive data, never executed.
+Its 10,294,380 original bytes occupy 737,456 stored bytes within existing budgets.
+
+Current common frontend types retain nominal source/variant/field identity and
+classify ordinary T and Q<T> signatures. Unknown, recursive, non-type and quantum
+fields refuse; closed sizes share existing Nat helpers and premise checking.
+Original enum/struct tokens prevent deleting AST declarations from bypassing
+source-pair validation. Non-nominal constructed-AST behavior remains unchanged;
+neither that compatibility nor source-byte equality is a preservation proof.
+
+Normal1.98.1 and sequential MSRV1.85 each pass211 relevant library and66
+integration tests, plus6 focused native-enabled snapshot cases. The default
+115library+1integration native ignores and137library filters, and the focused
+457filters, remain explicit. Both all-target compile; normal strict lint/format
+pass. No new maximum quantum case or Rust target is generated. Lean/native
+sources and the companion dirty files/binaries remain unchanged.
+
+The production nominal gate remains after common type/interface preparation.
+Constructors, field access/privacy, ordinary match, complete source/evidence
+dependencies, versioned native/QDV/private handles and coherent qmatch still
+require actual integration and public execution/fault validation. All #64
+checkboxes remain open. No hosted review, new guarantee or release is claimed.

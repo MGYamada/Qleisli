@@ -168,7 +168,7 @@ impl Ty {
             Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0usize, |bits, field| bits.checked_add(field.basis_bits()?)),
-            Kind::Q(_) | Kind::Parameter(_) => None,
+            Kind::Q(_) | Kind::Parameter(_) | Kind::Nominal(_) => None,
         }
     }
     fn classical(&self) -> bool {
@@ -859,11 +859,16 @@ fn prepare_original_source<'ast>(
     })?;
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
-    let (source, (occurrences, interface_naturals)) = check::program_with(
+    let (source, (occurrences, interface_naturals)) = check::program_with_sources(
         project
             .modules
             .iter()
             .map(|(name, module)| (name.as_str(), &module.ast))
+            .collect(),
+        project
+            .modules
+            .iter()
+            .map(|(name, module)| (name.as_str(), module.source.as_str()))
             .collect(),
         SourceLimits::finite(),
         |resolution, interfaces, helpers, _, _, indices, budget| {

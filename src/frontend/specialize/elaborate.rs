@@ -93,12 +93,14 @@ impl SourceType {
                 TypeKind::Tuple(_) => "tuple",
                 TypeKind::Q(_) => unreachable!("nested Q is not a basis"),
                 TypeKind::Parameter(_) => "unresolved",
+                TypeKind::Nominal(_) => "nominal",
             },
             TypeKind::Bit => "bit",
             TypeKind::Bits(_) => "bits",
             TypeKind::Tuple(_) => "tuple",
             TypeKind::Unit => "unit",
             TypeKind::Parameter(_) => "unresolved",
+            TypeKind::Nominal(_) => "nominal",
         }
     }
     pub fn width(&self) -> Option<u32> {
@@ -108,7 +110,7 @@ impl SourceType {
             TypeKind::Q(basis) => basis.basis_width(),
             TypeKind::Tuple(_) => None,
             TypeKind::Unit => Some(0),
-            TypeKind::Parameter(_) => None,
+            TypeKind::Parameter(_) | TypeKind::Nominal(_) => None,
         }
     }
     pub fn fields(&self) -> &[SourceType] {
@@ -1381,6 +1383,11 @@ fn concrete_type(
         span: Span,
     ) -> Result<u32> {
         match &t.kind {
+            TypeKind::Nominal(_) => Err(error(
+                "unsupported",
+                span,
+                "nominal source types require typed native transport",
+            )),
             TypeKind::Unit => Ok(0),
             TypeKind::Bit => Ok(1),
             TypeKind::Bits(_) => Ok(sizes.next().expect("one resolved size per occurrence")),
