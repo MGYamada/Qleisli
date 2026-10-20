@@ -1,0 +1,2867 @@
+{
+  "format": "qleisli.field-natural-syntax-history",
+  "version": 1,
+  "archive": {
+    "bytes": 818488,
+    "sha256": "14f9f900086faf87d6672af34fbed26e5b55d6e3e9348b5c00b69a6e9d65337e",
+    "expanded_file_bytes": 38792408
+  },
+  "scope": "Inert first14 projects/28 source-native observations, first implementations, exact failed proof/test inputs and generated-declaration audits. Initial compile success was not policy acceptance: derived nested equality/printing and equation-compiler recursion created partial project helpers, including private mapValues. The full compiled audit rejected them; later explicit total folds/recursors pass. A reserved Lean test identifier and opaque derived comparisons are authoring/test failures, not language refusals. Final syntax/reference tests and actual evaluator-to-Value proof are separate from still-pending source helper/affine checking and field dispatch. Nothing archived is executed.",
+  "records": {
+    "authored-inputs/audit-field-natural-generated-20261021.lean.txt": {
+      "bytes": 1273,
+      "sha256": "bd630c14a93525fef5a3091fad7d79f4537d438c5c72f3fe28d2750bb25e3839",
+      "original_mode": 420
+    },
+    "authored-inputs/field-natural-syntax-checks-20261021.lean.txt": {
+      "bytes": 2975,
+      "sha256": "47ab33825a316568da941cf5a989f0f8c4ad8c28a1812e23a85e6a08f56b8515",
+      "original_mode": 420
+    },
+    "authored-inputs/field-natural-syntax-checks-v2-20261021.lean.txt": {
+      "bytes": 2975,
+      "sha256": "d614b924df4a7473f1a291931577d65b18c8f9a25de8a176bebb4f84acc51807",
+      "original_mode": 420
+    },
+    "authored-inputs/field-natural-syntax-checks-v3-20261021.lean.txt": {
+      "bytes": 2775,
+      "sha256": "8ffac65029fc0cab3bddacf3eb9087f99ce311a823b33c42584b11c8cc4d1ee2",
+      "original_mode": 420
+    },
+    "authored-inputs/inspect-field-natural-generated-20261021.lean.txt": {
+      "bytes": 817,
+      "sha256": "beb39026e0a6c8127812b14691e519380fc5b89b5e67c38164bccda570480b36",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-field-nat-first-20261021.py.txt": {
+      "bytes": 8585,
+      "sha256": "26e73431b5520094943ca7e49f747d9d92d82fcd5a5f88cd9113fc38d52d2df4",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-field-natural-20261021.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-field-nat-syntax-evidence-20261021.py.txt": {
+      "bytes": 3983,
+      "sha256": "479b39959aba4bf9ab890dcce0e5348fc06906e9162bfa8ec86bf54bc0043925",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-field-nat-syntax-evidence.stdout": {
+      "bytes": 394,
+      "sha256": "77523f1c1d86d379a9bfa4d128eae33b3b1cc3381e74976effa4dde2d1adada5",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-rust-20261021.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-field-natural-lean-20261021.py.txt": {
+      "bytes": 5305,
+      "sha256": "47a1d94ba08d80ece87e5f9b0cedb487ddf07c37239dafb4f938c4a4a76b9352",
+      "original_mode": 420
+    },
+    "first-study/context.txt": {
+      "bytes": 1044,
+      "sha256": "05146ca745c015bbf77bfd0665908094bc1b2ad023982646bb2dd0e598604364",
+      "original_mode": 420
+    },
+    "first-study/false-premise-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/false-premise-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/false-premise-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/false-premise-source.stdout": {
+      "bytes": 384,
+      "sha256": "29aca9dc50ad945e734e441c3e66fda8a538ec6fe6fe29785eccc1e9b96cfd13",
+      "original_mode": 420
+    },
+    "first-study/helper-cycle-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/helper-cycle-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/helper-cycle-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/helper-cycle-source.stdout": {
+      "bytes": 379,
+      "sha256": "d0731c1b0e9984c3b100cecd7d468ff54e84efb27a055eb3f03f3ae87f699c40",
+      "original_mode": 420
+    },
+    "first-study/imported-helper-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/imported-helper-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/imported-helper-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/imported-helper-source.stdout": {
+      "bytes": 419,
+      "sha256": "7c37ec92f11524e4c24f99b1e340947b17e8ad146eb768f7ab5d04dd97256114",
+      "original_mode": 420
+    },
+    "first-study/left-associative-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/left-associative-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/left-associative-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/left-associative-source.stdout": {
+      "bytes": 419,
+      "sha256": "021ff525d6c171aab834c386fa4f9e46fe5acfe36569c4a256448042444ff053",
+      "original_mode": 420
+    },
+    "first-study/literal-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/literal-native.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "first-study/literal-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/literal-source.stdout": {
+      "bytes": 410,
+      "sha256": "9004f0a5399c8c3882628c648c410364e0bd655fc473cb628839b8315eaaec7b",
+      "original_mode": 420
+    },
+    "first-study/native/false-premise/artifact.qirf": {
+      "bytes": 1224,
+      "sha256": "21526fde0ad5ac52a8d001f29b72664de70fb224389124ab26692a8f596d6a49",
+      "original_mode": 420
+    },
+    "first-study/native/false-premise/packet.bin": {
+      "bytes": 5310,
+      "sha256": "042bb20595ece8ad1c4b75816f483bc842e2c8577de70c11a8e819e57fc02730",
+      "original_mode": 420
+    },
+    "first-study/native/false-premise/request.json": {
+      "bytes": 4041,
+      "sha256": "c66ec1dd7631106c231b6f95d206984a8e369024bc73ea95aee416bedb64e092",
+      "original_mode": 420
+    },
+    "first-study/native/helper-cycle/artifact.qirf": {
+      "bytes": 1185,
+      "sha256": "2246eb997de47439dde8af0fbaccd406099a0da542d61501a93afc5f17ecd190",
+      "original_mode": 420
+    },
+    "first-study/native/helper-cycle/packet.bin": {
+      "bytes": 5519,
+      "sha256": "42f3ae2a5d4490ef51bb6ccbbf1b693e721550c2cac819685d1e9ac352acee4d",
+      "original_mode": 420
+    },
+    "first-study/native/helper-cycle/request.json": {
+      "bytes": 4289,
+      "sha256": "151108c78a6b64386941b55f5a358a62020d5c3cebe20a62c4b3dd6b956d8c3e",
+      "original_mode": 420
+    },
+    "first-study/native/imported-helper/artifact.qirf": {
+      "bytes": 1281,
+      "sha256": "ae7840b7d646003902dd272c3de87e0cc73d3e9eebd5f8a6900c0c43dd1b2cfa",
+      "original_mode": 420
+    },
+    "first-study/native/imported-helper/packet.bin": {
+      "bytes": 5359,
+      "sha256": "9ac1f43aa33a2632a7304ca846dd33b97e3db9dcc3a73f92512b586e7c5c1954",
+      "original_mode": 420
+    },
+    "first-study/native/imported-helper/request.json": {
+      "bytes": 4033,
+      "sha256": "bc9e6260ad5313a75c5896394a1b10f29162e6825aa7bb99589c31af20075713",
+      "original_mode": 420
+    },
+    "first-study/native/left-associative/artifact.qirf": {
+      "bytes": 1092,
+      "sha256": "9cdfc73c397d307fd9759ce9a6ee9aa126f2f1e8948fc2aeaf4a697f0223e925",
+      "original_mode": 420
+    },
+    "first-study/native/left-associative/packet.bin": {
+      "bytes": 5054,
+      "sha256": "b785e770a10a0644befcf2ac54f47c07bfe77d7f42aa157150f5f8c118c34c16",
+      "original_mode": 420
+    },
+    "first-study/native/left-associative/request.json": {
+      "bytes": 3917,
+      "sha256": "87c5608995a045961f76cd70b40fc859505f365a6449d9019ab0afbc3b7b6d66",
+      "original_mode": 420
+    },
+    "first-study/native/literal/artifact.qirf": {
+      "bytes": 1088,
+      "sha256": "ea1c9051dee1cf7390eda6b2c9f9be9383e8731d7bd4c1fc2226e65a6a2536af",
+      "original_mode": 420
+    },
+    "first-study/native/literal/packet.bin": {
+      "bytes": 5034,
+      "sha256": "b3c26884ace4ab9c705d2eaefaa633147e5a85544ac2ab7891a34f94ee06f17b",
+      "original_mode": 420
+    },
+    "first-study/native/literal/request.json": {
+      "bytes": 3901,
+      "sha256": "23135fd556ca7552efe484e8d77839d1b1eb8335dc92472e0518f9f0502de40f",
+      "original_mode": 420
+    },
+    "first-study/native/negative-intermediate/artifact.qirf": {
+      "bytes": 1092,
+      "sha256": "39d5d77be76a97d4a584d9d689ffe15542f6025fef3d20561f414374dec5fe58",
+      "original_mode": 420
+    },
+    "first-study/native/negative-intermediate/packet.bin": {
+      "bytes": 5054,
+      "sha256": "4e944dc410db63cdd9f785356c6de3e1f3eaf6a322bba2ffea7161f60b08a24c",
+      "original_mode": 420
+    },
+    "first-study/native/negative-intermediate/request.json": {
+      "bytes": 3917,
+      "sha256": "1f8d53b1c460f12b1a81f8e04678e44b3505de7ad08f343fb898d61f4547244b",
+      "original_mode": 420
+    },
+    "first-study/native/nonlinear-generic/artifact.qirf": {
+      "bytes": 1147,
+      "sha256": "2f0dc727574b2dc226778a84723b793d5e0acb9a06037df784697493a3c31668",
+      "original_mode": 420
+    },
+    "first-study/native/nonlinear-generic/packet.bin": {
+      "bytes": 5329,
+      "sha256": "f308ead9b056ff72fefbffa8d6932016c1a05570a79847afb2dc19f3dc2dc5ec",
+      "original_mode": 420
+    },
+    "first-study/native/nonlinear-generic/request.json": {
+      "bytes": 4137,
+      "sha256": "31faeedf2e73d6c6ac080d25fd505fd48f3685ceb264ae439765ddf8322dcfbd",
+      "original_mode": 420
+    },
+    "first-study/native/precedence/artifact.qirf": {
+      "bytes": 1094,
+      "sha256": "74b4661257c3a993138ca477f452b35e836e185a041879a0f3bef19c6a994005",
+      "original_mode": 420
+    },
+    "first-study/native/precedence/packet.bin": {
+      "bytes": 5064,
+      "sha256": "c505a9010b9996163ff9623a8fb9b786a7c689c18e65e05bb2ba4ed078a36337",
+      "original_mode": 420
+    },
+    "first-study/native/precedence/request.json": {
+      "bytes": 3925,
+      "sha256": "8205b58c499da997c992c11093ecd7fcf6186c5d426b022ac9af778d09ade136",
+      "original_mode": 420
+    },
+    "first-study/native/private-helper-facade/artifact.qirf": {
+      "bytes": 1262,
+      "sha256": "dae642b418cde0d86a4daf5ee369fb48dfa21f213ae554a880340acdc0103d9c",
+      "original_mode": 420
+    },
+    "first-study/native/private-helper-facade/packet.bin": {
+      "bytes": 5288,
+      "sha256": "5125c8b7fe071a4daf31ddb09bb8715cda3fff751960d24e9301598085bd850b",
+      "original_mode": 420
+    },
+    "first-study/native/private-helper-facade/request.json": {
+      "bytes": 3981,
+      "sha256": "f123c150a8dce90595d24204cf6f37be7e8b0b679758cdc0576757c3255b0f32",
+      "original_mode": 420
+    },
+    "first-study/native/signed-overflow/artifact.qirf": {
+      "bytes": 1168,
+      "sha256": "1d1bbb34a22e60c9c2556c77687ab778a00d6650150de3232976a6b22af4a57b",
+      "original_mode": 420
+    },
+    "first-study/native/signed-overflow/packet.bin": {
+      "bytes": 5434,
+      "sha256": "db08776d53544ea4f0a8eeb8578d3350cd0989b4e201380078fd373578347820",
+      "original_mode": 420
+    },
+    "first-study/native/signed-overflow/request.json": {
+      "bytes": 4221,
+      "sha256": "230da363a5439926987c7fcbf9655ec2cd4ccad42cac4b1e75540646421906a6",
+      "original_mode": 420
+    },
+    "first-study/native/simultaneous-parameters/artifact.qirf": {
+      "bytes": 1210,
+      "sha256": "551959bfcfe8c17e6c08a9a759bbcb9191fbc3733158db9958a2084b5904a5ca",
+      "original_mode": 420
+    },
+    "first-study/native/simultaneous-parameters/packet.bin": {
+      "bytes": 5644,
+      "sha256": "c26d9f0d9aceb080a947f52ddd14b2bb066ebf32687517d37f3a84b0694d0047",
+      "original_mode": 420
+    },
+    "first-study/native/simultaneous-parameters/request.json": {
+      "bytes": 4389,
+      "sha256": "43a9a1772a207371c79b31d26894aca08663d7be7a28e388433ee829a382f8a9",
+      "original_mode": 420
+    },
+    "first-study/native/unguarded-generic/artifact.qirf": {
+      "bytes": 1149,
+      "sha256": "fe1ca009c380aa099b73f58b3f36d9ffc5be153bf190d08488772f84d5bc4dd6",
+      "original_mode": 420
+    },
+    "first-study/native/unguarded-generic/packet.bin": {
+      "bytes": 5339,
+      "sha256": "0b7fe58cb4fdb7cd5b424353229ba318d5c69a9af25cd9f6d6ee3b1103826e02",
+      "original_mode": 420
+    },
+    "first-study/native/unguarded-generic/request.json": {
+      "bytes": 4145,
+      "sha256": "bf9f0dc3f35b0c148948cd11cd1b5e3a6625ad9a7d2cf3aec7e7062c9852bcc5",
+      "original_mode": 420
+    },
+    "first-study/native/wide-intermediate/artifact.qirf": {
+      "bytes": 1110,
+      "sha256": "8d89b2982b3c868cae346cb7595c762dfc3b87e264d7819c4063739476f7ecf2",
+      "original_mode": 420
+    },
+    "first-study/native/wide-intermediate/packet.bin": {
+      "bytes": 5144,
+      "sha256": "cab8114728a3fb4025648d74ba65ad1d75a5319d560b3f022176d80d6dcaf925",
+      "original_mode": 420
+    },
+    "first-study/native/wide-intermediate/request.json": {
+      "bytes": 3989,
+      "sha256": "94229817c42e15c56f44bb818a23c8e732b65f1b488be8d0e107867375a860dd",
+      "original_mode": 420
+    },
+    "first-study/native/wrong-helper-category/artifact.qirf": {
+      "bytes": 1129,
+      "sha256": "f6429026012809f8efbf97c6faa6a6c27eb1eea672f911e290cf5f258ec5e22d",
+      "original_mode": 420
+    },
+    "first-study/native/wrong-helper-category/packet.bin": {
+      "bytes": 5239,
+      "sha256": "9bcccbea0c04bc2bdc0a526929b42a6a56d63cad6f30d388dc8ae333be479adc",
+      "original_mode": 420
+    },
+    "first-study/native/wrong-helper-category/request.json": {
+      "bytes": 4065,
+      "sha256": "818a06ead7ec51e28a954ee2a20a1c11fbe39e96a4acf700a7dfda495d3d3550",
+      "original_mode": 420
+    },
+    "first-study/negative-intermediate-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/negative-intermediate-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/negative-intermediate-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/negative-intermediate-source.stdout": {
+      "bytes": 376,
+      "sha256": "93e9120631539139f42c16325be29234c0cfbb9fe0babaa710ee59e79fac5ce6",
+      "original_mode": 420
+    },
+    "first-study/nonlinear-generic-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/nonlinear-generic-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/nonlinear-generic-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/nonlinear-generic-source.stdout": {
+      "bytes": 391,
+      "sha256": "fc1a9c5da5ac78f0d52b8b3d8d1037b8ee9b2b225fcc33db921d25415d1a913f",
+      "original_mode": 420
+    },
+    "first-study/observer.py.txt": {
+      "bytes": 8585,
+      "sha256": "26e73431b5520094943ca7e49f747d9d92d82fcd5a5f88cd9113fc38d52d2df4",
+      "original_mode": 420
+    },
+    "first-study/precedence-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/precedence-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/precedence-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/precedence-source.stdout": {
+      "bytes": 413,
+      "sha256": "385e7ebf6fe83e0956e0fc39c4af92a73025826db3c3e93d4c54dfb452c4fb1a",
+      "original_mode": 420
+    },
+    "first-study/predictions.json": {
+      "bytes": 3384,
+      "sha256": "d5ae233d01a41f797fb5820d40486fd345512a4e2b5c98900984ed0cca0b3c96",
+      "original_mode": 420
+    },
+    "first-study/private-helper-facade-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/private-helper-facade-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/private-helper-facade-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/private-helper-facade-source.stdout": {
+      "bytes": 377,
+      "sha256": "7e3a8ecebf2730f13e9102ae0e3d8111c53ed1caf10ee02bbdd2ecc933f78607",
+      "original_mode": 420
+    },
+    "first-study/projects/false-premise/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/false-premise/helper.qli": {
+      "bytes": 70,
+      "sha256": "bb4091e63bdfb55ce04fe3b88173b61cf7c5f701994915e842234720f75e9264",
+      "original_mode": 420
+    },
+    "first-study/projects/false-premise/main.qli": {
+      "bytes": 119,
+      "sha256": "c8abe3a74ae4c342debea5fbc1a5e6f771c48ae26f3f35297635908ec6f50f0f",
+      "original_mode": 420
+    },
+    "first-study/projects/helper-cycle/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/helper-cycle/main.qli": {
+      "bytes": 180,
+      "sha256": "8bb7b91924fdb8419a25ebe8e1c2d07fff893bd704832261291e0bad624dc32c",
+      "original_mode": 420
+    },
+    "first-study/projects/imported-helper/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/imported-helper/bridge.qli": {
+      "bytes": 28,
+      "sha256": "f206901d3581b6bd77509e2babd95102deeaa65ae0b7cc1563850aa047da03b1",
+      "original_mode": 420
+    },
+    "first-study/projects/imported-helper/helper.qli": {
+      "bytes": 70,
+      "sha256": "bb4091e63bdfb55ce04fe3b88173b61cf7c5f701994915e842234720f75e9264",
+      "original_mode": 420
+    },
+    "first-study/projects/imported-helper/main.qli": {
+      "bytes": 117,
+      "sha256": "061954c5c66c8a3a2126ccf325f48313e01ec9d8bea2a02a5b3356eaf8968a17",
+      "original_mode": 420
+    },
+    "first-study/projects/left-associative/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/left-associative/main.qli": {
+      "bytes": 88,
+      "sha256": "739dbad71770d61aa9bf6aeba58b895f4aaa4a39a85b7e533d78996f27f824a3",
+      "original_mode": 420
+    },
+    "first-study/projects/literal/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/literal/main.qli": {
+      "bytes": 84,
+      "sha256": "b33dde4bbe3b7226a9d3ba630c607112f9782be67124294d7bfb38d8d186f3ef",
+      "original_mode": 420
+    },
+    "first-study/projects/negative-intermediate/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/negative-intermediate/main.qli": {
+      "bytes": 88,
+      "sha256": "adb58192291a3e3e3a31edb8692b53f5c42f0e80d6736f8b110550a9eddbc45a",
+      "original_mode": 420
+    },
+    "first-study/projects/nonlinear-generic/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/nonlinear-generic/main.qli": {
+      "bytes": 143,
+      "sha256": "38f5ad40a654eded5acda7fdaa821a070065bd2d88ddd8812aa9400c7a635533",
+      "original_mode": 420
+    },
+    "first-study/projects/precedence/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/precedence/main.qli": {
+      "bytes": 90,
+      "sha256": "47c6ade8149b3da94a1947859ce69603336f77dbba300559c186ff3829808f84",
+      "original_mode": 420
+    },
+    "first-study/projects/private-helper-facade/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/private-helper-facade/bridge.qli": {
+      "bytes": 22,
+      "sha256": "25fcfaee5a66215eb2489d28a91cea32d24c7dc4eb8c6ef0001075653f59a444",
+      "original_mode": 420
+    },
+    "first-study/projects/private-helper-facade/helper.qli": {
+      "bytes": 70,
+      "sha256": "bb4091e63bdfb55ce04fe3b88173b61cf7c5f701994915e842234720f75e9264",
+      "original_mode": 420
+    },
+    "first-study/projects/private-helper-facade/main.qli": {
+      "bytes": 104,
+      "sha256": "df83ad56792d8d545a68a776d2aa5063ac4955826a5d71a31d2a7f13859e96c7",
+      "original_mode": 420
+    },
+    "first-study/projects/signed-overflow/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/signed-overflow/main.qli": {
+      "bytes": 164,
+      "sha256": "32c7864a68007cb795e83c340662732bb5eb99a81b076fac642994f49edc2345",
+      "original_mode": 420
+    },
+    "first-study/projects/simultaneous-parameters/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/simultaneous-parameters/main.qli": {
+      "bytes": 205,
+      "sha256": "bf9299f6060ea21443c36388c64e9136ce3a4ca144c3f2225301c193ad4c2c19",
+      "original_mode": 420
+    },
+    "first-study/projects/unguarded-generic/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/unguarded-generic/main.qli": {
+      "bytes": 145,
+      "sha256": "a4a3d669ba980e9412d80a41330b3428a9203e22b50851b14e068b69eb5bf380",
+      "original_mode": 420
+    },
+    "first-study/projects/wide-intermediate/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/wide-intermediate/main.qli": {
+      "bytes": 106,
+      "sha256": "007c3bbb2953958f5e804c164d39ab234c91cdf16acead06e51d5e3361aac3d8",
+      "original_mode": 420
+    },
+    "first-study/projects/wrong-helper-category/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "first-study/projects/wrong-helper-category/main.qli": {
+      "bytes": 125,
+      "sha256": "ae90201ee5999df08fca20b680664774041e208d4c3c6ed962b2453f1b2e963b",
+      "original_mode": 420
+    },
+    "first-study/report.json": {
+      "bytes": 6759188,
+      "sha256": "0e7705b9d62870a0a02b139cf0417d9c6d1b1f7132294ddc9b48d3ae289fb11a",
+      "original_mode": 420
+    },
+    "first-study/signed-overflow-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/signed-overflow-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/signed-overflow-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/signed-overflow-source.stdout": {
+      "bytes": 387,
+      "sha256": "ad53e52ed4198d49fe5a68a6c1986f242e2e7e56f98d0156b94df28691de703b",
+      "original_mode": 420
+    },
+    "first-study/simultaneous-parameters-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/simultaneous-parameters-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/simultaneous-parameters-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/simultaneous-parameters-source.stdout": {
+      "bytes": 429,
+      "sha256": "a117f23bd4cecf1b0684e8ce6b34da96a96f1cd2a8b5f0d5b8115eaf2e17491b",
+      "original_mode": 420
+    },
+    "first-study/unguarded-generic-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/unguarded-generic-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/unguarded-generic-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/unguarded-generic-source.stdout": {
+      "bytes": 372,
+      "sha256": "d64ff977c284b30a7c9289d62f2f100ce618caf3d19efe8f6b7a2f98c171e070",
+      "original_mode": 420
+    },
+    "first-study/wide-intermediate-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/wide-intermediate-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/wide-intermediate-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/wide-intermediate-source.stdout": {
+      "bytes": 420,
+      "sha256": "7b9e6f9eaf823e9c7a9bb397f8f704509dcbe93794448c3c680c1c61979f34ac",
+      "original_mode": 420
+    },
+    "first-study/wrong-helper-category-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/wrong-helper-category-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "first-study/wrong-helper-category-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-study/wrong-helper-category-source.stdout": {
+      "bytes": 396,
+      "sha256": "8ace2b623b4afd52dc59d0340af708643b8b2d9c336782b44888351bffda0963",
+      "original_mode": 420
+    },
+    "first-syntax-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "first-syntax-build/report.json": {
+      "bytes": 6824887,
+      "sha256": "3ef8a7e726b0327b05eea8626219e1f350861d65c32d2a558aa31e2d2e989830",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 1999,
+      "sha256": "464abb713cc3b19483d90e13d0f3d69b2f8f9f9c6e1fc7e0a93548bc41a57b51",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7518,
+      "sha256": "c1397ac20589549254cdeb037b2f7bb83d41b96d038d3a45a69995feb793c12d",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "first-syntax-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "first-syntax-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "first-syntax-build/stdout": {
+      "bytes": 942,
+      "sha256": "f3ca8bac2134c82765d6589ce88c2916091c6a8bc16facf4998646658cc85cdb",
+      "original_mode": 420
+    },
+    "first-syntax-tests/observation-summary.json": {
+      "bytes": 2462,
+      "sha256": "f5048274db7020e2a88542f5510067f56dd24e8c885cbbfa58993d55542e48d0",
+      "original_mode": 420
+    },
+    "first-syntax-tests/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6030,
+      "sha256": "b72e818301a5bcfa0c12bb88d499ba7f186879ac98c7561712b361a91516f94c",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "first-syntax-tests/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "first-syntax-tests/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-syntax-tests/stdout": {
+      "bytes": 9383,
+      "sha256": "3cbfc81fc25e16eb0d6e4f996baf6273e81689543a8d4e80a884e1bdea7f4f11",
+      "original_mode": 420
+    },
+    "first-value-proof/observation-summary.json": {
+      "bytes": 2032,
+      "sha256": "15a050e41b676f7a259b098657ecdbf3f74f27053af34d13270fe3ebddd3f12f",
+      "original_mode": 420
+    },
+    "first-value-proof/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6023,
+      "sha256": "70389150e7ba5d419a47ec0dbaf797aa3906bb9f188fc1562248ce203bd04b51",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "first-value-proof/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "first-value-proof/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "first-value-proof/stdout": {
+      "bytes": 4021,
+      "sha256": "dcba5eddf2000faa6156d306c7eb73f1e9b9f17ec556d0b8800098ea977a4b75",
+      "original_mode": 420
+    },
+    "fold-generated-audit/observation-summary.json": {
+      "bytes": 2471,
+      "sha256": "15572be2001d99f6687cdd5df21d85d02ccd3fb4900b75de6e0ce04bd64e4c95",
+      "original_mode": 420
+    },
+    "fold-generated-audit/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6801,
+      "sha256": "0f891da4d01fb41d244a1f9c9203fd27260c3cf5d80868b3be2106725c0f9cc6",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "fold-generated-audit/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "fold-generated-audit/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "fold-generated-audit/stdout": {
+      "bytes": 81,
+      "sha256": "8d39fd470e1c880386bed9c9883bde2f3037a567fd30f2f67f79f4da508c3233",
+      "original_mode": 420
+    },
+    "fold-value-build/observation-summary.json": {
+      "bytes": 2029,
+      "sha256": "5b0a8578799093a8463abd6b966f0fcd8cefcd5741f4d2b3b70960cfa87d01e8",
+      "original_mode": 420
+    },
+    "fold-value-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6801,
+      "sha256": "0f891da4d01fb41d244a1f9c9203fd27260c3cf5d80868b3be2106725c0f9cc6",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "fold-value-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "fold-value-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "fold-value-build/stdout": {
+      "bytes": 165,
+      "sha256": "88e45f02e838b85527ce3e1df2a6c2c39d3668c2aaed4a63dfa267ad072b4968",
+      "original_mode": 420
+    },
+    "generated-inspection/observation-summary.json": {
+      "bytes": 2449,
+      "sha256": "8929b3651f7c5486aac15afae3c817d0b1776e9a136f0d0196ee69bad5ef4458",
+      "original_mode": 420
+    },
+    "generated-inspection/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6030,
+      "sha256": "b72e818301a5bcfa0c12bb88d499ba7f186879ac98c7561712b361a91516f94c",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "generated-inspection/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "generated-inspection/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "generated-inspection/stdout": {
+      "bytes": 631,
+      "sha256": "a1e55d3b17bbf6e7734b3b320c72354794da9b6d03285c89df703bbc4aeae12e",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/check.stderr": {
+      "bytes": 60,
+      "sha256": "0855f3729a7aa2c0d96228abfa19124d51b19f7a70817c03e002aa3c984fdd97",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/native.stdout": {
+      "bytes": 291409,
+      "sha256": "5df80bab0232bf97eb2072ec19d9b029f44732ac41507bd0e18ff26d86e1ee34",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/report.json": {
+      "bytes": 6827742,
+      "sha256": "7e7b5c3493000fb337ec31fda5dc22a79d8018aca7fa96d637c3a86536ab44b5",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "syntax-msrv-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/check.stderr": {
+      "bytes": 60,
+      "sha256": "9fdb5f9eac62ae467e6d236d5f429329c7a03393f71392c6923aa2f3b6e1a9a5",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/lint.stderr": {
+      "bytes": 60,
+      "sha256": "35fc72bacfe065673ddba4b566b6467dc5b94a887c640891f8cbf1f5e1028448",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/lint.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/native.stdout": {
+      "bytes": 291409,
+      "sha256": "7033eebe4ef3b8b2062b9ac9f37ccad102ecd9d690602e54ae543a7fa55fc0f3",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/report.json": {
+      "bytes": 6828068,
+      "sha256": "b6e524325c58db362c78736749cb8c813fe5756f77da2c43d71c4d9d3dc56c90",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "syntax-normal-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/basis.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/basis.stdout": {
+      "bytes": 483,
+      "sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/binding.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/binding.stdout": {
+      "bytes": 7982,
+      "sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/extract-stdout-reference.json": {
+      "bytes": 386,
+      "sha256": "2ab111166f665aadf6d1c02aa0788df0358a22ae65e59c7deca120d0aadf1ed5",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/extract.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/main-replay.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/main-replay.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/observer.py.txt": {
+      "bytes": 5305,
+      "sha256": "47a1d94ba08d80ece87e5f9b0cedb487ddf07c37239dafb4f938c4a4a76b9352",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/raw.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/raw.stdout": {
+      "bytes": 612,
+      "sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/registry.json": {
+      "bytes": 8622,
+      "sha256": "0b66949f56140986ab06367cd75bfba67724ac550266f522730abc3e4510ae87",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/registry.stdout": {
+      "bytes": 332,
+      "sha256": "42ac82c71c780abc78b6d24ba889edd2ad6280de88869aa764294401678cc9dc",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/report.json": {
+      "bytes": 6828403,
+      "sha256": "bfae1c790aca000be88743c9474220fb5e323e2ed89e9b79a26a8491c00ba0e5",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/review.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/review.stdout": {
+      "bytes": 4692,
+      "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6961,
+      "sha256": "d8ef67ce3a3219fa8f417c187d4be059f0c468845cb8fc475f52600252bbd9c7",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 77151,
+      "sha256": "574fa7ff08adcfd4c8c362b3faa79e4044efa6b81b80adbbccecf449be8300b2",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-reference-lean-validation/tests.stdout": {
+      "bytes": 1241,
+      "sha256": "2637b2a2d2b325f2ae6fe9da8606b1bcb3850c8bb61ce5e3fce69e3773370e71",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/observation-summary.json": {
+      "bytes": 2466,
+      "sha256": "801fed1a09d17eb738e4dd709dbacd5ac23f5e5b2cb68d74a0b2465d32e0244a",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6030,
+      "sha256": "b72e818301a5bcfa0c12bb88d499ba7f186879ac98c7561712b361a91516f94c",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-tests-v2/stdout": {
+      "bytes": 6332,
+      "sha256": "0ed67377fbb6f4e0158bc3e4c35a7a62c2d729ab3f570a00f8ff961f0c36089c",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/observation-summary.json": {
+      "bytes": 2465,
+      "sha256": "9819015a51787ea15c4fec8dab972c848264a53526f875d2e6a40d0d2a7c9d28",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6524,
+      "sha256": "acfc3810feec341bf9c742098eecdb11efd31131472572a991ae5c0de18c49a1",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-tests-v3/stdout": {
+      "bytes": 96,
+      "sha256": "1614b6ebadde57c9d44c4523f7c7992161ce8de19df6ce713f5e8b893176fbd6",
+      "original_mode": 420
+    },
+    "syntax-v2-build/observation-summary.json": {
+      "bytes": 2028,
+      "sha256": "14b610c56a8ac9c819580daafd4c96f055ec07e7ed4e1a991448fe614fdfa436",
+      "original_mode": 420
+    },
+    "syntax-v2-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 1986,
+      "sha256": "da611c9c93574499e334173ab61b6a9077e53a590338dbccc0b429d08cf5e4ad",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7518,
+      "sha256": "c1397ac20589549254cdeb037b2f7bb83d41b96d038d3a45a69995feb793c12d",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-v2-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-v2-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "syntax-v2-build/stdout": {
+      "bytes": 1080,
+      "sha256": "3862e488289f8780b8a8eca7cdb75bff2d024889cdff024e20ffd93db20b797e",
+      "original_mode": 420
+    },
+    "syntax-v3-build/observation-summary.json": {
+      "bytes": 2027,
+      "sha256": "fcaa40d2521161933efb2a211637b498c4c0af915f9417ccc0d253337cfa0e67",
+      "original_mode": 420
+    },
+    "syntax-v3-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 1986,
+      "sha256": "da611c9c93574499e334173ab61b6a9077e53a590338dbccc0b429d08cf5e4ad",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "syntax-v3-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "syntax-v3-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "syntax-v3-build/stdout": {
+      "bytes": 103,
+      "sha256": "5ded81f83c9c2838b028fffd8eb170754c7db864cc6191c866ca032fc61ed875",
+      "original_mode": 420
+    },
+    "total-generated-audit/observation-summary.json": {
+      "bytes": 2475,
+      "sha256": "b93d9b4d7520a3152f6fa87d588d899a875ae6cd10cf23798a46073437636169",
+      "original_mode": 420
+    },
+    "total-generated-audit/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6524,
+      "sha256": "acfc3810feec341bf9c742098eecdb11efd31131472572a991ae5c0de18c49a1",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "total-generated-audit/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "total-generated-audit/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "total-generated-audit/stdout": {
+      "bytes": 245,
+      "sha256": "c05262819d8641f05bdb84236e1ff27c1acfc692517e5e8e1028f4172a891bc4",
+      "original_mode": 420
+    },
+    "total-syntax-tests/observation-summary.json": {
+      "bytes": 2471,
+      "sha256": "3b09bf2119055977eb9adf2b62fdb5f6c2bea4c2ebf2f88406b11172da44dba4",
+      "original_mode": 420
+    },
+    "total-syntax-tests/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6801,
+      "sha256": "0f891da4d01fb41d244a1f9c9203fd27260c3cf5d80868b3be2106725c0f9cc6",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "total-syntax-tests/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "total-syntax-tests/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "total-syntax-tests/stdout": {
+      "bytes": 96,
+      "sha256": "1614b6ebadde57c9d44c4523f7c7992161ce8de19df6ce713f5e8b893176fbd6",
+      "original_mode": 420
+    },
+    "total-value-build/observation-summary.json": {
+      "bytes": 2032,
+      "sha256": "a1f084bab585aa3bbd1278533448150e374bc100912d4e31364fbc82c07cf6ba",
+      "original_mode": 420
+    },
+    "total-value-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 5985,
+      "sha256": "23e8d123ac4f668c871ea13a47641ae71a43b06cbe20a3d5469c27f6196fcd76",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "total-value-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "total-value-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "total-value-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "total-value-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "total-value-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "total-value-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "total-value-build/stdout": {
+      "bytes": 33236,
+      "sha256": "472fc6680025c2b35476131e76cbcd0367e6d7e53bd4c40fccef842ce4596653",
+      "original_mode": 420
+    },
+    "total-value-v2-build/observation-summary.json": {
+      "bytes": 2037,
+      "sha256": "67667e492d8bb87b31217eb484f4ddb9b3aa05466d2249d246831f2a99dbbe2d",
+      "original_mode": 420
+    },
+    "total-value-v2-build/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6524,
+      "sha256": "acfc3810feec341bf9c742098eecdb11efd31131472572a991ae5c0de18c49a1",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "total-value-v2-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "total-value-v2-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "total-value-v2-build/stdout": {
+      "bytes": 165,
+      "sha256": "1310d4513d2951a8e44d30d48681aafd6193d796902e50a6c9d460fdc4ce3690",
+      "original_mode": 420
+    },
+    "value-proof-v2/observation-summary.json": {
+      "bytes": 2025,
+      "sha256": "b6c76d2d00aaa3dff29d75ffb1dec92bd47a5e2549fbc6a04a692fe9be495e3e",
+      "original_mode": 420
+    },
+    "value-proof-v2/observer.py.txt": {
+      "bytes": 2469,
+      "sha256": "bc72e310a5f8b7694fe7cbf946f9c7d6c29f34919114443bda58e47ae6278d66",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt": {
+      "bytes": 6030,
+      "sha256": "b72e818301a5bcfa0c12bb88d499ba7f186879ac98c7561712b361a91516f94c",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16622,
+      "sha256": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean.txt": {
+      "bytes": 7504,
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "value-proof-v2/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "value-proof-v2/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "value-proof-v2/stdout": {
+      "bytes": 164,
+      "sha256": "a762a2549ae4a8afe75e34bb0a28bc4f7ffe1c2518edbf8a1f763627be40c511",
+      "original_mode": 420
+    }
+  }
+}

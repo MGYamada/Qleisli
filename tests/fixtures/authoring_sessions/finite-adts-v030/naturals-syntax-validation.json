@@ -1,0 +1,409 @@
+{
+  "format": "qleisli.field-natural-syntax-validation",
+  "version": 1,
+  "base_commit": "09617c810504055c51cf9bcd9bc330880c7779ce",
+  "source_files": {
+    "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean": "d8ef67ce3a3219fa8f417c187d4be059f0c468845cb8fc475f52600252bbd9c7",
+    "lean-kernel/QleisliKernel/SourceTypes.lean": "ba49fb79e482ccd7f4ce5250a1acec08d5830e4656b59dca2f7595c7e384f07e",
+    "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+    "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+    "lean-kernel/Tests.lean": "574fa7ff08adcfd4c8c362b3faa79e4044efa6b81b80adbbccecf449be8300b2"
+  },
+  "observations": [
+    {
+      "stage": "first-syntax-build",
+      "full_report_sha256": "3ef8a7e726b0327b05eea8626219e1f350861d65c32d2a558aa31e2d2e989830",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "syntax-v2-build",
+      "full_report_sha256": "2797054527eda16b0be4521bb817d89fe472ed54d52f3ceba776b7557a77a98d",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "syntax-v3-build",
+      "full_report_sha256": "d1381e4db23dc86fae3bf21a618dd81d0dda38591e76caaa5528b459ca9e8140",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "first-value-proof",
+      "full_report_sha256": "d876aadee53fb68e4dcce705f5bfc57e182b21795aa596f990d575e8ce7b3686",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "value-proof-v2",
+      "full_report_sha256": "2830535517601bbe825a41b30e5eaa0bf7ab05e0289b092c1561e8564d8ecc24",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "first-syntax-tests",
+      "full_report_sha256": "d6a15111e82b2f895f567e80d4e807b7619424da50d75f1dfe4ebdfb71a80979",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "syntax-tests-v2",
+      "full_report_sha256": "ee03cdb64210c1c946c28052cf18f3a862c6a4779fa1514a0decbf3d481e0e92",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "generated-inspection",
+      "full_report_sha256": "42cbe9c7af44e8562d9983dd3c69b2091eac4a0c60e9511361260d48d684304b",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "total-value-build",
+      "full_report_sha256": "374970155846db1e4e11c1784d52e9e0aa8083670c889b4366ac236d72cfdd5e",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "total-value-v2-build",
+      "full_report_sha256": "601374c2f84114ffcff5ca98de5d42032d886b1dabb3c35250d4a328d7bd3ed4",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "syntax-tests-v3",
+      "full_report_sha256": "2bbc69deee502345190ab2e81e4d62a9cf79c1216310c6eaa3cb89869af059ed",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "total-generated-audit",
+      "full_report_sha256": "b7587652e35b69cfe2e8533f18190b6d158f0926e30cb7b4086945782b1670fa",
+      "pass": false,
+      "exit_code": 1,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "fold-value-build",
+      "full_report_sha256": "cb62d6b198466834b1f91b03f6687d710a5974488a502adf42b051f8b11a3933",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "total-syntax-tests",
+      "full_report_sha256": "a70bc0068a0ded8c29b8cb925bee7b8ad358e1935db639c4d3fd109e6ecd727b",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "fold-generated-audit",
+      "full_report_sha256": "a7b7bbacc3e046c48c82457996332ff44fae73ebbb9e64d417309389d06c6ab1",
+      "pass": true,
+      "exit_code": 0,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "syntax-reference-lean-validation",
+      "full_report_sha256": "bfae1c790aca000be88743c9474220fb5e323e2ed89e9b79a26a8491c00ba0e5",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "registry",
+          "argv": [
+            "python3",
+            "scripts/check_schema_registry.py",
+            "--write",
+            "--report",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-field-nat-syntax-reference-lean-validation/registry.json"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 150.3046623750124
+        },
+        {
+          "label": "tests",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Tests.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 168.90051133395173
+        },
+        {
+          "label": "review",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 20.552347416989505
+        },
+        {
+          "label": "binding",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.64782691700384
+        },
+        {
+          "label": "basis",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.4591065829154104
+        },
+        {
+          "label": "raw",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.4906168750021607
+        },
+        {
+          "label": "extract",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 4.008160792058334
+        },
+        {
+          "label": "main-replay",
+          "argv": [
+            "lake",
+            "env",
+            "leanchecker",
+            "--fresh",
+            "Main"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 72.76421983307227
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e"
+    },
+    {
+      "stage": "syntax-normal-rust",
+      "full_report_sha256": "b6e524325c58db362c78736749cb8c813fe5756f77da2c43d71c4d9d3dc56c90",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.8603972499258816
+        },
+        {
+          "label": "native",
+          "argv": [
+            "python3",
+            "scripts/run_kernel_tests.py",
+            "--",
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "interchange::native",
+            "--",
+            "--include-ignored",
+            "--nocapture"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.183662666939199
+        },
+        {
+          "label": "lint",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "clippy",
+            "--locked",
+            "--offline",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.9616488751489669
+        },
+        {
+          "label": "format",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.54504679213278
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e",
+      "kernel_after": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e"
+    },
+    {
+      "stage": "syntax-msrv-rust",
+      "full_report_sha256": "7e7b5c3493000fb337ec31fda5dc22a79d8018aca7fa96d637c3a86536ab44b5",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.5712503751274198
+        },
+        {
+          "label": "native",
+          "argv": [
+            "python3",
+            "scripts/run_kernel_tests.py",
+            "--",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "interchange::native",
+            "--",
+            "--include-ignored",
+            "--nocapture"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.327790749957785
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e",
+      "kernel_after": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e"
+    }
+  ],
+  "current_lean_source": "b56d47cff68cfe4b12e87921ce3a9d7d180a9a5c9052244142de41b54fe8b36a",
+  "current_evidence": "1b6653c4cf2c512152962eb23ba64c6f49deeb8c546243bcbe3154af0f790a3c",
+  "selected_kernel": "b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e",
+  "scope": "Existing Nat syntax and independent exact Value relation/evaluator only; no field helper/affine acceptance or source dispatch is enabled. Actual evaluator success implies Value under its explicitly supplied lookup/call interpretation; it is not original helper/source binding. Parentheses/precedence/left association/call forms/canonical decimal i128 literal bound/metadata depth controls pass. Explicit total code passes268-declaration private/generated audit. Full shared build/audits, full Tests, fresh kernel/Main replay and6 protected output comparisons pass. Sequential normal1.98.1/MSRV1.85 each pass all-target compilation and19 existing native boundary cases, zero skips; normal strict lint/format pass. First contract barriers are not generic semantic negative evidence. Source helper/category/visibility/binder/premise/affine/generic checks, host roots, constructors/match/qmatch, ordinary source routing and companion/bin/hosted review remain required; all8 Issue64 criteria stay open. No excluded39/63 work, new guarantee, external schema, maximum quantum generation or release."
+}

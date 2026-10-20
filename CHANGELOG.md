@@ -47,6 +47,12 @@ development milestones from the scope of their evidence.
   retain the pre-repair accepted raw counterexample. General static
   field expressions and ordinary source execution remain pending; no inverse/
   control capability or new guarantee is granted by this raw pure component.
+  Add an internal parser for existing field Nat expressions and an independent
+  exact arithmetic relation, with a proved computation-to-relation link. Keep
+  qualified calls, positional arguments, precedence, canonical literals and
+  existing metadata limits. Use total folds/recursors and audit generated
+  declarations. Source helper binding, affine obligations and carrier dispatch
+  remain pending; this parser/evaluator grants no helper or source authority.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

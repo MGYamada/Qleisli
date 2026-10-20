@@ -215,3 +215,36 @@ the retained times are observations, not a controlled performance comparison.
 General Nat expressions/helpers, source constructors/match/qmatch, host roots,
 ordinary source dispatch, companion/bin staging and review remain pending.
 All8 #64 criteria stay open; no guarantee scope or excluded #39/#63 work changes.
+
+
+The [field-Nat syntax history](naturals-syntax-first.tar.xz),
+[index](naturals-syntax-index.json) and [scope](naturals-syntax-validation.json)
+preserve571 inert records /38,792,408 original bytes /818,488 stored bytes.
+Fourteen original projects and28 actual calls distinguish valid field arithmetic
+and guarded helpers from generic subtraction/nonlinearity, false premises,
+overflow, privacy, category and cycle errors. Current native refusals for these
+nonliteral expressions are missing-reader barriers, not the intended semantic
+negative checks. Sources and first observations remain unchanged.
+
+The internal parser retains existing precedence, left association, qualified
+calls, positional arguments, empty runtime call syntax and canonical i128
+literal spelling. Its independent mathematical Value relation/evaluator has a
+checked actual-computation soundness theorem, conditional on explicit lookup/
+call interpretations. That relation supplies no original helper authority.
+Field affine/premise validation, helper source binding and dispatch are pending.
+
+The first nested deriving/equation implementations compiled but generated
+partial project helpers. Inspections expose three public-name instances and a
+later full-module audit rejects the private mapValues helper too. Explicit
+total recursors/folds replace them;268 declarations, including private/generated
+ones, pass the compiled audit. The reserved Lean test name and opaque comparison
+failures remain failed authoring observations. Exact parser-tree equations and
+arithmetic/capacity metadata tests pass without unsafe execution or raised caps.
+
+Shared builds/audits, full Tests, fresh kernel/Main replay and six protected
+output comparisons pass. Sequential Rust1.98.1/MSRV1.85 all-target checks and19
+existing native cases pass with zero ignored/conditional skips; normal strict
+lint/format pass. No additional field acceptance or ordinary ADT execution is
+enabled by this component. All8 #64 criteria remain open, including helper/
+affine checks, host roots, constructors/match/qmatch, source routing and companion/
+bin/hosted integration. No guarantee admission or excluded #39/#63 work is claimed.

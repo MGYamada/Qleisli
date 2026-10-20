@@ -429,5 +429,66 @@ class FirstCarrierSourceNumerals(unittest.TestCase):
             self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
 
 
+# Nat syntax history: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-index.json".
+# Scope: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-validation.json".
+class FirstFieldNaturalSyntax(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('naturals-syntax-index.json', 'naturals-syntax-first.tar.xz',
+            '54b64ba69903ac1fa2c76a893e952c7d13d04ca89f6d345fa28cdfe2d9ee145a',
+            818488, '14f9f900086faf87d6672af34fbed26e5b55d6e3e9348b5c00b69a6e9d65337e', 38_792_408)
+
+    def test_original_field_programs_keep_their_actual_source_and_native_barriers(self):
+        first = json.loads(self.data['first-study/report.json'])
+        self.assertEqual(len(self.data), 571)
+        self.assertTrue(first['source_and_binaries_unchanged'])
+        self.assertEqual(first['prediction_mismatches'], [])
+        self.assertEqual(len(first['commands']), 28)
+        source = [r for r in first['commands'] if r['label'].endswith('-source')]
+        native = [r for r in first['commands'] if r['label'].endswith('-native')]
+        self.assertEqual([r['actual_code'] for r in source[:6]], ['unsupported'] * 6)
+        self.assertEqual([r['actual_code'] for r in source[6:]],
+                         ['size', 'unsupported', 'size', 'size', 'limit', 'name', 'static', 'cycle'])
+        self.assertEqual([r['actual_code'] for r in native], ['decoded_view'] + ['contract'] * 13)
+        self.assertTrue(all(r['exit_code'] == 1 for r in first['commands']))
+
+    def test_compilation_does_not_hide_forbidden_generated_recursion(self):
+        self.assertIn(b'DecidableEq', self.data['first-syntax-build/stdout'])
+        inspection = self.data['generated-inspection/stdout']
+        self.assertIn(b'instBEqExpr.beq._unsafe_rec', inspection)
+        self.assertIn(b'instReprExpr.repr._unsafe_rec', inspection)
+        self.assertIn(b'evaluate._unsafe_rec', inspection)
+        self.assertIn(b'partial=true', inspection)
+        rejected = json.loads(self.data['total-generated-audit/observation-summary.json'])
+        self.assertFalse(rejected['pass'])
+        self.assertIn(b'mapValues._unsafe_rec', self.data['total-generated-audit/stdout'])
+        accepted = json.loads(self.data['fold-generated-audit/observation-summary.json'])
+        self.assertTrue(accepted['pass'])
+        self.assertIn(b'Audited 268', self.data['fold-generated-audit/stdout'])
+        final_source = self.data['fold-generated-audit/sources/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean.txt']
+        self.assertIn(b'Nat.rec', final_source)
+        self.assertIn(b'arguments.foldr', final_source)
+        self.assertNotIn(b'deriving BEq', final_source)
+
+    def test_current_reference_proof_and_native_regressions_remain_separate_from_dispatch(self):
+        self.assertIn(b'unexpected token', self.data['first-syntax-tests/stdout'])
+        self.assertIn(b'did not reduce', self.data['syntax-tests-v2/stdout'])
+        total = json.loads(self.data['total-syntax-tests/observation-summary.json'])
+        self.assertTrue(total['pass'])
+        lean = json.loads(self.data['syntax-reference-lean-validation/report.json'])
+        self.assertTrue(lean['pass'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(r['identical_recorded_output'] for r in lean['output_comparisons']))
+        for stage in ['syntax-normal-rust', 'syntax-msrv-rust']:
+            report = json.loads(self.data[stage + '/report.json'])
+            self.assertTrue(report['pass'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['after']['kernel'], lean['after']['kernel'])
+            self.assertIn('19 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+
+
 if __name__ == '__main__':
     unittest.main()

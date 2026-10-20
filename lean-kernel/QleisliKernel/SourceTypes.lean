@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.Imports
+import QleisliKernel.SourceTypes.NaturalSyntax
 import QleisliKernel.FiniteCarrier
 
 /-! Reconstruct a nominal carrier from original top-level source declarations.

@@ -1244,3 +1244,49 @@ end CarrierSourceExamples
 #print axioms Protocol.ExecutionView.CheckedCarrier.check_binding
 #print axioms Protocol.ExecutionView.CheckedCarrier.Binding.root_safe
 #print axioms Protocol.NativeContext.run_carrier_binding
+
+namespace SourceNaturalSyntaxExamples
+open Semantics.SourceNatural
+-- Existing Nat syntax/reference only. Callback names have no original helper
+-- authority until separate source binding and generic obligations are checked.
+-- Large values/depth examples below are metadata, not quantum cases.
+def parsed (text : String) := SourceTypes.lex text >>= SourceTypes.NaturalSyntax.read
+
+
+def n := Expr.number
+example : parsed "2+3*2-6" = .ok (.sub (.add (n 2) (.mul (n 3) (n 2))) (n 6)) := by rfl
+example : parsed "8-3-3" = .ok (.sub (.sub (n 8) (n 3)) (n 3)) := by rfl
+example : parsed "(1+2)*2-4" = .ok (.sub (.mul (.add (n 1) (n 2)) (n 2)) (n 4)) := by rfl
+example : parsed "previous[3]()" = .ok (.call ["previous"] [n 3]) := by rfl
+example : parsed "helper::p[add[1,1](),(3-1)]()"
+    = .ok (.call ["helper","p"] [.call ["add"] [n 1,n 1],.sub (n 3) (n 1)]) := by rfl
+example : parsed "f()" = .ok (.call ["f"] []) := by rfl
+example : parsed "f[]()" = .ok (.call ["f"] []) := by rfl
+example : parsed "f[1,2]()+3" = .ok (.add (.call ["f"] [n 1,n 2]) (n 3)) := by rfl
+example : parsed "std::classical::f[1]()" = .ok (.call ["std","classical","f"] [n 1]) := by rfl
+example : parsed "n" = .ok (.name ["n"]) := by rfl
+example : (SourceTypes.NaturalSyntax.decimal "170141183460469231731687303715884105727").toOption =
+    some 170141183460469231731687303715884105727 := by decide +kernel
+example : !(SourceTypes.NaturalSyntax.decimal "170141183460469231731687303715884105728").isOk := by decide +kernel
+example : (["", "00", "02", "+1", "-1", "1 2", "1**2", "1+", "(1", "1)",
+    "f[1,]()", "f(1)", "f[1]", "f[1]()()", "f[1)", "f::", "_", "a::basis[1]()"].all
+    (fun text => !(parsed text).isOk)) := by decide +kernel
+example : (parsed (String.intercalate "+" (List.replicate 128 "1"))).isOk := by decide +kernel
+example : !(parsed (String.intercalate "+" (List.replicate 129 "1"))).isOk := by decide +kernel
+example : (parsed (String.ofList (List.replicate 63 '(') ++ "1" ++
+    String.ofList (List.replicate 63 ')'))).isOk := by decide +kernel
+example : !(parsed (String.ofList (List.replicate 64 '(') ++ "1" ++
+    String.ofList (List.replicate 64 ')'))).isOk := by decide +kernel
+
+def emptyNames : Names := fun _ => none
+def emptyCalls : Calls := fun _ _ => none
+def mathematical (text : String) := (parsed text).toOption >>= evaluate 128 emptyNames emptyCalls
+example : mathematical "2+3*2-6" = some 2 := by decide +kernel
+example : mathematical "4294967295+1-4294967294" = some 2 := by decide +kernel
+example : mathematical "1-2+3" = none := by decide +kernel
+example : mathematical "previous[3]()" = none := by decide +kernel
+example : Value emptyNames emptyCalls (.sub (.add (n 2) (.mul (n 3) (n 2))) (n 6)) 2 :=
+  evaluate_value 128 emptyNames emptyCalls _ _ (by decide +kernel)
+#print axioms evaluate_value
+
+end SourceNaturalSyntaxExamples
