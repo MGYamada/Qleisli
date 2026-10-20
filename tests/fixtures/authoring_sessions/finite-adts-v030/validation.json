@@ -1,0 +1,299 @@
+{
+  "format": "qleisli.finite-carrier-foundation-validation",
+  "version": 1,
+  "base": "0bd108183649e0462cb5c5b1c8bae29d07e1c9fc",
+  "source_revision": "42506ddd2aef389ebe030108c81cecbc863f8195b99ad3699cfde2bd38678d93",
+  "source_files": 303,
+  "current_evidence_sha256": "d33dfe316f7594eabb24845aff275deab1adfce22866d0187f34eb48b3a3be44",
+  "observations": [
+    {
+      "name": "adt64-carrier-first-validation",
+      "full_report_sha256": "e5bb629bc10f046eebf4e797cd3b549e00d0da2bc5c1ee7e231c696da7682448",
+      "scope": "Fresh passive retention and compilation of new finite-carrier reader/reference/proofs/examples. The old native binary is unchanged; no source syntax, actual-body equation, native protocol, qmatch, accepted handle, fresh import replay or broad guarantee is established.",
+      "commands": [
+        {
+          "label": "retention",
+          "argv": [
+            "python3",
+            "scripts/test_finite_adts_first.py"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.4592770419549197
+        },
+        {
+          "label": "module",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "build",
+            "QleisliKernel.FiniteCarrier"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 5.38740454078652
+        },
+        {
+          "label": "examples",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Examples/FiniteCarrier.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 1,
+          "timeout": false,
+          "seconds": 2.053570125019178
+        }
+      ],
+      "source_unchanged": true,
+      "only_allowed_registry_source_change": null,
+      "output_comparisons": []
+    },
+    {
+      "name": "adt64-carrier-v2-validation",
+      "full_report_sha256": "d342b2a1bc85c5afa94b87d39bfcb006c58105a6a60a9720bf889d654f9b9e30",
+      "scope": "New carrier reference, bounded reader and generic code-condition theorems compile; small examples and actual compiled-declaration/import audit include the new modules. Old native executable remains unchanged. Not source syntax/body-equation/protocol/qmatch/accepted-handle integration, a full import replay or broader guarantee.",
+      "commands": [
+        {
+          "label": "retention",
+          "argv": [
+            "python3",
+            "scripts/test_finite_adts_first.py"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.46040991600602865
+        },
+        {
+          "label": "module",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "build",
+            "QleisliKernel.FiniteCarrier"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.8832980000879616
+        },
+        {
+          "label": "examples",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Examples/FiniteCarrier.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 8.613927625119686
+        },
+        {
+          "label": "audit",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/finite-carrier-audit-current.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 1,
+          "timeout": false,
+          "seconds": 3.3000812500249594
+        }
+      ],
+      "source_unchanged": true,
+      "only_allowed_registry_source_change": null,
+      "output_comparisons": []
+    },
+    {
+      "name": "adt64-carrier-audit-v3-validation",
+      "full_report_sha256": "f3b77f0c5e5722863cf4912a16bced9e517ccf947a31cdde8814eb3b515b5b6a",
+      "scope": "Actual compiled-declaration and pure-import audit of the new finite-carrier modules using the current auditor plus explicit new-module import-graph checking. Previous successful module/example/retention stages are not rerun or given broader credit. Old native executable remains unchanged; protocol/source/qmatch integration and broad guarantees are still pending.",
+      "commands": [
+        {
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/finite-carrier-audit-v3.lean"
+          ],
+          "exit_code": 0,
+          "seconds": 9.55068491701968
+        }
+      ],
+      "source_unchanged": true,
+      "only_allowed_registry_source_change": null,
+      "output_comparisons": []
+    },
+    {
+      "name": "adt64-carrier-rebinding-build",
+      "full_report_sha256": "f0a968bb1e914a3d1c682ebb13df67980b886bccfb33dfdca84ff3a409474d94",
+      "scope": "Shared schema rebuild/audits and fresh kernel/Main replay, current complete self-tests, fixed review/binding/Basis/Raw transport and extraction compared byte-for-byte before current-evidence rebinding. Only the schema manifest may change in this source window. Historical meanings, review bytes and adoption records are not changed. Native binary rebuilding is allowed and separately observed, not a compiler/runtime or source-preservation theorem.",
+      "commands": [
+        {
+          "label": "registry",
+          "argv": [
+            "python3",
+            "scripts/check_schema_registry.py",
+            "--write",
+            "--report",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-carrier-rebinding-build/registry.json"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 140.67850333312526
+        },
+        {
+          "label": "tests",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Tests.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 76.7264333339408
+        },
+        {
+          "label": "review",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 25.109560542041436
+        },
+        {
+          "label": "binding",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.6698112920857966
+        },
+        {
+          "label": "basis-transport",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.456603250000626
+        },
+        {
+          "label": "raw-transport",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.511400416959077
+        },
+        {
+          "label": "extract",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 4.0881569581106305
+        },
+        {
+          "label": "main-replay",
+          "argv": [
+            "lake",
+            "env",
+            "leanchecker",
+            "--fresh",
+            "Main"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 61.82171475002542
+        }
+      ],
+      "source_unchanged": null,
+      "only_allowed_registry_source_change": true,
+      "output_comparisons": [
+        {
+          "label": "review",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "binding",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "basis-transport",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "raw-transport",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "extract",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "main-replay",
+          "identical_recorded_output": true
+        }
+      ]
+    }
+  ],
+  "scope": "Source-backed nominal prefix data, separate finite cardinality/code coordinates, bounded reading and conditional exact code-isometry result only. The first example/audit-wrapper failures remain failures, followed by separate repairs. Full local reports and first development source/streams are retained separately; this compact record binds their complete digests, not copies of all input maps. Shared builds/audits, complete kernel reduction tests, fresh kernel/Main replay and fixed protected review/extraction checks pass. Existing physical Raw/checker definitions, historical semantics, two admitted scopes, external enablement, capacities, versions and dependencies are unchanged.",
+  "remaining": [
+    "ordinary enum/record/match/qmatch frontend implementation",
+    "typed ports, actual body/dependencies and public-effect binding",
+    "versioned native transport/QDV integration and accepted-handle coverage",
+    "independent meaningful algorithm/reference/phase/axis/stale-evidence regressions",
+    "current-head hosted CI/review and acceptance audit"
+  ],
+  "not_performed": [
+    "Rust/MSRV rebuild/tests: no Rust source or runtime entry change",
+    "no new maximum-size quantum case",
+    "no new source/runtime/target preservation theorem, human adequacy/admission, issue closure or release"
+  ]
+}

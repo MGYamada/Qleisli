@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Begin internal finite-carrier support with source-backed nominal trees,
+  separate logical cardinalities and physical code layouts, and bounded exact
+  code-isometry checking. Preserve first sources and both Lean study attempts.
+  Ordinary ADT syntax, typed-body/protocol binding and qmatch remain unfinished;
+  this foundation enables no native mode or public language form.
+
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.
   Keep original declaration identities, public effects and relevant resolution

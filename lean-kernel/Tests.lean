@@ -927,3 +927,65 @@ example : ((Qirf.InstrumentContract.check request.actual request.actualOrder req
     request.expectedOrder request.actualSignature request.expectedSignature request.identity).run
     2000000).1.isOk = false := by decide +kernel
 end EngineeringInstrumentTests
+
+
+/-! Small executable carrier/encoding regressions for #64. These do not check
+source syntax, original-body equations, qmatch, protocol integration or ownership.
+The largest generated matrix is 8x6 (three physical bits), below the six-bit
+finite profile; rejected huge widths never enumerate a code.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace FiniteCarrierExamples
+open QleisliKernel.Semantics.FiniteCarrier QleisliKernel.Semantics.Exact
+
+deriving instance DecidableEq for Except
+
+def origin : Origin := ⟨"labels","Tri","pub enum Tri { A, B, C }"⟩
+def tri : Basis := [.enumeration origin ["A","B","C"]]
+def four : Basis := [.enumeration ⟨"labels","Four","pub enum Four { A, B, C, D }"⟩ ["A","B","C","D"]]
+def emptyRecord : Basis := [.record ⟨"labels","Empty","pub struct Empty {}"⟩ []]
+def one : Basis := [.enumeration ⟨"labels","One","pub enum One { Only }"⟩ ["Only"]]
+
+def value {α : Type} (action : QleisliKernel.Finite.WorkM α) := (action.run 1000000).1
+
+example : layout tri = some ⟨2,[0,1,2]⟩ := by decide
+example : layout four = some ⟨2,[0,1,2,3]⟩ := by decide
+example : dimension tri = some 3 ∧ dimension four = some 4 := by decide
+
+def embedding : Matrix := ⟨4,3,([1,0,0, 0,1,0, 0,0,1, 0,0,0] : List Int).map fun n =>
+  ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+
+example : value (QleisliKernel.FiniteCarrier.code tri) = .ok embedding := by decide
+example : ((QleisliKernel.Exact.Matrix.isometryWork embedding).run 1000000).1 = .ok true := by decide
+
+-- Complete nominal trees stay distinct even when physical matrices coincide.
+def reordered : Basis := [.enumeration origin ["B","A","C"]]
+example : tri ≠ reordered := by decide
+example : layout tri = layout reordered := by decide
+example : one ≠ [.unit] ∧ one ≠ [.bits 0] ∧ one ≠ emptyRecord := by decide
+example : layout one = some singleton ∧ layout emptyRecord = some singleton := by decide
+example : value (QleisliKernel.FiniteCarrier.code emptyRecord) = .ok ⟨1,1,[Scalar.one]⟩ := by decide
+
+def record : Basis :=
+  .record ⟨"labels","Tagged","pub struct Tagged { tag: Tri, flag: Bit }"⟩ ["tag","flag"] :: tri ++ [.bit]
+def reversedRecord : Basis :=
+  [.record ⟨"labels","Reversed","pub struct Reversed { flag: Bit, tag: Tri }"⟩ ["flag","tag"],.bit] ++ tri
+
+example : layout record = some ⟨3,[0,1,2,4,5,6]⟩ := by decide
+example : dimension record = some 6 := by decide
+example : layout reversedRecord = some ⟨3,[0,1,2,3,4,5]⟩ := by decide
+example : layout record ≠ layout reversedRecord := by decide
+example : value (QleisliKernel.FiniteCarrier.code record) =
+    .ok (encoding ⟨3,[0,1,2,4,5,6]⟩) := by decide +kernel
+
+example : value (QleisliKernel.FiniteCarrier.read [.enumeration origin []]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.enumeration origin ["A","A"]]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.record origin ["a","b"],.bit]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.tuple 1,.bit]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.bits 100000]) = .error .limit := by decide
+example : ((QleisliKernel.FiniteCarrier.read tri).run 0).1 =
+    .error (.arithmetic .workLimit) := by decide
+
+#print axioms QleisliKernel.FiniteCarrier.read_reference
+#print axioms QleisliKernel.FiniteCarrier.code_conditions
+
+end FiniteCarrierExamples

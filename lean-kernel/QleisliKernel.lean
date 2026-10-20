@@ -5,6 +5,7 @@ import QleisliKernel.Exact
 import QleisliKernel.ExactCapacity
 import QleisliKernel.ExactMatrix
 import QleisliKernel.Finite
+import QleisliKernel.FiniteCarrier
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation

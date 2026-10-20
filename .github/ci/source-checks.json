@@ -165,6 +165,10 @@
         [
           "python3",
           "scripts/test_prelude_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_finite_adts_first.py"
         ]
       ],
       "prepare": []
