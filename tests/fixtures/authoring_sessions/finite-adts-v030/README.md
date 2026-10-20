@@ -63,3 +63,19 @@ fresh shared builds/audits/replay retain the existing standard axiom basis and
 protected guarantee outputs. Canonical source declaration lookup, source types,
 versioned typed native/QDV transport and qmatch remain pending. This internal
 component confers no native handle, public source form or completion credit.
+
+The [declaration history](declarations-first.tar.xz) and
+[index](declarations-index.json) retain 23 focused first Rust sources,
+observations and streams. The [current syntax checks](declarations-validation.json)
+separate the initially incorrect documentation-space expectation and subsequent
+strict lint refusal from the successful normal/MSRV results. Original comments
+and historical sources remain unchanged. Passive readers never execute history.
+
+The current common parser retains enum/record declarations, ordered members,
+visibility, complete spans, qualified type paths and descriptive documentation.
+Both production source paths explicitly refuse modules containing those parsed
+declarations, including unused ones, until canonical source type checking and
+typed native transport are integrated. All other #64/#195 criteria remain open.
+Normal and MSRV checks use the same existing debug0 target sequentially. Native
+test skips, filtered library cases and unperformed companion/hosted checks are
+reported explicitly; no new native acceptance or Issue completion is claimed.

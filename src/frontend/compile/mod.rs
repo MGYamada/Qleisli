@@ -1265,6 +1265,7 @@ mod snapshot_tests {
                     source,
                     ast: Module {
                         no_implicit_prelude: false,
+                        type_decls: vec![],
                         uses: vec![],
                         decls: vec![],
                         span: Span::default(),

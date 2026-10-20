@@ -767,6 +767,18 @@ pub(super) fn program_with<'a, R>(
         remaining: Cell::new(limits.work),
         limits,
     });
+    // Do not erase parsed nominal declarations while the shared source judgment
+    // and typed native transport are still being integrated (#64).
+    for (name, module) in &modules {
+        budget.charge(module.span, module.type_decls.len())?;
+        if let Some(declaration) = module.type_decls.first() {
+            return Err(SourceError::new(
+                "unsupported",
+                declaration.span,
+                "finite type declarations require canonical source elaboration and typed native transport",
+            ).in_module(name));
+        }
+    }
     let resolution = Resolution::new_budgeted(
         modules.iter().map(|(name, module)| (*name, *module)),
         |span, cells| budget.charge(span, cells),

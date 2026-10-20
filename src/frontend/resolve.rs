@@ -626,6 +626,7 @@ mod tests {
         let span = Span::new(9, 12);
         let ast = Module {
             no_implicit_prelude: false,
+            type_decls: vec![],
             uses: vec![UseDecl {
                 public: false,
                 path: vec![],

@@ -28,6 +28,8 @@ pub enum TokenKind {
     LBracket,
     RBracket,
     Pub,
+    Enum,
+    Struct,
     Classical,
     Basis,
     Isometry,
@@ -107,6 +109,8 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "conjugate_op" => TokenKind::ConjugateOp,
 
         "pub" => TokenKind::Pub,
+        "enum" => TokenKind::Enum,
+        "struct" => TokenKind::Struct,
         "classical" => TokenKind::Classical,
         "basis" => TokenKind::Basis,
         // Keep the old word reserved for the located migration error below.
@@ -165,6 +169,8 @@ impl TokenKind {
             Self::LBracket => "`[`",
             Self::RBracket => "`]`",
             Self::Pub => "`pub`",
+            Self::Enum => "`enum`",
+            Self::Struct => "`struct`",
             Self::Classical => "`classical`",
             Self::Basis => "`basis`",
             Self::Isometry => "`isometry`",

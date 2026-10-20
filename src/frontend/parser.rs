@@ -132,6 +132,7 @@ impl Parser {
             self.expect(&TokenKind::RBracket)?;
         }
         let mut uses = Vec::new();
+        let mut type_decls = Vec::new();
         let mut decls = Vec::new();
         while !self.at(&TokenKind::Eof) {
             if self.at(&TokenKind::Hash) {
@@ -146,6 +147,15 @@ impl Parser {
                         .is_some_and(|t| t.kind == TokenKind::Use))
             {
                 uses.extend(self.use_decl()?);
+            } else if self.at(&TokenKind::Enum)
+                || self.at(&TokenKind::Struct)
+                || (self.at(&TokenKind::Pub)
+                    && self
+                        .tokens
+                        .get(self.pos + 1)
+                        .is_some_and(|t| matches!(t.kind, TokenKind::Enum | TokenKind::Struct)))
+            {
+                type_decls.push(self.type_decl()?);
             } else if self.at(&TokenKind::Pub)
                 || self.at(&TokenKind::Classical)
                 || self.at(&TokenKind::Static)
@@ -158,14 +168,68 @@ impl Parser {
             {
                 decls.push(self.decl()?);
             } else {
-                return Err(self.error("expected `use` or a function declaration"));
+                return Err(
+                    self.error("expected `use`, a type declaration or a function declaration")
+                );
             }
         }
         Ok(Module {
             no_implicit_prelude,
             uses,
+            type_decls,
             decls,
             span: Span::new(0, source_len),
+        })
+    }
+
+    fn type_decl(&mut self) -> Result<TypeDecl, ParseError> {
+        let public = self.consume(&TokenKind::Pub);
+        let start = public
+            .as_ref()
+            .map_or(self.current().span.start, |t| t.span.start);
+        let enumeration = self.consume(&TokenKind::Enum).is_some();
+        if !enumeration {
+            self.expect(&TokenKind::Struct)?;
+        }
+        let name = self.ident()?;
+        let open = self.expect(&TokenKind::LBrace)?;
+        let mut variants = Vec::new();
+        let mut fields = Vec::new();
+        while !self.at(&TokenKind::RBrace) {
+            if variants.len() + fields.len() >= MAX_TUPLE_FIELDS {
+                return Err(self.error("finite type declaration exceeds 64 members"));
+            }
+            if enumeration {
+                variants.push(self.ident()?);
+            } else {
+                let public = self.consume(&TokenKind::Pub);
+                let name = self.ident()?;
+                let start = public.as_ref().map_or(name.span.start, |t| t.span.start);
+                self.expect(&TokenKind::Colon)?;
+                let ty = self.ty()?;
+                let span = Span::new(start, ty.span.end);
+                fields.push(RecordField {
+                    public: public.is_some(),
+                    name,
+                    ty,
+                    span,
+                });
+            }
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        let close = self.expect(&TokenKind::RBrace)?;
+        Ok(TypeDecl {
+            public: public.is_some(),
+            name,
+            kind: if enumeration {
+                TypeDeclKind::Enum { variants }
+            } else {
+                TypeDeclKind::Record { fields }
+            },
+            body_span: open.span.cover(close.span),
+            span: Span::new(start, close.span.end),
         })
     }
 
@@ -942,7 +1006,7 @@ impl Parser {
             });
         }
         if matches!(self.current().kind, TokenKind::Ident(_)) {
-            let name = self.ident()?;
+            let name = self.reference_name()?;
             return Ok(Type {
                 span: name.span,
                 kind: TypeKind::Named(name),
@@ -985,7 +1049,7 @@ impl Parser {
             });
         }
         if matches!(self.current().kind, TokenKind::Ident(_)) {
-            let name = self.ident()?;
+            let name = self.reference_name()?;
             return Ok(Type {
                 span: name.span,
                 kind: TypeKind::Named(name),

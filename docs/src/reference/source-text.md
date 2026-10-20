@@ -68,6 +68,32 @@ generic std APIs and source-preservation proofs remain separate work in
 [#32](https://github.com/MGYamada/Qleisli/issues/32) and
 [#317](https://github.com/MGYamada/Qleisli/issues/317).
 
+## Parsed finite type declarations
+
+The parser retains fieldless `enum Name { A, B, ... }` and named
+`struct Name { field: Type, ... }` declarations, optionally preceded by `pub`.
+Record fields may retain their own `pub` marker. This is syntax metadata:
+canonical nominal type elaboration, field privacy, constructors, `match` and
+typed native transport are not yet implemented. Both production source paths
+explicitly reject modules containing these declarations, including unused
+ones, before concrete lowering or native invocation. A parsed `Q<Named>` does
+not establish a legal quantum interface or provide execution evidence.
+
+Each declaration retains its whole original span, body span and ordered
+variants/fields. Named type paths retain all qualified segments and their byte
+span. Type/member documentation attaches to those original occurrences;
+source-only rendering makes no verification claim. An empty record remains
+a distinct declaration; the parser does not replace it with Unit. Empty enums
+and invalid/duplicate type members do not acquire semantic validity by parsing.
+
+The bounded syntax profile admits at most 64 members per declaration, using
+the existing source product limit. Payload variants, discriminant assignments,
+tuple structs and generic type declarations are not parsed. `enum` and `struct`
+are reserved keywords in the unpublished beta language; rename existing
+functions, bindings or module paths that used those identifiers. These parser
+changes do not complete [finite ADTs](https://github.com/MGYamada/Qleisli/issues/64)
+or the separate coherent `qmatch` boundary.
+
 ## One structured quantum result boundary
 
 Verified quantum-core functions are expression-oriented. A body has one

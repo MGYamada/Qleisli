@@ -7,6 +7,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Body history: "tests/fixtures/authoring_sessions/finite-adts-v030/body-index.json"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/body-first.tar.xz".
 # Body checks: "tests/fixtures/authoring_sessions/finite-adts-v030/body-validation.json".
+# Declaration history: "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-index.json".
+# Declaration checks: "tests/fixtures/authoring_sessions/finite-adts-v030/declarations-validation.json".
 # Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
 import hashlib
 import io
@@ -139,6 +142,36 @@ class FirstCarrierBody(unittest.TestCase):
         fold = json.loads(self.data['fold-first/observation-summary.json'])
         self.assertFalse(fold['pass'])
         self.assertIn(b'unexpected token', self.data['fold-first/module.stdout'])
+
+
+class FirstFiniteDeclarations(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('declarations-index.json', 'declarations-first.tar.xz',
+            'd0997f0a9c821eeecc559ab9f6a6f5aceddc450437e352ff0c0679635c73aa5d',
+            638664, '92683f7179c3c8c270186a199b89bbfcfab3cb492c48ba548bdb68f94aa59387', 7_227_062)
+
+    def test_failed_documentation_expectation_preserves_original_sources_and_spaces(self):
+        self.assertEqual(len(self.data), 23)
+        first = json.loads(self.data['first/report.json'])
+        self.assertTrue(first['source_unchanged'])
+        self.assertEqual(first['before'], first['after'])
+        self.assertEqual([row['exit_code'] for row in first['commands']], [0, 101])
+        self.assertIn(b'199 passed; 0 failed; 115 ignored', self.data['first/unit.stdout'])
+        self.assertIn(b'finite_type_and_member_docs_keep_original_targets_without_verification_claims ... FAILED',
+                      self.data['first/integration.stdout'])
+        self.assertIn(b'rendered.contains("```text\\nSecond.\\n```")',
+                      self.data['first-source/tests/documentation.rs.txt'])
+        self.assertIn(b'rendered.contains("```text\\nSecond. \\n```")',
+                      self.data['repair-01/documentation.rs.txt'])
+
+    def test_successful_integration_does_not_hide_the_separate_strict_lint_refusal(self):
+        repair = json.loads(self.data['repair-01/observation-summary.json'])
+        self.assertFalse(repair['pass'])
+        self.assertEqual([row['exit_code'] for row in repair['commands']], [0, 101])
+        self.assertIn(b'needlessly taken reference of left operand', self.data['repair-01/lint.stderr'])
+        self.assertIn(b'35 passed; 0 failed', self.data['repair-01/integration.stdout'])
+        self.assertIn(b'4 passed; 0 failed', self.data['repair-01/integration.stdout'])
 
 
 if __name__ == '__main__':

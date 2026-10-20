@@ -15,6 +15,10 @@ development milestones from the scope of their evidence.
   observation; retain zero-width owners. Preserve first compile/audit failures.
   Ordinary ADT syntax, canonical source typing, native typed-interface transport
   and qmatch remain unfinished; no native mode or public language form is enabled.
+  Retain fieldless enum and named-record declaration syntax, member visibility,
+  qualified type paths, spans and documentation in the common AST. Reserve
+  `enum`/`struct`; explicitly reject production source containing these parsed
+  declarations until canonical type elaboration and typed native transport exist.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

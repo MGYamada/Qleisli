@@ -6,6 +6,49 @@ use qleisli::frontend::project::{Project, SourcePolicy};
 use std::collections::BTreeMap;
 
 #[test]
+fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route() {
+    use qleisli::frontend::compile::check_project_with_kernel;
+    use qleisli::interchange::native::Kernel;
+    for declaration in [
+        "enum Tri { A, B, C }",
+        "struct Empty {}",
+        "struct Tagged { tag: Bit }",
+    ] {
+        let source = format!("fn main()->Unit{{()}} {declaration}");
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap_err();
+        assert_eq!(error.code(), "unsupported");
+        assert_eq!(&source[error.span().start..error.span().end], declaration);
+        let root = common::SourceRoot::new(&source);
+        let absent = root.0.join("must-not-run-native");
+        let error = check_project_with_kernel(
+            &root.0,
+            SourcePolicy::default(),
+            &Kernel::new(absent, qleisli::edition::Edition::E2026),
+        )
+        .unwrap_err();
+        assert_eq!(error.code, "unsupported");
+        assert_eq!(
+            error.message,
+            "finite type declarations require canonical source elaboration and typed native transport"
+        );
+    }
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("a_type".into(), "enum Tri { A, B, C }".into()),
+            ("z_bad".into(), "fn broken(".into()),
+        ]),
+    )
+    .unwrap_err();
+    assert_eq!(error.module(), Some("z_bad"));
+    assert_eq!(error.code(), "parse");
+}
+
+#[test]
 fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
     let unsupported = "pub fn sibling(c:Bit)->Bit{if c {1} else {0}}";
     for (supported, effect) in [

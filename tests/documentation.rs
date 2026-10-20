@@ -7,6 +7,34 @@ use qleisli::frontend::lexer::lex;
 use qleisli::frontend::parser::{parse_documented_module, parse_module};
 
 #[test]
+fn finite_type_and_member_docs_keep_original_targets_without_verification_claims() {
+    let source = "//! Module.\n/// Tri.\npub enum Tri { //! Inner type.\n/// First.\nA, /** Second. */ B, C, }\n/// Empty.\nstruct Empty {}\n/// Record.\npub struct Tagged { /// Tag.\npub tag: Tri, /// Flag.\nflag: Bit, }\n/// Function.\nfn main()->Unit{()}";
+    let parsed = parse_documented_module(source).unwrap();
+    assert_eq!(parsed.type_declaration_docs.len(), 3);
+    assert_eq!(
+        parsed.type_declaration_docs[0]
+            .iter()
+            .map(|d| d.text.trim())
+            .collect::<Vec<_>>(),
+        ["Tri.", "Inner type."]
+    );
+    assert_eq!(parsed.type_member_docs[0][0][0].text.trim(), "First.");
+    assert_eq!(parsed.type_member_docs[0][1][0].text.trim(), "Second.");
+    assert!(parsed.type_member_docs[0][2].is_empty());
+    assert!(parsed.type_member_docs[1].is_empty());
+    assert_eq!(parsed.type_member_docs[2][0][0].text.trim(), "Tag.");
+    assert_eq!(parsed.type_member_docs[2][1][0].text.trim(), "Flag.");
+    assert_eq!(parsed.declaration_docs[0][0].text.trim(), "Function.");
+    let rendered = render_markdown(source).unwrap();
+    assert!(rendered.contains("Source documentation only"));
+    assert!(rendered.contains("## Tri (public)"));
+    assert!(rendered.contains("## Empty (private)"));
+    assert!(rendered.contains("```qli\npub tag: Tri\n```"));
+    assert!(rendered.contains("```text\nSecond. \n```"));
+    assert!(!rendered.contains("Public quantum effect:"));
+}
+
+#[test]
 fn rust_style_docs_attach_to_modules_imports_and_functions_in_source_order() {
     let source = "//! Module.\n/*! More module. */\n\
         /// Import.\nuse std::gate::x;\n\

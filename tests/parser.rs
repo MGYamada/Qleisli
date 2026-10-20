@@ -4,6 +4,126 @@ use qleisli::frontend::ast::{
 use qleisli::frontend::parser::parse_module;
 use qleisli::frontend::{ast::Span, lexer::lex};
 
+#[test]
+fn finite_type_declarations_keep_names_members_shapes_and_original_spans() {
+    use qleisli::frontend::ast::TypeDeclKind;
+    let source = "pub enum Tri { A, B, C, } fn f(q:Q<labels::Tri>)->Q<labels::Tri>{q} struct Empty {} pub struct Tagged { pub tag: labels::Tri, flag: Bit, zero: Bits<0>, }";
+    let module = parse_module(source).unwrap();
+    assert_eq!(module.decls.len(), 1);
+    assert_eq!(module.type_decls.len(), 3);
+    let tri = &module.type_decls[0];
+    assert!(tri.public);
+    assert_eq!(tri.name.text, "Tri");
+    assert_eq!(
+        &source[tri.span.start..tri.span.end],
+        "pub enum Tri { A, B, C, }"
+    );
+    let TypeDeclKind::Enum { variants } = &tri.kind else {
+        panic!("enum")
+    };
+    assert_eq!(
+        variants.iter().map(|v| v.text.as_str()).collect::<Vec<_>>(),
+        ["A", "B", "C"]
+    );
+    assert!(
+        variants
+            .iter()
+            .all(|v| source[v.span.start..v.span.end] == v.text)
+    );
+    let empty = &module.type_decls[1];
+    assert!(!empty.public);
+    assert!(matches!(&empty.kind, TypeDeclKind::Record { fields } if fields.is_empty()));
+    let TypeDeclKind::Record { fields } = &module.type_decls[2].kind else {
+        panic!("record")
+    };
+    assert_eq!(
+        fields
+            .iter()
+            .map(|f| f.name.text.as_str())
+            .collect::<Vec<_>>(),
+        ["tag", "flag", "zero"]
+    );
+    assert!(fields[0].public);
+    assert!(!fields[1].public);
+    assert_eq!(
+        &source[fields[0].span.start..fields[0].span.end],
+        "pub tag: labels::Tri"
+    );
+    assert!(matches!(&fields[0].ty.kind, TypeKind::Named(name) if name.text == "labels::Tri"));
+    let TypeKind::Q(inner) = &module.decls[0].params[0].ty.kind else {
+        panic!("owner")
+    };
+    assert!(
+        matches!(&inner.kind, TypeKind::Named(name) if name.text == "labels::Tri" && &source[name.span.start..name.span.end] == "labels::Tri")
+    );
+}
+
+#[test]
+fn finite_declaration_profile_is_bounded_and_rejects_unimplemented_payload_forms() {
+    for source in [
+        "enum E { A(Bit) }",
+        "enum E { A { value: Bit } }",
+        "enum E { A = 1 }",
+        "struct R(Bit);",
+        "struct R[const N:Nat] { value: Bits<N> }",
+        "enum E { A B }",
+        "struct R { a: Bit b: Bit }",
+        "fn enum()->Unit{()}",
+        "fn struct()->Unit{()}",
+    ] {
+        assert!(parse_module(source).is_err(), "{source}");
+    }
+    for keyword in ["enum", "struct"] {
+        let members = (0..64)
+            .map(|i| {
+                if keyword == "enum" {
+                    format!("V{i}")
+                } else {
+                    format!("f{i}: Bit")
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(",");
+        let source = format!("{keyword} Many {{ {members} }}");
+        check_token_prefixes(&source, keyword);
+        let extra = if keyword == "enum" {
+            "Extra"
+        } else {
+            "extra: Bit"
+        };
+        let over = format!("{keyword} Many {{ {members}, {extra} }}");
+        let error = parse_module(&over).unwrap_err();
+        assert_eq!(error.message, "finite type declaration exceeds 64 members");
+        assert_eq!(
+            &over[error.span.start..error.span.end],
+            extra.split(':').next().unwrap()
+        );
+    }
+}
+
+#[test]
+fn qualified_type_paths_preserve_the_complete_reference_in_every_type_position() {
+    let source = "pub fn f[const U:Op<model::Input -> model::Output>](q:Q<model::Input>)->Q<model::Output>{U(q)}";
+    let module = parse_module(source).unwrap();
+    let declaration = &module.decls[0];
+    let qleisli::frontend::ast::StaticParamKind::Operation {
+        basis, codomain, ..
+    } = &declaration.static_params[0].kind
+    else {
+        panic!("operation")
+    };
+    for (ty, expected) in [
+        (basis, "model::Input"),
+        (codomain.as_deref().unwrap(), "model::Output"),
+    ] {
+        assert!(matches!(&ty.kind, TypeKind::Named(name) if name.text == expected));
+        assert_eq!(&source[ty.span.start..ty.span.end], expected);
+    }
+    let incomplete = "fn f(q:Q<model::>)->Unit{()}";
+    let error = parse_module(incomplete).unwrap_err();
+    assert_eq!(&incomplete[error.span.start..error.span.end], "model::");
+}
+
 fn check_token_prefixes(source: &str, label: &str) {
     parse_module(source).unwrap_or_else(|error| panic!("{label}: {error}"));
     let mut boundaries = vec![0, source.len()];
