@@ -1142,10 +1142,16 @@ example : refused (SourceTypes.check #[("labels",text ++ "\nenum Tri { D }")] tr
 def nested := "pub struct Pair { flags: (Bit, Bits<0>), tag: labels::Tri }"
 def nestedType : Basis := [.record ⟨"main","Pair",nested⟩ ["flags","tag"],.pair,.bit,.bits 0] ++ tri
 example : value (SourceTypes.check (sources.push ("main",nested)) nestedType) = .ok () := by decide +kernel
-example : value (SourceTypes.literalWidth "0006") = .ok 6 := by decide
-example : value (SourceTypes.literalWidth "0007") = .error .limit := by decide
+example : value (SourceTypes.literalWidth "6") = .ok 6 := by decide
+example : value (SourceTypes.literalWidth "7") = .error .limit := by decide
+example : value (SourceTypes.literalWidth "00") = .error .request := by decide
+example : value (SourceTypes.literalWidth "0006") = .error .request := by decide
+example : value (SourceTypes.literalWidth "0007") = .error .request := by decide
 example : value (SourceTypes.literalWidth "0x") = .error .request := by decide
 
+def noncanonicalDecimal := "struct Word { bits: Bits<02> }"
+example : refused (SourceTypes.check #[("main",noncanonicalDecimal)]
+    [.record ⟨"main","Word",noncanonicalDecimal⟩ ["bits"],.bits 2]) := by decide +kernel
 def recursive := "struct Loop { again: Loop }"
 example : refused (SourceTypes.check #[("main",recursive)]
     [.record ⟨"main","Loop",recursive⟩ ["again"],.unit]) := by decide +kernel

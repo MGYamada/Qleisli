@@ -189,3 +189,29 @@ archives and guarantee scopes remain unchanged. General Nat field expressions,
 host-selected roots, constructors/match/qmatch, ordinary source dispatch,
 companion/bin staging and review remain pending. All8 #64 criteria remain open;
 no source-function preservation, new guarantee or release is claimed.
+
+
+The [numeral conformance history](numerals-first.tar.xz), [index](numerals-index.json)
+and [current checks](numerals-validation.json) preserve133 inert records /
+42,346,961 original bytes /1,011,980 stored bytes. A separate informed study finds
+that common parsing rejects `Bits<02>` while the native type reader reaches the
+final null-view comparison. A full-view regression separately reproduces an
+actual bad raw `CarrierChecked` handle; its rejecting assertion fails. These
+are distinct observations, neither a source execution nor a passing negative.
+Earlier history's leading-zero behavior remains unchanged; its description as
+ordinary source spelling was too broad.
+
+The reader now follows existing canonical decimal grammar: only `0` can begin
+with zero. It retains the bounded direct fold and existing capacities. The same
+original Rust test and input now reject `Bits<02>` while `Bits<2>` retains its
+valid raw handle. Original null-view packets show the malformed spelling now
+refusing before final comparison. No first source or counterexample was repaired.
+
+Shared builds/audits, complete Tests, fresh kernel/Main replay and six protected
+output comparisons pass. Rust1.98.1 and sequential MSRV1.85 each pass all-target
+compilation and19 native boundary tests, zero ignored/conditional skips; normal
+strict lint/format pass. Rust tests overlapped only later read-only Lean stages;
+the retained times are observations, not a controlled performance comparison.
+General Nat expressions/helpers, source constructors/match/qmatch, host roots,
+ordinary source dispatch, companion/bin staging and review remain pending.
+All8 #64 criteria stay open; no guarantee scope or excluded #39/#63 work changes.

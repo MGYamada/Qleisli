@@ -377,5 +377,57 @@ class FirstCarrierTypeAliases(unittest.TestCase):
             self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
 
 
+# Numeral history: "tests/fixtures/authoring_sessions/finite-adts-v030/numerals-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/numerals-index.json".
+# Current scope: "tests/fixtures/authoring_sessions/finite-adts-v030/numerals-validation.json".
+class FirstCarrierSourceNumerals(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('numerals-index.json', 'numerals-first.tar.xz',
+            'a1ebb7e260d645d92a9bb23f46c5b13516d09d4088839616ea933b2668fce6bb',
+            1011980, 'b1eea4b33b2f160105ccf96c1b6f98038cf89b719ea8f8734878e6e1ee079e82', 42_346_961)
+
+    def test_source_parse_and_null_view_progress_do_not_become_accepted_handles(self):
+        first = json.loads(self.data['adt64-nat-spelling-first-study/report.json'])
+        after = json.loads(self.data['adt64-nat-spelling-after-study/report.json'])
+        self.assertEqual(len(self.data), 133)
+        self.assertEqual(first['prediction_mismatches'], ['leading-zero-native'])
+        self.assertTrue(first['source_and_binaries_unchanged'])
+        self.assertEqual([r['actual_code'] for r in first['commands']],
+                         ['unsupported', 'decoded_view', 'parse', 'decoded_view'])
+        self.assertTrue(after['pass'])
+        self.assertEqual([r['actual_code'] for r in after['commands']], ['decoded_view', 'contract'])
+        self.assertEqual(first['before']['original_inputs'], after['before']['original_inputs'])
+        self.assertTrue(after['source_and_kernel_unchanged'])
+
+    def test_bad_original_raw_handle_is_a_preserved_counterexample(self):
+        first = json.loads(self.data['adt64-nat-spelling-first-native-test/report.json'])
+        self.assertFalse(first['pass'])
+        self.assertEqual(first['exit_code'], 101)
+        self.assertTrue(first['source_unchanged'])
+        output = self.data['adt64-nat-spelling-first-native-test/stdout']
+        self.assertIn(b'outcome canonical-field-numeral accepted', output)
+        self.assertIn(b'outcome leading-zero-field-numeral accepted', output)
+        self.assertIn(b'called `Result::unwrap_err()` on an `Ok` value: CarrierChecked', output)
+        source = '/sources/src/interchange/native/carrier/tests.rs.txt'
+        self.assertEqual(self.data['adt64-nat-spelling-first-native-test' + source],
+                         self.data['adt64-nat-spelling-normal-rust' + source])
+
+    def test_repaired_checker_preserves_protected_outputs_and_both_native_test_runs(self):
+        lean = json.loads(self.data['adt64-nat-spelling-lean-validation/report.json'])
+        self.assertTrue(lean['pass'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertTrue(all(r['exit_code'] == 0 for r in lean['commands']))
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(r['identical_recorded_output'] for r in lean['output_comparisons']))
+        for stage in ['adt64-nat-spelling-normal-rust', 'adt64-nat-spelling-msrv-rust']:
+            report = json.loads(self.data[stage + '/report.json'])
+            self.assertTrue(report['pass'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['after']['kernel'], lean['after']['kernel'])
+            self.assertIn('19 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -717,3 +717,56 @@ fn imports_keep_original_type_identity_visibility_and_category() {
     );
     assert!(log.summary().complete());
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_field_numerals_obey_the_common_source_grammar() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for (label, width, accepted) in [
+        ("canonical-field-numeral", "2", true),
+        ("leading-zero-field-numeral", "02", false),
+    ] {
+        let source = format!("pub struct Word {{ bits: Bits<{width}> }}");
+        let mut body = json::parse(&artifact([0, 1, 2, 3], [0; 4], [0, 1])).unwrap();
+        replace(
+            &mut body,
+            "sources",
+            Value::Array(vec![Value::object([
+                ("path", text("labels")),
+                ("text", text(&source)),
+            ])]),
+        );
+        let body = json::encode(&body).unwrap();
+        let mut requested = request();
+        let basis = vec![
+            Atom::Record(
+                Arc::new(Origin {
+                    module: "labels".into(),
+                    declaration: "Word".into(),
+                    source,
+                }),
+                vec!["bits".into()],
+            ),
+            Atom::Bits(2),
+        ];
+        for owner in requested
+            .attached
+            .inputs
+            .iter_mut()
+            .chain(&mut requested.attached.outputs)
+        {
+            owner.basis = basis.clone();
+        }
+        requested.required = requested.attached.clone();
+        requested.logical = Matrix::identity(4).unwrap();
+        let result = observe(&kernel, label, &body, &requested);
+        if accepted {
+            assert_eq!(result.unwrap().request(), &requested);
+        } else {
+            assert_eq!(result.unwrap_err().code, "contract");
+        }
+    }
+}

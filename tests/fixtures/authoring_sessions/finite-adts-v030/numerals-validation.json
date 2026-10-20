@@ -1,0 +1,277 @@
+{
+  "format": "qleisli.carrier-source-numeral-validation",
+  "version": 1,
+  "base_commit": "586f5a63b7f038200ffae7547107b47e3720fe39",
+  "source_files": {
+    "lean-kernel/Protocol/Carrier.lean": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+    "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+    "lean-kernel/QleisliKernel/FiniteCarrier.lean": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+    "lean-kernel/QleisliKernel/Qirf/Carrier.lean": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+    "lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+    "lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+    "lean-kernel/QleisliKernel/SourceTypes.lean": "a78ffed886bdbee7d773be420aebef224c6e5d4a30f6c978b2929cd40d2b2f6b",
+    "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+    "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+    "lean-kernel/Tests.lean": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+    "src/interchange/carrier.rs": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+    "src/interchange/execution_view/finite/carrier.rs": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+    "src/interchange/native/carrier.rs": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+    "src/interchange/native/carrier/tests.rs": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7"
+  },
+  "observations": [
+    {
+      "stage": "adt64-nat-spelling-first-native-test",
+      "full_report_sha256": "f5d19f0d920e9e60d60fd8881bba409a19d5bbe29cf6d69f88bbaff2046d430a",
+      "pass": false,
+      "exit_code": 101,
+      "commands": [],
+      "source_unchanged": true,
+      "kernel_before": "ccdd13dee53b5ffe50611933d1ebf057d41557439cfdb051e548b855bc5a34ec",
+      "kernel_after": "ccdd13dee53b5ffe50611933d1ebf057d41557439cfdb051e548b855bc5a34ec"
+    },
+    {
+      "stage": "adt64-nat-spelling-lean-validation",
+      "full_report_sha256": "2769e048adc5bd74943b400865638e74a545de5965eb56fb67a1ff358ec6f0b1",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "registry",
+          "argv": [
+            "python3",
+            "scripts/check_schema_registry.py",
+            "--write",
+            "--report",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-nat-spelling-lean-validation/registry.json"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 145.53435570909642
+        },
+        {
+          "label": "tests",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Tests.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 248.0528318339493
+        },
+        {
+          "label": "review",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 31.637770167086273
+        },
+        {
+          "label": "binding",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.249937749933451
+        },
+        {
+          "label": "basis",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 5.134395000059158
+        },
+        {
+          "label": "raw",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 5.219517958816141
+        },
+        {
+          "label": "extract",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.291007707826793
+        },
+        {
+          "label": "main-replay",
+          "argv": [
+            "lake",
+            "env",
+            "leanchecker",
+            "--fresh",
+            "Main"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 273.40357708302327
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "ccdd13dee53b5ffe50611933d1ebf057d41557439cfdb051e548b855bc5a34ec",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "adt64-nat-spelling-normal-rust",
+      "full_report_sha256": "d180b49b7d020b9838749edcea554cdb12b459a4f15333dd596403ece8962e1c",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 11.075018000090495
+        },
+        {
+          "label": "native",
+          "argv": [
+            "python3",
+            "scripts/run_kernel_tests.py",
+            "--",
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "interchange::native",
+            "--",
+            "--include-ignored",
+            "--nocapture"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 10.545235958183184
+        },
+        {
+          "label": "lint",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "clippy",
+            "--locked",
+            "--offline",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 9.82375566684641
+        },
+        {
+          "label": "format",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 5.468803625088185
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    },
+    {
+      "stage": "adt64-nat-spelling-msrv-rust",
+      "full_report_sha256": "353ef3ab3a027fc4ddd2ec1a7b2b53234a900607af48a505abd9492cc481fa44",
+      "pass": true,
+      "exit_code": null,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 9.92108912486583
+        },
+        {
+          "label": "native",
+          "argv": [
+            "python3",
+            "scripts/run_kernel_tests.py",
+            "--",
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "interchange::native",
+            "--",
+            "--include-ignored",
+            "--nocapture"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 31.68667554203421
+        }
+      ],
+      "source_unchanged": true,
+      "kernel_before": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+      "kernel_after": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd"
+    }
+  ],
+  "current_lean_source": "db8c0fe481dfa9ffa8bbb1ebfdb595e181c4d7e19bd7ec4e6d21db35ce12252e",
+  "current_evidence": "ef29e234b31e89e57ada46b2658c1c651ceb798b43b47ae48ef37c780f134a5b",
+  "selected_kernel": "8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd",
+  "scope": "Canonical existing decimal spelling, with bounded direct reading unchanged: only 0 has an initial zero. Common source parse refusal and actual independent native refusal agree for Bits<02>; the same valid Bits<2> raw control remains accepted. Full shared Lean builds/audits, full Tests, fresh kernel/Main replay and six protected output comparisons pass. Normal1.98.1/MSRV1.85 all-target checks and19 native cases each pass with zero skips; normal strict lint/format pass. Rust normal/MSRV ran sequentially, overlapping only later read-only Lean proof stages after the shared schema build mutation completed. Source/checker windows are retained separately; timings are observations, not a controlled performance comparison. No capacities, guarantee scopes or excluded39/63 features are changed. All8 Issue64 criteria remain open: ordinary source ADT execution, constructors/match/qmatch, general Nat field expressions, host roots, companion/bin staging and hosted review remain pending."
+}

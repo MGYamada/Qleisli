@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "e2311ee70f2d12d72430ae4aa2ff1b3501cce17171c61da287f637ec5e503c26",
+    "sha256": "db8c0fe481dfa9ffa8bbb1ebfdb595e181c4d7e19bd7ec4e6d21db35ce12252e",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -306,12 +306,12 @@
       "lean-kernel/QleisliKernel/Semantics/Readout.lean": "1c97c7917590ebe10114dca1d1af3281c6dbdadf6ea28f74b32e7ffcf25b4656",
       "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
       "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
-      "lean-kernel/QleisliKernel/SourceTypes.lean": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "lean-kernel/QleisliKernel/SourceTypes.lean": "a78ffed886bdbee7d773be420aebef224c6e5d4a30f6c978b2929cd40d2b2f6b",
       "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
       "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
       "lean-kernel/QleisliKernel/Uniform.lean": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
       "lean-kernel/QleisliKernel.lean": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
-      "lean-kernel/Tests.lean": "9f9b4fa5a8cb96f041130f44b38206b6f54a0afc9896476d2ec7c9cb44c04976",
+      "lean-kernel/Tests.lean": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
       "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
       "lean-kernel/lakefile.toml": "26f9918d7a1fb5655fd878deb3c9b0004d4677813d61e111d759bd5ed3d9271a",
       "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",

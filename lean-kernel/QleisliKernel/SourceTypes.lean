@@ -171,13 +171,15 @@ private def combine (first second : Basis) : Finite.WorkM Basis := do
   Finite.guard (first.length + second.length ≤ 128) .limit
   pure (first ++ second)
 
-/-- Direct decimal reading for the existing zero-to-six width profile. Bound
-every prefix before extending it; leading zeroes retain their ordinary meaning.
-This introduces no general Nat-expression or const-value language. -/
+/-- Canonical decimal reading for the existing zero-to-six width profile.
+The common grammar permits a leading zero only for the literal `0`. Bound every
+prefix before extending it; introduce no general Nat-expression or const form. -/
 def literalWidth (literal : String) : Finite.WorkM Nat := do
   Finite.guard (!literal.isEmpty) .request
   Finite.exactWork (Exact.charge (literal.utf8ByteSize + 1))
-  literal.toList.foldlM (fun value char => do
+  let chars := literal.toList
+  Finite.guard (chars == ['0'] || chars.head? != some '0') .request
+  chars.foldlM (fun value char => do
     Finite.guard ('0' ≤ char && char ≤ '9') .request
     let width := value * 10 + (char.toNat - '0'.toNat)
     Finite.guard (width ≤ 6) .limit

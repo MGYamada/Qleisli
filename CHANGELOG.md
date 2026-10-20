@@ -42,7 +42,9 @@ development milestones from the scope of their evidence.
   false pure labels and hidden observation. Resolve original ordinary/grouped
   imports and public type reexports without changing canonical identity, category
   or visibility. Reject private facades, cycles, collisions and equal-width
-  substitutions within the existing parser/source/work bounds. General static
+  substitutions within the existing parser/source/work bounds. Reject leading
+  zeroes in original field-width literals, matching the common source grammar;
+  retain the pre-repair accepted raw counterexample. General static
   field expressions and ordinary source execution remain pending; no inverse/
   control capability or new guarantee is granted by this raw pure component.
 
