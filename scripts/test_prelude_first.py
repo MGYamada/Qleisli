@@ -1,6 +1,7 @@
 """Passive first-byte checks; historical source and observers are never run.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
+# Packet scope notes: "tests/fixtures/authoring_sessions/prelude-v030/README.md".
 import base64
 import gzip
 import hashlib
