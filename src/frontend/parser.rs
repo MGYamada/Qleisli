@@ -2159,7 +2159,7 @@ impl Parser {
     }
 
     fn reference_tail(&mut self, mut name: Ident) -> Result<Ident, ParseError> {
-        while self.consume(&TokenKind::DoubleColon).is_some() {
+        while let Some(separator) = self.consume(&TokenKind::DoubleColon) {
             let segment = if name.text == "std"
                 && matches!(
                     self.current().kind,
@@ -2177,7 +2177,10 @@ impl Parser {
                     span: token.span,
                 }
             } else {
-                self.ident()?
+                self.ident().map_err(|_| ParseError {
+                    message: "qualified reference must end with a declaration name; complete the `module::item` path".into(),
+                    span: name.span.cover(separator.span),
+                })?
             };
             name.text.push_str("::");
             name.text.push_str(&segment.text);

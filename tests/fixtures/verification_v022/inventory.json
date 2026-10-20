@@ -5082,7 +5082,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "c46b98f647453c7af310bb89bb340476681a6c02d4a9b5349a679ae40f2243fa",
+      "sha256": "5d23452e73c589b674e1802b5695e82e6ab3fdc8efdb0ad4338f52ae2f2cb91a",
       "group": "source",
       "surface": {
         "declarations": [

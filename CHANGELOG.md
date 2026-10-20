@@ -12,6 +12,8 @@ development milestones from the scope of their evidence.
   sources through implicit opening and export chains. Bare primitives retain
   their separate identities; wrong-category/moved uses never fall back.
   Count the eighth bundled module within the unchanged source/work limits.
+  Keep complete prefix spans for incomplete qualified references and explain
+  the missing declaration name without suggesting a module as a function.
   Preserve first desired programs and diagnostics as inert history, with a
   current Reference and import/prelude quick reference. Validate small native
   project and selected Raw forms, exact gate/instrument contracts, and normal/
