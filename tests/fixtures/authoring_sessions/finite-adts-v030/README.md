@@ -162,3 +162,30 @@ matrices with the original graph and source declarations. New quantum cases use
 at most two physical bits. Imported/static type expressions, host-selected type
 roots, ordinary constructors/match, coherent qmatch, source execution and review
 remain pending. No new guarantee or Issue completion follows from this raw mode.
+
+
+The [type-import history](aliases-first.tar.xz), [index](aliases-index.json) and
+[current checks](aliases-validation.json) preserve 263 inert records / 36,743,615
+original bytes / 801,416 stored bytes. Four first projects retain their original
+sources and diagnostics. The Bit caller initially fails `invalid_entry`; a
+separate command repair succeeds on the same source. Nominal source execution
+still reaches its existing gate. The wrong Lean target and the native test's
+incorrect cycle-error prediction remain failed attempts, without source repair
+or an acceptance-rule change to satisfy that prediction.
+
+The bounded native type reader follows original explicit/grouped imports and
+public reexports to canonical declarations. Private imports stay local; a facade
+cannot promote private visibility, change category or substitute an equal-width
+type. Cyclic paths reject, including by traversal-fuel exhaustion. Original null-
+view packets now reach final comparison through public reexports; these still
+fail `decoded_view` and confer no handle. Separate full-view Rust tests supply
+actual accepted raw handles and category/visibility/source-substitution faults.
+
+Shared builds/audits, full kernel Tests, fresh kernel/Main replay and all six
+protected output comparisons pass. Normal Rust1.98.1 and sequential MSRV1.85
+all-target checks and18 native boundary tests pass with zero ignored/conditional
+skips; normal strict lint/format pass. Existing capacities, original historical
+archives and guarantee scopes remain unchanged. General Nat field expressions,
+host-selected roots, constructors/match/qmatch, ordinary source dispatch,
+companion/bin staging and review remain pending. All8 #64 criteria remain open;
+no source-function preservation, new guarantee or release is claimed.

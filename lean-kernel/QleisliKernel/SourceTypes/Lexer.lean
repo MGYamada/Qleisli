@@ -24,7 +24,7 @@ def asciiLetter (c : Char) : Bool :=
 def identifier (s : String) : Bool :=
   match s.toList with
   | [] => false
-  | c :: rest => asciiLetter c && rest.all (fun c => asciiLetter c || c.isDigit) &&
+  | c :: rest => s != "_" && asciiLetter c && rest.all (fun c => asciiLetter c || c.isDigit) &&
     !["use","meaning","static","Op","requires","Apply","Adjoint","Controlled",
       "permutation_by","phase_by","checked_op","bind_op","inverse_op","then_op",
       "tensor_op","controlled_op","repeat_op","conjugate_op","pub","enum","struct",

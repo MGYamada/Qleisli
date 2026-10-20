@@ -189,7 +189,7 @@ fn observe(
     );
     let result = kernel.check_carrier(artifact, &bytes);
     eprintln!(
-        "outcome {}",
+        "outcome {label} {}",
         match &result {
             Ok(_) => "accepted",
             Err(error) => error.code,
@@ -532,4 +532,188 @@ fn nominal_zero_width_owners_and_their_scalar_phase_are_retained() {
         requested.required = requested.attached.clone();
         assert!(observe(&kernel, "dropped-zero-owner", &bytes, &requested).is_err());
     }
+}
+
+// This binds type declarations to a raw body, not the source function's meaning.
+fn import_artifact(rows: &[(&str, &str)]) -> Vec<u8> {
+    let mut value = json::parse(&artifact([1, 2, 0, 3], [0; 4], [0, 1])).unwrap();
+    replace(
+        &mut value,
+        "sources",
+        Value::Array(
+            rows.iter()
+                .map(|(path, source)| Value::object([("path", text(path)), ("text", text(source))]))
+                .collect(),
+        ),
+    );
+    let Value::Object(fields) = &mut value else {
+        panic!("fixture artifact")
+    };
+    let Value::Array(evidence) = fields.get_mut("evidence").unwrap() else {
+        panic!("fixture evidence")
+    };
+    let Value::Object(entry) = &mut evidence[0] else {
+        panic!("fixture entry")
+    };
+    replace(
+        entry.get_mut("identity").unwrap(),
+        "sources",
+        array((0..rows.len()).map(|i| u32::try_from(i).unwrap())),
+    );
+    json::encode(&value).unwrap()
+}
+
+fn import_request(main: &str, leaf: &str) -> Request {
+    let mut requested = request();
+    let basis = vec![
+        Atom::Record(
+            Arc::new(Origin {
+                module: "main".into(),
+                declaration: "Box".into(),
+                source: main.into(),
+            }),
+            vec!["tag".into()],
+        ),
+        Atom::Enum(
+            Arc::new(Origin {
+                module: "labels".into(),
+                declaration: "Tri".into(),
+                source: leaf.into(),
+            }),
+            vec!["A".into(), "B".into(), "C".into()],
+        ),
+    ];
+    for owner in requested
+        .attached
+        .inputs
+        .iter_mut()
+        .chain(&mut requested.attached.outputs)
+    {
+        owner.basis = basis.clone();
+    }
+    requested.required = requested.attached.clone();
+    requested
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn imports_keep_original_type_identity_visibility_and_category() {
+    let selected = Kernel::selected(Edition::E2026).unwrap();
+    let (kernel, log) = selected.recording();
+    let leaf = "pub enum Tri { A, B, C }";
+    let bridge = "pub use {labels::{Tri,},};";
+    let main = "use bridge::{Tri}; pub struct Box { tag: Tri }";
+    let rows = [("main", main), ("bridge", bridge), ("labels", leaf)];
+    let good = import_artifact(&rows);
+    let requested = import_request(main, leaf);
+    let handle = observe(&kernel, "public-type-reexport", &good, &requested).unwrap();
+    assert_eq!(handle.artifact(), good);
+    assert_eq!(handle.request(), &requested);
+    assert_eq!(handle.request_bytes(), requested.encode().unwrap());
+    let qualified = "pub struct Box { tag: bridge::Tri }";
+    let qualified_body =
+        import_artifact(&[("labels", leaf), ("bridge", bridge), ("main", qualified)]);
+    observe(
+        &kernel,
+        "qualified-type-reexport",
+        &qualified_body,
+        &import_request(qualified, leaf),
+    )
+    .unwrap();
+    let ordinary = "use labels::Tri; pub struct Box { tag: Tri }";
+    let ordinary_body = import_artifact(&[("labels", leaf), ("main", ordinary)]);
+    observe(
+        &kernel,
+        "private-local-type-import",
+        &ordinary_body,
+        &import_request(ordinary, leaf),
+    )
+    .unwrap();
+    for (label, actual_bridge, actual_leaf, include_bridge) in [
+        ("private-facade", "use labels::Tri;", leaf, true),
+        ("private-original", bridge, "enum Tri { A, B, C }", true),
+        (
+            "wrong-original-category",
+            bridge,
+            "pub classical fn Tri(x: Bit) -> Bit { x }",
+            true,
+        ),
+        ("duplicate-import", "pub use labels::{Tri,Tri};", leaf, true),
+        (
+            "unanchored-type-export-cycle",
+            "pub use labels::Tri;",
+            "pub use bridge::Tri;",
+            true,
+        ),
+        ("missing-alias-source", bridge, leaf, false),
+    ] {
+        let mut actual_rows = vec![("main", main), ("labels", actual_leaf)];
+        if include_bridge {
+            actual_rows.push(("bridge", actual_bridge));
+        }
+        let body = import_artifact(&actual_rows);
+        let requested = import_request(main, actual_leaf);
+        // With no renaming, a valid chain cannot exceed the source count.
+        // This cycle exhausts that fuel before revisiting its active pair.
+        let expected = if label == "unanchored-type-export-cycle" {
+            "limit"
+        } else {
+            "contract"
+        };
+        assert_eq!(
+            observe(&kernel, label, &body, &requested).unwrap_err().code,
+            expected,
+            "{label}"
+        );
+    }
+    let changed_bridge = "pub use other::Tri;";
+    let substituted = import_artifact(&[
+        ("main", main),
+        ("bridge", changed_bridge),
+        ("labels", leaf),
+        ("other", leaf),
+    ]);
+    assert_eq!(
+        observe(
+            &kernel,
+            "same-width-other-canonical-type",
+            &substituted,
+            &requested
+        )
+        .unwrap_err()
+        .code,
+        "contract"
+    );
+    let mut facade_origin = requested.clone();
+    for owner in facade_origin
+        .attached
+        .inputs
+        .iter_mut()
+        .chain(&mut facade_origin.attached.outputs)
+    {
+        owner.basis[1] = Atom::Enum(
+            Arc::new(Origin {
+                module: "bridge".into(),
+                declaration: "Tri".into(),
+                source: bridge.into(),
+            }),
+            vec!["A".into(), "B".into(), "C".into()],
+        );
+    }
+    facade_origin.required = facade_origin.attached.clone();
+    assert_eq!(
+        observe(
+            &kernel,
+            "facade-is-not-a-type-declaration",
+            &good,
+            &facade_origin
+        )
+        .unwrap_err()
+        .code,
+        "contract"
+    );
+    assert!(log.summary().complete());
 }

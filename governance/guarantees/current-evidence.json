@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "a6aceb4db07fa2cb7cd34cd52dff087b6454fd52edd0a76531e80ce974f9c7fa",
+      "sha256": "e2311ee70f2d12d72430ae4aa2ff1b3501cce17171c61da287f637ec5e503c26",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -317,13 +317,14 @@
         "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "a2683717ab43af3236c157eeb41f3e2f5b9079a1d86330f54f406415d80ebf22",
         "lean-kernel/QleisliKernel/Semantics/RawUnit.lean": "cdbe18d78fe1fab9bf2d76d9f0f430a7afc583f5b2cc1d25bd17dce35cca10e8",
         "lean-kernel/QleisliKernel/Semantics/Readout.lean": "1c97c7917590ebe10114dca1d1af3281c6dbdadf6ea28f74b32e7ffcf25b4656",
-        "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
-        "lean-kernel/QleisliKernel/SourceTypes.lean": "3d91de59c4af0e9983fa4b5a8f6b5ada5b6ca6165efc16ec302fc74ebfc1762c",
+        "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+        "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+        "lean-kernel/QleisliKernel/SourceTypes.lean": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
         "lean-kernel/QleisliKernel/Uniform.lean": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
         "lean-kernel/QleisliKernel.lean": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
-        "lean-kernel/Tests.lean": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+        "lean-kernel/Tests.lean": "9f9b4fa5a8cb96f041130f44b38206b6f54a0afc9896476d2ec7c9cb44c04976",
         "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
         "lean-kernel/lakefile.toml": "26f9918d7a1fb5655fd878deb3c9b0004d4677813d61e111d759bd5ed3d9271a",
         "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
@@ -333,12 +334,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "0fe525febdcda61f9a70972b3c339788928f4e23d6690afbdb4a5b61a1eabce0",
+      "lean/schema-registry.json": "30ea192b4cf49e9594b08c2f6dca446c2d74be1cb916575e1f40157b9b26b726",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "1f65891a28b1505fbc52a2024d9dff315ca75f2b82ea1a6319cc8cf29559a09c"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "33e605f61deb7aac7165a2a666455ce9b7c10da2d6de403f5adbf49fecdabae2"
     },
     "commands": [
       {
@@ -351,7 +352,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 20.455438415985554,
+        "seconds": 21.37503766687587,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -365,7 +366,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 68.12122283386998,
+        "seconds": 68.64218254107982,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -376,7 +377,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after explicit edition-aware QLV3 dispatch. The fixed historical semantic baseline, original byte/request/root witness, independent predicates and checked Raw/Basis transports retain their admitted meanings and premises. NativeContext.run_ordinary_root_safe links actual ordinary context success to the original accepted decoded root; both audited packages and fresh QleisliKernel/Main replay support the current source closure. This is not a new guarantee admission, human adequacy judgment, full QS/PR/quantitative RS/EXACT discharge, source/native-IO/runtime/target correspondence proof, or release approval. The separately recorded observed_native_build remains historical alpha data, not current binary attestation. The bounded finite-carrier pure profile additionally binds original nominal declarations, ordered owner forests, public effects and exact logical/body/code equations to a fresh native decision and compared retained QDV data. This raw component adds no admitted guarantee scope. Ordinary source ADT execution, import/static-expression readers, host-selected roots, source-function preservation and qmatch integration remain pending; native compilation, IO and runtime correspondence retain their separate assumptions.",
+    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after explicit edition-aware QLV3 dispatch. The fixed historical semantic baseline, original byte/request/root witness, independent predicates and checked Raw/Basis transports retain their admitted meanings and premises. NativeContext.run_ordinary_root_safe links actual ordinary context success to the original accepted decoded root; both audited packages and fresh QleisliKernel/Main replay support the current source closure. This is not a new guarantee admission, human adequacy judgment, full QS/PR/quantitative RS/EXACT discharge, source/native-IO/runtime/target correspondence proof, or release approval. The separately recorded observed_native_build remains historical alpha data, not current binary attestation. The bounded finite-carrier pure profile additionally binds original nominal declarations, ordered owner forests, public effects and exact logical/body/code equations to a fresh native decision and compared retained QDV data. This raw component adds no admitted guarantee scope. The independent original-source type reader resolves supported explicit imports and public reexports to canonical declarations with their original category and visibility. Ordinary source ADT execution, general Nat field expressions, host-selected roots, source-function preservation and qmatch integration remain pending; native compilation, IO and runtime correspondence retain their separate assumptions.",
     "native_binary_note": "The local native binary digest identifies the selected build observed here. It is a build record, not a portable binary identity or a proof of compiler/runtime correctness.",
     "observed_native_build": {
       "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
@@ -408,7 +409,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 3.5873193331062794,
+      "seconds": 3.5582107910886407,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -424,7 +425,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "a6aceb4db07fa2cb7cd34cd52dff087b6454fd52edd0a76531e80ce974f9c7fa",
+    "source_revision_sha256": "e2311ee70f2d12d72430ae4aa2ff1b3501cce17171c61da287f637ec5e503c26",
     "command": {
       "argv": [
         "lake",

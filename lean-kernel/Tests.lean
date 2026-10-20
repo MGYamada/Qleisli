@@ -1150,14 +1150,85 @@ def recursive := "struct Loop { again: Loop }"
 example : refused (SourceTypes.check #[("main",recursive)]
     [.record ⟨"main","Loop",recursive⟩ ["again"],.unit]) := by decide +kernel
 def imported := "use labels::{Tri}; struct Box { tag: Tri }"
-example : refused (SourceTypes.check (sources.push ("main",imported))
-    (.record ⟨"main","Box",imported⟩ ["tag"] :: tri)) := by decide +kernel
+example : value (SourceTypes.check (sources.push ("main",imported))
+    (.record ⟨"main","Box",imported⟩ ["tag"] :: tri)) = .ok () := by decide +kernel
 example : (SourceTypes.lex "/* enum X {} /* nested */ */ enum Y { A }").isOk := by decide
 example : !(SourceTypes.lex "/* unfinished").isOk := by decide
 example : !(SourceTypes.lex "enum X { A }\r").isOk := by decide
 example : (SourceTypes.lex "enum X { A }\r\n").isOk := by decide
 example : (SourceTypes.lex "// enum X { A }\nenum Y { B }") =
     .ok ["enum","Y","{","B","}"] := by decide
+
+-- Imported spellings must reconstruct the original declaration, not a facade.
+def facade := "pub use labels::{Tri};"
+def qualifiedFacade := "struct Box { tag: bridge::Tri }"
+def importedFacade := "use bridge::Tri; struct Box { tag: Tri }"
+def aliasSources : SourceTypes.Sources := sources.push ("bridge",facade)
+def box (source : String) (child : Basis := tri) : Basis :=
+  .record ⟨"main","Box",source⟩ ["tag"] :: child
+example : value (SourceTypes.check (aliasSources.push ("main",qualifiedFacade))
+    (box qualifiedFacade)) = .ok () := by decide +kernel
+example : value (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade)) = .ok () := by decide +kernel
+example : refused (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade [.enumeration ⟨"bridge","Tri",facade⟩ ["A","B","C"]])) := by decide +kernel
+example : refused (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade [.enumeration ⟨"labels","Tri",text⟩ ["C","B","A"]])) := by decide +kernel
+example : refused (SourceTypes.check (sources.push ("main",importedFacade))
+    (box importedFacade)) := by decide +kernel
+-- A private import is visible unqualified in its own module, never a member.
+def privateFacade := "use labels::Tri; struct Box { tag: Tri }"
+example : value (SourceTypes.check (sources.push ("main",privateFacade))
+    (box privateFacade)) = .ok () := by decide +kernel
+example : refused (SourceTypes.check ((sources.push ("bridge",privateFacade)).push ("main",qualifiedFacade))
+    (box qualifiedFacade)) := by decide +kernel
+def selfQualified := "use labels::Tri; struct Box { tag: main::Tri }"
+example : refused (SourceTypes.check (sources.push ("main",selfQualified))
+    (box selfQualified)) := by decide +kernel
+-- Canonical lookup has no category, visibility or same-width fallback.
+def privateType := "enum Tri { A, B, C }"
+example : refused (SourceTypes.check #[("labels",privateType),("main",imported)]
+    (box imported [.enumeration ⟨"labels","Tri",privateType⟩ ["A","B","C"]])) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",privateType),("bridge",facade),("main",importedFacade)]
+    (box importedFacade [.enumeration ⟨"labels","Tri",privateType⟩ ["A","B","C"]])) := by decide +kernel
+-- Public self-reexports cannot promote even an otherwise same-module private type.
+def selfPromoted := "enum Tri { A, B, C } pub use labels::Tri;"
+example : refused (SourceTypes.check #[("labels",selfPromoted),("main",imported)]
+    (box imported [.enumeration ⟨"labels","Tri",selfPromoted⟩ ["A","B","C"]])) := by decide +kernel
+def wrongCategory := "pub classical fn Tri(x: Bit) -> Bit { x }"
+example : refused (SourceTypes.check #[("labels",wrongCategory),("main",imported)]
+    (box imported)) := by decide +kernel
+def collision := "use labels::Tri; enum Tri { A, B, C } struct Box { tag: Tri }"
+example : refused (SourceTypes.check (sources.push ("main",collision))
+    (box collision)) := by decide +kernel
+def duplicate := "use labels::{Tri,Tri}; struct Box { tag: Tri }"
+example : refused (SourceTypes.check (sources.push ("main",duplicate))
+    (box duplicate)) := by decide +kernel
+def cycleA := "pub use bridge::Tri;"
+def cycleB := "pub use labels::Tri;"
+example : refused (SourceTypes.check #[("labels",cycleA),("bridge",cycleB),("main",imported)]
+    (box imported)) := by decide +kernel
+-- Module qualification never treats a local declaration as a module alias.
+def moduleShadow := "enum bridge { Only } struct Box { tag: bridge::Tri }"
+example : value (SourceTypes.check (aliasSources.push ("main",moduleShadow))
+    (box moduleShadow)) = .ok () := by decide +kernel
+-- Nested/grouped paths retain source order and contextual std module keywords.
+def importPaths (text : String) := SourceTypes.lex text >>= SourceTypes.Imports.read
+example : importPaths "a::{b::{Tri,Four,},One},c::Empty" = .error "unexpected import separator" := by decide
+example : importPaths "{a::{b::{Tri,Four,},One},c::Empty,}" =
+    .ok [["Tri","b","a"],["Four","b","a"],["One","a"],["Empty","c"]] := by decide
+example : importPaths "std::{basis::Tri,observe::Tri,classical::Tri}" =
+    .ok [["Tri","basis","std"],["Tri","observe","std"],["Tri","classical","std"]] := by decide
+example : !(importPaths "a::{}").isOk := by decide
+example : !(importPaths "a::{Tri,,Four}").isOk := by decide
+example : !(importPaths "a::{Tri,::Four}").isOk := by decide
+example : !(importPaths "a::Tri as Other").isOk := by decide
+example : !(importPaths "a::*").isOk := by decide
+example : !(importPaths "::a::Tri").isOk := by decide
+example : !(importPaths "a::_").isOk := by decide
+example : !(importPaths "a::basis::Tri").isOk := by decide
+example : !(SourceTypes.Imports.read ((List.replicate 65 "{") ++ ["a","::","Tri"] ++
+    List.replicate 65 "}")).isOk := by decide
 
 end CarrierSourceExamples
 

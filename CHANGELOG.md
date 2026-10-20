@@ -39,9 +39,12 @@ development milestones from the scope of their evidence.
   retained graph, both typed owner forests and logical matrix through QDV1 before
   constructing a private handle. Preserve public effects and zero-width owners;
   reject stale views, declaration/member substitutions, leakage, phase/axis faults,
-  false pure labels and hidden observation. Alias/static-expression readers and
-  ordinary source execution remain pending; no inverse/control or new guarantee
-  is granted by this raw pure component.
+  false pure labels and hidden observation. Resolve original ordinary/grouped
+  imports and public type reexports without changing canonical identity, category
+  or visibility. Reject private facades, cycles, collisions and equal-width
+  substitutions within the existing parser/source/work bounds. General static
+  field expressions and ordinary source execution remain pending; no inverse/
+  control capability or new guarantee is granted by this raw pure component.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

@@ -141,8 +141,10 @@ their retained Rust objects. Lean reconstructs supported nominal declarations
 from the original source rows and checks code Gram/body equations using the same
 QIRF dependency and Raw gates. A fresh execution-only decision binds its private
 handle; inspection/caller frames and ordinary requests cannot substitute for it.
-This bounded raw component does not yet connect ordinary source ADT execution,
-import aliases or general Nat field expressions. Declaration lookup is not a
+Its independent type reader follows original explicit imports and public
+reexports, retaining canonical identity, category and visibility. This bounded
+raw component does not yet connect ordinary source ADT execution or general
+Nat field expressions. Declaration lookup is not a
 source-function preservation theorem, an inverse/control capability or a new
 human-admitted guarantee. All existing source/runtime/target assumptions remain.
 

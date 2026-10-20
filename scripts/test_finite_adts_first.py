@@ -319,5 +319,63 @@ class FirstCarrierNative(unittest.TestCase):
         self.assertTrue(reference['byte_identical_to_decompressed_canonical'])
 
 
+# Type-import history: "tests/fixtures/authoring_sessions/finite-adts-v030/aliases-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/aliases-index.json".
+# Current scope: "tests/fixtures/authoring_sessions/finite-adts-v030/aliases-validation.json".
+class FirstCarrierTypeAliases(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('aliases-index.json', 'aliases-first.tar.xz',
+            '1806082f36d6a1a281bb441438bd831204324b44f7f5a9e1c02e7c6d7e096941',
+            801416, '0bacaa8c939d15c718e09be8cc6dfdedaee42aa0304e9135cce6c00e474ffab3', 36_743_615)
+
+    def test_first_source_and_caller_mistake_remain_separate_from_native_scope(self):
+        first = json.loads(self.data['adt64-type-alias-first-study/report.json'])
+        repair = json.loads(self.data['adt64-type-alias-caller-repair-study/report.json'])
+        self.assertEqual(len(self.data), 263)
+        self.assertEqual(first['prediction_mismatches'], ['bit-control-source'])
+        self.assertEqual(repair['prediction_mismatches'], [])
+        self.assertTrue(first['source_and_binaries_unchanged'])
+        self.assertTrue(repair['source_and_binaries_unchanged'])
+        original = {k: v for k, v in first['before']['inputs'].items() if k.startswith('projects/')}
+        self.assertEqual(original, repair['before']['inputs'])
+        diagnostic = json.loads(self.data['adt64-type-alias-first-study/bit-control-source.stdout'])
+        self.assertEqual(diagnostic['diagnostics'][0]['code'], 'invalid_entry')
+        self.assertEqual(repair['commands'][0]['exit_code'], 0)
+        after = json.loads(self.data['adt64-type-alias-native-after/report.json'])
+        self.assertTrue(after['pass'])
+        self.assertTrue(after['source_and_kernel_unchanged'])
+        self.assertEqual([r['actual_code'] for r in after['commands']],
+                         ['decoded_view', 'decoded_view', 'contract'])
+        self.assertTrue(all(r['exit_code'] == 1 for r in after['commands']))
+
+    def test_failed_target_and_cycle_prediction_are_not_successes(self):
+        wrong_target = json.loads(self.data['adt64-alias-resolution-first-tests/observation-summary.json'])
+        self.assertFalse(wrong_target['pass'])
+        self.assertIn(b'unknown target `Tests`', self.data['adt64-alias-resolution-first-tests/stderr'])
+        first_native = json.loads(self.data['adt64-alias-source-normal-rust/observation-summary.json'])
+        self.assertFalse(first_native['pass'])
+        self.assertEqual(first_native['commands'][1]['exit_code'], 101)
+        output = self.data['adt64-alias-source-normal-rust/native.stdout']
+        self.assertIn(b'17 passed; 1 failed', output)
+        self.assertIn(b'left: "limit"', output)
+        self.assertIn(b'right: "contract"', output)
+
+    def test_current_proof_and_both_compilers_bind_the_same_selected_checker(self):
+        lean = json.loads(self.data['adt64-alias-source-lean-validation/report.json'])
+        self.assertTrue(lean['pass'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertTrue(all(r['exit_code'] == 0 for r in lean['commands']))
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(r['identical_recorded_output'] for r in lean['output_comparisons']))
+        for stage in ['adt64-alias-source-final-normal-rust', 'adt64-alias-source-final-msrv-rust']:
+            report = json.loads(self.data[stage + '/report.json'])
+            self.assertTrue(report['pass'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['after']['kernel'], lean['after']['kernel'])
+            self.assertIn('18 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+
+
 if __name__ == '__main__':
     unittest.main()
