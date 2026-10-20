@@ -246,6 +246,100 @@ fn provider_receipts_retain_original_prelude_and_public_export_sources() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn host_selected_project_entry_retains_its_export_chain() {
+    let main = "pub use facade::main;";
+    let facade = "pub use middle::main;";
+    let middle = "pub use leaf::main;";
+    let leaf = "unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->(Bit,Bit){let(a,b)=controlled(flip)(h(init0()),init0());(measure_z(a),measure_z(b))}";
+    let root = common::SourceRoot::new(main);
+    for (name, source) in [("facade", facade), ("middle", middle), ("leaf", leaf)] {
+        root.write(&format!("{name}.qli"), source);
+    }
+    root.write("unrelated.qli", "pub unitary fn idle(q:Q<Bit>)->Q<Bit>{q}");
+    let program = compile_project(&root.0).unwrap();
+    let receipt = cnot_evidence(program.program());
+    assert_eq!(receipt.identity().implementation, "leaf::flip");
+    for (name, source) in [
+        ("main", main),
+        ("facade", facade),
+        ("middle", middle),
+        ("leaf", leaf),
+    ] {
+        assert!(
+            receipt
+                .identity()
+                .sources
+                .iter()
+                .any(|(module, bytes)| module == name && bytes == source),
+            "missing host selection source {name}"
+        );
+    }
+    assert!(
+        !receipt
+            .identity()
+            .sources
+            .iter()
+            .any(|(module, _)| module == "unrelated")
+    );
+    let changed = "// Changed host selection source.\npub use middle::main;";
+    root.write("facade.qli", changed);
+    let other = compile_project(&root.0).unwrap();
+    let changed_receipt = cnot_evidence(other.program());
+    assert_eq!(receipt.meaning(), changed_receipt.meaning());
+    assert_ne!(
+        receipt.identity().sources,
+        changed_receipt.identity().sources
+    );
+    assert!(
+        changed_receipt
+            .identity()
+            .sources
+            .iter()
+            .any(|(module, bytes)| module == "facade" && bytes == changed)
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn selected_host_entry_and_operation_aliases_keep_their_original_source_packet() {
+    let sources = BTreeMap::from([
+        ("facade".into(), "pub use middle::{entry,flip};".into()),
+        ("middle".into(), "pub use leaf::{entry,flip};".into()),
+        ("leaf".into(), "pub unitary fn flip(q:Q<Bit>)->Q<Bit>{q} pub unitary fn entry[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}".into()),
+    ]);
+    let parsed = ParsedProgram::parse(qleisli::edition::Edition::E2026, sources.clone()).unwrap();
+    let binding = OperationBinding::new("facade::flip", BTreeMap::new());
+    let source = parsed
+        .instantiate(
+            "facade::entry",
+            BTreeMap::new(),
+            BTreeMap::from([("U".into(), binding.clone())]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let proposal = source.lower_raw_operation("U").unwrap();
+    let instance = proposal.source().instantiation();
+    assert_eq!(instance.entry(), "facade::entry");
+    assert_eq!(instance.operations()["U"], binding);
+    assert_eq!(proposal.definition().path(), "leaf::flip");
+    for (name, bytes) in sources {
+        assert_eq!(instance.program().source(&name), Some(bytes.as_str()));
+    }
+    let kernel =
+        qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+    let accepted = kernel.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn local_and_explicit_import_shadows_keep_their_meaning_without_fallback() {
     for main in [
         "unitary fn x(q:Q<Bit>)->Q<Bit>{q}observe fn main()->Bit{measure_z(x(init0()))}",

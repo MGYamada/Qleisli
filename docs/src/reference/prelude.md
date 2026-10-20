@@ -109,8 +109,13 @@ owner or missing Basis actual keeps its corresponding existing diagnostic.
 
 The additional eighth bundled module counts toward the unchanged source byte,
 module and work limits. Canonical target identity does not erase the implicit
-opening or reexport chain from relevant source snapshots. Complete retained
-source bytes may differ between equivalent forms. Independently issued evidence
+opening or reexport chain from relevant source snapshots. Project source
+receipts also include the export chain when the host selects
+a reexported `main::main`, even without a reference in a function body.
+Selected-source preparation retains its exact entry and operation-binding
+selectors with the original source collection through lowering.
+Complete retained source bytes may differ between equivalent forms. Independently
+issued evidence
 IDs are also distinct: their `Eq` is not a semantic equivalence test.
 
 Bounded conformance compares original canonical targets, independently checked

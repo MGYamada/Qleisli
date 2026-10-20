@@ -26,6 +26,19 @@ impl Compiler<'_> {
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
             };
+            // Project entry selection has no lexical UseInfo. A reexported
+            // main::main still supplies the host's entry, so its exact export
+            // chain belongs to the source receipts produced in this project.
+            let resolution = &collector.compiler.source.resolution;
+            if let Some(owner) = resolution.module("main") {
+                if resolution.local(owner, "main").is_none()
+                    && resolution.qualified("main::main").is_ok()
+                {
+                    resolution.visit_name_sources(owner, "main::main", |module| {
+                        collector.source(resolution.module_name(module), None)
+                    })?;
+                }
+            }
             for &root in roots {
                 collector.root(root, None)?;
             }

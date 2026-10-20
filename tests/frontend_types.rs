@@ -171,8 +171,8 @@ fn common_basis_empty_constructor_does_not_admit_other_calls_or_local_capture() 
     for (source, code, message) in [
         (
             "pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {std::classical::empty_bits()}}",
-            "parse",
-            "expected `}`, found `::`",
+            "name",
+            "call the language primitive `empty_bits` without an import",
         ),
         (
             " pub unitary fn f(q:Q<Unit>)->Q<Bits<0>>{basis q as () {empty_bits(())}}",

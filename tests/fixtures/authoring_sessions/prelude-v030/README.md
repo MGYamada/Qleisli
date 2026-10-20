@@ -22,3 +22,16 @@ distributions, native acceptance and general source preservation remain distinct
 The bounded passive reader pins 215,917 expanded bytes and never runs saved
 sources, commands, the observer or the artifact. Subsequent implementation and
 validation must retain these original bytes and record repairs separately.
+
+[The host-entry supplement](host-entry-first.json.gz) separately preserves the
+first failing native project test: a reexported entry loses its supplying
+modules from source receipts. Its first selected-API regression omits the
+required `Applicable(U)` premise and fails at access checking; that failure is
+retained alongside the corrected test. Final actual output reports 22 tests
+per toolchain and strict Clippy, including four current source-snapshot tests;
+the observer's prose saying five is incorrect. Two historical 256-case stresses
+remain filtered and receive no credit. Raw streams, first test text and inert
+observers are pinned; committed code uses exact Git references and compact
+coordinate summaries bind the separately retained full local maps/reports.
+These records are bounded conformance evidence, not source/native/runtime
+preservation proofs, an independent specification review or Issue completion.

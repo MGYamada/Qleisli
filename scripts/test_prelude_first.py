@@ -76,6 +76,39 @@ class FirstPrelude(unittest.TestCase):
         for name in ('explicit-bell', 'local-shadow', 'explicit-import-shadow', 'explicit-static-id'):
             self.assertEqual(checks[name]['exit_code'], 0)
 
+    def test_host_entry_sources_and_first_access_refusal_remain_inert(self):
+        stored = (ROOT / 'tests/fixtures/authoring_sessions/prelude-v030/host-entry-first.json.gz').read_bytes()
+        self.assertEqual(hashlib.sha256(stored).hexdigest(),
+                         'c692e39ff485364cca263a3386016915bbd087d09f7bfc8d158b3af1539ffb16')
+        with gzip.GzipFile(fileobj=io.BytesIO(stored)) as archive:
+            raw = archive.read(106_405)
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                         (106_404, '82198ad7ac98a62350f48dac0683ac944c37fad46f72656585fcab26ab096ad5'))
+        packet = json.loads(raw)
+        self.assertEqual(packet['format'], 'qleisli.prelude-host-entry-first-history')
+        self.assertEqual(len(packet['records']), 18)
+        data = {}
+        for name, row in packet['records'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute() or '..' in path.parts)
+            self.assertEqual((str(path), row['mode']), (name, 0o644))
+            payload = base64.b64decode(row['base64'], validate=True)
+            self.assertEqual((len(payload), hashlib.sha256(payload).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            data[name] = payload
+        observations = {row['label']: row['summary'] for row in packet['observations']}
+        self.assertEqual(observations['first']['exit_code'], 101)
+        self.assertIn(b'missing host selection source main', data['first/first.stderr'])
+        self.assertIn(b'missing Applicable operation access',
+                      data['missing-access-repair/normal-tests.stdout'])
+        for observation in observations.values():
+            self.assertTrue(observation['source_unchanged'])
+            self.assertEqual(observation['coordinates']['before'], observation['coordinates']['after'])
+        self.assertEqual([row['exit_code'] for row in observations['current']['commands']], [0, 0, 0, 0])
+        for profile in ('normal', 'msrv'):
+            self.assertIn(b'4 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out',
+                          data[f'current/{profile}-tests.stdout'])
+
 
 if __name__ == '__main__':
     unittest.main()
