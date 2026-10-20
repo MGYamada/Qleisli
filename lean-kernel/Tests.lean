@@ -989,3 +989,128 @@ example : ((QleisliKernel.FiniteCarrier.read tri).run 0).1 =
 #print axioms QleisliKernel.FiniteCarrier.code_conditions
 
 end FiniteCarrierExamples
+
+/-! Original-body equations on proper finite code spaces; no native or source
+API is enabled. Largest new physical matrix: 4x4 (two bits).
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace CarrierBodyExamples
+open QleisliKernel QleisliKernel.Semantics.Exact
+open QleisliKernel.Semantics.CarrierInterface QleisliKernel.Semantics.Finite
+open QleisliKernel.Semantics.Observation
+
+private def matrix (rows cols : Nat) (values : List Int) : Matrix :=
+  ⟨rows,cols,values.map fun n => ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+private def cycle : Matrix := matrix 3 3 [0,0,1, 1,0,0, 0,1,0]
+private def identity3 : Matrix := matrix 3 3 [1,0,0, 0,1,0, 0,0,1]
+private def input : Owner := ⟨⟨0,[7,19],2⟩,FiniteCarrierExamples.tri⟩
+private def output : Owner := ⟨⟨1,[7,19],2⟩,FiniteCarrierExamples.tri⟩
+private def interface : Interface := ⟨[input],[output],.unitary⟩
+private def body (steps : List Step) : Program :=
+  ⟨[input.port],[],[.pure (.applyUnitary 0 1 steps)],[1],[],.unitary⟩
+private def step (axes permutation phases : List Nat) : List Step :=
+  [⟨[],.monomial axes permutation phases⟩]
+private def cycleSteps : List Step := step [0,1] [1,2,0,3] [0,0,0,0]
+private def artifact (steps : List Step) : Qirf.Artifact :=
+  ⟨#[body steps],#[],#[],0,none⟩
+private def accepts (data : Qirf.Artifact) (attached required : Interface)
+    (logical : Matrix) (order : Array Nat := #[0]) (work : Nat := 2000000) : Bool :=
+  ((Qirf.Carrier.check data order attached required logical).run work).1.isOk
+
+example : accepts (artifact cycleSteps) interface interface cycle = true := by decide +kernel
+example : accepts (artifact []) interface interface identity3 = true := by decide +kernel
+-- Caller-visible Isometry remains Isometry after checking a square pure map.
+example : ((Qirf.Carrier.check (artifact []) #[0]
+    {interface with publicEffect := .iso} {interface with publicEffect := .iso} identity3).run 2000000).1.map
+    (fun checked => checked.interface.publicEffect) = .ok .iso := by decide +kernel
+-- A physically valid four-cycle leaks the third logical basis state out of
+-- the three-state code. Equal width and whole-space unitarity do not suffice.
+example : accepts (artifact (step [0,1] [1,2,3,0] [0,0,0,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact (step [0,1] [1,2,0,3] [0,0,1,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact (step [1,0] [1,2,0,3] [0,0,0,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface identity3 = false := by decide +kernel
+
+private def threeToFour : Interface :=
+  {interface with outputs := [⟨output.port,FiniteCarrierExamples.four⟩],publicEffect := .iso}
+example : accepts (artifact []) threeToFour threeToFour FiniteCarrierExamples.embedding = true :=
+  by decide +kernel
+-- The same physical 4x4 identity is not a logical 3->4 Unitary operation.
+example : accepts (artifact []) {threeToFour with publicEffect := .unitary}
+    {threeToFour with publicEffect := .unitary} FiniteCarrierExamples.embedding = false :=
+  by decide +kernel
+example : accepts (artifact []) threeToFour interface identity3 = false := by decide +kernel
+-- Same code matrix, different original variant order: stale interface refuses.
+example : accepts (artifact cycleSteps) interface
+    {interface with inputs := [⟨input.port,FiniteCarrierExamples.reordered⟩]} cycle = false :=
+  by decide +kernel
+example : accepts (artifact cycleSteps) interface
+    {interface with outputs := [⟨⟨1,[19,7],2⟩,FiniteCarrierExamples.tri⟩]} cycle = false :=
+  by decide +kernel
+example : accepts (artifact cycleSteps) {interface with publicEffect := .observe}
+    {interface with publicEffect := .observe} cycle = false := by decide +kernel
+
+-- Fresh dependency checking retains original implementations/specifications.
+private def dependency (implementation : List Step) : Qirf.Artifact :=
+  ⟨#[body implementation,body cycleSteps,body [⟨[],.contract [0,1] 0 false⟩]],
+    #[⟨[.bits 2],0,.circuit 1,"implementation","specification",[]⟩],#[],2,none⟩
+example : accepts (dependency cycleSteps) interface interface cycle #[0,1,3,2] = true :=
+  by decide +kernel
+example : accepts (dependency []) interface interface cycle #[0,1,3,2] = false :=
+  by decide +kernel
+example : accepts (dependency cycleSteps) interface interface cycle #[0,1,2,3] = false :=
+  by decide +kernel
+
+-- An empty record remains an owner despite contributing no matrix axes. Its
+-- scalar phase acts on the complete live frame and must not disappear.
+private def empty : Owner := ⟨⟨0,[],0⟩,FiniteCarrierExamples.emptyRecord⟩
+private def bit : Owner := ⟨⟨1,[19],1⟩,[.bit]⟩
+private def zeroInterface : Interface := ⟨[empty,bit],[{empty with port := ⟨2,[],0⟩},bit],.unitary⟩
+private def scalarBody : Program :=
+  ⟨[empty.port,bit.port],[],[.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+    [2,1],[],.unitary⟩
+private def scalar : Qirf.Artifact := ⟨#[scalarBody],#[],#[],0,none⟩
+private def minusIdentity : Matrix := matrix 2 2 [-1,0,0,-1]
+example : accepts scalar zeroInterface zeroInterface minusIdentity = true := by decide +kernel
+example : accepts scalar zeroInterface zeroInterface (matrix 2 2 [1,0,0,1]) = false :=
+  by decide +kernel
+private def dropped : Interface := ⟨[bit],[bit],.unitary⟩
+example : accepts scalar dropped dropped minusIdentity = false := by decide +kernel
+example : accepts scalar zeroInterface
+    {zeroInterface with inputs := [⟨empty.port,[.unit]⟩,bit]} minusIdentity = false :=
+  by decide +kernel
+example : accepts scalar {zeroInterface with outputs := [bit,⟨⟨2,[],0⟩,empty.basis⟩]}
+    {zeroInterface with outputs := [bit,⟨⟨2,[],0⟩,empty.basis⟩]} minusIdentity = false :=
+  by decide +kernel
+
+-- Hidden observation may not acquire a pure carrier label, whether the raw
+-- label is honest or falsely Unit/Isometry. No public result exposes it.
+private def observing (effect : Semantics.Raw.Effect) : Qirf.Artifact :=
+  ⟨#[⟨[bit.port],[],[.discard 1,.pure (.init0 2 23)],[2],[],effect⟩],#[],#[],0,none⟩
+private def observingInterface : Interface := ⟨[bit],[⟨⟨2,[23],1⟩,[.bit]⟩],.iso⟩
+example : accepts (observing .observe) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (observing .unitary) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (observing .iso) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface cycle #[] = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface cycle #[0] 0 = false := by decide +kernel
+-- Width metadata cannot substitute for the complete original wire list.
+example : ((Qirf.Carrier.ownerCode [{input with port := ⟨0,[7],2⟩}]).run 2000000).1.isOk = false :=
+  by decide +kernel
+-- Concatenation would form a valid pair, but the first owner's incomplete
+-- tree may not steal the second owner's Unit node to finish its own shape.
+private def stolen : List Owner :=
+  [⟨⟨0,[0],1⟩,[.pair,.bit]⟩,⟨⟨1,[1],1⟩,[.unit,.bit]⟩]
+example : Semantics.FiniteCarrier.layout (forest stolen) = some ⟨2,[0,1,2,3]⟩ := by decide
+example : ((QleisliKernel.FiniteCarrier.code (forest stolen)).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Qirf.Carrier.ownerCode stolen).run 2000000).1.isOk = false :=
+  by decide +kernel
+
+#print axioms Qirf.Carrier.ownerCode_conditions
+#print axioms Qirf.Carrier.readOwners_conditions
+#print axioms Qirf.Carrier.check_postcondition
+end CarrierBodyExamples

@@ -1,0 +1,237 @@
+{
+  "format": "qleisli.finite-carrier-body-validation",
+  "version": 1,
+  "base_commit": "dbe40dd72b9fde2b2317e99ad3dc283b83990c9c",
+  "source_files": {
+    "lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+    "lean-kernel/QleisliKernel/Qirf/Carrier.lean": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+    "lean-kernel/QleisliKernel.lean": "f4a1f319f712fae7c6a6a42004724c58d6c90db0619abd02837329d480896092",
+    "lean-kernel/Tests.lean": "66211b542a3f3231a2b24a7c333bab52ef5cae03c0fbafe3566bd7c24d612778"
+  },
+  "lean_source_revision": "dfda3910159bf9c3433fac7ad8a3a77b053c83415115e4c79e05b37ecd98cf9e",
+  "lean_source_files": 305,
+  "current_scoped_evidence_sha256": "caa0b347983d533bf3f4db9451cf6a61e87fb5adf9a676972a1fc9aa6df10f20",
+  "selected_native_before": "23d2567e1591ec4779fc99e0b4739c799790c03c03936be47e47d458aab31755",
+  "selected_native_after": "23d2567e1591ec4779fc99e0b4739c799790c03c03936be47e47d458aab31755",
+  "reports": [
+    {
+      "full_local_report": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-body-v6-validation/report.json",
+      "sha256": "7cbcf6eca8f1cb1f3c15444c0c3a3f5fad07784159a9cfe9c79cad73a691190e",
+      "pass": true,
+      "commands": [
+        {
+          "label": "module",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "build",
+            "QleisliKernel"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.7134191251825541
+        },
+        {
+          "label": "audit",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Audit.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 2.17042366694659
+        },
+        {
+          "label": "tests",
+          "argv": [
+            "/opt/homebrew/bin/lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "Tests.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 112.00867945910431
+        }
+      ],
+      "source_window": true,
+      "output_comparisons": []
+    },
+    {
+      "full_local_report": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-body-rebinding-v3-build/report.json",
+      "sha256": "5e5aa144848f7e56b450c779dc0c17dc89aff30474dd91337e5cb03ced32232d",
+      "pass": true,
+      "commands": [
+        {
+          "label": "registry",
+          "argv": [
+            "python3",
+            "scripts/check_schema_registry.py",
+            "--write",
+            "--report",
+            "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-body-rebinding-v3-build/registry.json"
+          ],
+          "cwd": "/Users/masa/git/Qleisli",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 143.62850000010803
+        },
+        {
+          "label": "review",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.9162755829747766
+        },
+        {
+          "label": "binding",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.598015750059858
+        },
+        {
+          "label": "basis-transport",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.778867374872789
+        },
+        {
+          "label": "raw-transport",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 3.96129975002259
+        },
+        {
+          "label": "extract",
+          "argv": [
+            "lake",
+            "env",
+            "lean",
+            "-DwarningAsError=true",
+            "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 8.355639042099938
+        },
+        {
+          "label": "main-replay",
+          "argv": [
+            "lake",
+            "env",
+            "leanchecker",
+            "--fresh",
+            "Main"
+          ],
+          "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 62.81869608303532
+        }
+      ],
+      "source_window": true,
+      "output_comparisons": [
+        {
+          "label": "review",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "binding",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "basis-transport",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "raw-transport",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "extract",
+          "identical_recorded_output": true
+        },
+        {
+          "label": "main-replay",
+          "identical_recorded_output": true
+        }
+      ]
+    }
+  ],
+  "first_history": {
+    "archive_sha256": "e9af41b1dcc609b267e90614a5351613a3cfca9bb9d55799dec2ee57f5778e56",
+    "index_sha256": "7f3bc4ede17b2745a58e2280435d13e4df35585fb1cbf55d3135003d8e84be5b",
+    "members": 38,
+    "expanded_file_bytes": 7089180
+  },
+  "actual_scope": [
+    "Complete nominal owner forests, physical wire widths and zero-width owners are retained separately from product coordinates.",
+    "Original QIRF graph/root/dependencies are freshly checked before reconstruction and exact code/body equations; logical Gram and public Unitary cardinalities are checked separately.",
+    "The returned data retains the requested public effect; square maps cannot sharpen Isometry, and Observe refuses.",
+    "Generic postconditions compile under only the recorded standard Lean axiom basis. The compiled declaration audit covers generated/private helpers.",
+    "Small three/four-state, relative phase/axis/dependency faults, code leakage, false Unitary, zero-owner loss and hidden-observation reductions pass. Largest new physical matrix is 4x4, two bits.",
+    "A strengthened malformed-owner regression has a valid complete-forest positive control, then refuses the individually incomplete/extra child trees. The earlier refusal did not isolate that boundary.",
+    "Both shared Lean packages build/audit, fresh QleisliKernel/Main replay succeeds and all six fixed guarantee outputs match exactly before evidence refresh."
+  ],
+  "preserved_failures": [
+    "Observer preflight uses the retired qargo directory and runs no Lean command; its summary is a transcription, not the unavailable raw traceback.",
+    "First bridge compile fails because a postcondition field shadows its matrix parameter.",
+    "Tests pass for the recursive reader, but the compiled audit refuses its generated partial _unsafe_rec helper.",
+    "The first total-fold proof repair has an invalid Unit tactic pattern; a separate repair compiles and passes the audit.",
+    "The first passive reader looks for the recorded audit diagnostic on stderr; the unchanged original wrapper emits JSON on stdout. Repair only the live reader stream selection; all archive bytes remain pinned. Its original reader source remains in the full local validation directory as test_finite_adts_first.next.py, SHA-256 272600f2cfb5a34b231504d4a747cd3d90a4d9a14165098e75db79c5ae6a0d30. The initial missing check_fixture_retention.py helper invocation runs no retention gate; the actual helper is check_fixture_references.py."
+  ],
+  "performed": [
+    "Current full kernel Tests, compiled audit, both package builds/audits, kernel/Main fresh replay, fixed review/binding/Raw/Basis/extraction, exact source windows with unchanged companion sources.",
+    "Six passive first-history tests, current docs/schema identity, whitespace and reviewed-base constitutional continuity checks pass. Fixture budget preflight passes without raised limits; exact committed retention/budget gates follow."
+  ],
+  "not_performed": [
+    "Rust/MSRV rebuild: no Rust source or dependency changed in this component.",
+    "Hosted CI/review: local unpublished branch, no PR for this component yet.",
+    "No new maximum quantum case, package publication, release/tag or new guarantee admission."
+  ],
+  "remaining": [
+    "Ordinary enum/record declaration/constructor/match implementation.",
+    "Canonical source declaration identity, type-only/host dependencies and caller-visible type/effect integration.",
+    "Versioned native typed-interface/QDV transport and private accepted-handle binding.",
+    "Coherent qmatch with verified static-arm access, source preservation checks and actual public-path/fault regressions."
+  ],
+  "scope_limit": "An internal checked component, not a public source/API or native mode. Matching interface metadata is not canonical source elaboration. Broader QS/PR/RS/EXACT, source/compiler/runtime/target correspondence remain pending; both admitted scopes are unchanged. No Issue completion credit."
+}

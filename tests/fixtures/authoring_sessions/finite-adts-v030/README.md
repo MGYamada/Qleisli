@@ -40,5 +40,26 @@ reduction cases. First example and audit-wrapper failures remain failed stages;
 their separate repairs preserve the production capacities and use kernel proof
 evaluation. Shared rebuild/audits and fixed protected reviews/extraction agree
 with the existing scoped guarantees before current evidence is refreshed.
-Ordinary syntax, typed body/effect binding, native protocol integration and
+Ordinary syntax, source type/effect binding, native protocol integration and
 qmatch remain unimplemented; this record grants no accepted handle or completion.
+
+The separate [body history](body-first.tar.xz), [index](body-index.json) and
+[current validation](body-validation.json) distinguish original-QIRF body/code
+equations from source integration. Thirty-eight focused records retain the
+first bridge compile error, first reduction sources, a compiled-audit refusal
+of a generated partial recursive helper, and its first failed proof repair.
+The retired companion-directory error summary is a transcription, not the
+unavailable raw traceback. First compile observations keep their complete
+original report; later compact summaries bind full local reports without
+duplicating all source inventories. Nothing in the archive is executed.
+
+The repaired implementation uses the existing total list fold and passes the
+compiled audit. Current reductions distinguish three/four-state carriers,
+code leakage, exact phase/axes/dependencies, public Isometry, hidden observation
+and retained zero-width owners. A valid complete-forest control isolates the
+separate per-owner prefix refusal; the earlier malformed example did not.
+The largest new physical matrix is 4x4 (two bits). Generic postconditions and
+fresh shared builds/audits/replay retain the existing standard axiom basis and
+protected guarantee outputs. Canonical source declaration lookup, source types,
+versioned typed native/QDV transport and qmatch remain pending. This internal
+component confers no native handle, public source form or completion credit.
