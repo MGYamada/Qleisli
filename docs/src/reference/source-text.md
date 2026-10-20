@@ -101,6 +101,14 @@ declarations. Non-nominal constructed-AST consumers retain their existing
 boundary. This original-byte check is not a general source-preservation theorem
 or the pending source/native evidence/cache binding.
 
+Prepared nominal facts retain the original references in field types and closed
+Nat-helper calls. Ordinary provenance collection follows these type dependencies,
+their transparent reexport chains and the helpers' original lexical dependencies.
+It checks retained declaration/source/occurrence identity before collecting
+bytes. This is untrusted provenance preparation; selected/host binding through
+typed native transport and public execution remain pending. Read-only retained
+nominal maps preserve the existing `Send + Sync` source-handle contract.
+
 The Rust `Project` view labels `ResolvedImport.kind` as
 `ImportKind::Function(FnKind)` or `ImportKind::Type`. Its `declaration_span`
 points to the original declaration in the canonical `module`; `span` remains

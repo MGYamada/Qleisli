@@ -289,3 +289,65 @@ fn a_matching_origin_cannot_hide_changed_field_trees_or_visibility() {
         assert_ne!(mapped, Type::bits(1));
     });
 }
+
+#[test]
+fn type_only_fields_retain_original_type_and_nat_helper_occurrences() {
+    let text = "use alias::Tri; use sizes::width; struct Packet { tag:Tri, bits:Bits<width[2]()> }";
+    inspect(
+        &[
+            ("leaf", "pub enum Tri { A,B,C }"),
+            ("alias", "pub use leaf::Tri;"),
+            ("base", "pub static fn next[const n:Nat]()->Nat{n+1}"),
+            (
+                "numbers",
+                "pub static fn width[const n:Nat]()->Nat{base::next[n]()}",
+            ),
+            ("sizes", "pub use numbers::width;"),
+            ("main", text),
+        ],
+        |p| {
+            let Target::Type(id) = p.resolution.qualified_target("main::Packet").unwrap() else {
+                unreachable!()
+            };
+            let uses = &p.nominal_uses[&id];
+            assert_eq!(
+                uses.iter()
+                    .map(|use_site| use_site.name.as_str())
+                    .collect::<Vec<_>>(),
+                ["Tri", "width"]
+            );
+            assert_eq!(
+                uses[0].target,
+                p.resolution.qualified_target("leaf::Tri").unwrap()
+            );
+            assert_eq!(
+                uses[1].target,
+                Target::Declaration(p.resolution.qualified("numbers::width").unwrap())
+            );
+            let mut sources = BTreeSet::new();
+            for use_site in uses {
+                assert_eq!(&text[use_site.span.start..use_site.span.end], use_site.name);
+                p.resolution
+                    .visit_name_sources(
+                        p.resolution.module("main").unwrap(),
+                        &use_site.name,
+                        |module| {
+                            sources.insert(p.resolution.module_name(module));
+                            Ok::<_, ()>(())
+                        },
+                    )
+                    .unwrap();
+            }
+            assert_eq!(
+                sources.into_iter().collect::<Vec<_>>(),
+                ["alias", "leaf", "numbers", "sizes"]
+            );
+            // The helper's own original lexical use supplies the transitive source.
+            let width = p.resolution.qualified("numbers::width").unwrap();
+            assert!(p.indices[&width].table.resolved_uses().iter().any(|use_site| {
+            matches!(use_site.target, super::super::super::resolve::locals::ResolvedUse::Global(Target::Declaration(id))
+                if id == p.resolution.qualified("base::next").unwrap())
+        }));
+        },
+    );
+}

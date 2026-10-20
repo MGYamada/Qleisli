@@ -16,6 +16,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Type history: "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-index.json".
 # Type checks: "tests/fixtures/authoring_sessions/finite-adts-v030/elaboration-validation.json".
+# Dependency history: "tests/fixtures/authoring_sessions/finite-adts-v030/dependencies-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/dependencies-index.json".
+# Dependency checks: "tests/fixtures/authoring_sessions/finite-adts-v030/dependencies-validation.json".
 # Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
 import hashlib
 import io
@@ -235,6 +238,38 @@ class FirstNominalElaboration(unittest.TestCase):
         self.assertEqual([row['exit_code'] for row in report['commands']], [101])
         self.assertIn(b'syntax.type_decls.clear()', self.data['removed-type/source/src/frontend/check/nominal/tests.rs.txt'])
         self.assertIn(b'deleting AST declarations must not bypass original-source validation', self.data['removed-type/unit.stdout'])
+
+
+class FirstNominalDependencies(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('dependencies-index.json', 'dependencies-first.tar.xz',
+            'b2f917333ced54d8699e8891dcb50f9418fe8cfbbe1840f2479bc0ec296c220c',
+            616624, 'd66e225d82a55f76a6a5dabe817a77c113132885722648c1b7606b340fdecedd', 7_318_408)
+
+    def test_initial_fixture_and_qualification_errors_remain_failed_windows(self):
+        self.assertEqual(len(self.data), 28)
+        first = json.loads(self.data['first/report.json'])
+        repair = json.loads(self.data['repair-01/observation-summary.json'])
+        self.assertFalse(first['pass'])
+        self.assertFalse(repair['pass'])
+        self.assertTrue(first['source_unchanged'])
+        self.assertTrue(repair['source_unchanged'])
+        self.assertEqual(first['before'], first['after'])
+        self.assertIn(b'error[E0599]', self.data['first/check.stderr'])
+        self.assertIn(b'error[E0063]', self.data['first/check.stderr'])
+        self.assertIn(b'error[E0433]', self.data['repair-01/check.stderr'])
+
+    def test_the_existing_public_thread_sharing_contract_is_preserved_as_a_real_regression(self):
+        report = json.loads(self.data['send-sync/observation-summary.json'])
+        self.assertFalse(report['pass'])
+        self.assertTrue(report['source_unchanged'])
+        self.assertEqual([row['exit_code'] for row in report['commands']], [101])
+        self.assertEqual(self.data['send-sync/check.stderr'].count(b'error[E0277]'), 8)
+        caller = self.data['send-sync/unchanged-caller-sized-source.rs.txt']
+        self.assertIn(b'send_sync::<ParsedProgram>()', caller)
+        self.assertIn(b'std::thread::spawn(move ||', caller)
+        self.assertIn(b'Rc<BTreeMap', self.data['send-sync/check.stderr'])
 
 
 if __name__ == '__main__':

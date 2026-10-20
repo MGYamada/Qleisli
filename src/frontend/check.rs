@@ -29,7 +29,13 @@ use std::sync::Arc;
 
 pub(super) type Ty = Type<Linear>;
 pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
-type NominalTypes = Rc<BTreeMap<TypeId, Ty>>;
+type NominalTypes = Arc<BTreeMap<TypeId, Ty>>;
+#[derive(Clone, Debug)]
+pub(super) struct NominalUse {
+    pub name: String,
+    pub span: Span,
+    pub target: resolve::Target,
+}
 #[derive(Debug)]
 pub(super) struct StaticHelper {
     pub parameters: Vec<BinderKey>,
@@ -391,6 +397,8 @@ pub(super) struct Obligation {
 #[derive(Debug)]
 pub(super) struct CheckedProgram {
     pub resolution: Resolution,
+    pub nominals: NominalTypes,
+    pub nominal_uses: BTreeMap<TypeId, Vec<NominalUse>>,
     pub interfaces: BTreeMap<DefId, Interface>,
     pub effects: BTreeMap<DefId, FunctionEffect>,
     pub lexical: BTreeMap<DefId, Arc<Table>>,
@@ -502,7 +510,7 @@ impl Scope {
         budget.charge(span, 1)?;
         Ok(Self {
             helpers: Rc::clone(&self.helpers),
-            nominals: Rc::clone(&self.nominals),
+            nominals: Arc::clone(&self.nominals),
             naturals,
             bases,
             operations,
@@ -517,6 +525,7 @@ impl Scope {
 struct Program<'a> {
     helpers: StaticHelpers,
     nominals: NominalTypes,
+    nominal_uses: BTreeMap<TypeId, Vec<NominalUse>>,
     sources: BTreeMap<&'a str, &'a str>,
     modules: BTreeMap<&'a str, &'a ast::Module>,
     resolution: Resolution,
@@ -806,7 +815,8 @@ fn prepare_program<'a>(
     }
     let mut program = Program {
         helpers: Rc::new(BTreeMap::new()),
-        nominals: Rc::new(BTreeMap::new()),
+        nominals: Arc::new(BTreeMap::new()),
+        nominal_uses: BTreeMap::new(),
         sources,
         modules,
         resolution,
@@ -820,6 +830,27 @@ fn prepare_program<'a>(
     };
     declarations::prepare(&mut program)?;
     Ok(program)
+}
+
+/// Read-only fixture data from type/interface preparation. No body judgment,
+/// effect fact, IR program or accepted handle is manufactured by this helper.
+#[cfg(test)]
+pub(super) struct NominalMetadata {
+    pub resolution: Resolution,
+    pub types: NominalTypes,
+    pub uses: BTreeMap<TypeId, Vec<NominalUse>>,
+}
+#[cfg(test)]
+pub(super) fn nominal_metadata(
+    modules: BTreeMap<&str, &ast::Module>,
+    sources: BTreeMap<&str, &str>,
+) -> Result<NominalMetadata> {
+    let program = prepare_program(modules, sources, SourceLimits::finite())?;
+    Ok(NominalMetadata {
+        resolution: program.resolution,
+        types: program.nominals,
+        uses: program.nominal_uses,
+    })
 }
 
 pub(super) fn program_with_sources<'a, R>(
@@ -1002,6 +1033,8 @@ pub(super) fn program_with_sources<'a, R>(
     Ok((
         CheckedProgram {
             resolution: program.resolution,
+            nominals: program.nominals,
+            nominal_uses: program.nominal_uses,
             interfaces: program.interfaces,
             effects,
             lexical,

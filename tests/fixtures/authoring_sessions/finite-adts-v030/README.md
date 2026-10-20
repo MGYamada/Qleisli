@@ -118,3 +118,26 @@ Constructors, field access/privacy, ordinary match, complete source/evidence
 dependencies, versioned native/QDV/private handles and coherent qmatch still
 require actual integration and public execution/fault validation. All #64
 checkboxes remain open. No hosted review, new guarantee or release is claimed.
+
+The [dependency first history](dependencies-first.tar.xz),
+[index](dependencies-index.json) and [current checks](dependencies-validation.json)
+retain 28 records / 7,318,408 original bytes / 616,624 stored bytes. Slice/fixture
+and Rc-qualification compile failures precede a real public Send+Sync regression.
+The unchanged sized-source caller was copied after diagnosis and verified against
+both observed source-window hashes. These records are passive failed history.
+
+Current preparation retains original nominal field/Nat-helper occurrences.
+The ordinary source collector follows type/function worklists and alias paths,
+rechecks original bytes/targets, and rejects missing facts, equal-width target
+substitution and changed source. Its typed positive/fault test installs only
+read-only metadata; it fabricates no body/effect judgment, IR or accepted handle.
+Retained maps use Arc to preserve the existing public thread-sharing contract.
+
+Normal1.98.1 and sequential MSRV1.85 each pass212 relevant library+66integration
+cases,6native-enabled snapshot cases,4source-collector cases and1existing
+thread/clone/fold-activation case. Default116library+1integration native ignores
+and137library filters remain; focused snapshot/source/thread filters are459/461/42.
+Both all-target compile; normal strict lint/format pass. Host-selected binding,
+selected typed native provenance and all public typed execution remain pending.
+All8 #64 checkboxes stay open; no new maximum quantum case, proof replay,
+companion rebuild, hosted review, guarantee admission or release is claimed.

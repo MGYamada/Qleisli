@@ -234,6 +234,9 @@ impl Resolution {
     pub fn type_declaration(&self, id: TypeId) -> &TypeDeclaration {
         &self.types[id.0]
     }
+    pub fn try_type_declaration(&self, id: TypeId) -> Option<&TypeDeclaration> {
+        self.types.get(id.0)
+    }
     pub fn target_module(&self, target: Target) -> Option<ModuleId> {
         match target {
             Target::Declaration(id) => Some(self.declaration(id).module),

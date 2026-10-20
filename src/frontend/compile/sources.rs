@@ -2,6 +2,7 @@
 //! This metadata is not a replay project, source-preservation proof or acceptance.
 use super::*;
 use crate::contract::function::{SourceRows, SourceView};
+use crate::frontend::resolve::TypeId;
 use crate::frontend::resolve::locals::Table;
 use crate::ir::{CircuitAction, CircuitStep, RawOp, RawProgram};
 
@@ -23,6 +24,7 @@ impl Compiler<'_> {
                 work: &mut work,
                 pending: Vec::new(),
                 definitions: BTreeSet::new(),
+                types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
             };
@@ -48,9 +50,7 @@ impl Compiler<'_> {
             for body in bodies {
                 collector.raw(body)?;
             }
-            while let Some(key) = collector.pending.pop() {
-                collector.definition(key)?;
-            }
+            collector.drain()?;
             collector.charge(collector.modules.iter().map(|name| name.len() + 1).sum())?;
             Ok::<_, CompileError>(
                 collector
@@ -154,17 +154,31 @@ impl Compiler<'_> {
     }
 }
 
+enum Dependency {
+    Function(Key),
+    Type(TypeId),
+}
 struct Collector<'a, 'project> {
     compiler: &'a Compiler<'project>,
     module: &'a str,
     span: Span,
     work: &'a mut usize,
-    pending: Vec<Key>,
+    pending: Vec<Dependency>,
     definitions: BTreeSet<Key>,
+    types: BTreeSet<TypeId>,
     modules: BTreeSet<&'a str>,
     receipts: BTreeSet<usize>,
 }
 impl<'a> Collector<'a, '_> {
+    fn drain(&mut self) -> Result<(), CompileError> {
+        while let Some(dependency) = self.pending.pop() {
+            match dependency {
+                Dependency::Function(key) => self.definition(key)?,
+                Dependency::Type(key) => self.nominal(key)?,
+            }
+        }
+        Ok(())
+    }
     fn charge(&mut self, amount: usize) -> Result<(), CompileError> {
         self.compiler
             .charge_at(self.work, self.module, self.span, amount)
@@ -186,7 +200,7 @@ impl<'a> Collector<'a, '_> {
             return self.refusal("source closure root belongs to another original collection");
         }
         if self.definitions.insert(key) {
-            self.pending.push(key);
+            self.pending.push(Dependency::Function(key));
         }
         Ok(())
     }
@@ -288,10 +302,12 @@ impl<'a> Collector<'a, '_> {
                     self.root(next, None)?;
                 }
                 ResolvedUse::Global(Target::Primitive(_)) => {}
-                ResolvedUse::Global(Target::Type(_)) => {
-                    return self.refusal(
-                        "nominal type dependencies require canonical carrier elaboration",
-                    );
+                ResolvedUse::Global(Target::Type(next)) => {
+                    let resolution = &self.compiler.source.resolution;
+                    resolution.visit_name_sources(record.module, &usage.name, |owner| {
+                        self.source(resolution.module_name(owner), None)
+                    })?;
+                    self.type_root(next)?;
                 }
                 ResolvedUse::Local(id) if table.try_binder(id).is_some() => {}
                 _ => {
@@ -305,6 +321,76 @@ impl<'a> Collector<'a, '_> {
         }
         if let Some(meaning) = self.compiler.meanings.get(&key) {
             self.raw(&meaning.raw)?;
+        }
+        Ok(())
+    }
+
+    fn type_root(&mut self, key: TypeId) -> Result<(), CompileError> {
+        self.charge(self.types.len() + 2)?;
+        if self.types.insert(key) {
+            self.pending.push(Dependency::Type(key));
+        }
+        Ok(())
+    }
+
+    fn nominal(&mut self, key: TypeId) -> Result<(), CompileError> {
+        self.charge(
+            self.compiler.source.nominals.len() + self.compiler.source.nominal_uses.len() + 3,
+        )?;
+        let resolution = &self.compiler.source.resolution;
+        let Some(record) = resolution.try_type_declaration(key) else {
+            return self.refusal("source closure has an unknown original type");
+        };
+        let Some(ty) = self.compiler.source.nominals.get(&key) else {
+            return self.refusal("source closure type lacks canonical finite elaboration");
+        };
+        let Kind::Nominal(nominal) = &ty.kind else {
+            return self.refusal("source closure type lost its nominal tree");
+        };
+        let Some(original) = self
+            .compiler
+            .project
+            .modules
+            .get(&record.name.0)
+            .and_then(|module| module.ast.type_decls.get(record.ast_index))
+        else {
+            return self.refusal("source closure type is outside the original declarations");
+        };
+        self.charge(record.name.0.len() + record.name.1.len() + nominal.metadata_cells())?;
+        if nominal.origin.module != record.name.0
+            || nominal.origin.name != record.name.1
+            || nominal.origin.name != original.name.text
+            || nominal.origin.span != original.span
+        {
+            return self.refusal("source closure type differs from its original declaration");
+        }
+        self.source(&record.name.0, Some(&nominal.origin.source))?;
+        let Some(uses) = self.compiler.source.nominal_uses.get(&key) else {
+            return self.refusal("source closure type lacks its original dependency occurrences");
+        };
+        for usage in uses {
+            self.charge(usage.name.len() + 2)?;
+            if usage.span.start < original.body_span.start
+                || usage.span.end > original.body_span.end
+                || usage.span.start > usage.span.end
+                || resolution.lookup_visible(record.module, &usage.name) != Ok(Some(usage.target))
+            {
+                return self.refusal(
+                    "source closure type dependency differs from its original occurrence",
+                );
+            }
+            resolution.visit_name_sources(record.module, &usage.name, |owner| {
+                self.source(resolution.module_name(owner), None)
+            })?;
+            match usage.target {
+                Target::Type(next) => self.type_root(next)?,
+                Target::Declaration(next)
+                    if resolution.declaration(next).kind == FnKind::Static =>
+                {
+                    self.root(next, None)?
+                }
+                _ => return self.refusal("source closure field dependency has the wrong category"),
+            }
         }
         Ok(())
     }
@@ -518,6 +604,7 @@ mod tests {
             work: &mut work,
             pending: Vec::new(),
             definitions: BTreeSet::new(),
+            types: BTreeSet::new(),
             modules: BTreeSet::new(),
             receipts: BTreeSet::new(),
         };
@@ -527,5 +614,112 @@ mod tests {
         assert_eq!(error.code, ErrorCode::InvalidIr);
         assert!(error.message.contains("another original collection"));
         assert!(collector.pending.is_empty());
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn nominal_source_closure_retains_aliases_and_rejects_stale_type_dependencies() {
+        let originals = project(&[
+            (
+                "main",
+                "use alias::Tri; pub struct Packet { tag:Tri, empty:leaf::Empty }",
+            ),
+            ("alias", "pub use leaf::Tri;"),
+            (
+                "leaf",
+                "pub enum Tri { A,B,C } pub enum Four { A,B,C,D } pub struct Empty {}",
+            ),
+            ("unrelated", "enum Ignored { A }"),
+        ]);
+        let empty = project(&[("main", "fn empty()->Unit{()}")]);
+        for mutation in 0..5 {
+            let metadata = check::nominal_metadata(
+                originals
+                    .modules
+                    .iter()
+                    .map(|(name, source)| (name.as_str(), &source.ast))
+                    .collect(),
+                originals
+                    .modules
+                    .iter()
+                    .map(|(name, source)| (name.as_str(), source.source.as_str()))
+                    .collect(),
+            )
+            .unwrap();
+            let mut changed = originals.clone();
+            if mutation == 3 {
+                changed
+                    .modules
+                    .get_mut("leaf")
+                    .unwrap()
+                    .source
+                    .push_str(" // stale source");
+            }
+            let mut compiler = super::super::snapshot_tests::compiler(&empty);
+            // Only read-only metadata is installed. No source body judgment,
+            // runtime program, effect or native accepted handle is fabricated.
+            compiler.project = &changed;
+            compiler.source.resolution = metadata.resolution;
+            compiler.source.nominals = metadata.types;
+            compiler.source.nominal_uses = metadata.uses;
+            let Target::Type(root) = compiler
+                .source
+                .resolution
+                .qualified_target("main::Packet")
+                .unwrap()
+            else {
+                unreachable!()
+            };
+            let Target::Type(leaf) = compiler
+                .source
+                .resolution
+                .qualified_target("leaf::Tri")
+                .unwrap()
+            else {
+                unreachable!()
+            };
+            match mutation {
+                1 => {
+                    compiler.source.nominal_uses.remove(&root);
+                }
+                2 => {
+                    compiler.source.nominal_uses.get_mut(&root).unwrap()[0].target = compiler
+                        .source
+                        .resolution
+                        .qualified_target("leaf::Four")
+                        .unwrap()
+                }
+                4 => {
+                    Arc::make_mut(&mut compiler.source.nominals).remove(&leaf);
+                }
+                _ => {}
+            }
+            let mut work = 0;
+            let mut collector = Collector {
+                compiler: &compiler,
+                module: "main",
+                span: Span::default(),
+                work: &mut work,
+                pending: Vec::new(),
+                definitions: BTreeSet::new(),
+                types: BTreeSet::new(),
+                modules: BTreeSet::new(),
+                receipts: BTreeSet::new(),
+            };
+            collector.type_root(root).unwrap();
+            let result = collector.drain();
+            if mutation == 0 {
+                result.unwrap();
+                assert_eq!(
+                    collector.modules.into_iter().collect::<Vec<_>>(),
+                    ["alias", "leaf", "main"]
+                );
+            } else {
+                assert_eq!(result.unwrap_err().code, ErrorCode::InvalidIr);
+            }
+        }
     }
 }

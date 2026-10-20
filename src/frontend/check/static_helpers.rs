@@ -126,7 +126,7 @@ fn check(p: &Program<'_>, id: DefId) -> Result<StaticHelper> {
         })?;
     let mut scope = Scope {
         helpers: Rc::clone(&p.helpers),
-        nominals: Rc::clone(&p.nominals),
+        nominals: Arc::clone(&p.nominals),
         naturals,
         context,
         bases: BTreeMap::new(),

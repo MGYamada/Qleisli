@@ -29,6 +29,10 @@ development milestones from the scope of their evidence.
   Nat helpers for closed sizes. Check original declaration tokens as well as ASTs
   to prevent deletion from bypassing source identity. Keep constructed non-ADT
   AST consumers at their existing boundary; no source-preservation proof follows.
+  Retain field type/Nat-helper occurrences and traverse their original type,
+  function and reexport sources during provenance collection. Refuse stale
+  source/dependency substitutions. Keep retained type maps thread safe with Arc;
+  this metadata preparation enables no typed native handle or source execution.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.
