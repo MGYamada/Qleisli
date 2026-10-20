@@ -135,6 +135,17 @@ QLV3 success is formally connected to the original decoded-root ownership
 and classical-scope properties; this preserves their admitted scope and does
 not admit a new guarantee or discharge broader QS, PR, RS or EXACT duties.
 
+The internal `finite-carrier-pure-v1` mode additionally compares both ordered
+typed owner forests and the independently requested exact logical matrix with
+their retained Rust objects. Lean reconstructs supported nominal declarations
+from the original source rows and checks code Gram/body equations using the same
+QIRF dependency and Raw gates. A fresh execution-only decision binds its private
+handle; inspection/caller frames and ordinary requests cannot substitute for it.
+This bounded raw component does not yet connect ordinary source ADT execution,
+import aliases or general Nat field expressions. Declaration lookup is not a
+source-function preservation theorem, an inverse/control capability or a new
+human-admitted guarantee. All existing source/runtime/target assumptions remain.
+
 ### Non-verifier backend implementation scope (2026-10-11)
 
 [Decision #350](https://github.com/MGYamada/Qleisli/issues/350) retires the

@@ -8,6 +8,7 @@ use crate::edition::Edition;
 pub(super) enum Mode {
     Ordinary,
     Contract,
+    CarrierPure,
     Hierarchy,
     HierarchyRequest,
     HierarchyFourier,
@@ -26,6 +27,7 @@ impl Mode {
         match self {
             Self::Ordinary => "--qirf-native",
             Self::Contract => "--qirf-contract",
+            Self::CarrierPure => "--carrier-pure-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
             Self::HierarchyFourier => "--hierarchy-fourier-pending",
@@ -44,6 +46,7 @@ impl Mode {
         match argument {
             "--qirf-native" => Ok(Self::Ordinary),
             "--qirf-contract" => Ok(Self::Contract),
+            "--carrier-pure-check" => Ok(Self::CarrierPure),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
             "--hierarchy-fourier-pending" => Ok(Self::HierarchyFourier),
@@ -61,7 +64,7 @@ impl Mode {
 
     fn status(self) -> &'static str {
         match self {
-            Self::Ordinary | Self::Contract => "accepted",
+            Self::Ordinary | Self::Contract | Self::CarrierPure => "accepted",
             Self::Hierarchy
             | Self::HierarchyRequest
             | Self::HierarchyFourier
@@ -83,7 +86,8 @@ impl Mode {
             | Self::HierarchyFourier
             | Self::Instrument
             | Self::QpeInstrument => scope != Scope::Caller,
-            Self::EngineeringPure
+            Self::CarrierPure
+            | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
             | Self::EngineeringOpenQasm => scope == Scope::Execution,
@@ -235,6 +239,7 @@ mod tests {
         for mode in [
             Mode::Ordinary,
             Mode::Contract,
+            Mode::CarrierPure,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
             Mode::HierarchyFourier,
@@ -250,7 +255,8 @@ mod tests {
             assert_eq!(Mode::parse(mode.argument()).unwrap(), mode);
             let scope = if matches!(
                 mode,
-                Mode::EngineeringPure
+                Mode::CarrierPure
+                    | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument
                     | Mode::EngineeringOpenQasm

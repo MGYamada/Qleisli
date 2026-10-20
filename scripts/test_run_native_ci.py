@@ -68,8 +68,13 @@ class NativeCI(unittest.TestCase):
 
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
-        self.assertEqual(len(tasks), 72)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 112)
+        self.assertEqual(len(tasks), 73)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 113)
+        carrier = next(task for task in tasks if task['id'] == 'finite-carrier-pure')
+        self.assertEqual(carrier['commands'], [
+            ['cargo', '+1.98.1', 'test', '--lib', 'native::carrier', '--', '--include-ignored'],
+        ])
+        self.assertEqual(carrier['env'], {'QLEISLI_KERNEL': 'lean-kernel/.lake/build/bin/qleisli-kernel'})
         paths = next(task for task in tasks if task['id'] == 'native-paths')
         self.assertEqual(paths['commands'], [
             ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--bin', 'qleisli'],
@@ -108,12 +113,12 @@ class NativeCI(unittest.TestCase):
             ["cargo", "+1.98.1", "test", "--test", "sized_review_dialects", "native", "--", "--include-ignored"],
             ["cargo", "+1.98.1", "test", "--lib", "native_named_qpe", "--", "--include-ignored"],
         ]
-        actual = [c for task in tasks if task['id'] not in {'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm'}
+        actual = [c for task in tasks if task['id'] not in {'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm', 'finite-carrier-pure'}
                   for c in task["commands"] if "--include-ignored" in c]
         # native-acceptance already used include-ignored before this migration.
         actual = [c for c in actual if "native_acceptance" not in c]
         self.assertEqual(sorted(actual), sorted(migrated))
-        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance", "execution-view-encoding", "engineering-pure", "engineering-instrument", "engineering-pure-tensor", "engineering-openqasm"}]
+        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance", "execution-view-encoding", "engineering-pure", "engineering-instrument", "engineering-pure-tensor", "engineering-openqasm", "finite-carrier-pure"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]

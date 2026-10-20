@@ -1,5 +1,6 @@
 import QleisliKernel
 import QleisliKernel.Qirf.ControlAccess
+import Protocol.NativeContext.Bindings
 
 /-! Pure kernel regressions. Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
@@ -1114,3 +1115,55 @@ example : ((Qirf.Carrier.ownerCode stolen).run 2000000).1.isOk = false :=
 #print axioms Qirf.Carrier.readOwners_conditions
 #print axioms Qirf.Carrier.check_postcondition
 end CarrierBodyExamples
+
+namespace CarrierSourceExamples
+open Semantics.FiniteCarrier
+
+def text := "// enum Tri { Wrong }\npub enum Tri { A, B, C, }\n/* struct Box { wrong: Bit } */\npub struct Box { pub tag: Tri, flag: Bit }\nstruct Empty {}\nclassical fn f(x: Bit) -> Bit { x }"
+def sources : SourceTypes.Sources := #[("labels",text)]
+def tri : Basis := [.enumeration ⟨"labels","Tri",text⟩ ["A","B","C"]]
+def boxType : Basis := .record ⟨"labels","Box",text⟩ ["tag","flag"] :: tri ++ [.bit]
+def value {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+def refused {α : Type} (action : Finite.WorkM α) := !(value action).isOk
+
+example : value (SourceTypes.check sources tri) = .ok () := by decide +kernel
+example : value (SourceTypes.check sources boxType) = .ok () := by decide +kernel
+example : value (SourceTypes.check sources [.record ⟨"labels","Empty",text⟩ []]) = .ok () := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text⟩ ["A","C","B"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text⟩ ["A","B","C","D"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"other","Tri",text⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","f",text⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text ++ " "⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources (.record ⟨"labels","Box",text⟩ ["flag","tag"] :: [.bit] ++ tri)) := by decide +kernel
+example : refused (SourceTypes.check sources (.record ⟨"labels","Box",text⟩ ["tag","flag"] :: [.bits 2,.bit])) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",text),("labels",text)] tri) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",text ++ "\nenum Tri { D }")] tri) := by decide +kernel
+
+def nested := "pub struct Pair { flags: (Bit, Bits<0>), tag: labels::Tri }"
+def nestedType : Basis := [.record ⟨"main","Pair",nested⟩ ["flags","tag"],.pair,.bit,.bits 0] ++ tri
+example : value (SourceTypes.check (sources.push ("main",nested)) nestedType) = .ok () := by decide +kernel
+example : value (SourceTypes.literalWidth "0006") = .ok 6 := by decide
+example : value (SourceTypes.literalWidth "0007") = .error .limit := by decide
+example : value (SourceTypes.literalWidth "0x") = .error .request := by decide
+
+def recursive := "struct Loop { again: Loop }"
+example : refused (SourceTypes.check #[("main",recursive)]
+    [.record ⟨"main","Loop",recursive⟩ ["again"],.unit]) := by decide +kernel
+def imported := "use labels::{Tri}; struct Box { tag: Tri }"
+example : refused (SourceTypes.check (sources.push ("main",imported))
+    (.record ⟨"main","Box",imported⟩ ["tag"] :: tri)) := by decide +kernel
+example : (SourceTypes.lex "/* enum X {} /* nested */ */ enum Y { A }").isOk := by decide
+example : !(SourceTypes.lex "/* unfinished").isOk := by decide
+example : !(SourceTypes.lex "enum X { A }\r").isOk := by decide
+example : (SourceTypes.lex "enum X { A }\r\n").isOk := by decide
+example : (SourceTypes.lex "// enum X { A }\nenum Y { B }") =
+    .ok ["enum","Y","{","B","}"] := by decide
+
+end CarrierSourceExamples
+
+#print axioms SourceTypes.nominal_original
+#print axioms SourceTypes.check_original_declarations
+#print axioms Protocol.Carrier.check_binding
+#print axioms Protocol.ExecutionView.CheckedCarrier.check_binding
+#print axioms Protocol.ExecutionView.CheckedCarrier.Binding.root_safe
+#print axioms Protocol.NativeContext.run_carrier_binding

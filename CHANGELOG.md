@@ -13,8 +13,8 @@ development milestones from the scope of their evidence.
   forests, logical cardinalities and retained public effects. Reject code
   leakage, phase/axis/dependency faults, false Unitary labels and hidden
   observation; retain zero-width owners. Preserve first compile/audit failures.
-  Ordinary ADT values/match, source preservation and native typed-interface transport
-  and qmatch remain unfinished; no native mode or public language form is enabled.
+  Ordinary ADT values/match, source preservation, full source/native integration
+  and qmatch remain unfinished; no executable source ADT form is enabled.
   Retain fieldless enum and named-record declaration syntax, member visibility,
   qualified type paths, spans and documentation in the common AST. Reserve
   `enum`/`struct`; explicitly reject production source containing these parsed
@@ -32,7 +32,16 @@ development milestones from the scope of their evidence.
   Retain field type/Nat-helper occurrences and traverse their original type,
   function and reexport sources during provenance collection. Refuse stale
   source/dependency substitutions. Keep retained type maps thread safe with Arc;
-  this metadata preparation enables no typed native handle or source execution.
+  common source preparation does not yet reach a typed native handle or execution.
+  Add the internal versioned `finite-carrier-pure-v1` native request: independently
+  reconstruct direct nominal declarations from original source, then check the
+  original QIRF dependencies/body and exact code equations. Compare the actual
+  retained graph, both typed owner forests and logical matrix through QDV1 before
+  constructing a private handle. Preserve public effects and zero-width owners;
+  reject stale views, declaration/member substitutions, leakage, phase/axis faults,
+  false pure labels and hidden observation. Alias/static-expression readers and
+  ordinary source execution remain pending; no inverse/control or new guarantee
+  is granted by this raw pure component.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

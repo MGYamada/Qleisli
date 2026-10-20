@@ -7,6 +7,14 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Protocol.NativeContext
 open ExecutionView
 
+theorem run_carrier_binding (product : String) (bytes : ByteArray)
+    (decision : Decision .carrierPure) (work left : Nat)
+    (ok : (run .carrierPure product bytes).run work = (.ok decision,left)) :
+    ∃ input, Packet.read bytes = .ok input ∧ input.scope = .execution ∧
+      Nonempty (CheckedCarrier.Binding input.original input.graph decision.value work left) := by
+  obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
+  exact CheckedCarrier.run_binding bytes decision.value work left checked
+
 theorem run_ordinary_root_safe (product : String) (bytes : ByteArray)
     (decision : Decision .ordinary) (work left : Nat)
     (ok : (run .ordinary product bytes).run work = (.ok decision,left)) :

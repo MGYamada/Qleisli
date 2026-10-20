@@ -20,6 +20,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/dependencies-index.json".
 # Dependency checks: "tests/fixtures/authoring_sessions/finite-adts-v030/dependencies-validation.json".
 # Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/validation.json".
+# Native history: "tests/fixtures/authoring_sessions/finite-adts-v030/native-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/native-index.json".
+# Native checks: "tests/fixtures/authoring_sessions/finite-adts-v030/native-validation.json".
 import hashlib
 import io
 import json
@@ -270,6 +273,50 @@ class FirstNominalDependencies(unittest.TestCase):
         self.assertIn(b'send_sync::<ParsedProgram>()', caller)
         self.assertIn(b'std::thread::spawn(move ||', caller)
         self.assertIn(b'Rc<BTreeMap', self.data['send-sync/check.stderr'])
+
+
+class FirstCarrierNative(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('native-index.json', 'native-first.tar.xz',
+            '9bb7854efc3166cf4cfcb1e4f847dbc6eab7417fdd3608b150a9ce3e9ef12ddb',
+            717976, '8598d9e9caf991c6a1464afeae13cb4551ad9607c0ac862ed5694a0bae33a18f', 38_450_889)
+
+    def test_first_source_numeric_and_transport_errors_remain_failed_attempts(self):
+        self.assertEqual(len(self.data), 408)
+        first = json.loads(self.data['sources-first-build/report.json'])
+        self.assertFalse(first['pass'])
+        self.assertTrue(first['source_unchanged'])
+        self.assertIn(b'unexpected token', self.data['sources-first-build/stdout'])
+        self.assertIn(b'isError', self.data['sources-first-examples/stdout'])
+        self.assertIn(b'maximum recursion depth', self.data['nested-rfl-probe/stdout'])
+        self.assertEqual(self.data['nat-reduction/stdout'].count(b'maximum number of heartbeats'), 2)
+        self.assertIn(b'error[E0308]', self.data['native-first-rust-compile/stderr'])
+
+    def test_actual_final_compilers_native_scope_and_protected_outputs_are_separate(self):
+        for stage in ['native-final-normal-rust', 'native-final-msrv-rust']:
+            report = json.loads(self.data[stage + '/report.json'])
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['source_and_kernel_unchanged'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertIn('17 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+        lean = json.loads(self.data['native-v2-lean-validation/report.json'])
+        self.assertTrue(lean['pass'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertTrue(all(row['exit_code'] == 0 for row in lean['commands']))
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(row['identical_recorded_output'] for row in lean['output_comparisons']))
+
+    def test_exact_duplicated_extraction_uses_its_existing_canonical_fixture(self):
+        import gzip
+        reference = json.loads(self.data['native-v2-lean-validation/extract-stdout-reference.json'])
+        packed = (ROOT / reference['canonical_gzip']).read_bytes()
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), reference['gzip_sha256'])
+        actual = gzip.decompress(packed)
+        self.assertEqual(len(actual), reference['observed_stdout_bytes'])
+        self.assertEqual(hashlib.sha256(actual).hexdigest(), reference['observed_stdout_sha256'])
+        self.assertTrue(reference['byte_identical_to_decompressed_canonical'])
 
 
 if __name__ == '__main__':

@@ -5,9 +5,11 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod binding;
+mod carrier;
 mod reporting;
 mod runtime;
 
+pub use carrier::CarrierChecked;
 pub(crate) use reporting::DecisionLog;
 pub use reporting::NativeDecisionSummary;
 

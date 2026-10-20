@@ -2,6 +2,7 @@ import Protocol.ExecutionView.Native
 import Protocol.ExecutionView.CheckedEngineeringPure
 import Protocol.ExecutionView.CheckedEngineeringPureTensor
 import Protocol.ExecutionView.CheckedEngineeringOpenQasm
+import Protocol.ExecutionView.CheckedCarrier
 import Protocol.Product
 
 /-! One pure native dispatch and response projection. Context is validated from
@@ -13,7 +14,7 @@ open ExecutionView Gate
 inductive Mode where
   | ordinary | contract | hierarchy (mode : CheckedHierarchy.Modes.Mode)
   | engineeringPure | engineeringPureTensor | engineeringInstrument | engineeringOpenQasm
-  | readout | preparation
+  | readout | preparation | carrierPure
   deriving BEq, DecidableEq, Repr
 
 def Mode.name : Mode → String
@@ -30,6 +31,7 @@ def Mode.name : Mode → String
   | .engineeringOpenQasm => "--engineering-openqasm-check"
   | .readout => "--readout-check"
   | .preparation => "--preparation-check"
+  | .carrierPure => "--carrier-pure-check"
 
 def Mode.parse : String → Option Mode
   | "--qirf-native" => some .ordinary
@@ -45,6 +47,7 @@ def Mode.parse : String → Option Mode
   | "--engineering-openqasm-check" => some .engineeringOpenQasm
   | "--readout-check" => some .readout
   | "--preparation-check" => some .preparation
+  | "--carrier-pure-check" => some .carrierPure
   | _ => none
 
 theorem Mode.parse_name (mode : Mode) : Mode.parse mode.name = some mode := by
@@ -70,13 +73,14 @@ def Value : Mode → Type
   | .engineeringOpenQasm => CheckedEngineeringOpenQasm.Checked
   | .readout => Readout
   | .preparation => Preparation
+  | .carrierPure => CheckedCarrier.Checked
 
 def scope : (mode : Mode) → Value mode → Packet.Scope
   | .ordinary, value => value.scope
   | .contract, value => value.1
   | .hierarchy _, value => value.1
   | .engineeringPure, _ | .engineeringPureTensor, _
-  | .engineeringInstrument, _ | .engineeringOpenQasm, _ => .execution
+  | .engineeringInstrument, _ | .engineeringOpenQasm, _ | .carrierPure, _ => .execution
   | .readout, _ | .preparation, _ => .inspection
 
 private def parseComponent {α : Type} (result : Except Protocol.Error α) : CheckM α :=
@@ -114,6 +118,7 @@ def check : (mode : Mode) → ByteArray → CheckM (Value mode)
   | .engineeringOpenQasm => CheckedEngineeringOpenQasm.run
   | .readout => readout
   | .preparation => preparation
+  | .carrierPure => CheckedCarrier.run
 
 private theorem mapError_original {α ε δ : Type} (input : Except ε α) (mapping : ε → δ)
     (value : α) (ok : input.mapError mapping = .ok value) : input = .ok value := by
@@ -218,7 +223,7 @@ theorem run_edition (mode : Mode) (requestedProduct : String) (bytes : ByteArray
   exact Packet.read_edition bytes input parsed
 
 def Mode.status : Mode → String
-  | .ordinary | .contract => "accepted"
+  | .ordinary | .contract | .carrierPure => "accepted"
   | .hierarchy _ => "pending"
   | .engineeringPure | .engineeringPureTensor
   | .engineeringInstrument | .engineeringOpenQasm => "engineering-checked"
@@ -240,6 +245,7 @@ def payload : (mode : Mode) → Value mode → Nat → List String
   | .engineeringInstrument, _, work | .engineeringOpenQasm, _, work => [toString work]
   | .readout, value, _ => [toString value.checked.visits]
   | .preparation, value, _ => [toString value.checked.visits]
+  | .carrierPure, _, work => [toString work,"1"]
 
 def successLines (mode : Mode) (decision : Decision mode) (work : Nat) : List String :=
   ["qleisli.native-result 3",mode.status,toString decision.edition.code,productVersion,

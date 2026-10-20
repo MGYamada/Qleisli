@@ -141,3 +141,24 @@ Both all-target compile; normal strict lint/format pass. Host-selected binding,
 selected typed native provenance and all public typed execution remain pending.
 All8 #64 checkboxes stay open; no new maximum quantum case, proof replay,
 companion rebuild, hosted review, guarantee admission or release is claimed.
+
+
+The [native connection history](native-first.tar.xz), [index](native-index.json)
+and [validation](native-validation.json) retain 408 inert records for the bounded
+raw pure profile. First declaration/protocol/port-shape errors, the failed
+Except helper and concrete reduction attempts remain failed observations.
+A separate probe isolates the cost of the general string-to-Nat reader. The
+repair reads bounded decimal widths directly, preserves leading zeroes and the
+original complete nested-source test, and raises no operational or proof limit.
+The Raw extraction stdout is byte-identical to the already retained canonical
+gzip fixture; its exact reference avoids duplicating that large output.
+
+Fresh shared builds/audits, complete kernel Tests, kernel/Main replay and fixed
+protected reviews/transports/extraction pass. Sequential Rust 1.98.1/MSRV 1.85
+all-target checks and 17 native boundary tests each pass with zero ignored or
+conditional native skips; normal strict lint and format checks pass. The new
+native request compares retained owner trees, public effects and exact logical
+matrices with the original graph and source declarations. New quantum cases use
+at most two physical bits. Imported/static type expressions, host-selected type
+roots, ordinary constructors/match, coherent qmatch, source execution and review
+remain pending. No new guarantee or Issue completion follows from this raw mode.

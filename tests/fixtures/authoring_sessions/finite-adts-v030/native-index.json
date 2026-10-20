@@ -1,0 +1,2052 @@
+{
+  "format": "qleisli.carrier-native-first-history",
+  "version": 1,
+  "archive": {
+    "bytes": 717976,
+    "sha256": "8598d9e9caf991c6a1464afeae13cb4551ad9607c0ac862ed5694a0bae33a18f",
+    "expanded_file_bytes": 38450889
+  },
+  "scope": "First source-declaration/native implementations, actual failures, original input-bearing native logs and final checks. Complete first source/Rust and final proof/normal/MSRV reports are retained; other local reports have exact hashes and compact observations. The 8,186,631-byte Raw extraction stdout references its already-retained byte-identical canonical gzip fixture. Nothing is executed. A refresh-wrapper mismatch is explicitly a tool-output transcription, not a raw log. Raw pure scope remains separate from ordinary source ADTs/qmatch and broad guarantees.",
+  "records": {
+    "authored-inputs/build-and-focus-carrier-v3.py.txt": {
+      "bytes": 298,
+      "sha256": "628fc264dda934004104225d56c73d13bbae155a2b1790cc7446ee2278ee3710",
+      "original_mode": 420
+    },
+    "authored-inputs/diagnose-carrier-source-first.lean.txt": {
+      "bytes": 1292,
+      "sha256": "1e0683b85779a8232d169b41f8dd899427c422fd1f31c8573eaff87cfed3f379",
+      "original_mode": 420
+    },
+    "authored-inputs/focused-carrier-sources-v2.lean.txt": {
+      "bytes": 3288,
+      "sha256": "1c4ec09c767dbed834883b6723615499390293314af4a68e694be358d1ba9b35",
+      "original_mode": 420
+    },
+    "authored-inputs/focused-carrier-sources-v3.lean.txt": {
+      "bytes": 3404,
+      "sha256": "d889fb8cd429a903a5d6f232ae7fa2549f1c2de1383151051da8464cd6488d73",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-carrier-native-20261021.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-carrier-native-v1-20261021.py.txt": {
+      "bytes": 2193,
+      "sha256": "ffc12432a256a33fb45b078c2c9ff4d64c6305d0361ec476ed1a7ddd59f4b04c",
+      "original_mode": 420
+    },
+    "authored-inputs/probe-carrier-nat-reduction.lean.txt": {
+      "bytes": 94,
+      "sha256": "f465ba558ed4e98ec58c6d2a364ac5883f05909dc7db9a848e0792dbd4eba172",
+      "original_mode": 420
+    },
+    "authored-inputs/probe-carrier-qualifier-reduction.lean.txt": {
+      "bytes": 150,
+      "sha256": "11138083fa4a3bd0e5e363ce5569112272ee78481255c25149ed859b69bd317c",
+      "original_mode": 420
+    },
+    "authored-inputs/probe-nested-carrier-rfl.lean.txt": {
+      "bytes": 1103,
+      "sha256": "03eb9b4412a52876f0ab8755a5b89b57ef231228b726786e7162d8d669251403",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-carrier-native-evidence-20261021.py.txt": {
+      "bytes": 4390,
+      "sha256": "be1b2795d142e963beb5b61d503b1ae61b946a889c732da31ea0f546d330ed82",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-carrier-native-evidence-first-20261021.py.txt": {
+      "bytes": 4209,
+      "sha256": "b5068e75254283e1e7a18ff6d097a92315f215fdba2bad5d0ed74c02b6780f17",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-carrier-native-first-diagnostic-transcription.txt.txt": {
+      "bytes": 598,
+      "sha256": "bcf67ad9e79850cb28184dda4110c19121fcc7b257f90cec74e0a560c2cf09ac",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-lean-20261021.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-rust-20261021.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "nat-reduction/observation-summary.json": {
+      "bytes": 3717,
+      "sha256": "6db626714bdb46556ae6dbb2fce4f7df1244071ba7a7bbe183b6d060a9864930",
+      "original_mode": 420
+    },
+    "nat-reduction/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68858,
+      "sha256": "1e9a390b9ebca55290d3e76ac90f626bef118677e17d57b4f1d478ad842d71fb",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "nat-reduction/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "nat-reduction/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "nat-reduction/stdout": {
+      "bytes": 1488,
+      "sha256": "44e674789ed8e57c76d034bf2bc0fdd7ed06c98feb31db6ec96205882d017abc",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/check.stderr": {
+      "bytes": 120,
+      "sha256": "c129511d9ca4c5a6ccbd32e27990a8ef6b9fd1c5b2521c5779c344cf40321910",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/native.stdout": {
+      "bytes": 234207,
+      "sha256": "85629e0f19a4da3ec47bb6808aeef025aac45d6f0263b21d3a82db562b5e07e1",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/report.json": {
+      "bytes": 6825395,
+      "sha256": "ccdd9bd2ed3fc9b557bd9e0a8894d426789ff0306dd37ce4fe437897c6b67d11",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "native-final-msrv-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/check.stderr": {
+      "bytes": 120,
+      "sha256": "eda7a5f939b7f7a08935ba646329e0904da671c0b276a9079271c4292cb2dc34",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/lint.stderr": {
+      "bytes": 120,
+      "sha256": "15dee431295077bb0aab5dd3ba78df8025aa71268426cd00f4c6027b5ce85c99",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/lint.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/native.stdout": {
+      "bytes": 234206,
+      "sha256": "05c8e457bdb2ad8698d42da06e22af67c3b46a0d4d5bc5498d73560137f9cb58",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/report.json": {
+      "bytes": 6825720,
+      "sha256": "6e3d10206baaf25ada2f1fa3b491eb8bd8f68f3c932a038868872b1462c0b779",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "native-final-normal-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "native-first-build/observation-summary.json": {
+      "bytes": 2381,
+      "sha256": "5071c91d62f42f11081d3976f2e4e7b31c98d269b952d76ad28e4fe3d5d426b4",
+      "original_mode": 420
+    },
+    "native-first-build/observer.py.txt": {
+      "bytes": 2403,
+      "sha256": "5aa4ecd72ee468a0420baee62c8485521c43afceb47e218eb4b884c74ffc1818",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6872,
+      "sha256": "b2671dc1305a12c198da219aa4e875e87fd217ba4c90951bcbf4e91097b30a89",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 11446,
+      "sha256": "e6202349b723cfa077ad50ff7d18f04f95378f42bc15fbcf9c3ee33ad811670e",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-first-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "native-first-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "native-first-build/stdout": {
+      "bytes": 967,
+      "sha256": "4a4e890f09d92456fac50db39758dd23b380b7fbf35167acef4b809c0d0eb448",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/observation-summary.json": {
+      "bytes": 4168,
+      "sha256": "5a3b91f93a1b6384e11ca7a6cc860f0c0a4fd04f008e07e3beafc08fce76c2b3",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/observer.py.txt": {
+      "bytes": 5367,
+      "sha256": "11a19977cd84aa1ab29d4418d75cfc4bf94bb51f29f3bbc3b23485531c4a2d63",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/registry.json": {
+      "bytes": 8858,
+      "sha256": "309eb685a6c5eeac3a846d3499195314f8fe84021937f811e15374957991caf3",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/registry.stdout": {
+      "bytes": 332,
+      "sha256": "9d1a47a9165d47ba245370550509986bbcb4ae3cfccd0ce9a4ae14afcb77d6c2",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68745,
+      "sha256": "46b0f0dfca6052532fe2954ccb06cad71ee94602d4a024bfadf3b8c63c1201ab",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 16909,
+      "sha256": "1f2d0ea800d92bd0f8fc0bfb477a721c90a0d20aff1f9cfad72874950d9b5a44",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-first-lean-validation/tests.stdout": {
+      "bytes": 1355,
+      "sha256": "a4701fc0092bbb6eabf076c4c809512890468940ef088a519c87bef4c3a8c416",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/report.json": {
+      "bytes": 6822993,
+      "sha256": "05b801eb1fcbf9884e69e3ddb4279270282f6ee9dbad6dd38123faec0b046dad",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 11446,
+      "sha256": "e6202349b723cfa077ad50ff7d18f04f95378f42bc15fbcf9c3ee33ad811670e",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9445,
+      "sha256": "695ae9f2370c011983f8c570a3b8a9964f6ff09ffde45091253869c69643d479",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 11517,
+      "sha256": "cb1476bf15fec049005eeab11cb4d107c59413c5b239a9f11db08352799f66a9",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/stderr": {
+      "bytes": 1542,
+      "sha256": "b80c1aa475d4b6bf3612d201c6c3d9fafa1f3e05e081aff4aafc3a18a38c8644",
+      "original_mode": 420
+    },
+    "native-first-rust-compile/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/observation-summary.json": {
+      "bytes": 3987,
+      "sha256": "193e5e48c202cadf115db306dea225e678956ff65a0d433dafd93bb49896684b",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68858,
+      "sha256": "1e9a390b9ebca55290d3e76ac90f626bef118677e17d57b4f1d478ad842d71fb",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 17687,
+      "sha256": "00057415ac7ec879b1d1d5ac097d516bf368d8360bc9f277e1bd6f187ea72dd5",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-first-rust-tests/stdout": {
+      "bytes": 217599,
+      "sha256": "3b7aeb782d3e3ab60792190ce9f895e8ce1089d3dba7e0f13d178afd9dd92f11",
+      "original_mode": 420
+    },
+    "native-v2-build/observation-summary.json": {
+      "bytes": 3053,
+      "sha256": "6f02b3793eb0d7eec538816cebf0b514aa275b99b48ca419447256c27f037006",
+      "original_mode": 420
+    },
+    "native-v2-build/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 11446,
+      "sha256": "e6202349b723cfa077ad50ff7d18f04f95378f42bc15fbcf9c3ee33ad811670e",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9445,
+      "sha256": "695ae9f2370c011983f8c570a3b8a9964f6ff09ffde45091253869c69643d479",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-v2-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1877,
+      "sha256": "523a70f1fa82f2f8c46729fcccedcee3cad635cd91425c6ba9ba35a745fc5005",
+      "original_mode": 420
+    },
+    "native-v2-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-build/stdout": {
+      "bytes": 261,
+      "sha256": "250235e0bcd1c3e921fde86367489ae8bf43d0d8bb4526be7c956ca2b8da5378",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/basis.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/basis.stdout": {
+      "bytes": 483,
+      "sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/binding.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/binding.stdout": {
+      "bytes": 7982,
+      "sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/extract-stdout-reference.json": {
+      "bytes": 386,
+      "sha256": "2ab111166f665aadf6d1c02aa0788df0358a22ae65e59c7deca120d0aadf1ed5",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/extract.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/main-replay.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/main-replay.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/observer.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/raw.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/raw.stdout": {
+      "bytes": 612,
+      "sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/registry.json": {
+      "bytes": 7937,
+      "sha256": "1f65891a28b1505fbc52a2024d9dff315ca75f2b82ea1a6319cc8cf29559a09c",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/registry.stdout": {
+      "bytes": 332,
+      "sha256": "852de52d3ae3464b8ac78020247db406abc4111432b08252435c29d4b57b4957",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/report.json": {
+      "bytes": 6826075,
+      "sha256": "40d4dbc192a69eec97a2f30bd40537af5d8ae63e12323e174f1ff1a4547a0c70",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/review.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/review.stdout": {
+      "bytes": 4692,
+      "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13957,
+      "sha256": "3d91de59c4af0e9983fa4b5a8f6b5ada5b6ca6165efc16ec302fc74ebfc1762c",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68974,
+      "sha256": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "native-v2-lean-validation/tests.stdout": {
+      "bytes": 1145,
+      "sha256": "d6d8a0ed7c64f8e6a05a6a6f23f8a2af82e39e94035a0bbfbde179cf8786577c",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/observation-summary.json": {
+      "bytes": 3660,
+      "sha256": "40ca6608b91e976b7832f2e79641b1c8d5a6ebe65f2f5ac35f97dee5857826e3",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 11446,
+      "sha256": "e6202349b723cfa077ad50ff7d18f04f95378f42bc15fbcf9c3ee33ad811670e",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 16914,
+      "sha256": "7785851407a97e39ec34812e34af62bad7ced2e783a1966ff039c9e01354e5ef",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/stderr": {
+      "bytes": 120,
+      "sha256": "c84a2005f10ae59a438d7a2975437d797f85516a999832e7d7583fc9dbea0e2c",
+      "original_mode": 420
+    },
+    "native-v2-rust-compile/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/observation-summary.json": {
+      "bytes": 3742,
+      "sha256": "a4211b3298025a184159db192e330ce996cefe66ae4ed8c38cc86dce0a2f7494",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68745,
+      "sha256": "46b0f0dfca6052532fe2954ccb06cad71ee94602d4a024bfadf3b8c63c1201ab",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 16909,
+      "sha256": "1f2d0ea800d92bd0f8fc0bfb477a721c90a0d20aff1f9cfad72874950d9b5a44",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "nested-rfl-probe/stdout": {
+      "bytes": 1424,
+      "sha256": "4d578319dcd56d01c9ad71fe5eca8f31087bac97ae5c7b1766be3520ccbfe257",
+      "original_mode": 420
+    },
+    "qualifier-reduction/observation-summary.json": {
+      "bytes": 3745,
+      "sha256": "90d7b51ee019bdca559cc42b43ba6498503fc871840fdbe0893d7534573b6c45",
+      "original_mode": 420
+    },
+    "qualifier-reduction/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68858,
+      "sha256": "1e9a390b9ebca55290d3e76ac90f626bef118677e17d57b4f1d478ad842d71fb",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "qualifier-reduction/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "qualifier-reduction/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "qualifier-reduction/stdout": {
+      "bytes": 10,
+      "sha256": "21d91041c5d1a59661f8936571ee5c87e96f6f0c7a532b52ec17c5b9bea8220b",
+      "original_mode": 420
+    },
+    "sources-first-build/report.json": {
+      "bytes": 6819837,
+      "sha256": "ff251564e1bd729214e97fd58a4df28c3b90e55389dfe00357afdfa5cf3cd573",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9674,
+      "sha256": "e0b030674a2db0a32568f5b5d5665450048368e423250f875730d140f2822100",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-first-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68376,
+      "sha256": "e3ebc05800a0ad3c91f5843e57d53b98a03005414720937dbee6f8b4097003cf",
+      "original_mode": 420
+    },
+    "sources-first-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "sources-first-build/stdout": {
+      "bytes": 4908,
+      "sha256": "941e2eac281020fcde39456a002a61831e6e91ea85c29752db5fc799fd946664",
+      "original_mode": 420
+    },
+    "sources-first-examples/observation-summary.json": {
+      "bytes": 1994,
+      "sha256": "b7b9d3ec2acd6381c8aadeb17251f38da01ef2334f4e909b71ec5fa68861cb6c",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9709,
+      "sha256": "9fe8e0d2dda2eb94426b304f33c1db439ee32f639739daee4a0caa9eb3871ec8",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-first-examples/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68376,
+      "sha256": "e3ebc05800a0ad3c91f5843e57d53b98a03005414720937dbee6f8b4097003cf",
+      "original_mode": 420
+    },
+    "sources-first-examples/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "sources-first-examples/stdout": {
+      "bytes": 8201,
+      "sha256": "0c424a8d3ad7bf657aea51f7a866f4ec230ae7c61d956e7466a682cc108405db",
+      "original_mode": 420
+    },
+    "sources-focused-v2/observation-summary.json": {
+      "bytes": 3753,
+      "sha256": "1d7cfb8a0269e07447a52865aac082f530ea5c134665115730dc36288f659a9b",
+      "original_mode": 420
+    },
+    "sources-focused-v2/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13429,
+      "sha256": "e4a153f6a68ec41571584ddeca44ec690a06b01da5ab453c4c58a0a717b386ed",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68858,
+      "sha256": "1e9a390b9ebca55290d3e76ac90f626bef118677e17d57b4f1d478ad842d71fb",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "sources-focused-v2/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "sources-focused-v2/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "sources-focused-v2/stdout": {
+      "bytes": 870,
+      "sha256": "c79f3bdda9d5e511e94a9be5269c19a42b256863a618af256ac8a22b69126448",
+      "original_mode": 420
+    },
+    "sources-focused-v3/observation-summary.json": {
+      "bytes": 3696,
+      "sha256": "6545dcca8b6ca18ca2d66003b94abb1ed6c3ce435985aeac591d943e22d50d4a",
+      "original_mode": 420
+    },
+    "sources-focused-v3/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13957,
+      "sha256": "3d91de59c4af0e9983fa4b5a8f6b5ada5b6ca6165efc16ec302fc74ebfc1762c",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68974,
+      "sha256": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "sources-focused-v3/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "sources-focused-v3/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "sources-focused-v3/stdout": {
+      "bytes": 605,
+      "sha256": "66d66aeed4375797b24e451acba77f3ea0fff275c9516a51867bab861ce88d40",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/observation-summary.json": {
+      "bytes": 2420,
+      "sha256": "914c76d85cd06e0c61d16eb25038cc95840aa7f6d640bd25f90e49558c5e32b8",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/observer.py.txt": {
+      "bytes": 2403,
+      "sha256": "5aa4ecd72ee468a0420baee62c8485521c43afceb47e218eb4b884c74ffc1818",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9709,
+      "sha256": "9fe8e0d2dda2eb94426b304f33c1db439ee32f639739daee4a0caa9eb3871ec8",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "sources-nested-diagnostic/stdout": {
+      "bytes": 1299,
+      "sha256": "10cb4bd8dfc819b8eb6e3a6e145203074960bd059e1a1ce4aab4a7f8d64f3c36",
+      "original_mode": 420
+    },
+    "sources-v2-build/observation-summary.json": {
+      "bytes": 1928,
+      "sha256": "36422d3bcba7762544562db105d0539e6eef9ec0d5a48d5f01bf2c51c1c5f450",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9698,
+      "sha256": "5fcc8e6cc413651f53cf4055c848f70457b84686ede4a21213bfc430ff1065f7",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-v2-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68376,
+      "sha256": "e3ebc05800a0ad3c91f5843e57d53b98a03005414720937dbee6f8b4097003cf",
+      "original_mode": 420
+    },
+    "sources-v2-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "sources-v2-build/stdout": {
+      "bytes": 812,
+      "sha256": "7ca4122826552c6acb1075d6cdadb2fab222480ef7ba8cfd8f7114b8b323e25d",
+      "original_mode": 420
+    },
+    "sources-v3-build/observation-summary.json": {
+      "bytes": 1928,
+      "sha256": "bcccc3663205f04dc4f93375816e4431755cb50031877e3107dc89260ef1bb8f",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9714,
+      "sha256": "6f04fc2354d4aefe6f785904516776ecea6f43039d143ad2d9782a536ca3bdd3",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-v3-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68376,
+      "sha256": "e3ebc05800a0ad3c91f5843e57d53b98a03005414720937dbee6f8b4097003cf",
+      "original_mode": 420
+    },
+    "sources-v3-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "sources-v3-build/stdout": {
+      "bytes": 812,
+      "sha256": "04d7917cb38010bece7883c75a71f6b62bbe0dc4a753963a7fc1f5725b5a481b",
+      "original_mode": 420
+    },
+    "sources-v4-build/observation-summary.json": {
+      "bytes": 1927,
+      "sha256": "5a3037c02cdca20539dd7ad488a9408fe5814cc318d72948bab9aecb121d450b",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 9709,
+      "sha256": "9fe8e0d2dda2eb94426b304f33c1db439ee32f639739daee4a0caa9eb3871ec8",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-v4-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68376,
+      "sha256": "e3ebc05800a0ad3c91f5843e57d53b98a03005414720937dbee6f8b4097003cf",
+      "original_mode": 420
+    },
+    "sources-v4-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "sources-v4-build/stdout": {
+      "bytes": 92,
+      "sha256": "1b0243cc3f7676567f61f1dcc1cc2f766a18678b330583ff097048115b081616",
+      "original_mode": 420
+    },
+    "sources-v5-build/observation-summary.json": {
+      "bytes": 1982,
+      "sha256": "3796188927a66ff42f9578d78deb9ec88f31a82c6ece5827676150c93f855a26",
+      "original_mode": 420
+    },
+    "sources-v5-build/observer.py.txt": {
+      "bytes": 2403,
+      "sha256": "5aa4ecd72ee468a0420baee62c8485521c43afceb47e218eb4b884c74ffc1818",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13131,
+      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 5860,
+      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 11329,
+      "sha256": "dca28326405fa6bb3c34c4427c448d6aeb99ff9ece72d3d4a72310bfeeff6f92",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "sources-v5-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68370,
+      "sha256": "63df9d6765457d53d791c86038c8bb7e2b451b9b5c0d656f6d234afde7ab0e1a",
+      "original_mode": 420
+    },
+    "sources-v5-build/stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "sources-v5-build/stdout": {
+      "bytes": 1114,
+      "sha256": "33ccd10a940c1561d030ee31538fe981aa617b3772cb14ecd3a118f03b77eb65",
+      "original_mode": 420
+    }
+  }
+}
