@@ -1,0 +1,135 @@
+{
+  "format": "qleisli.field-natural-affine-validation",
+  "version": 1,
+  "base_commit": "f36c051fbd42242c326d720ea55415dafb01145b",
+  "source_files": {
+    "lean-kernel/QleisliKernel/Semantics/SourceAffine.lean": "077a08663ad8a0cf0979ea2722c85aefd0351d40deef2d80e3cb72c24a9aa397",
+    "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean": "d8ef67ce3a3219fa8f417c187d4be059f0c468845cb8fc475f52600252bbd9c7",
+    "lean-kernel/QleisliKernel/SourceTypes.lean": "51950be2f84b4e6f9a818c3ec47c5e0627431fa62d7d9f024c4bbbeff42a8d58",
+    "lean-kernel/QleisliKernel/SourceTypes/Declarations.lean": "fb5c4ac609fcd3aa08fbd343d9556b915b6a704cfe16cae87e08b2f7a1a265ee",
+    "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+    "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean": "a85bffb10efde608e90027edeff37fb4c0877f3b7ba454547b4ab1b9b9bd1f50",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalConstraints.lean": "9d1ecd5f0f5210860b02ac7d5998281e7a3637c76e829740827a7fa2ad689f48",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalHeaders.lean": "765eb6b98fd3eebc5ce52b64d2a23dc59b581ab041de29423bbf28a4327a8339",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalPredicates.lean": "e9a1d6674c944927e374a21e2da61b8bebce3c3af222a75fcb667b3e40ceb96a",
+    "lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+    "lean-kernel/Tests.lean": "8e8319fc2c91b92fb8ce0ac29a82530a2c37067242d34ad52aefa7bea48e8d1f"
+  },
+  "observations": [
+    {
+      "stage": "adt64-field-affine-first-build",
+      "pass": false,
+      "full_report_sha256": "4541b8f91b0826fd4c533c262f283c86b002cc075bef3c1d4efdc49a3fbbc008"
+    },
+    {
+      "stage": "adt64-field-affine-v2-build",
+      "pass": true,
+      "full_report_sha256": "f9008b727db6cde2311d4ef75cddd3e66cb2c6756132c2ae2fb69aecd137ae88"
+    },
+    {
+      "stage": "adt64-field-affine-first-operation-proofs",
+      "pass": false,
+      "full_report_sha256": "04d23d7b996f866f0dd779c8c85789c022ec7a2de74c07633f744f7c391eef21"
+    },
+    {
+      "stage": "adt64-field-affine-operation-proofs-v2",
+      "pass": true,
+      "full_report_sha256": "6548c2c292363694e67ab0e9662a1ee66fe9191d785a8b4c3fd46572d5fd81d7"
+    },
+    {
+      "stage": "adt64-field-affine-first-constraints-build",
+      "pass": false,
+      "full_report_sha256": "4f5bd0f8ec8c4bb9fa3c379c78ff42bcb628895e5af57b72efba6bd285881d3c"
+    },
+    {
+      "stage": "adt64-field-affine-constraints-v2-build",
+      "pass": false,
+      "full_report_sha256": "6ee59f52e54756e139185b64a49edbbe1ff6652a05c8ec34b48cbe8dbb458bfc"
+    },
+    {
+      "stage": "adt64-field-affine-constraints-v3-build",
+      "pass": false,
+      "full_report_sha256": "f29f8e65fa4745dd42c0411dc702db3d707bbdfc02d5664cb461e59472cf7c42"
+    },
+    {
+      "stage": "adt64-field-affine-constraints-v4-build",
+      "pass": true,
+      "full_report_sha256": "42578dcc034a6788626b6071a37383401a61d5657eebcbc0df1e0ebce29282d1"
+    },
+    {
+      "stage": "adt64-field-affine-first-checks",
+      "pass": false,
+      "full_report_sha256": "363dca796da7ba819245609bd7867cfff284803093cfeb27f1ccd6b6eca19dd1"
+    },
+    {
+      "stage": "adt64-field-affine-checks-v2",
+      "pass": false,
+      "full_report_sha256": "63e2f407b34059617967d1acc6ce370fe6acded6489890de74bf0503f147a16b"
+    },
+    {
+      "stage": "adt64-field-affine-checks-v3",
+      "pass": true,
+      "full_report_sha256": "2c6ed2073a0df3e771afc7a1262d5888627e552b5ff9f5435467ae6588f89c76"
+    },
+    {
+      "stage": "adt64-field-predicates-first-build",
+      "pass": false,
+      "full_report_sha256": "f549a61f960bf2ca49c00e3dbceed7003ecda8b594783fa73f6f0a68c1ebe9e4"
+    },
+    {
+      "stage": "adt64-field-predicates-build-v2",
+      "pass": false,
+      "full_report_sha256": "1061d8cea030c3a09668074f713ae2406796d820d32644aef337bf04fc78a034"
+    },
+    {
+      "stage": "adt64-field-predicates-build-v3",
+      "pass": true,
+      "full_report_sha256": "38d94810e14fd7ab4e42f657f172348f1c3eea08b42cb4864e8757aa4ba6ef9c"
+    },
+    {
+      "stage": "adt64-field-helper-declarations-first-build",
+      "pass": false,
+      "full_report_sha256": "737f8aa7c5c2be07f4399bed5ee6cc16878e82d84560919f1c76177ae97f0ab9"
+    },
+    {
+      "stage": "adt64-field-helper-headers-first-build",
+      "pass": true,
+      "full_report_sha256": "5c2705be4fdb5cb433f73e03faf4bf53fc653dc044c9aadbd8789aac3e58d61e"
+    },
+    {
+      "stage": "adt64-field-predicates-headers-first-checks",
+      "pass": true,
+      "full_report_sha256": "d2c1346d8c78dd57638cbbd90548d09095bb7bc5d3441efbdc067675e419923c"
+    },
+    {
+      "stage": "adt64-field-affine-complete-build",
+      "pass": true,
+      "full_report_sha256": "679f1a0a1105f63e68ca558bf326ed2ed2eafd2e4c747c254668e10abc06fe07"
+    },
+    {
+      "stage": "adt64-field-affine-generated-audit",
+      "pass": true,
+      "full_report_sha256": "4bafaf76362baba3e3d1d34dba1cb4611e4d95385d5cdfff25d17c89a7fa6a9c"
+    },
+    {
+      "stage": "adt64-field-affine-helpers-lean-validation",
+      "pass": true,
+      "full_report_sha256": "b9e4dcf1025f97fcf359f54c7d69bb3f8683711ff072f0f76d9ffe0c6cdf23e4"
+    },
+    {
+      "stage": "adt64-field-affine-normal-rust",
+      "pass": true,
+      "full_report_sha256": "ecce3ab19275f876b10c52297586be9efa61481dcd78e621bd846ccb99bc4d88"
+    },
+    {
+      "stage": "adt64-field-affine-msrv-rust",
+      "pass": true,
+      "full_report_sha256": "8c77cbf1aff7efc73951e115b934a54d75781d9e193da73a1586d39f5a135735"
+    }
+  ],
+  "current_lean_source": "f3c0b764047caa575d7f704e6d85f893f233e3f5df79098ff6fa8e89c2d245c1",
+  "current_evidence": "8ac1a420495e97a1b1d2b56780c44cc7e62563764bbd31a78fa6fefe6587c11f",
+  "selected_kernel": "6872ed8d062db0552f6c53fe2c4a65941003c3891505c2480f9c9f347ffc28c2",
+  "scope": "Internal signed-i128 affine operations prove exact integer meanings; bounded elimination returns proof over original constraints. Six comparisons, disjunction/conjunction and caller implication carry proofs. Complete original provisional helper headers/bodies share canonical module/category/visibility resolution. 759 private/generated definitions pass compiled audit; complete Tests, shared builds/audits, fresh kernel/Main replay and six fixed protected outputs pass. Sequential normal1.98.1/MSRV1.85 all-target and19 existing native cases pass, zero ignored/conditional skips; normal strict lint/format pass. Generic helper/body normalization, original formal-frame interpretation, simultaneous substitution, all-unused-helper validation and source-carrier dispatch remain pending. Existing first14/28 native refusals remain reader barriers. No additional field acceptance, ordinary ADT source execution, Issue64 completion, excluded39/63 work, new guarantee, external schema, maximum-size quantum generation, companion rebuild, hosted review or release."
+}

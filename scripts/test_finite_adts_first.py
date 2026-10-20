@@ -490,5 +490,75 @@ class FirstFieldNaturalSyntax(unittest.TestCase):
             self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
 
 
+# Affine/header first history: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-affine-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-affine-index.json".
+# Scope: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-affine-validation.json".
+class FirstFieldNaturalAffine(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('naturals-affine-index.json', 'naturals-affine-first.tar.xz',
+            '1f8141b11bdbfabd598d62b855caada565a3fbcf0a1cc92610bb7b761dcb80e1',
+            99288, 'a0f16b36bab15a784294af44518a4c4d7deb0b8e4ec61be5ba54166053ad5a5f', 1_464_256)
+
+    def report(self, stage):
+        return json.loads(self.data['adt64-field-' + stage + '/observation.json'])
+
+    def source(self, stage, name):
+        manifest = json.loads(self.data['adt64-field-' + stage + '/original-source-records.json'])
+        entry = manifest['sources/lean-kernel/QleisliKernel/' + name + '.lean']
+        data = self.data[entry['record']]
+        self.assertEqual((len(data), hashlib.sha256(data).hexdigest()),
+                         (entry['bytes'], entry['sha256']))
+        return data
+
+    def test_failed_authoring_attempts_remain_failed_original_observations(self):
+        self.assertEqual(len(self.data), 174)
+        for stage in ['affine-first-build', 'affine-first-operation-proofs',
+                      'affine-first-constraints-build', 'affine-constraints-v2-build',
+                      'affine-constraints-v3-build', 'affine-first-checks', 'affine-checks-v2',
+                      'predicates-first-build', 'predicates-build-v2', 'helper-declarations-first-build']:
+            report = self.report(stage)
+            self.assertFalse(report['pass'])
+            self.assertTrue(report['source_unchanged'])
+            self.assertNotEqual(report['exit_code'], 0)
+        self.assertIn(b'Decidable', self.data['adt64-field-affine-first-checks/stdout'])
+        self.assertIn(b'maximum number of heartbeats', self.data['adt64-field-affine-checks-v2/stdout'])
+        self.assertIn(b'List.rec', self.data['adt64-field-predicates-build-v2/stdout'])
+
+    def test_exact_operations_and_actual_original_headers_have_audited_total_definitions(self):
+        for stage in ['affine-checks-v3', 'predicates-headers-first-checks', 'affine-generated-audit']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['source_windows_unchanged'])
+        self.assertIn(b'Audited 759', self.data['adt64-field-affine-generated-audit/stdout'])
+        predicates = self.source('affine-generated-audit', 'SourceTypes/NaturalPredicates')
+        self.assertIn(b'Nat.rec', predicates)
+        self.assertIn(b'Comparison.negate_relation', predicates)
+        constraints = self.source('affine-generated-audit', 'SourceTypes/NaturalConstraints')
+        self.assertIn(b'witness : NoValues source', constraints)
+        self.assertIn(b'proof.witness', predicates)
+        sources = self.source('affine-generated-audit', 'SourceTypes/Declarations')
+        self.assertIn(b'static-fn', sources)
+        self.assertIn(b'original.declaration.isPublic', sources)
+
+    def test_fresh_proof_and_native_results_do_not_claim_generic_helper_dispatch(self):
+        lean = self.report('affine-helpers-lean-validation')
+        self.assertTrue(lean['pass'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(row['identical_recorded_output'] for row in lean['output_comparisons']))
+        for stage in ['affine-normal-rust', 'affine-msrv-rust']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['source_windows_unchanged'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['after']['kernel'], lean['after']['kernel'])
+            self.assertIn('19 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+        source = self.source('affine-generated-audit', 'SourceTypes')
+        self.assertIn(b'literalWidth width', source)
+        self.assertIn(b'General Nat expressions still refuse', source)
+
+
 if __name__ == '__main__':
     unittest.main()

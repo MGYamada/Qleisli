@@ -1290,3 +1290,125 @@ example : Value emptyNames emptyCalls (.sub (.add (n 2) (.mul (n 3) (n 2))) (n 6
 #print axioms evaluate_value
 
 end SourceNaturalSyntaxExamples
+
+namespace SourceNaturalAffineExamples
+open QleisliKernel
+open Semantics.SourceAffine
+open SourceTypes
+
+def value {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+
+def row (constant : Int) (coefficients : List Int) : Form := ⟨constant,coefficients⟩
+def x := row 0 [1]
+def y := row 0 [0,1]
+def found (rows : List Form) : Except Finite.Error Bool :=
+  match value (NaturalConstraints.check rows) with
+  | .ok none => .ok false
+  | .ok (some _) => .ok true
+  | .error error => .error error
+
+def observed (rows : List Form) : Option Bool := (found rows).toOption
+
+-- Metadata and symbolic arithmetic only; no quantum matrix/case is generated.
+example : value (NaturalAffine.add x (row 2 [3])) = .ok (row 2 [4]) := by rfl
+example : value (NaturalAffine.sub x x) = .ok (row 0 [0]) := by rfl
+example : value (NaturalAffine.multiply (row 2 [0]) x) = .ok (row 0 [2]) := by rfl
+example : !(value (NaturalAffine.multiply x x)).isOk := by rfl
+example : !(value (NaturalAffine.multiply x y)).isOk := by rfl
+example : value (NaturalAffine.constant 0 4294967296) = .ok (row 4294967296 []) := by rfl
+example : value (NaturalAffine.add (row 170141183460469231731687303715884105727 []) (row 1 [])) =
+    .error .limit := by rfl
+example : value (NaturalAffine.sub (row (-170141183460469231731687303715884105728) [])
+    (row (-170141183460469231731687303715884105728) [])) = .error .limit := by rfl
+example : !(value (NaturalAffine.multiply (row 0 (List.replicate 33 0)) x)).isOk := by rfl
+example : !(value (NaturalAffine.parameter 0 0)).isOk := by rfl
+example : value (NaturalAffine.parameter 2 1) = .ok y := by rfl
+example : observed [] = some false := by decide +kernel
+example : observed [row 1 []] = some true := by decide +kernel
+example : observed [row (-1) []] = some false := by decide +kernel
+example : observed [row 0 [-1],row 1 [-1],row 0 [1]] = some true := by decide +kernel
+example : observed [row 0 [-1],row 1 [-1],row (-2) [1]] = some false := by decide +kernel
+-- Rational relaxation deliberately supplies no integer-feasibility promise.
+example : observed [row 0 [-1],row (-1) [2],row 1 [-2]] = some false := by decide +kernel
+example : observed [row 0 [-1,1,0],row 0 [0,-1,1],row 0 [0,0,-1],row 1 [1,0,0]] =
+    some true := by decide +kernel
+example : observed [row 2 [-2],row 0 [2]] = some true := by decide +kernel
+example : !(found [row 0 [],x]).isOk := by rfl
+example : !(found [row 0 (List.replicate 33 0)]).isOk := by rfl
+open QleisliKernel SourceTypes Semantics.SourceAffine
+open NaturalPredicates
+
+def result {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+
+def form (c : Int) (cs : List Int) : Form := ⟨c,cs⟩
+def n := form 0 [1]
+def number (c : Int) := form c [0]
+def possible (a : Int) (op : Comparison) (b : Int) : Bool :=
+  (result (do feasible (← comparison (form a []) op (form b [])))).toOption.getD false
+
+def implied (guard : Comparison) (bound : Int) (op : Comparison) (other : Int) : Bool :=
+  (result (do
+    let context ← comparison n guard (number bound)
+    implies context n op (number other))).isOk
+
+-- All six exact predicates, with both polarities. These are scalar metadata.
+example : [possible 0 .eq 0,possible 0 .ne 1,possible 0 .le 1,
+  possible 0 .lt 1,possible 1 .ge 0,possible 1 .gt 0] = List.replicate 6 true := by decide +kernel
+example : [possible 0 .eq 1,possible 1 .ne 1,possible 1 .le 0,
+  possible 1 .lt 1,possible 0 .ge 1,possible 0 .gt 0] = List.replicate 6 false := by decide +kernel
+example : implied .ge 1 .ge 1 := by decide +kernel
+example : implied .gt 0 .ge 1 := by decide +kernel
+example : !implied .ge 0 .ge 1 := by decide +kernel
+example : !implied .ge 1 .ge 2 := by decide +kernel
+example : implied .eq 2 .ne 1 := by decide +kernel
+example : !implied .ne 1 .gt 1 := by decide +kernel
+example : (result (do
+  let nonnegative ← comparison n .ge (number 0)
+  let distinct ← comparison n .ne (number 1)
+  let positive ← comparison n .ge (number 1)
+  let first ← conjunction nonnegative distinct
+  let context ← conjunction first positive
+  implies context n .ge (number 2))).isOk := by decide +kernel
+example : (result (comparison (form (-170141183460469231731687303715884105728) [])
+  .le (form 0 []))).isOk = false := by decide +kernel
+example : ((comparison n .ge (number 1)).run 1).1.isOk = false := by decide +kernel
+
+def helper (source : String) : Except String NaturalHeaders.Helper := do
+  let [declaration] ← declarations source | throw "one declaration required"
+  NaturalHeaders.read declaration
+
+def shape (source : String) : Option (List String × Nat) :=
+  (helper source).toOption.map fun h => (h.parameters,h.premises.length)
+
+def validHelper : String :=
+  "pub static fn previous[const n:Nat]() -> Nat requires n >= 1 {n-1}"
+example : shape validHelper = some (["n"],1) := by decide +kernel
+example : shape "static fn value() -> Nat {2}" = some ([],0) := by decide +kernel
+example : shape "static fn value[]() -> Nat {2}" = some ([],0) := by decide +kernel
+example : shape "static fn swap[const n:Nat,const m:Nat,]() -> Nat requires pair[n,m]() != pair[m,n](), n >= 0, {n+m}" =
+  some (["n","m"],2) := by decide +kernel
+example : shape "static fn test[const n:Nat]() -> Nat requires n == 1,n != 2,n < 3,n <= 4,n > 0,n >= 1 {n}" =
+  some (["n"],6) := by decide +kernel
+example : !(helper "static fn bad(q:Bit) -> Nat {1}").isOk := by decide +kernel
+example : !(helper "static fn bad[const n:Basis]() -> Nat {1}").isOk := by decide +kernel
+example : !(helper "static fn bad[const n:Nat,const n:Nat]() -> Nat {n}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Bits<1> {1}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Nat requires {1}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Nat {00}").isOk := by decide +kernel
+example : !(helper "fn bad() -> Nat {1}").isOk := by decide +kernel
+example : !(declarations "static fn bad() -> Nat;").isOk := by decide +kernel
+example : !(declarations "static fn bad() -> Nat {").isOk := by decide +kernel
+-- Same original binding/category/visibility rules for both consumers.
+def canonical (sources : Sources) (caller : String) (path : List String) :=
+  (result (resolveReference sources caller path)).toOption.map fun r =>
+    (r.moduleName,r.declaration.name,r.declaration.kind)
+example : canonical #[ ("defs",validHelper),("exports","pub use defs::previous;"),
+  ("main","use exports::previous;")] "main" ["previous"] =
+  some ("defs","previous","static-fn") := by decide +kernel
+example : canonical #[ ("defs","static fn hidden() -> Nat {1}"),
+  ("main","use defs::hidden;")] "main" ["hidden"] = none := by decide +kernel
+example : canonical #[ ("defs",validHelper),("private","use defs::previous;")]
+  "main" ["private","::","previous"] = none := by decide +kernel
+example : canonical #[ ("main",validHelper ++ " fn previous() -> Bit {0}")]
+  "main" ["previous"] = none := by decide +kernel
+end SourceNaturalAffineExamples

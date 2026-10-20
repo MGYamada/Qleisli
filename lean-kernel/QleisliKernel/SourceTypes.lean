@@ -1,5 +1,9 @@
-import QleisliKernel.SourceTypes.Imports
+import QleisliKernel.SourceTypes.Declarations
 import QleisliKernel.SourceTypes.NaturalSyntax
+import QleisliKernel.SourceTypes.NaturalAffine
+import QleisliKernel.SourceTypes.NaturalConstraints
+import QleisliKernel.SourceTypes.NaturalPredicates
+import QleisliKernel.SourceTypes.NaturalHeaders
 import QleisliKernel.FiniteCarrier
 
 /-! Reconstruct a nominal carrier from original top-level source declarations.
@@ -9,65 +13,6 @@ is supplied. It grants neither source-body preservation nor a new guarantee.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes
 open Semantics.FiniteCarrier
-
-structure Declaration where
-  name : String
-  isPublic : Bool
-  kind : String
-  body : List String
-  deriving BEq, DecidableEq, Repr
-
-private structure Items where
-  depth : Nat := 0
-  isPublic : Bool := false
-  kind : String := ""
-  name : String := ""
-  body : List String := []
-  declarations : List Declaration := []
-  importing : Bool := false
-  importTokens : List String := []
-
-private def item (s : Items) (token : String) : Except String Items := do
-  if s.depth > 0 then
-    if token == "{" then return {s with depth := s.depth+1,body := token :: s.body}
-    if token == "}" then
-      if s.depth == 1 then
-        let declarations := if s.kind == "enum" || s.kind == "struct" then
-            ⟨s.name,s.isPublic,s.kind,s.body.reverse⟩ :: s.declarations else s.declarations
-        return {s with depth := 0,isPublic := false,kind := "",name := "",body := [],declarations}
-      return {s with depth := s.depth-1,body := token :: s.body}
-    return {s with body := if s.kind.isEmpty then [] else token :: s.body}
-  if s.importing then
-    if token != ";" then return {s with importTokens := token :: s.importTokens}
-    let paths ← Imports.read s.importTokens.reverse
-    let declarations ← paths.foldlM (fun declarations path => do
-      let name :: _ := path | throw "empty import path"
-      pure (⟨name,s.isPublic,"import",path⟩ :: declarations)) s.declarations
-    return {s with importing := false,importTokens := [],isPublic := false,declarations}
-  if token == "}" then throw "unmatched source brace"
-  if !s.kind.isEmpty && s.name.isEmpty then
-    if !identifier token then throw "invalid declaration name"
-    let declarations := if s.kind == "fn" || s.kind == "meaning" then
-        ⟨token,s.isPublic,s.kind,[]⟩ :: s.declarations else s.declarations
-    return {s with name := token,declarations}
-  if token == "{" then
-    if (s.kind == "enum" || s.kind == "struct") && s.name.isEmpty then
-      throw "missing type name"
-    return {s with depth := 1,body := []}
-  if token == ";" then return {s with kind := "",name := "",isPublic := false}
-  if token == "pub" then return {s with isPublic := true}
-  if token == "use" then return {s with importing := true,importTokens := []}
-  if ["enum","struct","fn","meaning"].contains token then
-    return {s with kind := token,name := ""}
-  -- Only a brace may follow a fieldless enum/record name in this profile.
-  if s.kind == "enum" || s.kind == "struct" then throw "unsupported type declaration header"
-  return s
-
-def declarations (source : String) : Except String (List Declaration) := do
-  let s ← (← lex source).foldlM item {}
-  if s.depth != 0 || s.importing || s.kind == "enum" || s.kind == "struct" then
-    throw "incomplete source declaration"
-  return s.declarations.reverse
 
 private structure Parts where
   stack : List String := []
@@ -91,35 +36,11 @@ def splitMembers (tokens : List String) : Except String (List (List String)) := 
   if !s.stack.isEmpty then throw "incomplete member type"
   return (if s.current.isEmpty then s.parts else s.current.reverse :: s.parts).reverse
 
-abbrev Sources := Array (String × String)
-
-private def binding (sources : Sources) (moduleName name : String) : Except String (String × Declaration) := do
-  let [(_,source)] := sources.toList.filter (fun entry => entry.1 == moduleName)
-    | throw "missing/ambiguous original source module"
-  let [decl] := (← declarations source).filter (fun decl => decl.name == name)
-    | throw "missing/ambiguous original type declaration"
-  return (source,decl)
-
 /-- Origin lookup is canonical: an alias never becomes a new declaration. -/
 def lookup (sources : Sources) (moduleName name : String) : Except String (String × Declaration) := do
-  let (source,decl) ← binding sources moduleName name
+  let (source,decl) ← originalBinding sources moduleName name
   if decl.kind != "enum" && decl.kind != "struct" then throw "source name is not a finite type"
   return (source,decl)
-
-private def path (tokens : List String) : Except String (List String) := do
-  let (names,separator) ← tokens.foldlM (fun (names,separator) token => do
-    if separator then
-      if token != "::" then throw "unsupported source type expression"
-      return (names,false)
-    if !identifier token && !(names == ["std"] && ["basis","observe","classical"].contains token) then
-      throw "unsupported source type expression"
-    return (token :: names,true)) ([],false)
-  if !separator then throw "incomplete source type path"
-  return names.reverse
-
-private structure Readers where
-  ty : Sources → String → List String → Finite.WorkM Basis
-  decl : Sources → String → String → Finite.WorkM Basis
 
 private def adapt {α : Type} (value : Except String α) : Finite.WorkM α :=
   Finite.lift (value.mapError fun _ => .request)
@@ -128,45 +49,6 @@ private def load (sources : Sources) (moduleName name : String) : Finite.WorkM (
   Finite.exactWork (Exact.charge ((sources.toList.map fun row =>
     row.1.utf8ByteSize + row.2.utf8ByteSize).sum + name.utf8ByteSize + moduleName.utf8ByteSize + 1))
   adapt (lookup sources moduleName name)
-
-private structure Resolved where
-  moduleName : String
-  source : String
-  declaration : Declaration
-
-private def resolveBinding : Nat → Sources → String → String → String → Bool →
-    List (String × String) → Finite.WorkM Resolved :=
-  Nat.rec (fun _ _ _ _ _ _ => throw .limit) (fun _ recurse sources caller moduleName name localImports active => do
-    Finite.exactWork (Exact.charge ((moduleName.utf8ByteSize+name.utf8ByteSize+1)*(active.length+1)))
-    Finite.guard (!active.contains (moduleName,name)) .request
-    Finite.exactWork (Exact.charge ((sources.toList.map fun row =>
-      row.1.utf8ByteSize+row.2.utf8ByteSize).sum+name.utf8ByteSize+moduleName.utf8ByteSize+1))
-    let (source,decl) ← adapt (binding sources moduleName name)
-    if decl.kind == "enum" || decl.kind == "struct" then
-      Finite.guard (decl.isPublic || moduleName == caller) .request
-      return ⟨moduleName,source,decl⟩
-    Finite.guard (decl.kind == "import" && (localImports || decl.isPublic)) .request
-    -- Import bodies retain reversed original paths, not foreign target IDs.
-    let target :: modules := decl.body | throw .request
-    Finite.guard (target == decl.name && !modules.isEmpty) .request
-    Finite.exactWork (Exact.charge ((decl.body.map String.utf8ByteSize).sum+decl.body.length+1))
-    let owner := String.intercalate "::" modules.reverse
-    let original ← recurse sources moduleName owner target false ((moduleName,name)::active)
-    -- A public export requires an original public declaration, even if the
-    -- importing module could otherwise see its own private declaration.
-    Finite.guard (!decl.isPublic || original.declaration.isPublic) .request
-    Finite.guard (original.declaration.isPublic || original.moduleName == caller) .request
-    return original)
-
-private def resolveReference (sources : Sources) (caller : String) (tokens : List String) :
-    Finite.WorkM Resolved := do
-  let names ← adapt (path tokens)
-  let some name := names.getLast? | throw .request
-  let localName := names.length == 1
-  let moduleName := if localName then caller else String.intercalate "::" names.dropLast
-  -- An import retains its final spelling; a noncyclic chain cannot visit more
-  -- modules than the already bounded original source table.
-  resolveBinding sources.size sources caller moduleName name localName []
 
 private def combine (first second : Basis) : Finite.WorkM Basis := do
   Finite.guard (first.length + second.length ≤ 128) .limit
@@ -185,6 +67,10 @@ def literalWidth (literal : String) : Finite.WorkM Nat := do
     let width := value * 10 + (char.toNat - '0'.toNat)
     Finite.guard (width ≤ 6) .limit
     pure width) 0
+
+private structure Readers where
+  ty : Sources → String → List String → Finite.WorkM Basis
+  decl : Sources → String → String → Finite.WorkM Basis
 
 private def readers : Nat → Readers :=
   Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩

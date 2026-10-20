@@ -248,3 +248,29 @@ lint/format pass. No additional field acceptance or ordinary ADT execution is
 enabled by this component. All8 #64 criteria remain open, including helper/
 affine checks, host roots, constructors/match/qmatch, source routing and companion/
 bin/hosted integration. No guarantee admission or excluded #39/#63 work is claimed.
+
+
+The [affine/helper first history](naturals-affine-first.tar.xz),
+[index](naturals-affine-index.json) and [validation](naturals-affine-validation.json)
+retain174 inert records /1,464,256 original bytes /99,288 stored bytes. Changed
+source objects are stored once with per-observation manifests; repeated complete
+inventories/toolchain snapshots are represented by their exact digests. Original
+elaboration/compiler, equality-instance and reduction-limit failures remain
+failed attempts, not source-language rejection evidence. No archived code runs.
+
+Current signed-i128 affine operations have exact integer-meaning proofs. Bounded
+elimination retains proofs over original inequalities; comparison conversion and
+caller implication carry their exact properties. Rational relaxation supplies
+no integer-existence witness. Complete provisional static helper headers/bodies
+share the original module resolver, preserving declaration/category/visibility.
+The759-declaration compiled audit includes private/generated helpers. All50 new
+kernel examples, complete Tests, shared builds/audits, fresh kernel/Main replay
+and six protected output comparisons pass. Normal1.98.1 and sequential MSRV1.85
+each pass all-target compilation and19 existing native cases, zero skips;
+normal strict lint/format pass in their captured unchanged windows.
+
+This prepares the existing field-Nat contract; it enables no additional field
+acceptance. Generic helper normalization, original formal-frame interpretation,
+simultaneous substitution, dependency/all-unused-helper checks and actual field
+dispatch remain pending, as do ordinary source ADT execution and all8 #64
+criteria. No excluded #39/#63 work, new guarantee or release is claimed.

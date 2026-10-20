@@ -53,6 +53,14 @@ development milestones from the scope of their evidence.
   existing metadata limits. Use total folds/recursors and audit generated
   declarations. Source helper binding, affine obligations and carrier dispatch
   remain pending; this parser/evaluator grants no helper or source authority.
+  Add signed-i128 affine operations with exact-meaning proofs and bounded
+  inequality elimination whose contradictions carry proofs over the original
+  constraints. Check all six comparisons and caller implications, retaining
+  rational-relaxation limits and refusing unresolved obligations. Read complete
+  provisional Nat-helper headers/bodies through the shared original module
+  resolver, preserving category, visibility and declaration identity. Generic
+  helper normalization/substitution and field dispatch remain pending; parsing
+  and arithmetic components alone cannot authorize a helper or source program.
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.
