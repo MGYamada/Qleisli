@@ -1110,6 +1110,19 @@ pub(super) fn with_control_roots(
 }
 
 fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedProgram, usize)> {
+    let mut cells = 0;
+    crate::frontend::check::require_nominal_transport(
+        instance
+            .program
+            .sources
+            .iter()
+            .map(|(name, source)| (name, source.syntax())),
+        |span, amount| {
+            charge_retained_cells(&mut cells, amount, span)
+                .map_err(crate::frontend::check::SourceError::from)
+        },
+    )
+    .map_err(Error::from)?;
     let mut builder = Builder {
         program: &instance.program,
         definitions: Vec::new(),
@@ -1118,7 +1131,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
         calls: 0,
         folds: 0,
         steps: 0,
-        cells: 0,
+        cells,
         active_frames: 0,
         basis_work: 0,
     };
@@ -1595,7 +1608,7 @@ impl Builder<'_> {
                 )
             })?;
             total
-                .checked_add(size.nodes)
+                .checked_add(size.nodes.saturating_add(basis.named_key_cells()))
                 .ok_or_else(|| error("limit", Span::default(), "type binding accounting overflow"))
         })?;
         // Include keys, retained definition substitutions and lexical scope

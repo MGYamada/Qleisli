@@ -84,6 +84,57 @@ fn closed_bindings_preserve_tags_order_and_nesting_and_require_eof() {
 }
 
 #[test]
+fn public_source_bound_host_types_and_provider_maps_keep_original_dependencies() {
+    let modules = BTreeMap::from([
+        ("main".into(), "pub unitary fn entry[const A:Basis,const U:Op<Bit>]()->Unit{()} pub unitary fn provider[const B:Basis](q:Q<Bit>)->Q<Bit>{q}".into()),
+        ("alias".into(), "pub use leaf::Tri;".into()),
+        ("leaf".into(), "pub enum Tri { A,B,C }".into()),
+    ]);
+    let p = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules.clone()).unwrap();
+    let binding = p.basis_binding("alias::Tri").unwrap();
+    assert_eq!(binding.ty().kind(), "nominal");
+    assert_eq!(binding.ty(), p.basis_binding("leaf::Tri").unwrap().ty());
+    let instance = p
+        .instantiate_with_types(
+            "main::entry",
+            BTreeMap::from([("A".into(), binding.clone())]),
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::with_types(
+                    "main::provider",
+                    BTreeMap::from([("B".into(), binding.clone())]),
+                    BTreeMap::new(),
+                ),
+            )]),
+        )
+        .unwrap();
+    assert_eq!(instance.elaborate().unwrap_err().code(), "unsupported");
+
+    let mut changed = modules;
+    changed.insert("leaf".into(), "pub enum Tri { A,C,B }".into());
+    let other = ParsedProgram::parse(qleisli::edition::Edition::E2026, changed).unwrap();
+    // The entry's own map is freshly selected; the unused provider's stale map
+    // must still be checked instead of inheriting or ignoring that selection.
+    let error = other
+        .instantiate_with_types(
+            "main::entry",
+            BTreeMap::from([("A".into(), other.basis_binding("alias::Tri").unwrap())]),
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::with_types(
+                    "main::provider",
+                    BTreeMap::from([("B".into(), binding)]),
+                    BTreeMap::new(),
+                ),
+            )]),
+        )
+        .unwrap_err();
+    assert_eq!(error.code(), "source");
+}
+
+#[test]
 fn unused_source_type_arguments_obey_the_same_closed_binding_capacity() {
     // Nine one-bit fields are a small type description, not an emitted or
     // executed maximum-size quantum case. An unused parameter cannot bypass

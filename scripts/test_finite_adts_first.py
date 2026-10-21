@@ -639,5 +639,67 @@ class FirstOriginalHelperFields(unittest.TestCase):
             self.assertIn(b'outcome field-nat-unused-private-helper contract', output)
 
 
+# Host root history: "tests/fixtures/authoring_sessions/finite-adts-v030/host-roots-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/host-roots-index.json".
+# Scope: "tests/fixtures/authoring_sessions/finite-adts-v030/host-roots-validation.json".
+class FirstHostTypeRoots(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('host-roots-index.json', 'host-roots-first.tar.xz',
+            '950aa96690bfb2cb0d7507aa1c4f4367e00b33d040f01b197555d182779bee0a',
+            170064, '5f0f6574aacaa29167d40ce35308dcbb295d36e401a808887dfe705421f93ec4', 2_129_955)
+
+    def report(self, stage):
+        return json.loads(self.data[stage + '/observation.json'])
+
+    def test_first_configuration_refusals_do_not_validate_type_or_native_rules(self):
+        self.assertEqual(len(self.data), 186)
+        first = self.report('first')
+        self.assertTrue(first['source_unchanged'])
+        self.assertEqual([r['exit_code'] for r in first['commands']], [0, 1, 1, 1, 1, 1, 1])
+        for case in ['public-host', 'private-host', 'private-facade', 'unit-control', 'unused-host', 'direct-source']:
+            result = json.loads(self.data['first/' + case + '.stdout'])
+            self.assertEqual(result['diagnostics'][0]['code'], 'project')
+            self.assertIn('schema-version = 2', result['diagnostics'][0]['message'])
+            repaired = json.loads(self.data['manifest-repair/' + case + '.stdout'])
+            self.assertEqual(repaired['diagnostics'][0]['code'], 'unsupported')
+        unit = json.loads(self.data['unit-isolation/unit-control.stdout'])
+        self.assertEqual(unit['result']['verification']['scope'], 'native-validity')
+        self.assertFalse(unit['result']['source_preservation_verified'])
+
+    def test_test_authoring_errors_remain_failed_original_attempts(self):
+        self.assertFalse(self.report('first-host-root-tests')['pass'])
+        self.assertIn(b'E0061', self.data['first-host-root-tests/stderr'])
+        self.assertFalse(self.report('host-root-tests-v2')['pass'])
+        self.assertIn(b'expected `;`, found identifier', self.data['host-root-tests-v2/stderr'])
+        self.assertTrue(self.report('host-root-tests-v3')['pass'])
+        self.assertTrue(self.report('host-root-tests-v4')['pass'])
+        self.assertIn(b'7 passed; 0 failed', self.data['host-root-tests-v4/stdout'])
+
+    def test_current_normal_msrv_windows_have_no_conditional_native_skips(self):
+        for stage in ['normal-final', 'msrv-final']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['source_and_kernel_unchanged'])
+            self.assertEqual(report['before'], report['after'])
+            for group, counts in [('frontend', [335]), ('integration', [12, 16, 5]), ('native', [21])]:
+                summaries = report['test_summaries'][group]
+                actual = [int(line.split()[3]) for line in summaries if line.startswith('test result:')]
+                self.assertEqual(actual, counts)
+                self.assertEqual(summaries[-1], 'native test gate: zero conditional native skips')
+        self.assertTrue(self.report('normal-strict-lint')['pass'])
+
+    def test_cli_exposes_real_selection_checks_and_retains_the_execution_gate(self):
+        expected = [('public-host', 'unsupported'), ('private-host', 'visibility'),
+                    ('private-facade', 'name'), ('unit-control', 'unsupported'),
+                    ('unused-host', 'unsupported'), ('direct-source', 'unsupported'),
+                    ('isolated-unit', None)]
+        for stage in ['cli-normal', 'cli-msrv']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['inputs_and_cli_unchanged'])
+            self.assertEqual([(row['name'], row['code']) for row in report['cases']], expected)
+
+
 if __name__ == '__main__':
     unittest.main()

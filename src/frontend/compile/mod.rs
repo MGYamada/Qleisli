@@ -872,6 +872,13 @@ fn prepare_original_source<'ast>(
             .collect(),
         SourceLimits::finite(),
         |resolution, interfaces, helpers, _, _, indices, budget| {
+            check::require_nominal_transport(
+                project
+                    .modules
+                    .iter()
+                    .map(|(name, module)| (name.as_str(), &module.ast)),
+                |span, cells| budget.charge(span, cells),
+            )?;
             let mut interface_naturals = BTreeMap::new();
             // Capture every signature before moving any original occurrence
             // association out of the common checker's indices.

@@ -310,3 +310,33 @@ refresh preserves both admitted scopes. New quantum cases use two physical bits.
 Ordinary source ADT execution, host roots, constructors/access/privacy/match/qmatch,
 source-function preservation, companion/bin and hosted CI/review remain pending.
 All8 #64 criteria remain open; no #39/#63 extension, new guarantee or release.
+
+The [host-root history](host-roots-first.tar.xz), [index](host-roots-index.json)
+and [validation](host-roots-validation.json) retain186 inert records /
+2,129,955 original bytes /170,064 stored bytes. First CLI inputs lack manifest
+schema2 and fail configuration. Their separate manifest repair then reaches the
+existing whole-source nominal gate, including the Unit control with unused type
+declarations. A separately isolated Unit control reaches native validity. Neither
+earlier refusal tests name privacy or nominal execution. First missing test
+arguments, the incorrect effect-view assertion and unsupported test-only import
+renaming remain failed authoring attempts, with exact source objects/diagnostics.
+
+Complete original nominal type/body/effect preparation now runs independently
+of concrete execution eligibility. `ParsedProgram::basis_binding` resolves public
+original types/reexports, retains canonical trees and relevant alias/type/Nat-helper
+source bytes, and rechecks every receiving entry/provider map before closure or
+cache use. Context-free parsing still rejects named types. Existing expansion,
+work and storage limits apply before copied trees/cache keys are allocated.
+Preparation gives no native handle. Both concrete adapters retain their explicit
+whole-source nominal transport refusal, including unused definitions.
+
+Normal1.98.1 and sequential MSRV1.85 each pass335 frontend,33 integration and21
+native tests, zero ignored/conditional skips, plus seven actual CLI observations.
+The CLI now reports real private-name/reexport failures before the transport
+barrier; public nominal cases still stop there. Normal strict lint/format and
+both all-target checks pass. Lean sources, selected kernel and companion dirty
+files remain unchanged. No fresh Lean rebuild/replay is claimed for this Rust
+component; the protected current-source identity remains separate from replay.
+No maximum quantum case is added. Ordinary nominal execution, constructors/
+access/match/qmatch, source preservation, companion/bin and hosted CI/review remain
+pending. All8 #64 criteria and broader guarantee obligations remain open.

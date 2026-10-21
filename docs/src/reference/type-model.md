@@ -712,21 +712,41 @@ value or quantum owner. A runtime function named `type` remains an ordinary
 function; existing contextual static Nat names such as Bit retain their category.
 No argument is inferred from expected width, type or an available provider.
 
-The Rust API uses `BasisBinding::parse`, `instantiate_with_types` and
-`OperationBinding::with_types`. The existing `instantiate` and provider `new`
+The Rust API uses `BasisBinding::parse`, `ParsedProgram::basis_binding`,
+`instantiate_with_types` and `OperationBinding::with_types`.
+The context-free parser retains its built-in-only contract. The preparation's
+`basis_binding` additionally resolves fully qualified public finite type names
+and public reexports, for example `program.basis_binding("labels::Tri")`.
+It retains the original canonical tree and relevant declaration, alias and
+transitive Nat-helper source bytes. Every receiving preparation rechecks that
+selection before closure/cache use; private names, changed dependencies and
+same-width substitute trees reject. A portable built-in description needs no
+source context. Host selection grants no module-private privilege.
+
+The existing `instantiate` and provider `new`
 methods supply empty type maps. Entry types use `--type=A=Bit` or an exact
 closed ordinary product in the common CLI. A provider binds its own declaration's
 types separately with `--operation-type=U.B=Bit`. Missing, extra and wrong-category
 bindings reject; a provider does not inherit the caller's parameters by name.
 `--basis=N` retains its distinct hierarchy runtime-input role.
 
-Closed descriptions use the same type grammar, require EOF and reject unknown
+Closed descriptions use the same type grammar, require EOF and reject unavailable
 names, quantum owners, unresolved sizes and invalid bounded arithmetic. This
 selected profile retains eight total basis bits, 4096 type nodes and depth 64.
 Substitution expansion is checked before copied trees are allocated, and retained
 type bindings and cache data count against the existing 100000-cell preparation
 budget. The existing 1024 calls/folds, call depth 16 and 10000 steps remain.
 These preparation limits are not a discharged quantitative RS theorem.
+
+Complete original type/body/effect preparation now retains nominal declarations;
+it does not silently omit their unused functions or quantum effects. A host Basis
+description and an `Instantiation` remain untrusted preparation data. Ordinary
+nominal source execution still requires its typed native route: both concrete
+adapters explicitly reject source collections containing these declarations
+before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
+actual public-name/source checks, then the remaining transport refusal. This
+does not implement constructors, field access, ordinary `match`, `qmatch` or a
+source-preservation theorem, and it grants no inverse/control access.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

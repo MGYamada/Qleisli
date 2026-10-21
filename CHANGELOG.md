@@ -61,6 +61,13 @@ development milestones from the scope of their evidence.
   forests, including empty forests. Retain first source/diagnostic history and
   disclose temporary-record loss and its exact recovery limits. Ordinary source
   ADT execution, source-function preservation and all #64 criteria remain pending.
+  Separate complete nominal source preparation from concrete transport eligibility.
+  Resolve host Basis descriptions through original public types/reexports; retain
+  relevant declaration, alias and Nat-helper sources and recheck every receiving
+  entry/provider map before closure or cache use. Preserve exact trees, checked
+  expansion/work limits and the context-free parser's built-in-only contract.
+  Keep explicit nominal execution refusals in both concrete adapters while their
+  actual source/native route remains pending; preparation grants no acceptance.
 
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,

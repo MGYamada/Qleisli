@@ -14,11 +14,15 @@ fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route
         "struct Empty {}",
         "struct Tagged { tag: Bit }",
     ] {
-        let source = format!("fn main()->Unit{{()}} {declaration}");
+        let source = format!("pub fn main()->Unit{{()}} {declaration}");
         let error = ParsedProgram::parse(
             qleisli::edition::Edition::E2026,
             BTreeMap::from([("main".into(), source.clone())]),
         )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
         .unwrap_err();
         assert_eq!(error.code(), "unsupported");
         assert_eq!(&source[error.span().start..error.span().end], declaration);
@@ -72,11 +76,19 @@ fn nominal_registration_checks_real_names_before_the_pending_carrier_gate() {
         assert_eq!(Project::load(&root.0).unwrap_err().message, message);
     }
     let modules = BTreeMap::from([
-        ("main".into(), "use alias::Tri; fn main()->Unit{()}".into()),
+        (
+            "main".into(),
+            "use alias::Tri; pub fn main()->Unit{()}".into(),
+        ),
         ("alias".into(), "pub use leaf::Tri;".into()),
         ("leaf".into(), "pub enum Tri { A, B, C }".into()),
     ]);
-    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules).unwrap_err();
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
     assert_eq!(error.code(), "unsupported");
     assert!(error.message().contains("typed native transport"));
 }

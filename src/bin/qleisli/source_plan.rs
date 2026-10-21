@@ -245,12 +245,14 @@ fn width(ty: &SourceType) -> usize {
 fn prepare(options: &Options) -> Result<PreparedIr> {
     let program = ParsedProgram::load(options.modules.clone())?;
     fn bindings(
+        program: &ParsedProgram,
         values: &std::collections::BTreeMap<String, String>,
     ) -> Result<std::collections::BTreeMap<String, BasisBinding>> {
         values
             .iter()
             .map(|(name, source)| {
-                BasisBinding::parse(source)
+                program
+                    .basis_binding(source)
                     .map(|basis| (name.clone(), basis))
                     .map_err(|e| {
                         Failure::new(e.code(), format!("Basis binding {name}: {}", e.message()))
@@ -266,7 +268,10 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
                 name.clone(),
                 OperationBinding::with_types(
                     definition.clone(),
-                    bindings(&options.op_types.get(name).cloned().unwrap_or_default())?,
+                    bindings(
+                        &program,
+                        &options.op_types.get(name).cloned().unwrap_or_default(),
+                    )?,
                     options.op_ns.get(name).cloned().unwrap_or_default(),
                 ),
             ))
@@ -275,7 +280,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
     let source = program
         .instantiate_with_types(
             &options.entry,
-            bindings(&options.types)?,
+            bindings(&program, &options.types)?,
             options.ns.clone(),
             operations,
         )?

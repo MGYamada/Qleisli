@@ -853,6 +853,26 @@ pub(super) fn nominal_metadata(
     })
 }
 
+/// Concrete adapters retain this refusal until their actual nominal transport
+/// is integrated. Complete original source preparation is a separate judgment.
+pub(super) fn require_nominal_transport<'a>(
+    modules: impl IntoIterator<Item = (&'a str, &'a ast::Module)>,
+    mut charge: impl FnMut(Span, usize) -> Result<()>,
+) -> Result<()> {
+    for (name, module) in modules {
+        charge(module.span, module.type_decls.len() + 1)?;
+        if let Some(declaration) = module.type_decls.first() {
+            return Err(SourceError::new(
+                "unsupported",
+                declaration.span,
+                "finite type declarations require typed native transport before source execution",
+            )
+            .in_module(name));
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn program_with_sources<'a, R>(
     modules: BTreeMap<&'a str, &'a ast::Module>,
     sources: BTreeMap<&'a str, &'a str>,
@@ -868,21 +888,6 @@ pub(super) fn program_with_sources<'a, R>(
     ) -> Result<R>,
 ) -> Result<(CheckedProgram, R)> {
     let mut program = prepare_program(modules, sources, limits)?;
-    // Do not erase parsed nominal declarations while the shared source judgment
-    // and typed native transport are still being integrated (#64).
-    for (name, module) in &program.modules {
-        program
-            .budget
-            .charge(module.span, module.type_decls.len())?;
-        if let Some(declaration) = module.type_decls.first() {
-            return Err(SourceError::new(
-                "unsupported",
-                declaration.span,
-                "finite type declarations require typed native transport before source execution",
-            )
-            .in_module(name));
-        }
-    }
     let mut bodies = BTreeMap::new();
     let mut edges = BTreeMap::new();
     // Canonical DefId order deliberately does not choose declaration diagnostics.
