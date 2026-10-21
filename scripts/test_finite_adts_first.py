@@ -560,5 +560,84 @@ class FirstFieldNaturalAffine(unittest.TestCase):
         self.assertIn(b'General Nat expressions still refuse', source)
 
 
+# Recovery records: "tests/fixtures/authoring_sessions/finite-adts-v030/helper-authoring-recovery.json"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/helper-first-test-recovered.lean.txt".
+class RecoveredHelperAuthoring(unittest.TestCase):
+    def test_retained_events_do_not_replace_unavailable_full_observations(self):
+        data = (FIXTURES / 'helper-authoring-recovery.json').read_bytes()
+        self.assertEqual(hashlib.sha256(data).hexdigest(),
+                         'd5db45d42f187596c104b1f0b8ef3777cdb3a242dcd17a8f6ce1a3011aa6ad9b')
+        recovered = json.loads(data)
+        self.assertEqual(len(recovered['items']), 25)
+        self.assertIn('result remains unknown', recovered['scope'])
+        self.assertIn('not a substitute for lost raw streams', recovered['scope'])
+
+    def test_first_test_source_is_preserved_as_inert_bytes(self):
+        data = (FIXTURES / 'helper-first-test-recovered.lean.txt').read_bytes()
+        self.assertEqual((len(data), hashlib.sha256(data).hexdigest()),
+                         (4911, '730d399cac9ddb94b4d6c5a9a74ddfd35604b1e2ae40eccb5d17dd00bf14f18b'))
+
+
+# Original helper history: "tests/fixtures/authoring_sessions/finite-adts-v030/helpers-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/helpers-index.json".
+# Current scope: "tests/fixtures/authoring_sessions/finite-adts-v030/helpers-validation.json".
+class FirstOriginalHelperFields(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('helpers-index.json', 'helpers-first.tar.xz',
+            '2d62e735841fb5f738ad5f2d93e3f085bb8af346ff2b1ee739a168e08ed48c6b',
+            79872, '55e376fdd8e7eaeb83915551047d46ae3078363f985e28727a45b81301649b00', 1_913_960)
+
+    def report(self, stage):
+        return json.loads(self.data[stage + '/observation.json'])
+
+    def test_failed_elaboration_and_first_native_observations_remain_failed(self):
+        self.assertEqual(len(self.data), 193)
+        for stage in ['definition-binding-support-build', 'bound-helper-reader-first-build',
+                      'bound-helper-call-checks', 'field-natural-dispatch-first-build',
+                      'field-natural-dispatch-build-v2', 'field-natural-dispatch-build-v3',
+                      'field-natural-dispatch-build-v4', 'field-natural-dispatch-build-v5',
+                      'field-natural-dispatch-build-v6', 'first-field-native-old-checker',
+                      'helper-field-normal-rust']:
+            self.assertFalse(self.report(stage)['pass'])
+        first = self.data['first-field-native-old-checker/stdout']
+        self.assertIn(b'outcome field-nat-precedence contract', first)
+        native = self.data['helper-field-normal-rust/native.stdout']
+        self.assertIn(b'outcome field-nat-i128-intermediate-overflow limit', native)
+        self.assertIn(b'right: "contract"', native)
+
+    def test_executable_lean_assertions_keep_their_bounded_test_scope(self):
+        for stage, count in [('generic-execution-checks', 26),
+                             ('bound-helper-call-checks-v2', 17),
+                             ('field-source-first-checks', 18)]:
+            self.assertTrue(self.report(stage)['pass'])
+            self.assertEqual(self.data[stage + '/stdout'].count(b'PASS: '), count)
+        self.assertIn(b'Audited 1332', self.data['bound-helper-compiled-audit/stdout'])
+
+    def test_fresh_shared_proofs_preserve_all_six_protected_outputs(self):
+        lean = self.report('helper-field-full-lean')
+        self.assertTrue(lean['pass'])
+        self.assertTrue(lean['source_windows_unchanged_except_registry'])
+        self.assertEqual(lean['changed_source_files'], ['lean/schema-registry.json'])
+        self.assertEqual(len(lean['commands']), 8)
+        self.assertEqual(len(lean['output_comparisons']), 6)
+        self.assertTrue(all(row['identical_recorded_output'] for row in lean['output_comparisons']))
+
+    def test_sequential_native_windows_retain_the_actual_small_source_cases(self):
+        kernel = self.report('helper-field-full-lean')['after']['kernel']
+        for stage in ['helper-field-normal-rust-v2', 'helper-field-msrv-rust-v2']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['source_windows_unchanged'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['after']['kernel'], kernel)
+            self.assertIn('21 passed; 0 failed; 0 ignored', report['test_summaries'][0])
+            self.assertEqual(report['test_summaries'][1], 'native test gate: zero conditional native skips')
+            output = self.data[stage + '/native.stdout']
+            self.assertIn(b'outcome field-nat-original-ordinal-order accepted', output)
+            self.assertIn(b'outcome field-nat-simultaneous-original-binders accepted', output)
+            self.assertIn(b'outcome field-nat-unused-private-helper contract', output)
+
+
 if __name__ == '__main__':
     unittest.main()

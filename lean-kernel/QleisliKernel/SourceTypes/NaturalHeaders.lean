@@ -8,10 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.SourceTypes.NaturalHeaders
 open Semantics.SourceNatural Semantics.SourceAffine
 
-structure Predicate where
-  left : Expr
-  comparison : Comparison
-  right : Expr
+abbrev Predicate := Semantics.SourceNatural.Predicate
 
 structure Helper where
   parameters : List String

@@ -134,6 +134,29 @@ def implies {meaning : Valuation → Prop} (context : Context meaning)
     · exact False.elim (noValues.proof values (counterexamples.correct values |>.mpr
         ⟨original,Comparison.negate_relation _ _ _ |>.mpr wanted⟩))⟩
 
+/-- The subtraction guard uses the common direct `b-a+1` counterexample
+construction, without introducing comparison's extra checked negation. -/
+def provesLe {meaning : Valuation → Prop} (context : Context meaning) (a b : Form) :
+    WorkM (Established (∀ values,meaning values → a.evaluate values ≤ b.evaluate values)) := do
+  let diff ← difference b a
+  let one ← witness (constant b.coefficients.length 1)
+  have oneMeaning : ∀ values,one.val.evaluate values = 1 := by
+    obtain ⟨work,left,ok⟩ := one.property
+    exact constant_meaning _ _ _ _ _ ok
+  let counterexample ← increment diff.form one.val oneMeaning
+  let opposite : Context (fun values => b.evaluate values-a.evaluate values+1 ≤ 0) :=
+    ⟨[[counterexample.form]],by
+      intro values
+      simp only [satisfies_singleton,holds_singleton,counterexample.correct,diff.correct]⟩
+  let counterexamples ← conjunction context opposite
+  let noValues ← refuteLoop counterexamples.alternatives.length counterexamples.alternatives
+  return ⟨by
+    intro values original
+    by_cases wanted : a.evaluate values ≤ b.evaluate values
+    · exact wanted
+    · exact False.elim (noValues.proof values ((counterexamples.correct values).mpr
+        ⟨original,by omega⟩))⟩
+
 /-- This is the common feasibility filter, not an integer-existence proof. -/
 def feasible {meaning : Valuation → Prop} (context : Context meaning) : WorkM Bool :=
   context.alternatives.foldlM (fun found rows => do

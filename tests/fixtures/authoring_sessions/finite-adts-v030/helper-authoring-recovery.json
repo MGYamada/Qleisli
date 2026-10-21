@@ -1,0 +1,522 @@
+{
+  "format": "qleisli.helper-authoring-recovery",
+  "version": 1,
+  "base_commit": "1cd87f79b2a2becf34f2bf065928fa3631d2795b",
+  "thread_id": "01a12c68-ecb8-7c83-9264-66796aabf74d",
+  "turn_id": "01a15af1-1ce3-7522-aece-ac25e49cdbf9",
+  "scope": "Exact retained authoring file-change and command events, recovered through read_thread after the external temporary directory disappeared. Historical commands and sources are inert data. Original full local observation reports/before-after maps are unavailable; retained command output is only the exact output shown in this event, not a substitute for lost raw streams. The first generic-check process has no terminal validation report and its result remains unknown. Current code requires fresh bounded validation.",
+  "items": [
+    {
+      "type": "fileChange",
+      "id": "exec-2b16bc37-6417-45e4-9186-609f3c96d0ec",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -6,2 +6,3 @@\n import QleisliKernel.SourceTypes.NaturalHeaders\n+import QleisliKernel.SourceTypes.NaturalCatalog\n import QleisliKernel.FiniteCarrier\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean",
+          "kind": {
+            "type": "add"
+          },
+          "diff": {
+            "text": "import QleisliKernel.SourceTypes.NaturalHeaders\n\n/-! Original Nat helpers and their complete acyclic dependency graph. Every\nprivate/unused helper is visited. This catalogue grants no generic body validity;\nnormalization and source-to-meaning obligations remain separate.\nCopyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/\nnamespace QleisliKernel.SourceTypes.NaturalCatalog\nopen Semantics.SourceNatural\nabbrev WorkM := Finite.WorkM\n\nstructure Key where\n  moduleName : String\n  declarationName : String\n  deriving BEq, DecidableEq, Repr\n\nstructure Original where\n  key : Key\n  source : String\n  declaration : Declaration\n  helper : NaturalHeaders.Helper\n  calls : List (Path × Key) := []\n\nprivate def adapt {α : Type} (result : Except String α) : WorkM α :=\n  Finite.lift (result.mapError fun _ => .request)\n\nprivate def keyCells (key : Key) : Nat :=\n  key.moduleName.utf8ByteSize+key.declarationName.utf8ByteSize+1\n\nprivate def gather (sources : Sources) : WorkM (List Original) := do\n  let (_,helpers) ← sources.toList.foldlM (fun (modules,helpers) (moduleName,source) => do\n    Finite.exactWork (Exact.charge ((moduleName.utf8ByteSize+1)*(modules.length+1)+source.utf8ByteSize+1))\n    Finite.guard (!modules.contains moduleName) .request\n    let declarations ← adapt (SourceTypes.declarations source)\n    let (_,helpers) ← declarations.foldlM (fun (names,helpers) declaration => do\n      Finite.exactWork (Exact.charge ((declaration.name.utf8ByteSize+1)*(names.length+1)))\n      Finite.guard (!names.contains declaration.name) .request\n      if declaration.kind != \"static-fn\" then return (declaration.name :: names,helpers)\n      let helper ← adapt (NaturalHeaders.read declaration)\n      let original : Original := ⟨⟨moduleName,declaration.name⟩,source,declaration,helper,[]⟩\n      return (declaration.name :: names,original :: helpers)) (([] : List String),helpers)\n    return (moduleName :: modules,helpers)) (([] : List String),([] : List Original))\n  return helpers.reverse\n\nprivate def resolve (sources : Sources) (original : Original) (path : Path) : WorkM Key := do\n  Finite.exactWork (Exact.charge ((path.map String.utf8ByteSize).sum+path.length+1))\n  if let [name] := path then\n    Finite.exactWork (Exact.charge ((name.utf8ByteSize+1)*(original.helper.parameters.length+1)))\n    Finite.guard (!original.helper.parameters.contains name) .request\n  let target ← resolveReference sources original.key.moduleName (List.intersperse \"::\" path)\n  Finite.guard (target.declaration.kind == \"static-fn\") .request\n  return ⟨target.moduleName,target.declaration.name⟩\n\nprivate def scan : Nat → Sources → List Original → Original → List Expr →\n    List (Path × Key) → WorkM (List (Path × Key)) :=\n  Nat.rec (fun _ _ _ pending calls =>\n      if pending.isEmpty then pure calls else throw .limit)\n    (fun _ recurse sources catalog original pending calls => do\n      Finite.exactWork (Exact.charge 1)\n      match pending with\n      | [] => return calls\n      | expression :: rest =>\n        match expression with\n        | .number _ => recurse sources catalog original rest calls\n        | .name path =>\n          let [name] := path | throw .request\n          Finite.exactWork (Exact.charge ((name.utf8ByteSize+1)*(original.helper.parameters.length+1)))\n          Finite.guard (original.helper.parameters.contains name) .request\n          recurse sources catalog original rest calls\n        | .add a b | .sub a b | .mul a b =>\n          Finite.exactWork (Exact.charge 2)\n          recurse sources catalog original (a::b::rest) calls\n        | .call path arguments =>\n          let key ← resolve sources original path\n          Finite.exactWork (Exact.charge ((catalog.length+1)*(keyCells key+1)+arguments.length+1))\n          let [target] := catalog.filter (fun entry => entry.key == key) | throw .request\n          Finite.guard (arguments.length == target.helper.parameters.length) .request\n          Finite.exactWork (Exact.charge ((calls.length+1)*((path.map String.utf8ByteSize).sum+keyCells key+1)))\n          let calls := if calls.contains (path,key) then calls else (path,key) :: calls\n          recurse sources catalog original (arguments ++ rest) calls)\n\nprivate def dependencies (sources : Sources) (catalog : List Original) (original : Original) :\n    WorkM Original := do\n  Finite.exactWork (Exact.charge (2*original.helper.premises.length+1))\n  let pending := original.helper.body :: original.helper.premises.flatMap (fun p => [p.left,p.right])\n  let calls ← scan (original.source.utf8ByteSize+1) sources catalog original pending []\n  return {original with calls := calls.reverse}\n\nprivate def order : Nat → List Original → List Original → WorkM (List Original) :=\n  Nat.rec (fun pending ready => if pending.isEmpty then pure ready.reverse else throw .request)\n    (fun _ recurse pending ready => do\n      if pending.isEmpty then return ready.reverse\n      Finite.exactWork (Exact.charge (pending.length+ready.length+1))\n      let readyKeys := ready.map (·.key)\n      let next ← pending.foldlM (fun selected entry => do\n        if selected.isSome then return selected\n        Finite.exactWork (Exact.charge ((entry.calls.map (fun call => keyCells call.2+1)).sum*(ready.length+1)+1))\n        return if entry.calls.all (fun call => readyKeys.contains call.2) then some entry else none) none\n      let some next := next | throw .request\n      Finite.exactWork (Exact.charge ((keyCells next.key+1)*(pending.length+1))))\n      recurse (pending.filter (fun entry => entry.key != next.key)) (next :: ready))\n\n/-- Original-source collection and topological order, including unused bodies.\nThe caller must still normalize every returned definition before any use. -/\ndef prepare (sources : Sources) : WorkM (List Original) := do\n  let catalog ← gather sources\n  let catalog ← catalog.mapM (dependencies sources catalog)\n  order catalog.length catalog []\n\nend QleisliKernel.SourceTypes.NaturalCatalog\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-fcd67cd8-7367-4fdf-806a-d2a32fb7c6a9",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-catalog-first-build '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 26476,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-catalog-first-build\", \"exit_code\": 1, \"seconds\": 17.773095291107893, \"source_unchanged\": true, \"pass\": false}\n✖ [14/14] Building QleisliKernel.SourceTypes.NaturalCatalog (3.8s)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalCatalog.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalCatalog.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalCatalog.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalCatalog.setup.json --json\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:6: Unknown identifier `recurse`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:69: Unknown identifier `next`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:77: Unknown identifier `ready`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:15: Unknown identifier `pending.filter`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:90:36: invalid `do` notation, expected type is not a monad application\n  Nat → List Original → List Original → WorkM (List Original)\nYou can use the `do` notation in pure code by writing `Id.run do` instead of `do`, where `Id` is the identity monad.\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:89:35: Invalid field notation: Type of\n  pending\nis not known; cannot resolve field `isEmpty`\n\nHint: Consider replacing the field projection with a call to one of the following:\n  • `Array.isEmpty`\n  • `ByteArray.isEmpty`\n  • `FloatArray.isEmpty`\n  • `List.isEmpty`\n  • `String.isEmpty`\n  • `Substring.isEmpty`\n  • `Std.DHashMap.isEmpty`\n  • `Std.DTreeMap.isEmpty`\n  • `Std.ExtDHashMap.isEmpty`\n  • `Std.ExtDTreeMap.isEmpty`\n  • `Std.ExtHashMap.isEmpty`\n  • `Std.ExtHashSet.isEmpty`\n  • `Std.ExtTreeMap.isEmpty`\n  • `Std.ExtTreeSet.isEmpty`\n  • `Std.Format.isEmpty`\n  • `Std.HashMap.isEmpty`\n  • `Std.HashSet.isEmpty`\n  • `Std.Iter.isEmpty`\n  • `Std.IterM.isEmpty`\n  • `Std.Queue.isEmpty`\n  • `Std.Rcc.isEmpty`\n  • `Std.Rci.isEmpty`\n  • `Std.Rco.isEmpty`\n  • `Std.Ric.isEmpty`\n  • `Std.Rii.isEmpty`\n  • `Std.Rio.isEmpty`\n  • `Std.Roc.isEmpty`\n  • `Std.Roi.isEmpty`\n  • `Std.Roo.isEmpty`\n  • `Std.StreamMap.isEmpty`\n  • `Std.TreeMap.isEmpty`\n  • `Std.TreeSet.isEmpty`\n  • `String.Internal.isEmpty`\n  • `String.Slice.isEmpty`\n  • `Substring.Raw.isEmpty`\n  • `Std.DHashMap.Raw.isEmpty`\n  • `Std.DTreeMap.Raw.isEmpty`\n  • `Std.HashMap.Raw.isEmpty`\n  • `Std.HashSet.Raw.isEmpty`\n  • `Std.Http.Headers.isEmpty`\n  • `Std.Http.Trailer.isEmpty`\n  • `Std.Internal.IndexMultiMap.isEmpty`\n  • `Std.Iter.Total.isEmpty`\n  • `Std.IterM.Total.isEmpty`\n  • `Std.TreeMap.Raw.isEmpty`\n  • `Std.TreeSet.Raw.isEmpty`\n  • `Substring.Raw.Internal.isEmpty`\n  • `Std.DTreeMap.Internal.Impl.isEmpty`\n  • `Std.Http.Internal.ChunkedBuffer.isEmpty`\n  • `Std.Http.URI.Path.isEmpty`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:89:86: Invalid dotted identifier notation: The expected type of `.request` could not be determined\n\nHint: Using `Finite.Error.request would be unambiguous:\n  [apply] `Finite.Error.request`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:83: unexpected token ')'; expected command\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.SourceTypes.NaturalCatalog\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-bf798383-e57a-47a7-83a3-e88c29be27c2",
+      "command": "/bin/zsh -lc \"tail -24 lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean; python3 - <<'PY'\nfrom pathlib import Path\np=Path('/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-helper-catalog-first-build')\nfor n in ['stdout','stderr']:\n f=p/n\n if f.exists() and f.stat().st_size:print(n,f.read_text()[-2600:])\nPY\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 24,
+      "output": {
+        "text": "  return {original with calls := calls.reverse}\n\nprivate def order : Nat → List Original → List Original → WorkM (List Original) :=\n  Nat.rec (fun pending ready => if pending.isEmpty then pure ready.reverse else throw .request)\n    (fun _ recurse pending ready => do\n      if pending.isEmpty then return ready.reverse\n      Finite.exactWork (Exact.charge (pending.length+ready.length+1))\n      let readyKeys := ready.map (·.key)\n      let next ← pending.foldlM (fun selected entry => do\n        if selected.isSome then return selected\n        Finite.exactWork (Exact.charge ((entry.calls.map (fun call => keyCells call.2+1)).sum*(ready.length+1)+1))\n        return if entry.calls.all (fun call => readyKeys.contains call.2) then some entry else none) none\n      let some next := next | throw .request\n      Finite.exactWork (Exact.charge ((keyCells next.key+1)*(pending.length+1))))\n      recurse (pending.filter (fun entry => entry.key != next.key)) (next :: ready))\n\n/-- Original-source collection and topological order, including unused bodies.\nThe caller must still normalize every returned definition before any use. -/\ndef prepare (sources : Sources) : WorkM (List Original) := do\n  let catalog ← gather sources\n  let catalog ← catalog.mapM (dependencies sources catalog)\n  order catalog.length catalog []\n\nend QleisliKernel.SourceTypes.NaturalCatalog\nstdout turalCatalog.lean:100:69: Unknown identifier `next`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:77: Unknown identifier `ready`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:15: Unknown identifier `pending.filter`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:90:36: invalid `do` notation, expected type is not a monad application\n  Nat → List Original → List Original → WorkM (List Original)\nYou can use the `do` notation in pure code by writing `Id.run do` instead of `do`, where `Id` is the identity monad.\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:89:35: Invalid field notation: Type of\n  pending\nis not known; cannot resolve field `isEmpty`\n\nHint: Consider replacing the field projection with a call to one of the following:\n  • `Array.isEmpty`\n  • `ByteArray.isEmpty`\n  • `FloatArray.isEmpty`\n  • `List.isEmpty`\n  • `String.isEmpty`\n  • `Substring.isEmpty`\n  • `Std.DHashMap.isEmpty`\n  • `Std.DTreeMap.isEmpty`\n  • `Std.ExtDHashMap.isEmpty`\n  • `Std.ExtDTreeMap.isEmpty`\n  • `Std.ExtHashMap.isEmpty`\n  • `Std.ExtHashSet.isEmpty`\n  • `Std.ExtTreeMap.isEmpty`\n  • `Std.ExtTreeSet.isEmpty`\n  • `Std.Format.isEmpty`\n  • `Std.HashMap.isEmpty`\n  • `Std.HashSet.isEmpty`\n  • `Std.Iter.isEmpty`\n  • `Std.IterM.isEmpty`\n  • `Std.Queue.isEmpty`\n  • `Std.Rcc.isEmpty`\n  • `Std.Rci.isEmpty`\n  • `Std.Rco.isEmpty`\n  • `Std.Ric.isEmpty`\n  • `Std.Rii.isEmpty`\n  • `Std.Rio.isEmpty`\n  • `Std.Roc.isEmpty`\n  • `Std.Roi.isEmpty`\n  • `Std.Roo.isEmpty`\n  • `Std.StreamMap.isEmpty`\n  • `Std.TreeMap.isEmpty`\n  • `Std.TreeSet.isEmpty`\n  • `String.Internal.isEmpty`\n  • `String.Slice.isEmpty`\n  • `Substring.Raw.isEmpty`\n  • `Std.DHashMap.Raw.isEmpty`\n  • `Std.DTreeMap.Raw.isEmpty`\n  • `Std.HashMap.Raw.isEmpty`\n  • `Std.HashSet.Raw.isEmpty`\n  • `Std.Http.Headers.isEmpty`\n  • `Std.Http.Trailer.isEmpty`\n  • `Std.Internal.IndexMultiMap.isEmpty`\n  • `Std.Iter.Total.isEmpty`\n  • `Std.IterM.Total.isEmpty`\n  • `Std.TreeMap.Raw.isEmpty`\n  • `Std.TreeSet.Raw.isEmpty`\n  • `Substring.Raw.Internal.isEmpty`\n  • `Std.DTreeMap.Internal.Impl.isEmpty`\n  • `Std.Http.Internal.ChunkedBuffer.isEmpty`\n  • `Std.Http.URI.Path.isEmpty`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:89:86: Invalid dotted identifier notation: The expected type of `.request` could not be determined\n\nHint: Using `Finite.Error.request would be unambiguous:\n  [apply] `Finite.Error.request`\nerror: QleisliKernel/SourceTypes/NaturalCatalog.lean:100:83: unexpected token ')'; expected command\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.SourceTypes.NaturalCatalog\n\nstderr error: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-c3aceb60-ad3c-4600-9454-617a7f97782c",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean');s=p.read_text().replace('*(pending.length+1))))','*(pending.length+1)))');p.write_text(s)\nPY\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 0
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-ca3f5a45-6d9f-4416-bc89-a312dcbbd8e6",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -150,2 +150,15 @@\n \n+/-- Explicit argument correspondence for callers of the independent evaluator.\n+The call interpretation is still an assumption requiring original-source binding. -/\n+theorem evaluate_call (fuel : Nat) (names : Names) (calls : Calls) (path : Path)\n+    (arguments : List Expr) (values : List Nat) (n : Nat)\n+    (args : List.Forall₂ (fun expression value => evaluate fuel names calls expression = some value)\n+      arguments values) (found : calls path values = some n) :\n+    evaluate (fuel+1) names calls (.call path arguments) = some n := by\n+  have all : mapValues (evaluate fuel names calls) arguments = some values := by\n+    induction args with\n+    | nil => rfl\n+    | cons head _ ih => simp only [mapValues_cons,head,ih,Option.pure_def]\n+  simpa only [evaluate_succ,evaluateStep,all] using found\n+\n end QleisliKernel.Semantics.SourceNatural\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -7,2 +7,3 @@\n import QleisliKernel.SourceTypes.NaturalCatalog\n+import QleisliKernel.SourceTypes.NaturalNormalize\n import QleisliKernel.FiniteCarrier\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean",
+          "kind": {
+            "type": "add"
+          },
+          "diff": {
+            "text": "import QleisliKernel.SourceTypes.NaturalPredicates\nimport QleisliKernel.Semantics.SourceNatural\n\n/-! Symbolic existing Nat normalization with exact original-expression meaning.\nNames/calls must be supplied by bound original readers; these parameters do not\ngive a producer lookup/template authority or grant source execution by themselves.\nCopyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/\nnamespace QleisliKernel.SourceTypes.NaturalNormalize\nopen Semantics.SourceNatural Semantics.SourceAffine NaturalAffine NaturalPredicates\n\nstructure Result (names : Valuation → Names) (calls : Calls) (meaning : Valuation → Prop)\n    (fuel : Nat) (expression : Expr) where\n  form : Form\n  correct : ∀ values,meaning values → ∃ n,\n    evaluate fuel (names values) calls expression = some n ∧ form.evaluate values = (n : Int)\n\ntheorem Result.value {names calls meaning fuel expression}\n    (result : Result names calls meaning fuel expression) (values : Valuation)\n    (held : meaning values) : ∃ n,Value (names values) calls expression n ∧\n      result.form.evaluate values = (n : Int) := by\n  obtain ⟨n,computed,same⟩ := result.correct values held\n  exact ⟨n,evaluate_value _ _ _ _ _ computed,same⟩\n\nstructure Arguments (names : Valuation → Names) (calls : Calls) (meaning : Valuation → Prop)\n    (fuel : Nat) (arguments : List Expr) where\n  forms : List Form\n  correct : ∀ values,meaning values → ∃ numbers,\n    List.Forall₂ (fun e n => evaluate fuel (names values) calls e = some n) arguments numbers ∧\n    List.Forall₂ (fun form n => form.evaluate values = (n : Int)) forms numbers\n\nstructure Readers (names : Valuation → Names) (calls : Calls) (meaning : Valuation → Prop) where\n  name : ∀ fuel path, WorkM (Result names calls meaning (fuel+1) (.name path))\n  call : ∀ fuel path arguments, Arguments names calls meaning fuel arguments →\n    WorkM (Result names calls meaning (fuel+1) (.call path arguments))\n\nprivate def readArguments {names calls meaning fuel}\n    (read : ∀ expression,WorkM (Result names calls meaning fuel expression)) :\n    Nat → (arguments : List Expr) → WorkM (Arguments names calls meaning fuel arguments) :=\n  Nat.rec (fun arguments => match arguments with\n      | [] => pure ⟨[],fun _ _ => ⟨[],.nil,.nil⟩⟩\n      | _ :: _ => throw .limit)\n    (fun _ recurse arguments => do\n      Finite.exactWork (Exact.charge 1)\n      match arguments with\n      | [] => return ⟨[],fun _ _ => ⟨[],.nil,.nil⟩⟩\n      | first :: rest =>\n        let head ← read first\n        let tail ← recurse rest\n        return ⟨head.form :: tail.forms,by\n          intro values held\n          obtain ⟨n,computed,same⟩ := head.correct values held\n          obtain ⟨numbers,computedTail,sameTail⟩ := tail.correct values held\n          exact ⟨n :: numbers,.cons computed computedTail,.cons same sameTail⟩⟩)\n\nprivate def step {names calls meaning} (fuel variables : Nat) (context : Context meaning)\n    (readers : Readers names calls meaning)\n    (recurse : ∀ expression,WorkM (Result names calls meaning fuel expression))\n    (expression : Expr) : WorkM (Result names calls meaning (fuel+1) expression) := do\n  Finite.exactWork (Exact.charge 1)\n  match expression with\n  | .number n =>\n    let result ← witness (constant variables n)\n    return ⟨result.val,by\n      intro values _held\n      refine ⟨n,rfl,?_⟩\n      obtain ⟨work,left,ok⟩ := result.property\n      exact constant_meaning _ _ _ _ _ ok values⟩\n  | .name path => readers.name fuel path\n  | .call path arguments => do\n    Finite.exactWork (Exact.charge (arguments.length+1))\n    let args ← readArguments recurse (arguments.length+1) arguments\n    readers.call fuel path arguments args\n  | .add a b =>\n    let first ← recurse a\n    let second ← recurse b\n    let result ← witness (add first.form second.form)\n    return ⟨result.val,by\n      intro values held\n      obtain ⟨x,hx,px⟩ := first.correct values held\n      obtain ⟨y,hy,py⟩ := second.correct values held\n      refine ⟨x+y,?_,?_⟩\n      · change (do return (← evaluate fuel (names values) calls a) +\n          (← evaluate fuel (names values) calls b)) = some (x+y)\n        simp only [hx,hy,Option.pure_def]\n      · obtain ⟨work,left,ok⟩ := result.property\n        rw [add_meaning _ _ _ _ _ ok,px,py]\n        rfl⟩\n  | .sub a b =>\n    let first ← recurse a\n    let second ← recurse b\n    let nonnegative ← provesLe context second.form first.form\n    let result ← witness (sub first.form second.form)\n    return ⟨result.val,by\n      intro values held\n      obtain ⟨x,hx,px⟩ := first.correct values held\n      obtain ⟨y,hy,py⟩ := second.correct values held\n      have le : y ≤ x := by\n        have bounded := nonnegative.proof values held\n        rw [px,py] at bounded\n        omega\n      refine ⟨x-y,?_,?_⟩\n      · change (do\n          let x ← evaluate fuel (names values) calls a\n          let y ← evaluate fuel (names values) calls b\n          if y ≤ x then some (x-y) else none) = some (x-y)\n        simp only [hx,hy,le,if_true]\n      · obtain ⟨work,left,ok⟩ := result.property\n        rw [sub_meaning _ _ _ _ _ ok,px,py]\n        omega⟩\n  | .mul a b =>\n    let first ← recurse a\n    let second ← recurse b\n    let result ← witness (multiply first.form second.form)\n    return ⟨result.val,by\n      intro values held\n      obtain ⟨x,hx,px⟩ := first.correct values held\n      obtain ⟨y,hy,py⟩ := second.correct values held\n      refine ⟨x*y,?_,?_⟩\n      · change (do return (← evaluate fuel (names values) calls a) *\n          (← evaluate fuel (names values) calls b)) = some (x*y)\n        simp only [hx,hy,Option.pure_def]\n      · obtain ⟨work,left,ok⟩ := result.property\n        rw [multiply_meaning _ _ _ _ _ ok,px,py]\n        rfl⟩\n\n/-- Every successful arithmetic step is tied to the independent evaluator and\nValue relation. Generic original-reader obligations are deliberately explicit. -/\ndef normalize {names calls meaning} (variables : Nat) (context : Context meaning)\n    (readers : Readers names calls meaning) :\n    (fuel : Nat) → (expression : Expr) → WorkM (Result names calls meaning fuel expression) :=\n  Nat.rec (fun _ => throw .limit) (fun fuel recurse => step fuel variables context readers recurse)\n\nend QleisliKernel.SourceTypes.NaturalNormalize\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalPredicates.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -136,2 +136,25 @@\n \n+/-- The subtraction guard uses the common direct `b-a+1` counterexample\n+construction, without introducing comparison's extra checked negation. -/\n+def provesLe {meaning : Valuation → Prop} (context : Context meaning) (a b : Form) :\n+    WorkM (Established (∀ values,meaning values → a.evaluate values ≤ b.evaluate values)) := do\n+  let diff ← difference b a\n+  let one ← witness (constant b.coefficients.length 1)\n+  have oneMeaning : ∀ values,one.val.evaluate values = 1 := by\n+    obtain ⟨work,left,ok⟩ := one.property\n+    exact constant_meaning _ _ _ _ _ ok\n+  let counterexample ← increment diff.form one.val oneMeaning\n+  let opposite : Context (fun values => b.evaluate values-a.evaluate values+1 ≤ 0) :=\n+    ⟨[[counterexample.form]],by\n+      intro values\n+      simp only [satisfies_singleton,holds_singleton,counterexample.correct,diff.correct]⟩\n+  let counterexamples ← conjunction context opposite\n+  let noValues ← refuteLoop counterexamples.alternatives.length counterexamples.alternatives\n+  return ⟨by\n+    intro values original\n+    by_cases wanted : a.evaluate values ≤ b.evaluate values\n+    · exact wanted\n+    · exact False.elim (noValues.proof values ((counterexamples.correct values).mpr\n+        ⟨original,by omega⟩))⟩\n+\n /-- This is the common feasibility filter, not an integer-existence proof. -/\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-d653d514-7e1c-44e8-b7ba-56a48aaf0fd7",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-normalize-first-build '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\",\\\"QleisliKernel.SourceTypes.NaturalNormalize\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 13307,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-normalize-first-build\", \"exit_code\": 1, \"seconds\": 7.526196124963462, \"source_unchanged\": true, \"pass\": false}\n✖ [13/18] Building QleisliKernel.Semantics.SourceNatural (3.5s)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.setup.json --json\nerror: QleisliKernel/Semantics/SourceNatural.lean:155:12: Unknown constant `List.Forall₂`\nerror: Lean exited with code 1\n✔ [17/18] Built QleisliKernel.SourceTypes.NaturalPredicates (3.6s)\nSome required targets logged failures:\n- QleisliKernel.Semantics.SourceNatural\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-3747673a-d749-4f0a-a43f-93154f8f39cb",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -23,2 +23,7 @@\n \n+/-- Pointwise correspondence of complete ordered lists, including their shape. -/\n+inductive Related {α β : Type} (relation : α → β → Prop) : List α → List β → Prop where\n+  | nil : Related relation [] []\n+  | cons {a b as bs} : relation a b → Related relation as bs → Related relation (a::as) (b::bs)\n+\n mutual\n@@ -154,3 +159,3 @@\n     (arguments : List Expr) (values : List Nat) (n : Nat)\n-    (args : List.Forall₂ (fun expression value => evaluate fuel names calls expression = some value)\n+    (args : Related (fun expression value => evaluate fuel names calls expression = some value)\n       arguments values) (found : calls path values = some n) :\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -27,4 +27,4 @@\n   correct : ∀ values,meaning values → ∃ numbers,\n-    List.Forall₂ (fun e n => evaluate fuel (names values) calls e = some n) arguments numbers ∧\n-    List.Forall₂ (fun form n => form.evaluate values = (n : Int)) forms numbers\n+    Related (fun e n => evaluate fuel (names values) calls e = some n) arguments numbers ∧\n+    Related (fun form n => form.evaluate values = (n : Int)) forms numbers\n \n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-583e9043-62f0-4c2f-adb9-2c3c74b2f9d1",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-normalize-build-v2 '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\",\\\"QleisliKernel.SourceTypes.NaturalNormalize\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 7858,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-normalize-build-v2\", \"exit_code\": 1, \"seconds\": 4.593730125110596, \"source_unchanged\": true, \"pass\": false}\n✖ [14/18] Building QleisliKernel.Semantics.SourceNatural (481ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.setup.json --json\nerror: QleisliKernel/Semantics/SourceNatural.lean:166:21: unsolved goals\ncase cons\nfuel : Nat\nnames : Names\ncalls : Calls\npath : Path\narguments : List Expr\nvalues : List Nat\nn : Nat\na✝¹ : Expr\nb✝ : Nat\nas✝ : List Expr\nbs✝ : List Nat\nhead : evaluate fuel names calls a✝¹ = some b✝\na✝ : Related (fun expression value => evaluate fuel names calls expression = some value) as✝ bs✝\nih : calls path bs✝ = some n → mapValues (evaluate fuel names calls) as✝ = some bs✝\nfound : calls path (b✝ :: bs✝) = some n\n⊢ (do\n      let value ← some b✝\n      let values ← mapValues (evaluate fuel names calls) as✝\n      some (value :: values)) =\n    some (b✝ :: bs✝)\nerror: QleisliKernel/Semantics/SourceNatural.lean:166:55: This simp argument is unused:\n  ih\n\nHint: Omit it from the simp argument list.\n  simp only [mapValues_cons, ̲head,i̵h̵,̵ ̲Option.pure_def]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.Semantics.SourceNatural\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-5aad3068-498d-45a7-bd75-94b4b1e34ebd",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -163,2 +163,3 @@\n   have all : mapValues (evaluate fuel names calls) arguments = some values := by\n+    clear found\n     induction args with\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-342bb00e-54fd-48ba-b89f-7d4448a317cf",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-normalize-build-v3 '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\",\\\"QleisliKernel.SourceTypes.NaturalNormalize\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 9530,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-normalize-build-v3\", \"exit_code\": 1, \"seconds\": 6.332119250204414, \"source_unchanged\": true, \"pass\": false}\n✖ [14/18] Building QleisliKernel.Semantics.SourceNatural (2.4s)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Semantics/SourceNatural.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Semantics/SourceNatural.setup.json --json\nerror: QleisliKernel/Semantics/SourceNatural.lean:167:21: unsolved goals\ncase cons\nfuel : Nat\nnames : Names\ncalls : Calls\npath : Path\narguments : List Expr\nvalues : List Nat\nn : Nat\na✝¹ : Expr\nb✝ : Nat\nas✝ : List Expr\nbs✝ : List Nat\nhead : evaluate fuel names calls a✝¹ = some b✝\na✝ : Related (fun expression value => evaluate fuel names calls expression = some value) as✝ bs✝\nih : mapValues (evaluate fuel names calls) as✝ = some bs✝\n⊢ (do\n      let value ← some b✝\n      let values ← some bs✝\n      some (value :: values)) =\n    some (b✝ :: bs✝)\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.Semantics.SourceNatural\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-b99fe043-6598-4b1f-82e2-a0aa445176c3",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -166,3 +166,3 @@\n     | nil => rfl\n-    | cons head _ ih => simp only [mapValues_cons,head,ih,Option.pure_def]\n+    | cons head _ ih => simp only [mapValues_cons,head,ih,Option.pure_def]; rfl\n   simpa only [evaluate_succ,evaluateStep,all] using found\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -83,3 +83,3 @@\n           (← evaluate fuel (names values) calls b)) = some (x+y)\n-        simp only [hx,hy,Option.pure_def]\n+        simp only [hx,hy,Option.pure_def] <;> rfl\n       · obtain ⟨work,left,ok⟩ := result.property\n@@ -105,3 +105,3 @@\n           if y ≤ x then some (x-y) else none) = some (x-y)\n-        simp only [hx,hy,le,if_true]\n+        simp only [hx,hy,le,if_true] <;> rfl\n       · obtain ⟨work,left,ok⟩ := result.property\n@@ -120,3 +120,3 @@\n           (← evaluate fuel (names values) calls b)) = some (x*y)\n-        simp only [hx,hy,Option.pure_def]\n+        simp only [hx,hy,Option.pure_def] <;> rfl\n       · obtain ⟨work,left,ok⟩ := result.property\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-c6a46f6e-8205-4b1b-837e-d0b556a3683e",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-normalize-build-v4 '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\",\\\"QleisliKernel.SourceTypes.NaturalNormalize\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 10464,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-normalize-build-v4\", \"exit_code\": 1, \"seconds\": 7.33435449982062, \"source_unchanged\": true, \"pass\": false}\n✔ [14/18] Built QleisliKernel.Semantics.SourceNatural (1.8s)\n✔ [15/18] Built QleisliKernel.SourceTypes.NaturalSyntax (516ms)\n✖ [16/18] Building QleisliKernel.SourceTypes.NaturalNormalize (507ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalNormalize.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalNormalize.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalNormalize.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalNormalize.setup.json --json\nerror: QleisliKernel/SourceTypes/NaturalNormalize.lean:29:67: Application type mismatch: The argument\n  numbers\nhas type\n  List Nat\nbut is expected to have type\n  List Int\nin the application\n  Related (fun form n => ?m.15 = n) forms numbers\nerror: QleisliKernel/SourceTypes/NaturalNormalize.lean:36:12: declaration uses `sorry`\nerror: QleisliKernel/SourceTypes/NaturalNormalize.lean:106:41: Tactic `rfl` failed: The left-hand side\n  do\n    let x ← some x\n    let y ← some y\n    if y ≤ x then some (x - y) else none\nis not definitionally equal to the right-hand side\n  some (x - y)\n\ncase refine_1\nnames : Valuation → Names\ncalls : Calls\nmeaning : Valuation → Prop\nfuel variables : Nat\ncontext : Context meaning\nreaders : Readers names calls meaning\nrecurse : (expression : Expr) → WorkM (Result names calls meaning fuel expression)\nexpression : Expr\nx✝ : PUnit\na b : Expr\nfirst : Result names calls meaning fuel a\nsecond : Result names calls meaning fuel b\nnonnegative :\n  Established (∀ (values : Valuation), meaning values → second.form.evaluate values ≤ first.form.evaluate values)\nresult : { value // ∃ work left, ExceptT.run (sub first.form second.form) work = (Except.ok value, left) }\nvalues : Valuation\nheld : meaning values\nx : Nat\nhx : evaluate fuel (names values) calls a = some x\npx : first.form.evaluate values = ↑x\ny : Nat\nhy : evaluate fuel (names values) calls b = some y\npy : second.form.evaluate values = ↑y\nle : y ≤ x\n⊢ (do\n      let x ← some x\n      let y ← some y\n      if y ≤ x then some (x - y) else none) =\n    some (x - y)\nerror: QleisliKernel/SourceTypes/NaturalNormalize.lean:106:25: This simp argument is unused:\n  le\n\nHint: Omit it from the simp argument list.\n  simp only [hx, ̲hy,l̵e̵,̵ ̲if_true]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: QleisliKernel/SourceTypes/NaturalNormalize.lean:106:28: This simp argument is unused:\n  if_true\n\nHint: Omit it from the simp argument list.\n  simp only [̵h̵x̵,̵h̵y̵,̵l̵e̵,̵i̵f̵_̵t̵r̵u̵e̵]̵[̲h̲x̲,̲ ̲h̲y̲,̲ ̲l̲e̲]̲\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: Lean exited with code 1\n✔ [17/18] Built QleisliKernel.SourceTypes.NaturalHeaders (467ms)\n✔ [18/18] Built QleisliKernel.SourceTypes.NaturalCatalog (443ms)\nSome required targets logged failures:\n- QleisliKernel.SourceTypes.NaturalNormalize\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-e96ae29a-80a7-462a-b3c4-c1d5436c074f",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -28,3 +28,3 @@\n     Related (fun e n => evaluate fuel (names values) calls e = some n) arguments numbers ∧\n-    Related (fun form n => form.evaluate values = (n : Int)) forms numbers\n+    Related (fun (form : Form) (n : Nat) => form.evaluate values = (n : Int)) forms numbers\n \n@@ -105,3 +105,5 @@\n           if y ≤ x then some (x-y) else none) = some (x-y)\n-        simp only [hx,hy,le,if_true] <;> rfl\n+        simp only [hx,hy]\n+        change (if y ≤ x then some (x-y) else none) = some (x-y)\n+        rw [if_pos le]\n       · obtain ⟨work,left,ok⟩ := result.property\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-f3efe366-eb7d-49d7-83de-bd777a35dc54",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-normalize-build-v5 '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalCatalog\\\",\\\"QleisliKernel.SourceTypes.NaturalNormalize\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 7376,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-normalize-build-v5\", \"exit_code\": 0, \"seconds\": 4.343694957904518, \"source_unchanged\": true, \"pass\": true}\n✔ [18/18] Built QleisliKernel.SourceTypes.NaturalNormalize (503ms)\nBuild completed successfully (18 jobs).\n\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-e6f9a5ee-e950-4e89-8332-b6814bfc08ba",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceAffine.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -70,2 +70,24 @@\n \n+def coordinate (variables position : Nat) : Form :=\n+  ⟨0,List.replicate position 0 ++ 1 :: List.replicate (variables-position-1) 0⟩\n+\n+private theorem dot_zero_prefix (count : Nat) (tail : List Int) (values : Valuation) :\n+    dot (List.replicate count 0 ++ tail) values = dot tail (fun i => values (i+count)) := by\n+  induction count generalizing values with\n+  | zero => simp\n+  | succ count ih =>\n+    simp only [List.replicate_succ,List.cons_append,dot_cons,Int.zero_mul,Int.zero_add,ih]\n+    simp only [Nat.add_assoc]\n+\n+theorem coordinate_evaluate (variables position : Nat) (values : Valuation) :\n+    (coordinate variables position).evaluate values = values position := by\n+  have zero : (List.replicate (variables-position-1) (0 : Int)).all (· == 0) = true := by simp\n+  simp only [coordinate,Form.evaluate,dot_zero_prefix,dot_cons,dot_zero _ zero,\n+    Int.zero_add,Int.one_mul,Int.add_zero,Nat.zero_add]\n+\n+theorem coordinate_length (variables position : Nat) (bound : position < variables) :\n+    (coordinate variables position).coefficients.length = variables := by\n+  simp only [coordinate,List.length_append,List.length_replicate,List.length_cons]\n+  omega\n+\n /-- Every row represents an exact integer inequality `row(values) <= 0`. -/\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -8,2 +8,3 @@\n import QleisliKernel.SourceTypes.NaturalNormalize\n+import QleisliKernel.SourceTypes.NaturalFrames\n import QleisliKernel.FiniteCarrier\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -45,3 +45,3 @@\n   Finite.exactWork (Exact.charge (variables+1))\n-  return ⟨0,(List.range variables).map (fun i => if i == position then 1 else 0)⟩\n+  return coordinate variables position\n \n@@ -99,2 +99,15 @@\n \n+theorem parameter_value (variables position : Nat) (result : Form) (work left : Nat)\n+    (ok : (parameter variables position).run work = (.ok result,left)) :\n+    result = coordinate variables position := by\n+  obtain ⟨_,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok\n+  obtain ⟨_,w₂,_,h⟩ := Finite.bind_success _ _ _ _ _ h\n+  exact (Finite.pure_success _ _ _ _ h).1\n+\n+theorem parameter_meaning (variables position : Nat) (result : Form) (work left : Nat)\n+    (ok : (parameter variables position).run work = (.ok result,left)) (values : Valuation) :\n+    result.evaluate values = values position := by\n+  rw [parameter_value _ _ _ _ _ ok]\n+  exact coordinate_evaluate _ _ _\n+\n theorem scale_value (factor : Int) (a result : Form) (work left : Nat)\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalFrames.lean",
+          "kind": {
+            "type": "add"
+          },
+          "diff": {
+            "text": "import QleisliKernel.SourceTypes.NaturalCatalog\nimport QleisliKernel.SourceTypes.NaturalNormalize\n\n/-! Original formal identities in canonical affine order. Original ordinals\nretain positional calls; sorting matches BinderKey's name-first iteration without\nconfusing binders from separate original declarations.\nCopyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/\nnamespace QleisliKernel.SourceTypes.NaturalFrames\nopen Semantics.SourceNatural Semantics.SourceAffine NaturalAffine NaturalPredicates\n\nstructure Binder where\n  owner : NaturalCatalog.Key\n  ordinal : Nat\n  name : String\n  deriving BEq, DecidableEq, Repr\n\nstructure Frame where\n  binders : List Binder\n\ndef original (helper : NaturalCatalog.Original) : Frame :=\n  let binders := helper.helper.parameters.zipIdx.map fun (name,ordinal) =>\n    (⟨helper.key,ordinal,name⟩ : Binder)\n  ⟨binders.mergeSort (fun a b => a.name ≤ b.name)⟩\n\ndef lookup (frame : Frame) (path : Path) : Option Nat := do\n  let [name] := path | none\n  let (_,position) ← frame.binders.zipIdx.find? (fun (binder,_) => binder.name == name)\n  return position\n\ndef names (frame : Frame) (values : Valuation) (path : Path) : Option Nat :=\n  (lookup frame path).map (fun position => (values position).toNat)\n\ndef Natural (frame : Frame) (values : Valuation) : Prop :=\n  ∀ position,position < frame.binders.length → 0 ≤ values position\n\ndef initial (frame : Frame) : WorkM (Context (Natural frame)) := do\n  Finite.guard (frame.binders.length ≤ 32) .limit\n  Finite.exactWork (Exact.charge (frame.binders.length*(frame.binders.length+3)+1))\n  let rows := (List.range frame.binders.length).map (fun position =>\n    (coordinate frame.binders.length position).scale (-1))\n  let _ ← rows.mapM valid\n  return ⟨[rows],by\n    intro values\n    rw [satisfies_singleton]\n    constructor\n    · intro held position bound\n      have member : (coordinate frame.binders.length position).scale (-1) ∈ rows :=\n        List.mem_map.mpr ⟨position,List.mem_range.mpr bound,rfl⟩\n      have negative := held _ member\n      rw [Form.evaluate_scale,coordinate_evaluate] at negative\n      omega\n    · intro held row member\n      obtain ⟨position,bound,same⟩ := List.mem_map.mp member\n      subst row\n      rw [Form.evaluate_scale,coordinate_evaluate]\n      have nonnegative := held position (List.mem_range.mp bound)\n      omega⟩\n\ndef readName {meaning : Valuation → Prop} (frame : Frame) (calls : Calls)\n    (natural : ∀ values,meaning values → Natural frame values) (fuel : Nat) (path : Path) :\n    WorkM (NaturalNormalize.Result (names frame) calls meaning (fuel+1) (.name path)) := do\n  Finite.exactWork (Exact.charge ((path.map String.utf8ByteSize).sum+\n    (frame.binders.map (fun b => b.name.utf8ByteSize+1)).sum+1))\n  let some position := found : lookup frame path | throw .request\n  if bound : position < frame.binders.length then\n    let result ← witness (parameter frame.binders.length position)\n    return ⟨result.val,by\n      intro values held\n      refine ⟨(values position).toNat,?_,?_⟩\n      · change names frame values path = some (values position).toNat\n        simp only [names,found,Option.map_some]\n      · obtain ⟨work,left,ok⟩ := result.property\n        rw [parameter_meaning _ _ _ _ _ ok]\n        exact (Int.toNat_of_nonneg (natural values held position bound)).symm⟩\n  else throw .request\n\nend QleisliKernel.SourceTypes.NaturalFrames\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-136194d5-0783-40f9-b9bc-5a17f860f5dd",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-frames-first-build '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalFrames\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 10413,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-frames-first-build\", \"exit_code\": 1, \"seconds\": 7.36385149997659, \"source_unchanged\": true, \"pass\": false}\n✔ [12/19] Built QleisliKernel.Semantics.SourceAffine (501ms)\n✔ [13/19] Built QleisliKernel.SourceTypes.NaturalAffine (445ms)\n✔ [14/19] Built QleisliKernel.SourceTypes.NaturalHeaders (489ms)\n✔ [15/19] Built QleisliKernel.SourceTypes.NaturalCatalog (599ms)\n✔ [16/19] Built QleisliKernel.SourceTypes.NaturalConstraints (627ms)\n✔ [17/19] Built QleisliKernel.SourceTypes.NaturalPredicates (724ms)\n✔ [18/19] Built QleisliKernel.SourceTypes.NaturalNormalize (590ms)\n✖ [19/19] Building QleisliKernel.SourceTypes.NaturalFrames (457ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalFrames.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalFrames.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalFrames.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalFrames.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalFrames.setup.json --json\nerror: QleisliKernel/SourceTypes/NaturalFrames.lean:64:23: Unknown identifier `found`\nerror: QleisliKernel/SourceTypes/NaturalFrames.lean:64:2: Application type mismatch: The argument\n  PUnit.unit\nhas type\n  PUnit\nbut is expected to have type\n  NaturalNormalize.Result (names frame) calls meaning (fuel + 1) (Expr.name path)\nin the application\n  pure PUnit.unit\nerror: QleisliKernel/SourceTypes/NaturalFrames.lean:64:29: unexpected token ':'; expected command\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.SourceTypes.NaturalFrames\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-8226707b-137e-4acf-9dcf-8948b8bc6cf9",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('lean-kernel/QleisliKernel/SourceTypes/NaturalFrames.lean');s=p.read_text();a=s.index('  let some position := found :');b=s.index('\\\\nend QleisliKernel.SourceTypes.NaturalFrames',a)\ns=s[:a]+'''  match found : lookup frame path with\n  | none => throw .request\n  | some position =>\n    if bound : position < frame.binders.length then\n      let result ← witness (parameter frame.binders.length position)\n      return ⟨result.val,by\n        intro values held\n        refine ⟨(values position).toNat,?_,?_⟩\n        · change names frame values path = some (values position).toNat\n          simp only [names,found,Option.map_some]\n        · obtain ⟨work,left,ok⟩ := result.property\n          rw [parameter_meaning _ _ _ _ _ ok]\n          exact (Int.toNat_of_nonneg (natural values held position bound)).symm⟩\n    else throw .request\n'''+s[b:];p.write_text(s)\nPY\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 0
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-f5d64253-3423-4efc-b779-e130e9a0c3bb",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -9,2 +9,3 @@\n import QleisliKernel.SourceTypes.NaturalFrames\n+import QleisliKernel.SourceTypes.NaturalSubstitute\n import QleisliKernel.FiniteCarrier\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalSubstitute.lean",
+          "kind": {
+            "type": "add"
+          },
+          "diff": {
+            "text": "import QleisliKernel.SourceTypes.NaturalAffine\n\n/-! Simultaneous affine substitution in original canonical coefficient order.\nReplacement forms are never traversed as callee variables. Each checked scale\nand addition retains exact meaning and its signed-i128 intermediate failures.\nCopyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/\nnamespace QleisliKernel.SourceTypes.NaturalSubstitute\nopen Semantics.SourceAffine NaturalAffine\n\ndef replacementValues (replacements : List Form) (values : Valuation) : Valuation :=\n  fun position => (replacements[position]?.map (fun form => form.evaluate values)).getD 0\n\nprivate theorem replacement_head (head : Form) (tail : List Form) (values : Valuation) :\n    replacementValues (head::tail) values 0 = head.evaluate values := rfl\n\nprivate theorem replacement_tail (head : Form) (tail : List Form) (values : Valuation) :\n    (fun i => replacementValues (head::tail) values (i+1)) = replacementValues tail values := rfl\n\nstructure Result (template : Form) (replacements : List Form) where\n  form : Form\n  correct : ∀ values,form.evaluate values = template.evaluate (replacementValues replacements values)\n\nprivate structure Accumulated (coefficients : List Int) (replacements : List Form) (prior : Form) where\n  form : Form\n  correct : ∀ values,form.evaluate values = prior.evaluate values +\n    dot coefficients (replacementValues replacements values)\n\nprivate def loop : Nat → (coefficients : List Int) → (replacements : List Form) → (prior : Form) →\n    WorkM (Accumulated coefficients replacements prior) :=\n  Nat.rec (fun _ _ _ => throw .limit) (fun _ recurse coefficients replacements prior => do\n    Finite.exactWork (Exact.charge 1)\n    match coefficients,replacements with\n    | [],[] => return ⟨prior,by intro values; simp only [dot_nil,Int.add_zero]⟩\n    | coefficient :: rest,head :: tail =>\n      if zero : coefficient = 0 then\n        let result ← recurse rest tail prior\n        return ⟨result.form,by\n          intro values\n          rw [result.correct,dot_cons,zero,Int.zero_mul,Int.zero_add,replacement_tail]⟩\n      else\n        let scaled ← witness (scale coefficient head)\n        let next ← witness (add prior scaled.val)\n        let result ← recurse rest tail next.val\n        return ⟨result.form,by\n          intro values\n          obtain ⟨scaleWork,scaleLeft,scaleOk⟩ := scaled.property\n          obtain ⟨addWork,addLeft,addOk⟩ := next.property\n          rw [result.correct,add_meaning _ _ _ _ _ addOk,\n            scale_meaning _ _ _ _ _ scaleOk,dot_cons,replacement_head,replacement_tail]\n          omega⟩\n    | _,_ => throw .request)\n\ndef substitute (variables : Nat) (template : Form) (replacements : List Form) :\n    WorkM (Result template replacements) := do\n  valid template\n  Finite.guard (variables ≤ 32 && template.coefficients.length == replacements.length) .request\n  Finite.exactWork (Exact.charge (replacements.length+1))\n  let _ ← replacements.mapM fun replacement => do\n    valid replacement\n    Finite.guard (replacement.coefficients.length == variables) .request\n  let start ← witness (constant variables template.constant)\n  let result ← loop (template.coefficients.length+1) template.coefficients replacements start.val\n  return ⟨result.form,by\n    intro values\n    obtain ⟨work,left,ok⟩ := start.property\n    rw [result.correct,constant_meaning _ _ _ _ _ ok]\n    rfl⟩\n\nend QleisliKernel.SourceTypes.NaturalSubstitute\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-daae9c38-0e7f-480d-892f-2ede49124980",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-substitute-first-build '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalFrames\\\",\\\"QleisliKernel.SourceTypes.NaturalSubstitute\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 8425,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-substitute-first-build\", \"exit_code\": 0, \"seconds\": 5.306780166924, \"source_unchanged\": true, \"pass\": true}\n✔ [19/20] Built QleisliKernel.SourceTypes.NaturalFrames (1.3s)\n✔ [20/20] Built QleisliKernel.SourceTypes.NaturalSubstitute (1.3s)\nBuild completed successfully (20 jobs).\n\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-e72b9005-43c5-4b8b-a5d6-3f13fc09b382",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceAffine.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -147,2 +147,11 @@\n \n+def Comparison.test : Comparison → Int → Int → Bool\n+  | .eq,a,b => a == b | .ne,a,b => a != b\n+  | .le,a,b => a ≤ b | .lt,a,b => a < b\n+  | .ge,a,b => b ≤ a | .gt,a,b => b < a\n+\n+theorem Comparison.test_relation (op : Comparison) (a b : Int) :\n+    op.test a b = true ↔ op.Relation a b := by\n+  cases op <;> simp [test,Relation]\n+\n theorem Comparison.negate_relation (op : Comparison) (a b : Int) :\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -1,2 +1,2 @@\n-import Std\n+import QleisliKernel.Semantics.SourceAffine\n \n@@ -169,2 +169,25 @@\n \n+structure Predicate where\n+  left : Expr\n+  comparison : SourceAffine.Comparison\n+  right : Expr\n+\n+/-- Original predicate computations, independent of produced affine rows. -/\n+def Predicate.Truth (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Prop :=\n+  ∃ a b,evaluate fuel names calls predicate.left = some a ∧\n+    evaluate fuel names calls predicate.right = some b ∧\n+    predicate.comparison.Relation (a : Int) (b : Int)\n+\n+def PredicatesTruth (fuel : Nat) (names : Names) (calls : Calls) (predicates : List Predicate) : Prop :=\n+  ∀ predicate ∈ predicates,predicate.Truth fuel names calls\n+\n+theorem predicates_append (fuel : Nat) (names : Names) (calls : Calls) (a b : List Predicate) :\n+    PredicatesTruth fuel names calls (a ++ b) ↔\n+      PredicatesTruth fuel names calls a ∧ PredicatesTruth fuel names calls b := by\n+  simp only [PredicatesTruth,List.mem_append,or_imp,forall_and]\n+\n+theorem predicates_singleton (fuel : Nat) (names : Names) (calls : Calls) (p : Predicate) :\n+    PredicatesTruth fuel names calls [p] ↔ p.Truth fuel names calls := by\n+  simp only [PredicatesTruth,List.mem_singleton,forall_eq]\n+\n end QleisliKernel.Semantics.SourceNatural\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -10,2 +10,3 @@\n import QleisliKernel.SourceTypes.NaturalSubstitute\n+import QleisliKernel.SourceTypes.NaturalPrepare\n import QleisliKernel.FiniteCarrier\n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalHeaders.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -10,6 +10,3 @@\n \n-structure Predicate where\n-  left : Expr\n-  comparison : Comparison\n-  right : Expr\n+abbrev Predicate := Semantics.SourceNatural.Predicate\n \n",
+            "truncated": false
+          }
+        },
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean",
+          "kind": {
+            "type": "add"
+          },
+          "diff": {
+            "text": "import QleisliKernel.SourceTypes.NaturalFrames\nimport QleisliKernel.SourceTypes.NaturalSubstitute\n\n/-! Original helper premises are checked in declaration order, then the generic\nbody. Context truth refers to the independent original-expression evaluator;\nnormalization results do not define the intended predicate.\nOriginal dependency-call readers still require their separate binding proofs.\nCopyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/\nnamespace QleisliKernel.SourceTypes.NaturalPrepare\nopen Semantics.SourceNatural Semantics.SourceAffine NaturalAffine NaturalPredicates\n\nstructure Numeric where\n  left : Form\n  comparison : Comparison\n  right : Form\n\ndef Numeric.Truth (numeric : Numeric) (values : Valuation) : Prop :=\n  numeric.comparison.Relation (numeric.left.evaluate values) (numeric.right.evaluate values)\n\ndef NumericsTruth (numeric : List Numeric) (values : Valuation) : Prop :=\n  ∀ fact ∈ numeric,fact.Truth values\n\ndef Meaning (frame : NaturalFrames.Frame) (calls : Calls) (premises : List Predicate)\n    (values : Valuation) : Prop :=\n  NaturalFrames.Natural frame values ∧ PredicatesTruth 128 (NaturalFrames.names frame values) calls premises\n\nstructure Scope (frame : NaturalFrames.Frame) (calls : Calls) (premises : List Predicate) where\n  context : Context (Meaning frame calls premises)\n  numeric : List Numeric\n  correct : ∀ values,NaturalFrames.Natural frame values →\n    (NumericsTruth numeric values ↔ PredicatesTruth 128 (NaturalFrames.names frame values) calls premises)\n\nstructure CallsReader (frame : NaturalFrames.Frame) (calls : Calls) where\n  read : ∀ {meaning : Valuation → Prop}, Context meaning →\n    (∀ values,meaning values → NaturalFrames.Natural frame values) →\n    ∀ fuel path arguments,\n      NaturalNormalize.Arguments (NaturalFrames.names frame) calls meaning fuel arguments →\n      WorkM (NaturalNormalize.Result (NaturalFrames.names frame) calls meaning (fuel+1) (.call path arguments))\n\nprivate def readers {frame calls premises} (scope : Scope frame calls premises)\n    (callReader : CallsReader frame calls) :\n    NaturalNormalize.Readers (NaturalFrames.names frame) calls (Meaning frame calls premises) :=\n  ⟨NaturalFrames.readName frame calls (fun _ held => held.1),\n    callReader.read scope.context (fun _ held => held.1)⟩\n\nprivate theorem normalized_predicate {frame calls meaning} (predicate : Predicate)\n    (a : NaturalNormalize.Result (NaturalFrames.names frame) calls meaning 128 predicate.left)\n    (b : NaturalNormalize.Result (NaturalFrames.names frame) calls meaning 128 predicate.right)\n    (values : Valuation) (held : meaning values) :\n    predicate.comparison.Relation (a.form.evaluate values) (b.form.evaluate values) ↔\n      predicate.Truth 128 (NaturalFrames.names frame values) calls := by\n  obtain ⟨x,hx,px⟩ := a.correct values held\n  obtain ⟨y,hy,py⟩ := b.correct values held\n  constructor\n  · intro valid\n    exact ⟨x,y,hx,hy,by rwa [← px,← py]⟩\n  · rintro ⟨otherX,otherY,otherLeft,otherRight,valid⟩\n    have sameX : otherX = x := Option.some.inj (otherLeft.symm.trans hx)\n    have sameY : otherY = y := Option.some.inj (otherRight.symm.trans hy)\n    subst otherX\n    subst otherY\n    rwa [px,py]\n\nprivate def extend {frame calls premises} (scope : Scope frame calls premises)\n    (callReader : CallsReader frame calls) (predicate : Predicate) :\n    WorkM (Scope frame calls (premises ++ [predicate])) := do\n  let a ← NaturalNormalize.normalize frame.binders.length scope.context (readers scope callReader) 128 predicate.left\n  let b ← NaturalNormalize.normalize frame.binders.length scope.context (readers scope callReader) 128 predicate.right\n  let numeric : Numeric := ⟨a.form,predicate.comparison,b.form⟩\n  let condition ← comparison a.form predicate.comparison b.form\n  let context ← conjunction scope.context condition\n  return ⟨⟨context.alternatives,by\n    intro values\n    rw [context.correct]\n    change (Meaning frame calls premises values ∧ numeric.Truth values) ↔ _\n    constructor\n    · rintro ⟨held,valid⟩\n      exact ⟨held.1,(predicates_append _ _ _ _ _).mpr\n        ⟨held.2,(predicates_singleton _ _ _ _).mpr\n          ((normalized_predicate predicate a b values held).mp valid)⟩⟩\n    · rintro ⟨natural,all⟩\n      obtain ⟨prior,current⟩ := (predicates_append _ _ _ _ _).mp all\n      have held : Meaning frame calls premises values := ⟨natural,prior⟩\n      exact ⟨held,(normalized_predicate predicate a b values held).mpr\n        ((predicates_singleton _ _ _ _).mp current)⟩⟩,\n    scope.numeric ++ [numeric],by\n      intro values natural\n      have prior := scope.correct values natural\n      simp only [NumericsTruth,List.mem_append,List.mem_singleton,or_imp,forall_and,forall_eq]\n      rw [← NumericsTruth,prior,predicates_append,predicates_singleton]\n      constructor\n      · rintro ⟨old,new⟩\n        exact ⟨old,(normalized_predicate predicate a b values ⟨natural,old⟩).mp new⟩\n      · rintro ⟨old,new⟩\n        exact ⟨old,(normalized_predicate predicate a b values ⟨natural,old⟩).mpr new⟩⟩\n\nprivate def requirements {frame calls} (callReader : CallsReader frame calls) :\n    Nat → (premises remaining : List Predicate) → Scope frame calls premises →\n      WorkM (Scope frame calls (premises ++ remaining)) :=\n  Nat.rec (fun _ _ _ => throw .limit)\n    (fun _ recurse premises remaining scope => do\n      Finite.exactWork (Exact.charge 1)\n      match remaining with\n      | [] => return (by simpa only [List.append_nil] using scope)\n      | predicate :: rest =>\n        let next ← extend scope callReader predicate\n        let result ← recurse (premises ++ [predicate]) rest next\n        return (by simpa only [List.append_assoc,List.singleton_append] using result))\n\nstructure Prepared (original : NaturalCatalog.Original) (calls : Calls) where\n  scope : Scope (NaturalFrames.original original) calls original.helper.premises\n  body : NaturalNormalize.Result (NaturalFrames.names (NaturalFrames.original original)) calls\n    (Meaning (NaturalFrames.original original) calls original.helper.premises) 128 original.helper.body\n\n/-- Check an original definition generically before any closed instantiation.\nCalls require source-bound readers; no external template is accepted here. -/\ndef check (original : NaturalCatalog.Original) (calls : Calls)\n    (callReader : CallsReader (NaturalFrames.original original) calls) :\n    WorkM (Prepared original calls) := do\n  let frame := NaturalFrames.original original\n  let initial ← NaturalFrames.initial frame\n  let scope : Scope frame calls [] := ⟨⟨initial.alternatives,by\n      intro values\n      simp only [initial.correct,Meaning,PredicatesTruth,List.not_mem_nil,false_implies,forall_const,and_true]⟩,\n    [],by simp [NumericsTruth,PredicatesTruth]⟩\n  let scope ← requirements callReader (original.helper.premises.length+1) [] original.helper.premises scope\n  Finite.guard (← feasible scope.context) .request\n  let body ← NaturalNormalize.normalize frame.binders.length scope.context (readers scope callReader) 128 original.helper.body\n  return ⟨scope,body⟩\n\nend QleisliKernel.SourceTypes.NaturalPrepare\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-62cbeb09-5820-4b44-b2fd-261a97f5ab52",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-prepare-first-build '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalPrepare\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "failed",
+      "exitCode": 1,
+      "durationMs": 37968,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-prepare-first-build\", \"exit_code\": 1, \"seconds\": 23.520063667092472, \"source_unchanged\": true, \"pass\": false}\n✔ [10/21] Built QleisliKernel.Semantics.SourceAffine (3.0s)\n✔ [11/21] Built QleisliKernel.Semantics.SourceNatural (483ms)\n✔ [12/21] Built QleisliKernel.SourceTypes.NaturalAffine (484ms)\n✔ [13/21] Built QleisliKernel.SourceTypes.NaturalSubstitute (411ms)\n✔ [14/21] Built QleisliKernel.SourceTypes.NaturalSyntax (524ms)\n✔ [15/21] Built QleisliKernel.SourceTypes.NaturalConstraints (486ms)\n✔ [16/21] Built QleisliKernel.SourceTypes.NaturalPredicates (489ms)\n✔ [17/21] Built QleisliKernel.SourceTypes.NaturalHeaders (491ms)\n✔ [18/21] Built QleisliKernel.SourceTypes.NaturalCatalog (457ms)\n✔ [19/21] Built QleisliKernel.SourceTypes.NaturalNormalize (457ms)\n✔ [20/21] Built QleisliKernel.SourceTypes.NaturalFrames (388ms)\n✖ [21/21] Building QleisliKernel.SourceTypes.NaturalPrepare (399ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalPrepare.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/SourceTypes/NaturalPrepare.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalPrepare.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/SourceTypes/NaturalPrepare.setup.json --json\nerror: QleisliKernel/SourceTypes/NaturalPrepare.lean:122:61: unsolved goals\noriginal : NaturalCatalog.Original\ncalls : Calls\ncallReader : CallsReader (NaturalFrames.original original) calls\nframe : NaturalFrames.Frame := NaturalFrames.original original\ninitial : Context (NaturalFrames.Natural frame)\nvalues : Valuation\n⊢ NaturalFrames.Natural frame values ↔ NaturalFrames.Natural frame values ∧ ∀ (predicate : Predicate), True\nerror: QleisliKernel/SourceTypes/NaturalPrepare.lean:124:88: This simp argument is unused:\n  forall_const\n\nHint: Omit it from the simp argument list.\n  simp only [̵i̵n̵i̵t̵i̵a̵l̵.̵c̵o̵r̵r̵e̵c̵t̵,̵M̵e̵a̵n̵i̵n̵g̵,̵P̵r̵e̵d̵i̵c̵a̵t̵e̵s̵T̵r̵u̵t̵h̵,̵L̵i̵s̵t̵.̵n̵o̵t̵_̵m̵e̵m̵_̵n̵i̵l̵,̵f̵a̵l̵s̵e̵_̵i̵m̵p̵l̵i̵e̵s̵,̵f̵o̵r̵a̵l̵l̵_̵c̵o̵n̵s̵t̵,̵a̵n̵d̵_̵t̵r̵u̵e̵]̵[̲i̲n̲i̲t̲i̲a̲l̲.̲c̲o̲r̲r̲e̲c̲t̲,̲ ̲M̲e̲a̲n̲i̲n̲g̲,̲ ̲P̲r̲e̲d̲i̲c̲a̲t̲e̲s̲T̲r̲u̲t̲h̲,̲ ̲L̲i̲s̲t̲.̲n̲o̲t̲_̲m̲e̲m̲_̲n̲i̲l̲,̲ ̲f̲a̲l̲s̲e̲_̲i̲m̲p̲l̲i̲e̲s̲,̲\n  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲a̲n̲d̲_̲t̲r̲u̲e̲]̲\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: QleisliKernel/SourceTypes/NaturalPrepare.lean:124:101: This simp argument is unused:\n  and_true\n\nHint: Omit it from the simp argument list.\n  simp only [̵i̵n̵i̵t̵i̵a̵l̵.̵c̵o̵r̵r̵e̵c̵t̵,̵M̵e̵a̵n̵i̵n̵g̵,̵P̵r̵e̵d̵i̵c̵a̵t̵e̵s̵T̵r̵u̵t̵h̵,̵L̵i̵s̵t̵.̵n̵o̵t̵_̵m̵e̵m̵_̵n̵i̵l̵,̵f̵a̵l̵s̵e̵_̵i̵m̵p̵l̵i̵e̵s̵,̵f̵o̵r̵a̵l̵l̵_̵c̵o̵n̵s̵t̵,̵a̵n̵d̵_̵t̵r̵u̵e̵]̵[̲i̲n̲i̲t̲i̲a̲l̲.̲c̲o̲r̲r̲e̲c̲t̲,̲ ̲M̲e̲a̲n̲i̲n̲g̲,̲ ̲P̲r̲e̲d̲i̲c̲a̲t̲e̲s̲T̲r̲u̲t̲h̲,̲ ̲L̲i̲s̲t̲.̲n̲o̲t̲_̲m̲e̲m̲_̲n̲i̲l̲,̲ ̲f̲a̲l̲s̲e̲_̲i̲m̲p̲l̲i̲e̲s̲,̲\n  ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲ ̲f̲o̲r̲a̲l̲l̲_̲c̲o̲n̲s̲t̲]̲\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.SourceTypes.NaturalPrepare\n\nerror: build failed\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "fileChange",
+      "id": "exec-e3cb7a2f-ca81-4cb5-a161-bae6bb6daf28",
+      "status": "completed",
+      "changes": [
+        {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean",
+          "kind": {
+            "type": "update",
+            "move_path": null
+          },
+          "diff": {
+            "text": "@@ -123,3 +123,8 @@\n       intro values\n-      simp only [initial.correct,Meaning,PredicatesTruth,List.not_mem_nil,false_implies,forall_const,and_true]⟩,\n+      rw [initial.correct]\n+      constructor\n+      · intro held\n+        exact ⟨held,by intro _ member; cases member⟩\n+      · intro held\n+        exact held.1⟩,\n     [],by simp [NumericsTruth,PredicatesTruth]⟩\n",
+            "truncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-ba8b795d-967c-444e-9681-88ed0dd36853",
+      "command": "/bin/zsh -lc \"python3 /private/tmp/qleisli-ci-rust-parallel-38npgq8o/observe-field-affine-20261021.py adt64-helper-prepare-build-v2 '[\\\"lake\\\",\\\"build\\\",\\\"QleisliKernel.SourceTypes.NaturalPrepare\\\"]' lean-kernel\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 28520,
+      "output": {
+        "text": "{\"label\": \"adt64-helper-prepare-build-v2\", \"exit_code\": 0, \"seconds\": 17.284367125015706, \"source_unchanged\": true, \"pass\": true}\n✔ [21/21] Built QleisliKernel.SourceTypes.NaturalPrepare (3.9s)\nBuild completed successfully (21 jobs).\n\n\n",
+        "truncated": false
+      }
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-92306916-4c5c-4483-ba77-9a4c164c4d8a",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('/private/tmp/qleisli-ci-rust-parallel-38npgq8o');f=p/'field-helper-generic-first-checks-20261021.lean';assert not f.exists()\nf.write_text('''import QleisliKernel.SourceTypes.NaturalPrepare\nopen QleisliKernel SourceTypes Semantics.SourceNatural Semantics.SourceAffine\n\ndef run {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1\n\ndef keys (source : String) : Option (List (String × String)) :=\n  (run (NaturalCatalog.prepare #[(\\\"main\\\",source)])).toOption.map fun entries =>\n    entries.map (fun original => (original.key.moduleName,original.key.declarationName))\n\nexample : keys \\\"static fn later[const n:Nat]() -> Nat {first[n]()} static fn first[const n:Nat]() -> Nat {n}\\\" =\n  some [(\\\"main\\\",\\\"first\\\"),(\\\"main\\\",\\\"later\\\")] := by decide +kernel\nexample : keys \\\"static fn f[const n:Nat]() -> Nat {g[n]()} static fn g[const n:Nat]() -> Nat {f[n]()}\\\" = none := by decide +kernel\nexample : keys \\\"static fn unused() -> Nat {unknown()} static fn main() -> Nat {0}\\\" = none := by decide +kernel\nexample : keys \\\"static fn unused() -> Nat {missing+1}\\\" = none := by decide +kernel\nexample : keys \\\"fn runtime() -> Bit {0} static fn unused() -> Nat {runtime()}\\\" = none := by decide +kernel\nexample : keys \\\"static fn f[const n:Nat]() -> Nat {n} static fn g() -> Nat {f()}\\\" = none := by decide +kernel\nexample : keys \\\"static fn f[const f:Nat]() -> Nat {f[1]()}\\\" = none := by decide +kernel\nexample : keys \\\"static fn f() -> Nat {1} static fn f() -> Nat {2}\\\" = none := by decide +kernel\nexample : \"'!(run (NaturalCatalog.prepare #[\n  (\"defs\",\"pub static fn actual[const n:Nat]() -> Nat {n}\"),\n  (\"hidden\",\"use defs::actual;\"),\n  (\"main\",\"static fn unused() -> Nat {hidden::actual[1]()}\" )])).isOk := by decide +kernel\nexample : (run (NaturalCatalog.prepare #[\n  (\"defs\",\"pub static fn actual[const n:Nat]() -> Nat {n}\"),\n  (\"exports\",\"pub use defs::actual;\"),\n  (\"main\",\"use exports::actual; static fn unused() -> Nat {actual[1]()}\" )])).isOk := by decide +kernel\n\ndef noCalls : Calls := fun _ _ => none\n\ndef leaf (source : String) : Except Finite.Error (List (Int × List Int)) := do\n  let entries ← run (NaturalCatalog.prepare #[(\"main\",source)])\n  entries.mapM fun original => do\n    let checked ← run (NaturalPrepare.check original noCalls\n      {read := fun {_} _ _ _ _ _ _ => throw .request})\n    return (checked.body.form.constant,checked.body.form.coefficients)\n\n-- Generic original bodies are checked independently of a later chosen argument.\nexample : (leaf \"static fn previous[const n:Nat]() -> Nat requires n >= 1 {n-1}\").toOption =\n  some [(-1,[1])] := by decide +kernel\nexample : (leaf \"static fn diff[const z:Nat,const a:Nat]() -> Nat requires z >= a {z-a}\").toOption =\n  some [(0,[-1,1])] := by decide +kernel\nexample : (leaf \"static fn sum[const z:Nat,const a:Nat]() -> Nat {z+a}\").toOption =\n  some [(0,[1,1])] := by decide +kernel\nexample : !(leaf \"static fn previous[const n:Nat]() -> Nat {n-1} struct R {bits:Bits<previous[1]()>}\").isOk := by decide +kernel\nexample : !(leaf \"static fn square[const n:Nat]() -> Nat {n*n} struct R {bits:Bits<square[1]()>}\").isOk := by decide +kernel\nexample : !(leaf \"static fn square[const n:Nat]() -> Nat requires n == 1 {n*n}\").isOk := by decide +kernel\nexample : !(leaf \"static fn unused[const n:Nat]() -> Nat {n-1} static fn valid() -> Nat {1}\").isOk := by decide +kernel\nexample : (leaf \"static fn cancel[const n:Nat]() -> Nat {(n-n)*n}\").toOption =\n  some [(0,[0])] := by decide +kernel\nexample : (leaf \"static fn previous[const n:Nat]() -> Nat requires n >= 1,n-1 <= 3 {n-1}\").isOk := by decide +kernel\nexample : !(leaf \"static fn previous[const n:Nat]() -> Nat requires n-1 <= 3,n >= 1 {n-1}\").isOk := by decide +kernel\nexample : !(leaf \"static fn impossible[const n:Nat]() -> Nat requires n >= 2,n <= 1 {n}\").isOk := by decide +kernel\nexample : (leaf \"static fn relaxation[const n:Nat]() -> Nat requires 2*n == 1 {n}\").isOk := by decide +kernel\nexample : !(leaf \"static fn wrong[const n:Nat]() -> Nat requires n != 0 {n-2}\").isOk := by decide +kernel\nexample : (leaf \"static fn good[const n:Nat]() -> Nat requires n != 0 {n-1}\").isOk := by decide +kernel\n\ndef substitute (constant : Int) (coefficients : List Int) (replacements : List Form) (variables : Nat) :=\n  (run (NaturalSubstitute.substitute variables ⟨constant,coefficients⟩ replacements)).toOption.map fun result =>\n    (result.form.constant,result.form.coefficients)\nexample : substitute 7 [3,-2] [⟨1,[2]⟩,⟨4,[1]⟩] 1 = some (2,[4]) := by decide +kernel\n-- Simultaneous replacements, even when a caller spelling matches a callee one.\nexample : substitute 0 [1,1] [⟨1,[0,1]⟩,⟨8,[0,0]⟩] 2 = some (9,[0,1]) := by decide +kernel\nexample : substitute 0 [2] [⟨170141183460469231731687303715884105727,[]⟩] 0 = none := by decide +kernel\nexample : substitute 0 [0] [⟨0,List.replicate 33 0⟩] 1 = none := by decide +kernel\nexample : substitute 0 [1,1] [⟨1,[]⟩] 0 = none := by decide +kernel\n\n#print axioms NaturalPrepare.check\n#print axioms NaturalNormalize.Result.value\n#print axioms NaturalSubstitute.substitute\n'\"''')\nPY\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 0
+    },
+    {
+      "type": "commandExecution",
+      "id": "exec-117bdc3b-b4b7-4317-be58-7c8e0fcd17bb",
+      "command": "/bin/zsh -lc \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-helper-generic-first-checks')\nfor name in ['stdout','stderr']:\n f=p/name\n if f.exists():print(name,f.stat().st_size,f.read_text()[-2200:])\nPY\"",
+      "cwd": "/Users/masa/git/Qleisli",
+      "status": "completed",
+      "exitCode": 0,
+      "durationMs": 695475,
+      "output": {
+        "text": "stdout 0 \nstderr 0 \n",
+        "truncated": false
+      }
+    }
+  ]
+}

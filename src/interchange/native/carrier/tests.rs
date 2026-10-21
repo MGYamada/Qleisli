@@ -536,7 +536,11 @@ fn nominal_zero_width_owners_and_their_scalar_phase_are_retained() {
 
 // This binds type declarations to a raw body, not the source function's meaning.
 fn import_artifact(rows: &[(&str, &str)]) -> Vec<u8> {
-    let mut value = json::parse(&artifact([1, 2, 0, 3], [0; 4], [0, 1])).unwrap();
+    source_artifact([1, 2, 0, 3], rows)
+}
+
+fn source_artifact(permutation: [u32; 4], rows: &[(&str, &str)]) -> Vec<u8> {
+    let mut value = json::parse(&artifact(permutation, [0; 4], [0, 1])).unwrap();
     replace(
         &mut value,
         "sources",
@@ -767,6 +771,159 @@ fn original_field_numerals_obey_the_common_source_grammar() {
             assert_eq!(result.unwrap().request(), &requested);
         } else {
             assert_eq!(result.unwrap_err().code, "contract");
+        }
+    }
+}
+
+fn field_request(source: &str) -> Request {
+    let mut requested = request();
+    let basis = vec![
+        Atom::Record(
+            Arc::new(Origin {
+                module: "labels".into(),
+                declaration: "Word".into(),
+                source: source.into(),
+            }),
+            vec!["bits".into()],
+        ),
+        Atom::Bits(2),
+    ];
+    for owner in requested
+        .attached
+        .inputs
+        .iter_mut()
+        .chain(&mut requested.attached.outputs)
+    {
+        owner.basis = basis.clone();
+    }
+    requested.required = requested.attached.clone();
+    requested.logical = Matrix::identity(4).unwrap();
+    requested
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_field_naturals_check_actual_generic_helpers() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    // Each positive and every guard/overflow counterexample has the same
+    // two-bit intended final width. Width mismatch cannot mask a missing rule.
+    for (label, header, expression, accepted) in [
+        ("field-nat-literal", "", "2", true),
+        ("field-nat-precedence", "", "1+1*1", true),
+        ("field-nat-left-association", "", "5-2-1", true),
+        (
+            "field-nat-wide-u32-intermediate",
+            "",
+            "4294967296+1-4294967295",
+            true,
+        ),
+        ("field-nat-negative-intermediate", "", "0-1+3", false),
+        (
+            "field-nat-i128-intermediate-overflow",
+            "",
+            "170141183460469231731687303715884105727+1-170141183460469231731687303715884105727+1",
+            false,
+        ),
+        (
+            "field-nat-guarded-helper",
+            "static fn dec[const k:Nat]() -> Nat requires k >= 1 {k-1}",
+            "dec[3]()",
+            true,
+        ),
+        (
+            "field-nat-false-callee-premise",
+            "static fn dec[const k:Nat]() -> Nat requires k >= 1 {k-1}",
+            "dec[0]()+3",
+            false,
+        ),
+        (
+            "field-nat-generic-not-repaired",
+            "static fn dec[const k:Nat]() -> Nat {k-1}",
+            "dec[3]()",
+            false,
+        ),
+        (
+            "field-nat-nonlinear-not-repaired",
+            "static fn square[const k:Nat]() -> Nat {k*k}",
+            "square[1]()+1",
+            false,
+        ),
+        (
+            "field-nat-unused-private-helper",
+            "static fn unused[const k:Nat]() -> Nat {k-1}",
+            "2",
+            false,
+        ),
+        (
+            "field-nat-multiple-positional-arguments",
+            "static fn sum[const a:Nat,const b:Nat]() -> Nat {a+b}",
+            "sum[1,1]()",
+            true,
+        ),
+        (
+            "field-nat-original-ordinal-order",
+            "static fn diff[const z:Nat,const a:Nat]() -> Nat requires z >= a {z-a}",
+            "diff[3,1]()",
+            true,
+        ),
+        (
+            "field-nat-simultaneous-original-binders",
+            "static fn sum[const n:Nat,const p:Nat]() -> Nat {n+p} static fn forward[const p:Nat]() -> Nat {sum[p+1,0]()}",
+            "forward[1]()",
+            true,
+        ),
+        (
+            "field-nat-runtime-category",
+            "fn runtime() -> Bit {0}",
+            "runtime()+2",
+            false,
+        ),
+    ] {
+        let source = format!("{header} pub struct Word {{ bits: Bits<{expression}> }}");
+        let body = source_artifact([0, 1, 2, 3], &[("labels", &source)]);
+        let requested = field_request(&source);
+        let result = observe(&kernel, label, &body, &requested);
+        if accepted {
+            assert_eq!(result.unwrap().request(), &requested, "{label}");
+        } else {
+            // Checked intermediate overflow retains the existing capacity
+            // diagnostic; generic contract failures retain their own code.
+            let expected = if label == "field-nat-i128-intermediate-overflow" {
+                "limit"
+            } else {
+                "contract"
+            };
+            assert_eq!(result.unwrap_err().code, expected, "{label}");
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_field_helper_imports_keep_source_visibility() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for (label, bridge, accepted) in [
+        ("field-helper-public-reexport", "pub use helper::dec;", true),
+        ("field-helper-private-facade", "use helper::dec;", false),
+    ] {
+        let source = "pub struct Word { bits: Bits<bridge::dec[3]()> }";
+        let helper = "pub static fn dec[const k:Nat]() -> Nat requires k >= 1 {k-1}";
+        let body = source_artifact(
+            [0, 1, 2, 3],
+            &[("labels", source), ("bridge", bridge), ("helper", helper)],
+        );
+        let requested = field_request(source);
+        let result = observe(&kernel, label, &body, &requested);
+        if accepted {
+            assert_eq!(result.unwrap().request(), &requested, "{label}");
+        } else {
+            assert_eq!(result.unwrap_err().code, "contract", "{label}");
         }
     }
 }

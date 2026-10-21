@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "f3c0b764047caa575d7f704e6d85f893f233e3f5df79098ff6fa8e89c2d245c1",
+      "sha256": "5044a5649c0638b66a28ab93b8d64683f7eff6848ba21c4d2e6ab7803d55e03e",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -165,7 +165,7 @@
         "lean-kernel/Cli/Validity.lean": "3e8f61ab8b707ba1e4f3f0614c0f6d80d7909bb0384ae8b944292bea8bb93880",
         "lean-kernel/Main.lean": "0616fc1b58793c16942b9975cfddf5adb94476532573ea39a880caa77bc1c024",
         "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
-        "lean-kernel/Protocol/Carrier.lean": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+        "lean-kernel/Protocol/Carrier.lean": "b12558cd284a75cdacf3d835e773ca412a63553cfd4fad248dc560935c710cb2",
         "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
         "lean-kernel/Protocol/EngineeringInstrument.lean": "d4e9dfdced0837199cb79b76bdb3fb2f7d1b3f989930a2b73ed8559d7171e804",
         "lean-kernel/Protocol/EngineeringOpenQasm.lean": "91349f0708e392cfba7ffbdf71ba9d4d177d41e077df6a5d004de6cda586aa00",
@@ -317,17 +317,23 @@
         "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "a2683717ab43af3236c157eeb41f3e2f5b9079a1d86330f54f406415d80ebf22",
         "lean-kernel/QleisliKernel/Semantics/RawUnit.lean": "cdbe18d78fe1fab9bf2d76d9f0f430a7afc583f5b2cc1d25bd17dce35cca10e8",
         "lean-kernel/QleisliKernel/Semantics/Readout.lean": "1c97c7917590ebe10114dca1d1af3281c6dbdadf6ea28f74b32e7ffcf25b4656",
-        "lean-kernel/QleisliKernel/Semantics/SourceAffine.lean": "077a08663ad8a0cf0979ea2722c85aefd0351d40deef2d80e3cb72c24a9aa397",
-        "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean": "d8ef67ce3a3219fa8f417c187d4be059f0c468845cb8fc475f52600252bbd9c7",
+        "lean-kernel/QleisliKernel/Semantics/SourceAffine.lean": "33ce2d583394d55efb4074097332ccfa486096d929990574dcd3a0fbd6588658",
+        "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean": "b3d16328b51f28bb03244eaea5ef84dfbe9d27c56ac15da94d598f3c13c03620",
         "lean-kernel/QleisliKernel/SourceTypes/Declarations.lean": "fb5c4ac609fcd3aa08fbd343d9556b915b6a704cfe16cae87e08b2f7a1a265ee",
         "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
         "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
-        "lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean": "a85bffb10efde608e90027edeff37fb4c0877f3b7ba454547b4ab1b9b9bd1f50",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean": "117935f8688c12206dc9c7072c2e211f474d13b55e2451f5debd146e64ae046e",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean": "493e036a35adda03af3461e34b2932e1966b418d8b8332a4d5712bc8913982f3",
         "lean-kernel/QleisliKernel/SourceTypes/NaturalConstraints.lean": "9d1ecd5f0f5210860b02ac7d5998281e7a3637c76e829740827a7fa2ad689f48",
-        "lean-kernel/QleisliKernel/SourceTypes/NaturalHeaders.lean": "765eb6b98fd3eebc5ce52b64d2a23dc59b581ab041de29423bbf28a4327a8339",
-        "lean-kernel/QleisliKernel/SourceTypes/NaturalPredicates.lean": "e9a1d6674c944927e374a21e2da61b8bebce3c3af222a75fcb667b3e40ceb96a",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalFrames.lean": "1522d373a6d6a3dac880abe64bc14ef666764ed9e8ac380e8a43407ddde347bb",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalHeaders.lean": "3ae2a0f8ffd7cb6fe69ce79cec8049ecc409aafc26359dcaa4208907b8099ffa",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalHelpers.lean": "6992ca59734941a7811a936226fdea08cb87302fbb7453cf51a4fccdab009abb",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean": "0cfa129810d46c22432adeb8ccee6a0748a4f1e3182d4d1607902f5ab683fc08",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalPredicates.lean": "a82076d338759b683c4d4a302915fae14a3f904b6b565c8b756083cf2eddca09",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean": "aaedc456d5724d397b380601d6ac848a88f8c7ec8092b909eef6efc54b2aad40",
+        "lean-kernel/QleisliKernel/SourceTypes/NaturalSubstitute.lean": "42b2b41d6211752c8fb162c7ffffeaf3c246b13d470382d70489f6ec6f0e05ce",
         "lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
-        "lean-kernel/QleisliKernel/SourceTypes.lean": "51950be2f84b4e6f9a818c3ec47c5e0627431fa62d7d9f024c4bbbeff42a8d58",
+        "lean-kernel/QleisliKernel/SourceTypes.lean": "53d497964c7a31b61824935fdfe92e5e508021a22e1d0a9674f243df977050e7",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
         "lean-kernel/QleisliKernel/Uniform.lean": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
@@ -342,12 +348,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "7bbe78223021de15fdb0d8f2903057ab53a5461482aa4995b37c91be90a1d162",
+      "lean/schema-registry.json": "62be81d90086355ee24848422a50fe4fbda12b131ae820b563a44eb610148920",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "342e7a933bc1a4375ad3efa27085cf15e56526eddb8ef330c01329a750f1a0bf"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "a45fd16e43a7b214cab9879076fd3cb7f6d0f3e692875f60630eaad7186266fb"
     },
     "commands": [
       {
@@ -360,7 +366,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 23.294912832789123,
+        "seconds": 20.380731000000196,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -374,7 +380,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 120.16904758405872,
+        "seconds": 62.49666412500028,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -385,7 +391,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after explicit edition-aware QLV3 dispatch. The fixed historical semantic baseline, original byte/request/root witness, independent predicates and checked Raw/Basis transports retain their admitted meanings and premises. NativeContext.run_ordinary_root_safe links actual ordinary context success to the original accepted decoded root; both audited packages and fresh QleisliKernel/Main replay support the current source closure. This is not a new guarantee admission, human adequacy judgment, full QS/PR/quantitative RS/EXACT discharge, source/native-IO/runtime/target correspondence proof, or release approval. The separately recorded observed_native_build remains historical alpha data, not current binary attestation. The bounded finite-carrier pure profile additionally binds original nominal declarations, ordered owner forests, public effects and exact logical/body/code equations to a fresh native decision and compared retained QDV data. This raw component adds no admitted guarantee scope. The independent original-source type reader resolves supported explicit imports and public reexports to canonical declarations with their original category and visibility. Ordinary source ADT execution, general Nat field expressions, host-selected roots, source-function preservation and qmatch integration remain pending; native compilation, IO and runtime correspondence retain their separate assumptions. Original field-width literals follow the existing canonical decimal grammar; leading zeroes except 0 reject. This is not general Nat-expression or helper-source checking. An internal total parser and independent natural-expression Value relation/evaluator are built and audited; actual evaluation success implies that relation under its explicit lookup/call interpretation. They are not wired to field acceptance and confer no original helper binding, affine/premise validation, source execution or guarantee admission. Internal checked signed-i128 affine operations prove their exact integer meanings. Bounded elimination returns proof of contradiction over original constraints; six comparisons and caller implication return their exact mathematical properties. Complete provisional static helper headers/bodies use shared original declaration/category/visibility resolution. Generic helper normalization, binding/substitution and source field dispatch are still pending; these components authorize no new source execution, inverse/control access or guarantee admission.",
+    "scope": "Current-source evidence for the two human-admitted ordinary QLV1 ownership and classical-scope guarantees after explicit edition-aware QLV3 dispatch. The fixed historical semantic baseline, original byte/request/root witness, independent predicates and checked Raw/Basis transports retain their admitted meanings and premises. NativeContext.run_ordinary_root_safe links actual ordinary context success to the original accepted decoded root; both audited packages and fresh QleisliKernel/Main replay support the current source closure. This is not a new guarantee admission, human adequacy judgment, full QS/PR/quantitative RS/EXACT discharge, source/native-IO/runtime/target correspondence proof, or release approval. The separately recorded observed_native_build remains historical alpha data, not current binary attestation. The bounded finite-carrier pure profile additionally binds original nominal declarations, ordered owner forests, public effects and exact logical/body/code equations to a fresh native decision and compared retained QDV data. This raw component adds no admitted guarantee scope. The independent original-source type reader resolves supported imports/reexports and reconstructs existing field Nat expressions. It checks every original private/unused helper generically, binds original formal ordinals and ordered premises, simultaneously substitutes caller forms, and preserves canonical dependency/category/visibility identities. Reference calls execute original predicates/body independently of generated templates. Checked affine operations, implication and normalization retain exact original-expression postconditions; rational relaxation supplies no integer-existence witness. The helper environment is checked once across all four ordered owner forests, including empty forests. Final closed widths retain u32 and existing physical bounds; checked intermediates and canonical decimal spelling remain explicit. Ordinary source ADT execution, host-selected roots, constructors/match/qmatch and source-function preservation remain pending. No source execution, inverse/control capability or new guarantee admission follows from this bounded raw component. Evidence argv spells lake canonically; the retained fresh report records the actual /opt/homebrew/bin/lake executable and observed command outputs.",
     "native_binary_note": "The local native binary digest identifies the selected build observed here. It is a build record, not a portable binary identity or a proof of compiler/runtime correctness.",
     "observed_native_build": {
       "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
@@ -417,7 +423,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 3.7007196669001132,
+      "seconds": 3.6913913340004,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -433,7 +439,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "f3c0b764047caa575d7f704e6d85f893f233e3f5df79098ff6fa8e89c2d245c1",
+    "source_revision_sha256": "5044a5649c0638b66a28ab93b8d64683f7eff6848ba21c4d2e6ab7803d55e03e",
     "command": {
       "argv": [
         "lake",

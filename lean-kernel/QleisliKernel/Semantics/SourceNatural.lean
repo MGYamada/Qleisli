@@ -1,4 +1,4 @@
-import Std
+import QleisliKernel.Semantics.SourceAffine
 
 /-! Exact natural-expression meanings, independent of source parsing and checking.
 Lookup/call interpretations are explicit parameters; this definition grants no
@@ -20,6 +20,17 @@ inductive Expr where
 
 abbrev Names := Path → Option Nat
 abbrev Calls := Path → List Nat → Option Nat
+
+/-- Pointwise correspondence of complete ordered lists, including their shape. -/
+inductive Related {α β : Type} (relation : α → β → Prop) : List α → List β → Prop where
+  | nil : Related relation [] []
+  | cons {a b as bs} : relation a b → Related relation as bs → Related relation (a::as) (b::bs)
+
+theorem Related.length_eq {α β : Type} {relation : α → β → Prop} {a : List α} {b : List β}
+    (related : Related relation a b) : a.length = b.length := by
+  induction related with
+  | nil => rfl
+  | cons _ _ ih => simpa only [List.length_cons,Nat.add_right_cancel_iff] using ih
 
 mutual
   /-- Exact arithmetic: subtraction requires its nonnegative premise. A call
@@ -147,5 +158,85 @@ theorem evaluate_value (fuel : Nat) (names : Names) (calls : Calls) (expression 
       | some values =>
         simp only [evaluate_succ,evaluateStep,args] at ok
         exact .call path arguments values n (mapValues_sound names calls _ ih arguments values args) ok
+
+/-- Explicit argument correspondence for callers of the independent evaluator.
+The call interpretation is still an assumption requiring original-source binding. -/
+theorem evaluate_call (fuel : Nat) (names : Names) (calls : Calls) (path : Path)
+    (arguments : List Expr) (values : List Nat) (n : Nat)
+    (args : Related (fun expression value => evaluate fuel names calls expression = some value)
+      arguments values) (found : calls path values = some n) :
+    evaluate (fuel+1) names calls (.call path arguments) = some n := by
+  have all : mapValues (evaluate fuel names calls) arguments = some values := by
+    clear found
+    induction args with
+    | nil => rfl
+    | cons head _ ih => simp only [mapValues_cons,head,ih,Option.pure_def]; rfl
+  simpa only [evaluate_succ,evaluateStep,all] using found
+
+structure Predicate where
+  left : Expr
+  comparison : SourceAffine.Comparison
+  right : Expr
+
+/-- Original predicate computations, independent of produced affine rows. -/
+def Predicate.Truth (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Prop :=
+  ∃ a b,evaluate fuel names calls predicate.left = some a ∧
+    evaluate fuel names calls predicate.right = some b ∧
+    predicate.comparison.Relation (a : Int) (b : Int)
+
+def PredicatesTruth (fuel : Nat) (names : Names) (calls : Calls) (predicates : List Predicate) : Prop :=
+  ∀ predicate ∈ predicates,predicate.Truth fuel names calls
+
+theorem predicates_append (fuel : Nat) (names : Names) (calls : Calls) (a b : List Predicate) :
+    PredicatesTruth fuel names calls (a ++ b) ↔
+      PredicatesTruth fuel names calls a ∧ PredicatesTruth fuel names calls b := by
+  simp only [PredicatesTruth,List.mem_append,or_imp,forall_and]
+
+theorem predicates_singleton (fuel : Nat) (names : Names) (calls : Calls) (p : Predicate) :
+    PredicatesTruth fuel names calls [p] ↔ p.Truth fuel names calls := by
+  simp only [PredicatesTruth,List.mem_singleton,forall_eq]
+
+def Predicate.check (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Option Unit := do
+  let a ← evaluate fuel names calls predicate.left
+  let b ← evaluate fuel names calls predicate.right
+  if predicate.comparison.test (a : Int) (b : Int) then some () else none
+
+theorem Predicate.check_of_truth (fuel : Nat) (names : Names) (calls : Calls) (p : Predicate)
+    (truth : p.Truth fuel names calls) : p.check fuel names calls = some () := by
+  obtain ⟨a,b,ha,hb,related⟩ := truth
+  have compared := (SourceAffine.Comparison.test_relation _ _ _).mpr related
+  simp only [check,ha,hb]
+  change (if p.comparison.test (a : Int) (b : Int) then some () else none) = some ()
+  rw [compared]
+  rfl
+
+/-- Original helper syntax and a specified formal assignment. This reference
+executes original predicates/body; it never reads an affine template. Original
+declaration, formal and dependency binding remain duties of its source adapter. -/
+structure Definition where
+  arity : Nat
+  assignment : List Nat → Names
+  premises : List Predicate
+  body : Expr
+
+def Definition.execute (definition : Definition) (calls : Calls) (arguments : List Nat) : Option Nat := do
+  if arguments.length != definition.arity then none
+  else
+    let names := definition.assignment arguments
+    if definition.premises.all (fun p => (p.check 128 names calls).isSome) then
+      evaluate 128 names calls definition.body
+    else none
+
+theorem Definition.execute_of_body (definition : Definition) (calls : Calls)
+    (arguments : List Nat) (n : Nat) (arity : arguments.length = definition.arity)
+    (premises : PredicatesTruth 128 (definition.assignment arguments) calls definition.premises)
+    (body : evaluate 128 (definition.assignment arguments) calls definition.body = some n) :
+    definition.execute calls arguments = some n := by
+  have all : definition.premises.all (fun p => (p.check 128 (definition.assignment arguments) calls).isSome) = true := by
+    apply List.all_eq_true.mpr
+    intro p member
+    rw [Predicate.check_of_truth _ _ _ _ (premises p member)]
+    rfl
+  simpa only [execute,arity,bne_self_eq_false,Bool.false_eq_true,if_false,all,if_true] using body
 
 end QleisliKernel.Semantics.SourceNatural

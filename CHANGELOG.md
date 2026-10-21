@@ -44,23 +44,24 @@ development milestones from the scope of their evidence.
   or visibility. Reject private facades, cycles, collisions and equal-width
   substitutions within the existing parser/source/work bounds. Reject leading
   zeroes in original field-width literals, matching the common source grammar;
-  retain the pre-repair accepted raw counterexample. General static
-  field expressions and ordinary source execution remain pending; no inverse/
+  retain the pre-repair accepted raw counterexample. Ordinary source execution
+  remains pending; no inverse/
   control capability or new guarantee is granted by this raw pure component.
-  Add an internal parser for existing field Nat expressions and an independent
-  exact arithmetic relation, with a proved computation-to-relation link. Keep
-  qualified calls, positional arguments, precedence, canonical literals and
-  existing metadata limits. Use total folds/recursors and audit generated
-  declarations. Source helper binding, affine obligations and carrier dispatch
-  remain pending; this parser/evaluator grants no helper or source authority.
-  Add signed-i128 affine operations with exact-meaning proofs and bounded
-  inequality elimination whose contradictions carry proofs over the original
-  constraints. Check all six comparisons and caller implications, retaining
-  rational-relaxation limits and refusing unresolved obligations. Read complete
-  provisional Nat-helper headers/bodies through the shared original module
-  resolver, preserving category, visibility and declaration identity. Generic
-  helper normalization/substitution and field dispatch remain pending; parsing
-  and arithmetic components alone cannot authorize a helper or source program.
+  Reconstruct existing field Nat expressions and every original static helper,
+  including unused/private definitions, through canonical source bindings.
+  Preserve positional formal identities in canonical affine order, ordered
+  premises, acyclic dependencies, category and visibility; substitute caller
+  forms simultaneously. Prove checked signed-i128 operations, elimination,
+  implication and normalization against independent original-expression meanings.
+  Reference calls execute original predicates/body rather than a produced
+  template. Normalize closed field sizes before applying the final u32 and
+  existing physical bounds; retain valid above-u32 intermediates and reject
+  intermediate overflow, unguarded subtraction and nonlinear generic bodies.
+  Check the complete helper environment once across all four typed owner
+  forests, including empty forests. Retain first source/diagnostic history and
+  disclose temporary-record loss and its exact recovery limits. Ordinary source
+  ADT execution, source-function preservation and all #64 criteria remain pending.
+
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.

@@ -88,8 +88,9 @@ def readRequest (bytes : ByteArray) : WorkM Request := do
   decode value
 
 def checkSources (sources : SourceTypes.Sources) (request : Request) : WorkM Unit :=
-  [request.attached.inputs,request.attached.outputs,request.required.inputs,request.required.outputs].forM
-    fun owners => owners.forM fun owner => SourceTypes.check sources owner.basis
+  SourceTypes.checkMany sources
+    ([request.attached.inputs,request.attached.outputs,request.required.inputs,request.required.outputs].flatMap
+      fun owners => owners.map (·.basis))
 
 structure Checked where
   body : ByteArray

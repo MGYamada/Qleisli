@@ -43,7 +43,7 @@ def constant (variables : Nat) (value : Int) : WorkM Form := do
 def parameter (variables position : Nat) : WorkM Form := do
   Finite.guard (variables ≤ 32 && position < variables) .limit
   Finite.exactWork (Exact.charge (variables+1))
-  return ⟨0,(List.range variables).map (fun i => if i == position then 1 else 0)⟩
+  return coordinate variables position
 
 def scale (factor : Int) (a : Form) : WorkM Form := do
   valid a
@@ -96,6 +96,19 @@ theorem constant_meaning (variables : Nat) (value : Int) (result : Form) (work l
   rw [constant_value _ _ _ _ _ ok]
   have zero : (List.replicate variables (0 : Int)).all (· == 0) = true := by simp
   simp only [Form.evaluate,dot_zero _ zero,Int.add_zero]
+
+theorem parameter_value (variables position : Nat) (result : Form) (work left : Nat)
+    (ok : (parameter variables position).run work = (.ok result,left)) :
+    result = coordinate variables position := by
+  obtain ⟨_,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨_,w₂,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  exact (Finite.pure_success _ _ _ _ h).1
+
+theorem parameter_meaning (variables position : Nat) (result : Form) (work left : Nat)
+    (ok : (parameter variables position).run work = (.ok result,left)) (values : Valuation) :
+    result.evaluate values = values position := by
+  rw [parameter_value _ _ _ _ _ ok]
+  exact coordinate_evaluate _ _ _
 
 theorem scale_value (factor : Int) (a result : Form) (work left : Nat)
     (ok : (scale factor a).run work = (.ok result,left)) : result = a.scale factor := by

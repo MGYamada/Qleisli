@@ -1,0 +1,134 @@
+{
+  "format": "qleisli.original-helper-field-validation",
+  "version": 1,
+  "base_commit": "1cd87f79b2a2becf34f2bf065928fa3631d2795b",
+  "source_revision": "5044a5649c0638b66a28ab93b8d64683f7eff6848ba21c4d2e6ab7803d55e03e",
+  "schema_registry_sha256": "62be81d90086355ee24848422a50fe4fbda12b131ae820b563a44eb610148920",
+  "observed_kernel_sha256": "ee9521b6a8de86a4c56e6275c8cda6cb953a649709a7aa04f7ca30b4e2de2ee5",
+  "history": {
+    "archive": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/helpers-first.tar.xz",
+      "bytes": 79872,
+      "sha256": "55e376fdd8e7eaeb83915551047d46ae3078363f985e28727a45b81301649b00"
+    },
+    "index": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/helpers-index.json",
+      "sha256": "2d62e735841fb5f738ad5f2d93e3f085bb8af346ff2b1ee739a168e08ed48c6b"
+    },
+    "records": 193,
+    "expanded_bytes": 1913960
+  },
+  "observations": [
+    {
+      "stage": "bound-helper-call-checks",
+      "pass": false,
+      "full_local_report_sha256": "7d2ab7195fdba5ab40e4f840d784f9ea6d30ce86027d88e7a7089ea5213d2d9f"
+    },
+    {
+      "stage": "bound-helper-call-checks-v2",
+      "pass": true,
+      "full_local_report_sha256": "a6fbcc2556713ff12d174c9700e4b8e109a6d898e0238932f8d51afd86a6521d"
+    },
+    {
+      "stage": "bound-helper-compiled-audit",
+      "pass": true,
+      "full_local_report_sha256": "119058d167768d35cfaa4bcb1cfa92e6cb4e35d94b5dca2863f30c19abc4c8f3"
+    },
+    {
+      "stage": "bound-helper-reader-build-v2",
+      "pass": true,
+      "full_local_report_sha256": "20dc69ad106685704294fea67a960690d5073a4161d841026403605e16f8b566"
+    },
+    {
+      "stage": "bound-helper-reader-first-build",
+      "pass": false,
+      "full_local_report_sha256": "3bc0e133048a5a0ac709bda5dbf02e7b9d0d26df484a82fc087a9b87459f6d84"
+    },
+    {
+      "stage": "current-prepare-build",
+      "pass": true,
+      "full_local_report_sha256": "7528c39d2d29a23eac8f25601ee9cc792cb2997a3a4a9548a6e8bbdc551098e1"
+    },
+    {
+      "stage": "definition-binding-support-build",
+      "pass": false,
+      "full_local_report_sha256": "f299d50118271a9ebe73622eb609eaa4293cd40db84fba3af1b3e419551ee9b7"
+    },
+    {
+      "stage": "definition-binding-support-build-v2",
+      "pass": true,
+      "full_local_report_sha256": "bc51e3e3ff60afe9b589b6242c31a73be4035dc319bd0c07b71baf334468e18b"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v2",
+      "pass": false,
+      "full_local_report_sha256": "840e500e500feff3f91f4d2226e1eb674952d2e683ef188191ee5440066be693"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v3",
+      "pass": false,
+      "full_local_report_sha256": "8520d42bdff690dedcb12f313d9c5fea29b15acf080cb471b3784f14c18eb22b"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v4",
+      "pass": false,
+      "full_local_report_sha256": "334d25b06d315ba4f9611710b6f6c1436cc2e5fffa30b7f5e2000a49334638a5"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v5",
+      "pass": false,
+      "full_local_report_sha256": "0014cbfb3c869b2c06c520d6eefa9f9cabcc203a905bcab74c02518c1307a59b"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v6",
+      "pass": false,
+      "full_local_report_sha256": "b1859d9415eef1a810f9c32249eb24beaf5b4be40449591cfb952a29374f366d"
+    },
+    {
+      "stage": "field-natural-dispatch-build-v7",
+      "pass": true,
+      "full_local_report_sha256": "93047c23b4d0bf6cd021ff96b31b9d3e5d2d5beea1f891f863ebfe7b3f477291"
+    },
+    {
+      "stage": "field-natural-dispatch-first-build",
+      "pass": false,
+      "full_local_report_sha256": "db281a9d779cf4b7345347e481ed24522c9ac18853156c3a1a4f3d1e80f24b58"
+    },
+    {
+      "stage": "field-source-first-checks",
+      "pass": true,
+      "full_local_report_sha256": "4864cce1cc70d0f91dfbdf35bfe9f45a12e1e46961b9d9f272972208b505a0e3"
+    },
+    {
+      "stage": "first-field-native-old-checker",
+      "pass": false,
+      "full_local_report_sha256": "e13eb890e780ebd86321785f8365db224f4c3f053933e7af910347ba4402dbe4"
+    },
+    {
+      "stage": "generic-execution-checks",
+      "pass": true,
+      "full_local_report_sha256": "874fc066f6184706cb2b09eb1eb18d974a8910d7b6aa480eeaf599c519b4b1b6"
+    },
+    {
+      "stage": "helper-field-full-lean",
+      "pass": true,
+      "full_local_report_sha256": "87cd19d9803c4fc1d0c8a3e778507a5a6c831641ac50f704ce10eda017133508"
+    },
+    {
+      "stage": "helper-field-msrv-rust-v2",
+      "pass": true,
+      "full_local_report_sha256": "845e9f18b8352ad7484e8134c6796c0d37abd53f3709835b70558ece487118f8"
+    },
+    {
+      "stage": "helper-field-normal-rust",
+      "pass": false,
+      "full_local_report_sha256": "fd176e03fb1b6d83e0fc2843fe7ffd3b1858add534885715cbf8f233d9a07697"
+    },
+    {
+      "stage": "helper-field-normal-rust-v2",
+      "pass": true,
+      "full_local_report_sha256": "6ab2dcd0e4114b523aebca424579eb22adfa73804ac859fb31aa12de1f89f8ba"
+    }
+  ],
+  "current_scope": "Fresh generic original-helper normalization, simultaneous substitution and field source reconstruction support the bounded finite-carrier raw mode. All 61 external executable Lean assertions, full shared builds/audits, complete Tests, fresh kernel/Main replay and six protected comparisons pass. Normal/MSRV all-target checks and 21 native tests pass with zero conditional skips; normal lint/format pass. Executable assertions are tests, not generic theorem proofs. Exact semantic postconditions remain in Lean sources. The original early generic kernel test result is unknown; unavailable original full reports/maps are not reconstructed. Native compilation/IO/runtime, ordinary source ADT execution, host roots, source-function preservation, constructors/match/qmatch, companion/bin and hosted CI/review remain pending. All eight #64 criteria stay open. No excluded #39/#63 extension, new guarantee admission or release is claimed."
+}

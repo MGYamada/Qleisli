@@ -142,11 +142,16 @@ from the original source rows and checks code Gram/body equations using the same
 QIRF dependency and Raw gates. A fresh execution-only decision binds its private
 handle; inspection/caller frames and ordinary requests cannot substitute for it.
 Its independent type reader follows original explicit imports and public
-reexports, retaining canonical identity, category and visibility. This bounded
-raw component does not yet connect ordinary source ADT execution or general
-Nat field expressions. Declaration lookup is not a
-source-function preservation theorem, an inverse/control capability or a new
-human-admitted guarantee. All existing source/runtime/target assumptions remain.
+reexports, retaining canonical identity, category and visibility. Existing field
+Nat expressions use exact symbolic arithmetic and original acyclic helpers,
+including generic checking of unused/private definitions and ordered premises.
+Simultaneous calls are proved against original predicate/body evaluation;
+produced templates and caller-supplied success receipts grant no authority.
+The helper environment is checked once across all ordered owner forests.
+This bounded raw component does not enable ordinary source ADT execution.
+Neither declaration lookup nor these scalar checks supply a source-function
+preservation theorem, inverse/control access or a new human-admitted guarantee.
+All existing source/runtime/target assumptions remain.
 
 ### Non-verifier backend implementation scope (2026-10-11)
 

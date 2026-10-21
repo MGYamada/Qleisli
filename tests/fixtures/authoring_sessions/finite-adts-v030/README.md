@@ -274,3 +274,39 @@ acceptance. Generic helper normalization, original formal-frame interpretation,
 simultaneous substitution, dependency/all-unused-helper checks and actual field
 dispatch remain pending, as do ordinary source ADT execution and all8 #64
 criteria. No excluded #39/#63 work, new guarantee or release is claimed.
+
+The [helper authoring recovery](helper-authoring-recovery.json) preserves 25
+exact retained file-change and command events after the external temporary
+directory disappeared. The [first test source](helper-first-test-recovered.lean.txt)
+was recovered as literal data from a retained command, without executing it.
+The unavailable full observations and before/after maps cannot be reconstructed
+from displayed command tails. The first generic test has no terminal report;
+its result remains unknown. These records are inert history, not fresh evidence.
+
+The [helper/field history](helpers-first.tar.xz), [index](helpers-index.json)
+and [current checks](helpers-validation.json) preserve 193 inert records /
+1,913,960 original bytes /79,872 stored bytes. Complete relevant source versions
+are stored once; repeated whole-repository inventories retain canonical digests.
+First elaboration failures, the old checker's arithmetic-reader refusal and the
+new test's incorrect overflow error expectation remain separate failed attempts.
+No unavailable report or unknown result is reconstructed.
+
+Original helpers are now checked generically, including unused/private bodies,
+ordered predicates and acyclic dependencies. Canonical formal order retains
+original positional identities; simultaneous substitution never rewrites caller
+forms as callee variables. Exact normalization and call postconditions refer to
+independent original predicate/body evaluation. The actual field reader binds
+the original expression/module, checks closed sizes and retains canonical
+spelling, signed-i128 intermediates, final u32 and existing physical bounds.
+One helper environment serves all four ordered owner forests, including empty
+forests. No producer template or success receipt grants source authority.
+
+All61 external executable Lean assertions pass as tests; generic postconditions
+remain separate Lean proofs. Full shared builds/audits, complete Tests, fresh
+kernel/Main replay and six protected output comparisons pass. Sequential normal
+Rust1.98.1/MSRV1.85 all-target checks and21 native tests each pass, zero ignored
+or conditional skips; normal strict lint/format pass. The guarded current-evidence
+refresh preserves both admitted scopes. New quantum cases use two physical bits.
+Ordinary source ADT execution, host roots, constructors/access/privacy/match/qmatch,
+source-function preservation, companion/bin and hosted CI/review remain pending.
+All8 #64 criteria remain open; no #39/#63 extension, new guarantee or release.

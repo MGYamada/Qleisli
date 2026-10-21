@@ -68,6 +68,28 @@ theorem dot_zero (coefficients : List Int) (zero : coefficients.all (· == 0) = 
     simp only [dot_cons,head,Int.zero_mul,Int.zero_add]
     exact ih tail _
 
+def coordinate (variables position : Nat) : Form :=
+  ⟨0,List.replicate position 0 ++ 1 :: List.replicate (variables-position-1) 0⟩
+
+private theorem dot_zero_prefix (count : Nat) (tail : List Int) (values : Valuation) :
+    dot (List.replicate count 0 ++ tail) values = dot tail (fun i => values (i+count)) := by
+  induction count generalizing values with
+  | zero => simp
+  | succ count ih =>
+    simp only [List.replicate_succ,List.cons_append,dot_cons,Int.zero_mul,Int.zero_add,ih]
+    simp only [Nat.add_assoc]
+
+theorem coordinate_evaluate (variables position : Nat) (values : Valuation) :
+    (coordinate variables position).evaluate values = values position := by
+  have zero : (List.replicate (variables-position-1) (0 : Int)).all (· == 0) = true := by simp
+  simp only [coordinate,Form.evaluate,dot_zero_prefix,dot_cons,dot_zero _ zero,
+    Int.zero_add,Int.one_mul,Int.add_zero,Nat.zero_add]
+
+theorem coordinate_length (variables position : Nat) (bound : position < variables) :
+    (coordinate variables position).coefficients.length = variables := by
+  simp only [coordinate,List.length_append,List.length_replicate,List.length_cons]
+  omega
+
 /-- Every row represents an exact integer inequality `row(values) <= 0`. -/
 def Holds (rows : List Form) (values : Valuation) : Prop :=
   ∀ row ∈ rows, row.evaluate values ≤ 0
@@ -122,6 +144,15 @@ def Comparison.Relation : Comparison → Int → Int → Prop
 def Comparison.negate : Comparison → Comparison
   | .eq => .ne | .ne => .eq | .le => .gt
   | .lt => .ge | .ge => .lt | .gt => .le
+
+def Comparison.test : Comparison → Int → Int → Bool
+  | .eq,a,b => a == b | .ne,a,b => a != b
+  | .le,a,b => a ≤ b | .lt,a,b => a < b
+  | .ge,a,b => b ≤ a | .gt,a,b => b < a
+
+theorem Comparison.test_relation (op : Comparison) (a b : Int) :
+    op.test a b = true ↔ op.Relation a b := by
+  cases op <;> simp [test,Relation]
 
 theorem Comparison.negate_relation (op : Comparison) (a b : Int) :
     op.negate.Relation a b ↔ ¬op.Relation a b := by
