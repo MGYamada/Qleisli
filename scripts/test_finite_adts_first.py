@@ -701,5 +701,93 @@ class FirstHostTypeRoots(unittest.TestCase):
             self.assertEqual([(row['name'], row['code']) for row in report['cases']], expected)
 
 
+# Value history: "tests/fixtures/authoring_sessions/finite-adts-v030/values-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/values-index.json".
+# Scope: "tests/fixtures/authoring_sessions/finite-adts-v030/values-validation.json".
+class FirstOrdinaryValues(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history('values-index.json', 'values-first.tar.xz',
+            'd12bb0e8fff68ffd6f8b129acd845526ee37242e77115fa0a3ddb9e47af866df',
+            215040, '0b2aae13383acde445bbff974515418a79f61d3b32d652169188fca6f1fa6dfc', 2_659_991)
+
+    def report(self, stage):
+        return json.loads(self.data[stage + '/observation.json'])
+
+    def test_first_parser_name_failures_remain_separate_from_native_validity(self):
+        self.assertEqual(len(self.data), 259)
+        first = self.report('first')
+        self.assertTrue(first['sources_and_binaries_unchanged'])
+        self.assertTrue(first['first_sources_unchanged'])
+        self.assertEqual(first['before'], first['after'])
+        self.assertEqual([row['code'] for row in first['commands']],
+                         ['module', 'module', 'parse', 'parse', 'parse', 'parse',
+                          'parse', 'parse', 'parse', 'module', None])
+        control = json.loads(self.data['first/bit-control.stdout'])
+        self.assertEqual(control['result']['verification']['scope'], 'native-validity')
+        self.assertFalse(control['result']['source_preservation_verified'])
+        mapping = json.loads(self.data['first/original-source-records.json'])
+        source = self.data[mapping['record-order/main.qli']['record']]
+        self.assertIn(b'Packet{bit:1,tag:Color::Green,zero:()}', source)
+
+    def test_actual_stack_failure_and_unsuccessful_repairs_are_not_successes(self):
+        self.assertFalse(self.report('compile-first')['pass'])
+        self.assertIn(b'E0004', self.data['compile-first/stderr'])
+        for stage in ['tests-first', 'tests-second']:
+            self.assertFalse(self.report(stage)['pass'])
+            self.assertIn(b'has overflowed its stack', self.data[stage + '/stderr'])
+        self.assertFalse(self.report('tests-third')['pass'])
+        self.assertIn(b'parsed_preparation_keeps_concrete_execution_gate',
+                      self.data['tests-third/stderr'])
+        self.assertTrue(self.report('frontend-first')['pass'])
+        self.assertIn(b'348 passed; 0 failed; 0 ignored', self.data['frontend-first/stdout'])
+
+    def test_real_sandbox_failure_and_separate_complete_rerun_retain_their_scopes(self):
+        for stage in ['normal-final', 'msrv-final']:
+            report = self.report(stage)
+            self.assertTrue(report['stable'])
+            self.assertEqual(report['before'], report['after'])
+            for group, counts in [('frontend', [348]), ('integration', [12, 16, 5]), ('native', [21])]:
+                summaries = report['summaries'][group]
+                self.assertEqual([int(s.split()[3]) for s in summaries if s.startswith('test result:')], counts)
+                self.assertEqual(summaries[-1], 'native test gate: zero conditional native skips')
+        self.assertFalse(self.report('normal-final')['pass'])
+        self.assertIn(b'Operation not permitted', self.data['normal-final/companion-tests.stdout'])
+        self.assertTrue(self.report('companion-normal-retry')['pass'])
+        self.assertTrue(self.report('msrv-final')['pass'])
+        for stream in ['companion-normal-retry/stdout', 'msrv-final/companion-tests.stdout']:
+            lines = self.data[stream].decode().splitlines()
+            summaries = [s for s in lines if s.startswith('test result: ok.')]
+            self.assertEqual(sum(int(s.split()[3]) for s in summaries), 176)
+            self.assertTrue(all('0 failed; 0 ignored' in s for s in summaries))
+        self.assertTrue(self.report('passive-readers')['pass'])
+
+    def test_current_cli_refusals_and_four_staged_tools_do_not_claim_nominal_execution(self):
+        for stage in ['cli-normal', 'cli-msrv']:
+            report = self.report(stage)
+            self.assertTrue(report['pass'])
+            self.assertTrue(report['stable'])
+            self.assertEqual(len(report['cases']), 15)
+            cases = {case['name']: case['code'] for case in report['cases']}
+            self.assertEqual([cases[n] for n in ['enum', 'classical', 'record', 'field', 'empty', 'public']],
+                             ['unsupported'] * 6)
+            self.assertEqual([cases[n] for n in ['private', 'quantum-field', 'observation', 'order']],
+                             ['visibility', 'type', 'effect', 'ownership'])
+        staged = json.loads(self.data['companion-compatibility/staging.json.txt'])
+        self.assertEqual([r['name'] for r in staged['files']], ['qargo', 'qlippy', 'qlifmt', 'qlidoc'])
+        self.assertTrue(all(r['target_sha256'] == r['staged_sha256'] for r in staged['files']))
+        self.assertTrue(self.report('staged-runtime')['pass'])
+        self.assertIn(b'no binary-source attestation', self.data['staged-runtime/stdout'])
+        validation = json.loads((FIXTURES / 'values-validation.json').read_bytes())
+        self.assertEqual(validation['format'], 'qleisli.finite-values-validation')
+        sources = json.loads(self.data['final-validated-source-records.json'])
+        self.assertEqual(validation['source_files'], {n: row['sha256'] for n, row in sources.items()})
+        for name, row in sources.items():
+            self.assertEqual(hashlib.sha256(self.data[row['record']]).hexdigest(), row['sha256'], name)
+        self.assertEqual(validation['history']['records'], len(self.data))
+        self.assertEqual(validation['history']['archive']['sha256'],
+                         '0b2aae13383acde445bbff974515418a79f61d3b32d652169188fca6f1fa6dfc')
+
+
 if __name__ == '__main__':
     unittest.main()

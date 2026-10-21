@@ -134,8 +134,17 @@
       {
         "check": "fixture references",
         "result": "error: nonexistent Git object from a mistyped change-base argument; no validation credit. Separate corrected invocation passed."
+      },
+      {
+        "check": "committed fixture references at 378c693c91058c7b5d13e59e5576e958bcd28ba0",
+        "result": "forbidden: the three new value-history files lacked fixed passive consumers. Connected them to the existing bounded history reader and added four passive tests; no gate or budget was weakened."
       }
     ],
-    "scope": "Read-only source/retention/documentation checks after the captured Rust windows; final committed fixture growth/references remain separate."
+    "scope": "Read-only source/retention/documentation checks after the captured Rust windows; final committed fixture growth/references remain separate.",
+    "finite_adt_history_tests": 43,
+    "passive_reader_source": {
+      "path": "scripts/test_finite_adts_first.py",
+      "sha256": "168addebb503053738004f603b515446dfe9907d0c3708a20d13c0566782ab93"
+    }
   }
 }

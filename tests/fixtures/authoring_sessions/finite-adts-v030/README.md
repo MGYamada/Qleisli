@@ -372,7 +372,11 @@ refreshed MSRV executables are staged in workspace `bin/` and pass actual runtim
 verification with the explicitly intended source/std and selected native checker.
 These are developer observations, not binary/source or release attestations.
 
-The 49 passive history-reader tests pass. Lean sources and selected checker are
+The 49 generic passive-reader tests and 43 finite-ADT history tests pass. The
+first committed retention check refused these three new unrooted files. Their
+fixed passive reader now checks original bytes, first failures, source windows,
+actual CLI diagnostics and staged-tool observations without executing history.
+Lean sources and selected checker are
 unchanged; no fresh Lean rebuild/replay or new native acceptance rule is claimed.
 No maximum quantum case is added. Ordinary nominal execution, native source/value
 routing, match/qmatch, source-function preservation and hosted CI/review remain
