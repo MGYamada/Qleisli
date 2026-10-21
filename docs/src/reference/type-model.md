@@ -745,8 +745,30 @@ nominal source execution still requires its typed native route: both concrete
 adapters explicitly reject source collections containing these declarations
 before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
 actual public-name/source checks, then the remaining transport refusal. This
-does not implement constructors, field access, ordinary `match`, `qmatch` or a
+does not enable ordinary nominal execution, `match`, `qmatch` or a
 source-preservation theorem, and it grants no inverse/control access.
+
+Common source preparation also checks fieldless `Type::Variant` values,
+explicit `Type { field: expression, ... }` records and ordinary `value.field`
+projection, in runtime blocks and classical bodies. Type references use the
+original occurrence table, including public reexports and local shadowing;
+a local Basis or runtime name cannot fall back to a same-spelled global type.
+Member names and diagnostics retain their original source spans. A qualified
+call remains a function call; no payload variant or imported bare-variant API
+is introduced.
+
+Every record field is supplied exactly once with its exact declared ordinary
+type. Initializers are checked in written evaluation order; the resulting type
+retains declaration order and nominal identity. Field privacy is checked in the
+original declaring module, including zero-width fields. Projection checks its
+receiver once and requires an ordinary record; `Q<Record>` remains one owner,
+with no implicit decomposition or observation. Initializer calls retain their
+normal effects, dependencies and ownership transitions, so observation cannot
+be hidden behind a Unitary/Isometry annotation. Empty records and singleton
+enums are distinct from Unit and Bits<0>. Shorthand, record updates, methods
+and general const<T> remain outside these forms. Concrete nominal lowering,
+typed native value transport and source correspondence remain required before
+execution; successful common preparation supplies no accepted handle.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

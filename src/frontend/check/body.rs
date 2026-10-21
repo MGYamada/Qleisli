@@ -42,6 +42,7 @@ fn unresolved_function_message(name: &str) -> String {
     message
 }
 
+mod aggregate;
 mod operations;
 mod places;
 mod special;
@@ -881,6 +882,16 @@ impl Checker<'_, '_> {
         let span = expr.span;
         self.tick(span)?;
         let result = match &expr.kind {
+            ExprKind::Variant(value) => self.variant_value(value)?,
+            ExprKind::Record(record) => {
+                self.record_value(record, scope, |checker, value, scope, expected| {
+                    checker.expr(value, scope, Some(expected))
+                })?
+            }
+            ExprKind::Field { receiver, field } => {
+                let ty = self.expr(receiver, scope, None)?;
+                self.field_value(&ty, field)?
+            }
             ExprKind::UnsupportedClosure(closure) => {
                 return Err(self.closure_error(closure, scope, span)?);
             }

@@ -340,3 +340,41 @@ component; the protected current-source identity remains separate from replay.
 No maximum quantum case is added. Ordinary nominal execution, constructors/
 access/match/qmatch, source preservation, companion/bin and hosted CI/review remain
 pending. All8 #64 criteria and broader guarantee obligations remain open.
+
+The [value authoring history](values-first.tar.xz), [index](values-index.json)
+and [validation](values-validation.json) preserve 259 inert records /
+2,659,991 original bytes /215,040 stored bytes. Eleven first projects retain
+their actual parser/name barriers and the separate native Bit control. Missing
+exhaustive consumers, test-authoring mistakes, the genuine nested-record parser
+stack overflow and its first unsuccessful repair remain failed history. The
+repaired parser shares the existing 64-level/64-field limits without increasing
+the test stack. An incorrect expectation about the remaining preparation gate
+is retained separately from the successful final checks.
+
+Common preparation now checks original fieldless enum values, explicit record
+literals and ordinary record projection in both expression grammars. Type
+references retain original lexical occurrences, canonical nominal identity,
+reexports and shadowing. Every field is supplied exactly once with its exact
+ordinary type and original privacy, including zero-width fields. Initializers
+are checked once in written order, retaining effects, dependencies and owner
+consumption; declaration order remains in the resulting type. `Q<Record>`
+projection, quantum field initializers and false Unitary/Isometry bounds reject.
+Concrete adapters retain their explicit typed nominal transport refusals.
+
+Normal 1.98.1 and sequential MSRV 1.85 each pass 348 frontend, 33 integration and 21
+native tests plus 15 actual CLI observations, zero ignored/conditional native
+skips. Normal strict all-target lint/format pass. Both toolchains pass 176
+companion tests and build all four executables. The normal sandbox's five
+process-inspection refusals remain failed observations; the separate unrestricted
+normal rerun passes. Minimal qlippy AST traversal compatibility adds 16 lines;
+the companion's four existing dirty files retain their exact bytes. The four
+refreshed MSRV executables are staged in workspace `bin/` and pass actual runtime
+verification with the explicitly intended source/std and selected native checker.
+These are developer observations, not binary/source or release attestations.
+
+The 49 passive history-reader tests pass. Lean sources and selected checker are
+unchanged; no fresh Lean rebuild/replay or new native acceptance rule is claimed.
+No maximum quantum case is added. Ordinary nominal execution, native source/value
+routing, match/qmatch, source-function preservation and hosted CI/review remain
+pending. All 8 #64 criteria remain open; no #39/#63 extension, new guarantee,
+publication or release is claimed.

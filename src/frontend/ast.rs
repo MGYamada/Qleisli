@@ -210,6 +210,27 @@ pub struct Expr {
     pub span: Span,
 }
 
+/// Explicit ordinary constructors retain their original type/member occurrences.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct VariantValue {
+    pub type_name: Ident,
+    pub variant: Ident,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordValue<E> {
+    pub type_name: Ident,
+    /// Written evaluation order; declaration order is a separate checked fact.
+    pub fields: Vec<ValueField<E>>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ValueField<E> {
+    pub name: Ident,
+    pub value: E,
+    pub span: Span,
+}
+
 /// Diagnostic syntax only. Common checking always refuses this expression;
 /// neither its parameters nor its body describe an executable callable value.
 /// Optional annotations are parsed for bounded syntax only, not type facts;
@@ -222,6 +243,12 @@ pub struct UnsupportedClosure {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    Variant(Box<VariantValue>),
+    Record(Box<RecordValue<Expr>>),
+    Field {
+        receiver: Box<Expr>,
+        field: Ident,
+    },
     /// Retain lexical identities for capture diagnostics, never for lowering.
     UnsupportedClosure(Box<UnsupportedClosure>),
     AccessCall {
@@ -447,11 +474,20 @@ pub struct BasisExpr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BasisExprKind {
+    Variant(Box<VariantValue>),
+    Record(Box<RecordValue<BasisExpr>>),
+    Field {
+        receiver: Box<BasisExpr>,
+        field: Ident,
+    },
     Name(Ident),
     Bit(bool),
     Unit,
     Tuple(Vec<BasisExpr>),
-    Call { callee: Ident, args: Vec<BasisExpr> },
+    Call {
+        callee: Ident,
+        args: Vec<BasisExpr>,
+    },
     Not(Box<BasisExpr>),
     Xor(Box<BasisExpr>, Box<BasisExpr>),
     And(Box<BasisExpr>, Box<BasisExpr>),

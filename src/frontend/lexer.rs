@@ -56,6 +56,7 @@ pub enum TokenKind {
     Star,
     Caret,
     DotDot,
+    Dot,
     EqualEqual,
     NotEqual,
     LessEqual,
@@ -196,6 +197,7 @@ impl TokenKind {
             Self::Star => "`*`",
             Self::Caret => "`^`",
             Self::DotDot => "`..`",
+            Self::Dot => "`.`",
             Self::EqualEqual => "`==`",
             Self::NotEqual => "`!=`",
             Self::LessEqual => "`<=`",
@@ -322,6 +324,7 @@ fn scan(
                     TokenKind::HeaderBang
                 }
                 '.' if scanner.join(&mut token, '.') => TokenKind::DotDot,
+                '.' => TokenKind::Dot,
                 '+' => TokenKind::Plus,
                 '*' => TokenKind::Star,
                 '^' => TokenKind::Caret,
@@ -334,9 +337,7 @@ fn scan(
                 '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
                 '<' => TokenKind::LAngle,
                 _ => {
-                    let message = if ch == '.' {
-                        "unexpected character `.`; field and method receiver syntax is unsupported; use an ordinary function call. For quantum access, write explicit `excl ...` or `ctrl ...` arguments: receiver adjustment cannot infer or forward quantum access".into()
-                    } else if ch == '!' {
+                    let message = if ch == '!' {
                         match tokens.last().map(|token| &token.kind) {
                             Some(TokenKind::Ident(name))
                                 if matches!(

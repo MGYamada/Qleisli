@@ -68,6 +68,12 @@ development milestones from the scope of their evidence.
   expansion/work limits and the context-free parser's built-in-only contract.
   Keep explicit nominal execution refusals in both concrete adapters while their
   actual source/native route remains pending; preparation grants no acceptance.
+  Check fieldless enum values, explicit record literals and ordinary field
+  projection in both common expression grammars. Preserve original occurrence
+  identity, reexports, member privacy, exact types and written initializer
+  order/effects; reject implicit quantum projection and false pure labels.
+  Keep nominal execution transport gates and existing syntax/work limits.
+  Reduce recursive parser frames without increasing stack or nesting limits.
 
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,

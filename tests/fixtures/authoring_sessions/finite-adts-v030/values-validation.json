@@ -1,0 +1,141 @@
+{
+  "format": "qleisli.finite-values-validation",
+  "version": 1,
+  "base_commit": "8c6b0e771ad7577fec52b94ce0920cefb65fb811",
+  "source_files": {
+    "CHANGELOG.md": "990d1e59f72d94b0a2a0d7c45f74345160124323db0db746832900fb797697e1",
+    "docs/src/reference/rust-boundary.md": "8f5d4b508a3703d344310988a43de8b28f2b36ecb1bb4950c1005f0e1e17bc15",
+    "docs/src/reference/source-text.md": "2819e39f7f99cbb8c80fbb02940d825e8028aba419b52dd38217d9a298068e6d",
+    "docs/src/reference/type-model.md": "2a413055616be295599521a687564c5d722076e4d7ba643db0c4ecd786a54f52",
+    "src/frontend/ast.rs": "c20d032317b8518f9ade9f24f86921288834f2b39dbf38c1428bc2b730f27269",
+    "src/frontend/check/body.rs": "ac04634a2eec8c14853341ce12bbd7a4dd3f975c5a3cce3c367c744da0573960",
+    "src/frontend/check/body/aggregate.rs": "869561713779d2cbcc53783b47a865a23a5d69bdc269e873f4dbe5ad72d8f869",
+    "src/frontend/check/body/aggregate/tests.rs": "e035a1af8b6b00f2b34e6c3d42b11e09c8e65dfeedd24e9948ffc1b200b21e79",
+    "src/frontend/check/body/special.rs": "97d0c558c0aad08c1491ffb71e4cfac17e6a9a22b5a0d00f686816b88b908426",
+    "src/frontend/compile/basis.rs": "178faab1a174afc719091a58600d94754508de731a82ebdd626220e3c17f528a",
+    "src/frontend/compile/lower/classical.rs": "bed70d0638b6177212dcce30cd61a52b6fb24098e6ec56b8203ea4ec15c94d86",
+    "src/frontend/compile/lower/mod.rs": "ecbfa57f06ed30ea284430e7d10ff718d8a3236b02fe4135000bafe44a6ea1fe",
+    "src/frontend/compile/profile.rs": "f38ffb1b033c34553af902f02eecf4aa02260b4e3cb07ae31647f14562224097",
+    "src/frontend/lexer.rs": "f6fcec1d931c70ea0c87b39882e063949c7ea039d24f518103315382e08fb779",
+    "src/frontend/ordinary.rs": "e56ea75768e728f4c6a253c5d3151bf3af3c467007500790eec227276a673eef",
+    "src/frontend/ordinary/finite.rs": "1163662b6a93886319c73a5e689c934cd3ebdea63c584a6314f92ab4530d1c19",
+    "src/frontend/parser.rs": "0e11f0f01a717fe4068a17403ed5cfb11f4bfddb1fd3118236dd99f351333682",
+    "src/frontend/parser/aggregate_tests.rs": "2ff17726627d78884d8824fdbbde88229efcf61de4db8211ab63aea5b4d324f6",
+    "src/frontend/resolve/locals.rs": "8a65ec4abffd457aef4b91ddc3a7f5113106f259f05c363e87b55125d1f148d8",
+    "src/frontend/specialize/meaning.rs": "e8f9086ea175ee26747f62f8b1ba7cfa4dd41e5ae67f0775bb79abc7a46f0300",
+    "src/frontend/specialize/projection.rs": "c52086ed30635ea9fe75ac68d77f41bc25ac2a9ec27a0cd1f0fcc928332ae329"
+  },
+  "history": {
+    "archive": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/values-first.tar.xz",
+      "bytes": 215040,
+      "sha256": "0b2aae13383acde445bbff974515418a79f61d3b32d652169188fca6f1fa6dfc"
+    },
+    "index": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/values-index.json",
+      "sha256": "d12bb0e8fff68ffd6f8b129acd845526ee37242e77115fa0a3ddb9e47af866df"
+    },
+    "records": 259,
+    "expanded_bytes": 2659991
+  },
+  "observations": [
+    {
+      "stage": "cli-msrv",
+      "pass": true,
+      "full_local_report_sha256": "fc907dedf35ed7c2d577b45f0c86b59f804b1bdc6131a28e68467da58e2072d6"
+    },
+    {
+      "stage": "cli-normal",
+      "pass": true,
+      "full_local_report_sha256": "360b1b01d876c88378fddc4e27c99a9058ac3e9f1e105e2675d9bae9f6d323e2"
+    },
+    {
+      "stage": "companion-normal-retry",
+      "pass": true,
+      "full_local_report_sha256": "3b696f7241a8f58d3f7191d39fbd6774d90f82fdc9e47e98ce91f5d7bbcb5de0"
+    },
+    {
+      "stage": "compile-first",
+      "pass": false,
+      "full_local_report_sha256": "1370f1fed2374380b8864d59b31ccc5d1386e2cadf5b76cca4c5ac08ce9c9c45"
+    },
+    {
+      "stage": "compile-second",
+      "pass": true,
+      "full_local_report_sha256": "b6d3938900eb42d3ebb3cb752f24d94997bead72691d27712e2af83b0de11dca"
+    },
+    {
+      "stage": "first",
+      "pass": null,
+      "full_local_report_sha256": "6d6c7d8508b8633473e0c3c5c2a465bf56724e4b3a0ea8935e28258427bec68b"
+    },
+    {
+      "stage": "frontend-first",
+      "pass": true,
+      "full_local_report_sha256": "15f98e26fae1c21b4dbf63c705379b066468e43a4951fa93af2869bd9c8993fe"
+    },
+    {
+      "stage": "lint-first",
+      "pass": true,
+      "full_local_report_sha256": "4a297e04e5f29baa67aacfcee91d870a0f1bf1aacbf8dd606098a6d752e306fb"
+    },
+    {
+      "stage": "msrv-final",
+      "pass": true,
+      "full_local_report_sha256": "fd1ba2c40198b46d31e1694204ef5e63b8e28fc62e52f4283c95eefb57cec7e9"
+    },
+    {
+      "stage": "normal-final",
+      "pass": false,
+      "full_local_report_sha256": "c68f01d39440d0afbcb1a4378f1c577836fb8da200e46b6dfe9a6ef9531b25ff"
+    },
+    {
+      "stage": "passive-readers",
+      "pass": true,
+      "full_local_report_sha256": "231582e823a6d0a73f729c4c5e931b335758ef733255f386a588803971d8bfc2"
+    },
+    {
+      "stage": "staged-runtime",
+      "pass": true,
+      "full_local_report_sha256": "7550c9efb5dc82ba824a2b72c59ae59e31835107208bb5ae947918e9e383b03c"
+    },
+    {
+      "stage": "tests-first",
+      "pass": false,
+      "full_local_report_sha256": "af780194c221bc523a1e165b2d57f1b19e4cf13781089f0e999ef15667bb6e39"
+    },
+    {
+      "stage": "tests-second",
+      "pass": false,
+      "full_local_report_sha256": "6cecd32eefb48b19a7a0cfb7365500199fe33b3ffec29d4df42f2eb8ebd8f0bc"
+    },
+    {
+      "stage": "tests-third",
+      "pass": false,
+      "full_local_report_sha256": "ce06af4fb000bc867cd2df0b2602ed7f863b5d3e620812ceb68c3527d3b807ea"
+    }
+  ],
+  "kernel_sha256": "ee9521b6a8de86a4c56e6275c8cda6cb953a649709a7aa04f7ca30b4e2de2ee5",
+  "scope": "Common original-source enum/record constructors and ordinary field projection, exact nominal identities and visibility, written initializer order/effects/ownership and retained concrete transport gates. First sources and actual parser/name failures, missing exhaustive consumers, authoring mistakes and the genuine parser stack overflow remain distinct from repaired checks. The normal companion process-inspection sandbox refusal remains failed history; a separate unrestricted normal rerun passes. Normal1.98.1 and MSRV1.85 pass348 frontend,33 integration,21 native tests and15 CLI cases; no conditional skips. Companion compatibility tests/builds and four staged runtime executables are separately observed. No changed Lean source/acceptance rule or fresh Lean replay. Nominal execution, typed native routing, match/qmatch, source-function preservation, hosted CI/review and all8 #64 criteria remain open. No #39/#63 extension, guarantee admission or release.",
+  "post_checks": {
+    "companion_compatibility_commit": "a37e711a9457ffdb8d77a56fb681a419fb8de4aa",
+    "existing_companion_dirty_files_preserved": true,
+    "source_file_identities_checked": 21,
+    "passive_reader_tests": 49,
+    "normal_companion_tests": 176,
+    "msrv_companion_tests": 176,
+    "docs_local_links": 2618,
+    "docs_markdown_anchors": 93,
+    "lean_root_modules": 312,
+    "constitutional_continuity_base": "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb",
+    "constitutional_identity_and_continuity": "passed; not a fresh Lean replay",
+    "fixture_reference_change_base": "0bd108183649e0462cb5c5b1c8bae29d07e1c9fc",
+    "non_validation_attempts": [
+      {
+        "check": "fixture references",
+        "result": "error: nonexistent Git object from a mistyped change-base argument; no validation credit. Separate corrected invocation passed."
+      }
+    ],
+    "scope": "Read-only source/retention/documentation checks after the captured Rust windows; final committed fixture growth/references remain separate."
+  }
+}

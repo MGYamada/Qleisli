@@ -14,6 +14,8 @@ use crate::ir::{ClassicalId, RawOp};
 /// Consumers charge their existing traversal/allocation budgets; this view
 /// creates no second source tree, truth table, acceptance or evidence.
 pub(crate) enum RuntimeExpression<'a> {
+    /// Common typing is available; nominal execution needs its typed transport.
+    Nominal,
     Name(&'a Ident),
     Unit,
     Tuple(&'a [BasisExpr]),
@@ -29,6 +31,9 @@ pub(crate) enum RuntimeExpression<'a> {
 
 pub(crate) fn runtime_expression(expr: &BasisExpr) -> RuntimeExpression<'_> {
     match &expr.kind {
+        BasisExprKind::Variant(_) | BasisExprKind::Record(_) | BasisExprKind::Field { .. } => {
+            RuntimeExpression::Nominal
+        }
         BasisExprKind::Name(name) => RuntimeExpression::Name(name),
         BasisExprKind::Unit => RuntimeExpression::Unit,
         BasisExprKind::Tuple(fields) => RuntimeExpression::Tuple(fields),

@@ -120,6 +120,12 @@ fn block(block: &Block) -> Result<(), Failure> {
 }
 fn expr(expr: &Expr) -> Result<(), Failure> {
     match &expr.kind {
+        ExprKind::Variant(_) | ExprKind::Record(_) | ExprKind::Field { .. } => {
+            return Err((
+                expr.span,
+                "ordinary nominal values require their typed native transport",
+            ));
+        }
         ExprKind::UnsupportedClosure(_) => {
             return Err((expr.span, "runtime closure values are unsupported"));
         }

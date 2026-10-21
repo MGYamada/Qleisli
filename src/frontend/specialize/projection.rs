@@ -179,6 +179,12 @@ impl Projection<'_, '_> {
         // keep their addresses rather than resolve names in a copied AST.
         self.charge(expression.span, 1)?;
         let kind = match crate::frontend::ordinary::runtime_expression(expression) {
+            RuntimeExpression::Nominal => {
+                return Err(unsupported(
+                    expression.span,
+                    "ordinary nominal values require their typed native transport",
+                ));
+            }
             RuntimeExpression::Name(name) => ExprKind::Name(self.ident(name)?),
             RuntimeExpression::Unit => ExprKind::Unit,
             RuntimeExpression::Tuple(fields) => {
@@ -345,6 +351,14 @@ impl Projection<'_, '_> {
     fn expr(&self, expr: &source::Expr) -> Result<Expr> {
         self.charge(expr.span, 1)?;
         let kind = match &expr.kind {
+            source::ExprKind::Variant(_)
+            | source::ExprKind::Record(_)
+            | source::ExprKind::Field { .. } => {
+                return Err(unsupported(
+                    expr.span,
+                    "ordinary nominal values require their typed native transport",
+                ));
+            }
             source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)?),
             source::ExprKind::Unit => ExprKind::Unit,
             source::ExprKind::Bit(value) => ExprKind::Boolean(Boolean::Constant(*value), vec![]),
