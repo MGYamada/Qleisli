@@ -1,0 +1,267 @@
+{
+  "format": "qleisli.nominal-resolution-validation",
+  "version": 1,
+  "base_commit": "00c5521881a1561103d765212dae745d9cb7c1dd",
+  "source_files": {
+    "src/frontend/check.rs": "9c6bc0ec36397a2b4569f9e9cc99c8676ff83765bbb47820a00424542a39b17a",
+    "src/frontend/check/body/operations.rs": "f4d6f99557055af61a1567618867b4bfcecab31fec44021007812b4c16330db6",
+    "src/frontend/check/declarations.rs": "b42cbf572b9dde27926ebd4ef6d23f6205d1a0b208a949b95b1aabe258d7889d",
+    "src/frontend/compile/dormant.rs": "8449bb8c0dd3ac1ae425750d7b96dcdebd3e1bc7cc63c4c837b626e8e68d76bb",
+    "src/frontend/compile/dormant/controls.rs": "dfc3d815adaa14adb2c437421f258c65577ce7cbab3a2eb8abe47f170c5fbed7",
+    "src/frontend/compile/mod.rs": "978d2251ee7a753864d2416ab00faba0fff8b08f5e6523dbec701e5bb048506c",
+    "src/frontend/compile/sources.rs": "33657fdee35a0a361604a2c16f5726908591e7b657dd1ce08c4ce67dc1ef7294",
+    "src/frontend/project.rs": "5b3910a6593b118a706c1dafbe3ca67a9360ef780c8849b8e8820dac486324ae",
+    "src/frontend/resolve.rs": "3c159a8bee4f6922200a22a03951b58ea6fb5a58a6e920302ec5745bb3d0ee59",
+    "src/frontend/resolve/exports.rs": "8c1d337a8d585e68c7ce6130c49f9d66c5ac5089d1e31b1d4727fabdaea0c3b2",
+    "src/frontend/resolve/nominal.rs": "f043a4ec6c1dca33fb67868d2c271cc5f000922a5a955e31abda396c033d0cc0",
+    "src/frontend/specialize.rs": "a26d4a7e215e50029e542b67e9bbe8f59bb5319091400618103bf25da7faf62c",
+    "tests/project.rs": "2230d190a4146227de3c8aa38c2906a6a1acc9a5978a7ec433e4de8a56b4d40d",
+    "tests/source_collection.rs": "793e9aa2b39c144d0a4185943a455a8904a3377ba4d5018c0c0b8edb2f9c9087"
+  },
+  "reports": [
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-resolution-first-validation/report.json",
+      "sha256": "45a90dde210ffcc18dbb7dacaebfbea4f0bc3038a706eda05482c07307a3cb2a",
+      "pass": false,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "compile",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--lib",
+            "--tests"
+          ],
+          "exit_code": 101,
+          "timeout": false,
+          "seconds": 7.645429915981367
+        }
+      ],
+      "summaries": {
+        "compile.stdout": []
+      }
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-resolution-v2-validation/report.json",
+      "sha256": "ef2abaded2de8e62c0ae42342c8ba816ce1b40fdd0ea5e10195a1bea10acf795",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "unit",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 14.299059707904235
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 21.020759166916832
+        },
+        {
+          "label": "lint",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "clippy",
+            "--locked",
+            "--offline",
+            "--lib",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.217133834026754
+        },
+        {
+          "label": "format",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.1664062498603016
+        }
+      ],
+      "summaries": {
+        "unit.stdout": [
+          "test result: ok. 202 passed; 0 failed; 115 ignored; 0 measured; 137 filtered out; finished in 0.54s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+        ],
+        "format.stdout": [],
+        "lint.stdout": []
+      }
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-resolution-msrv-validation/report.json",
+      "sha256": "0f8ba71d710fa990aed25b53ff441d936e0be2b25c1072391037ed6bd46597ac",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "unit",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 15.760864167008549
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 24.763991833897308
+        }
+      ],
+      "summaries": {
+        "unit.stdout": [
+          "test result: ok. 202 passed; 0 failed; 115 ignored; 0 measured; 137 filtered out; finished in 0.58s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s"
+        ]
+      }
+    }
+  ],
+  "first_history": {
+    "members": 10,
+    "archive_sha256": "d37ed321b00f82428748e9998e339e6c0f49154f1de795cd4a45cda49ec99f64",
+    "index_sha256": "4373a1a8dc7fa01116cac763d9ffbdd26d45700f83cc9c1accd6f76ecde8cedc",
+    "expanded_file_bytes": 6964921
+  },
+  "actual_scope": [
+    "Original collection-local TypeIds distinguish nominal declarations from function DefIds; registration checks empty enums, duplicate members and module name collisions at original spans.",
+    "Imports/reexports preserve original type category/visibility/AST index and resolution-source chain. Public Project imports retain ImportKind::Function/Type and original declaration_span separately from import span.",
+    "Function/operation/provider/Meaning consumers refuse type targets. The temporary production carrier gate remains after common registration/import resolution. Type-only source closure explicitly refuses until full elaboration exists.",
+    "Normal and sequential MSRV1.85:202 relevant library+66 integration passed each;115library+1integration native-gated ignored,137library filtered. Normal lib/four-target strict lint and format pass.",
+    "First compile reports eight exhaustiveness errors for the new category; all original sources and diagnostics remain failed history. No placeholder suggestions become production code.",
+    "Both normal/MSRV cargo check --all-targets pass after the public import metadata change. This compiles additional tests/examples but does not execute native-gated cases."
+  ],
+  "unchanged": {
+    "selected_native": "23d2567e1591ec4779fc99e0b4739c799790c03c03936be47e47d458aab31755",
+    "companion_sources_and_four_dirty_files": true,
+    "lean_source_revision": "dfda3910159bf9c3433fac7ad8a3a77b053c83415115e4c79e05b37ecd98cf9e"
+  },
+  "remaining": [
+    "Canonical finite type-tree elaboration including record fields/recursive/unknown type rejection and ordinary/quantum type classification.",
+    "Original source/type-only/host dependency identity through evidence/cache/native/QDV transport.",
+    "Constructors/match/qmatch, private accepted-handle integration, public source/fault validation and companion minimum compatibility."
+  ],
+  "skipped": [
+    "Native-gated and filtered cases as explicitly reported; no new native mode, type acceptance or handle is enabled.",
+    "No Lean/proof change, so preceding fresh build/audit/replay is not repeated.",
+    "No new Rust target/cache/worktree/agent, dependency/version/capacity change, maximum quantum case, hosted CI/review, companion rebuild/bin restaging, release/tag/publication or guarantee admission."
+  ],
+  "scope_limit": "Name/category integration only, not completed ADT support or source-preservation proof. All #64 acceptance criteria stay open and broader QS/PR/RS/EXACT duties remain pending.",
+  "static_api_checks": [
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-resolution-all-targets-validation/report.json",
+      "sha256": "cea43d69127c00d7b6f486cbee70ecf71bedab83c0b9abec978e0542d8c038b2",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "all-targets",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 31.738048249855638
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-resolution-all-targets-msrv-validation/report.json",
+      "sha256": "4a3f3ddb569423487290bd5c54274b4df4a95efa458a0eb6a60db16e9b8483e1",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "all-targets",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 32.11364124994725
+        }
+      ]
+    }
+  ]
+}

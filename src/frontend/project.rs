@@ -289,10 +289,18 @@ pub enum ImportOrigin {
 /// An explicitly imported ordinary source declaration. Language primitives
 /// resolve without imports and never receive a library-origin label.
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ImportKind {
+    Function(FnKind),
+    Type,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResolvedImport {
     pub module: String,
     pub name: String,
-    pub kind: FnKind,
+    pub kind: ImportKind,
+    /// Original declaration span in `module`, separately from this import use.
+    pub declaration_span: ast::Span,
     pub origin: ImportOrigin,
     pub span: Span,
 }
@@ -729,6 +737,13 @@ impl Project {
             FailureKind::PreludePrimitive(name) => {
                 format!("std::prelude cannot reexport language primitive spelling `{name}`")
             }
+            FailureKind::NotFunction(name) => format!("`{name}` is a type, not a function"),
+            FailureKind::EmptyEnum(name) => {
+                format!("finite enum `{name}` must have at least one variant")
+            }
+            FailureKind::DuplicateMember { owner, member } => {
+                format!("duplicate member `{member}` in type `{owner}`")
+            }
         };
         source_error(&self.modules[&failure.module], failure.span, message)
     }
@@ -743,7 +758,7 @@ impl Project {
             let mut imports = BTreeMap::new();
             for usage in &source.ast.uses {
                 let local = &usage.path.last().expect("parsed import").text;
-                let (owner, name, kind, origin) = match scope.imports[local] {
+                let (owner, name, kind, origin, declaration_span) = match scope.imports[local] {
                     Target::Declaration(id) => {
                         let declaration = resolution.declaration(id);
                         let (owner, name) = &declaration.name;
@@ -751,7 +766,24 @@ impl Project {
                             ModuleOrigin::Local => ImportOrigin::Local,
                             ModuleOrigin::Bundled => ImportOrigin::Bundled,
                         };
-                        (owner.clone(), name.clone(), declaration.kind, origin)
+                        let span = self.modules[owner].ast.decls[declaration.ast_index].span;
+                        (
+                            owner.clone(),
+                            name.clone(),
+                            ImportKind::Function(declaration.kind),
+                            origin,
+                            span,
+                        )
+                    }
+                    Target::Type(id) => {
+                        let declaration = resolution.type_declaration(id);
+                        let (owner, name) = &declaration.name;
+                        let origin = match self.modules[owner].origin {
+                            ModuleOrigin::Local => ImportOrigin::Local,
+                            ModuleOrigin::Bundled => ImportOrigin::Bundled,
+                        };
+                        let span = self.modules[owner].ast.type_decls[declaration.ast_index].span;
+                        (owner.clone(), name.clone(), ImportKind::Type, origin, span)
                     }
                     Target::Primitive(_) => {
                         return Err(source_error(
@@ -767,6 +799,7 @@ impl Project {
                         module: owner,
                         name,
                         kind,
+                        declaration_span,
                         origin,
                         span: usage.span,
                     },

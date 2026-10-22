@@ -51,7 +51,21 @@ pub(in crate::frontend) enum ResolvedNaturalKind {
     Sub(Box<ResolvedNatural>, Box<ResolvedNatural>),
     Mul(Box<ResolvedNatural>, Box<ResolvedNatural>),
 }
-pub(in crate::frontend) type ResolvedType = Type<ResolvedNatural>;
+/// A named finite declaration is an atomic reference to its canonical tree.
+/// Its field sizes belong to that declaration, never to the caller's Nat index.
+#[derive(Clone, Debug)]
+pub(in crate::frontend) struct ResolvedType {
+    pub kind: ResolvedTypeKind,
+}
+#[derive(Clone, Debug)]
+pub(in crate::frontend) enum ResolvedTypeKind {
+    Unit,
+    Bit,
+    Bits(ResolvedNatural),
+    Parameter(super::super::types::TypeParameter),
+    Nominal { id: TypeId, canonical: Ty },
+    Tuple(Vec<ResolvedType>),
+}
 
 #[derive(Clone, Debug)]
 pub(in crate::frontend) struct ResolvedStatic {
@@ -197,6 +211,7 @@ pub(super) struct Capture<'a, 'ast> {
     pub index: &'a Index<'ast>,
     pub helpers: &'a StaticHelpers,
     pub budget: &'a Budget,
+    pub nominals: &'a NominalTypes,
 }
 impl Capture<'_, '_> {
     pub fn reference(&self, name: &ast::Ident) -> Result<ResolvedReference> {
@@ -307,12 +322,24 @@ impl Capture<'_, '_> {
             ));
         }
         use ast::TypeKind;
-        Ok(match &source.kind {
-            TypeKind::Unit => Type::unit(),
-            TypeKind::Bit => Type::bit(),
-            TypeKind::Bits(n) => Type::bits(self.natural(n)?),
+        let kind = match &source.kind {
+            TypeKind::Unit => ResolvedTypeKind::Unit,
+            TypeKind::Bit => ResolvedTypeKind::Bit,
+            TypeKind::Bits(n) => ResolvedTypeKind::Bits(self.natural(n)?),
             TypeKind::Named(name) => {
                 let reference = self.reference(name)?;
+                if let ResolvedUse::Global(resolve::Target::Type(id)) = reference.target {
+                    self.budget.charge(name.span, self.nominals.len() + 1)?;
+                    let canonical = self.nominals.get(&id).ok_or_else(|| {
+                        SourceError::new("source", name.span, "missing original finite type tree")
+                    })?;
+                    let canonical = self.budget.copy_ty(name.span, canonical)?;
+                    self.budget.charge(name.span, 1)?;
+                    references.push(reference);
+                    return Ok(ResolvedType {
+                        kind: ResolvedTypeKind::Nominal { id, canonical },
+                    });
+                }
                 let key = self.budget.key(
                     name.span,
                     reference.local.as_ref().ok_or_else(|| {
@@ -333,7 +360,7 @@ impl Capture<'_, '_> {
                 self.budget.charge(name.span, name.text.len() + 1)?;
                 self.budget.charge(name.span, 1)?;
                 references.push(reference);
-                Type::parameter(super::super::types::TypeParameter {
+                ResolvedTypeKind::Parameter(super::super::types::TypeParameter {
                     key: Some(key),
                     name: name.text.clone(),
                     span: name.span,
@@ -348,7 +375,7 @@ impl Capture<'_, '_> {
                     ));
                 }
                 self.budget.charge(source.span, fields.len())?;
-                Type::tuple(
+                ResolvedTypeKind::Tuple(
                     fields
                         .iter()
                         .map(|ty| self.basis_at(ty, depth + 1, references, nodes))
@@ -362,7 +389,8 @@ impl Capture<'_, '_> {
                     "retained Basis argument contains quantum ownership",
                 ));
             }
-        })
+        };
+        Ok(ResolvedType { kind })
     }
     pub fn operation(&self, source: &ast::StaticOp) -> Result<ResolvedStatic> {
         self.operation_at(source, 1)
@@ -667,27 +695,25 @@ fn free_static(
             FreeTask::Type(value, span) => {
                 charge(span, 1)?;
                 match &value.kind {
-                    Kind::Bits(n) => {
+                    ResolvedTypeKind::Bits(n) => {
                         charge(span, 1)?;
                         pending.push(FreeTask::Natural(n));
                     }
-                    Kind::Parameter(parameter) => {
+                    ResolvedTypeKind::Parameter(parameter) => {
                         let key = parameter.key.as_ref().ok_or_else(|| {
                             SourceError::new("source", span, "unbound retained Basis identity")
                         })?;
                         charge(span, 1)?;
                         pending.push(FreeTask::Key(key, span));
                     }
-                    Kind::Tuple(fields) => {
+                    ResolvedTypeKind::Tuple(fields) => {
                         charge(span, fields.len())?;
                         pending.extend(fields.iter().rev().map(|ty| FreeTask::Type(ty, span)));
                     }
-                    Kind::Q(_) => {
-                        return Err(SourceError::new(
-                            "source",
-                            span,
-                            "retained Basis plan contains ownership",
-                        ));
+                    ResolvedTypeKind::Nominal { canonical, .. } => {
+                        // Canonical declarations have closed field sizes and
+                        // no caller-local Basis/Nat bindings to substitute.
+                        type_size_budgeted(canonical, 4096, 64, true, span, charge)?;
                     }
                     _ => {}
                 }
@@ -746,6 +772,7 @@ struct Validation<'a, 'ast> {
     interfaces: &'a BTreeMap<DefId, Interface>,
     resolution: &'a Resolution,
     budget: &'a Budget,
+    nominals: &'a NominalTypes,
 }
 impl<'ast> Validation<'_, 'ast> {
     fn failure(&self, span: Span) -> SourceError {
@@ -943,11 +970,12 @@ impl<'ast> Validation<'_, 'ast> {
         }
         *nodes = remaining;
         match (&source.kind, &ty.kind) {
-            (ast::TypeKind::Unit, Kind::Unit) | (ast::TypeKind::Bit, Kind::Bit) => {}
-            (ast::TypeKind::Bits(n), Kind::Bits(value)) => {
+            (ast::TypeKind::Unit, ResolvedTypeKind::Unit)
+            | (ast::TypeKind::Bit, ResolvedTypeKind::Bit) => {}
+            (ast::TypeKind::Bits(n), ResolvedTypeKind::Bits(value)) => {
                 self.natural_at(owner, n, value, 1)?;
             }
-            (ast::TypeKind::Named(name), Kind::Parameter(parameter)) => {
+            (ast::TypeKind::Named(name), ResolvedTypeKind::Parameter(parameter)) => {
                 let Some((reference, remaining)) = references.split_first() else {
                     return Err(self.failure(source.span));
                 };
@@ -967,7 +995,30 @@ impl<'ast> Validation<'_, 'ast> {
                 }
                 *references = remaining;
             }
-            (ast::TypeKind::Tuple(original), Kind::Tuple(fields)) => {
+            (ast::TypeKind::Named(name), ResolvedTypeKind::Nominal { id, canonical }) => {
+                let Some((reference, remaining)) = references.split_first() else {
+                    return Err(self.failure(source.span));
+                };
+                self.named_reference(owner, reference, name)?;
+                self.budget.charge(name.span, self.nominals.len() + 1)?;
+                let Some(original) = self.nominals.get(id) else {
+                    return Err(self.failure(name.span));
+                };
+                let (Kind::Nominal(original), Kind::Nominal(retained)) =
+                    (&original.kind, &canonical.kind)
+                else {
+                    return Err(self.failure(name.span));
+                };
+                if reference.target != ResolvedUse::Global(resolve::Target::Type(*id))
+                    || reference.local.is_some()
+                    || !Arc::ptr_eq(original, retained)
+                {
+                    return Err(self.failure(name.span));
+                }
+                self.budget.ty(name.span, canonical)?;
+                *references = remaining;
+            }
+            (ast::TypeKind::Tuple(original), ResolvedTypeKind::Tuple(fields)) => {
                 if original.len() != fields.len() || fields.len() > 64 {
                     return Err(self.failure(source.span));
                 }
@@ -1550,6 +1601,7 @@ pub(super) fn validate_and_finish(
         interfaces: &program.interfaces,
         resolution: &program.resolution,
         budget: &program.budget,
+        nominals: &program.nominals,
     };
     validation.body_statics(&program.body_statics)?;
     for (site, plan) in &mut program.static_calls {

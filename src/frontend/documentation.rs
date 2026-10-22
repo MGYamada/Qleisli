@@ -19,14 +19,16 @@ pub struct DocComment {
     pub span: Span,
 }
 
-/// Sidecar documentation preserves the existing public syntax-tree shape.
-/// Item vectors align with `syntax.decls` and `syntax.uses`, respectively.
+/// Descriptive sidecars align with the corresponding syntax vectors. Type
+/// member vectors retain original variant/field order, including private fields.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DocumentedModule {
     pub syntax: Module,
     pub module_docs: Vec<DocComment>,
     pub declaration_docs: Vec<Vec<DocComment>>,
     pub import_docs: Vec<Vec<DocComment>>,
+    pub type_declaration_docs: Vec<Vec<DocComment>>,
+    pub type_member_docs: Vec<Vec<Vec<DocComment>>>,
 }
 
 const MAX_IMPORT_DOC_COPIES: usize = 65_536;
@@ -46,6 +48,17 @@ pub(crate) fn attach(
         .map(|(index, decl)| (decl.span.start, index))
         .collect();
     let mut imports: BTreeMap<_, Vec<usize>> = BTreeMap::new();
+    let mut types = BTreeMap::new();
+    let mut type_members = BTreeMap::new();
+    let mut type_bodies = BTreeMap::new();
+    for (index, item) in syntax.type_decls.iter().enumerate() {
+        types.insert(item.span.start, index);
+        let opening = tokens.partition_point(|t| t.span.start < item.body_span.start);
+        type_bodies.insert(opening, index);
+        for (member, span) in item.member_spans().enumerate() {
+            type_members.insert(span.start, (index, member));
+        }
+    }
     for (index, item) in syntax.uses.iter().enumerate() {
         imports.entry(item.span.start).or_default().push(index);
     }
@@ -77,6 +90,12 @@ pub(crate) fn attach(
     let mut result = DocumentedModule {
         declaration_docs: vec![vec![]; syntax.decls.len()],
         import_docs: vec![vec![]; syntax.uses.len()],
+        type_declaration_docs: vec![vec![]; syntax.type_decls.len()],
+        type_member_docs: syntax
+            .type_decls
+            .iter()
+            .map(|decl| vec![vec![]; decl.member_spans().count()])
+            .collect(),
         syntax,
         module_docs: vec![],
     };
@@ -101,6 +120,10 @@ pub(crate) fn attach(
                 let position = tokens[next].span.start;
                 if let Some(&index) = declarations.get(&position) {
                     result.declaration_docs[index].push(comment);
+                } else if let Some(&index) = types.get(&position) {
+                    result.type_declaration_docs[index].push(comment);
+                } else if let Some(&(index, member)) = type_members.get(&position) {
+                    result.type_member_docs[index][member].push(comment);
                 } else if let Some(indices) = imports.get(&position) {
                     // Move the original comment once; bound the extra copies
                     // introduced by grouping before cloning any of its text.
@@ -124,7 +147,9 @@ pub(crate) fn attach(
                     result.import_docs[first].push(comment);
                 } else {
                     return Err(ParseError {
-                        message: "outer documentation must precede a function or use item".into(),
+                        message:
+                            "outer documentation must precede a function, type, member or use item"
+                                .into(),
                         span: comment.span,
                     });
                 }
@@ -137,9 +162,15 @@ pub(crate) fn attach(
                     .and_then(|previous| bodies.get(&previous))
                 {
                     result.declaration_docs[index].push(comment);
+                } else if let Some(&index) = next
+                    .checked_sub(1)
+                    .and_then(|previous| type_bodies.get(&previous))
+                {
+                    result.type_declaration_docs[index].push(comment);
                 } else {
                     return Err(ParseError {
-                        message: "inner documentation must start a module or function body".into(),
+                        message: "inner documentation must start a module, type or function body"
+                            .into(),
                         span: comment.span,
                     });
                 }
@@ -183,6 +214,21 @@ fn render(
             render_source(&mut output, &source[item.span.start..item.span.end]);
             render_comments(&mut output, docs);
             last_import_span = Some(item.span);
+        }
+    }
+    for (index, decl) in documented.syntax.type_decls.iter().enumerate() {
+        output.push_str(&format!(
+            "## {} ({})\n\n",
+            decl.name.text,
+            if decl.public { "public" } else { "private" }
+        ));
+        render_source(&mut output, &source[decl.span.start..decl.span.end]);
+        render_comments(&mut output, &documented.type_declaration_docs[index]);
+        for (span, docs) in decl.member_spans().zip(&documented.type_member_docs[index]) {
+            if !docs.is_empty() {
+                render_source(&mut output, &source[span.start..span.end]);
+                render_comments(&mut output, docs);
+            }
         }
     }
     for (decl, docs) in documented

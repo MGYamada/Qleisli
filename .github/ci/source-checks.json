@@ -67,6 +67,10 @@
         ],
         [
           "python3",
+          "scripts/test_refresh_current_proof_records.py"
+        ],
+        [
+          "python3",
           "scripts/test_check_release_ready.py"
         ],
         [
@@ -165,6 +169,10 @@
         [
           "python3",
           "scripts/test_prelude_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_finite_adts_first.py"
         ]
       ],
       "prepare": []

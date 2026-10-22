@@ -1,0 +1,107 @@
+{
+  "format": "qleisli.host-type-root-validation",
+  "version": 1,
+  "base_commit": "9654f78ccca0c54a3c5446d2f7b569da05f683cd",
+  "source_files": {
+    "CHANGELOG.md": "01c621af10099f05fe9b439702010b5375c1d17f82620fa216dee81ccf79e3fa",
+    "docs/src/reference/type-model.md": "e72811ba9e3744f70cfb801d2c62bddffe7dd1aa118dcf7d75a1c54a38f3946d",
+    "src/bin/qleisli/source_plan.rs": "67737b8cb8e8820de4d23da3714fea7d091cd7d57f0fb07eaa48edc7cbaf06ef",
+    "src/frontend/check.rs": "37a22732b0b4d53ae7fed7ddd156ab897ec5461769c864a72aa6a049b620c975",
+    "src/frontend/closed.rs": "11d571af8642db21e1f75501b531a1388f963dddae1ef2f974bcde620f376ebb",
+    "src/frontend/compile/mod.rs": "5e852a354b60bc6d8e511b40106a68ee3568a32c63df15aa5609aef81278d19b",
+    "src/frontend/specialize.rs": "7ae1a4448d7356fe8187b3a5c049866650ac76f18e6dd51ebb07dc4934940649",
+    "src/frontend/specialize/basis_binding.rs": "b3cebbefcade3824cb71d2df8f15444f68df6e4eca66943119a7532ff0b5aa24",
+    "src/frontend/specialize/bindings.rs": "36e405951a8d6337338ac6dc813a62a434d3c313130600d2a99af93188d674c1",
+    "src/frontend/specialize/elaborate.rs": "57d941ac1000dd8fd941afaabd90d0717cd4857088fd4401e2baacaf9cf90c44",
+    "tests/basis_polymorphism.rs": "399c186eb541c16c07d2024558b142f995ce64ccd49b9b3680e51cf7270f9f5e",
+    "tests/source_collection.rs": "e9890df37fd2717b37fa684c2fc8c2df10dbdaff2a70a262220aa5c45eb44a78"
+  },
+  "history": {
+    "archive": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/host-roots-first.tar.xz",
+      "bytes": 170064,
+      "sha256": "5f0f6574aacaa29167d40ce35308dcbb295d36e401a808887dfe705421f93ec4"
+    },
+    "index": {
+      "path": "tests/fixtures/authoring_sessions/finite-adts-v030/host-roots-index.json",
+      "sha256": "950aa96690bfb2cb0d7507aa1c4f4367e00b33d040f01b197555d182779bee0a"
+    },
+    "records": 186,
+    "expanded_bytes": 2129955
+  },
+  "observations": [
+    {
+      "stage": "cli-msrv",
+      "pass": true,
+      "full_local_report_sha256": "abef6cb84dcc254aff9dfd1c3ca7db2cacecb39806bcaeb31301c8ee4fa1b5aa"
+    },
+    {
+      "stage": "cli-normal",
+      "pass": true,
+      "full_local_report_sha256": "2d3c838468da8b8c3ec95c58ea7d405e89362e017769924af31803b5398eeb57"
+    },
+    {
+      "stage": "common-frontend-regressions",
+      "pass": true,
+      "full_local_report_sha256": "3ebf71864b4bfe3ad5ac93f646a7dae859703e563f10169a9c9c06ce4ed5a58b"
+    },
+    {
+      "stage": "first",
+      "pass": null,
+      "full_local_report_sha256": "e6e1135235062cbd651586d00a41b99182f1de7932f568ae90bbb16c0bcaa607"
+    },
+    {
+      "stage": "first-host-root-tests",
+      "pass": false,
+      "full_local_report_sha256": "3fa104f1cd0c4390aa1d0ffbe0f554dfca73a801683b8b4fd3c20a55c3cc79ca"
+    },
+    {
+      "stage": "host-root-tests-v2",
+      "pass": false,
+      "full_local_report_sha256": "fb7a67bc9fbd61ec9c9be0f8dc660f88bfb447aa2ab19017adf4307c34b3780d"
+    },
+    {
+      "stage": "host-root-tests-v3",
+      "pass": true,
+      "full_local_report_sha256": "99a7a8bb41acc7138420a70e5dbd3444c817cfb78ccc946e30839a03565ebfda"
+    },
+    {
+      "stage": "host-root-tests-v4",
+      "pass": true,
+      "full_local_report_sha256": "2204023b404a3aff1ae1f3ca2e05a41bbb70cc8a255d48632ce22a2b35100d4c"
+    },
+    {
+      "stage": "host-source-integration",
+      "pass": true,
+      "full_local_report_sha256": "20a92fc77616ba10da84418f043243d232beff5b9e4e44cf2ab6a903b772644e"
+    },
+    {
+      "stage": "manifest-repair",
+      "pass": null,
+      "full_local_report_sha256": "51d7f55eba05faaa07763c5f1e34dd0174b58670fa4b3d2d92f753f89e34048f"
+    },
+    {
+      "stage": "msrv-final",
+      "pass": true,
+      "full_local_report_sha256": "0ed51ab7224aeffba51128fb79527856e81269bb5657cdf304c63ab1dfafc4aa"
+    },
+    {
+      "stage": "normal-final",
+      "pass": true,
+      "full_local_report_sha256": "95348f7c764293bcc95e703af2e9d5e120f15fed0614b5bcb675013ff6aff3f2"
+    },
+    {
+      "stage": "normal-strict-lint",
+      "pass": true,
+      "full_local_report_sha256": "48a83da4c8c62bd8bd8b26531bc0a06f20ecc7e1b40d27e67c9b1dc3fc024d4e"
+    },
+    {
+      "stage": "unit-isolation",
+      "pass": null,
+      "full_local_report_sha256": "612d2d11c29bc754e36691b79c0e407bc318d6d34cc8ce485f25ebd160880b08"
+    }
+  ],
+  "unchanged_lean_source_revision": "5044a5649c0638b66a28ab93b8d64683f7eff6848ba21c4d2e6ab7803d55e03e",
+  "unchanged_kernel_sha256": "ee9521b6a8de86a4c56e6275c8cda6cb953a649709a7aa04f7ca30b4e2de2ee5",
+  "scope": "Source-bound host Basis descriptions and complete original nominal type/body/effect preparation, with canonical trees, relevant original alias/type/Nat-helper snapshots, revalidation before entry/provider closure and explicit transport gates in both concrete adapters. Normal1.98.1 and sequential MSRV1.85 each pass335 frontend,33 integration,21 native tests and7 CLI cases, zero ignored/conditional skips. Normal all-target compilation, strict lint and format pass; MSRV all-target compilation passes. Initial manifest/configuration and test-authoring failures remain distinct from actual source errors. No maximum quantum case, changed Lean source or new native acceptance rule; current compiled kernel/proof-source identity remains unchanged. No fresh Lean rebuild/replay is claimed for this Rust change. Ordinary nominal source execution, constructors/access/match/qmatch, source-preservation, companion/bin and hosted CI/review remain pending, with all8 #64 criteria open. No #39/#63 extension, new guarantee admission or release."
+}

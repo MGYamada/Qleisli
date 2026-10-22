@@ -1,7 +1,7 @@
 //! Bounded partial type substitution over the original checked type trees.
 use super::*;
 use crate::frontend::check::Linear;
-use crate::frontend::check::plans::ResolvedType;
+use crate::frontend::check::plans::{ResolvedNatural, ResolvedType, ResolvedTypeKind};
 
 #[derive(Default)]
 struct Measure {
@@ -65,8 +65,13 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<Option<Ty>, CompileError> {
+        // This finite adapter still has no nominal transport. Borrow original
+        // Nat plans while adapting its existing built-in partial closer; never
+        // expand a type declaration into invented caller-owned Nat nodes.
+        self.preflight_resolved_basis(value, module, span, 1, &mut 0)?;
+        let view = self.resolved_basis_view(value, module, span, 1, &mut 0)?;
         self.close_partial_type(
-            value,
+            &view,
             environment,
             module,
             span,
@@ -77,6 +82,110 @@ impl Compiler<'_> {
                     .map(|value| (value, false))
             },
         )
+    }
+
+    fn preflight_resolved_basis(
+        &mut self,
+        value: &ResolvedType,
+        module: &str,
+        span: Span,
+        depth: usize,
+        nodes: &mut usize,
+    ) -> Result<(), CompileError> {
+        self.tick(module, span)?;
+        *nodes = nodes.saturating_add(1);
+        if depth > MAX_DEPTH || *nodes > MAX_TREE_NODES {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "retained Basis exceeds finite tree/depth capacity",
+            ));
+        }
+        match &value.kind {
+            ResolvedTypeKind::Nominal { .. } => Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "nominal source types require typed native transport",
+            )),
+            ResolvedTypeKind::Tuple(fields) => {
+                if fields.len() > 64 {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "retained Basis tuple exceeds 64 fields",
+                    ));
+                }
+                self.charge(module, span, fields.len())?;
+                for field in fields {
+                    self.preflight_resolved_basis(field, module, span, depth + 1, nodes)?;
+                }
+                Ok(())
+            }
+            _ => Ok(()),
+        }
+    }
+
+    fn resolved_basis_view<'plan>(
+        &mut self,
+        value: &'plan ResolvedType,
+        module: &str,
+        span: Span,
+        depth: usize,
+        nodes: &mut usize,
+    ) -> Result<super::super::super::types::Type<&'plan ResolvedNatural>, CompileError> {
+        self.tick(module, span)?;
+        *nodes = nodes.saturating_add(1);
+        if depth > MAX_DEPTH || *nodes > MAX_TREE_NODES {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "retained Basis exceeds finite tree/depth capacity",
+            ));
+        }
+        use super::super::super::types::Type;
+        Ok(match &value.kind {
+            ResolvedTypeKind::Unit => Type::unit(),
+            ResolvedTypeKind::Bit => Type::bit(),
+            ResolvedTypeKind::Bits(size) => Type::bits(size),
+            ResolvedTypeKind::Parameter(parameter) => {
+                self.charge(
+                    module,
+                    span,
+                    parameter.name.len()
+                        + parameter.key.as_ref().map_or(0, |key| key.name.len())
+                        + 1,
+                )?;
+                Type::parameter(parameter.clone())
+            }
+            ResolvedTypeKind::Nominal { .. } => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal source types require typed native transport",
+                ));
+            }
+            ResolvedTypeKind::Tuple(fields) => {
+                if fields.len() > 64 {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "retained Basis tuple exceeds 64 fields",
+                    ));
+                }
+                self.charge(module, span, fields.len())?;
+                let mut result = Vec::with_capacity(fields.len());
+                for field in fields {
+                    result.push(self.resolved_basis_view(field, module, span, depth + 1, nodes)?);
+                }
+                Type::tuple(result)
+            }
+        })
     }
 
     fn close_source_size(
@@ -220,6 +329,14 @@ impl Compiler<'_> {
             conditional_size: false,
         };
         match &value.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal source types require typed native transport",
+                ));
+            }
             Kind::Unit => {}
             Kind::Bit => {
                 measure.known_bits = 1;
@@ -436,6 +553,14 @@ impl Compiler<'_> {
     ) -> Result<Ty, CompileError> {
         self.tick(module, span)?;
         Ok(match &value.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal source types require typed native transport",
+                ));
+            }
             Kind::Unit => Ty::unit(),
             Kind::Bit => Ty::bit(),
             Kind::Bits(original) => Ty::bits(size(self, original)?.0.ok_or_else(|| {

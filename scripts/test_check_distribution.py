@@ -256,7 +256,9 @@ class ArchiveTests(unittest.TestCase):
         files = {name: File(b"source") for name in SOURCE_ROOTS}
         check_source_roots(files)
         for name in ["lean-kernel/Audit.lean", "lean-kernel/Main.lean", "lean-kernel/Tests.lean",
-                     "scripts/check_lean_kernel.py", "examples/lean_kernel.rs"]:
+                     "scripts/check_lean_kernel.py", "examples/lean_kernel.rs",
+                     "scripts/refresh_current_proof_records.py", "scripts/test_refresh_current_proof_records.py",
+                     ".github/workflows/current-proof-records.yml"]:
             with self.subTest(name=name), self.assertRaisesRegex(DistributionError, name):
                 check_source_roots({key: value for key, value in files.items() if key != name})
 

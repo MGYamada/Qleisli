@@ -1,5 +1,12 @@
 # VM-22: frozen verification boundaries
 
+The baseline timeout-diagnostic repair refreshes only the current
+`scripts/test_verification_baseline.py` comparison-source pin. Its invocation
+helper now retains bounded stdout/stderr before re-raising a timeout. Independent
+oracle functions, source cases, requests, commands and success assertions are
+unchanged, as are the 60-second deadline and per-stream 1 MiB limit. Historical
+artifacts and results are not rebaselined; fresh native CI remains required.
+
 The #58 prelude integration reviews fourteen changed frontend source pins and
 adds the ordinary export resolver and `stdlib/src/prelude.qli`. The two new
 lexer tokens describe only the leading module header. The public AST records

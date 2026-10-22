@@ -93,12 +93,14 @@ impl SourceType {
                 TypeKind::Tuple(_) => "tuple",
                 TypeKind::Q(_) => unreachable!("nested Q is not a basis"),
                 TypeKind::Parameter(_) => "unresolved",
+                TypeKind::Nominal(_) => "nominal",
             },
             TypeKind::Bit => "bit",
             TypeKind::Bits(_) => "bits",
             TypeKind::Tuple(_) => "tuple",
             TypeKind::Unit => "unit",
             TypeKind::Parameter(_) => "unresolved",
+            TypeKind::Nominal(_) => "nominal",
         }
     }
     pub fn width(&self) -> Option<u32> {
@@ -108,7 +110,7 @@ impl SourceType {
             TypeKind::Q(basis) => basis.basis_width(),
             TypeKind::Tuple(_) => None,
             TypeKind::Unit => Some(0),
-            TypeKind::Parameter(_) => None,
+            TypeKind::Parameter(_) | TypeKind::Nominal(_) => None,
         }
     }
     pub fn fields(&self) -> &[SourceType] {
@@ -1038,6 +1040,12 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     build(instance, &[]).map(|(source, _)| source)
 }
 
+// The only caller immediately emits and independently checks a sealed typed
+// carrier request. Never return this preparation through an ordinary API.
+pub(super) fn carrier_preparation(instance: &Instantiation) -> Result<(ElaboratedProgram, usize)> {
+    build_profile(instance, &[], true)
+}
+
 /// Rebuild the same selected graph first, then append closed original bodies
 /// whose resolved dependencies can reach a control obligation. This changes no
 /// public entry or static argument and supplies proposals, never acceptance.
@@ -1108,6 +1116,29 @@ pub(super) fn with_control_roots(
 }
 
 fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedProgram, usize)> {
+    build_profile(instance, extra_roots, false)
+}
+
+fn build_profile(
+    instance: &Instantiation,
+    extra_roots: &[DefId],
+    carrier: bool,
+) -> Result<(ElaboratedProgram, usize)> {
+    let mut cells = 0;
+    if !carrier {
+        crate::frontend::check::require_nominal_transport(
+            instance
+                .program
+                .sources
+                .iter()
+                .map(|(name, source)| (name, source.syntax())),
+            |span, amount| {
+                charge_retained_cells(&mut cells, amount, span)
+                    .map_err(crate::frontend::check::SourceError::from)
+            },
+        )
+        .map_err(Error::from)?;
+    }
     let mut builder = Builder {
         program: &instance.program,
         definitions: Vec::new(),
@@ -1116,7 +1147,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
         calls: 0,
         folds: 0,
         steps: 0,
-        cells: 0,
+        cells,
         active_frames: 0,
         basis_work: 0,
     };
@@ -1342,6 +1373,11 @@ fn concrete_type(
                 expanded_nodes = expanded_nodes.saturating_add(1);
                 pending.extend(fields.iter().rev().map(|child| (child, depth + 1)));
             }
+            TypeKind::Nominal(nominal) => {
+                charge_retained_cells(cells, nominal.metadata_cells(), span)?;
+                expanded_nodes = expanded_nodes.saturating_add(1);
+                pending.extend(nominal.fields().rev().map(|child| (child, depth + 1)));
+            }
             _ => expanded_nodes = expanded_nodes.saturating_add(1),
         }
         if expanded_nodes > 4096 {
@@ -1369,6 +1405,7 @@ fn concrete_type(
             }
             TypeKind::Q(basis) => pending.push(basis),
             TypeKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+            TypeKind::Nominal(nominal) => pending.extend(nominal.fields().rev()),
             _ => {}
         }
     }
@@ -1381,6 +1418,22 @@ fn concrete_type(
         span: Span,
     ) -> Result<u32> {
         match &t.kind {
+            TypeKind::Nominal(nominal) => match &nominal.body {
+                crate::frontend::types::nominal::Body::Enum(variants) => {
+                    let cardinality = u32::try_from(variants.len())
+                        .map_err(|_| error("limit", span, "nominal cardinality exceeds u32"))?;
+                    if cardinality == 0 {
+                        return Err(error("type", span, "nominal enum has no variants"));
+                    }
+                    Ok(u32::BITS - (cardinality - 1).leading_zeros())
+                }
+                crate::frontend::types::nominal::Body::Record(_) => {
+                    nominal.fields().try_fold(0u32, |n, field| {
+                        n.checked_add(widths(field, sizes, bases, span)?)
+                            .ok_or_else(|| error("limit", span, "concrete record width overflow"))
+                    })
+                }
+            },
             TypeKind::Unit => Ok(0),
             TypeKind::Bit => Ok(1),
             TypeKind::Bits(_) => Ok(sizes.next().expect("one resolved size per occurrence")),
@@ -1460,6 +1513,9 @@ pub(super) fn concrete_capacity(ty: &SourceType, span: Span) -> Result<()> {
                     ));
                 }
                 pending.extend(fields.iter().map(|field| (field, in_basis)));
+            }
+            TypeKind::Nominal(nominal) => {
+                pending.extend(nominal.fields().map(|field| (field, in_basis)))
             }
             TypeKind::Parameter(parameter) => {
                 return Err(error(
@@ -1588,7 +1644,7 @@ impl Builder<'_> {
                 )
             })?;
             total
-                .checked_add(size.nodes)
+                .checked_add(size.nodes.saturating_add(basis.named_key_cells()))
                 .ok_or_else(|| error("limit", Span::default(), "type binding accounting overflow"))
         })?;
         // Include keys, retained definition substitutions and lexical scope

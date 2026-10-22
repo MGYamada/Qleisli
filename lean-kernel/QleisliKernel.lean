@@ -5,6 +5,8 @@ import QleisliKernel.Exact
 import QleisliKernel.ExactCapacity
 import QleisliKernel.ExactMatrix
 import QleisliKernel.Finite
+import QleisliKernel.FiniteCarrier
+import QleisliKernel.SourceTypes
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation
@@ -46,6 +48,7 @@ import QleisliKernel.Hierarchical.Finite
 import QleisliKernel.Hierarchical.FiniteBinding
 import QleisliKernel.Qirf
 import QleisliKernel.Qirf.Validity
+import QleisliKernel.Qirf.Carrier
 import QleisliKernel.Qirf.Ownership
 import QleisliKernel.Hierarchical.Conditional
 import QleisliKernel.Hierarchical.Root

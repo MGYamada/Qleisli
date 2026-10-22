@@ -6,6 +6,110 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Begin internal finite-carrier support with source-backed nominal trees,
+  separate logical cardinalities and physical code layouts, and bounded exact
+  code-isometry checking. Preserve first sources and both Lean study attempts.
+  Add an internal original-QIRF body/code equation check with complete owner
+  forests, logical cardinalities and retained public effects. Reject code
+  leakage, phase/axis/dependency faults, false Unitary labels and hidden
+  observation; retain zero-width owners. Preserve first compile/audit failures.
+  Ordinary ADT values/match, source preservation, full source/native integration
+  and qmatch remain unfinished; no executable source ADT form is enabled.
+  Retain fieldless enum and named-record declaration syntax, member visibility,
+  qualified type paths, spans and documentation in the common AST. Reserve
+  `enum`/`struct`; explicitly reject production source containing these parsed
+  declarations until typed native transport is connected.
+  Register type names in the common resolver with a separate category and
+  original visibility through imports/reexports. Reject empty enums, duplicate
+  members and cross-category name collisions; retain canonical declaration spans
+  in Project import metadata. Callable consumers cannot treat types as providers.
+  Elaborate ordinary nominal field trees and T/Q<T> signatures in the common
+  frontend, retaining original bytes, enum order, field visibility and exact
+  trees. Reject unknown/recursive/quantum-owned fields and reuse existing bounded
+  Nat helpers for closed sizes. Check original declaration tokens as well as ASTs
+  to prevent deletion from bypassing source identity. Keep constructed non-ADT
+  AST consumers at their existing boundary; no source-preservation proof follows.
+  Retain field type/Nat-helper occurrences and traverse their original type,
+  function and reexport sources during provenance collection. Refuse stale
+  source/dependency substitutions. Keep retained type maps thread safe with Arc;
+  common source preparation does not yet reach a typed native handle or execution.
+  Add the internal versioned `finite-carrier-pure-v1` native request: independently
+  reconstruct direct nominal declarations from original source, then check the
+  original QIRF dependencies/body and exact code equations. Compare the actual
+  retained graph, both typed owner forests and logical matrix through QDV1 before
+  constructing a private handle. Preserve public effects and zero-width owners;
+  reject stale views, declaration/member substitutions, leakage, phase/axis faults,
+  false pure labels and hidden observation. Resolve original ordinary/grouped
+  imports and public type reexports without changing canonical identity, category
+  or visibility. Reject private facades, cycles, collisions and equal-width
+  substitutions within the existing parser/source/work bounds. Reject leading
+  zeroes in original field-width literals, matching the common source grammar;
+  retain the pre-repair accepted raw counterexample. Ordinary source execution
+  remains pending; no inverse/
+  control capability or new guarantee is granted by this raw pure component.
+  Reconstruct existing field Nat expressions and every original static helper,
+  including unused/private definitions, through canonical source bindings.
+  Preserve positional formal identities in canonical affine order, ordered
+  premises, acyclic dependencies, category and visibility; substitute caller
+  forms simultaneously. Prove checked signed-i128 operations, elimination,
+  implication and normalization against independent original-expression meanings.
+  Reference calls execute original predicates/body rather than a produced
+  template. Normalize closed field sizes before applying the final u32 and
+  existing physical bounds; retain valid above-u32 intermediates and reject
+  intermediate overflow, unguarded subtraction and nonlinear generic bodies.
+  Check the complete helper environment once across all four typed owner
+  forests, including empty forests. Retain first source/diagnostic history and
+  disclose temporary-record loss and its exact recovery limits. Ordinary source
+  ADT execution, source-function preservation and all #64 criteria remain pending.
+  Separate complete nominal source preparation from concrete transport eligibility.
+  Resolve host Basis descriptions through original public types/reexports; retain
+  relevant declaration, alias and Nat-helper sources and recheck every receiving
+  entry/provider map before closure or cache use. Preserve exact trees, checked
+  expansion/work limits and the context-free parser's built-in-only contract.
+  Keep explicit nominal execution refusals in both concrete adapters while their
+  actual source/native route remains pending; preparation grants no acceptance.
+  Check fieldless enum values, explicit record literals and ordinary field
+  projection in both common expression grammars. Preserve original occurrence
+  identity, reexports, member privacy, exact types and written initializer
+  order/effects; reject implicit quantum projection and false pure labels.
+  Keep nominal execution transport gates and existing syntax/work limits.
+  Reduce recursive parser frames without increasing stack or nesting limits.
+  Retain explicit `type(Nominal)` static arguments through the common plans
+  and selected projection. Bind the original type occurrence to its canonical
+  declaration; keep record field Nat/helper provenance separate from caller
+  Nat nodes. Reject foreign collections and replaced type identities.
+  Generate ordered untrusted carrier descriptions from exact closed Basis
+  trees, preserving nominal source bytes, product shape and zero-width nodes
+  within the existing native capacity; no same-width conversion is introduced.
+  Connect an explicit check-only source carrier API to the shared selected
+  Builder, Raw emitter, fresh native typed equation and retained-step replay.
+  Require the caller's exact logical matrix and preserve actual ordered owner
+  ports and public effects. Admit original nominal source rows through their
+  independently checked exact type references; ordinary source-use checking
+  stays strict. Keep unsupported helper/import-only rows refused and the typed
+  result sealed, with no ordinary execution, inverse/control or source-AST
+  preservation claim.
+  Add a separate proof-metadata CI producer with fixed command/output checks,
+  full stream retention and a reviewable five-file patch after successful fresh
+  proofs. It restores its checkout and grants no ordinary CI or release credit.
+  Refresh the mutable current extraction through the existing protected Raw
+  projection, keeping historical meanings and fixed review outputs unchanged.
+  Retain the earlier extraction as immutable history with its original Git
+  provenance, so passive history checks remain valid after current updates.
+  Update punctuation, selected-CLI and Rust-boundary regressions for field projection while
+  retaining method-call refusal, access guidance and exact diagnostic spans.
+  Exclude compressed `.tar.xz` history snapshots from registry packaging under
+  the existing archive policy; retain their complete bytes in Git/source archives
+  and keep the 10 MB crate limit unchanged.
+  Use the same canonical native-checker selection during CI host preparation
+  and comparisons, avoiding needless Rust rebuilds between workers. Preserve
+  bounded child diagnostics when verification-baseline commands time out;
+  command coverage and time limits stay unchanged.
+  Register the finite-carrier proposal, native component, source adapter and
+  checked-view routes in the verification inventory, retaining their explicit
+  source/runtime proof gaps and constructor/capacity coverage.
+
+
 - Add the small ordinary derived `std::prelude`, transparent public reexports,
   root-qualified references and a per-module `#![no_implicit_prelude]` header.
   Keep original declaration identities, public effects and relevant resolution

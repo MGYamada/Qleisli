@@ -63,6 +63,8 @@ SOURCE_ROOTS = (
     "scripts/test_lean_controlled_power.py",
     "lean/SchemaExport.lean", "lean/schema-registry.json",
     "scripts/check_schema_registry.py", "scripts/test_check_schema_registry.py",
+    "scripts/refresh_current_proof_records.py", "scripts/test_refresh_current_proof_records.py",
+    ".github/workflows/current-proof-records.yml",
     "scripts/test_hierarchical_graph.py",
     "scripts/test_hierarchical_artifact.py",
     "scripts/test_hierarchical_typing.py",

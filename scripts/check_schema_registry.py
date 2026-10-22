@@ -141,20 +141,45 @@ def verify_manifest(manifest, export, revision):
             "review the change, then use --write to rebuild and audit")
 
 
-def run(argv, cwd, records):
+def command_output_directory(root, path):
+    path = path.absolute()
+    require(".." not in path.parts, "command output path must not contain parent traversal")
+    require(not any(parent.is_symlink() for parent in (path, *path.parents)), "linked command output directory")
+    require(path.parent.is_dir() and not path.exists(), "command output directory must be new under an existing parent")
+    require(not path.is_relative_to(root.resolve()), "command outputs must be outside source root")
+    path.mkdir()
+    return path
+
+
+def run(argv, cwd, records, command_output_dir=None):
     started = time.monotonic()
-    result = subprocess.run(argv, cwd=cwd, capture_output=True, check=False)
+    if command_output_dir is None:
+        result = subprocess.run(argv, cwd=cwd, capture_output=True, check=False)
+        stdout, stderr = result.stdout, result.stderr
+    else:
+        directory = command_output_dir / f"{len(records):02d}"
+        directory.mkdir()
+        # Retain diagnostics while the child runs, including when an outer
+        # timeout kills this producer before subprocess.run can return.
+        (directory / "command.json").write_text(json.dumps({"argv": argv, "cwd": str(cwd), "exit_code": None}) + "\n")
+        with (directory / "stdout").open("wb") as out, (directory / "stderr").open("wb") as err:
+            result = subprocess.run(argv, cwd=cwd, stdout=out, stderr=err, check=False)
+        stdout, stderr = (directory / "stdout").read_bytes(), (directory / "stderr").read_bytes()
+        (directory / "command.json").write_text(json.dumps({"argv": argv, "cwd": str(cwd), "exit_code": result.returncode}) + "\n")
     records.append({"argv": argv, "cwd": cwd.name, "exit_code": result.returncode,
                     "seconds": round(time.monotonic() - started, 3),
-                    "stdout_sha256": digest(result.stdout), "stderr_sha256": digest(result.stderr),
-                    "diagnostics": (result.stdout + result.stderr).decode(errors="replace")[:4000]})
+                    "stdout_sha256": digest(stdout), "stderr_sha256": digest(stderr),
+                    "diagnostics": (stdout + stderr).decode(errors="replace")[:4000]})
     require(result.returncode == 0, f"command failed: {argv}\n" +
-            (result.stdout + result.stderr).decode(errors="replace")[:4000])
-    return result.stdout
+            (stdout + stderr).decode(errors="replace")[:4000])
+    return stdout
 
 
-def check(root, write=False, source_only=False, report=None):
+def check(root, write=False, source_only=False, report=None, command_output_dir=None):
     require(not (write and source_only), "--write requires rebuilt types and audits")
+    require(not (source_only and command_output_dir is not None), "source-only mode has no command outputs")
+    if command_output_dir is not None:
+        command_output_dir = command_output_directory(root, command_output_dir)
     record = report if report is not None else {}
     record.update(format="qleisli.schema-registry-validation", version=1,
                   mode="source-identity-only" if source_only else "rebuilt-types-and-audits",
@@ -166,13 +191,13 @@ def check(root, write=False, source_only=False, report=None):
         verify_manifest(manifest, manifest_export(manifest), revision)
     else:
         commands = record["commands"]
-        run([sys.executable, "scripts/check_lean_kernel.py"], root, commands)
+        run([sys.executable, "scripts/check_lean_kernel.py"], root, commands, command_output_dir)
         for package in ("lean-kernel", "lean"):
-            run(["lake", "build"], root / package, commands)
-            run(["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / package, commands)
-        run(["lake", "env", "leanchecker", "--fresh", "QleisliKernel"], root / "lean-kernel", commands)
+            run(["lake", "build"], root / package, commands, command_output_dir)
+            run(["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / package, commands, command_output_dir)
+        run(["lake", "env", "leanchecker", "--fresh", "QleisliKernel"], root / "lean-kernel", commands, command_output_dir)
         export = read_json(run(["lake", "env", "lean", "-DwarningAsError=true", "SchemaExport.lean"],
-                               root / "lean", commands))
+                               root / "lean", commands, command_output_dir))
         require(revision == source_revision(root), "source changed during registry validation")
         manifest = expected_manifest(export, revision)
         if write:
@@ -191,10 +216,11 @@ def main():
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--source-only", action="store_true")
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--command-output-dir", type=Path, help="new outside directory retaining the seven unchanged canonical commands' full streams")
     args = parser.parse_args()
     report = {}
     try:
-        check(args.root.resolve(), args.write, args.source_only, report)
+        check(args.root.resolve(), args.write, args.source_only, report, args.command_output_dir)
     except (RegistryError, OSError, ValueError, KeyError, TypeError, RecursionError) as error:
         report.update(status="error", error=str(error))
     if args.report:

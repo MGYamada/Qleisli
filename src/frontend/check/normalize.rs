@@ -27,6 +27,63 @@ fn local<'a>(index: &'a Index<'_>, name: &ast::Ident) -> Option<&'a BinderKey> {
         _ => None,
     }
 }
+#[derive(Clone, Copy)]
+enum NaturalNames<'a, 'ast> {
+    Function(&'a Index<'ast>),
+    Module(&'a Resolution, super::super::resolve::ModuleId),
+}
+impl<'a> NaturalNames<'a, '_> {
+    fn helper(self, name: &ast::Ident) -> Result<DefId> {
+        match self {
+            Self::Function(index) => static_helpers::target(index, name),
+            Self::Module(resolution, module) => {
+                let target = resolution
+                    .lookup_visible(module, &name.text)
+                    .map_err(|kind| {
+                        declarations::resolution_error(super::super::resolve::Failure {
+                            module: resolution.module_name(module).into(),
+                            span: name.span,
+                            kind,
+                        })
+                    })?;
+                match target {
+                    Some(super::super::resolve::Target::Declaration(id)) => Ok(id),
+                    _ => Err(SourceError::new(
+                        "static",
+                        name.span,
+                        "a Nat helper call requires a declared static function",
+                    )),
+                }
+            }
+        }
+    }
+    fn local(self, natural: &Natural) -> Option<&'a BinderKey> {
+        match self {
+            Self::Function(index) => match index.table.usage(index.natural_usage(natural)).target {
+                ResolvedUse::Local(id) => Some(index.table.key(id)),
+                _ => None,
+            },
+            Self::Module(..) => None,
+        }
+    }
+}
+
+pub(super) fn module_natural(
+    n: &Natural,
+    resolution: &Resolution,
+    module: super::super::resolve::ModuleId,
+    scope: &Scope,
+    budget: &Budget,
+) -> Result<Linear> {
+    natural_inner(
+        n,
+        NaturalNames::Module(resolution, module),
+        scope,
+        None,
+        budget,
+        1,
+    )
+}
 pub(super) fn natural(
     n: &Natural,
     index: &Index<'_>,
@@ -34,11 +91,11 @@ pub(super) fn natural(
     prefix: Option<&BTreeSet<BinderKey>>,
     budget: &Budget,
 ) -> Result<Linear> {
-    natural_inner(n, index, scope, prefix, budget, 1)
+    natural_inner(n, NaturalNames::Function(index), scope, prefix, budget, 1)
 }
 fn natural_inner(
     n: &Natural,
-    index: &Index<'_>,
+    names: NaturalNames<'_, '_>,
     scope: &Scope,
     prefix: Option<&BTreeSet<BinderKey>>,
     budget: &Budget,
@@ -55,7 +112,7 @@ fn natural_inner(
     let mut charge = |span, cells| budget.preparation_charge(span, cells);
     let result = match &n.kind {
         NatKind::Call { callee, arguments } => {
-            let id = static_helpers::target(index, callee)?;
+            let id = names.helper(callee)?;
             let helper = scope.helpers.get(&id).ok_or_else(|| {
                 SourceError::new(
                     "static",
@@ -72,7 +129,7 @@ fn natural_inner(
             }
             let mut values = BTreeMap::new();
             for (key, argument) in helper.parameters.iter().zip(arguments) {
-                let value = natural_inner(argument, index, scope, prefix, budget, depth + 1)?;
+                let value = natural_inner(argument, names, scope, prefix, budget, depth + 1)?;
                 values.insert(budget.key(argument.span, key)?, value);
             }
             for (left, comparison, right) in &helper.requirements {
@@ -113,9 +170,9 @@ fn natural_inner(
             Linear::constant_budgeted(*value, n.span, &mut charge)?
         }
         NatKind::Name(name) => {
-            let key = match index.table.usage(index.natural_usage(n)).target {
-                ResolvedUse::Local(id) => index.table.key(id),
-                _ => {
+            let key = match names.local(n) {
+                Some(key) => key,
+                None => {
                     return Err(SourceError::new(
                         "static",
                         n.span,
@@ -132,8 +189,8 @@ fn natural_inner(
             x.copy_budgeted(n.span, &mut charge)?
         }
         NatKind::Add(a, b) | NatKind::Sub(a, b) | NatKind::Mul(a, b) => {
-            let a = natural_inner(a, index, scope, prefix, budget, depth + 1)?;
-            let b = natural_inner(b, index, scope, prefix, budget, depth + 1)?;
+            let a = natural_inner(a, names, scope, prefix, budget, depth + 1)?;
+            let b = natural_inner(b, names, scope, prefix, budget, depth + 1)?;
             match &n.kind {
                 NatKind::Add(..) => a.add_budgeted(&b, n.span, &mut charge).map_err(|error| {
                     arithmetic_context(error, n.span, "normalizing size expression")
@@ -238,7 +295,7 @@ pub(super) fn ty(
         }
         match &node.kind {
             TypeKind::Named(name) => {
-                let key = local(index, name).ok_or_else(|| {
+                let unavailable = || {
                     SourceError::new(
                         "type",
                         name.span,
@@ -247,17 +304,19 @@ pub(super) fn ty(
                             name.text
                         ),
                     )
-                })?;
-                if prefix.is_some_and(|p| !p.bases.contains(key)) || !scope.bases.contains_key(key)
-                {
-                    return Err(SourceError::new(
-                        "type",
-                        name.span,
-                        format!(
-                            "Basis parameter {} is unavailable in this ordered kind",
-                            name.text
-                        ),
-                    ));
+                };
+                if let Some(key) = local(index, name) {
+                    if prefix.is_some_and(|p| !p.bases.contains(key))
+                        || !scope.bases.contains_key(key)
+                    {
+                        return Err(unavailable());
+                    }
+                } else {
+                    match index.table.usage(index.usage(name)).target {
+                        ResolvedUse::Global(super::super::resolve::Target::Type(id))
+                            if scope.nominals.contains_key(&id) => {}
+                        _ => return Err(unavailable()),
+                    }
                 }
             }
             TypeKind::Q(child) => {
@@ -297,8 +356,17 @@ pub(super) fn ty(
             )
         }
         fn resolve_basis(&mut self, name: &ast::Ident) -> Result<Ty> {
-            let key = local(self.index, name).expect("prechecked Basis occurrence");
-            self.budget.copy_ty(name.span, &self.scope.bases[key])
+            let ty = if let Some(key) = local(self.index, name) {
+                &self.scope.bases[key]
+            } else {
+                let ResolvedUse::Global(super::super::resolve::Target::Type(id)) =
+                    self.index.table.usage(self.index.usage(name)).target
+                else {
+                    unreachable!("prechecked nominal occurrence")
+                };
+                &self.scope.nominals[&id]
+            };
+            self.budget.copy_ty(name.span, ty)
         }
         fn quantum_basis_error(&mut self, span: Span) -> SourceError {
             SourceError::new("type", span, "a Basis type cannot contain a quantum owner")
@@ -372,6 +440,11 @@ pub(super) fn substitute(
             Kind::Tuple(fields) => {
                 budget.charge(span, fields.len())?;
                 pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
+                1
+            }
+            Kind::Nominal(nominal) => {
+                budget.charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+                pending.extend(nominal.fields().rev().map(|field| (field, depth + 1)));
                 1
             }
             _ => 1,

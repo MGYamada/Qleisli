@@ -135,6 +135,32 @@ QLV3 success is formally connected to the original decoded-root ownership
 and classical-scope properties; this preserves their admitted scope and does
 not admit a new guarantee or discharge broader QS, PR, RS or EXACT duties.
 
+The internal `finite-carrier-pure-v1` mode additionally compares both ordered
+typed owner forests and the independently requested exact logical matrix with
+their retained Rust objects. Lean reconstructs supported nominal declarations
+from the original source rows and checks code Gram/body equations using the same
+QIRF dependency and Raw gates. A fresh execution-only decision binds its private
+handle; inspection/caller frames and ordinary requests cannot substitute for it.
+Its independent type reader follows original explicit imports and public
+reexports, retaining canonical identity, category and visibility. Existing field
+Nat expressions use exact symbolic arithmetic and original acyclic helpers,
+including generic checking of unused/private definitions and ordered premises.
+Simultaneous calls are proved against original predicate/body evaluation;
+produced templates and caller-supplied success receipts grant no authority.
+The helper environment is checked once across all ordered owner forests.
+This bounded raw component does not enable ordinary source ADT execution.
+The explicit source carrier adapter reuses the common judgment, selected
+Builder and Raw emitter, requires an independent exact logical request and
+replays retained source steps against the native-compared body. Extra original
+source rows are covered only by exact nominal origins after independent type
+checking; ordinary checking keeps evidence-only source usage. Uncovered
+helper/import-only rows refuse. Its sealed result retains the source graph and
+grants no ordinary runtime, inverse or controlled access; original AST-to-step
+preservation remains unproved and is reported as such.
+Neither declaration lookup nor these scalar checks supply a source-function
+preservation theorem, inverse/control access or a new human-admitted guarantee.
+All existing source/runtime/target assumptions remain.
+
 ### Non-verifier backend implementation scope (2026-10-11)
 
 [Decision #350](https://github.com/MGYamada/Qleisli/issues/350) retires the

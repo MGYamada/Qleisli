@@ -4,9 +4,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import copy
 import json
+import os
 from pathlib import Path
+import signal
 import tempfile
+import time
 import unittest
+from unittest.mock import patch
+import subprocess
+import sys
 
 import check_schema_registry as registry
 
@@ -116,6 +122,93 @@ class RegistryTests(unittest.TestCase):
     def test_source_only_cannot_refresh_theorem_types(self):
         with self.assertRaisesRegex(registry.RegistryError, "requires rebuilt types"):
             registry.check(registry.ROOT, write=True, source_only=True)
+
+
+class StreamCaptureTests(unittest.TestCase):
+    def experiment(self, root, outside=None, failure=None):
+        manifest = registry.read_json((registry.ROOT / registry.MANIFEST).read_bytes())
+        revision = manifest["source_revision"]
+        export = registry.manifest_export(manifest)
+        target = root / registry.MANIFEST
+        target.parent.mkdir(parents=True, exist_ok=True)
+        original = b"original manifest must survive failure\n"
+        target.write_bytes(original)
+        outputs = [b"source-policy\xff\n", b"native build\n", b"native audit\n", b"math build\n", b"math audit\n", b"", json.dumps(export).encode()]
+        expected = [([sys.executable, "scripts/check_lean_kernel.py"], root), (["lake", "build"], root / "lean-kernel"), (["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / "lean-kernel"), (["lake", "build"], root / "lean"), (["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / "lean"), (["lake", "env", "leanchecker", "--fresh", "QleisliKernel"], root / "lean-kernel"), (["lake", "env", "lean", "-DwarningAsError=true", "SchemaExport.lean"], root / "lean")]
+        calls, report = [], {}
+
+        def synthetic(argv, cwd, **kwargs):
+            index = len(calls)
+            self.assertEqual((argv, cwd), expected[index])
+            stderr = b"failed\xfe" if index == failure else b""
+            if outside is None:
+                self.assertEqual(kwargs, {"capture_output": True, "check": False})
+            else:
+                self.assertEqual(set(kwargs), {"stdout", "stderr", "check"})
+                self.assertFalse(kwargs["check"])
+                kwargs["stdout"].write(outputs[index])
+                kwargs["stderr"].write(stderr)
+            calls.append((argv, cwd))
+            return subprocess.CompletedProcess(argv, 1 if index == failure else 0, outputs[index], stderr)
+
+        with patch.object(registry, "source_revision", return_value=revision), patch.object(registry.subprocess, "run", side_effect=synthetic):
+            if failure is None:
+                registry.check(root, write=True, report=report, command_output_dir=outside)
+            else:
+                with self.assertRaises(registry.RegistryError):
+                    registry.check(root, write=True, report=report, command_output_dir=outside)
+        self.assertEqual(len(calls), 7 if failure is None else failure + 1)
+        if failure is not None:
+            self.assertEqual(target.read_bytes(), original)
+        if outside is not None:
+            for index, row in enumerate(report["commands"]):
+                self.assertEqual((outside / f"{index:02d}" / "stdout").read_bytes(), outputs[index])
+                self.assertEqual(registry.digest((outside / f"{index:02d}" / "stdout").read_bytes()), row["stdout_sha256"])
+            if failure is not None:
+                self.assertEqual((outside / f"{failure:02d}" / "stderr").read_bytes(), b"failed\xfe")
+        return report
+
+    def test_optional_streams_preserve_exact_seven_commands_and_report_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            first = self.experiment(base / "default")
+            second = self.experiment(base / "captured", base / "streams")
+            self.assertEqual(set(first), set(second))
+            self.assertEqual([row["argv"] for row in first["commands"]], [row["argv"] for row in second["commands"]])
+            self.assertTrue(all(set(a) == set(b) for a, b in zip(first["commands"], second["commands"])))
+
+    def test_failure_preserves_actual_non_utf8_streams_without_writing_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            self.experiment(base / "failed", base / "streams", failure=3)
+
+    @unittest.skipUnless(os.name == "posix", "requires the hosted POSIX process-group boundary")
+    def test_interrupted_producer_retains_running_child_streams(self):
+        child = "import pathlib,sys,time; sys.stdout.buffer.write(b'actual output\\xff\\n'); sys.stdout.flush(); sys.stderr.buffer.write(b'actual error\\xfe\\n'); sys.stderr.flush(); pathlib.Path(sys.argv[1]).write_text('ready'); time.sleep(60)"
+        driver = "import sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); import check_schema_registry as registry; registry.run([sys.executable,'-c',sys.argv[4],sys.argv[5]],Path(sys.argv[2]),[],Path(sys.argv[3]))"
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            streams = base / "streams"
+            streams.mkdir()
+            ready = base / "ready"
+            process = subprocess.Popen([sys.executable, "-c", driver, str(registry.ROOT / "scripts"), str(base), str(streams), child, str(ready)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+            try:
+                deadline = time.monotonic() + 10
+                while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                self.assertTrue(ready.exists(), "child did not write actual diagnostics before interruption")
+                os.killpg(process.pid, signal.SIGTERM)
+                process.communicate(timeout=5)
+                self.assertNotEqual(process.returncode, 0)
+                self.assertEqual((streams / "00/stdout").read_bytes(), b"actual output\xff\n")
+                self.assertEqual((streams / "00/stderr").read_bytes(), b"actual error\xfe\n")
+                self.assertIsNone(json.loads((streams / "00/command.json").read_bytes())["exit_code"])
+            finally:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate(timeout=5)
 
 
 if __name__ == "__main__":

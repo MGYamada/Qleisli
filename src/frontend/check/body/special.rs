@@ -18,6 +18,16 @@ impl Checker<'_, '_> {
     fn basis_inner(&mut self, expr: &BasisExpr, scope: &mut Scope) -> Result<Ty> {
         self.tick(expr.span)?;
         let result = match &expr.kind {
+            BasisExprKind::Variant(value) => self.variant_value(value)?,
+            BasisExprKind::Record(record) => {
+                self.record_value(record, scope, |checker, value, scope, _| {
+                    checker.basis_expr(value, scope)
+                })?
+            }
+            BasisExprKind::Field { receiver, field } => {
+                let ty = self.basis_expr(receiver, scope)?;
+                self.field_value(&ty, field)?
+            }
             BasisExprKind::Name(name) => {
                 let key = self
                     .local(name)
@@ -497,7 +507,7 @@ impl Checker<'_, '_> {
                 }
                 Some(total)
             }
-            Kind::Parameter(_) => None,
+            Kind::Parameter(_) | Kind::Nominal(_) => None,
             Kind::Q(_) => {
                 return Err(SourceError::new(
                     "type",

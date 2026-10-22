@@ -705,6 +705,13 @@ impl finite::Context for Context<'_, '_> {
     type Environment = Environment;
     type Tuple = Product;
     type Error = SourceError;
+    fn nominal_unavailable(&mut self, span: Span) -> SourceError {
+        SourceError::new(
+            "unsupported",
+            span,
+            "ordinary nominal values require their typed native transport",
+        )
+    }
     fn enter(&mut self, span: Span, depth: usize) -> Result<()> {
         self.budget.charge(span, 1)?;
         if depth >= 64 {

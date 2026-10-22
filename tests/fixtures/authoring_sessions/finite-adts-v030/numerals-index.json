@@ -1,0 +1,677 @@
+{
+  "format": "qleisli.carrier-source-numeral-history",
+  "version": 1,
+  "archive": {
+    "bytes": 1011980,
+    "sha256": "b1eea4b33b2f160105ccf96c1b6f98038cf89b719ea8f8734878e6e1ee079e82",
+    "expanded_file_bytes": 42346961
+  },
+  "scope": "Inert first original sources and exact packets, actual source parse refusal but native final-view progress for leading-zero spelling, and the separately reproduced BAD raw CarrierChecked acceptance. The first rejecting Rust assertion fails because it received that handle. The unchanged source/test then rejects after the canonical-decimal repair. All original failures remain failed observations. Null-view stage observations are not handles; source execution/preservation and general Nat helpers remain pending. Every history record is passive data, never executed.",
+  "records": {
+    "adt64-nat-spelling-after-study/canonical.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-after-study/canonical.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-after-study/leading-zero.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-after-study/leading-zero.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-after-study/observer.py.txt": {
+      "bytes": 2664,
+      "sha256": "de363553f5bb8bdd9ed5b8f9cb9649568b2779742e940f14d352c2469b80d16a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-after-study/report.json": {
+      "bytes": 6723423,
+      "sha256": "f930ec386acbd6bf3df6591bbb3019fc1ae5dbefc443f7b449c2feb90ad42d41",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/report.json": {
+      "bytes": 6824114,
+      "sha256": "f5d19f0d920e9e60d60fd8881bba409a19d5bbe29cf6d69f88bbaff2046d430a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16477,
+      "sha256": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 73850,
+      "sha256": "9f9b4fa5a8cb96f041130f44b38206b6f54a0afc9896476d2ec7c9cb44c04976",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-native-test/stdout": {
+      "bytes": 59222,
+      "sha256": "36891cd7d68cc115ab4b42cc7648d5f71fb8179a5504b9e6f3e5adfde92c0631",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical-native.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical-source.stdout": {
+      "bytes": 406,
+      "sha256": "982a8d918225e491e7edefec24beb10afd6ae131aa85fd0e226131b43d510e3f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical/artifact.qirf": {
+      "bytes": 1086,
+      "sha256": "1dfeee66abd668d16d803338905d4b2bc70117bb703a4131ace4febca9d879c8",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical/main.qli": {
+      "bytes": 83,
+      "sha256": "9ade238ee9963068f6774f8cbf9926d421ab053ca8cab5cd1cb02cb593e402ce",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical/packet.bin": {
+      "bytes": 5024,
+      "sha256": "0e71ab449e5e396c326191008ccea7cdbafd641770c46f6755fbd5aebfdb7b2a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/canonical/request.json": {
+      "bytes": 3893,
+      "sha256": "19031791a5cbbb3693b16405a2640eeba05a5e62cc7c1b2b3902d53597aca20a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/context.txt": {
+      "bytes": 685,
+      "sha256": "b0226852faff37d62d0f1bb65b770d4995f1de3afee743e7ce8a44a9260ad26a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero-native.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero-source.stdout": {
+      "bytes": 359,
+      "sha256": "54fee2331cec7f977032155665ca60abbd2097e0f10207d3211e5098cb7c42ad",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero/artifact.qirf": {
+      "bytes": 1087,
+      "sha256": "4c9efb389e53eff402bdcbd82d518995fda4d3a9b25edab2586ef8e830c27c13",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero/main.qli": {
+      "bytes": 84,
+      "sha256": "a43c12802339a1a966720e2f09f735963b7c6009cc3ff5fe00073bd68661c1b2",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero/packet.bin": {
+      "bytes": 5029,
+      "sha256": "7175b1c855384b6cae2b440293c62ff9efc9e21d8838145dbe30446b73a9793f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/leading-zero/request.json": {
+      "bytes": 3897,
+      "sha256": "927163a8cdb70ff3b25377231db667f14f2a59701f29ef7b6d7c8f8031243b3d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/observer.py.txt": {
+      "bytes": 5734,
+      "sha256": "b1e4c8bef5e0c72760d553d804991360933f7caedd0826b29972f136e9ed8178",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-first-study/report.json": {
+      "bytes": 6723352,
+      "sha256": "7fb30fdb58d975172a14caefd9f695d59eb95e82b4d068bd8910c9b50b13a999",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/basis.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/basis.stdout": {
+      "bytes": 483,
+      "sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/binding.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/binding.stdout": {
+      "bytes": 7982,
+      "sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/extract-stdout-reference.json": {
+      "bytes": 386,
+      "sha256": "2ab111166f665aadf6d1c02aa0788df0358a22ae65e59c7deca120d0aadf1ed5",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/extract.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/main-replay.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/main-replay.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/observer.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/raw.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/raw.stdout": {
+      "bytes": 612,
+      "sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/registry.json": {
+      "bytes": 8328,
+      "sha256": "cf4176cca550047556eaed2748e58f4c23d211260c44c5869285316781bb3d73",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/registry.stdout": {
+      "bytes": 332,
+      "sha256": "823dec9cecf4a75acc7ea67916ceb23f97906b204f81c5f38dbf903fa2fca1b9",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/report.json": {
+      "bytes": 6826783,
+      "sha256": "2769e048adc5bd74943b400865638e74a545de5965eb56fb67a1ff358ec6f0b1",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/review.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/review.stdout": {
+      "bytes": 4692,
+      "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16575,
+      "sha256": "a78ffed886bdbee7d773be420aebef224c6e5d4a30f6c978b2929cd40d2b2f6b",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 74307,
+      "sha256": "8cf869ebfb92c7f42b54e6baeb000d08a8fd4a8d75f40eb39d292139cb6130ec",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-lean-validation/tests.stdout": {
+      "bytes": 1145,
+      "sha256": "d6d8a0ed7c64f8e6a05a6a6f23f8a2af82e39e94035a0bbfbde179cf8786577c",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/check.stderr": {
+      "bytes": 119,
+      "sha256": "9d7876d3d6db776cb62702774ccc42386223efaf6b54bb4acbc654986c41849a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/native.stdout": {
+      "bytes": 291469,
+      "sha256": "ecac4ab6dde9c1d458bbedd1619cf7392b229f592f88cc00556f74d733a6ccaf",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/report.json": {
+      "bytes": 6825838,
+      "sha256": "353ef3ab3a027fc4ddd2ec1a7b2b53234a900607af48a505abd9492cc481fa44",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-msrv-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/check.stderr": {
+      "bytes": 120,
+      "sha256": "3dff8f061d39ac22baf63842bc42d15c0f6dbd31defda46f6fb732c32a5828e5",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/lint.stderr": {
+      "bytes": 119,
+      "sha256": "df26eaf88381e8f5cd47239eaf96c17af21141b2f04937914d9b7028bd366c7f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/lint.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/native.stdout": {
+      "bytes": 291409,
+      "sha256": "232a896fb6740a4df6f356ba64bb9067982b806511ae9bf2a654b5aea556b5ea",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/report.json": {
+      "bytes": 6826166,
+      "sha256": "d180b49b7d020b9838749edcea554cdb12b459a4f15333dd596403ece8962e1c",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 25812,
+      "sha256": "23cccc6712f7930d99a7dd49b8dadad4f26caf6ba124b3d4313cd081679dd3a7",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-nat-spelling-normal-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-carrier-nat-spelling-first-20261021.py.txt": {
+      "bytes": 5734,
+      "sha256": "b1e4c8bef5e0c72760d553d804991360933f7caedd0826b29972f136e9ed8178",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-carrier-native-20261021.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-nat-spelling-after-20261021.py.txt": {
+      "bytes": 2664,
+      "sha256": "de363553f5bb8bdd9ed5b8f9cb9649568b2779742e940f14d352c2469b80d16a",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-nat-spelling-evidence-20261021.py.txt": {
+      "bytes": 3791,
+      "sha256": "8bf5f0ec25096d203bdebca03761c807f762f266e644a35ca8bf4bcf89951d59",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-nat-spelling-evidence.stdout": {
+      "bytes": 394,
+      "sha256": "ae33728584d421efa1a8ad44c67949f0f456a2af6bed546d7f6c90960d0ed1cc",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-lean-20261021.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-rust-20261021.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    }
+  }
+}

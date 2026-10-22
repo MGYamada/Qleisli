@@ -149,6 +149,12 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match ordinary::runtime_expression(expr) {
+            RuntimeExpression::Nominal => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "ordinary nominal values require their typed native transport",
+            )),
             RuntimeExpression::Name(name) => self.read_name(module, name, env),
             RuntimeExpression::Unit => Ok(Value::Unit),
             RuntimeExpression::Tuple(fields) => {

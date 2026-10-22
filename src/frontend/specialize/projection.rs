@@ -5,7 +5,7 @@
 use super::ast::*;
 use super::{Error, Result, Span};
 use crate::frontend::ast as source;
-use crate::frontend::check::{Budget, StaticHelpers};
+use crate::frontend::check::{Budget, NominalTypes, StaticHelpers};
 use crate::frontend::resolve::Target;
 use crate::frontend::resolve::locals::{Index, UseSiteId};
 
@@ -22,11 +22,13 @@ pub(super) fn project_declaration(
     index: &Index<'_>,
     helpers: &StaticHelpers,
     budget: &Budget,
+    nominals: &NominalTypes,
 ) -> Result<ProjectedBody> {
     Projection {
         index,
         helpers,
         budget,
+        nominals,
     }
     .function(declaration)
 }
@@ -35,6 +37,7 @@ struct Projection<'a, 'ast> {
     helpers: &'a StaticHelpers,
     index: &'a Index<'ast>,
     budget: &'a Budget,
+    nominals: &'a NominalTypes,
 }
 impl Projection<'_, '_> {
     fn charge(&self, span: Span, cells: usize) -> Result<()> {
@@ -179,6 +182,12 @@ impl Projection<'_, '_> {
         // keep their addresses rather than resolve names in a copied AST.
         self.charge(expression.span, 1)?;
         let kind = match crate::frontend::ordinary::runtime_expression(expression) {
+            RuntimeExpression::Nominal => {
+                return Err(unsupported(
+                    expression.span,
+                    "ordinary nominal values require their typed native transport",
+                ));
+            }
             RuntimeExpression::Name(name) => ExprKind::Name(self.ident(name)?),
             RuntimeExpression::Unit => ExprKind::Unit,
             RuntimeExpression::Tuple(fields) => {
@@ -255,6 +264,36 @@ impl Projection<'_, '_> {
                     self.charge(node.span, 1)?;
                     pending.push((inner, depth));
                 }
+                source::TypeKind::Named(name) => {
+                    let target = self.index.table.usage(self.index.usage(name)).target;
+                    if let ResolvedUse::Global(Target::Type(id)) = target {
+                        self.charge(name.span, self.nominals.len() + 1)?;
+                        let canonical = self.nominals.get(&id).ok_or_else(|| {
+                            Error::new("source", name.span, "missing original finite type tree")
+                        })?;
+                        let expanded = crate::frontend::check::type_size_budgeted(
+                            canonical,
+                            4096,
+                            65 - depth,
+                            true,
+                            name.span,
+                            &mut |span, cells| self.budget.charge(span, cells),
+                        )
+                        .map_err(Error::from)?;
+                        nodes = nodes
+                            .checked_add(expanded.nodes.saturating_sub(1))
+                            .ok_or_else(|| {
+                                Error::new("limit", name.span, "type cell count overflow")
+                            })?;
+                        if nodes + pending.len() > 4096 {
+                            return Err(Error::new(
+                                "limit",
+                                name.span,
+                                "source type exceeds 4096 expanded nodes",
+                            ));
+                        }
+                    }
+                }
                 _ => {}
             }
         }
@@ -265,6 +304,7 @@ impl Projection<'_, '_> {
                 index: self.index,
                 helpers: self.helpers,
                 budget: self.budget,
+                nominals: self.nominals,
             },
         )
     }
@@ -345,6 +385,14 @@ impl Projection<'_, '_> {
     fn expr(&self, expr: &source::Expr) -> Result<Expr> {
         self.charge(expr.span, 1)?;
         let kind = match &expr.kind {
+            source::ExprKind::Variant(_)
+            | source::ExprKind::Record(_)
+            | source::ExprKind::Field { .. } => {
+                return Err(unsupported(
+                    expr.span,
+                    "ordinary nominal values require their typed native transport",
+                ));
+            }
             source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)?),
             source::ExprKind::Unit => ExprKind::Unit,
             source::ExprKind::Bit(value) => ExprKind::Boolean(Boolean::Constant(*value), vec![]),
@@ -520,6 +568,48 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
     }
     fn resolve_basis(&mut self, name: &source::Ident) -> Result<Type> {
         let reference = self.ident(name)?;
+        if let ResolvedUse::Global(Target::Type(id)) = self.index.table.usage(reference.site).target
+        {
+            self.charge(name.span, self.nominals.len() + 1)?;
+            let canonical = self.nominals.get(&id).ok_or_else(|| {
+                Error::new("source", name.span, "missing original finite type tree")
+            })?;
+            crate::frontend::check::type_size_budgeted(
+                canonical,
+                4096,
+                64,
+                true,
+                name.span,
+                &mut |span, cells| self.budget.charge(span, cells),
+            )
+            .map_err(Error::from)?;
+            // Nominal fields were closed by the common declaration judgment.
+            // The selected constants are adapter data, not caller Nat nodes;
+            // map_parts retains every original Nominal Origin/source byte.
+            return canonical.map_parts(
+                &mut |linear| {
+                    self.charge(name.span, linear.terms.len() + 2)?;
+                    if !linear.terms.is_empty() || u32::try_from(linear.constant).is_err() {
+                        return Err(Error::new(
+                            "source",
+                            name.span,
+                            "canonical finite field size is not a closed u32",
+                        ));
+                    }
+                    Ok(Natural {
+                        span: name.span,
+                        kind: NatKind::Number(linear.constant),
+                    })
+                },
+                &mut |_| {
+                    Err(Error::new(
+                        "source",
+                        name.span,
+                        "canonical finite declaration contains a Basis parameter",
+                    ))
+                },
+            );
+        }
         {
             let index = self.index;
             let usage = index.table.usage(reference.site);
@@ -561,5 +651,92 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
             ));
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod nominal_basis_tests {
+    use super::*;
+    use crate::frontend::check::{SourceLimits, program_with_sources};
+    use crate::frontend::types::{Kind, nominal::Body};
+
+    #[test]
+    fn explicit_record_basis_projection_preserves_source_field_order_and_closed_sizes() {
+        let leaf = "pub static fn width[const n:Nat]()->Nat{n+1}
+            pub enum Tri { A,B,C }
+            pub struct Packet { pub tag:Tri, hidden:Bits<width[1]()>, pub zero:Unit }";
+        let main = "use alias::Packet;
+            unitary fn identity[const A:Basis](q:Q<A>)->Q<A>{q}
+            pub unitary fn f(q:Q<(Packet,Bit)>)->Q<(Packet,Bit)>{identity[type((Packet,Bit))](q)}";
+        let texts = [
+            ("leaf", leaf),
+            ("alias", "pub use leaf::Packet;"),
+            ("main", main),
+        ];
+        let modules = texts
+            .iter()
+            .map(|(_, text)| crate::frontend::parser::parse_module(text).unwrap())
+            .collect::<Vec<_>>();
+        program_with_sources(
+            texts
+                .iter()
+                .zip(&modules)
+                .map(|((name, _), module)| (*name, module))
+                .collect(),
+            texts.into_iter().collect(),
+            SourceLimits::selected(),
+            |resolution, _, helpers, _, _, indices, budget, nominals| {
+                let owner = resolution.qualified("main::f").unwrap();
+                let declaration = &modules[2].decls[resolution.declaration(owner).ast_index];
+                let projected =
+                    project_declaration(declaration, &indices[&owner], helpers, budget, nominals)
+                        .map_err(crate::frontend::check::SourceError::from)?;
+                let ExprKind::Call(_, arguments, _) = &projected.body.result.kind else {
+                    panic!("projected original call");
+                };
+                let Argument::Basis(basis, _) = &arguments[0] else {
+                    panic!("explicit Basis");
+                };
+                let Kind::Tuple(fields) = &basis.kind else {
+                    panic!("exact product");
+                };
+                assert!(matches!(fields[1].kind, Kind::Bit));
+                let Kind::Nominal(packet) = &fields[0].kind else {
+                    panic!("original record");
+                };
+                assert_eq!(packet.origin.module, "leaf");
+                assert_eq!(packet.origin.source.as_ref(), leaf);
+                let Body::Record(fields) = &packet.body else {
+                    unreachable!()
+                };
+                assert_eq!(
+                    fields
+                        .iter()
+                        .map(|field| (field.name.as_str(), field.public))
+                        .collect::<Vec<_>>(),
+                    [("tag", true), ("hidden", false), ("zero", true)]
+                );
+                let Kind::Nominal(tri) = &fields[0].ty.kind else {
+                    panic!("nested nominal");
+                };
+                let Body::Enum(names) = &tri.body else {
+                    unreachable!()
+                };
+                assert_eq!(
+                    names.iter().map(String::as_str).collect::<Vec<_>>(),
+                    ["A", "B", "C"]
+                );
+                assert!(matches!(
+                    &fields[1].ty.kind,
+                    Kind::Bits(Natural {
+                        kind: NatKind::Number(2),
+                        ..
+                    })
+                ));
+                assert!(matches!(fields[2].ty.kind, Kind::Unit));
+                Ok(())
+            },
+        )
+        .unwrap();
     }
 }

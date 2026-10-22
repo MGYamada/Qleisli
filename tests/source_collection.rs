@@ -6,6 +6,94 @@ use qleisli::frontend::project::{Project, SourcePolicy};
 use std::collections::BTreeMap;
 
 #[test]
+fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route() {
+    use qleisli::frontend::compile::check_project_with_kernel;
+    use qleisli::interchange::native::Kernel;
+    for declaration in [
+        "enum Tri { A, B, C }",
+        "struct Empty {}",
+        "struct Tagged { tag: Bit }",
+    ] {
+        let source = format!("pub fn main()->Unit{{()}} {declaration}");
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
+        assert_eq!(error.code(), "unsupported");
+        assert_eq!(&source[error.span().start..error.span().end], declaration);
+        let root = common::SourceRoot::new(&source);
+        let absent = root.0.join("must-not-run-native");
+        let error = check_project_with_kernel(
+            &root.0,
+            SourcePolicy::default(),
+            &Kernel::new(absent, qleisli::edition::Edition::E2026),
+        )
+        .unwrap_err();
+        assert_eq!(error.code, "unsupported");
+        assert_eq!(
+            error.message,
+            "finite type declarations require typed native transport before source execution"
+        );
+    }
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([
+            ("a_type".into(), "enum Tri { A, B, C }".into()),
+            ("z_bad".into(), "fn broken(".into()),
+        ]),
+    )
+    .unwrap_err();
+    assert_eq!(error.module(), Some("z_bad"));
+    assert_eq!(error.code(), "parse");
+}
+
+#[test]
+fn nominal_registration_checks_real_names_before_the_pending_carrier_gate() {
+    for (source, message) in [
+        (
+            "enum Empty {}",
+            "finite enum `Empty` must have at least one variant",
+        ),
+        ("enum Tri { A, B, A }", "duplicate member `A` in type `Tri`"),
+        (
+            "struct R { a:Bit, a:Bits<0> }",
+            "duplicate member `a` in type `R`",
+        ),
+    ] {
+        let error = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap_err();
+        assert_eq!(error.code(), "type");
+        assert_eq!(error.message(), message);
+        let root = common::SourceRoot::new(source);
+        assert_eq!(Project::load(&root.0).unwrap_err().message, message);
+    }
+    let modules = BTreeMap::from([
+        (
+            "main".into(),
+            "use alias::Tri; pub fn main()->Unit{()}".into(),
+        ),
+        ("alias".into(), "pub use leaf::Tri;".into()),
+        ("leaf".into(), "pub enum Tri { A, B, C }".into()),
+    ]);
+    let error = ParsedProgram::parse(qleisli::edition::Edition::E2026, modules)
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.message().contains("typed native transport"));
+}
+
+#[test]
 fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
     let unsupported = "pub fn sibling(c:Bit)->Bit{if c {1} else {0}}";
     for (supported, effect) in [

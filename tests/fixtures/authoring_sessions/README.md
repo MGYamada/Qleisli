@@ -1,3 +1,8 @@
+The [finite ADT first studies](finite-adts-v030/README.md) retain ten desired
+projects and both bounded Lean encoding attempts, including the first failed
+elaboration. Parser refusals, concrete repaired facts and unfinished common
+source/native integration remain distinct; history is never executed.
+
 The [prelude first study](prelude-v030/README.md) retains nineteen complete first
 projects and twenty-four actual observations before implicit opening, opt-out,
 reexports or qualified calls exist. Parser/name refusals remain distinct from

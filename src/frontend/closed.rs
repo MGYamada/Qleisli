@@ -21,6 +21,7 @@ type ClosedType = Type<u32>;
 /// No standalone Interface, foreign resolution or rewritten source is accepted.
 #[derive(Clone, Copy)]
 pub(super) struct CheckedInterface<'a> {
+    program: &'a CheckedProgram,
     interface: &'a Interface,
     span: Span,
 }
@@ -53,7 +54,11 @@ impl<'a> CheckedInterface<'a> {
                 "checked interface does not match its original declaration",
             ));
         }
-        Ok(Self { interface, span })
+        Ok(Self {
+            program,
+            interface,
+            span,
+        })
     }
 }
 
@@ -153,7 +158,7 @@ impl<'a> ClosedSubstitution<'a> {
             charge(span, formal.key.name.len() + 1)?;
         }
         for ty in bases.values() {
-            validate_closed_basis(ty, span, &mut charge)?;
+            validate_closed_basis(checked.program, ty, span, &mut charge)?;
         }
         Ok(Self {
             checked,
@@ -208,7 +213,7 @@ impl<'a> ClosedSubstitution<'a> {
             charge(span, formal.key.name.len() + 1)?;
         }
         for value in types.values() {
-            validate_closed_basis(basis(value), span, &mut charge)?;
+            validate_closed_basis(checked.program, basis(value), span, &mut charge)?;
         }
         let resolved_naturals = interface
             .statics
@@ -278,6 +283,7 @@ fn validate_bound_keys<V>(
 }
 
 fn validate_closed_basis(
+    program: &CheckedProgram,
     ty: &ClosedType,
     span: Span,
     charge: &mut impl FnMut(Span, usize) -> Result<()>,
@@ -298,6 +304,43 @@ fn validate_closed_basis(
                     span,
                     "a Basis binding must be a closed ordinary type",
                 ));
+            }
+            Kind::Nominal(nominal) => {
+                use super::resolve::Target;
+                charge(span, nominal.metadata_cells())?;
+                let original = program
+                    .resolution
+                    .module(&nominal.origin.module)
+                    .and_then(|owner| program.resolution.local_target(owner, &nominal.origin.name))
+                    .and_then(|target| match target {
+                        Target::Type(id) => program.nominals.get(&id),
+                        _ => None,
+                    })
+                    .ok_or_else(|| {
+                        SourceError::new(
+                            "source",
+                            span,
+                            "Basis binding has no original finite type declaration",
+                        )
+                    })?;
+                let actual = close_type_budgeted(
+                    original,
+                    &BTreeMap::new(),
+                    &BTreeMap::new(),
+                    span,
+                    &mut *charge,
+                )?;
+                let same =
+                    node.equivalent_by_budgeted(&actual, &mut |a, b| Ok(a == b), &mut |cells| {
+                        charge(span, cells)
+                    })?;
+                if !same {
+                    return Err(SourceError::new(
+                        "source",
+                        span,
+                        "Basis binding differs from its original finite type tree",
+                    ));
+                }
             }
             Kind::Tuple(fields) if fields.len() < 2 => {
                 return Err(SourceError::new(
@@ -890,9 +933,10 @@ mod tests {
 
     #[test]
     fn basis_validation_stops_at_preallocation_charge_failures() {
+        let program = checked("pub fn empty()->Unit{()}");
         let span = Span::default();
         let mut calls = 0;
-        let error = validate_closed_basis(&ClosedType::unit(), span, &mut |_, _| {
+        let error = validate_closed_basis(&program, &ClosedType::unit(), span, &mut |_, _| {
             calls += 1;
             Err(SourceError::new(
                 "limit",
@@ -916,7 +960,7 @@ mod tests {
         );
         let mut remaining = 6usize;
         let mut declined = None;
-        let error = validate_closed_basis(&unresolved, span, &mut |_, cells| {
+        let error = validate_closed_basis(&program, &unresolved, span, &mut |_, cells| {
             remaining = remaining.checked_sub(cells).ok_or_else(|| {
                 declined = Some(cells);
                 SourceError::new("limit", span, "second traversal reservation")

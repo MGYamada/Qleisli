@@ -118,9 +118,10 @@ fn invoke_mode(
         mode,
         crate::interchange::native_context::Mode::Ordinary
             | crate::interchange::native_context::Mode::Contract
+            | crate::interchange::native_context::Mode::CarrierPure
     ) {
         return Err(Error::format(
-            "finite checking requires the ordinary or contract native mode",
+            "finite checking requires an ordinary, contract or carrier native mode",
         ));
     }
     limits.invoke(executable, packet, mode.argument(), |bytes| {

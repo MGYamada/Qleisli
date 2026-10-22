@@ -135,6 +135,14 @@ impl<'a> Compiler<'a> {
                 return Ok(());
             }
             ResolvedUse::Global(Target::Declaration(_)) => {}
+            ResolvedUse::Global(Target::Type(_)) => {
+                return Err(self.dormant_error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "a type declaration is not a controlled operation",
+                )?);
+            }
             ResolvedUse::Unresolved => {
                 return Err(self.dormant_error(
                     module,

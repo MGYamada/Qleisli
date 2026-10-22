@@ -262,7 +262,9 @@ impl Port {
                     pending.extend(fields.iter().rev());
                     tagged("tuple", &[("arity", fields.len().to_string())])
                 }
-                Kind::Q(_) | Kind::Parameter(_) => unreachable!("validated closed ordinary basis"),
+                Kind::Q(_) | Kind::Parameter(_) | Kind::Nominal(_) => {
+                    unreachable!("validated legacy ordinary basis profile")
+                }
             });
         }
         object(&[

@@ -47,6 +47,7 @@ pub(in crate::frontend) struct InterfaceNaturalContext<'a, 'ast> {
     pub indices: &'a BTreeMap<DefId, Index<'ast>>,
     pub helpers: &'a StaticHelpers,
     pub budget: &'a Budget,
+    pub nominals: &'a NominalTypes,
 }
 
 #[derive(Clone, Copy)]
@@ -156,6 +157,7 @@ impl Reader<'_, '_> {
             interfaces: self.context.interfaces,
             resolution: self.context.resolution,
             budget: self.context.budget,
+            nominals: self.context.nominals,
         }
     }
 
@@ -438,21 +440,7 @@ impl Reader<'_, '_> {
                 }
                 Ok(count)
             }
-            ast::TypeKind::Named(name) => {
-                let ResolvedUse::Local(id) = self.original_name(name)? else {
-                    return Err(self.failure(name.span));
-                };
-                self.context.budget.charge(name.span, 1)?;
-                if self
-                    .index
-                    .table
-                    .try_binder(id)
-                    .is_none_or(|info| info.kind != BindingKind::StaticBasis)
-                {
-                    return Err(self.failure(name.span));
-                }
-                Ok(0)
-            }
+            ast::TypeKind::Named(name) => self.named_basis(name).map(|()| 0),
             ast::TypeKind::Unit | ast::TypeKind::Bit => Ok(0),
         }
     }
@@ -471,6 +459,40 @@ impl Reader<'_, '_> {
                 formal: self.context.budget.key(span, key)?,
             },
         })
+    }
+
+    fn named_basis(&self, name: &ast::Ident) -> Result<()> {
+        match self.original_name(name)? {
+            ResolvedUse::Local(id) => {
+                self.context.budget.charge(name.span, 1)?;
+                if self
+                    .index
+                    .table
+                    .try_binder(id)
+                    .is_none_or(|info| info.kind != BindingKind::StaticBasis)
+                {
+                    return Err(self.failure(name.span));
+                }
+            }
+            ResolvedUse::Global(resolve::Target::Type(id)) => {
+                self.context
+                    .budget
+                    .charge(name.span, self.context.nominals.len() + 1)?;
+                let canonical = self
+                    .context
+                    .nominals
+                    .get(&id)
+                    .ok_or_else(|| self.failure(name.span))?;
+                // These closed field naturals are rooted in the original type
+                // declaration and source closure, not in this function index.
+                self.context.budget.ty(name.span, canonical)?;
+                if !matches!(canonical.kind, Kind::Nominal(_)) {
+                    return Err(self.failure(name.span));
+                }
+            }
+            _ => return Err(self.failure(name.span)),
+        }
+        Ok(())
     }
 
     fn capture_type(
@@ -506,6 +528,7 @@ impl Reader<'_, '_> {
                     index: self.index,
                     helpers: self.context.helpers,
                     budget: self.context.budget,
+                    nominals: self.context.nominals,
                 };
                 let natural = capture.natural(natural)?;
                 self.context.budget.charge(source.span, 1)?;
@@ -538,6 +561,7 @@ impl Reader<'_, '_> {
                     self.capture_type(slot, field, Some(&next), roots)?;
                 }
             }
+            ast::TypeKind::Named(name) => self.named_basis(name)?,
             _ => {}
         }
         Ok(())
@@ -671,6 +695,7 @@ impl Reader<'_, '_> {
                     self.validate_type(slot, field, Some(&next), roots)?;
                 }
             }
+            ast::TypeKind::Named(name) => self.named_basis(name)?,
             _ => {}
         }
         Ok(())
@@ -913,16 +938,46 @@ impl Reader<'_, '_> {
 mod tests {
     use super::*;
 
+    #[test]
+    fn nominal_signature_fields_are_not_invented_function_natural_roots() {
+        study(
+            "static fn width[const n:Nat]()->Nat{n+1}
+             enum Tri { A,B,C } struct Packet { tag:Tri, bits:Bits<width[1]()> }
+             unitary fn f(q:Q<Packet>)->Q<Packet>{q}",
+            "main::f",
+            |reader, retained| {
+                assert!(retained.roots.is_empty());
+                assert!(retained.environment.naturals.is_empty());
+                reader.validate(retained)?;
+                let resolve::Target::Type(id) = reader
+                    .context
+                    .resolution
+                    .qualified_target("main::Packet")
+                    .unwrap()
+                else {
+                    unreachable!()
+                };
+                let Kind::Nominal(packet) = &reader.context.nominals[&id].kind else {
+                    unreachable!()
+                };
+                assert_eq!(packet.fields().nth(1), Some(&Ty::bits(Linear::constant(2))));
+                Ok(())
+            },
+        )
+        .unwrap();
+    }
+
     fn study<R>(
         source: &str,
         target: &str,
         test: impl FnOnce(&Reader<'_, '_>, &mut InterfaceNaturals) -> Result<R>,
     ) -> Result<R> {
         let module = crate::frontend::parser::parse_module(source).unwrap();
-        crate::frontend::check::program_with(
+        crate::frontend::check::program_with_sources(
             BTreeMap::from([("main", &module)]),
+            BTreeMap::from([("main", source)]),
             SourceLimits::finite(),
-            |resolution, interfaces, helpers, _, _, indices, budget| {
+            |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
                 let owner = resolution.qualified(target).unwrap();
                 let record = resolution.declaration(owner);
                 let declaration = &module.decls[record.ast_index];
@@ -934,6 +989,7 @@ mod tests {
                     indices,
                     helpers,
                     budget,
+                    nominals,
                 };
                 let mut retained = capture_interface_naturals_budgeted(context)?;
                 let reader = Reader {

@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.finite-declarations-first-history",
+  "version": 1,
+  "archive": {
+    "bytes": 638664,
+    "sha256": "92683f7179c3c8c270186a199b89bbfcfab3cb492c48ba548bdb68f94aa59387",
+    "expanded_file_bytes": 7227062
+  },
+  "scope": "First exact changed Rust sources, observer as data, full source-window report and actual compiler/test streams. Separate repair summary binds its full local report without duplicating inventories. A documentation-space expectation failure and subsequent lint failure are not passing validations. No archived commands are extracted or executed.",
+  "records": {
+    "first-source/src/frontend/ast.rs.txt": {
+      "bytes": 13051,
+      "sha256": "fc7c746a02c139e88db8704fc185f11f3d7dd51c9985adbce04804623ed3b1b9",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/check.rs.txt": {
+      "bytes": 39885,
+      "sha256": "d4f92fbe664a984b1e46f17252c1792d051581543182d3a793fa93f5933a9468",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/compile/mod.rs.txt": {
+      "bytes": 56996,
+      "sha256": "208721277b361d9053199ba23d07f41fcc86d869d5e315ba857b4ef499b52541",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/documentation.rs.txt": {
+      "bytes": 12854,
+      "sha256": "a1b0ee760c6011a728736d45bec2535ea9af98b50a46ac3e2a64e87068012be8",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/lexer.rs.txt": {
+      "bytes": 16563,
+      "sha256": "56bad2a21e457e4e78637307857d3668917297401c4d089ba5868ea0db9bb116",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/parser.rs.txt": {
+      "bytes": 88403,
+      "sha256": "0ffc0bbf5af1f16e90b603e855dc3265a4ae79d7314a63678fc2d11fe48d5921",
+      "original_mode": 420
+    },
+    "first-source/src/frontend/resolve.rs.txt": {
+      "bytes": 24633,
+      "sha256": "8a15c48a46bb2a21ad491e9fe54769bc2206f852cc4541bebf668e6a5d495218",
+      "original_mode": 420
+    },
+    "first-source/tests/documentation.rs.txt": {
+      "bytes": 13339,
+      "sha256": "2f6b0b53ca3e7858765c69ca17be895b945663217d0e93195b43ba9433eb7cd7",
+      "original_mode": 420
+    },
+    "first-source/tests/parser.rs.txt": {
+      "bytes": 42386,
+      "sha256": "5e3f2e1caefe472d1c2afd289461c082977f163a8e45f18daa3b1fc45aa6f100",
+      "original_mode": 420
+    },
+    "first-source/tests/source_collection.rs.txt": {
+      "bytes": 5735,
+      "sha256": "7ad3e7e4ca9b2651eae88fae6b34b3652119de1f1895d7060738c46039e11741",
+      "original_mode": 420
+    },
+    "first/integration.stderr": {
+      "bytes": 265,
+      "sha256": "41820b82060890c942a672e38fd6178e9308956ff21720e9adf2338fded95ba7",
+      "original_mode": 420
+    },
+    "first/integration.stdout": {
+      "bytes": 1597,
+      "sha256": "adca9322114df9e654ec7515ad4a3d5568e19ac7fa257ce4ef5ce4c1d51dd655",
+      "original_mode": 420
+    },
+    "first/observer.py.txt": {
+      "bytes": 3582,
+      "sha256": "de719d161847c5a798f4e39fd50542f785af46d0eb7a052120d0d7343f1ba082",
+      "original_mode": 420
+    },
+    "first/report.json": {
+      "bytes": 6816050,
+      "sha256": "0ca000a3b6f9e1f5e67acbd511d19f2c987be4002ef983791fa3cf8a4224b38e",
+      "original_mode": 420
+    },
+    "first/unit.stderr": {
+      "bytes": 200,
+      "sha256": "0af9ba9845507ffe983c6ebb786aeaaa22077f777ec934c525e3c1c35906e9d4",
+      "original_mode": 420
+    },
+    "first/unit.stdout": {
+      "bytes": 43893,
+      "sha256": "42e9c6d1469a53d17ad1277e49e8db2c094329ec8ead4492ae5ee4922f852119",
+      "original_mode": 420
+    },
+    "repair-01/documentation.rs.txt": {
+      "bytes": 13340,
+      "sha256": "362ac15a4b4c55cb0bcd98178cb695186681d205d26faca7379b968558dc9ef2",
+      "original_mode": 420
+    },
+    "repair-01/integration.stderr": {
+      "bytes": 375,
+      "sha256": "d11b67af5441c4488c80d79474a6b33506b54dbfc18484884b9e676c8689488b",
+      "original_mode": 420
+    },
+    "repair-01/integration.stdout": {
+      "bytes": 4240,
+      "sha256": "aab3575f79e4faa06f6f337940fac6e232d8478f821ecdf18aa2fd43ee7f835d",
+      "original_mode": 420
+    },
+    "repair-01/lint.stderr": {
+      "bytes": 723,
+      "sha256": "1e9a235727c1ce00fa486b1a7c50cfa63e1047c648417328ec21ad3c3e9c64a7",
+      "original_mode": 420
+    },
+    "repair-01/lint.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "repair-01/observation-summary.json": {
+      "bytes": 25040,
+      "sha256": "fdba49155bd5348f3e88dbd4d605e71cc7a192a1ead25c6e53f7a67f5b97191d",
+      "original_mode": 420
+    },
+    "repair-01/observer.py.txt": {
+      "bytes": 3912,
+      "sha256": "3014f45f609e2a0a36ff0bb10c6bc5e006791b058c987094406b36fada18f628",
+      "original_mode": 420
+    }
+  }
+}

@@ -11,6 +11,7 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 from check_verification_inventory import ROOT, check
@@ -31,7 +32,22 @@ def unique(pairs):
 def invoke(args, expected=0, timeout=60, env=None):
     # Bound retained output, even for a malfunctioning native executable.
     with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
-        result=subprocess.run([str(x) for x in args],cwd=ROOT,stdout=out,stderr=err,timeout=timeout,env=env,check=False)
+        command=[str(x) for x in args]
+        try:
+            result=subprocess.run(command,cwd=ROOT,stdout=out,stderr=err,timeout=timeout,env=env,check=False)
+        except subprocess.TimeoutExpired as failure:
+            # File-backed streams are not attached to TimeoutExpired by run().
+            # Preserve bounded diagnostics before the temporary files close;
+            # a timeout remains a failed observation with its original deadline.
+            out.seek(0); err.seek(0)
+            stdout,stderr=out.read(1_048_577),err.read(1_048_577)
+            failure.output, failure.stderr = stdout[:1_048_576], stderr[:1_048_576]
+            print(json.dumps(dict(event='process-timeout', command=command,
+                timeout_seconds=timeout, stdout=failure.output.decode(errors='replace'),
+                stderr=failure.stderr.decode(errors='replace'),
+                stdout_truncated=len(stdout)>1_048_576,
+                stderr_truncated=len(stderr)>1_048_576)), file=sys.stderr, flush=True)
+            raise
         out.seek(0); err.seek(0)
         stdout,stderr=out.read(1_048_577),err.read(1_048_577)
     if len(stdout)>1_048_576 or len(stderr)>1_048_576: raise ValueError('process output limit exceeded')

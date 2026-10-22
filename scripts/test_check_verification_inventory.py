@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import unittest
 
-from check_verification_inventory import ROOT, INVENTORY, check, check_language_primitives, digest, public_surface, variants
+from check_verification_inventory import ROOT, INVENTORY, check, check_language_primitives, digest, public_surface, test_names, variants
 
 
 class InventoryTests(unittest.TestCase):
@@ -179,6 +179,55 @@ class InventoryTests(unittest.TestCase):
     def test_boundary_must_include_independent_request_and_binding(self):
         self.data['boundaries'][0]['request']=''
         self.bad('empty boundary field')
+
+    def test_carrier_contract_cannot_claim_ast_runtime_or_inverse_authority(self):
+        for field, value in (
+            ('binding', 'Matching metadata proves the original source function'),
+            ('domain', 'Every enum supports ordinary runtime, matching, inverse and control'),
+            ('encoding', 'Old inspection success replies are sufficient'),
+            ('failure', 'An unavailable checker may fall back to a producer receipt'),
+        ):
+            self.data = copy.deepcopy(self.baseline)
+            next(row for row in self.data['boundaries'] if row['id'] == 'finite-carrier')[field] = value
+            with self.subTest(field=field):
+                self.bad('unreviewed finite-carrier boundary contract')
+
+    def test_carrier_public_source_requires_its_distinct_boundary(self):
+        self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'finite-carrier']
+        self.bad('missing finite-carrier public boundary')
+
+    def test_new_carrier_constructor_cannot_hide_behind_updated_source_identity(self):
+        path = self.root/'src/interchange/carrier.rs'
+        original = path.read_text()
+        try:
+            path.write_text(original.replace('pub enum Atom {', 'pub enum Atom { UncheckedNominal,'))
+            next(row for row in self.data['sources'] if row['path'] == 'src/interchange/carrier.rs')['sha256'] = digest(path)
+            self.bad('constructor coverage drift: Atom')
+        finally:
+            path.write_text(original)
+
+    def test_nominal_declaration_family_cannot_be_omitted(self):
+        self.data['enums'] = [row for row in self.data['enums'] if row['name'] != 'TypeDeclKind']
+        self.bad('unlisted public constructor family: TypeDeclKind')
+
+    def test_multiline_native_test_attributes_require_a_real_uncommented_test(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary)/'tests.rs'
+            path.write_text('''
+                // #[test] fn fake_comment() {}
+                const EXAMPLE: &str = "#[test] fn fake_literal() {}";
+                #[test]
+                #[cfg_attr(
+                    not(qleisli_native_tests),
+                    ignore = "requires native checker"
+                )]
+                fn actual_native() {}
+                #[cfg_attr(not(qleisli_native_tests), ignore = "native")]
+                #[test]
+                fn actual_reordered() {}
+                fn helper_without_test() {}
+            ''')
+            self.assertEqual(test_names(path), {'actual_native', 'actual_reordered'})
 
     def test_instrument_engineering_contract_cannot_promote_zero_or_claim_hardware(self):
         for field, value in (

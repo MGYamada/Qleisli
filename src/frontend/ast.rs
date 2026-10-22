@@ -33,8 +33,47 @@ pub struct Module {
     /// The leading module header disables only implicit ordinary prelude lookup.
     pub no_implicit_prelude: bool,
     pub uses: Vec<UseDecl>,
+    /// Ordinary nominal type declarations, retaining their original source order.
+    /// Parsing these does not establish finite-carrier or quantum contracts.
+    pub type_decls: Vec<TypeDecl>,
     pub decls: Vec<Decl>,
     pub span: Span,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct TypeDecl {
+    pub public: bool,
+    pub name: Ident,
+    pub kind: TypeDeclKind,
+    pub body_span: Span,
+    pub span: Span,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum TypeDeclKind {
+    Enum { variants: Vec<Ident> },
+    Record { fields: Vec<RecordField> },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordField {
+    pub public: bool,
+    pub name: Ident,
+    pub ty: Type,
+    pub span: Span,
+}
+
+impl TypeDecl {
+    pub fn member_spans(&self) -> impl Iterator<Item = Span> + '_ {
+        let (variants, fields): (&[Ident], &[RecordField]) = match &self.kind {
+            TypeDeclKind::Enum { variants } => (variants, &[]),
+            TypeDeclKind::Record { fields } => (&[], fields),
+        };
+        variants
+            .iter()
+            .map(|v| v.span)
+            .chain(fields.iter().map(|f| f.span))
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -171,6 +210,27 @@ pub struct Expr {
     pub span: Span,
 }
 
+/// Explicit ordinary constructors retain their original type/member occurrences.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct VariantValue {
+    pub type_name: Ident,
+    pub variant: Ident,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordValue<E> {
+    pub type_name: Ident,
+    /// Written evaluation order; declaration order is a separate checked fact.
+    pub fields: Vec<ValueField<E>>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ValueField<E> {
+    pub name: Ident,
+    pub value: E,
+    pub span: Span,
+}
+
 /// Diagnostic syntax only. Common checking always refuses this expression;
 /// neither its parameters nor its body describe an executable callable value.
 /// Optional annotations are parsed for bounded syntax only, not type facts;
@@ -183,6 +243,12 @@ pub struct UnsupportedClosure {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    Variant(Box<VariantValue>),
+    Record(Box<RecordValue<Expr>>),
+    Field {
+        receiver: Box<Expr>,
+        field: Ident,
+    },
     /// Retain lexical identities for capture diagnostics, never for lowering.
     UnsupportedClosure(Box<UnsupportedClosure>),
     AccessCall {
@@ -408,11 +474,20 @@ pub struct BasisExpr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BasisExprKind {
+    Variant(Box<VariantValue>),
+    Record(Box<RecordValue<BasisExpr>>),
+    Field {
+        receiver: Box<BasisExpr>,
+        field: Ident,
+    },
     Name(Ident),
     Bit(bool),
     Unit,
     Tuple(Vec<BasisExpr>),
-    Call { callee: Ident, args: Vec<BasisExpr> },
+    Call {
+        callee: Ident,
+        args: Vec<BasisExpr>,
+    },
     Not(Box<BasisExpr>),
     Xor(Box<BasisExpr>, Box<BasisExpr>),
     And(Box<BasisExpr>, Box<BasisExpr>),

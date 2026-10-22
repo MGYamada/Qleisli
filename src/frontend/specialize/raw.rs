@@ -13,7 +13,9 @@ use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, RawProgram, Single
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
+mod carrier;
 mod circuit;
+pub use carrier::CheckedSourceCarrier;
 pub(super) mod contracts;
 mod meanings;
 mod preservation;
@@ -573,13 +575,24 @@ fn supported(ty: &SourceType) -> bool {
         Kind::Unit | Kind::Bit | Kind::Bits(_) => true,
         Kind::Q(basis) => basis_supported(basis),
         Kind::Tuple(fields) => fields.iter().all(supported),
-        Kind::Parameter(_) => false,
+        Kind::Parameter(_) | Kind::Nominal(_) => false,
     }
 }
 fn basis_supported(basis: &SourceType) -> bool {
     match &basis.kind {
         Kind::Unit | Kind::Bit | Kind::Bits(_) => true,
         Kind::Tuple(fields) => fields.iter().all(basis_supported),
+        _ => false,
+    }
+}
+fn carrier_supported(ty: &SourceType) -> bool {
+    match &ty.kind {
+        Kind::Unit => true,
+        Kind::Q(basis) => {
+            // Type storage starts at one; native prefix depth starts at zero.
+            basis.storage_size(128, 33).is_some() && basis.basis_width().is_some_and(|n| n <= 6)
+        }
+        Kind::Tuple(fields) => fields.iter().all(carrier_supported),
         _ => false,
     }
 }
@@ -608,7 +621,9 @@ fn atom_count(ty: &SourceType) -> usize {
         Kind::Unit => 0,
         Kind::Bit | Kind::Bits(_) | Kind::Q(_) => 1,
         Kind::Tuple(fields) => fields.iter().map(atom_count).sum(),
-        Kind::Parameter(_) => unreachable!("preflighted closed finite source type"),
+        Kind::Parameter(_) | Kind::Nominal(_) => {
+            unreachable!("preflighted legacy closed finite source type")
+        }
     }
 }
 fn effect(source: &ElaboratedProgram, subject: usize) -> Effect {
@@ -636,10 +651,11 @@ fn eighths(ns: &[u32]) -> Option<usize> {
     Some((j * 8 / denominator) as usize)
 }
 // Capability selection precedes every emission and native decision.
-fn check_profile(
+fn check_profile_for(
     source: &ElaboratedProgram,
     selected: Option<&BTreeSet<usize>>,
     checking_control: bool,
+    carrier: bool,
 ) -> Result<()> {
     if !checking_control {
         source.require_control_evidence()?;
@@ -649,7 +665,11 @@ fn check_profile(
             continue;
         }
         for value in definition.inputs().iter().chain([definition.output()]) {
-            if !supported(value.ty()) {
+            if !(if carrier {
+                carrier_supported(value.ty())
+            } else {
+                supported(value.ty())
+            }) {
                 return Err(located(
                     source,
                     id,
@@ -664,12 +684,13 @@ fn check_profile(
             } else {
                 step.check_access_contract()?;
             }
-            if step
-                .inputs()
-                .iter()
-                .chain([step.output()])
-                .any(|v| !supported(v.ty()))
-            {
+            if step.inputs().iter().chain([step.output()]).any(|v| {
+                !(if carrier {
+                    carrier_supported(v.ty())
+                } else {
+                    supported(v.ty())
+                })
+            }) {
                 return Err(located(
                     source,
                     id,
@@ -2221,7 +2242,18 @@ fn lower_inner(
     binding: Option<(OperationSite, usize)>,
     checking: Option<(&native::Kernel, &mut Budget, &[CheckedMeaning])>,
 ) -> Result<RawSourceProposal> {
-    check_profile(source, selected, checking.is_some())?;
+    lower_inner_profile(source, subject, selected, binding, checking, None)
+}
+
+fn lower_inner_profile(
+    source: &ElaboratedProgram,
+    subject: usize,
+    selected: Option<&BTreeSet<usize>>,
+    binding: Option<(OperationSite, usize)>,
+    checking: Option<(&native::Kernel, &mut Budget, &[CheckedMeaning])>,
+    carrier: Option<(&crate::contract::exact::Matrix, &mut Budget)>,
+) -> Result<RawSourceProposal> {
+    check_profile_for(source, selected, checking.is_some(), carrier.is_some())?;
     let root = &source.definitions()[subject];
     let mut emitter = Emitter {
         source,
@@ -2271,6 +2303,7 @@ fn lower_inner(
         emitter.invoke(subject, arguments, 0, root.span())?
     };
     let mut quantum_outputs = Vec::new();
+    let mut output_ports = Vec::new();
     let mut classical_outputs = Vec::new();
     let mut retained = BTreeSet::new();
     for atom in outputs {
@@ -2291,6 +2324,13 @@ fn lower_inner(
                     )
                 })?;
                 quantum_outputs.push(register.token);
+                output_ports.push(QuantumPort {
+                    token: register.token,
+                    wires: register.wires.clone(),
+                    shape: BasisShape {
+                        bits: register.wires.len() as u8,
+                    },
+                });
             }
         }
     }
@@ -2310,7 +2350,7 @@ fn lower_inner(
             .as_ref()
             .map_or_else(|| effect(source, subject), |(_, effect, _)| *effect),
     };
-    if checking.is_none() {
+    if checking.is_none() && carrier.is_none() {
         preservation::validate_subject(source, subject, operation, &raw)?;
     }
     // A finite request binds the actual artifact's declared type as well as
@@ -2335,8 +2375,12 @@ fn lower_inner(
         input: basis.clone(),
         output: basis,
     });
-    let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
-        .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
+    let proposal = if let Some((logical, budget)) = carrier {
+        carrier::proposal(source, &raw, &output_ports, logical, budget)?
+    } else {
+        native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
+            .map_err(|error| Error::new("transport", root.span(), error.to_string()))?
+    };
     let mut instrument_calls = Vec::new();
     if let Some((kernel, budget, meanings)) = checking {
         // These checks bind the original source roles to decoded, freshly

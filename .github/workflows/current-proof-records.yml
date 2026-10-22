@@ -1,0 +1,81 @@
+name: Produce reviewable current proof records
+
+on:
+  push:
+    branches: [codex/beta-finite-adts]
+    paths:
+      - .github/workflows/current-proof-records.yml
+      - scripts/refresh_current_proof_records.py
+      - scripts/check_schema_registry.py
+      - lean/**
+      - lean-kernel/**
+      - src/**
+      - scripts/check_verification_inventory.py
+      - scripts/check_production_coverage.py
+      - tests/fixtures/verification_v022/inventory.json
+      - tests/fixtures/verification_v029/coverage.json
+  workflow_dispatch:
+
+# This bootstrap artifact producer is intentionally independent of changes and
+# stale source-integrity checks. It is not an ordinary CI or release receipt.
+permissions:
+  contents: read
+
+concurrency:
+  group: current-proof-records-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  produce-review-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SOURCE_COMMIT: ${{ github.sha }}
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact clean head and cumulative size budgets before builds
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test -z "$(git status --porcelain)"
+          python3 scripts/check_pr_size.py --report "$RUNNER_TEMP/proof-size.json"
+          python3 scripts/check_fixture_budget.py --hosted --report "$RUNNER_TEMP/proof-fixtures.json"
+          python3 scripts/check_fixture_references.py --hosted
+          python3 -B - <<'PY'
+          import os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          import refresh_current_proof_records as maintenance
+          report = maintenance.cumulative(os.environ['SOURCE_COMMIT'])
+          (Path(os.environ['RUNNER_TEMP']) / 'proof-cumulative.json').write_bytes(maintenance.encoded(report))
+          PY
+          python3 -B scripts/test_refresh_current_proof_records.py
+      - name: Install the pinned native toolchain without a duplicate build
+        uses: ./.github/actions/native-runtime
+        with:
+          prepare: 'false'
+      - name: Prepare the pinned mathematical package and its existing cache
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'false'
+      - name: Execute the fixed fresh proof and review-output plan
+        run: python3 -B scripts/refresh_current_proof_records.py --source-commit "$SOURCE_COMMIT" --output "$RUNNER_TEMP/current-proof-records"
+      - name: Retain actual proof records and proposed metadata for human review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: current-proof-records-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/proof-size.json
+            ${{ runner.temp }}/proof-fixtures.json
+            ${{ runner.temp }}/proof-cumulative.json
+            ${{ runner.temp }}/current-proof-records/
+          if-no-files-found: error

@@ -1,5 +1,6 @@
 import QleisliKernel
 import QleisliKernel.Qirf.ControlAccess
+import Protocol.NativeContext.Bindings
 
 /-! Pure kernel regressions. Copyright 2026 Qleisli Project Contributors. Apache-2.0. -/
 
@@ -927,3 +928,607 @@ example : ((Qirf.InstrumentContract.check request.actual request.actualOrder req
     request.expectedOrder request.actualSignature request.expectedSignature request.identity).run
     2000000).1.isOk = false := by decide +kernel
 end EngineeringInstrumentTests
+
+
+/-! Small executable carrier/encoding regressions for #64. These do not check
+source syntax, original-body equations, qmatch, protocol integration or ownership.
+The largest generated matrix is 8x6 (three physical bits), below the six-bit
+finite profile; rejected huge widths never enumerate a code.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace FiniteCarrierExamples
+open QleisliKernel.Semantics.FiniteCarrier QleisliKernel.Semantics.Exact
+
+deriving instance DecidableEq for Except
+
+def origin : Origin := ⟨"labels","Tri","pub enum Tri { A, B, C }"⟩
+def tri : Basis := [.enumeration origin ["A","B","C"]]
+def four : Basis := [.enumeration ⟨"labels","Four","pub enum Four { A, B, C, D }"⟩ ["A","B","C","D"]]
+def emptyRecord : Basis := [.record ⟨"labels","Empty","pub struct Empty {}"⟩ []]
+def one : Basis := [.enumeration ⟨"labels","One","pub enum One { Only }"⟩ ["Only"]]
+
+def value {α : Type} (action : QleisliKernel.Finite.WorkM α) := (action.run 1000000).1
+
+example : layout tri = some ⟨2,[0,1,2]⟩ := by decide
+example : layout four = some ⟨2,[0,1,2,3]⟩ := by decide
+example : dimension tri = some 3 ∧ dimension four = some 4 := by decide
+
+def embedding : Matrix := ⟨4,3,([1,0,0, 0,1,0, 0,0,1, 0,0,0] : List Int).map fun n =>
+  ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+
+example : value (QleisliKernel.FiniteCarrier.code tri) = .ok embedding := by decide
+example : ((QleisliKernel.Exact.Matrix.isometryWork embedding).run 1000000).1 = .ok true := by decide
+
+-- Complete nominal trees stay distinct even when physical matrices coincide.
+def reordered : Basis := [.enumeration origin ["B","A","C"]]
+example : tri ≠ reordered := by decide
+example : layout tri = layout reordered := by decide
+example : one ≠ [.unit] ∧ one ≠ [.bits 0] ∧ one ≠ emptyRecord := by decide
+example : layout one = some singleton ∧ layout emptyRecord = some singleton := by decide
+example : value (QleisliKernel.FiniteCarrier.code emptyRecord) = .ok ⟨1,1,[Scalar.one]⟩ := by decide
+
+def record : Basis :=
+  .record ⟨"labels","Tagged","pub struct Tagged { tag: Tri, flag: Bit }"⟩ ["tag","flag"] :: tri ++ [.bit]
+def reversedRecord : Basis :=
+  [.record ⟨"labels","Reversed","pub struct Reversed { flag: Bit, tag: Tri }"⟩ ["flag","tag"],.bit] ++ tri
+
+example : layout record = some ⟨3,[0,1,2,4,5,6]⟩ := by decide
+example : dimension record = some 6 := by decide
+example : layout reversedRecord = some ⟨3,[0,1,2,3,4,5]⟩ := by decide
+example : layout record ≠ layout reversedRecord := by decide
+example : value (QleisliKernel.FiniteCarrier.code record) =
+    .ok (encoding ⟨3,[0,1,2,4,5,6]⟩) := by decide +kernel
+
+example : value (QleisliKernel.FiniteCarrier.read [.enumeration origin []]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.enumeration origin ["A","A"]]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.record origin ["a","b"],.bit]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.tuple 1,.bit]) = .error .invalid := by decide
+example : value (QleisliKernel.FiniteCarrier.read [.bits 100000]) = .error .limit := by decide
+example : ((QleisliKernel.FiniteCarrier.read tri).run 0).1 =
+    .error (.arithmetic .workLimit) := by decide
+
+#print axioms QleisliKernel.FiniteCarrier.read_reference
+#print axioms QleisliKernel.FiniteCarrier.code_conditions
+
+end FiniteCarrierExamples
+
+/-! Original-body equations on proper finite code spaces; no native or source
+API is enabled. Largest new physical matrix: 4x4 (two bits).
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace CarrierBodyExamples
+open QleisliKernel QleisliKernel.Semantics.Exact
+open QleisliKernel.Semantics.CarrierInterface QleisliKernel.Semantics.Finite
+open QleisliKernel.Semantics.Observation
+
+private def matrix (rows cols : Nat) (values : List Int) : Matrix :=
+  ⟨rows,cols,values.map fun n => ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+private def cycle : Matrix := matrix 3 3 [0,0,1, 1,0,0, 0,1,0]
+private def identity3 : Matrix := matrix 3 3 [1,0,0, 0,1,0, 0,0,1]
+private def input : Owner := ⟨⟨0,[7,19],2⟩,FiniteCarrierExamples.tri⟩
+private def output : Owner := ⟨⟨1,[7,19],2⟩,FiniteCarrierExamples.tri⟩
+private def interface : Interface := ⟨[input],[output],.unitary⟩
+private def body (steps : List Step) : Program :=
+  ⟨[input.port],[],[.pure (.applyUnitary 0 1 steps)],[1],[],.unitary⟩
+private def step (axes permutation phases : List Nat) : List Step :=
+  [⟨[],.monomial axes permutation phases⟩]
+private def cycleSteps : List Step := step [0,1] [1,2,0,3] [0,0,0,0]
+private def artifact (steps : List Step) : Qirf.Artifact :=
+  ⟨#[body steps],#[],#[],0,none⟩
+private def accepts (data : Qirf.Artifact) (attached required : Interface)
+    (logical : Matrix) (order : Array Nat := #[0]) (work : Nat := 2000000) : Bool :=
+  ((Qirf.Carrier.check data order attached required logical).run work).1.isOk
+
+example : accepts (artifact cycleSteps) interface interface cycle = true := by decide +kernel
+example : accepts (artifact []) interface interface identity3 = true := by decide +kernel
+-- Caller-visible Isometry remains Isometry after checking a square pure map.
+example : ((Qirf.Carrier.check (artifact []) #[0]
+    {interface with publicEffect := .iso} {interface with publicEffect := .iso} identity3).run 2000000).1.map
+    (fun checked => checked.interface.publicEffect) = .ok .iso := by decide +kernel
+-- A physically valid four-cycle leaks the third logical basis state out of
+-- the three-state code. Equal width and whole-space unitarity do not suffice.
+example : accepts (artifact (step [0,1] [1,2,3,0] [0,0,0,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact (step [0,1] [1,2,0,3] [0,0,1,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact (step [1,0] [1,2,0,3] [0,0,0,0]))
+    interface interface cycle = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface identity3 = false := by decide +kernel
+
+private def threeToFour : Interface :=
+  {interface with outputs := [⟨output.port,FiniteCarrierExamples.four⟩],publicEffect := .iso}
+example : accepts (artifact []) threeToFour threeToFour FiniteCarrierExamples.embedding = true :=
+  by decide +kernel
+-- The same physical 4x4 identity is not a logical 3->4 Unitary operation.
+example : accepts (artifact []) {threeToFour with publicEffect := .unitary}
+    {threeToFour with publicEffect := .unitary} FiniteCarrierExamples.embedding = false :=
+  by decide +kernel
+example : accepts (artifact []) threeToFour interface identity3 = false := by decide +kernel
+-- Same code matrix, different original variant order: stale interface refuses.
+example : accepts (artifact cycleSteps) interface
+    {interface with inputs := [⟨input.port,FiniteCarrierExamples.reordered⟩]} cycle = false :=
+  by decide +kernel
+example : accepts (artifact cycleSteps) interface
+    {interface with outputs := [⟨⟨1,[19,7],2⟩,FiniteCarrierExamples.tri⟩]} cycle = false :=
+  by decide +kernel
+example : accepts (artifact cycleSteps) {interface with publicEffect := .observe}
+    {interface with publicEffect := .observe} cycle = false := by decide +kernel
+
+-- Fresh dependency checking retains original implementations/specifications.
+private def dependency (implementation : List Step) : Qirf.Artifact :=
+  ⟨#[body implementation,body cycleSteps,body [⟨[],.contract [0,1] 0 false⟩]],
+    #[⟨[.bits 2],0,.circuit 1,"implementation","specification",[]⟩],#[],2,none⟩
+example : accepts (dependency cycleSteps) interface interface cycle #[0,1,3,2] = true :=
+  by decide +kernel
+example : accepts (dependency []) interface interface cycle #[0,1,3,2] = false :=
+  by decide +kernel
+example : accepts (dependency cycleSteps) interface interface cycle #[0,1,2,3] = false :=
+  by decide +kernel
+
+-- An empty record remains an owner despite contributing no matrix axes. Its
+-- scalar phase acts on the complete live frame and must not disappear.
+private def empty : Owner := ⟨⟨0,[],0⟩,FiniteCarrierExamples.emptyRecord⟩
+private def bit : Owner := ⟨⟨1,[19],1⟩,[.bit]⟩
+private def zeroInterface : Interface := ⟨[empty,bit],[{empty with port := ⟨2,[],0⟩},bit],.unitary⟩
+private def scalarBody : Program :=
+  ⟨[empty.port,bit.port],[],[.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+    [2,1],[],.unitary⟩
+private def scalar : Qirf.Artifact := ⟨#[scalarBody],#[],#[],0,none⟩
+private def minusIdentity : Matrix := matrix 2 2 [-1,0,0,-1]
+example : accepts scalar zeroInterface zeroInterface minusIdentity = true := by decide +kernel
+example : accepts scalar zeroInterface zeroInterface (matrix 2 2 [1,0,0,1]) = false :=
+  by decide +kernel
+private def dropped : Interface := ⟨[bit],[bit],.unitary⟩
+example : accepts scalar dropped dropped minusIdentity = false := by decide +kernel
+example : accepts scalar zeroInterface
+    {zeroInterface with inputs := [⟨empty.port,[.unit]⟩,bit]} minusIdentity = false :=
+  by decide +kernel
+example : accepts scalar {zeroInterface with outputs := [bit,⟨⟨2,[],0⟩,empty.basis⟩]}
+    {zeroInterface with outputs := [bit,⟨⟨2,[],0⟩,empty.basis⟩]} minusIdentity = false :=
+  by decide +kernel
+
+-- Hidden observation may not acquire a pure carrier label, whether the raw
+-- label is honest or falsely Unit/Isometry. No public result exposes it.
+private def observing (effect : Semantics.Raw.Effect) : Qirf.Artifact :=
+  ⟨#[⟨[bit.port],[],[.discard 1,.pure (.init0 2 23)],[2],[],effect⟩],#[],#[],0,none⟩
+private def observingInterface : Interface := ⟨[bit],[⟨⟨2,[23],1⟩,[.bit]⟩],.iso⟩
+example : accepts (observing .observe) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (observing .unitary) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (observing .iso) observingInterface observingInterface
+    (matrix 2 2 [1,0,0,1]) = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface cycle #[] = false := by decide +kernel
+example : accepts (artifact cycleSteps) interface interface cycle #[0] 0 = false := by decide +kernel
+-- Width metadata cannot substitute for the complete original wire list.
+example : ((Qirf.Carrier.ownerCode [{input with port := ⟨0,[7],2⟩}]).run 2000000).1.isOk = false :=
+  by decide +kernel
+-- Concatenation would form a valid pair, but the first owner's incomplete
+-- tree may not steal the second owner's Unit node to finish its own shape.
+private def stolen : List Owner :=
+  [⟨⟨0,[0],1⟩,[.pair,.bit]⟩,⟨⟨1,[1],1⟩,[.unit,.bit]⟩]
+example : Semantics.FiniteCarrier.layout (forest stolen) = some ⟨2,[0,1,2,3]⟩ := by decide
+example : ((QleisliKernel.FiniteCarrier.code (forest stolen)).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Qirf.Carrier.ownerCode stolen).run 2000000).1.isOk = false :=
+  by decide +kernel
+
+#print axioms Qirf.Carrier.ownerCode_conditions
+#print axioms Qirf.Carrier.readOwners_conditions
+#print axioms Qirf.Carrier.check_postcondition
+end CarrierBodyExamples
+
+namespace CarrierSourceExamples
+open Semantics.FiniteCarrier
+
+def text := "// enum Tri { Wrong }\npub enum Tri { A, B, C, }\n/* struct Box { wrong: Bit } */\npub struct Box { pub tag: Tri, flag: Bit }\nstruct Empty {}\nclassical fn f(x: Bit) -> Bit { x }"
+def sources : SourceTypes.Sources := #[("labels",text)]
+def tri : Basis := [.enumeration ⟨"labels","Tri",text⟩ ["A","B","C"]]
+def boxType : Basis := .record ⟨"labels","Box",text⟩ ["tag","flag"] :: tri ++ [.bit]
+def value {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+def refused {α : Type} (action : Finite.WorkM α) := !(value action).isOk
+
+example : value (SourceTypes.check sources tri) = .ok () := by decide +kernel
+example : value (SourceTypes.check sources boxType) = .ok () := by decide +kernel
+example : value (SourceTypes.check sources [.record ⟨"labels","Empty",text⟩ []]) = .ok () := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text⟩ ["A","C","B"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text⟩ ["A","B","C","D"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"other","Tri",text⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","f",text⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources [.enumeration ⟨"labels","Tri",text ++ " "⟩ ["A","B","C"]]) := by decide +kernel
+example : refused (SourceTypes.check sources (.record ⟨"labels","Box",text⟩ ["flag","tag"] :: [.bit] ++ tri)) := by decide +kernel
+example : refused (SourceTypes.check sources (.record ⟨"labels","Box",text⟩ ["tag","flag"] :: [.bits 2,.bit])) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",text),("labels",text)] tri) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",text ++ "\nenum Tri { D }")] tri) := by decide +kernel
+
+def nested := "pub struct Pair { flags: (Bit, Bits<0>), tag: labels::Tri }"
+def nestedType : Basis := [.record ⟨"main","Pair",nested⟩ ["flags","tag"],.pair,.bit,.bits 0] ++ tri
+example : value (SourceTypes.check (sources.push ("main",nested)) nestedType) = .ok () := by decide +kernel
+example : value (SourceTypes.literalWidth "6") = .ok 6 := by decide
+example : value (SourceTypes.literalWidth "7") = .error .limit := by decide
+example : value (SourceTypes.literalWidth "00") = .error .request := by decide
+example : value (SourceTypes.literalWidth "0006") = .error .request := by decide
+example : value (SourceTypes.literalWidth "0007") = .error .request := by decide
+example : value (SourceTypes.literalWidth "0x") = .error .request := by decide
+
+def noncanonicalDecimal := "struct Word { bits: Bits<02> }"
+example : refused (SourceTypes.check #[("main",noncanonicalDecimal)]
+    [.record ⟨"main","Word",noncanonicalDecimal⟩ ["bits"],.bits 2]) := by decide +kernel
+def recursive := "struct Loop { again: Loop }"
+example : refused (SourceTypes.check #[("main",recursive)]
+    [.record ⟨"main","Loop",recursive⟩ ["again"],.unit]) := by decide +kernel
+def imported := "use labels::{Tri}; struct Box { tag: Tri }"
+example : value (SourceTypes.check (sources.push ("main",imported))
+    (.record ⟨"main","Box",imported⟩ ["tag"] :: tri)) = .ok () := by decide +kernel
+example : (SourceTypes.lex "/* enum X {} /* nested */ */ enum Y { A }").isOk := by decide
+example : !(SourceTypes.lex "/* unfinished").isOk := by decide
+example : !(SourceTypes.lex "enum X { A }\r").isOk := by decide
+example : (SourceTypes.lex "enum X { A }\r\n").isOk := by decide
+example : (SourceTypes.lex "// enum X { A }\nenum Y { B }") =
+    .ok ["enum","Y","{","B","}"] := by decide
+
+-- Imported spellings must reconstruct the original declaration, not a facade.
+def facade := "pub use labels::{Tri};"
+def qualifiedFacade := "struct Box { tag: bridge::Tri }"
+def importedFacade := "use bridge::Tri; struct Box { tag: Tri }"
+def aliasSources : SourceTypes.Sources := sources.push ("bridge",facade)
+def box (source : String) (child : Basis := tri) : Basis :=
+  .record ⟨"main","Box",source⟩ ["tag"] :: child
+example : value (SourceTypes.check (aliasSources.push ("main",qualifiedFacade))
+    (box qualifiedFacade)) = .ok () := by decide +kernel
+example : value (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade)) = .ok () := by decide +kernel
+example : refused (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade [.enumeration ⟨"bridge","Tri",facade⟩ ["A","B","C"]])) := by decide +kernel
+example : refused (SourceTypes.check (aliasSources.push ("main",importedFacade))
+    (box importedFacade [.enumeration ⟨"labels","Tri",text⟩ ["C","B","A"]])) := by decide +kernel
+example : refused (SourceTypes.check (sources.push ("main",importedFacade))
+    (box importedFacade)) := by decide +kernel
+-- A private import is visible unqualified in its own module, never a member.
+def privateFacade := "use labels::Tri; struct Box { tag: Tri }"
+example : value (SourceTypes.check (sources.push ("main",privateFacade))
+    (box privateFacade)) = .ok () := by decide +kernel
+example : refused (SourceTypes.check ((sources.push ("bridge",privateFacade)).push ("main",qualifiedFacade))
+    (box qualifiedFacade)) := by decide +kernel
+def selfQualified := "use labels::Tri; struct Box { tag: main::Tri }"
+example : refused (SourceTypes.check (sources.push ("main",selfQualified))
+    (box selfQualified)) := by decide +kernel
+-- Canonical lookup has no category, visibility or same-width fallback.
+def privateType := "enum Tri { A, B, C }"
+example : refused (SourceTypes.check #[("labels",privateType),("main",imported)]
+    (box imported [.enumeration ⟨"labels","Tri",privateType⟩ ["A","B","C"]])) := by decide +kernel
+example : refused (SourceTypes.check #[("labels",privateType),("bridge",facade),("main",importedFacade)]
+    (box importedFacade [.enumeration ⟨"labels","Tri",privateType⟩ ["A","B","C"]])) := by decide +kernel
+-- Public self-reexports cannot promote even an otherwise same-module private type.
+def selfPromoted := "enum Tri { A, B, C } pub use labels::Tri;"
+example : refused (SourceTypes.check #[("labels",selfPromoted),("main",imported)]
+    (box imported [.enumeration ⟨"labels","Tri",selfPromoted⟩ ["A","B","C"]])) := by decide +kernel
+def wrongCategory := "pub classical fn Tri(x: Bit) -> Bit { x }"
+example : refused (SourceTypes.check #[("labels",wrongCategory),("main",imported)]
+    (box imported)) := by decide +kernel
+def collision := "use labels::Tri; enum Tri { A, B, C } struct Box { tag: Tri }"
+example : refused (SourceTypes.check (sources.push ("main",collision))
+    (box collision)) := by decide +kernel
+def duplicate := "use labels::{Tri,Tri}; struct Box { tag: Tri }"
+example : refused (SourceTypes.check (sources.push ("main",duplicate))
+    (box duplicate)) := by decide +kernel
+def cycleA := "pub use bridge::Tri;"
+def cycleB := "pub use labels::Tri;"
+example : refused (SourceTypes.check #[("labels",cycleA),("bridge",cycleB),("main",imported)]
+    (box imported)) := by decide +kernel
+-- Module qualification never treats a local declaration as a module alias.
+def moduleShadow := "enum bridge { Only } struct Box { tag: bridge::Tri }"
+example : value (SourceTypes.check (aliasSources.push ("main",moduleShadow))
+    (box moduleShadow)) = .ok () := by decide +kernel
+-- Nested/grouped paths retain source order and contextual std module keywords.
+def importPaths (text : String) := SourceTypes.lex text >>= SourceTypes.Imports.read
+example : importPaths "a::{b::{Tri,Four,},One},c::Empty" = .error "unexpected import separator" := by decide
+example : importPaths "{a::{b::{Tri,Four,},One},c::Empty,}" =
+    .ok [["Tri","b","a"],["Four","b","a"],["One","a"],["Empty","c"]] := by decide
+example : importPaths "std::{basis::Tri,observe::Tri,classical::Tri}" =
+    .ok [["Tri","basis","std"],["Tri","observe","std"],["Tri","classical","std"]] := by decide
+example : !(importPaths "a::{}").isOk := by decide
+example : !(importPaths "a::{Tri,,Four}").isOk := by decide
+example : !(importPaths "a::{Tri,::Four}").isOk := by decide
+example : !(importPaths "a::Tri as Other").isOk := by decide
+example : !(importPaths "a::*").isOk := by decide
+example : !(importPaths "::a::Tri").isOk := by decide
+example : !(importPaths "a::_").isOk := by decide
+example : !(importPaths "a::basis::Tri").isOk := by decide
+example : !(SourceTypes.Imports.read ((List.replicate 65 "{") ++ ["a","::","Tri"] ++
+    List.replicate 65 "}")).isOk := by decide
+
+end CarrierSourceExamples
+
+
+namespace CarrierSourceCoverageExamples
+set_option maxRecDepth 2048
+set_option maxHeartbeats 2000000
+set_option Elab.async false
+
+open Semantics.FiniteCarrier Semantics.CarrierInterface Semantics.Exact
+
+private def original := "pub enum Tri { A, B, C }"
+private def basis : Basis := [.enumeration ⟨"labels","Tri",original⟩ ["A","B","C"]]
+private def owner : Owner := ⟨⟨0,[0,1],2⟩,basis⟩
+private def interface : Interface := ⟨[owner],[owner],.unitary⟩
+private def identity : Matrix := ⟨3,3,[1,0,0,0,1,0,0,0,1].map fun n =>
+  ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+-- The actual root has no circuit evidence. Its declarations are consumed only
+-- by the typed source reader, not by an invented self-comparison dependency.
+private def artifact (rows : Array (String × String)) : Qirf.Artifact :=
+  ⟨#[⟨[owner.port],[],[],[0],[],.unitary⟩],#[],rows,0,none⟩
+private def data := artifact #[("labels",original)]
+private def rows := Qirf.Carrier.sourceRows interface interface
+private def request : Protocol.Carrier.Request := ⟨interface,interface,identity⟩
+private def typed (value : Qirf.Artifact) (required : Protocol.Carrier.Request := request) := do
+  Protocol.Carrier.checkSources value.sources required
+  Qirf.Carrier.check value #[0] required.attached required.required required.logical
+private def accepts {α : Type} (action : Finite.WorkM α) : Bool :=
+  (action.run 2000000).1.isOk
+
+-- Source-coverage rejection tests use the actual checker postconditions.
+-- The carrier proof follows the retained root check; the typed proof passes
+-- the source check's actual remaining work to the carrier check.
+private theorem ordinary_refuses (value : Qirf.Artifact) (order : Array Nat)
+    (coverage : Qirf.Validity.sourcesUsed value = false) (work : Nat) :
+    ((Qirf.Validity.checkRoot value order).run work).1.isOk = false := by
+  cases checked : (Qirf.Validity.checkRoot value order).run work with
+  | mk result left =>
+    cases result with
+    | error error => rfl
+    | ok root =>
+      have facts := Qirf.Validity.checkRoot_postcondition value order root work left checked
+      have impossible : (true : Bool) = false := facts.sources.symm.trans coverage
+      cases impossible
+
+private theorem carrier_refuses (value : Qirf.Artifact) (order : Array Nat)
+    (attached required : Interface) (logical : Matrix)
+    (coverage : Qirf.Validity.sourcesUsedWithSources value
+      (Qirf.Carrier.sourceRows attached required) = false) (work : Nat) :
+    ((Qirf.Carrier.check value order attached required logical).run work).1.isOk = false := by
+  cases checked : (Qirf.Carrier.check value order attached required logical).run work with
+  | mk result left =>
+    cases result with
+    | error error => rfl
+    | ok accepted =>
+      have facts := Qirf.Carrier.check_postcondition value order attached required logical
+        accepted work left checked
+      obtain ⟨beforeRoot,afterRoot,root⟩ := facts.root
+      obtain ⟨afterCharges,checkedRoot⟩ := Qirf.Carrier.sourceRoot_result value order
+        attached required accepted.root beforeRoot afterRoot root
+      have actual := Qirf.Validity.checkRootWithSources_postcondition value order
+        (Qirf.Carrier.sourceRows attached required) accepted.root afterCharges afterRoot checkedRoot
+      have impossible : (true : Bool) = false := actual.sources.symm.trans coverage
+      cases impossible
+
+private theorem typed_refuses (value : Qirf.Artifact) (required : Protocol.Carrier.Request)
+    (refuses : ∀ work, ((Qirf.Carrier.check value #[0] required.attached
+      required.required required.logical).run work).1.isOk = false) (work : Nat) :
+    ((typed value required).run work).1.isOk = false := by
+  change ((Protocol.Carrier.checkSources value.sources required >>=
+    fun _ => Qirf.Carrier.check value #[0] required.attached required.required
+      required.logical).run work).1.isOk = false
+  rw [Finite.bind_run]
+  cases sourceStep : (Protocol.Carrier.checkSources value.sources required).run work with
+  | mk result remaining =>
+    cases result with
+    | error error => rfl
+    | ok sourceValue => exact refuses remaining
+
+example : Qirf.Validity.sourcesUsed data = false := by decide_cbv
+example : Qirf.Validity.sourcesUsedWithSources data rows = true := by decide_cbv
+example : accepts (Qirf.Validity.checkRoot data #[0]) = false := by
+  change ((Qirf.Validity.checkRoot data #[0]).run 2000000).1.isOk = false
+  exact ordinary_refuses data #[0] (by decide_cbv) 2000000
+example : accepts (typed data) = true := by decide_cbv
+-- The policy compares complete module/text rows, not labels or width alone.
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("other",original)]) rows = false := by decide_cbv
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("labels","pub enum Tri { A, C, B }")]) rows = false := by decide_cbv
+example : accepts (typed (artifact #[("other",original)])) = false := by decide_cbv
+example : accepts (typed (artifact #[("",original)])) = false := by decide_cbv
+example : accepts (Qirf.Validity.checkRootWithSources
+    (artifact #[("",original)]) #[0] [("",original)]) = false := by decide_cbv
+example : accepts (typed (artifact #[("labels","pub enum Tri { A, C, B }")])) = false :=
+  by decide_cbv
+-- Unrelated and helper-only dependencies are not nominal-origin references.
+private def helper := "pub static fn width() -> Nat {1}"
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("labels",original),("helper",helper)]) rows = false := by decide_cbv
+example : accepts (typed (artifact #[("labels",original),("helper",helper)])) = false :=
+  by
+    have coverage : Qirf.Validity.sourcesUsedWithSources
+        (artifact #[("labels",original),("helper",helper)])
+        (Qirf.Carrier.sourceRows request.attached request.required) = false := by decide_cbv
+    change ((typed (artifact #[("labels",original),("helper",helper)]) request).run 2000000).1.isOk = false
+    exact typed_refuses (artifact #[("labels",original),("helper",helper)]) request
+      (fun remaining => carrier_refuses (artifact #[("labels",original),("helper",helper)])
+        #[0] request.attached request.required request.logical coverage remaining) 2000000
+-- An exact row reference cannot launder a fabricated nominal member order.
+private def reordered : Owner :=
+  ⟨owner.port,[.enumeration ⟨"labels","Tri",original⟩ ["A","C","B"]]⟩
+private def badInterface : Interface := ⟨[reordered],[reordered],.unitary⟩
+example : accepts (typed data ⟨badInterface,badInterface,identity⟩) = false := by decide_cbv
+
+#print axioms ordinary_refuses
+#print axioms carrier_refuses
+#print axioms typed_refuses
+#print axioms Qirf.checkGraphReceipts_freshWithSources
+#print axioms Qirf.Validity.checkRootWithSources_postcondition
+#print axioms Qirf.Carrier.sourceRoot_result
+end CarrierSourceCoverageExamples
+
+#print axioms SourceTypes.nominal_original
+#print axioms SourceTypes.check_original_declarations
+#print axioms Protocol.Carrier.check_binding
+#print axioms Protocol.ExecutionView.CheckedCarrier.check_binding
+#print axioms Protocol.ExecutionView.CheckedCarrier.Binding.root_safe
+#print axioms Protocol.NativeContext.run_carrier_binding
+
+namespace SourceNaturalSyntaxExamples
+open Semantics.SourceNatural
+-- Existing Nat syntax/reference only. Callback names have no original helper
+-- authority until separate source binding and generic obligations are checked.
+-- Large values/depth examples below are metadata, not quantum cases.
+def parsed (text : String) := SourceTypes.lex text >>= SourceTypes.NaturalSyntax.read
+
+
+def n := Expr.number
+example : parsed "2+3*2-6" = .ok (.sub (.add (n 2) (.mul (n 3) (n 2))) (n 6)) := by rfl
+example : parsed "8-3-3" = .ok (.sub (.sub (n 8) (n 3)) (n 3)) := by rfl
+example : parsed "(1+2)*2-4" = .ok (.sub (.mul (.add (n 1) (n 2)) (n 2)) (n 4)) := by rfl
+example : parsed "previous[3]()" = .ok (.call ["previous"] [n 3]) := by rfl
+example : parsed "helper::p[add[1,1](),(3-1)]()"
+    = .ok (.call ["helper","p"] [.call ["add"] [n 1,n 1],.sub (n 3) (n 1)]) := by rfl
+example : parsed "f()" = .ok (.call ["f"] []) := by rfl
+example : parsed "f[]()" = .ok (.call ["f"] []) := by rfl
+example : parsed "f[1,2]()+3" = .ok (.add (.call ["f"] [n 1,n 2]) (n 3)) := by rfl
+example : parsed "std::classical::f[1]()" = .ok (.call ["std","classical","f"] [n 1]) := by rfl
+example : parsed "n" = .ok (.name ["n"]) := by rfl
+example : (SourceTypes.NaturalSyntax.decimal "170141183460469231731687303715884105727").toOption =
+    some 170141183460469231731687303715884105727 := by decide +kernel
+example : !(SourceTypes.NaturalSyntax.decimal "170141183460469231731687303715884105728").isOk := by decide +kernel
+example : (["", "00", "02", "+1", "-1", "1 2", "1**2", "1+", "(1", "1)",
+    "f[1,]()", "f(1)", "f[1]", "f[1]()()", "f[1)", "f::", "_", "a::basis[1]()"].all
+    (fun text => !(parsed text).isOk)) := by decide +kernel
+example : (parsed (String.intercalate "+" (List.replicate 128 "1"))).isOk := by decide +kernel
+example : !(parsed (String.intercalate "+" (List.replicate 129 "1"))).isOk := by decide +kernel
+example : (parsed (String.ofList (List.replicate 63 '(') ++ "1" ++
+    String.ofList (List.replicate 63 ')'))).isOk := by decide +kernel
+example : !(parsed (String.ofList (List.replicate 64 '(') ++ "1" ++
+    String.ofList (List.replicate 64 ')'))).isOk := by decide +kernel
+
+def emptyNames : Names := fun _ => none
+def emptyCalls : Calls := fun _ _ => none
+def mathematical (text : String) := (parsed text).toOption >>= evaluate 128 emptyNames emptyCalls
+example : mathematical "2+3*2-6" = some 2 := by decide +kernel
+example : mathematical "4294967295+1-4294967294" = some 2 := by decide +kernel
+example : mathematical "1-2+3" = none := by decide +kernel
+example : mathematical "previous[3]()" = none := by decide +kernel
+example : Value emptyNames emptyCalls (.sub (.add (n 2) (.mul (n 3) (n 2))) (n 6)) 2 :=
+  evaluate_value 128 emptyNames emptyCalls _ _ (by decide +kernel)
+#print axioms evaluate_value
+
+end SourceNaturalSyntaxExamples
+
+namespace SourceNaturalAffineExamples
+open QleisliKernel
+open Semantics.SourceAffine
+open SourceTypes
+
+def value {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+
+def row (constant : Int) (coefficients : List Int) : Form := ⟨constant,coefficients⟩
+def x := row 0 [1]
+def y := row 0 [0,1]
+def found (rows : List Form) : Except Finite.Error Bool :=
+  match value (NaturalConstraints.check rows) with
+  | .ok none => .ok false
+  | .ok (some _) => .ok true
+  | .error error => .error error
+
+def observed (rows : List Form) : Option Bool := (found rows).toOption
+
+-- Metadata and symbolic arithmetic only; no quantum matrix/case is generated.
+example : value (NaturalAffine.add x (row 2 [3])) = .ok (row 2 [4]) := by rfl
+example : value (NaturalAffine.sub x x) = .ok (row 0 [0]) := by rfl
+example : value (NaturalAffine.multiply (row 2 [0]) x) = .ok (row 0 [2]) := by rfl
+example : !(value (NaturalAffine.multiply x x)).isOk := by rfl
+example : !(value (NaturalAffine.multiply x y)).isOk := by rfl
+example : value (NaturalAffine.constant 0 4294967296) = .ok (row 4294967296 []) := by rfl
+example : value (NaturalAffine.add (row 170141183460469231731687303715884105727 []) (row 1 [])) =
+    .error .limit := by rfl
+example : value (NaturalAffine.sub (row (-170141183460469231731687303715884105728) [])
+    (row (-170141183460469231731687303715884105728) [])) = .error .limit := by rfl
+example : !(value (NaturalAffine.multiply (row 0 (List.replicate 33 0)) x)).isOk := by rfl
+example : !(value (NaturalAffine.parameter 0 0)).isOk := by rfl
+example : value (NaturalAffine.parameter 2 1) = .ok y := by rfl
+example : observed [] = some false := by decide +kernel
+example : observed [row 1 []] = some true := by decide +kernel
+example : observed [row (-1) []] = some false := by decide +kernel
+example : observed [row 0 [-1],row 1 [-1],row 0 [1]] = some true := by decide +kernel
+example : observed [row 0 [-1],row 1 [-1],row (-2) [1]] = some false := by decide +kernel
+-- Rational relaxation deliberately supplies no integer-feasibility promise.
+example : observed [row 0 [-1],row (-1) [2],row 1 [-2]] = some false := by decide +kernel
+example : observed [row 0 [-1,1,0],row 0 [0,-1,1],row 0 [0,0,-1],row 1 [1,0,0]] =
+    some true := by decide +kernel
+example : observed [row 2 [-2],row 0 [2]] = some true := by decide +kernel
+example : !(found [row 0 [],x]).isOk := by rfl
+example : !(found [row 0 (List.replicate 33 0)]).isOk := by rfl
+open QleisliKernel SourceTypes Semantics.SourceAffine
+open NaturalPredicates
+
+def result {α : Type} (action : Finite.WorkM α) := (action.run 10000000).1
+
+def form (c : Int) (cs : List Int) : Form := ⟨c,cs⟩
+def n := form 0 [1]
+def number (c : Int) := form c [0]
+def possible (a : Int) (op : Comparison) (b : Int) : Bool :=
+  (result (do feasible (← comparison (form a []) op (form b [])))).toOption.getD false
+
+def implied (guard : Comparison) (bound : Int) (op : Comparison) (other : Int) : Bool :=
+  (result (do
+    let context ← comparison n guard (number bound)
+    implies context n op (number other))).isOk
+
+-- All six exact predicates, with both polarities. These are scalar metadata.
+example : [possible 0 .eq 0,possible 0 .ne 1,possible 0 .le 1,
+  possible 0 .lt 1,possible 1 .ge 0,possible 1 .gt 0] = List.replicate 6 true := by decide +kernel
+example : [possible 0 .eq 1,possible 1 .ne 1,possible 1 .le 0,
+  possible 1 .lt 1,possible 0 .ge 1,possible 0 .gt 0] = List.replicate 6 false := by decide +kernel
+example : implied .ge 1 .ge 1 := by decide +kernel
+example : implied .gt 0 .ge 1 := by decide +kernel
+example : !implied .ge 0 .ge 1 := by decide +kernel
+example : !implied .ge 1 .ge 2 := by decide +kernel
+example : implied .eq 2 .ne 1 := by decide +kernel
+example : !implied .ne 1 .gt 1 := by decide +kernel
+example : (result (do
+  let nonnegative ← comparison n .ge (number 0)
+  let distinct ← comparison n .ne (number 1)
+  let positive ← comparison n .ge (number 1)
+  let first ← conjunction nonnegative distinct
+  let context ← conjunction first positive
+  implies context n .ge (number 2))).isOk := by decide +kernel
+example : (result (comparison (form (-170141183460469231731687303715884105728) [])
+  .le (form 0 []))).isOk = false := by decide +kernel
+example : ((comparison n .ge (number 1)).run 1).1.isOk = false := by decide +kernel
+
+def helper (source : String) : Except String NaturalHeaders.Helper := do
+  let [declaration] ← declarations source | throw "one declaration required"
+  NaturalHeaders.read declaration
+
+def shape (source : String) : Option (List String × Nat) :=
+  (helper source).toOption.map fun h => (h.parameters,h.premises.length)
+
+def validHelper : String :=
+  "pub static fn previous[const n:Nat]() -> Nat requires n >= 1 {n-1}"
+example : shape validHelper = some (["n"],1) := by decide +kernel
+example : shape "static fn value() -> Nat {2}" = some ([],0) := by decide +kernel
+example : shape "static fn value[]() -> Nat {2}" = some ([],0) := by decide +kernel
+example : shape "static fn swap[const n:Nat,const m:Nat,]() -> Nat requires pair[n,m]() != pair[m,n](), n >= 0, {n+m}" =
+  some (["n","m"],2) := by decide +kernel
+example : shape "static fn test[const n:Nat]() -> Nat requires n == 1,n != 2,n < 3,n <= 4,n > 0,n >= 1 {n}" =
+  some (["n"],6) := by decide +kernel
+example : !(helper "static fn bad(q:Bit) -> Nat {1}").isOk := by decide +kernel
+example : !(helper "static fn bad[const n:Basis]() -> Nat {1}").isOk := by decide +kernel
+example : !(helper "static fn bad[const n:Nat,const n:Nat]() -> Nat {n}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Bits<1> {1}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Nat requires {1}").isOk := by decide +kernel
+example : !(helper "static fn bad() -> Nat {00}").isOk := by decide +kernel
+example : !(helper "fn bad() -> Nat {1}").isOk := by decide +kernel
+example : !(declarations "static fn bad() -> Nat;").isOk := by decide +kernel
+example : !(declarations "static fn bad() -> Nat {").isOk := by decide +kernel
+-- Same original binding/category/visibility rules for both consumers.
+def canonical (sources : Sources) (caller : String) (path : List String) :=
+  (result (resolveReference sources caller path)).toOption.map fun r =>
+    (r.moduleName,r.declaration.name,r.declaration.kind)
+example : canonical #[ ("defs",validHelper),("exports","pub use defs::previous;"),
+  ("main","use exports::previous;")] "main" ["previous"] =
+  some ("defs","previous","static-fn") := by decide +kernel
+example : canonical #[ ("defs","static fn hidden() -> Nat {1}"),
+  ("main","use defs::hidden;")] "main" ["hidden"] = none := by decide +kernel
+example : canonical #[ ("defs",validHelper),("private","use defs::previous;")]
+  "main" ["private","::","previous"] = none := by decide +kernel
+example : canonical #[ ("main",validHelper ++ " fn previous() -> Bit {0}")]
+  "main" ["previous"] = none := by decide +kernel
+end SourceNaturalAffineExamples

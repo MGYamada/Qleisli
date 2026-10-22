@@ -11,6 +11,7 @@ pub(in crate::frontend) trait Context {
     type Tuple;
     type Error;
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), Self::Error>;
+    fn nominal_unavailable(&mut self, span: Span) -> Self::Error;
     fn name(&mut self, name: &Ident, env: &Self::Environment) -> Result<Self::Value, Self::Error>;
     fn unit(&mut self) -> Self::Value;
     fn bit(&mut self, value: bool) -> Self::Value;
@@ -51,6 +52,9 @@ pub(in crate::frontend) fn evaluate<C: Context>(
 ) -> Result<C::Value, C::Error> {
     context.enter(expr.span, depth)?;
     let value = match &expr.kind {
+        BasisExprKind::Variant(_) | BasisExprKind::Record(_) | BasisExprKind::Field { .. } => {
+            return Err(context.nominal_unavailable(expr.span));
+        }
         BasisExprKind::Name(name) => context.name(name, env)?,
         BasisExprKind::Unit => context.unit(),
         BasisExprKind::Bit(value) => context.bit(*value),

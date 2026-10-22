@@ -10,6 +10,9 @@ use super::ast::*;
 use super::documentation::{DocumentedModule, attach};
 use super::lexer::{LexError, Token, TokenKind, lex_documented};
 
+#[cfg(test)]
+mod aggregate_tests;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ParseError {
     pub message: String,
@@ -65,6 +68,7 @@ pub(crate) fn parse_closed_basis(source: &str) -> Result<Type, ParseError> {
         tokens,
         pos: 0,
         nesting: 0,
+        allow_record_literals: true,
         remaining_import_prefix_identifiers: MAX_IMPORT_PREFIX_IDENTIFIERS,
         remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
     };
@@ -86,6 +90,7 @@ fn parse_documented(
         tokens,
         pos: 0,
         nesting: 0,
+        allow_record_literals: true,
         remaining_import_prefix_identifiers: MAX_IMPORT_PREFIX_IDENTIFIERS,
         remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
     };
@@ -105,6 +110,7 @@ struct Parser {
     tokens: Vec<Token>,
     pos: usize,
     nesting: usize,
+    allow_record_literals: bool,
     remaining_import_prefix_identifiers: usize,
     remaining_import_prefix_bytes: usize,
 }
@@ -132,6 +138,7 @@ impl Parser {
             self.expect(&TokenKind::RBracket)?;
         }
         let mut uses = Vec::new();
+        let mut type_decls = Vec::new();
         let mut decls = Vec::new();
         while !self.at(&TokenKind::Eof) {
             if self.at(&TokenKind::Hash) {
@@ -146,6 +153,15 @@ impl Parser {
                         .is_some_and(|t| t.kind == TokenKind::Use))
             {
                 uses.extend(self.use_decl()?);
+            } else if self.at(&TokenKind::Enum)
+                || self.at(&TokenKind::Struct)
+                || (self.at(&TokenKind::Pub)
+                    && self
+                        .tokens
+                        .get(self.pos + 1)
+                        .is_some_and(|t| matches!(t.kind, TokenKind::Enum | TokenKind::Struct)))
+            {
+                type_decls.push(self.type_decl()?);
             } else if self.at(&TokenKind::Pub)
                 || self.at(&TokenKind::Classical)
                 || self.at(&TokenKind::Static)
@@ -158,14 +174,68 @@ impl Parser {
             {
                 decls.push(self.decl()?);
             } else {
-                return Err(self.error("expected `use` or a function declaration"));
+                return Err(
+                    self.error("expected `use`, a type declaration or a function declaration")
+                );
             }
         }
         Ok(Module {
             no_implicit_prelude,
             uses,
+            type_decls,
             decls,
             span: Span::new(0, source_len),
+        })
+    }
+
+    fn type_decl(&mut self) -> Result<TypeDecl, ParseError> {
+        let public = self.consume(&TokenKind::Pub);
+        let start = public
+            .as_ref()
+            .map_or(self.current().span.start, |t| t.span.start);
+        let enumeration = self.consume(&TokenKind::Enum).is_some();
+        if !enumeration {
+            self.expect(&TokenKind::Struct)?;
+        }
+        let name = self.ident()?;
+        let open = self.expect(&TokenKind::LBrace)?;
+        let mut variants = Vec::new();
+        let mut fields = Vec::new();
+        while !self.at(&TokenKind::RBrace) {
+            if variants.len() + fields.len() >= MAX_TUPLE_FIELDS {
+                return Err(self.error("finite type declaration exceeds 64 members"));
+            }
+            if enumeration {
+                variants.push(self.ident()?);
+            } else {
+                let public = self.consume(&TokenKind::Pub);
+                let name = self.ident()?;
+                let start = public.as_ref().map_or(name.span.start, |t| t.span.start);
+                self.expect(&TokenKind::Colon)?;
+                let ty = self.ty()?;
+                let span = Span::new(start, ty.span.end);
+                fields.push(RecordField {
+                    public: public.is_some(),
+                    name,
+                    ty,
+                    span,
+                });
+            }
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        let close = self.expect(&TokenKind::RBrace)?;
+        Ok(TypeDecl {
+            public: public.is_some(),
+            name,
+            kind: if enumeration {
+                TypeDeclKind::Enum { variants }
+            } else {
+                TypeDeclKind::Record { fields }
+            },
+            body_span: open.span.cover(close.span),
+            span: Span::new(start, close.span.end),
         })
     }
 
@@ -942,7 +1012,7 @@ impl Parser {
             });
         }
         if matches!(self.current().kind, TokenKind::Ident(_)) {
-            let name = self.ident()?;
+            let name = self.reference_name()?;
             return Ok(Type {
                 span: name.span,
                 kind: TypeKind::Named(name),
@@ -985,7 +1055,7 @@ impl Parser {
             });
         }
         if matches!(self.current().kind, TokenKind::Ident(_)) {
-            let name = self.ident()?;
+            let name = self.reference_name()?;
             return Ok(Type {
                 span: name.span,
                 kind: TypeKind::Named(name),
@@ -1258,7 +1328,42 @@ impl Parser {
     }
 
     fn expr(&mut self) -> Result<Expr, ParseError> {
-        self.nested(Self::expr_inner)
+        self.expr_mode(true)
+    }
+
+    fn expr_mode(&mut self, allow_records: bool) -> Result<Expr, ParseError> {
+        let previous = self.allow_record_literals;
+        self.allow_record_literals = allow_records;
+        let result = self.nested(Self::expr_inner);
+        self.allow_record_literals = previous;
+        result
+    }
+
+    fn expr_postfix(&mut self, mut value: Expr) -> Result<Expr, ParseError> {
+        let mut depth = Self::expr_depth(&value)?;
+        while self.consume(&TokenKind::Dot).is_some() {
+            let field = self.ident()?;
+            self.reject_method_call()?;
+            depth += 1;
+            if depth > MAX_NESTING {
+                return Err(self.error("expression AST exceeds the initial 64-level limit"));
+            }
+            value = Expr {
+                span: value.span.cover(field.span),
+                kind: ExprKind::Field {
+                    receiver: Box::new(value),
+                    field,
+                },
+            };
+        }
+        Ok(value)
+    }
+
+    fn reject_method_call(&self) -> Result<(), ParseError> {
+        if self.at(&TokenKind::LParen) {
+            return Err(self.error("method receiver syntax is unsupported; use an ordinary function call. For quantum access, write explicit `excl ...` or `ctrl ...` arguments: receiver adjustment cannot infer or forward quantum access"));
+        }
+        Ok(())
     }
 
     fn expr_inner(&mut self) -> Result<Expr, ParseError> {
@@ -1278,7 +1383,7 @@ impl Parser {
             self.nesting += negations.len();
             let parsed = self.expr_primary();
             self.nesting -= negations.len();
-            let mut value = parsed?;
+            let mut value = self.expr_postfix(parsed?)?;
             let depth = Self::expr_depth(&value)? + negations.len();
             if depth > MAX_NESTING {
                 return Err(self.error("expression AST exceeds the initial 64-level limit"));
@@ -1343,6 +1448,10 @@ impl Parser {
             }
             maximum = maximum.max(depth);
             match &node.kind {
+                ExprKind::Record(record) => {
+                    pending.extend(record.fields.iter().map(|field| (&field.value, depth + 1)))
+                }
+                ExprKind::Field { receiver, .. } => pending.push((receiver, depth + 1)),
                 ExprKind::UnsupportedClosure(closure) => {
                     pending.push((&closure.body.result, depth + 1));
                     pending.extend(closure.body.statements.iter().filter_map(|statement| {
@@ -1441,7 +1550,7 @@ impl Parser {
                         Some((value, depth + 1))
                     }));
                 }
-                ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit => {}
+                ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit | ExprKind::Variant(_) => {}
             }
         }
         Ok(maximum)
@@ -1621,7 +1730,7 @@ impl Parser {
         self.expect_word("carry")?;
         let carry = self.pattern()?;
         self.expect(&TokenKind::Equals)?;
-        let initial = Box::new(self.expr()?);
+        let initial = Box::new(self.expr_mode(false)?);
         let body = self.block_mode(true)?;
         Ok(Expr {
             span: open.span.cover(body.span),
@@ -1678,7 +1787,7 @@ impl Parser {
                 },
             });
         }
-        let condition = self.expr()?;
+        let condition = self.expr_mode(false)?;
         let then_branch = self.block()?;
         self.required_else(if_token.span)?;
         let else_branch = self.block()?;
@@ -1811,6 +1920,12 @@ impl Parser {
         if let TokenKind::Ident(_) = self.current().kind {
             return self.named_expr();
         }
+        self.parenthesized_expr()
+    }
+
+    // Do not keep tuple temporaries live while recursing through record fields.
+    #[inline(never)]
+    fn parenthesized_expr(&mut self) -> Result<Expr, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
         if let Some(close) = self.consume(&TokenKind::RParen) {
             return Ok(Expr {
@@ -1843,6 +1958,25 @@ impl Parser {
 
     fn named_expr(&mut self) -> Result<Expr, ParseError> {
         let ident = self.reference_name()?;
+        let name_end = self.pos;
+        if self.allow_record_literals && self.at(&TokenKind::LBrace) {
+            let start = ident.span;
+            let record = self.record_value(ident, |parser| {
+                let value = parser.expr()?;
+                let span = value.span;
+                Ok((value, span))
+            })?;
+            return Ok(Expr {
+                span: start.cover(self.tokens[self.pos - 1].span),
+                kind: ExprKind::Record(Box::new(record)),
+            });
+        }
+        self.named_runtime_expr(ident, name_end)
+    }
+
+    // Record recursion must not retain this much larger call/access frame.
+    #[inline(never)]
+    fn named_runtime_expr(&mut self, ident: Ident, name_end: usize) -> Result<Expr, ParseError> {
         // Explain already-invalid early-return syntax without reserving the
         // ordinary identifier or turning an ordinary return(q) call into exit.
         if ident.text == "return"
@@ -1869,7 +2003,8 @@ impl Parser {
         }
         let mut static_args = Vec::new();
         let mut end = ident.span;
-        if self.consume(&TokenKind::LBracket).is_some() {
+        let has_static_arguments = self.consume(&TokenKind::LBracket).is_some();
+        if has_static_arguments {
             static_args = self.static_arguments()?;
             end = self.tokens[self.pos - 1].span;
             if !static_args.is_empty() && !self.at(&TokenKind::LParen) {
@@ -1950,6 +2085,16 @@ impl Parser {
                 span,
             });
         }
+        if ident.text.contains("::") {
+            if has_static_arguments {
+                return Err(self.error("static arguments require a call"));
+            }
+            let span = ident.span;
+            return Ok(Expr {
+                span,
+                kind: ExprKind::Variant(Box::new(self.variant_value(ident, name_end))),
+            });
+        }
         Ok(Expr {
             span: ident.span.cover(end),
             kind: ExprKind::Name(ident),
@@ -1967,6 +2112,45 @@ impl Parser {
             }
         }
         Ok(args)
+    }
+
+    fn variant_value(&self, name: Ident, end: usize) -> VariantValue {
+        let (type_name, variant) = name.text.rsplit_once("::").expect("qualified variant");
+        VariantValue {
+            type_name: Ident {
+                text: type_name.into(),
+                span: Span::new(name.span.start, self.tokens[end - 3].span.end),
+            },
+            variant: Ident {
+                text: variant.into(),
+                span: self.tokens[end - 1].span,
+            },
+        }
+    }
+
+    fn record_value<E>(
+        &mut self,
+        type_name: Ident,
+        mut read: impl FnMut(&mut Self) -> Result<(E, Span), ParseError>,
+    ) -> Result<RecordValue<E>, ParseError> {
+        self.expect(&TokenKind::LBrace)?;
+        let mut fields = Vec::new();
+        while !self.at(&TokenKind::RBrace) {
+            let name = self.ident()?;
+            self.expect(&TokenKind::Colon)?;
+            let (value, span) = read(self)?;
+            fields.push(ValueField {
+                span: name.span.cover(span),
+                name,
+                value,
+            });
+            self.tuple_arity(fields.len())?;
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        self.expect(&TokenKind::RBrace)?;
+        Ok(RecordValue { type_name, fields })
     }
 
     fn basis_expr(&mut self) -> Result<BasisExpr, ParseError> {
@@ -1987,6 +2171,10 @@ impl Parser {
                 });
             }
             match &node.kind {
+                BasisExprKind::Record(record) => {
+                    pending.extend(record.fields.iter().map(|field| (&field.value, depth + 1)))
+                }
+                BasisExprKind::Field { receiver, .. } => pending.push((receiver, depth + 1)),
                 BasisExprKind::Not(inner) => pending.push((inner, depth + 1)),
                 BasisExprKind::Tuple(fields) => {
                     pending.extend(fields.iter().map(|field| (field, depth + 1)))
@@ -2052,7 +2240,20 @@ impl Parser {
                 span,
             });
         }
-        self.basis_atom()
+        let mut value = self.basis_atom()?;
+        while self.consume(&TokenKind::Dot).is_some() {
+            let field = self.ident()?;
+            self.reject_method_call()?;
+            value = BasisExpr {
+                span: value.span.cover(field.span),
+                kind: BasisExprKind::Field {
+                    receiver: Box::new(value),
+                    field,
+                },
+            };
+            Self::basis_depth(&value)?;
+        }
+        Ok(value)
     }
 
     fn basis_atom(&mut self) -> Result<BasisExpr, ParseError> {
@@ -2068,6 +2269,19 @@ impl Parser {
         }
         if let TokenKind::Ident(_) = self.current().kind {
             let ident = self.reference_name()?;
+            let name_end = self.pos;
+            if self.at(&TokenKind::LBrace) {
+                let start = ident.span;
+                let record = self.record_value(ident, |parser| {
+                    let value = parser.basis_expr()?;
+                    let span = value.span;
+                    Ok((value, span))
+                })?;
+                return Ok(BasisExpr {
+                    span: start.cover(self.tokens[self.pos - 1].span),
+                    kind: BasisExprKind::Record(Box::new(record)),
+                });
+            }
             if self.consume(&TokenKind::LParen).is_some() {
                 let mut args = Vec::new();
                 if !self.at(&TokenKind::RParen) {
@@ -2085,6 +2299,13 @@ impl Parser {
                         callee: ident,
                         args,
                     },
+                });
+            }
+            if ident.text.contains("::") {
+                let span = ident.span;
+                return Ok(BasisExpr {
+                    span,
+                    kind: BasisExprKind::Variant(Box::new(self.variant_value(ident, name_end))),
                 });
             }
             return Ok(BasisExpr {

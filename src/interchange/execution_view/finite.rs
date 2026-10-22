@@ -645,6 +645,7 @@ pub(in crate::interchange) fn graph(
 }
 
 pub(in crate::interchange) mod caller;
+pub(in crate::interchange) mod carrier;
 pub(in crate::interchange) mod contracts;
 pub(in crate::interchange) mod engineering_instrument;
 pub(in crate::interchange) mod engineering_openqasm;

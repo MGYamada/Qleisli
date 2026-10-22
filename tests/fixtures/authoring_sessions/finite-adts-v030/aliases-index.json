@@ -1,0 +1,1327 @@
+{
+  "format": "qleisli.carrier-type-alias-history",
+  "version": 1,
+  "archive": {
+    "bytes": 801416,
+    "sha256": "0bacaa8c939d15c718e09be8cc6dfdedaee42aa0304e9135cce6c00e474ffab3",
+    "expanded_file_bytes": 36743615
+  },
+  "scope": "Inert original sources, actual first caller mistake, raw native packets/streams, first reader implementations and check attempts. Unknown lake target and incorrect cycle-code expectation remain failed observations. Subsequent null-QDV queries establish only the reached comparison stage; full-view native tests supply separate accepted-handle controls. No commands are extracted or executed. The refresh tool output is explicitly a transcription. No source-function preservation, source ADT execution or new guarantee is claimed.",
+  "records": {
+    "adt64-alias-imports-first-build/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/report.json": {
+      "bytes": 6822523,
+      "sha256": "f63e7e2e4aafd418b795f63acaafdedef64a3549ba4c2266fd7b5ab61f9732dd",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 14078,
+      "sha256": "37a9cb71564eeb4abf8e03dd3a595d4e7c634313687dea1a1724a321ec7727cb",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68974,
+      "sha256": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-imports-first-build/stdout": {
+      "bytes": 208,
+      "sha256": "cc01441220d7369766bdc06f405491adc9e654e1d542e8e014c2debec4b9ae54",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/observation-summary.json": {
+      "bytes": 1996,
+      "sha256": "94e78d7b248106b93e25c6e5e5a5956f608c557277e3cdf4e0a29e6484a69064",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16477,
+      "sha256": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68974,
+      "sha256": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-build/stdout": {
+      "bytes": 91,
+      "sha256": "6f35ae492a1abb1972f4e0d0f8f5f5495f5b33612aef20f610c7ad0247a95893",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/observation-summary.json": {
+      "bytes": 2031,
+      "sha256": "3b68ac52e7fce8576ff2175840943544abe2486c43f70ceeef15f3e660706635",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16477,
+      "sha256": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 73910,
+      "sha256": "72bbfc6df56639548568447a597b1d05d7711dffb1bb90e28fbc5f9f3cd481a7",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/stderr": {
+      "bytes": 30,
+      "sha256": "ee1699b9f3b373cf7d5531bd285b8f8561b97b0c2595ed06cd550d0ac9a58374",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-first-tests/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/observation-summary.json": {
+      "bytes": 2091,
+      "sha256": "dbc4309b7bbb65e0cbbe80bbb9a4fa017c81d5a881193d249d79af8ff36d996e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16477,
+      "sha256": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 73910,
+      "sha256": "72bbfc6df56639548568447a597b1d05d7711dffb1bb90e28fbc5f9f3cd481a7",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-resolution-tests-command-repair/stdout": {
+      "bytes": 1145,
+      "sha256": "d6d8a0ed7c64f8e6a05a6a6f23f8a2af82e39e94035a0bbfbde179cf8786577c",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/check.stderr": {
+      "bytes": 119,
+      "sha256": "60afbf41501e3097bcbef8f23793c54958b6c3bd88eb9451485a0f01244ccff1",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/native.stdout": {
+      "bytes": 281689,
+      "sha256": "496524850329cbba0b497fc10719632dd9a817aa81bd23102d96e4322c1ea039",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/report.json": {
+      "bytes": 6825486,
+      "sha256": "84bc139892f6698f0ad1e4c055a3724f422d02c426ad1b3183ef0df695ea3297",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 24070,
+      "sha256": "530f0d794d691c7c27cf0673a2df482a8e4a2a932990e63fa164d78c0f1c83b9",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-msrv-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/check.stderr": {
+      "bytes": 119,
+      "sha256": "48c785f8794afaafdcae93ebb3e86530e345b0449bc59cde49cf0cf5ab7280c3",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/lint.stderr": {
+      "bytes": 119,
+      "sha256": "2339133638b2ccc8c407e157a28459550860db29db4320dda77d303488f5e457",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/lint.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/native.stdout": {
+      "bytes": 281689,
+      "sha256": "17e2f889a1d41aebe32ae4011af468538fff64ed01db665b1f1b2dcecae41d26",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/report.json": {
+      "bytes": 6825813,
+      "sha256": "3d4aefceb02d3701b253c5129e78e3f79a10242e100f66f8c89e0ea0ae25db88",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 24070,
+      "sha256": "530f0d794d691c7c27cf0673a2df482a8e4a2a932990e63fa164d78c0f1c83b9",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-alias-source-final-normal-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/observation-summary.json": {
+      "bytes": 2142,
+      "sha256": "bfcdce9a342f537e0e06e02c296fa25ae2456a773e203b21b885cc081b7e6fde",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/observer.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 13957,
+      "sha256": "3d91de59c4af0e9983fa4b5a8f6b5ada5b6ca6165efc16ec302fc74ebfc1762c",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3361,
+      "sha256": "778ec2c98f267d2063ca1c9bfb27eca8717da3ba1c2b08b3cf02e8f335576dd4",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 68974,
+      "sha256": "e232f4b2024c2fdf2b62007c30a9de4f562fc2f4102391f3ce554a0ac5303c42",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 18201,
+      "sha256": "fce0710090ef5990877e3c6ff0d9535e5e89d891919dbf7e6b1bf7aba88cf3bb",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/stderr": {
+      "bytes": 120,
+      "sha256": "3b5b44ee4e78e2ce74d3f60c8b1d98d80c37d2701fb2fb3b2d438c4a1725cb2f",
+      "original_mode": 420
+    },
+    "adt64-alias-source-first-cli-build/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/basis.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/basis.stdout": {
+      "bytes": 483,
+      "sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/binding.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/binding.stdout": {
+      "bytes": 7982,
+      "sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/extract-stdout-reference.json": {
+      "bytes": 386,
+      "sha256": "2ab111166f665aadf6d1c02aa0788df0358a22ae65e59c7deca120d0aadf1ed5",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/extract.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/main-replay.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/main-replay.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/observer.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/raw.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/raw.stdout": {
+      "bytes": 612,
+      "sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/registry.json": {
+      "bytes": 8409,
+      "sha256": "33e605f61deb7aac7165a2a666455ce9b7c10da2d6de403f5adbf49fecdabae2",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/registry.stdout": {
+      "bytes": 332,
+      "sha256": "9b31ffe2d8cb388f071dd2c5b751446bf0991612cdb3424b5993d9759ad820f0",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/report.json": {
+      "bytes": 6826132,
+      "sha256": "0b33b9e4397bd1a3942f36863bde871104aa29fcc1965b211d0eab12bd34cc23",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/review.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/review.stdout": {
+      "bytes": 4692,
+      "sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/Protocol/Carrier.lean.txt": {
+      "bytes": 6911,
+      "sha256": "b631d04dae5df403b0c68fc6e39e702e04d9ff29e4f52ff3d59a31f7de8a8aee",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean.txt": {
+      "bytes": 6233,
+      "sha256": "3e84ddb63f3fe3469517aab07727f60f77f472e56dabb4b1b77e8b3eb582bc5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/Protocol/NativeContext.lean.txt": {
+      "bytes": 13445,
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/Protocol/NativeContext/Bindings.lean.txt": {
+      "bytes": 6377,
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel.lean.txt": {
+      "bytes": 3154,
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/FiniteCarrier.lean.txt": {
+      "bytes": 4487,
+      "sha256": "7503d6691fc3ac7eeab8436c555af38b059b004e88bf3c71465ff4f486a66bd0",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/Qirf/Carrier.lean.txt": {
+      "bytes": 10338,
+      "sha256": "1463fbf8a562ef709af2b36b50eb5035d63a4acb98ac4b56d456347de816d5d5",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean.txt": {
+      "bytes": 3221,
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes.lean.txt": {
+      "bytes": 16477,
+      "sha256": "377a8fd5b51f67aa9f65087832f1c08a0744220fc491b56a44fb3bef6e3d869e",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Imports.lean.txt": {
+      "bytes": 3767,
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean.txt": {
+      "bytes": 3373,
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/lean-kernel/Tests.lean.txt": {
+      "bytes": 73850,
+      "sha256": "9f9b4fa5a8cb96f041130f44b38206b6f54a0afc9896476d2ec7c9cb44c04976",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 23751,
+      "sha256": "d7831ca94141ba3983899a2821d2e9b145cfeea77914edd81d7640eba3ad9036",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-lean-validation/tests.stdout": {
+      "bytes": 1145,
+      "sha256": "d6d8a0ed7c64f8e6a05a6a6f23f8a2af82e39e94035a0bbfbde179cf8786577c",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/check.stderr": {
+      "bytes": 120,
+      "sha256": "951a24c5dc99ac9cd377ef8072dadb78dcfcde6b6c90c384f204430aed67d018",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/native.stdout": {
+      "bytes": 268689,
+      "sha256": "db02cee70a2f8616748263bc317182ef26c8c9d43222c10c3c97a75073c27b30",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/observation-summary.json": {
+      "bytes": 4718,
+      "sha256": "2d48574bd84eaf02530dee10a6ecdad6d05df57f44b0a9883ac000830fad8c63",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/observer.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/carrier.rs.txt": {
+      "bytes": 9554,
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/execution_view/finite.rs.txt": {
+      "bytes": 22982,
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/execution_view/finite/carrier.rs.txt": {
+      "bytes": 2296,
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/mod.rs.txt": {
+      "bytes": 43559,
+      "sha256": "79af6d6d602f1e262a9898f0733ab0054707084556f581ca7c24e35e5b82037f",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native.rs.txt": {
+      "bytes": 34162,
+      "sha256": "3999be67823f3a32160e6e3062093d8d8be05b1a300c56e4298f17c42915f119",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native/carrier.rs.txt": {
+      "bytes": 1902,
+      "sha256": "554e60bf3af61da11c77dd69fe8ef1f7d012c8c6d680a9797af62b6acb927621",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native/carrier/tests.rs.txt": {
+      "bytes": 23751,
+      "sha256": "d7831ca94141ba3983899a2821d2e9b145cfeea77914edd81d7640eba3ad9036",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native/reporting.rs.txt": {
+      "bytes": 12295,
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native/runtime.rs.txt": {
+      "bytes": 7060,
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
+      "original_mode": 420
+    },
+    "adt64-alias-source-normal-rust/sources/src/interchange/native_context.rs.txt": {
+      "bytes": 12048,
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/bit-control.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/bit-control.stdout": {
+      "bytes": 510,
+      "sha256": "d666977c8b5e0b72335f640417f4f1856f7afa729b16d822b4675bfa76ecea9c",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/observer.py.txt": {
+      "bytes": 2435,
+      "sha256": "418df6298eca0cc8f92d608cf467bc520bc916f0f05bf1509fec39b636dad60d",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/private-reexport.stderr": {
+      "bytes": 53,
+      "sha256": "5c9b89773b70d32807641337f14b7b323ef285e8fcae3c30ec0da0faf636e29b",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/private-reexport.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/qualified.stderr": {
+      "bytes": 105,
+      "sha256": "bb6fc1bfeca72ba815acceeb5a935fd13adfe322e1cf5e5b50926afa2217f232",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/qualified.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/reexport.stderr": {
+      "bytes": 105,
+      "sha256": "bb6fc1bfeca72ba815acceeb5a935fd13adfe322e1cf5e5b50926afa2217f232",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/reexport.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-caller-repair-study/report.json": {
+      "bytes": 6982,
+      "sha256": "c1fde635672ee375b4b4c57e63442bf522b5812f8a829de0b15a7857cf1102bd",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/bit-control-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/bit-control-source.stdout": {
+      "bytes": 310,
+      "sha256": "f033299a01b774e1c2291322c9747142ab0edd7beedc7e1b0ed4f992452bef05",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/private-reexport/artifact.qirf": {
+      "bytes": 1204,
+      "sha256": "be8e185796a91af47496cce4950ec30f69f2f4c849af4ba575eb45baa6d4db92",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/private-reexport/packet.bin": {
+      "bytes": 4464,
+      "sha256": "7a19f8c1c42a01a5dbb7e5f95a42ad0e1c2536f8b01d8c2a8948b38a4d3e6c06",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/private-reexport/request.json": {
+      "bytes": 3215,
+      "sha256": "450881e595c02b33ced81e7b474348e502a34f8a51f291c8d89b8b7af6d0c644",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/qualified/artifact.qirf": {
+      "bytes": 1196,
+      "sha256": "e2d32438336c9ddb63efcf86980305fd0d7553a2ac7e0522765eefa08fcb80d2",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/qualified/packet.bin": {
+      "bytes": 4408,
+      "sha256": "dd0cc94ab2212a3fb3077daf6427bb0c1191c1f8745b9d4c9e7db758a89116f7",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/qualified/request.json": {
+      "bytes": 3167,
+      "sha256": "e7c3fc501c6b2a31065027b8c36a62527a1938d7660f260427b53d7ad97d1a97",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/reexport/artifact.qirf": {
+      "bytes": 1208,
+      "sha256": "c3f21babae9abf83ad802cc541628e044035dec31eb8eb32de34a844aa2fd816",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/reexport/packet.bin": {
+      "bytes": 4468,
+      "sha256": "faec49a781eeb4fbac6948eb6e5225a767ed30eeda690ea5b4ef88310877078d",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/native/reexport/request.json": {
+      "bytes": 3215,
+      "sha256": "450881e595c02b33ced81e7b474348e502a34f8a51f291c8d89b8b7af6d0c644",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/observer.py.txt": {
+      "bytes": 5666,
+      "sha256": "286c865360bcdaabb1dcc2c6e9f94f99f542aa015cee852cd5b3309e8a558f59",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/private-reexport-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/private-reexport-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/private-reexport-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/private-reexport-source.stdout": {
+      "bytes": 274,
+      "sha256": "b7b98a1fdb0ee7d9a5644367595e4b0d3b5c4e6bcb68082146f0f8c9ed2be1f5",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/bit-control/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/bit-control/main.qli": {
+      "bytes": 47,
+      "sha256": "a4f447fb69714405e17566d7ae68c01f3323483cd1893ba801fba4019d8143be",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/private-reexport/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/private-reexport/bridge.qli": {
+      "bytes": 15,
+      "sha256": "0826039018e230ddc7a2a571ad03a47a2f3c05e5fc64baa57815e2472ff70b86",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/private-reexport/leaf.qli": {
+      "bytes": 25,
+      "sha256": "729e6ac0432d19a4b65a2fc10b034594f4a9f102bf0f026f0162fca901a0656e",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/private-reexport/main.qli": {
+      "bytes": 92,
+      "sha256": "59efb4f3e32d12e39eee121214843504ee1d479d8552816a04549c53e80f8b13",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/qualified/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/qualified/bridge.qli": {
+      "bytes": 19,
+      "sha256": "f8ef6b9630759cf7e51ce393045ab47698da453720eba1b1f9e5f54f326d092f",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/qualified/leaf.qli": {
+      "bytes": 25,
+      "sha256": "729e6ac0432d19a4b65a2fc10b034594f4a9f102bf0f026f0162fca901a0656e",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/qualified/main.qli": {
+      "bytes": 81,
+      "sha256": "b38ec08cfcb6c4703c8bbbd45ab7582ba73f3cc021c3c3d422cef156e2274f65",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/reexport/Qargo.toml": {
+      "bytes": 44,
+      "sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/reexport/bridge.qli": {
+      "bytes": 19,
+      "sha256": "f8ef6b9630759cf7e51ce393045ab47698da453720eba1b1f9e5f54f326d092f",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/reexport/leaf.qli": {
+      "bytes": 25,
+      "sha256": "729e6ac0432d19a4b65a2fc10b034594f4a9f102bf0f026f0162fca901a0656e",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/projects/reexport/main.qli": {
+      "bytes": 92,
+      "sha256": "59efb4f3e32d12e39eee121214843504ee1d479d8552816a04549c53e80f8b13",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/qualified-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/qualified-native.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/qualified-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/qualified-source.stdout": {
+      "bytes": 322,
+      "sha256": "d76b4ad52b3a82d87fe25fda4daa08c171296094b7fa959a7dedeb7c7ef5c6e5",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/reexport-native.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/reexport-native.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/reexport-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/reexport-source.stdout": {
+      "bytes": 322,
+      "sha256": "d76b4ad52b3a82d87fe25fda4daa08c171296094b7fa959a7dedeb7c7ef5c6e5",
+      "original_mode": 420
+    },
+    "adt64-type-alias-first-study/report.json": {
+      "bytes": 10197,
+      "sha256": "1eb4e9c85b629911045519ded9f8c5c3c1a92d4964d3be4c394f12b9c50d1f5f",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/observer.py.txt": {
+      "bytes": 2652,
+      "sha256": "a394d9885f5cc53eda0221fc37e077fb2367bc0b081b4984c54e792edc111fb1",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/private-reexport.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/private-reexport.stdout": {
+      "bytes": 39,
+      "sha256": "a19ce6dc05fdda43f87411112e37d2648981a73a13d0dafb320a087bde1a1390",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/qualified.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/qualified.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/reexport.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/reexport.stdout": {
+      "bytes": 43,
+      "sha256": "5226d64e4423b611b62f47540ad55791eb7c96518535e3bc1a41110e9201c6b6",
+      "original_mode": 420
+    },
+    "adt64-type-alias-native-after/report.json": {
+      "bytes": 6726494,
+      "sha256": "cf8c9d0b6717993bb57dbb2f57ff31b0b7563a4c35a11eae026994582c2327d0",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-alias-native-after-20261021.py.txt": {
+      "bytes": 2652,
+      "sha256": "a394d9885f5cc53eda0221fc37e077fb2367bc0b081b4984c54e792edc111fb1",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-carrier-native-20261021.py.txt": {
+      "bytes": 2437,
+      "sha256": "4730abad938eaeb7e79f64c390961155495f27ab41fb54c1b749e4bd476df277",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-type-alias-first-20261021.py.txt": {
+      "bytes": 5666,
+      "sha256": "286c865360bcdaabb1dcc2c6e9f94f99f542aa015cee852cd5b3309e8a558f59",
+      "original_mode": 420
+    },
+    "authored-inputs/observe-type-alias-repair-20261021.py.txt": {
+      "bytes": 2435,
+      "sha256": "418df6298eca0cc8f92d608cf467bc520bc916f0f05bf1509fec39b636dad60d",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-alias-source-evidence-20261021.py.txt": {
+      "bytes": 4144,
+      "sha256": "6831f581cf576dfe731752c45ba805e2785deec27344c2aad0135734ba7c6176",
+      "original_mode": 420
+    },
+    "authored-inputs/refresh-tool-output-transcription.txt": {
+      "bytes": 586,
+      "sha256": "be387dca6f7075aede737219762f36dfa1a0d12cdae2692d9c1a165ead9a0488",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-lean-20261021.py.txt": {
+      "bytes": 5270,
+      "sha256": "fb62da5b356b38c01a4466ad093a2b81a6930240d4c4c4fe6d1fd76599442e3c",
+      "original_mode": 420
+    },
+    "authored-inputs/validate-carrier-native-rust-20261021.py.txt": {
+      "bytes": 3994,
+      "sha256": "13e2a75edc56e7b9ec974c7b8453ddd0735c236a1ac88fe54e1850000bf69d42",
+      "original_mode": 420
+    }
+  }
+}

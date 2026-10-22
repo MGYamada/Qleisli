@@ -29,10 +29,10 @@ use types::finite_type;
 pub use report::ProjectCheckReport;
 
 pub use super::specialize::{
-    BasisBinding, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort, HierarchyEligibility,
-    HierarchyProposal, InitializationMove, Instantiation, OperationBinding, ParsedProgram,
-    PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition, SourceEvent,
-    SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
+    BasisBinding, CheckedSourceCarrier, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort,
+    HierarchyEligibility, HierarchyProposal, InitializationMove, Instantiation, OperationBinding,
+    ParsedProgram, PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition,
+    SourceEvent, SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -168,7 +168,7 @@ impl Ty {
             Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0usize, |bits, field| bits.checked_add(field.basis_bits()?)),
-            Kind::Q(_) | Kind::Parameter(_) => None,
+            Kind::Q(_) | Kind::Parameter(_) | Kind::Nominal(_) => None,
         }
     }
     fn classical(&self) -> bool {
@@ -348,6 +348,10 @@ impl<'a> Compiler<'a> {
         match self.locals().usage(name).target {
             ResolvedUse::Global(Target::Declaration(id)) => Ok(Callee::User(id)),
             ResolvedUse::Global(Target::Primitive(id)) => Ok(Callee::Primitive(id)),
+            ResolvedUse::Global(Target::Type(_)) => Err(self.error(
+                module,name.span,ErrorCode::TypeMismatch,
+                "a type declaration is not a function",
+            )),
             ResolvedUse::Local(_) | ResolvedUse::Unresolved => Err(self.error(
                 module,
                 name.span,
@@ -855,14 +859,26 @@ fn prepare_original_source<'ast>(
     })?;
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
-    let (source, (occurrences, interface_naturals)) = check::program_with(
+    let (source, (occurrences, interface_naturals)) = check::program_with_sources(
         project
             .modules
             .iter()
             .map(|(name, module)| (name.as_str(), &module.ast))
             .collect(),
+        project
+            .modules
+            .iter()
+            .map(|(name, module)| (name.as_str(), module.source.as_str()))
+            .collect(),
         SourceLimits::finite(),
-        |resolution, interfaces, helpers, _, _, indices, budget| {
+        |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
+            check::require_nominal_transport(
+                project
+                    .modules
+                    .iter()
+                    .map(|(name, module)| (name.as_str(), &module.ast)),
+                |span, cells| budget.charge(span, cells),
+            )?;
             let mut interface_naturals = BTreeMap::new();
             // Capture every signature before moving any original occurrence
             // association out of the common checker's indices.
@@ -879,6 +895,7 @@ fn prepare_original_source<'ast>(
                         indices,
                         helpers,
                         budget,
+                        nominals,
                     },
                 )
                 .map_err(|error| error.in_module(&record.name.0))?;
@@ -1265,6 +1282,7 @@ mod snapshot_tests {
                     source,
                     ast: Module {
                         no_implicit_prelude: false,
+                        type_decls: vec![],
                         uses: vec![],
                         decls: vec![],
                         span: Span::default(),

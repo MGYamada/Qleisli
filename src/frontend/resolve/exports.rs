@@ -1,5 +1,5 @@
 //! Transparent public exports, outside semantic acceptance. Each alias has one
-//! original target; iterative resolution retains that DefId and its public effect.
+//! original target; iterative resolution retains its function/type category.
 use super::*;
 use crate::frontend::ast::Ident;
 
@@ -38,7 +38,7 @@ pub(super) fn prepare<'a, E: From<Failure>>(
                 last.span,
                 last.text.len().saturating_add(name.len()).saturating_add(2),
             )?;
-            if resolution.local(owner, &last.text).is_some() {
+            if resolution.local_target(owner, &last.text).is_some() {
                 return Err(failure(
                     FailureKind::Collision(last.text.clone()),
                     last.span,
@@ -133,7 +133,7 @@ pub(super) fn prepare<'a, E: From<Failure>>(
                 )
             })?;
             if let Some(id) = resolution.member(owner, &export.name.text) {
-                if !resolution.visible(id, None) {
+                if !resolution.target_visible(id, None) {
                     return Err(failure(
                         FailureKind::Private(format!("{}::{}", export.module, export.name.text)),
                         export.name.span,

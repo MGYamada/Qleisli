@@ -276,9 +276,11 @@ must expose its actual interface and pass the same ownership, effect and
 access checks; a wrapper name grants no hidden projection or forwarding.
 There are no user-defined `Deref`/`DerefMut` hooks or receiver adjustments.
 
-Field/method receiver syntax is currently absent for ordinary classical and
-static values as well. Their ordinary first-order calls are unaffected. A
-syntax diagnostic therefore reports the unsupported form without guessing
+Method receiver syntax is absent for ordinary classical and static values as
+well. Common preparation admits ordinary nominal record field projection under
+the [type-model rules](type-model.md#opaque-basis-specialization-in-the-selected-profile);
+concrete nominal execution remains gated. Their ordinary first-order calls are
+unaffected. A method syntax diagnostic reports the unsupported form without guessing
 the receiver's type and conditions its `excl`/`ctrl` advice on quantum access.
 It does not mechanically rewrite a receiver into either access mode.
 

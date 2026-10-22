@@ -1,0 +1,62 @@
+{
+  "format": "qleisli.nominal-resolution-first-history",
+  "version": 1,
+  "archive": {
+    "bytes": 601404,
+    "sha256": "d37ed321b00f82428748e9998e339e6c0f49154f1de795cd4a45cda49ec99f64",
+    "expanded_file_bytes": 6964921
+  },
+  "scope": "Exact first changed Rust sources including the new untracked nominal module, real nonexhaustive category compile diagnostics, full before/after report and observer as inert data. No historical source/command is extracted or executed.",
+  "records": {
+    "compile.stderr": {
+      "bytes": 7912,
+      "sha256": "bab95af30d77b5d1221f0b2d1f4c24ba39eabda8e7f4ec8de76663c7d12a7de0",
+      "original_mode": 420
+    },
+    "compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "observer.py.txt": {
+      "bytes": 3304,
+      "sha256": "f5ef22e2cec26efe3956e0f632115c0f381d65b91b225bcf2f9e8459acb8882f",
+      "original_mode": 420
+    },
+    "report.json": {
+      "bytes": 6816698,
+      "sha256": "45a90dde210ffcc18dbb7dacaebfbea4f0bc3038a706eda05482c07307a3cb2a",
+      "original_mode": 420
+    },
+    "source/src/frontend/check.rs.txt": {
+      "bytes": 40231,
+      "sha256": "54e14f9036b038a3f31fa54a17f5bf60bec34e92536b92d214d5993eb9471e4f",
+      "original_mode": 420
+    },
+    "source/src/frontend/check/declarations.rs.txt": {
+      "bytes": 19688,
+      "sha256": "b42cbf572b9dde27926ebd4ef6d23f6205d1a0b208a949b95b1aabe258d7889d",
+      "original_mode": 420
+    },
+    "source/src/frontend/project.rs.txt": {
+      "bytes": 37651,
+      "sha256": "5b3910a6593b118a706c1dafbe3ca67a9360ef780c8849b8e8820dac486324ae",
+      "original_mode": 420
+    },
+    "source/src/frontend/resolve.rs.txt": {
+      "bytes": 28078,
+      "sha256": "3c159a8bee4f6922200a22a03951b58ea6fb5a58a6e920302ec5745bb3d0ee59",
+      "original_mode": 420
+    },
+    "source/src/frontend/resolve/exports.rs.txt": {
+      "bytes": 9548,
+      "sha256": "8c1d337a8d585e68c7ce6130c49f9d66c5ac5089d1e31b1d4727fabdaea0c3b2",
+      "original_mode": 420
+    },
+    "source/src/frontend/resolve/nominal.rs.txt": {
+      "bytes": 1811,
+      "sha256": "7cc45a36853eacc736178aa9421dd137d3388d4b769ee582baa1fb78e343d043",
+      "original_mode": 420
+    }
+  }
+}

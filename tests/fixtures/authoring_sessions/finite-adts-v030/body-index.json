@@ -1,0 +1,202 @@
+{
+  "format": "qleisli.finite-adt-body-first-history",
+  "version": 1,
+  "archive": {
+    "bytes": 594608,
+    "sha256": "e9af41b1dcc609b267e90614a5351613a3cfca9bb9d55799dec2ee57f5778e56",
+    "expanded_file_bytes": 7089180
+  },
+  "scope": "Focused immutable original bridge sources, first Tests sources, observers as data and real streams; the first compile includes its full original report. Later compact summaries bind full local reports without duplicating their inventories. An observer path failure summary is a transcription, not the missing raw traceback. No historical commands are extracted or executed; successful tests do not overrule failed compiled audits.",
+  "records": {
+    "compile-first/Qirf-Carrier.lean.txt": {
+      "bytes": 8371,
+      "sha256": "69623602cf9da2196a63688033dd8a1cfa4f2f7ac6ab27dce37557b0589cd5d2",
+      "original_mode": 420
+    },
+    "compile-first/Semantics-CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "compile-first/module.stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "compile-first/module.stdout": {
+      "bytes": 5605,
+      "sha256": "706b79b4fa2713aabb766410093e0d3263b0ee80a0aded63226156698c638339",
+      "original_mode": 420
+    },
+    "compile-first/observer.py.txt": {
+      "bytes": 2798,
+      "sha256": "5dc13d1607ee41ad34aad31041001598d1c309e602495169cebbd137bbded91d",
+      "original_mode": 420
+    },
+    "compile-first/report.json": {
+      "bytes": 6814399,
+      "sha256": "382fb20d365e9057751e9074bd35de38edf557a3f24dcbac368a446985770adc",
+      "original_mode": 420
+    },
+    "compiled-audit-refusal/observation-summary.json": {
+      "bytes": 2346,
+      "sha256": "81ed66df8d8acb7680e31514dfbd0d4f9a60bdb5bad0b4d15321da52a51caa99",
+      "original_mode": 420
+    },
+    "compiled-audit-refusal/observer.py.txt": {
+      "bytes": 6126,
+      "sha256": "227d3480ffcffa72a08051591a2f46d7ffd07df587aa644658169cc0ef8deff8",
+      "original_mode": 420
+    },
+    "compiled-audit-refusal/registry.json": {
+      "bytes": 1759,
+      "sha256": "65a7d255bdd9658c27785a31ad2f4c89e4d15ec5f6ee35d5f1470e7c647f73c8",
+      "original_mode": 420
+    },
+    "compiled-audit-refusal/registry.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "compiled-audit-refusal/registry.stdout": {
+      "bytes": 315,
+      "sha256": "3fdb6bc85f889efc77b6d2ed521d006f0bcd36753108716f87cab5d1a1309485",
+      "original_mode": 420
+    },
+    "first-tests/Qirf-Carrier.lean.txt": {
+      "bytes": 8378,
+      "sha256": "e78a06f4e983d154e3b8737068ea19bd31b99ac48d3ccfed414ddd2dcacf943a",
+      "original_mode": 420
+    },
+    "first-tests/Semantics-CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "first-tests/lean-kernel-Tests.lean.txt": {
+      "bytes": 64145,
+      "sha256": "ec8efddbb87f9c62a8ac487b78c3184a5cefdbddc49c56a6e479f9a37e1bbb98",
+      "original_mode": 420
+    },
+    "first-tests/module.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-tests/module.stdout": {
+      "bytes": 137,
+      "sha256": "ac2ffe7f28fcdb5b1135e53553aba0029e6051f98fbabaa36694fc4048c4b087",
+      "original_mode": 420
+    },
+    "first-tests/observation-summary.json": {
+      "bytes": 1880,
+      "sha256": "f88ba677e18b17a4d7347ff020a20f16a0adcc84835639d25886b5ba54be2c19",
+      "original_mode": 420
+    },
+    "first-tests/observer.py.txt": {
+      "bytes": 2940,
+      "sha256": "e699deaf98155713e6450f41c705cb912c2e266cc7ab6e3b16012081f539a802",
+      "original_mode": 420
+    },
+    "first-tests/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "first-tests/tests.stdout": {
+      "bytes": 336,
+      "sha256": "60785cd4615631dcc9eb2c68d5f8ec8b1127a313317a90c90e97dcb1051beac8",
+      "original_mode": 420
+    },
+    "fold-first/Qirf-Carrier.lean.txt": {
+      "bytes": 10321,
+      "sha256": "e0383314a2bf7d768267e6287413c8453fab38f82892c2fb1f41ef928133de5f",
+      "original_mode": 420
+    },
+    "fold-first/Semantics-CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "fold-first/lean-kernel-Tests.lean.txt": {
+      "bytes": 65016,
+      "sha256": "e1c2b133291c189c4e2887122c16d4891d2bca10137dddf29d84a11433e0bcf4",
+      "original_mode": 420
+    },
+    "fold-first/module.stderr": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f",
+      "original_mode": 420
+    },
+    "fold-first/module.stdout": {
+      "bytes": 983,
+      "sha256": "803cddaef4720052e0f4e91a23e6c06180f3a8001473993e90f30ff357647f9e",
+      "original_mode": 420
+    },
+    "fold-first/observation-summary.json": {
+      "bytes": 1776,
+      "sha256": "6c74cc47fc41f5a7be9af7dd121ca3f87675835512022fb5ece4386134f63bd0",
+      "original_mode": 420
+    },
+    "fold-first/observer.py.txt": {
+      "bytes": 3260,
+      "sha256": "448d27209c96e1a974561eb8a38997ce0a8ce96ca3a7cd10a0d96d4e81cf3c33",
+      "original_mode": 420
+    },
+    "observer-error/failure-summary.json": {
+      "bytes": 208,
+      "sha256": "2c1358208fc7d49d7d00dce9068e4baa9e495f61364eba99b689fb7db1caae53",
+      "original_mode": 420
+    },
+    "observer-error/observer.py.txt": {
+      "bytes": 2794,
+      "sha256": "04395f7fbe2ea9c79274893841eec7a0384331eaca64922c9163bd5bc71fe76d",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/Qirf-Carrier.lean.txt": {
+      "bytes": 10236,
+      "sha256": "44f56666bb3499afd94129c92f6992d4ac5de12fa808177de4b4935b24ba96fd",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/Semantics-CarrierInterface.lean.txt": {
+      "bytes": 1103,
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/lean-kernel-Tests.lean.txt": {
+      "bytes": 65016,
+      "sha256": "e1c2b133291c189c4e2887122c16d4891d2bca10137dddf29d84a11433e0bcf4",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/module.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/module.stdout": {
+      "bytes": 137,
+      "sha256": "810a46ef942e8b0dceb7d3812995413e9bebc9175aa4565d5819c80d1a40d68c",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/observation-summary.json": {
+      "bytes": 1972,
+      "sha256": "d37d7a779c6f8cad2bf39bebe7e5fdc0218705d7fc9141b28c0334a194eaee33",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/observer.py.txt": {
+      "bytes": 3034,
+      "sha256": "61803d2012256e07091e61f7ce3e1867e6e6218980fb1d28c920bf8eef0afa90",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_mode": 420
+    },
+    "recursive-owner-reading/tests.stdout": {
+      "bytes": 440,
+      "sha256": "bd1c0ce0c5534c4958a5fe8e5a30d83b4e2a7550115f067ef9e2a744ca54bce2",
+      "original_mode": 420
+    }
+  }
+}

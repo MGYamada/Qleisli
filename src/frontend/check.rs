@@ -6,6 +6,7 @@
 
 mod body;
 mod declarations;
+mod nominal;
 mod normalize;
 pub(super) mod plans;
 pub(super) mod primitive;
@@ -19,7 +20,7 @@ use super::effects::{
 };
 pub(super) use super::linear::{Context, Linear};
 use super::resolve::locals::{BinderKey, Index, Table};
-use super::resolve::{self, DefId, Resolution};
+use super::resolve::{self, DefId, Resolution, TypeId};
 use super::types::{Kind, Type};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -28,6 +29,13 @@ use std::sync::Arc;
 
 pub(super) type Ty = Type<Linear>;
 pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
+pub(in crate::frontend) type NominalTypes = Arc<BTreeMap<TypeId, Ty>>;
+#[derive(Clone, Debug)]
+pub(super) struct NominalUse {
+    pub name: String,
+    pub span: Span,
+    pub target: resolve::Target,
+}
 #[derive(Debug)]
 pub(super) struct StaticHelper {
     pub parameters: Vec<BinderKey>,
@@ -109,6 +117,10 @@ pub(super) fn type_size_budgeted<N>(
             }
             charge(span, fields.len())?;
             pending.extend(fields.iter().rev().map(|field| (field, level + 1)));
+        }
+        if let Kind::Nominal(nominal) = &node.kind {
+            charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+            pending.extend(nominal.fields().rev().map(|field| (field, level + 1)));
         }
     }
     Ok(size)
@@ -251,6 +263,10 @@ impl Budget {
                     self.charge(span, fields.len())?;
                     pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
                 }
+                Kind::Nominal(nominal) => {
+                    self.charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+                    pending.extend(nominal.fields().rev().map(|field| (field, depth + 1)));
+                }
                 _ => {}
             }
         }
@@ -381,6 +397,8 @@ pub(super) struct Obligation {
 #[derive(Debug)]
 pub(super) struct CheckedProgram {
     pub resolution: Resolution,
+    pub nominals: NominalTypes,
+    pub nominal_uses: BTreeMap<TypeId, Vec<NominalUse>>,
     pub interfaces: BTreeMap<DefId, Interface>,
     pub effects: BTreeMap<DefId, FunctionEffect>,
     pub lexical: BTreeMap<DefId, Arc<Table>>,
@@ -439,6 +457,7 @@ struct Binding {
 }
 struct Scope {
     helpers: StaticHelpers,
+    nominals: NominalTypes,
     naturals: BTreeMap<BinderKey, Linear>,
     bases: BTreeMap<BinderKey, Ty>,
     operations: BTreeMap<BinderKey, Operation>,
@@ -491,6 +510,7 @@ impl Scope {
         budget.charge(span, 1)?;
         Ok(Self {
             helpers: Rc::clone(&self.helpers),
+            nominals: Arc::clone(&self.nominals),
             naturals,
             bases,
             operations,
@@ -504,6 +524,9 @@ impl Scope {
 
 struct Program<'a> {
     helpers: StaticHelpers,
+    nominals: NominalTypes,
+    nominal_uses: BTreeMap<TypeId, Vec<NominalUse>>,
+    sources: BTreeMap<&'a str, &'a str>,
     modules: BTreeMap<&'a str, &'a ast::Module>,
     resolution: Resolution,
     indices: BTreeMap<DefId, Index<'a>>,
@@ -715,6 +738,9 @@ impl<'a> Program<'a> {
                     // require independent exact semantic evidence.
                 }
                 ObligationKind::CertifiedClean { logical } => match logical {
+                    OperationIdentity::Global(resolve::Target::Type(_)) => {
+                        return Err(failure().in_module(&interface.module));
+                    }
                     OperationIdentity::Global(resolve::Target::Declaration(id)) => {
                         provider(*id, crate::ir::Effect::Unitary)?
                     }
@@ -750,6 +776,7 @@ impl<'a> Program<'a> {
     }
 }
 
+#[cfg(test)]
 pub(super) fn program_with<'a, R>(
     modules: BTreeMap<&'a str, &'a ast::Module>,
     limits: SourceLimits,
@@ -763,16 +790,39 @@ pub(super) fn program_with<'a, R>(
         &Budget,
     ) -> Result<R>,
 ) -> Result<(CheckedProgram, R)> {
+    // AST-only unit tests cannot establish a nominal origin without original bytes.
+    program_with_sources(
+        modules,
+        BTreeMap::new(),
+        limits,
+        |a, b, c, d, e, f, g, _| finish(a, b, c, d, e, f, g),
+    )
+}
+
+fn prepare_program<'a>(
+    modules: BTreeMap<&'a str, &'a ast::Module>,
+    sources: BTreeMap<&'a str, &'a str>,
+    limits: SourceLimits,
+) -> Result<Program<'a>> {
     let budget = Rc::new(Budget {
         remaining: Cell::new(limits.work),
         limits,
     });
-    let resolution = Resolution::new_budgeted(
+    nominal::validate_originals(&modules, &sources, &budget)?;
+    let mut resolution = Resolution::new_budgeted(
         modules.iter().map(|(name, module)| (*name, *module)),
         |span, cells| budget.charge(span, cells),
     )?;
+    for (name, module) in &modules {
+        let owner = resolution.module(name).expect("registered source module");
+        let imports = resolution.imports_budgeted(owner, module, |s, c| budget.charge(s, c))?;
+        resolution.set_scope_budgeted(owner, imports, |s, c| budget.charge(s, c))?;
+    }
     let mut program = Program {
         helpers: Rc::new(BTreeMap::new()),
+        nominals: Arc::new(BTreeMap::new()),
+        nominal_uses: BTreeMap::new(),
+        sources,
         modules,
         resolution,
         indices: BTreeMap::new(),
@@ -784,6 +834,66 @@ pub(super) fn program_with<'a, R>(
         budget,
     };
     declarations::prepare(&mut program)?;
+    Ok(program)
+}
+
+/// Read-only fixture data from type/interface preparation. No body judgment,
+/// effect fact, IR program or accepted handle is manufactured by this helper.
+#[cfg(test)]
+pub(super) struct NominalMetadata {
+    pub resolution: Resolution,
+    pub types: NominalTypes,
+    pub uses: BTreeMap<TypeId, Vec<NominalUse>>,
+}
+#[cfg(test)]
+pub(super) fn nominal_metadata(
+    modules: BTreeMap<&str, &ast::Module>,
+    sources: BTreeMap<&str, &str>,
+) -> Result<NominalMetadata> {
+    let program = prepare_program(modules, sources, SourceLimits::finite())?;
+    Ok(NominalMetadata {
+        resolution: program.resolution,
+        types: program.nominals,
+        uses: program.nominal_uses,
+    })
+}
+
+/// Concrete adapters retain this refusal until their actual nominal transport
+/// is integrated. Complete original source preparation is a separate judgment.
+pub(super) fn require_nominal_transport<'a>(
+    modules: impl IntoIterator<Item = (&'a str, &'a ast::Module)>,
+    mut charge: impl FnMut(Span, usize) -> Result<()>,
+) -> Result<()> {
+    for (name, module) in modules {
+        charge(module.span, module.type_decls.len() + 1)?;
+        if let Some(declaration) = module.type_decls.first() {
+            return Err(SourceError::new(
+                "unsupported",
+                declaration.span,
+                "finite type declarations require typed native transport before source execution",
+            )
+            .in_module(name));
+        }
+    }
+    Ok(())
+}
+
+pub(super) fn program_with_sources<'a, R>(
+    modules: BTreeMap<&'a str, &'a ast::Module>,
+    sources: BTreeMap<&'a str, &'a str>,
+    limits: SourceLimits,
+    finish: impl FnOnce(
+        &Resolution,
+        &BTreeMap<DefId, Interface>,
+        &StaticHelpers,
+        &BTreeMap<DefId, FunctionEffect>,
+        &[DefId],
+        &mut BTreeMap<DefId, Index<'a>>,
+        &Budget,
+        &NominalTypes,
+    ) -> Result<R>,
+) -> Result<(CheckedProgram, R)> {
+    let mut program = prepare_program(modules, sources, limits)?;
     let mut bodies = BTreeMap::new();
     let mut edges = BTreeMap::new();
     // Canonical DefId order deliberately does not choose declaration diagnostics.
@@ -922,6 +1032,7 @@ pub(super) fn program_with<'a, R>(
         &dependency_order,
         &mut program.indices,
         &program.budget,
+        &program.nominals,
     )?;
     program
         .budget
@@ -934,6 +1045,8 @@ pub(super) fn program_with<'a, R>(
     Ok((
         CheckedProgram {
             resolution: program.resolution,
+            nominals: program.nominals,
+            nominal_uses: program.nominal_uses,
             interfaces: program.interfaces,
             effects,
             lexical,
@@ -994,6 +1107,11 @@ pub(super) fn close_type_budgeted(
                 }
                 charge(span, fields.len())?;
                 pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
+                1
+            }
+            Kind::Nominal(nominal) => {
+                charge(span, nominal.metadata_cells() + nominal.fields().len())?;
+                pending.extend(nominal.fields().rev().map(|field| (field, depth + 1)));
                 1
             }
             Kind::Q(child) => {

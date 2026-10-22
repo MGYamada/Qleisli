@@ -128,6 +128,7 @@ fn pretransfer_validation_rejects_changed_predicates_and_missing_body_sites() {
                 interfaces,
                 resolution,
                 budget,
+                nominals: &Arc::default(),
             };
             validation.body_statics(&program.body_statics).unwrap();
             let mut changed = program.body_statics.clone();
@@ -388,6 +389,7 @@ fn every_runtime_operation_root_is_retained_without_an_incidental_call() {
                 interfaces,
                 resolution,
                 budget,
+                nominals: &Arc::default(),
             };
             validation.body_statics(&program.body_statics).unwrap();
             let mut changed = program.body_statics.clone();

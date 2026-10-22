@@ -6,6 +6,8 @@
 //! canonical types here and enforce their existing lowering restrictions separately.
 use std::convert::Infallible;
 use std::fmt;
+use std::sync::Arc;
+pub(super) mod nominal;
 
 /// Concrete or symbolic exact type tree. Construction remains frontend-private.
 #[derive(Clone, Debug)]
@@ -34,6 +36,7 @@ pub(super) enum Kind<N> {
     Bit,
     Bits(N),
     Parameter(TypeParameter),
+    Nominal(Arc<nominal::Nominal<N>>),
     Q(Box<Type<N>>),
     Tuple(Vec<Type<N>>),
 }
@@ -120,6 +123,7 @@ impl<N> Type<N> {
             Kind::Bit => Type::bit(),
             Kind::Bits(size) => Type::bits(resolve(size)?),
             Kind::Parameter(parameter) => bases(parameter)?,
+            Kind::Nominal(nominal) => Type::nominal(nominal.map_parts(resolve, bases)?),
             Kind::Q(basis) => Type::quantum(basis.map_parts(resolve, bases)?),
             Kind::Tuple(fields) => Type::tuple(
                 fields
@@ -132,6 +136,11 @@ impl<N> Type<N> {
     pub(super) fn parameter(parameter: TypeParameter) -> Self {
         Self {
             kind: Kind::Parameter(parameter),
+        }
+    }
+    pub(super) fn nominal(nominal: nominal::Nominal<N>) -> Self {
+        Self {
+            kind: Kind::Nominal(Arc::new(nominal)),
         }
     }
     pub(super) fn unit() -> Self {
@@ -219,6 +228,17 @@ impl<N> Type<N> {
                 }
                 pending.extend(fields.iter().rev().map(|field| (field, level + 1)));
             }
+            if let Kind::Nominal(nominal) = &ty.kind {
+                if size
+                    .nodes
+                    .checked_add(pending.len())?
+                    .checked_add(nominal.fields().len())?
+                    > nodes
+                {
+                    return None;
+                }
+                pending.extend(nominal.fields().rev().map(|field| (field, level + 1)));
+            }
         }
         Some(size)
     }
@@ -234,6 +254,7 @@ impl<N> Type<N> {
             match &ty.kind {
                 Kind::Q(_) => return true,
                 Kind::Tuple(fields) => pending.extend(fields),
+                Kind::Nominal(nominal) => pending.extend(nominal.fields()),
                 _ => {}
             }
         }
@@ -258,6 +279,7 @@ impl<N> Type<N> {
             match &ty.kind {
                 Kind::Q(inner) if !owners_atomic => pending.push((inner, depth + 1)),
                 Kind::Tuple(fields) => pending.extend(fields.iter().map(|f| (f, depth + 1))),
+                Kind::Nominal(nominal) => pending.extend(nominal.fields().map(|f| (f, depth + 1))),
                 _ => {}
             }
         }
@@ -296,6 +318,24 @@ impl<N> Type<N> {
                         (None, None) => a.name == b.name,
                         _ => false,
                     };
+                }
+                (Kind::Nominal(a), Kind::Nominal(b)) => {
+                    charge(a.metadata_cells())?;
+                    charge(b.metadata_cells())?;
+                    equal &= a.origin == b.origin;
+                    match (&a.body, &b.body) {
+                        (nominal::Body::Enum(a), nominal::Body::Enum(b)) => equal &= a == b,
+                        (nominal::Body::Record(a), nominal::Body::Record(b))
+                            if a.len() == b.len() =>
+                        {
+                            charge(a.len())?;
+                            for (a, b) in a.iter().zip(b).rev() {
+                                equal &= a.name == b.name && a.public == b.public;
+                                pending.push((&a.ty, &b.ty));
+                            }
+                        }
+                        _ => equal = false,
+                    }
                 }
                 (Kind::Q(a), Kind::Q(b)) => {
                     charge(1)?;
@@ -343,6 +383,9 @@ impl<N: fmt::Display> fmt::Display for DisplayType<'_, N> {
                     Kind::Bit => f.write_str("Bit")?,
                     Kind::Bits(n) => write!(f, "Bits<{n}>")?,
                     Kind::Parameter(parameter) => f.write_str(&parameter.name)?,
+                    Kind::Nominal(nominal) => {
+                        write!(f, "{}::{}", nominal.origin.module, nominal.origin.name)?
+                    }
                     Kind::Q(inner) => {
                         f.write_str("Q<")?;
                         pending.extend([Part::Text(">"), Part::Type(inner, Stage::Basis)]);
@@ -374,6 +417,9 @@ impl<N: fmt::Debug> fmt::Debug for SizedDebug<'_, N> {
             Kind::Bit => f.write_str("Bit"),
             Kind::Bits(n) => f.debug_tuple("Bits").field(n).finish(),
             Kind::Parameter(parameter) => f.debug_tuple("Basis").field(&parameter.name).finish(),
+            Kind::Nominal(nominal) => {
+                write!(f, "{}::{}", nominal.origin.module, nominal.origin.name)
+            }
             Kind::Q(inner) => f.debug_tuple("Q").field(&inner.sized_debug()).finish(),
             Kind::Tuple(fields) => {
                 struct Fields<'a, N>(&'a [Type<N>]);
@@ -402,6 +448,16 @@ impl Type<u32> {
                 Kind::Bit => total = total.checked_add(1)?,
                 Kind::Bits(n) => total = total.checked_add(*n)?,
                 Kind::Tuple(fields) => pending.extend(fields.iter().rev()),
+                Kind::Nominal(nominal) => match &nominal.body {
+                    nominal::Body::Enum(variants) => {
+                        let cardinality = u32::try_from(variants.len()).ok()?;
+                        if cardinality == 0 {
+                            return None;
+                        }
+                        total = total.checked_add(u32::BITS - (cardinality - 1).leading_zeros())?;
+                    }
+                    nominal::Body::Record(_) => pending.extend(nominal.fields().rev()),
+                },
                 Kind::Q(_) | Kind::Parameter(_) => return None,
             }
         }

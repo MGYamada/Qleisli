@@ -349,6 +349,7 @@ impl Checker<'_, '_> {
         }
         let mut target = Scope {
             helpers: Rc::clone(&scope.helpers),
+            nominals: Arc::clone(&scope.nominals),
             naturals: BTreeMap::new(),
             bases: BTreeMap::new(),
             operations: BTreeMap::new(),
@@ -655,6 +656,11 @@ impl Checker<'_, '_> {
             return Ok(output.map(Ty::quantum).unwrap_or(ty));
         }
         match self.resolve(name)? {
+            Target::Type(_) => Err(SourceError::new(
+                "type",
+                name.span,
+                "a type declaration is not a callable operation",
+            )),
             Target::Primitive(primitive) => {
                 self.program
                     .budget
@@ -769,6 +775,13 @@ impl Checker<'_, '_> {
             .is_none()
         {
             match self.resolve(name)? {
+                Target::Type(_) => {
+                    return Err(SourceError::new(
+                        "type",
+                        name.span,
+                        "a type declaration provides no operation access",
+                    ));
+                }
                 Target::Declaration(id) => {
                     self.tick(span)?;
                     self.effects.require_unitary(id, span);
@@ -961,6 +974,11 @@ impl Checker<'_, '_> {
             ));
         }
         match self.resolve(name)? {
+            Target::Type(_) => Err(SourceError::new(
+                "type",
+                name.span,
+                "a type declaration is not a static operation",
+            )),
             Target::Primitive(primitive) if allow_primitive => {
                 if primitive.dependent() {
                     return Err(SourceError::new(

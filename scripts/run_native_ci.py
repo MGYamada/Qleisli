@@ -109,6 +109,19 @@ def verify_coverage(report: dict, tasks: list[dict], binding: dict, manifest_has
                 raise ValueError(f"wrong or failed comparison command: {task['id']}")
 
 
+def canonical_task_environment(task: dict, root: Path) -> dict:
+    """Keep explicit checker selections, with one spelling per selected path.
+
+    Cargo tracks the raw QLEISLI_KERNEL value in build.rs. Relative and absolute
+    spellings of the same checker must not invalidate its shared target between
+    workers. Do not mutate the source manifest or replace a different selection.
+    """
+    if not task.get("env"):
+        return task
+    return task | {"env": {key: str((root / value).resolve()) if value else value
+                           for key, value in task["env"].items()}}
+
+
 def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeout: float,
             environment: dict | None = None, drivers=None) -> list[dict]:
     if workers not in (1, 2, 4):
@@ -136,9 +149,11 @@ def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeou
     # A recorded failure still leaves all other selected groups to execute.
     for task in tasks:
         if task["id"] == "native-paths":
-            record(run_task(task, root, directory / task["id"], timeout, task_environment(task)))
+            record(run_task(canonical_task_environment(task, root), root,
+                            directory / task["id"], timeout, task_environment(task)))
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, task_environment(task)): task
+        futures = {pool.submit(run_task, canonical_task_environment(task, root), root,
+                               directory / task["id"], timeout, task_environment(task)): task
                    for task in tasks if task["id"] != "native-paths"}
         for future in as_completed(futures):
             record(future.result())
@@ -183,7 +198,10 @@ def main() -> int:
         report["tasks"] = [dict(id=task["id"], status="not-run", reason="preparation did not complete",
                                 commands=task["commands"]) for task in tasks]
         manifest_hash = hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
-        environment = execution_environment()
+        # Build and execute under the same native-test cfg. Selecting the
+        # checker only after host-build invalidates every just-built test.
+        environment = execution_environment() | {
+            "QLEISLI_KERNEL": str((ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel").resolve())}
         binding = source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment)
         report.update(binding=binding, manifest_sha256=manifest_hash, expected_ids=[task["id"] for task in tasks])
         build_path = args.output / "native-build.json"
@@ -204,8 +222,7 @@ def main() -> int:
         if report["host_build"]["status"] != "passed":
             raise ValueError("native comparison host build failed: " + report["host_build"]["log"])
         report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900,
-                                  environment | {native_harness.BUILD_ENV: str(build_path),
-                                  "QLEISLI_KERNEL": str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")}, drivers)
+                                  environment | {native_harness.BUILD_ENV: str(build_path)}, drivers)
         native_harness.validate(build_path)
         if source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment) != binding or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != manifest_hash:
             raise ValueError("source or toolchain changed during comparisons")

@@ -30,6 +30,7 @@ enum FailureKind {
     BasisWidth,
     RegisterWidth(RegisterWidthError),
     Parameter,
+    Nominal,
     QuantumBasis,
     TupleArity,
     TupleLimit,
@@ -76,6 +77,10 @@ impl Failure {
             FailureKind::Parameter => (
                 ErrorCode::Unsupported,
                 "named Basis types are outside the finite lowering profile".to_owned(),
+            ),
+            FailureKind::Nominal => (
+                ErrorCode::Unsupported,
+                "nominal source types require typed native transport".to_owned(),
             ),
             FailureKind::QuantumBasis => (
                 ErrorCode::TypeMismatch,
@@ -163,6 +168,7 @@ fn measure<'a, N: FiniteRegisterSize>(
             }
         }
         Kind::Parameter(_) => return Err(Failure::at(original, FailureKind::Parameter)),
+        Kind::Nominal(_) => return Err(Failure::at(original, FailureKind::Nominal)),
         Kind::Q(basis) => {
             if stage == Stage::Basis {
                 return Err(Failure::at(original, FailureKind::QuantumBasis));
@@ -251,6 +257,7 @@ fn copy_reserved<'a, N: FiniteRegisterSize>(
             })?))
         }
         Kind::Parameter(_) => Err(Failure::at(original, FailureKind::Parameter)),
+        Kind::Nominal(_) => Err(Failure::at(original, FailureKind::Nominal)),
         Kind::Q(_) if stage == Stage::Basis => {
             Err(Failure::at(original, FailureKind::QuantumBasis))
         }

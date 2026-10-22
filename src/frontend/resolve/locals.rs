@@ -964,6 +964,8 @@ impl<'ast> Task<'ast> {
                 _ => 2,
             },
             Self::Basis(n) => match &n.kind {
+                BasisExprKind::Variant(_) | BasisExprKind::Field { .. } => 1,
+                BasisExprKind::Record(record) => record.fields.len().saturating_add(1),
                 BasisExprKind::Name(_) | BasisExprKind::Not(_) => 1,
                 BasisExprKind::Call { args, .. } => args.len().saturating_add(1),
                 BasisExprKind::Tuple(f) => f.len(),
@@ -991,6 +993,8 @@ impl<'ast> Task<'ast> {
                 children
             }
             Self::Expression(n) => match &n.kind {
+                ExprKind::Variant(_) | ExprKind::Field { .. } => 1,
+                ExprKind::Record(record) => record.fields.len().saturating_add(1),
                 ExprKind::UnsupportedClosure(closure) => closure.parameters.len().saturating_add(3),
                 ExprKind::Name(_) | ExprKind::Not(_) => 1,
                 ExprKind::Call {
@@ -1374,6 +1378,18 @@ where
                     }
                 },
                 Task::Basis(expression) => match &expression.kind {
+                    BasisExprKind::Variant(value) => tasks.push(Task::Reference(&value.type_name)),
+                    BasisExprKind::Record(record) => {
+                        tasks.extend(
+                            record
+                                .fields
+                                .iter()
+                                .rev()
+                                .map(|field| Task::Basis(&field.value)),
+                        );
+                        tasks.push(Task::Reference(&record.type_name));
+                    }
+                    BasisExprKind::Field { receiver, .. } => tasks.push(Task::Basis(receiver)),
                     BasisExprKind::Name(name) => tasks.push(Task::Reference(name)),
                     BasisExprKind::Call { callee, args } => {
                         tasks.extend(args.iter().rev().map(Task::Basis));
@@ -1410,6 +1426,18 @@ where
                     }
                 }
                 Task::Expression(expression) => match &expression.kind {
+                    ExprKind::Variant(value) => tasks.push(Task::Reference(&value.type_name)),
+                    ExprKind::Record(record) => {
+                        tasks.extend(
+                            record
+                                .fields
+                                .iter()
+                                .rev()
+                                .map(|field| Task::Expression(&field.value)),
+                        );
+                        tasks.push(Task::Reference(&record.type_name));
+                    }
+                    ExprKind::Field { receiver, .. } => tasks.push(Task::Expression(receiver)),
                     ExprKind::UnsupportedClosure(closure) => {
                         tasks.extend([Task::Leave, Task::Block(&closure.body)]);
                         tasks.extend(

@@ -6,6 +6,7 @@
 //! are not verified IR, execution handles or evidence of source preservation.
 
 mod ast;
+mod basis_binding;
 mod bindings;
 mod elaborate;
 mod lower;
@@ -30,7 +31,7 @@ pub use elaborate::{
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,
 };
-pub use raw::{CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
+pub use raw::{CheckedSourceCarrier, CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
 
 use super::error::Result;
 pub use qpe::QpeBindingProposal;
@@ -267,10 +268,14 @@ impl ParsedProgram {
             .iter()
             .map(|(name, source)| (name, source.syntax()))
             .collect();
-        let (checked, (projections, meaning_targets)) = super::check::program_with(
+        let (checked, (projections, meaning_targets)) = super::check::program_with_sources(
             originals,
+            sources
+                .iter()
+                .map(|(name, source)| (name, source.text()))
+                .collect(),
             super::check::SourceLimits::selected(),
-            |resolution, interfaces, helpers, _, order, indices, budget| {
+            |resolution, interfaces, helpers, _, order, indices, budget, nominals| {
                 let meaning_targets =
                     meaning::validate(&sources, resolution, interfaces, indices, order, budget)?;
                 let mut projections = BTreeMap::new();
@@ -284,9 +289,14 @@ impl ParsedProgram {
                     if original.kind == super::ast::FnKind::Static {
                         continue;
                     }
-                    let result =
-                        projection::project_declaration(original, &indices[&id], helpers, budget)
-                            .map_err(|e| e.in_module(&declaration.name.0));
+                    let result = projection::project_declaration(
+                        original,
+                        &indices[&id],
+                        helpers,
+                        budget,
+                        nominals,
+                    )
+                    .map_err(|e| e.in_module(&declaration.name.0));
                     if let Err(error) = &result {
                         if error.code == "limit" {
                             return Err(super::check::SourceError::from(error.clone()));
@@ -450,6 +460,17 @@ impl ParsedProgram {
                 "name",
                 format!("std::prelude cannot reexport language primitive spelling `{name}`"),
             ),
+            FailureKind::NotFunction(name) => {
+                ("type", format!("`{name}` is a type, not a function"))
+            }
+            FailureKind::EmptyEnum(name) => (
+                "type",
+                format!("finite enum `{name}` must have at least one variant"),
+            ),
+            FailureKind::DuplicateMember { owner, member } => (
+                "type",
+                format!("duplicate member `{member}` in type `{owner}`"),
+            ),
         };
         Error::new(code, failure.span, message).in_module(&failure.module)
     }
@@ -495,6 +516,13 @@ impl ParsedProgram {
         self.instantiate_with_types(entry, BTreeMap::new(), naturals, operations)
     }
 
+    /// Resolve an untrusted host Basis description against these original public
+    /// types/reexports. Bindings are rechecked by the receiving preparation;
+    /// this grants no runtime value, native acceptance or source preservation.
+    pub fn basis_binding(&self, source: &str) -> Result<BasisBinding> {
+        basis_binding::parse(source, Some(self))
+    }
+
     /// Explicit closed Basis, Nat and provider bindings. Generic declarations
     /// have already been checked independently of these concrete choices.
     pub fn instantiate_with_types(
@@ -523,6 +551,8 @@ impl ParsedProgram {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BasisBinding {
     ty: SourceType,
+    // Original host description, re-resolved in every receiving preparation.
+    selection: Option<Arc<basis_binding::Selection>>,
 }
 impl BasisBinding {
     fn checked(ty: SourceType, span: Span) -> Result<Self> {
@@ -533,84 +563,40 @@ impl BasisBinding {
                 "closed Basis binding exceeds eight bits or type storage capacity",
             ));
         }
-        Ok(Self { ty })
+        Ok(Self {
+            ty,
+            selection: None,
+        })
     }
     /// The bounded selected-source profile permits at most eight total basis
     /// bits and retains its 4096-node/depth-64 type-storage limits.
     pub fn parse(source: &str) -> Result<Self> {
-        let syntax = super::parser::parse_closed_basis(source)
-            .map_err(|e| Error::new("type", e.span, e.message))?;
-        struct Closed;
-        impl super::types::SourceTypeContext for Closed {
-            type Size = u32;
-            type Error = Error;
-            fn resolve_size(&mut self, n: &super::ast::Natural) -> Result<u32> {
-                use super::ast::NatKind;
-                let bad = || {
-                    Error::new(
-                        "type",
-                        n.span,
-                        "closed Basis size must be a bounded nonnegative u32 expression",
-                    )
-                };
-                match &n.kind {
-                    NatKind::Number(n) => u32::try_from(*n).map_err(|_| bad()),
-                    NatKind::Name(_) | NatKind::Call { .. } => Err(bad()),
-                    NatKind::Add(a, b) => self
-                        .resolve_size(a)?
-                        .checked_add(self.resolve_size(b)?)
-                        .ok_or_else(bad),
-                    NatKind::Sub(a, b) => self
-                        .resolve_size(a)?
-                        .checked_sub(self.resolve_size(b)?)
-                        .ok_or_else(bad),
-                    NatKind::Mul(a, b) => self
-                        .resolve_size(a)?
-                        .checked_mul(self.resolve_size(b)?)
-                        .ok_or_else(bad),
-                }
-            }
-            fn resolve_basis(&mut self, name: &super::ast::Ident) -> Result<SourceType> {
-                Err(Error::new(
-                    "type",
-                    name.span,
-                    format!(
-                        "closed Basis binding cannot contain named type {}",
-                        name.text
-                    ),
-                ))
-            }
-            fn quantum_basis_error(&mut self, span: Span) -> Error {
-                Error::new(
-                    "type",
-                    span,
-                    "closed Basis binding must be an ordinary type, not a Q owner",
-                )
-            }
-            fn checked_node(
-                &mut self,
-                source: &super::ast::Type,
-                _stage: super::types::Stage,
-                ty: &SourceType,
-            ) -> Result<()> {
-                if ty.storage_size(4096, 64).is_none() || ty.basis_width().is_none_or(|n| n > 8) {
-                    return Err(Error::new(
-                        "limit",
-                        source.span,
-                        "closed Basis binding exceeds eight bits or type storage capacity",
-                    ));
-                }
-                Ok(())
-            }
-        }
-        let ty = super::types::classify_source(&syntax, super::types::Stage::Basis, &mut Closed)?;
-        Self::checked(ty, syntax.span)
+        basis_binding::parse(source, None)
     }
     pub fn ty(&self) -> &SourceType {
         &self.ty
     }
     fn key(&self) -> String {
         self.ty.display(super::types::Stage::Basis).to_string()
+    }
+    // Existing structural key accounting predates source-bound names. Charge
+    // their variable-size canonical paths before allocating any cache key.
+    fn named_key_cells(&self) -> usize {
+        fn cells(ty: &SourceType) -> usize {
+            match &ty.kind {
+                super::types::Kind::Nominal(n) => n
+                    .origin
+                    .module
+                    .len()
+                    .saturating_add(n.origin.name.len())
+                    .saturating_add(2),
+                super::types::Kind::Tuple(fields) => fields
+                    .iter()
+                    .fold(0usize, |total, ty| total.saturating_add(cells(ty))),
+                _ => 0,
+            }
+        }
+        cells(&self.ty)
     }
 }
 

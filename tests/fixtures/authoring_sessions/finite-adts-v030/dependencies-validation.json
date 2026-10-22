@@ -1,0 +1,342 @@
+{
+  "format": "qleisli.nominal-dependencies-validation",
+  "version": 1,
+  "base_commit": "08eb2d2b6dea963fdab02f900e15db9c2a6ce42e",
+  "source_files": {
+    "src/frontend/check.rs": "7cb5c5aa9d88436bd5702f7d825796b07b2ebd1d0ef139866912658fe8f0a169",
+    "src/frontend/check/body.rs": "d8a733b32cb4c585be419ec2b8c5b3d923df3ac851654eb1339dc84c92288008",
+    "src/frontend/check/body/operations.rs": "84a18a240315d9cbe2dacde03a7daf5854c67c967bf9bc6af7f639c8d6a5763f",
+    "src/frontend/check/declarations.rs": "85c46dd68d1d70652914783a1df600f8af4fb89bdc4214d9cfb1c13bee22be47",
+    "src/frontend/check/nominal.rs": "6bb163656452d5bc195fc6dc6ceaf17cbe9617e0275511239acda88f97ea648b",
+    "src/frontend/check/nominal/tests.rs": "4ad1ee983a689477325a1e57577a129f8f7ba75cd9ceba9e8df4112ffa7d1cb2",
+    "src/frontend/check/static_helpers.rs": "dcf56ff262f9c484348a1a805540d115f98fbd9e353d981bf5281bb6543de307",
+    "src/frontend/compile/sources.rs": "7295fdb0e3f223ddc54982cbed5808ae8ea2559077c57b638958d0b308cd56b5",
+    "src/frontend/resolve.rs": "e1eef867f449080427e871a942f4f6208b4811bdca7999938624cd10773fecbd"
+  },
+  "reports": [
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-dependencies-v4-validation/report.json",
+      "sha256": "947bb0b4c768750200434b5de0ded4620b9500863c2e409c59a55d549d5379f3",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 52.92208574991673
+        },
+        {
+          "label": "unit",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 26.632413499988616
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 23.799662416800857
+        },
+        {
+          "label": "lint",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "clippy",
+            "--locked",
+            "--offline",
+            "--lib",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.754835708066821
+        },
+        {
+          "label": "native-snapshot",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::snapshot_tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 7.211993167176843
+        },
+        {
+          "label": "native-sources",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::sources::tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.14730729209259152
+        },
+        {
+          "label": "format",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "fmt",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 1.389331541955471
+        }
+      ],
+      "summaries": {
+        "check.stdout": [],
+        "native-snapshot.stdout": [
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 459 filtered out; finished in 0.20s"
+        ],
+        "unit.stdout": [
+          "test result: ok. 212 passed; 0 failed; 116 ignored; 0 measured; 137 filtered out; finished in 1.15s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s"
+        ],
+        "format.stdout": [],
+        "lint.stdout": [],
+        "native-sources.stdout": [
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 461 filtered out; finished in 0.00s"
+        ]
+      }
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-dependencies-thread-validation/report.json",
+      "sha256": "625e631336330d6eefcd75433f6d049c54150acf3cba49a4956a3a122e36ae07",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "thread",
+          "argv": [
+            "/opt/homebrew/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "sized_source",
+            "common_lexical_tables_survive_cloning_and_distinguish_fold_activations"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 6.353299042209983
+        }
+      ],
+      "summaries": {
+        "thread.stdout": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.02s"
+        ]
+      }
+    },
+    {
+      "path": "/private/tmp/qleisli-ci-rust-parallel-38npgq8o/adt64-type-dependencies-msrv-validation/report.json",
+      "sha256": "cad5b9fd1f578ef0e9f4c202bdb1426d1ccbabc8fedac63b3e875377f6255b92",
+      "pass": true,
+      "source_unchanged": true,
+      "commands": [
+        {
+          "label": "check",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "check",
+            "--locked",
+            "--offline",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 62.1701400000602
+        },
+        {
+          "label": "unit",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 18.502436083042994
+        },
+        {
+          "label": "integration",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "parser",
+            "--test",
+            "documentation",
+            "--test",
+            "source_collection",
+            "--test",
+            "project"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 26.87250708299689
+        },
+        {
+          "label": "thread",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--test",
+            "sized_source",
+            "common_lexical_tables_survive_cloning_and_distinguish_fold_activations"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 4.375480124959722
+        },
+        {
+          "label": "native-snapshot",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::snapshot_tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 8.4061003329698
+        },
+        {
+          "label": "native-sources",
+          "argv": [
+            "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "--lib",
+            "frontend::compile::sources::tests",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "timeout": false,
+          "seconds": 0.09099870803765953
+        }
+      ],
+      "summaries": {
+        "check.stdout": [],
+        "native-snapshot.stdout": [
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 459 filtered out; finished in 0.20s"
+        ],
+        "unit.stdout": [
+          "test result: ok. 212 passed; 0 failed; 116 ignored; 0 measured; 137 filtered out; finished in 0.88s"
+        ],
+        "thread.stdout": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.02s"
+        ],
+        "integration.stdout": [
+          "test result: ok. 11 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+          "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s",
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s",
+          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s"
+        ],
+        "native-sources.stdout": [
+          "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 461 filtered out; finished in 0.00s"
+        ]
+      }
+    }
+  ],
+  "history": {
+    "members": 28,
+    "archive_sha256": "d66e225d82a55f76a6a5dabe817a77c113132885722648c1b7606b340fdecedd",
+    "index_sha256": "b2f917333ced54d8699e8891dcb50f9418fe8cfbbe1840f2479bc0ec296c220c",
+    "expanded_file_bytes": 7318408
+  },
+  "actual_scope": [
+    "Common prepared facts retain canonical nominal trees and original field type/Nat-helper occurrences with names, spans and collection-local targets. Original alias sources remain separate from canonical identities.",
+    "Ordinary source provenance collection follows Function/Type worklists, rechecks original declaration/source/occurrence targets, traverses reexports, and reuses static helper lexical roots. Metadata-only positive/fault cases cover type-only aliases, empty records, missing facts, equal-width substitutions and changed source.",
+    "The test-only metadata adapter returns resolution/types/uses; it manufactures no body/effect judgment, IR program or accepted handle. Public typed source execution remains gated. Host-selected generic basis binding and selected typed native provenance remain subsequent work.",
+    "Retained nominal maps use Arc, preserving existing public ParsedProgram/Instantiation/ElaboratedProgram Send+Sync contracts; no unsafe implementation is introduced. The existing cloning/thread/fold-activation regression executes on both compilers.",
+    "Normal1.98.1 and sequential MSRV1.85 each pass212 relevant library+66 integration cases; default116library+1integration native ignores and137library filters remain explicit. Each separately passes6 native-enabled snapshot cases and4 source-collector cases, plus1 thread case. Both all-target compile; normal strict lint/format pass."
+  ],
+  "unchanged": {
+    "selected_native": "23d2567e1591ec4779fc99e0b4739c799790c03c03936be47e47d458aab31755",
+    "companion_sources_and_four_dirty_files": true,
+    "lean_source_revision": "dfda3910159bf9c3433fac7ad8a3a77b053c83415115e4c79e05b37ecd98cf9e"
+  },
+  "remaining": [
+    "Actual selected/host source binding through explicit versioned typed native/QDV transport and private accepted handles.",
+    "Ordinary constructors, field access/privacy, exhaustive match, body checking and coherent qmatch.",
+    "Public typed execution/fault validation, companion minimum compatibility/bin restaging, hosted CI/review and complete criterion audit."
+  ],
+  "skipped": [
+    "Ignored/filtered cases remain reported; focused metadata tests are not new typed native acceptance or a source-preservation theorem.",
+    "No Lean/proof source change, so previous actual build/audit/replay is not repeated.",
+    "No new target/cache/worktree/agent, dependency/version/cap raise, maximum quantum case, hosted review, companion rebuild/bin restaging, release/tag/publication or guarantee admission."
+  ],
+  "scope_limit": "Untrusted common/source-provenance integration only. Nominal production gate and all eight open #64 criteria remain; broader QS/PR/RS/EXACT and source/runtime/target obligations stay pending."
+}

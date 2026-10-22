@@ -195,6 +195,15 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
     type Tuple = LabelTuple;
     type Error = CompileError;
 
+    fn nominal_unavailable(&mut self, span: Span) -> CompileError {
+        self.compiler.error(
+            self.module,
+            span,
+            ErrorCode::Unsupported,
+            "ordinary nominal values require their typed native transport",
+        )
+    }
+
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), CompileError> {
         self.compiler.tick(self.module, span)?;
         if depth >= MAX_DEPTH {

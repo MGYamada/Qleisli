@@ -76,6 +76,9 @@ pub(super) fn closed_interface_budgeted(
     span: Span,
     mut charge: impl FnMut(Span, usize) -> Result<()>,
 ) -> Result<crate::frontend::closed::ClosedInterface> {
+    for binding in types.values() {
+        super::basis_binding::validate(binding, program, &mut charge)?;
+    }
     let mut source_charge =
         |span, cells| charge(span, cells).map_err(crate::frontend::check::SourceError::from);
     let checked = crate::frontend::closed::CheckedInterface::original(

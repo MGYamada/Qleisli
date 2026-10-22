@@ -283,6 +283,14 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         self.compiler.tick(module, span)?;
         Ok(match &ty.kind {
+            Kind::Nominal(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "nominal input requires typed native transport",
+                ));
+            }
             Kind::Unit => Value::Unit,
             Kind::Bit => {
                 let id = self.classical();
@@ -1202,6 +1210,12 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::Variant(_) | ExprKind::Record(_) | ExprKind::Field { .. } => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "ordinary nominal values require their typed native transport",
+            )),
             ExprKind::UnsupportedClosure(_) => Err(self.error(
                 module,
                 expr.span,

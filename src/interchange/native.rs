@@ -5,9 +5,11 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod binding;
+mod carrier;
 mod reporting;
 mod runtime;
 
+pub use carrier::CarrierChecked;
 pub(crate) use reporting::DecisionLog;
 pub use reporting::NativeDecisionSummary;
 
@@ -93,8 +95,20 @@ struct Prepared {
 
 impl Prepared {
     fn new(subject: Arc<Subject>) -> Result<Self> {
+        Self::with_carrier(subject, None)
+    }
+
+    fn with_carrier(
+        subject: Arc<Subject>,
+        carrier: Option<&super::carrier::Request>,
+    ) -> Result<Self> {
         let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
-        let decoded = Arc::new(super::decode_subject(&subject, &mut budget)?);
+        let decoded = Arc::new(match carrier {
+            None => super::decode_subject(&subject, &mut budget)?,
+            Some(request) => {
+                super::decode_subject_with_carrier(&subject, &mut budget, Some(request))?
+            }
+        });
         let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
         Ok(Self {
             subject,
@@ -446,8 +460,27 @@ impl Proposal {
         version: Version,
         request: Option<&[u8]>,
     ) -> Result<Self> {
+        Self::from_raw_with_sources(program, interface, version, request, &[])
+    }
+    /// Attach bounded original rows as untrusted proposal data. Ordinary native
+    /// checking still rejects rows with no evidence reference; carrier checking
+    /// independently binds the extra exact rows to its original nominal atoms.
+    pub(crate) fn from_raw_with_sources(
+        program: &RawProgram,
+        interface: Option<&RootInterface>,
+        version: Version,
+        request: Option<&[u8]>,
+        sources: &[(String, String)],
+    ) -> Result<Self> {
+        if sources.len() > 128 {
+            return Err(Error::limit("more than 128 sources"));
+        }
+        let mut encoder = Encoder::new(version);
+        for (path, text) in sources {
+            encoder.source(path, text)?;
+        }
         Self::new(
-            &super::encode_proposal(program, interface, Encoder::new(version))?,
+            &super::encode_proposal(program, interface, encoder)?,
             request,
         )
     }

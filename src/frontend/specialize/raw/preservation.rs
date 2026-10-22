@@ -64,18 +64,8 @@ fn quantum_bit(ty: &SourceType) -> bool {
 
 fn basis_width(ty: &SourceType) -> Option<usize> {
     ty.storage_size(4096, 64)?;
-    let mut pending = vec![ty];
-    let mut width = 0usize;
-    while let Some(ty) = pending.pop() {
-        match &ty.kind {
-            Kind::Unit => {}
-            Kind::Bit => width += 1,
-            Kind::Bits(bits) => width = width.checked_add(*bits as usize)?,
-            Kind::Tuple(fields) => pending.extend(fields),
-            _ => return None,
-        }
-    }
-    Some(width)
+    ty.basis_width()
+        .and_then(|width| usize::try_from(width).ok())
 }
 fn quantum_width(ty: &SourceType) -> Option<usize> {
     ty.quantum_basis().and_then(basis_width)
@@ -566,6 +556,12 @@ impl Replay<'_, '_> {
                 return Err(site.invalid("source value field differs from its exact type tree"));
             }
             match &expected.kind {
+                Kind::Nominal(_) => {
+                    return Err(site.error(
+                        "unsupported",
+                        "nominal values require typed native transport",
+                    ));
+                }
                 Kind::Unit => {
                     if value.identity().is_some() || !value.fields().is_empty() {
                         return Err(site.invalid("ordinary Unit has an identity or fields"));

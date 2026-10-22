@@ -354,6 +354,14 @@ impl<'a> Compiler<'a> {
                     return Ok(());
                 }
                 Target::Primitive(_) => return Ok(()),
+                Target::Type(_) => {
+                    return Err(self.dormant_error(
+                        module,
+                        operation.span,
+                        ErrorCode::TypeMismatch,
+                        "a type declaration is not an operation provider",
+                    )?);
+                }
             }
         }
         self.closed_operation(module, operation, environment, requested)

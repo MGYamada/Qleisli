@@ -712,21 +712,101 @@ value or quantum owner. A runtime function named `type` remains an ordinary
 function; existing contextual static Nat names such as Bit retain their category.
 No argument is inferred from expected width, type or an available provider.
 
-The Rust API uses `BasisBinding::parse`, `instantiate_with_types` and
-`OperationBinding::with_types`. The existing `instantiate` and provider `new`
+Explicit `type(T)` also retains an original resolved finite enum or record,
+including aliases and closed Nat-helper field sizes. The common static plan
+binds that original type occurrence to its canonical declaration in the same
+checked collection. Field sizes remain rooted in the type declaration; they
+are not invented Nat occurrences in the calling function. Selected projection
+keeps the complete nominal source tree. This preparation grants no execution
+or inverse/control capability.
+
+The Rust API uses `BasisBinding::parse`, `ParsedProgram::basis_binding`,
+`instantiate_with_types` and `OperationBinding::with_types`.
+The context-free parser retains its built-in-only contract. The preparation's
+`basis_binding` additionally resolves fully qualified public finite type names
+and public reexports, for example `program.basis_binding("labels::Tri")`.
+It retains the original canonical tree and relevant declaration, alias and
+transitive Nat-helper source bytes. Every receiving preparation rechecks that
+selection before closure/cache use; private names, changed dependencies and
+same-width substitute trees reject. A portable built-in description needs no
+source context. Host selection grants no module-private privilege.
+
+`BasisBinding::carrier_description()` produces the ordered prefix atoms for
+an untrusted internal carrier request. It retains exact nominal source bytes,
+variant/field order, product shape and singleton/zero-width nodes. Its existing
+carrier profile bounds are six physical bits, 128 nodes and prefix depth 32;
+producer work remains bounded by 100000 cells. Logical cardinality and code
+coordinates are separate from physical width. Constructing these atoms grants
+no accepted handle or source-preservation result; the complete typed ports,
+actual body/dependencies and exact logical request still need fresh native
+checking.
+
+The existing `instantiate` and provider `new`
 methods supply empty type maps. Entry types use `--type=A=Bit` or an exact
 closed ordinary product in the common CLI. A provider binds its own declaration's
 types separately with `--operation-type=U.B=Bit`. Missing, extra and wrong-category
 bindings reject; a provider does not inherit the caller's parameters by name.
 `--basis=N` retains its distinct hierarchy runtime-input role.
 
-Closed descriptions use the same type grammar, require EOF and reject unknown
+Closed descriptions use the same type grammar, require EOF and reject unavailable
 names, quantum owners, unresolved sizes and invalid bounded arithmetic. This
 selected profile retains eight total basis bits, 4096 type nodes and depth 64.
 Substitution expansion is checked before copied trees are allocated, and retained
 type bindings and cache data count against the existing 100000-cell preparation
 budget. The existing 1024 calls/folds, call depth 16 and 10000 steps remain.
 These preparation limits are not a discharged quantitative RS theorem.
+
+Complete original type/body/effect preparation now retains nominal declarations;
+it does not silently omit their unused functions or quantum effects. A host Basis
+description and an `Instantiation` remain untrusted preparation data. Ordinary
+nominal source execution still requires its typed native route: both concrete
+adapters explicitly reject source collections containing these declarations
+before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
+actual public-name/source checks, then the remaining transport refusal. This
+does not enable ordinary nominal execution, `match`, `qmatch` or a
+source-preservation theorem, and it grants no inverse/control access.
+
+The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
+has a separate bounded, check-only route. It uses the same common judgment,
+selected Builder and Raw emitter for pure quantum owners and ordinary Unit
+products, retaining complete nominal trees. The caller supplies the independent
+exact logical matrix; the adapter never infers the requested action from its
+emitted physical matrix. Fresh native checking binds typed input/output owner
+forests, public effects, original nominal declarations, actual Raw dependencies
+and the exact code/body equation. A second reader replays the retained source
+steps against that same immutable native-compared body.
+
+Original source rows must be covered by exact nominal origins in the request;
+unrelated rows and currently uncovered helper/import-only modules refuse.
+Ordinary native checking retains its evidence-only source-use rule. The returned
+`CheckedSourceCarrier` retains its complete source preparation privately and
+offers artifact/request inspection, with no ordinary accepted-program escape,
+runtime invocation, inverse or controlled access. `source_meaning_verified()`
+remains false: retained-step replay does not prove original AST elaboration.
+This route checks real enum/record identity and scalar bodies without enabling
+ordinary constructor values, match, qmatch or general source execution.
+
+Common source preparation also checks fieldless `Type::Variant` values,
+explicit `Type { field: expression, ... }` records and ordinary `value.field`
+projection, in runtime blocks and classical bodies. Type references use the
+original occurrence table, including public reexports and local shadowing;
+a local Basis or runtime name cannot fall back to a same-spelled global type.
+Member names and diagnostics retain their original source spans. A qualified
+call remains a function call; no payload variant or imported bare-variant API
+is introduced.
+
+Every record field is supplied exactly once with its exact declared ordinary
+type. Initializers are checked in written evaluation order; the resulting type
+retains declaration order and nominal identity. Field privacy is checked in the
+original declaring module, including zero-width fields. Projection checks its
+receiver once and requires an ordinary record; `Q<Record>` remains one owner,
+with no implicit decomposition or observation. Initializer calls retain their
+normal effects, dependencies and ownership transitions, so observation cannot
+be hidden behind a Unitary/Isometry annotation. Empty records and singleton
+enums are distinct from Unit and Bits<0>. Shorthand, record updates, methods
+and general const<T> remain outside these forms. Concrete nominal lowering,
+typed native value transport and source correspondence remain required before
+execution; successful common preparation supplies no accepted handle.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

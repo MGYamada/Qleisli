@@ -28,6 +28,8 @@ pub enum TokenKind {
     LBracket,
     RBracket,
     Pub,
+    Enum,
+    Struct,
     Classical,
     Basis,
     Isometry,
@@ -54,6 +56,7 @@ pub enum TokenKind {
     Star,
     Caret,
     DotDot,
+    Dot,
     EqualEqual,
     NotEqual,
     LessEqual,
@@ -107,6 +110,8 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "conjugate_op" => TokenKind::ConjugateOp,
 
         "pub" => TokenKind::Pub,
+        "enum" => TokenKind::Enum,
+        "struct" => TokenKind::Struct,
         "classical" => TokenKind::Classical,
         "basis" => TokenKind::Basis,
         // Keep the old word reserved for the located migration error below.
@@ -165,6 +170,8 @@ impl TokenKind {
             Self::LBracket => "`[`",
             Self::RBracket => "`]`",
             Self::Pub => "`pub`",
+            Self::Enum => "`enum`",
+            Self::Struct => "`struct`",
             Self::Classical => "`classical`",
             Self::Basis => "`basis`",
             Self::Isometry => "`isometry`",
@@ -190,6 +197,7 @@ impl TokenKind {
             Self::Star => "`*`",
             Self::Caret => "`^`",
             Self::DotDot => "`..`",
+            Self::Dot => "`.`",
             Self::EqualEqual => "`==`",
             Self::NotEqual => "`!=`",
             Self::LessEqual => "`<=`",
@@ -316,6 +324,7 @@ fn scan(
                     TokenKind::HeaderBang
                 }
                 '.' if scanner.join(&mut token, '.') => TokenKind::DotDot,
+                '.' => TokenKind::Dot,
                 '+' => TokenKind::Plus,
                 '*' => TokenKind::Star,
                 '^' => TokenKind::Caret,
@@ -328,9 +337,7 @@ fn scan(
                 '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
                 '<' => TokenKind::LAngle,
                 _ => {
-                    let message = if ch == '.' {
-                        "unexpected character `.`; field and method receiver syntax is unsupported; use an ordinary function call. For quantum access, write explicit `excl ...` or `ctrl ...` arguments: receiver adjustment cannot infer or forward quantum access".into()
-                    } else if ch == '!' {
+                    let message = if ch == '!' {
                         match tokens.last().map(|token| &token.kind) {
                             Some(TokenKind::Ident(name))
                                 if matches!(
