@@ -52,7 +52,10 @@ pub(in crate::frontend) fn evaluate<C: Context>(
 ) -> Result<C::Value, C::Error> {
     context.enter(expr.span, depth)?;
     let value = match &expr.kind {
-        BasisExprKind::Variant(_) | BasisExprKind::Record(_) | BasisExprKind::Field { .. } => {
+        BasisExprKind::Variant(_)
+        | BasisExprKind::Record(_)
+        | BasisExprKind::Field { .. }
+        | BasisExprKind::Match(_) => {
             return Err(context.nominal_unavailable(expr.span));
         }
         BasisExprKind::Name(name) => context.name(name, env)?,

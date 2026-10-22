@@ -18,6 +18,17 @@ impl Checker<'_, '_> {
     fn basis_inner(&mut self, expr: &BasisExpr, scope: &mut Scope) -> Result<Ty> {
         self.tick(expr.span)?;
         let result = match &expr.kind {
+            BasisExprKind::Match(selection) => {
+                let scrutinee = self.basis_expr(&selection.scrutinee, scope)?;
+                self.match_arms(
+                    &scrutinee,
+                    &selection.arms,
+                    scope,
+                    None,
+                    expr.span,
+                    |checker, body, scope, _| checker.basis_expr(body, scope),
+                )?
+            }
             BasisExprKind::Variant(value) => self.variant_value(value)?,
             BasisExprKind::Record(record) => {
                 self.record_value(record, scope, |checker, value, scope, _| {

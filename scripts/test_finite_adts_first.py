@@ -25,6 +25,12 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Native checks: "tests/fixtures/authoring_sessions/finite-adts-v030/native-validation.json".
 # Immutable extraction: "tests/fixtures/authoring_sessions/finite-adts-v030/native-v2-extract-stdout.json.gz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/native-v2-extract-recovery.json".
+# Ordinary runtime history: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-runtime-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-runtime-index.json".
+# Original retention proposal: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-runtime-retention.json".
+# Ordinary match history: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-index.json".
+# Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-validation.json".
 import gzip
 import hashlib
 import io
@@ -1074,6 +1080,322 @@ class CarrierSourceHistory(unittest.TestCase):
             validation['history']['index']['bytes'] +
             (FIXTURES / 'carrier-source-validation.json').stat().st_size, 7_360_000)
 
+
+
+class OrdinaryRuntimeFirstHistory(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history(
+            'ordinary-runtime-index.json', 'ordinary-runtime-first.tar.xz',
+            '458ea4695d8f9506ec9e2d7aef325a0e8224c98ec03c5245b867ca4d5b1bab58',
+            581156, 'f8660884ef336f824e0c6b93600795e775304dc6636506585dab3aba14c8e2c7',
+            3410855)
+        cls.originals = json.loads(cls.data['original-records.json'])['records']
+        cls.index = json.loads((FIXTURES / 'ordinary-runtime-index.json').read_bytes())
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                         (row['bytes'], row['sha256']))
+        return value
+
+    def test_all_original_files_are_retained_losslessly_with_one_copy_per_object(self):
+        self.assertEqual(len(self.data), 41)
+        self.assertEqual(len(self.originals), 58)
+        self.assertEqual(self.originals, self.index['original_records'])
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 6721406)
+        used = set()
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+            used.add(row['record'])
+        self.assertEqual(set(self.data), used | {'original-records.json'})
+        self.assertEqual(len(used), 40)
+
+    def test_original_predictions_and_all_fourteen_project_files_remain_frozen(self):
+        original = self.raw('manifest.json')
+        self.assertEqual(hashlib.sha256(original).hexdigest(),
+                         '5bc7b8f56ccb6c1164bee1021401b7f15755fba7a7da6722883f9d638cbeff0c')
+        manifest = json.loads(original)
+        self.assertEqual(manifest['study_kind'], 'informed-study')
+        self.assertEqual(len(manifest['cases']), 6)
+        self.assertEqual(manifest['bounds']['max_live_qubits'], 1)
+        self.assertEqual(len(manifest['records']), 14)
+        for name, row in manifest['records'].items():
+            raw = self.raw(name)
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                             (row['bytes'], row['sha256']))
+            if name.endswith('/Qargo.toml'):
+                self.assertEqual(raw, b'schema-version = 2\n\n[qrate]\nedition = "2026"\n')
+        self.assertEqual(self.raw('projects/foreign-enum-label/left.qli'),
+                         self.raw('projects/foreign-enum-label/right.qli'))
+        self.assertIn(b'fn missing', self.raw('projects/missing-and-duplicate-arms/main.qli'))
+        self.assertIn(b'fn duplicate', self.raw('projects/missing-and-duplicate-arms/main.qli'))
+
+    def test_every_actual_check_record_keeps_full_streams_and_first_barrier(self):
+        report = json.loads(self.raw('observations-01/report.json'))
+        self.assertTrue(report['complete'])
+        self.assertTrue(report['stable'])
+        self.assertEqual(len(report['commands']), 12)
+        codes = []
+        spans = {'enum-helper': (0, 20), 'record-zero-data': (0, 17),
+                 'runtime-tri-match': (157, 158), 'missing-and-duplicate-arms': (70, 71),
+                 'foreign-enum-label': (54, 55), 'quantum-match-unused': (59, 60)}
+        for ordinal, row in enumerate(report['commands']):
+            prefix = f"observations-01/{ordinal:02d}-{row['case']}-{row['route']}/"
+            self.assertEqual(json.loads(self.raw(prefix + 'command.json')), row)
+            self.assertEqual(row['argv'][1], 'check')
+            self.assertEqual(row['exit_code'], 1)
+            self.assertFalse(row['timed_out'])
+            stdout, stderr = self.raw(prefix + 'stdout'), self.raw(prefix + 'stderr')
+            self.assertEqual(hashlib.sha256(stdout).hexdigest(), row['stdout_sha256'])
+            self.assertEqual(hashlib.sha256(stderr).hexdigest(), row['stderr_sha256'])
+            self.assertEqual(stderr, b'')
+            result = json.loads(stdout)
+            self.assertEqual(result['command'], 'check')
+            self.assertEqual(result['outcome'], 'error')
+            self.assertIsNone(result['result'])
+            self.assertEqual(len(result['diagnostics']), 1)
+            diagnostic = result['diagnostics'][0]
+            primary = diagnostic['primary']
+            self.assertEqual((primary['start'], primary['end']), spans[row['case']])
+            expected = 'unsupported' if ordinal < 4 else 'parse'
+            self.assertEqual(diagnostic['code'], expected)
+            self.assertEqual(diagnostic['message'],
+                'finite type declarations require typed native transport before source execution'
+                if expected == 'unsupported' else 'expected `}`, found identifier')
+            codes.append(diagnostic['code'])
+        self.assertEqual(codes.count('unsupported'), 4)
+        self.assertEqual(codes.count('parse'), 8)
+
+    def test_complete_original_windows_are_shared_without_inventory_compaction(self):
+        before_raw = self.raw('observations-01/before.json')
+        self.assertEqual(before_raw, self.raw('observations-01/after.json'))
+        self.assertEqual(len(before_raw), 3327228)
+        self.assertEqual(hashlib.sha256(before_raw).hexdigest(),
+                         'f42b892f9ca52a30fcac1c85a8d6d9526eb39c119c5663748437fabfd8ac1527')
+        before = json.loads(before_raw)
+        self.assertEqual(len(before['root']), 20230)
+        canonical = json.dumps(before['root'], sort_keys=True, separators=(',', ':'),
+                               ensure_ascii=False).encode('utf-8')
+        self.assertEqual(hashlib.sha256(canonical).hexdigest(),
+                         '744b1f5a32762765faca58ff39fc529ef229516b3a57f17fc4587c0c221e7afb')
+        for name, digest in before['study'].items():
+            self.assertEqual(hashlib.sha256(self.raw(name)).hexdigest(), digest)
+        self.assertEqual(before['manifest'], hashlib.sha256(self.raw('manifest.json')).hexdigest())
+        self.assertEqual(self.originals['observations-01/before.json']['record'],
+                         self.originals['observations-01/after.json']['record'])
+
+    def test_inspection_preserves_unknown_native_invocation_and_semantic_limits(self):
+        raw = self.raw('inspection-01.json')
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '1d3d8f059255e8a849fb4f5fc33f9e9d9a0d1cb40d7723fed72b1d699a7e851e')
+        inspection = json.loads(raw)
+        self.assertEqual(inspection['summary']['check_commands'], 12)
+        self.assertEqual(inspection['summary']['run_commands'], 0)
+        self.assertEqual(inspection['summary']['unexpected_diagnostics'], [])
+        self.assertIn('Unknown: no native invocation trace',
+                      inspection['summary']['native_invocation'])
+        context = json.loads(self.raw('observations-01/context.json'))
+        self.assertIn('No native invocation trace is collected.', context['identity_limit'])
+        self.assertIn('full original streams are not retained',
+                      context['first_version_probe']['observation'])
+        retention_raw = (FIXTURES / 'ordinary-runtime-retention.json').read_bytes()
+        self.assertEqual((len(retention_raw), hashlib.sha256(retention_raw).hexdigest()),
+                         (2646, '38ceb1dc5e98aec0203b70512a18bd1ba49e48d989e66ef81d7979eba51b00d7'))
+        retention = json.loads(retention_raw)
+        self.assertEqual(retention['format'], 'qleisli.inert-retention-proposal')
+        self.assertIn('have not been performed by this proposal', retention['pending'])
+        self.assertEqual(retention['original_files'], 58)
+        self.assertEqual(retention['original_bytes'], 6721406)
+        self.assertEqual(retention['archive']['sha256'],
+                         'f8660884ef336f824e0c6b93600795e775304dc6636506585dab3aba14c8e2c7')
+
+
+class OrdinaryMatchAuthoringHistory(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history(
+            'ordinary-match-index.json', 'ordinary-match-first.tar.xz',
+            '1d29c4ad0fd628787e6c721881c97fcefaee843c5a55bc27fdadb9341e82de30',
+            1777180, 'ebb598f4e10b4a6f6fb5beb09f85ec0c3a91251e6208582a377a6441e2a7a2d5',
+            99006698)
+        cls.originals = json.loads(cls.data['original-records.json'])['records']
+        cls.index = json.loads((FIXTURES / 'ordinary-match-index.json').read_bytes())
+        raw = (FIXTURES / 'ordinary-match-validation.json').read_bytes()
+        if (len(raw), hashlib.sha256(raw).hexdigest()) != (
+                12589, '958858fd5c7869e173101aace182f1b3f14e1f654e6eacd7b5956bcddd779f55'):
+            raise AssertionError('ordinary match retention proposal changed')
+        cls.validation = json.loads(raw)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                         (row['bytes'], row['sha256']), name)
+        return value
+
+    def record(self, stage, name):
+        return json.loads(self.raw(stage + '/' + name))
+
+    def test_complete_original_inventory_and_whole_file_deduplication(self):
+        self.assertEqual((len(self.data), len(self.originals)), (98, 294))
+        self.assertEqual(self.originals, self.index['original_records'])
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 109807776)
+        used = set()
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+            used.add(row['record'])
+        self.assertEqual(set(self.data), used | {'original-records.json'})
+        self.assertEqual(len(used), 97)
+
+    def test_full_windows_bind_captured_sources_and_observers_without_execution(self):
+        expected = [False, False, True, False, False, False, True, True, True, True]
+        windows = self.validation['windows']
+        self.assertEqual([row['pass'] for row in windows], expected)
+        for summary in windows:
+            stage = summary['window']
+            report = self.record(stage, 'report.json')
+            before = self.record(stage, 'before.json')
+            plan = self.record(stage, 'plan.json')
+            self.assertEqual(before, report['before'])
+            self.assertEqual(before, report['after'])
+            self.assertEqual(len(before['files']), 20237)
+            self.assertEqual(before['kernel'],
+                '6d4ccbaefa09985169acd12fe74fd6c2a1b5ad45b8dc389b68bdc66df510c57b')
+            self.assertTrue(report['stable'])
+            self.assertEqual(report['exit_code'], 0 if summary['pass'] else 101)
+            self.assertEqual(report['pass'], summary['pass'])
+            self.assertIsNone(report['stop_reason'])
+            self.assertEqual(report['rss_group_limit_kib'], 3145728)
+            self.assertEqual(report['heavy_job_concurrency'], 1)
+            self.assertLessEqual(report['peak_rss_kib'], 3145728)
+            self.assertEqual(plan['argv'], report['argv'])
+            self.assertEqual(plan['environment'],
+                {'CARGO_BUILD_JOBS': '1', 'RUST_TEST_THREADS': '1', 'LEAN_NUM_THREADS': '1'})
+            for name in ('before', 'report'):
+                raw = self.raw(stage + '/' + name + '.json')
+                self.assertEqual(summary[name],
+                    {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+            prefix = stage + '/sources/'
+            captured = [name for name in self.originals if name.startswith(prefix)]
+            self.assertGreaterEqual(len(captured), 18)
+            for name in captured:
+                self.assertEqual(hashlib.sha256(self.raw(name)).hexdigest(),
+                                 before['files'][name[len(prefix):]], name)
+            observer = ('run-bounded-runtime-3g.py' if before['explicit_inputs']
+                        else 'run-bounded-rust185-integration-3g.py')
+            self.assertEqual(self.raw(stage + '/observer.py.txt'), self.raw(observer))
+            for name, digest in before['explicit_inputs'].items():
+                held = self.raw(stage + '/explicit-inputs/' + PurePosixPath(name).name)
+                self.assertEqual(hashlib.sha256(held).hexdigest(), digest)
+                self.assertEqual(held, self.raw(PurePosixPath(name).name))
+
+    def test_first_compile_and_three_frontend_test_failures_remain_failed(self):
+        self.assertIn(b'no method named `try_node_id_expr`',
+                      self.raw('ordinary-match-msrv-01/stderr'))
+        self.assertNotIn(b'test result:', self.raw('ordinary-match-msrv-01/stdout'))
+        out = self.raw('ordinary-match-msrv-02/stdout')
+        for text in (b'371 passed; 3 failed', b'unresolved function init0',
+                     b'`leaf::E` is not public', b'left: "name"', b'right: "effect"'):
+            self.assertIn(text, out)
+        first = self.raw('ordinary-match-msrv-01/sources/src/frontend/resolve/locals.rs')
+        self.assertIn(b'try_node_id_expr', first)
+        self.assertNotEqual(first,
+            self.raw('ordinary-match-msrv-03/sources/src/frontend/resolve/locals.rs'))
+
+    def test_three_integration_expectation_failures_are_not_successful_runs(self):
+        first = self.raw('ordinary-match-integration-msrv-01/stdout')
+        self.assertIn(b'40 passed; 1 failed', first)
+        self.assertIn(b'error.message.contains("`match`")', first)
+        second = self.raw('ordinary-match-integration-msrv-02/stdout')
+        self.assertIn(b'41 passed; 0 failed', second)
+        self.assertIn(b'5 passed; 1 failed', second)
+        self.assertIn(b'called `Result::unwrap_err()` on an `Ok` value: Instantiation', second)
+        third = self.raw('ordinary-match-integration-msrv-03/stdout')
+        self.assertIn(b'5 passed; 1 failed', third)
+        self.assertIn(b'left: "type_mismatch"', third)
+        self.assertIn(b'right: "type"', third)
+        self.assertIn(b'non-exhaustive match: missing variant B', third)
+
+    def test_passing_scopes_preserve_filters_and_actual_driver_commands(self):
+        self.assertIn(b'374 passed; 0 failed; 0 ignored; 0 measured; 147 filtered out',
+                      self.raw('ordinary-match-msrv-03/stdout'))
+        for stage in ('ordinary-match-integration-msrv-04', 'ordinary-match-stable-01'):
+            out = self.raw(stage + '/stdout')
+            self.assertIn(b'41 passed; 0 failed; 0 ignored', out)
+            self.assertIn(b'6 passed; 0 failed; 0 ignored', out)
+        self.assertIn(b'374 passed; 0 failed; 0 ignored; 0 measured; 147 filtered out',
+                      self.raw('ordinary-match-stable-01/stdout'))
+        lint = self.record('ordinary-match-msrv-clippy-01', 'report.json')['argv']
+        self.assertEqual(lint[-7:], ['clippy', '--offline', '--locked', '--all-targets', '--', '-D', 'warnings'])
+        self.assertEqual(self.raw('ordinary-match-msrv-clippy-01/stdout'), b'')
+        driver = self.raw('run-ordinary-match-stable.py')
+        self.assertEqual(hashlib.sha256(driver).hexdigest(),
+                         '81449ee23dc66e1476dbd5f1c310edd677b25a33713a8407c8eb912c5e55c89f')
+        self.assertIn(b'"build", "--offline", "--locked", "--bin", "qleisli"', driver)
+
+    def test_twelve_current_cli_refusals_bind_the_unchanged_first_sources(self):
+        stage = 'ordinary-match-current-cli-01'
+        report = self.record(stage, 'report.json')
+        self.assertTrue(report['stable'])
+        self.assertTrue(report['passed'])
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(report['before'], self.record(stage, 'before.json'))
+        self.assertEqual(report['source_manifest_sha256'],
+                         '5bc7b8f56ccb6c1164bee1021401b7f15755fba7a7da6722883f9d638cbeff0c')
+        old = json.loads((FIXTURES / 'ordinary-runtime-index.json').read_bytes())['original_records']
+        self.assertEqual(len(report['before']['sources']), 14)
+        for name, digest in report['before']['sources'].items():
+            self.assertEqual(digest, old[name]['sha256'])
+        self.assertEqual(len(report['commands']), 12)
+        for ordinal, row in enumerate(report['commands']):
+            self.assertEqual(row['argv'][1], 'check')
+            self.assertEqual(row['exit_code'], 1)
+            self.assertTrue(row['passed'])
+            prefix = f"{stage}/{ordinal:02d}-{row['case']}-{row['route']}"
+            stdout, stderr = self.raw(prefix + '.stdout'), self.raw(prefix + '.stderr')
+            self.assertEqual(hashlib.sha256(stdout).hexdigest(), row['stdout_sha256'])
+            self.assertEqual(hashlib.sha256(stderr).hexdigest(), row['stderr_sha256'])
+            self.assertEqual(stderr, b'')
+            result = json.loads(stdout)
+            self.assertEqual(result['outcome'], 'error')
+            self.assertIsNone(result['result'])
+            self.assertEqual(result['diagnostics'], [row['diagnostic']])
+            code = 'unsupported' if ordinal < 6 else (
+                'type_mismatch' if row['route'] == 'ordinary' else 'type')
+            self.assertEqual(row['diagnostic']['code'], code)
+        self.assertIn('missing variant C', report['commands'][6]['diagnostic']['message'])
+        self.assertIn('expected `left::Tri`, found `right::Tri`',
+                      report['commands'][8]['diagnostic']['message'])
+        self.assertIn('ordinary match requires', report['commands'][10]['diagnostic']['message'])
+
+    def test_original_packet_and_proposal_scope_remain_unchanged(self):
+        for name, row in self.validation['unchanged_original_packet'].items():
+            raw = (FIXTURES / name).read_bytes()
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                             (row['bytes'], row['sha256']))
+        self.assertEqual(self.validation['format'], 'qleisli.inert-retention-proposal')
+        self.assertIn('PREPARED ONLY', self.validation['state'])
+        self.assertIn('have not been performed by this proposal', self.validation['pending'])
+        self.assertEqual(self.validation['inner_cli']['accepted_runtime_commands'], 0)
+        self.assertEqual(self.validation['inner_cli']['run_commands'], 0)
+        self.assertIn('No native invocation trace', self.validation['limits'][2])
+        self.assertLessEqual(sum((FIXTURES / name).stat().st_size for name in (
+            'ordinary-match-first.tar.xz', 'ordinary-match-index.json',
+            'ordinary-match-validation.json')), 1_910_000)
 
 
 if __name__ == '__main__':

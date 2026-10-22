@@ -469,3 +469,104 @@ separate first test invocation had an import-path error and remains failed.
 The working fixture budget passes at 17,228 files / 150,619,622 bytes, and local
 link checks pass. These are retention/packaging observations; all required
 proof and hosted checks above remain pending.
+
+The [ordinary runtime first history](ordinary-runtime-first.tar.xz),
+[index](ordinary-runtime-index.json) and
+[original retention proposal](ordinary-runtime-retention.json) preserve 58 original
+files / 6,721,406 original bytes. The deterministic archive has 41 regular
+members / 3,410,855 expanded bytes / 581,156 stored bytes. Its 40 complete
+content-addressed objects retain every original byte; the index and archived
+map identify each original path, length and hash. Identical complete files
+share one object. In particular, the two full 3,327,228-byte source windows
+share one complete object; none of their 20,230-entry Root inventory is
+omitted. All 58 external originals were compared byte-for-byte with their
+retained objects and remain unchanged without deletion.
+
+Six informed projects retain eight first `.qli` sources, six edition-2026
+manifests and independent predictions frozen before observations. The cases
+cover an ordinary enum helper, record projection with distinct zero-data
+nominal fields, measured-Bit selection through a three-state ordinary enum,
+missing/duplicate match arms, a foreign same-spelled enum label and ordinary
+match on a quantum owner in an unused function. Only one proposed runtime
+case allocates a qubit. No general `const<T>` or #39/#63 extension is added.
+
+All twelve actual commands are `check`, not `run`, and exit 1 with empty
+stderr. Both source routes give four nominal transport refusals and eight
+parser refusals. The parser stops at the scrutinee identifier after `match`;
+these are not exhaustiveness, nominal identity, ownership or runtime checks.
+The missing/duplicate project stops in its first helper and supplies no
+independent duplicate-arm refusal. No native invocation trace was collected;
+frontend diagnostics and a selected checker argument do not establish whether
+that executable was invoked. The unsupported version probe has only its
+recorded summary; unavailable full streams are not recreated.
+
+The separate inspection retains all first diagnostics and exact source spans,
+recomputes original hashes, and distinguishes actual barriers from desired
+semantic properties. Recorded before/after equality binds the observed files
+and executable hashes; it is not source/binary attestation or a preservation
+theorem. The installed passive reader never executes or extracts saved observers or
+sources. The retention JSON keeps its original proposal-time status and
+unfinished checks unchanged; current installation and actual validation are
+recorded separately. No accepted nominal runtime, completed issue criterion,
+guarantee admission or release follows from retention. All broader pending
+obligations remain unchanged.
+
+Fresh passive checks pass all 59 finite-ADT history tests, including five for
+this packet, and all 25 fixture-reference unit tests. The unchanged static
+reference walker reaches all three new assets from the installed reader. The
+working fixture budget passes within the existing limits. These are local
+retention checks; the committed/hosted reference and size gates remain separate.
+No Rust or Lean build or archived source execution is part of this installation.
+
+The [ordinary match authoring history](ordinary-match-first.tar.xz),
+[index](ordinary-match-index.json) and
+[proposal-time validation record](ordinary-match-validation.json) preserve all
+294 original files / 109,807,776 original bytes from ten bounded validation
+windows, their inner CLI observations and associated observers. The archive
+stores 97 complete content-addressed objects and one original-path map:
+98 regular members / 99,006,698 expanded bytes / 1,777,180 stored bytes.
+Identical complete files share one object. Full stdout/stderr, exact captured
+changed sources, plans and complete before/after reports remain intact;
+each outer source inventory retains all 20,237 entries. The original
+ordinary-runtime first archive, index and retention JSON remain byte-identical.
+
+Five windows failed. The first MSRV attempt did not compile because a test
+called a nonexistent `Index::try_node_id_expr`. The second reached 371 passing
+and three failing frontend tests: two encountered unresolved `init0`, while
+one encountered private `leaf::E`. Three integration attempts then exposed,
+respectively, an over-specific parser diagnostic expectation, an incorrect
+`unwrap_err` on successful preparation, and a `type` expectation where the
+ordinary route reports `type_mismatch`. Their full failures and source versions
+are retained separately from all later passes; none is a proof failure or a
+successful validation of its historical source window.
+
+The later MSRV window passed 374 filtered frontend tests (147 filtered out).
+The final integration window passed 41 parser and six source-collection tests;
+strict all-target MSRV Clippy also passed. The recorded Homebrew Cargo driver
+passed the same frontend/parser/source-collection groups and built `qleisli`.
+These observations do not claim all Rust tests, a fresh compiler version probe,
+Lean replay or validation of source changes made after their respective windows.
+Each outer observer recorded one heavy job, a 3 GiB process-group RSS limit,
+no resource stop and before/after equality. These are observed resource and
+file identities, not executable/source attestation or preservation theorems.
+
+The twelve later CLI commands reuse the six unchanged first projects. Every
+command is `check` and returns exit 1 with empty stderr, as expected: six refuse
+pending nominal native transport; six diagnose missing enum coverage, a foreign
+same-spelled enum label or ordinary matching on a live quantum owner. Ordinary
+and selected Raw routes retain their distinct diagnostic codes. The combined
+missing/duplicate project still stops at its first missing-arm error. No native
+invocation trace was collected. No accepted nominal execution, `run` observation,
+maximum quantum case or #39/#63 extension is added.
+
+The proposed passive reader checks these bytes without extracting or executing
+saved sources. Its seven isolated tests passed locally. Two earlier candidate
+reader attempts failed due to diagnostic spelling and source-path expectations;
+their exact candidates and full outputs remain in the external preparation
+record. The immutable validation JSON retains its proposal-time pending status;
+installed/committed size and reference gates and hosted review remain separate.
+All eight #64 criteria and broader constitutional obligations remain open;
+this packet grants no new guarantee, issue completion or release.
+
+After installation, all 66 passive history checks pass against the retained
+files. This checks preservation only; the saved failures remain failures.

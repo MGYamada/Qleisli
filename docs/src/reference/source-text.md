@@ -80,7 +80,10 @@ Common preparation retains and checks explicit fieldless `Type::Variant`,
 `Type { field: expression, ... }` and ordinary `value.field` forms, including
 original type/member identity, visibility and written initializer order; see
 the [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile).
-Ordinary `match` and general typed source execution remain pending.
+Common preparation also checks ordinary `match` with exact qualified enum
+labels and exhaustive, disjoint arms. Runtime blocks allow an expression or
+block per arm; classical bodies allow ordinary expressions. General typed
+source execution remains pending.
 Both ordinary production source paths explicitly reject
 modules containing these declarations, including unused ones, after common
 type/body/effect preparation and before concrete lowering or native invocation.
@@ -133,7 +136,8 @@ and invalid/duplicate type members do not acquire semantic validity by parsing.
 
 The bounded syntax profile admits at most 64 members per declaration, using
 the existing source product limit. Payload variants, discriminant assignments,
-tuple structs and generic type declarations are not parsed. `enum` and `struct`
+tuple structs and generic type declarations are not parsed. Ordinary match
+uses the same 64-member bound for its arms. `enum`, `struct` and `match`
 are reserved keywords in the unpublished beta language; rename existing
 functions, bindings or module paths that used those identifiers. These parser
 changes do not complete [finite ADTs](https://github.com/MGYamada/Qleisli/issues/64)

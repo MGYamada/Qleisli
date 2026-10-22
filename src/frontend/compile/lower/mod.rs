@@ -1210,7 +1210,10 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
-            ExprKind::Variant(_) | ExprKind::Record(_) | ExprKind::Field { .. } => Err(self.error(
+            ExprKind::Variant(_)
+            | ExprKind::Record(_)
+            | ExprKind::Field { .. }
+            | ExprKind::Match(_) => Err(self.error(
                 module,
                 expr.span,
                 ErrorCode::Unsupported,

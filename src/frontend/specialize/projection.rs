@@ -387,7 +387,8 @@ impl Projection<'_, '_> {
         let kind = match &expr.kind {
             source::ExprKind::Variant(_)
             | source::ExprKind::Record(_)
-            | source::ExprKind::Field { .. } => {
+            | source::ExprKind::Field { .. }
+            | source::ExprKind::Match(_) => {
                 return Err(unsupported(
                     expr.span,
                     "ordinary nominal values require their typed native transport",

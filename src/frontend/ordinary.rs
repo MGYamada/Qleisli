@@ -31,9 +31,10 @@ pub(crate) enum RuntimeExpression<'a> {
 
 pub(crate) fn runtime_expression(expr: &BasisExpr) -> RuntimeExpression<'_> {
     match &expr.kind {
-        BasisExprKind::Variant(_) | BasisExprKind::Record(_) | BasisExprKind::Field { .. } => {
-            RuntimeExpression::Nominal
-        }
+        BasisExprKind::Variant(_)
+        | BasisExprKind::Record(_)
+        | BasisExprKind::Field { .. }
+        | BasisExprKind::Match(_) => RuntimeExpression::Nominal,
         BasisExprKind::Name(name) => RuntimeExpression::Name(name),
         BasisExprKind::Unit => RuntimeExpression::Unit,
         BasisExprKind::Tuple(fields) => RuntimeExpression::Tuple(fields),

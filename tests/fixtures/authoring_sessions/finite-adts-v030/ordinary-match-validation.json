@@ -1,0 +1,339 @@
+{
+  "format": "qleisli.inert-retention-proposal",
+  "version": 1,
+  "state": "PREPARED ONLY: immutable historical observations; not an installation or current-source validation",
+  "original_files": 294,
+  "original_bytes": 109807776,
+  "objects": 97,
+  "members": 98,
+  "expanded_bytes": 99006698,
+  "archive": {
+    "bytes": 1777180,
+    "sha256": "ebb598f4e10b4a6f6fb5beb09f85ec0c3a91251e6208582a377a6441e2a7a2d5"
+  },
+  "index": {
+    "bytes": 110476,
+    "sha256": "1d29c4ad0fd628787e6c721881c97fcefaee843c5a55bc27fdadb9341e82de30"
+  },
+  "windows": [
+    {
+      "window": "ordinary-match-msrv-01",
+      "scope": "Compilation failed: the first test called a nonexistent locals::Index::try_node_id_expr. No completed frontend test run.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "frontend::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "pass": false,
+      "stable": true,
+      "peak_rss_kib": 1330256,
+      "report": {
+        "bytes": 6734604,
+        "sha256": "b33f1cf1deb816c08edfd7ecb810a6ccca4a2bcd832d760cd7644f98d1504331"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "37a4864269ed7eaadca52ba58bc9995a024a67f3f898d45315216c778a96110e"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-msrv-02",
+      "scope": "Frontend test run: 371 passed and 3 failed; two tests unexpectedly failed name resolution for init0 and one hit leaf::E visibility. These failed authoring expectations are retained.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "frontend::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "pass": false,
+      "stable": true,
+      "peak_rss_kib": 1809312,
+      "report": {
+        "bytes": 6736320,
+        "sha256": "493fbf51f5137c3be6a541dfe3bae29199acffa83fd6f9c44e53fc419b7586ae"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "99d9fa1f8bd9c3b76c79eb0abdc4d05ec1a36c55ee331fd9b1886a41e3d508c4"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-msrv-03",
+      "scope": "MSRV filtered frontend tests: 374 passed, 0 failed, 0 ignored, 147 filtered out.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "frontend::",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "stable": true,
+      "peak_rss_kib": 1054976,
+      "report": {
+        "bytes": 6736198,
+        "sha256": "5049024469f8b52bafb5bcff54b9c0bac900581c79c957fb061a627dde54f118"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "5bf6ca26395568e7080a1e54adf9b082a4b923b069c28426dc7761b56452ffab"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-integration-msrv-01",
+      "scope": "Parser tests: 40 passed, 1 failed because the reserved-match diagnostic expectation was too narrow. source_collection was not reached.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "parser",
+        "--test",
+        "source_collection",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "pass": false,
+      "stable": true,
+      "peak_rss_kib": 1428688,
+      "report": {
+        "bytes": 6735069,
+        "sha256": "e8395f6956116490a015a080a90f3b8b2dc20c866e9acc2c7703b58782c9ebc5"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "5bf6ca26395568e7080a1e54adf9b082a4b923b069c28426dc7761b56452ffab"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-integration-msrv-02",
+      "scope": "Parser 41 passed; source_collection 5 passed, 1 failed after an incorrect unwrap_err on successful preparation. Full printed Instantiation is retained. Preparation is distinct from the execution transport gate.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "parser",
+        "--test",
+        "source_collection",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "pass": false,
+      "stable": true,
+      "peak_rss_kib": 318592,
+      "report": {
+        "bytes": 6734638,
+        "sha256": "46722867eb9554180fe519ed1168387b72da135d87e6de9e66a87570f1de4264"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "ed83a55797f6d6750ef30fffc2bee9eb277f4cc8f7662e2cae1877da564c047d"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-integration-msrv-03",
+      "scope": "Parser 41 passed; source_collection 5 passed, 1 failed because the ordinary-route code is type_mismatch, not the expected type.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "parser",
+        "--test",
+        "source_collection",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "pass": false,
+      "stable": true,
+      "peak_rss_kib": 252688,
+      "report": {
+        "bytes": 6734637,
+        "sha256": "2050d45b51c5d48e2327febb6ed2593ab34e31f81413acc0ec8b1b33a6a2fc6c"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "e51a83e8f75ef309d315361596ba79b416dc2efdfd1598af08c26b8b1697b8c2"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-integration-msrv-04",
+      "scope": "MSRV parser 41 and source_collection 6 passed, 0 failed or ignored.",
+      "argv": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "parser",
+        "--test",
+        "source_collection",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "stable": true,
+      "peak_rss_kib": 266944,
+      "report": {
+        "bytes": 6734636,
+        "sha256": "2a92211443e5a0bab22095a7bffbc26f938c1b4412a949dc369dbad15dba11c2"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "420f8d665dc3d3701d0b65e3f7d2e80aed6cc6e3826285f7293f249ac5747e17"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-msrv-clippy-01",
+      "scope": "MSRV clippy --all-targets -- -D warnings passed. This does not execute all Rust tests.",
+      "argv": [
+        "/usr/bin/env",
+        "PATH=/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin:/opt/homebrew/bin:/usr/bin:/bin",
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "stable": true,
+      "peak_rss_kib": 1250352,
+      "report": {
+        "bytes": 6737858,
+        "sha256": "c382f4f023e58d9879c698ccde8eed40b0345395b354f80306630df13d72ec5f"
+      },
+      "before": {
+        "bytes": 3326510,
+        "sha256": "dfef721db361d42b2c475de3ce5e92637cf3bb23081702d0802bb1fa959e494a"
+      },
+      "source_count": 20237,
+      "source_head": "5051067f771131037cc49823e874e184044c20be"
+    },
+    {
+      "window": "ordinary-match-stable-01",
+      "scope": "Homebrew Cargo filtered frontend 374, parser 41 and source_collection 6 passed; qleisli binary build passed. The driver does not retain a fresh rustc version probe.",
+      "argv": [
+        "/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/run-ordinary-match-stable.py"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "stable": true,
+      "peak_rss_kib": 1369216,
+      "report": {
+        "bytes": 6738461,
+        "sha256": "8f5e65898f133b4ea0f2e080d131173f99b910b2c268b61bb1d686d9d243aa4c"
+      },
+      "before": {
+        "bytes": 3326670,
+        "sha256": "5c7a3779ef2bad2cb859e16a252b00ba8f33263be2184ec1672ee7c01593f30a"
+      },
+      "source_count": 20237,
+      "source_head": "0016bf4bbfb2713b4a4ebd79d954f1ff51cdbe3f"
+    },
+    {
+      "window": "ordinary-match-current-cli-window-01",
+      "scope": "Outer bounded observer passed around twelve check commands on the unchanged six first projects. Every inner command refused with exit 1 as expected; no run command or accepted ordinary nominal execution.",
+      "argv": [
+        "/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/observe-ordinary-match-current.py"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "stable": true,
+      "peak_rss_kib": 33216,
+      "report": {
+        "bytes": 6734939,
+        "sha256": "84c23ba94d90a471b88a73e26a2e117bd36960c9bd5cddc76a4dd28a0eec4730"
+      },
+      "before": {
+        "bytes": 3326675,
+        "sha256": "cf28b1b3765b6a6352a8e19270e9887ecabfcc72a495d56587e5bc2cab49fcd8"
+      },
+      "source_count": 20237,
+      "source_head": "0016bf4bbfb2713b4a4ebd79d954f1ff51cdbe3f"
+    }
+  ],
+  "inner_cli": {
+    "record": "ordinary-match-current-cli-01/report.json",
+    "report": {
+      "bytes": 17692,
+      "sha256": "31979a51c234468ecb68f3c7c164b50fd4c1ffa55ab2c511d93266e97c81aceb"
+    },
+    "check_commands": 12,
+    "run_commands": 0,
+    "expected_refusals": 12,
+    "transport_refusals": 6,
+    "semantic_refusals": 6,
+    "accepted_runtime_commands": 0,
+    "source_manifest_sha256": "5bc7b8f56ccb6c1164bee1021401b7f15755fba7a7da6722883f9d638cbeff0c"
+  },
+  "unchanged_original_packet": {
+    "ordinary-runtime-first.tar.xz": {
+      "bytes": 581156,
+      "sha256": "f8660884ef336f824e0c6b93600795e775304dc6636506585dab3aba14c8e2c7"
+    },
+    "ordinary-runtime-index.json": {
+      "bytes": 26562,
+      "sha256": "458ea4695d8f9506ec9e2d7aef325a0e8224c98ec03c5245b867ca4d5b1bab58"
+    },
+    "ordinary-runtime-retention.json": {
+      "bytes": 2646,
+      "sha256": "38ceb1dc5e98aec0203b70512a18bd1ba49e48d989e66ef81d7979eba51b00d7"
+    }
+  },
+  "performed": [
+    "Inventoried all 294 requested original files including full streams, exact captured source copies, complete before/after maps and observers.",
+    "Preserved each unique complete byte string once; no inventory compaction, extraction, source execution or original deletion.",
+    "Bounded reread verified every regular archive member, length, mode and SHA256. Rechecked all external original hashes after packaging."
+  ],
+  "limits": [
+    "Five failed bounded windows remain failed; later results apply only to their separately recorded source windows.",
+    "Recorded source/binary hashes and before/after equality are observations, not source/binary attestation or source-function preservation.",
+    "No native invocation trace was collected by the twelve CLI observations. Selected checker arguments do not establish invocation.",
+    "The combined missing/duplicate-arm first project stops at the missing-arm error; it does not independently test its duplicate helper.",
+    "All eight #64 criteria and broader pending obligations remain open. No #39/#63 expansion, new guarantee, Lean replay, full Rust execution, hosted CI, release or publication follows."
+  ],
+  "pending": "Repository installation, full installed passive checks, rooted fixture-reference and size gates, source review and hosted checks have not been performed by this proposal. Historical authoring mistakes are not proof failures and are not relabeled as successes."
+}

@@ -1437,6 +1437,10 @@
         "Field": {
           "declaration": "Field { receiver: Box<Expr>, field: Ident, }",
           "group": "source"
+        },
+        "Match": {
+          "declaration": "Match(Box<MatchExpr<Expr, Block>>)",
+          "group": "source"
         }
       }
     },
@@ -1554,6 +1558,10 @@
         },
         "Field": {
           "declaration": "Field { receiver: Box<BasisExpr>, field: Ident, }",
+          "group": "source"
+        },
+        "Match": {
+          "declaration": "Match(Box<MatchExpr<BasisExpr, BasisExpr>>)",
           "group": "source"
         }
       }
@@ -1952,6 +1960,10 @@
         },
         "Struct": {
           "declaration": "Struct",
+          "group": "source"
+        },
+        "Match": {
+          "declaration": "Match",
           "group": "source"
         }
       }
@@ -4294,7 +4306,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "c20d032317b8518f9ade9f24f86921288834f2b39dbf38c1428bc2b730f27269",
+      "sha256": "236ab76695a45f175c7723be5d87cbc705c5c04e4e81b047bcd2bcd8f4c94336",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4313,6 +4325,8 @@
           "FnBody",
           "FnKind",
           "Ident",
+          "MatchArm",
+          "MatchExpr",
           "Module",
           "NatKind",
           "Natural",
@@ -4368,7 +4382,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "cd3acc7d58b5ddd3a56dd339d0127f7c097821d4c33c1dfb94401e60f252900a",
+      "sha256": "d87102ee7224ae4613d8a98511e8a040e54c146f384d3efef8961c5a50720d6d",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4398,7 +4412,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "97d0c558c0aad08c1491ffb71e4cfac17e6a9a22b5a0d00f686816b88b908426",
+      "sha256": "81a6b006df1d3293be332b287620662dad6f05c352342edbd3f3d0b3d1ac708b",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4760,7 +4774,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "ecbfa57f06ed30ea284430e7d10ff718d8a3236b02fe4135000bafe44a6ea1fe",
+      "sha256": "ad0ae8c9c081731afbcb06599037369a9c5001d4b6618804cde73372c8b65d8c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4951,7 +4965,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "f38ffb1b033c34553af902f02eecf4aa02260b4e3cb07ae31647f14562224097",
+      "sha256": "da0b77cdfa1687e3e6b9d9c186e0d34336dbf75009758c97af8a523d353afd65",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5116,7 +5130,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "f6fcec1d931c70ea0c87b39882e063949c7ea039d24f518103315382e08fb779",
+      "sha256": "c8839d4c3a826023a27137966b04ab9874357240b16d2d473fb18b4f1e3e8b1b",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5189,7 +5203,7 @@
     },
     {
       "path": "src/frontend/ordinary.rs",
-      "sha256": "e56ea75768e728f4c6a253c5d3151bf3af3c467007500790eec227276a673eef",
+      "sha256": "f46739695926f773d817e2e588c90d0f0eee354ebc11bf3fa4c7e9d7f6b845c9",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5199,7 +5213,7 @@
     },
     {
       "path": "src/frontend/ordinary/finite.rs",
-      "sha256": "1163662b6a93886319c73a5e689c934cd3ebdea63c584a6314f92ab4530d1c19",
+      "sha256": "ea9002194fb76b4f59fdf9f87dd7072474fa98577c7009c793416248e0a3f381",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5209,7 +5223,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "0e11f0f01a717fe4068a17403ed5cfb11f4bfddb1fd3118236dd99f351333682",
+      "sha256": "253db2eb9943b97a5231573ffc28755a25689d177f67ea3d64033e1d38bc65ee",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5415,7 +5429,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "8a65ec4abffd457aef4b91ddc3a7f5113106f259f05c363e87b55125d1f148d8",
+      "sha256": "3dd6eb5693120fd845948011a2ec61b5e2d1942043fcb761657f2fe37e273911",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5904,7 +5918,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "6290418ccf7bb0da2d0a726ba54fb08ad94a4f56b9152e2af497407149114c51",
+      "sha256": "13d43673676b6c9305263d49f93dcf4ad25c51fb40caaab8cadd83b19000f495",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -7570,6 +7584,26 @@
       "path": "src/interchange/native/carrier/tests.rs",
       "sha256": "c2d7257c3b5b6f9d89049c305975b78deede15bca510e7fc01f067a877c8a439",
       "group": "finite-carrier",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/body/matching.rs",
+      "sha256": "e644e0a6cb5b272281d438f257d5ba587f32bcaa0ca081866afd3bdfa876d500",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/body/matching/tests.rs",
+      "sha256": "4946854508568d14f53b8e0e386360582a5afe938c8467d9a99e76be05dca5ca",
+      "group": "source",
       "surface": {
         "declarations": [],
         "functions": [],

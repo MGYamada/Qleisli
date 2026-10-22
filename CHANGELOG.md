@@ -73,6 +73,13 @@ development milestones from the scope of their evidence.
   identity, reexports, member privacy, exact types and written initializer
   order/effects; reject implicit quantum projection and false pure labels.
   Keep nominal execution transport gates and existing syntax/work limits.
+  Retain first ordinary runtime sources and actual pre-implementation refusals.
+  Reserve `match` and check exact enum labels in both common expression grammars,
+  preserving original spans, canonical identity and separate arm scopes. Require
+  exhaustive disjoint arms, exact result trees and complete owner-frame joins;
+  inspect every arm's dependencies and effects even for a known constructor.
+  Reject ordinary selection on live quantum owners. Typed nominal execution
+  remains gated; these source checks do not complete ordinary runtime or qmatch.
   Reduce recursive parser frames without increasing stack or nesting limits.
   Retain explicit `type(Nominal)` static arguments through the common plans
   and selected projection. Bind the original type occurrence to its canonical

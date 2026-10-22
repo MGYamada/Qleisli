@@ -6,6 +6,68 @@ use qleisli::frontend::project::{Project, SourcePolicy};
 use std::collections::BTreeMap;
 
 #[test]
+fn ordinary_match_checks_all_arms_before_both_native_transport_gates() {
+    use qleisli::frontend::compile::check_project_with_kernel;
+    use qleisli::interchange::native::Kernel;
+    let edition = qleisli::edition::Edition::E2026;
+    for (body, code, message) in [
+        (
+            "pub fn main()->Bit{match E::A{E::A=>0,E::B=>1}}",
+            "unsupported",
+            "typed native transport",
+        ),
+        (
+            "classical fn selected()->Bit{match E::A{E::A=>0,E::B=>1}} pub fn main()->Bit{selected()}",
+            "unsupported",
+            "typed native transport",
+        ),
+        (
+            "pub fn main()->Bit{match E::A{E::A=>0}}",
+            "type",
+            "missing variant B",
+        ),
+        (
+            "classical fn selected()->Bit{match E::A{E::A=>0,E::B=>1,E::B=>0}} pub fn main()->Bit{selected()}",
+            "type",
+            "duplicate match arm B",
+        ),
+        (
+            "fn unused(q:Q<E>)->Unit{match q{E::A=>(),E::B=>()}} pub fn main()->Unit{()}",
+            "type",
+            "ordinary match requires",
+        ),
+    ] {
+        let source = format!("enum E{{A,B}} {body}");
+        let selected =
+            ParsedProgram::parse(edition, BTreeMap::from([("main".into(), source.clone())]))
+                .and_then(|parsed| {
+                    parsed.instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                })
+                .and_then(|instance| instance.elaborate())
+                .unwrap_err();
+        assert_eq!(selected.code(), code, "{selected}");
+        assert!(selected.message().contains(message), "{selected}");
+        let root = common::SourceRoot::new(&source);
+        let finite = check_project_with_kernel(
+            &root.0,
+            SourcePolicy::default(),
+            &Kernel::new(root.0.join("must-not-run-native"), edition),
+        )
+        .unwrap_err();
+        assert_eq!(
+            finite.code,
+            if code == "type" {
+                "type_mismatch"
+            } else {
+                code
+            },
+            "{finite:?}"
+        );
+        assert!(finite.message.contains(message), "{finite:?}");
+    }
+}
+
+#[test]
 fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route() {
     use qleisli::frontend::compile::check_project_with_kernel;
     use qleisli::interchange::native::Kernel;
