@@ -153,20 +153,26 @@ def command_output_directory(root, path):
 
 def run(argv, cwd, records, command_output_dir=None):
     started = time.monotonic()
-    result = subprocess.run(argv, cwd=cwd, capture_output=True, check=False)
-    if command_output_dir is not None:
+    if command_output_dir is None:
+        result = subprocess.run(argv, cwd=cwd, capture_output=True, check=False)
+        stdout, stderr = result.stdout, result.stderr
+    else:
         directory = command_output_dir / f"{len(records):02d}"
         directory.mkdir()
-        (directory / "stdout").write_bytes(result.stdout)
-        (directory / "stderr").write_bytes(result.stderr)
+        # Retain diagnostics while the child runs, including when an outer
+        # timeout kills this producer before subprocess.run can return.
+        (directory / "command.json").write_text(json.dumps({"argv": argv, "cwd": str(cwd), "exit_code": None}) + "\n")
+        with (directory / "stdout").open("wb") as out, (directory / "stderr").open("wb") as err:
+            result = subprocess.run(argv, cwd=cwd, stdout=out, stderr=err, check=False)
+        stdout, stderr = (directory / "stdout").read_bytes(), (directory / "stderr").read_bytes()
         (directory / "command.json").write_text(json.dumps({"argv": argv, "cwd": str(cwd), "exit_code": result.returncode}) + "\n")
     records.append({"argv": argv, "cwd": cwd.name, "exit_code": result.returncode,
                     "seconds": round(time.monotonic() - started, 3),
-                    "stdout_sha256": digest(result.stdout), "stderr_sha256": digest(result.stderr),
-                    "diagnostics": (result.stdout + result.stderr).decode(errors="replace")[:4000]})
+                    "stdout_sha256": digest(stdout), "stderr_sha256": digest(stderr),
+                    "diagnostics": (stdout + stderr).decode(errors="replace")[:4000]})
     require(result.returncode == 0, f"command failed: {argv}\n" +
-            (result.stdout + result.stderr).decode(errors="replace")[:4000])
-    return result.stdout
+            (stdout + stderr).decode(errors="replace")[:4000])
+    return stdout
 
 
 def check(root, write=False, source_only=False, report=None, command_output_dir=None):

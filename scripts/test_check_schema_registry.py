@@ -4,8 +4,11 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import copy
 import json
+import os
 from pathlib import Path
+import signal
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 import subprocess
@@ -137,9 +140,16 @@ class StreamCaptureTests(unittest.TestCase):
         def synthetic(argv, cwd, **kwargs):
             index = len(calls)
             self.assertEqual((argv, cwd), expected[index])
-            self.assertEqual(kwargs, {"capture_output": True, "check": False})
+            stderr = b"failed\xfe" if index == failure else b""
+            if outside is None:
+                self.assertEqual(kwargs, {"capture_output": True, "check": False})
+            else:
+                self.assertEqual(set(kwargs), {"stdout", "stderr", "check"})
+                self.assertFalse(kwargs["check"])
+                kwargs["stdout"].write(outputs[index])
+                kwargs["stderr"].write(stderr)
             calls.append((argv, cwd))
-            return subprocess.CompletedProcess(argv, 1 if index == failure else 0, outputs[index], b"failed\xfe" if index == failure else b"")
+            return subprocess.CompletedProcess(argv, 1 if index == failure else 0, outputs[index], stderr)
 
         with patch.object(registry, "source_revision", return_value=revision), patch.object(registry.subprocess, "run", side_effect=synthetic):
             if failure is None:
@@ -171,6 +181,34 @@ class StreamCaptureTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory).resolve()
             self.experiment(base / "failed", base / "streams", failure=3)
+
+    @unittest.skipUnless(os.name == "posix", "requires the hosted POSIX process-group boundary")
+    def test_interrupted_producer_retains_running_child_streams(self):
+        child = "import pathlib,sys,time; sys.stdout.buffer.write(b'actual output\\xff\\n'); sys.stdout.flush(); sys.stderr.buffer.write(b'actual error\\xfe\\n'); sys.stderr.flush(); pathlib.Path(sys.argv[1]).write_text('ready'); time.sleep(60)"
+        driver = "import sys; from pathlib import Path; sys.path.insert(0,sys.argv[1]); import check_schema_registry as registry; registry.run([sys.executable,'-c',sys.argv[4],sys.argv[5]],Path(sys.argv[2]),[],Path(sys.argv[3]))"
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            streams = base / "streams"
+            streams.mkdir()
+            ready = base / "ready"
+            process = subprocess.Popen([sys.executable, "-c", driver, str(registry.ROOT / "scripts"), str(base), str(streams), child, str(ready)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+            try:
+                deadline = time.monotonic() + 10
+                while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                self.assertTrue(ready.exists(), "child did not write actual diagnostics before interruption")
+                os.killpg(process.pid, signal.SIGTERM)
+                process.communicate(timeout=5)
+                self.assertNotEqual(process.returncode, 0)
+                self.assertEqual((streams / "00/stdout").read_bytes(), b"actual output\xff\n")
+                self.assertEqual((streams / "00/stderr").read_bytes(), b"actual error\xfe\n")
+                self.assertIsNone(json.loads((streams / "00/command.json").read_bytes())["exit_code"])
+            finally:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate(timeout=5)
 
 
 if __name__ == "__main__":
