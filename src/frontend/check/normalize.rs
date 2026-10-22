@@ -32,7 +32,7 @@ enum NaturalNames<'a, 'ast> {
     Function(&'a Index<'ast>),
     Module(&'a Resolution, super::super::resolve::ModuleId),
 }
-impl<'a, 'ast> NaturalNames<'a, 'ast> {
+impl<'a> NaturalNames<'a, '_> {
     fn helper(self, name: &ast::Ident) -> Result<DefId> {
         match self {
             Self::Function(index) => static_helpers::target(index, name),
