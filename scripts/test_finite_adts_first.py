@@ -34,6 +34,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Match-keyword repair history: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-index.json".
 # Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-validation.json".
+# Ordinary value reference: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-index.json".
+# Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-validation.json".
 import gzip
 import hashlib
 import io
@@ -1555,6 +1558,417 @@ class MatchKeywordRepairHistory(unittest.TestCase):
         self.assertLessEqual(sum((FIXTURES / name).stat().st_size for name in (
             'match-keyword-first.tar.xz', 'match-keyword-index.json',
             'match-keyword-validation.json')), 1572864)
+
+
+class OrdinaryValueReferenceHistory(unittest.TestCase):
+    """Read one bounded archive; saved code, paths and commands remain inert data."""
+
+    STEM = 'ordinary-value-reference-'
+    INDEX_SHA = '9e691dbce382e92ba1df58ab6532687f18fcaca6ac715bb4dc0451345598756a'
+    ARCHIVE_SHA = 'ad3da88dbe714eedb4eec6d14d934d6e26de12251d07ce2e4933b37bae330557'
+    VALIDATION_SHA = '89b2d632dc623e8ae3738b31a7ba17dfb33f558a5a79be6b91f785258d9960f3'
+    # Historical strings are compared only, never resolved or opened.
+    ACTUAL = '/private/tmp/qleisli-ordinary-value-validation-20261022-3rgzx7ko'
+    TOOLCHAIN = '/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/'
+    SOURCES = {
+        'core': 'lean-kernel/QleisliKernel/Semantics/OrdinaryValue.lean',
+        'bridge': 'lean/Qleisli/Semantics/OrdinaryValue.lean',
+        'examples': 'tests/OrdinaryValueExamples.lean',
+        'raw-examples': 'tests/OrdinaryValueRawExamples.lean',
+        'audit': 'tests/OrdinaryValueAudit.lean',
+    }
+    WINDOWS = {
+        '02-core': 1, '03-core': 1, '04-core': 0, '05-bridge': 1,
+        '06-bridge': 0, '07-examples': 1, '09-examples': 0,
+        '10-raw-examples': 0, '11-audit': 1, '12-core': 0,
+        '13-bridge': 0, '14-examples': 0, '15-raw-examples': 0,
+        '16-audit': 0, '17-fresh-audit': 0,
+    }
+
+    @staticmethod
+    def pin(value):
+        return {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        index = (FIXTURES / (cls.STEM + 'index.json')).read_bytes()
+        validation = (FIXTURES / (cls.STEM + 'validation.json')).read_bytes()
+        if cls.pin(index) != {'bytes': 108527, 'sha256': cls.INDEX_SHA}:
+            raise AssertionError('ordinary value index changed')
+        if cls.pin(validation) != {'bytes': 8385, 'sha256': cls.VALIDATION_SHA}:
+            raise AssertionError('ordinary value summary changed')
+        cls.index, cls.validation = json.loads(index), json.loads(validation)
+        cls.originals = cls.index['original_records']
+        cls.data = read_history(cls.STEM + 'index.json', cls.STEM + 'first.tar.xz',
+                                cls.INDEX_SHA, 1521176, cls.ARCHIVE_SHA, 141896245)
+
+    @classmethod
+    def tearDownClass(cls):
+        # The complete original inventories are large; do not retain a second
+        # decoded copy or keep their byte objects after this class finishes.
+        for name in ('data', 'originals', 'index', 'validation'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {key: row[key] for key in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def check_original_map(self, originals):
+        self.assertEqual(len(originals), 289)
+        self.assertEqual(sum(row['bytes'] for row in originals.values()), 156378431)
+        self.assertEqual({row['record'] for row in originals.values()},
+                         set(self.data) - {'original-records.json'})
+        for name, row in originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertNotIn('/lib/', name)
+            self.assertFalse(name.endswith(('.olean', '.ilean', '.pyc')))
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertEqual(self.pin(self.data[row['record']]),
+                             {key: row[key] for key in ('bytes', 'sha256')})
+        mapped = json.loads(self.data['original-records.json'])
+        self.assertEqual(mapped, {'format': 'qleisli.inert-original-records',
+                                  'version': 1, 'records': originals})
+
+    def check_sources(self, window, inputs):
+        prefix = 'validation/' + window + '-sources/'
+        expected = set(self.SOURCES.values())
+        if int(window[:2]) < 11:
+            expected.remove(self.SOURCES['audit'])
+        self.assertEqual(set(inputs['sources']), expected)
+        self.assertEqual({name[len(prefix):] for name in self.originals
+                          if name.startswith(prefix) and name.endswith('.lean')}, expected)
+        for name, pin in inputs['sources'].items():
+            self.assertEqual(self.pin(self.raw(prefix + name)), pin)
+        if int(window[:2]) >= 3:
+            audit = int(window[:2]) >= 11
+            manifest = 'namespace-cache-audit-pins.json' if audit else 'namespace-cache-pins.json'
+            observer = 'attempt-v3.py' if audit else 'attempt-v2.py'
+            self.assertEqual(self.raw(prefix + manifest), self.raw('validation/' + manifest))
+            self.assertEqual(inputs['namespace_cache_pins'], self.pin(self.raw(prefix + manifest)))
+            self.assertEqual(self.raw(prefix + observer), self.raw('validation/' + observer))
+
+    def invocation(self, window):
+        if window == '17-fresh-audit':
+            return ([self.TOOLCHAIN + 'leanchecker', '--fresh', 'OrdinaryValueAudit'],
+                    self.ACTUAL + '/work/tests', None)
+        source = self.SOURCES[window.split('-', 1)[1]]
+        root, module = source.split('/', 1)
+        output = module.removesuffix('.lean') + '.olean'
+        return ([self.TOOLCHAIN + 'lean', '-j1', '-DautoImplicit=false',
+                 '-DwarningAsError=true', '-o', self.ACTUAL + '/lib/' + output,
+                 self.ACTUAL + '/work/' + source], self.ACTUAL + '/work/' + root, source)
+
+    def check_window(self, window, report=None, plan=None, inputs=None):
+        prefix = 'validation/' + window
+        if report is None:
+            report = self.decoded(prefix + '/report.json')
+        if plan is None:
+            plan = self.decoded(prefix + '/plan.json')
+        if inputs is None:
+            inputs = self.decoded(prefix + '-sources/inputs.json')
+        self.assertEqual((report['format'], report['version']),
+                         ('qleisli.bounded-current-validation', 1))
+        code = self.WINDOWS[window]
+        self.assertIs(type(report['exit_code']), int)
+        self.assertEqual(report['exit_code'], code)
+        self.assertIs(report['pass'], code == 0)
+        self.assertIs(report['stable'], True)
+        self.assertIsNone(report['stop_reason'])
+        before = report['before']
+        self.assertTrue(before == self.decoded(prefix + '/before.json'), 'captured source inventory changed')
+        self.assertTrue(before == report['after'], 'window source inventory changed')
+        early = window in ('02-core', '03-core', '04-core')
+        self.assertEqual(before['head'], '239e0546d24bfe952020a413fd24ae7f65a66d92' if early
+                         else 'e936505ecc156d3cc31b8f5dffda780be7a1ef99')
+        for name, digest in before['files'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertRegex(digest, r'^[0-9a-f]{64}$')
+        self.assertRegex(before['kernel'], r'^[0-9a-f]{64}$')
+        argv, cwd, source = self.invocation(window)
+        self.assertEqual(report['argv'], argv)
+        self.assertEqual(report['cwd'], cwd)
+        self.assertEqual(plan['argv'], argv)
+        self.assertEqual(plan['cwd'], cwd)
+        self.assertEqual(inputs['command'], argv)
+        self.assertEqual(inputs['cwd'], cwd)
+        live = self.decoded(prefix + '/live.json')
+        self.assertEqual(live['argv'], argv)
+        self.assertEqual(live['limit_seconds'], 600)
+        self.assertEqual(plan['time_limit_seconds'], 600)
+        self.assertEqual(inputs['timeout_seconds'], 600)
+        for limit in (report['rss_group_limit_kib'], plan['rss_group_limit_kib'],
+                      inputs['group_rss_limit_kib']):
+            self.assertEqual(limit, 3145728)
+        self.assertEqual(report['heavy_job_concurrency'], 1)
+        self.assertEqual(inputs['heavy_concurrency'], 1)
+        self.assertGreater(report['peak_rss_kib'], 0)
+        self.assertLess(report['peak_rss_kib'], 3145728)
+        self.assertGreater(report['seconds'], 0)
+        self.assertLess(report['seconds'], 600)
+        self.assertEqual(plan['environment'], {'CARGO_BUILD_JOBS': '1',
+                                             'RUST_TEST_THREADS': '1', 'LEAN_NUM_THREADS': '1'})
+        self.assertEqual(self.raw(prefix + '/observer.py.txt'),
+                         self.raw('validation/run-bounded-runtime-3g.py'))
+        self.check_sources(window, inputs)
+        explicit = {} if source is None else {
+            self.ACTUAL + '/work/' + source: inputs['sources'][source]['sha256']}
+        self.assertEqual(before['explicit_inputs'], explicit)
+        for absolute, digest in explicit.items():
+            value = self.raw(prefix + '/explicit-inputs/' + PurePosixPath(absolute).name)
+            self.assertEqual(self.pin(value)['sha256'], digest)
+            self.assertEqual(value, self.raw(prefix + '-sources/' + source))
+        for name in self.originals:
+            if name.startswith(prefix + '/sources/'):
+                relative = name[len(prefix + '/sources/'):]
+                self.assertEqual(self.pin(self.raw(name))['sha256'], before['files'][relative])
+        return dict(window=window, **{key: report[key] for key in (
+            'exit_code', 'pass', 'stable', 'stop_reason', 'peak_rss_kib', 'seconds')},
+            head_before=before['head'], head_after=report['after']['head'],
+            report_record=prefix + '/report.json')
+
+    def check_summary_order(self, rows):
+        self.assertEqual([row['window'] for row in rows], ['01-core', *self.WINDOWS])
+        self.assertEqual(rows[0], dict(window='01-core',
+                                      result='No final report; 01 stopped before Lean spawn.', lean_result=None))
+
+    def check_summary_row(self, row):
+        window = row['window']
+        self.assertIn(window, self.WINDOWS)
+        record = 'validation/' + window + '/report.json'
+        report = self.decoded(record)
+        self.assertEqual(row, dict(window=window, **{key: report[key] for key in (
+            'exit_code', 'pass', 'stable', 'stop_reason', 'peak_rss_kib', 'seconds')},
+            head_before=report['before']['head'], head_after=report['after']['head'], report_record=record))
+
+    def check_audit(self, audit, repaired):
+        count = 284 if repaired else 301
+        self.assertEqual((audit['format'], audit['version']),
+                         ('qleisli.ordinary-value-candidate-audit', 1))
+        rows = audit['declarations']
+        self.assertEqual(audit['checked'], count)
+        self.assertEqual(len(rows), count)
+        self.assertEqual(len({row['name'] for row in rows}), count)
+        self.assertEqual({row['module'] for row in rows}, {
+            'QleisliKernel.Semantics.OrdinaryValue', 'Qleisli.Semantics.OrdinaryValue',
+            'OrdinaryValueExamples', 'OrdinaryValueRawExamples'})
+        self.assertEqual({axiom for row in rows for axiom in row['axioms']},
+                         {'propext', 'Classical.choice', 'Quot.sound'})
+        self.assertTrue(all(row['unsafe'] is False for row in rows))
+        partial = {row['name'] for row in rows if row['partial']}
+        expected = set() if repaired else {
+            'QleisliKernel.Semantics.OrdinaryValue.littleEndian._unsafe_rec',
+            'QleisliKernel.Semantics.OrdinaryValue.instReprValue.repr._unsafe_rec',
+            'QleisliKernel.Semantics.OrdinaryValue.instReprStorage.repr._unsafe_rec'}
+        self.assertEqual(partial, expected)
+        self.assertEqual(audit['status'], 'pass' if repaired else 'fail')
+        self.assertEqual(set(audit['failures']), {name + ': partial declaration' for name in expected})
+        self.assertEqual(len(audit['failures']), len(expected))
+
+    def check_fresh_inputs(self, fresh):
+        final = self.decoded('validation/16-audit-sources/inputs.json')
+        self.assertEqual(fresh['sources'], final['sources'])
+        expected = dict(final['already_compiled_candidate_modules'])
+        self.assertEqual(len(expected), 4)
+        expected['lib/OrdinaryValueAudit.olean'] = {
+            'bytes': 4992, 'sha256': '646ccca2865a41929fc10790b965001fe38ad2f6abd245153acf5f52c52eee3d'}
+        self.assertEqual(fresh['already_compiled_candidate_modules'], expected)
+        self.assertEqual(fresh['namespace_cache_pins'], final['namespace_cache_pins'])
+
+    def test_complete_original_bytes_modes_and_map(self):
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual(len(self.data), 114)
+        self.assertEqual(sum(map(len, self.data.values())), 141896245)
+        self.check_original_map(self.originals)
+        self.assertEqual({prefix: sum(name.startswith(prefix + '/') for name in self.originals)
+                          for prefix in ('design', 'first', 'imports', 'validation')},
+                         {'design': 1, 'first': 9, 'imports': 13, 'validation': 266})
+        required17 = {'validation/17-fresh-audit/' + name for name in (
+            'observer.py.txt', 'live.json', 'stderr', 'stdout', 'report.json', 'plan.json', 'before.json')}
+        required17 |= {'validation/17-fresh-audit-sources/' + name for name in (
+            *self.SOURCES.values(), 'attempt-v3.py', 'inputs.json', 'namespace-cache-audit-pins.json')}
+        self.assertEqual({name for name in self.originals if name.startswith('validation/17-')}, required17)
+
+    def test_uncompiled_first_sources_and_original_failed_observations(self):
+        first = self.decoded('first/provenance.json')
+        self.assertEqual(first['status'], 'uncompiled-candidate-only')
+        for field in ('repository_modified_by_candidate', 'lean_cargo_build_or_axiom_audit_run',
+                      'source_preservation_or_acceptance_claim'):
+            self.assertIs(first[field], False)
+        self.assertEqual(len(first['candidate_files']), 8)
+        for name, pin in first['candidate_files'].items():
+            self.assertEqual(self.pin(self.raw('first/' + name)), pin)
+        closure = first['consulted_project_import_closure']
+        self.assertEqual(len(closure), 13)
+        self.assertEqual({'imports/' + name for name in closure},
+                         {name for name in self.originals if name.startswith('imports/')})
+        for name, pin in closure.items():
+            self.assertEqual(self.pin(self.raw('imports/' + name)), pin)
+        self.assertEqual(self.pin(self.raw('design/PROPOSAL.md')),
+                         {key: first['base_proposal'][key] for key in ('bytes', 'sha256')})
+        blocked = self.decoded('validation/BLOCKED.json')
+        self.assertIs(blocked['attempt_01']['lean_spawned'], False)
+        self.assertIs(blocked['attempt_01']['final_report_exists'], False)
+        self.assertIs(blocked['attempt_02']['lean_spawned'], False)
+        self.assertIs(blocked['attempt_02']['attempt_directory_exists'], False)
+        self.assertIn('/bin/ps', blocked['attempt_01']['failure'])
+        for name in ('report.json', 'live.json'):
+            self.assertNotIn('validation/01-core/' + name, self.originals)
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw('validation/01-core/' + stream), b'')
+        self.check_sources('01-core', self.decoded('validation/01-core-sources/inputs.json'))
+        self.assertFalse(any(name.startswith('validation/08-') for name in self.originals))
+        for window, text in (('02-core', 'FiniteCarrier.olean'), ('03-core', 'congrArg₂'),
+                             ('05-bridge', 'Type mismatch'), ('07-examples', 'Dependent elimination failed')):
+            self.assertIn(text.encode(), self.raw('validation/' + window + '/stdout'))
+
+    def test_actual_windows_bind_source_inventories_invocations_and_summary(self):
+        summaries = [dict(window='01-core', result='No final report; 01 stopped before Lean spawn.',
+                          lean_result=None)]
+        reports = {name.split('/')[1] for name in self.originals
+                   if name.endswith('/report.json') and name.startswith('validation/')}
+        self.assertEqual(reports, set(self.WINDOWS))
+        for window in self.WINDOWS:
+            with self.subTest(window=window):
+                # Decode and discard one complete source inventory at a time.
+                summaries.append(self.check_window(window))
+        self.check_summary_order(self.validation['windows'])
+        self.assertEqual(self.validation['windows'], summaries)
+
+    def test_failed_and_repaired_audits_and_fresh_compiled_inputs(self):
+        for window, repaired in (('11-audit', False), ('16-audit', True)):
+            self.check_audit(json.loads(self.raw('validation/' + window + '/stdout').splitlines()[0]), repaired)
+        self.check_fresh_inputs(self.decoded('validation/17-fresh-audit-sources/inputs.json'))
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw('validation/17-fresh-audit/' + stream), b'')
+        final = self.decoded('validation/16-audit-sources/inputs.json')['sources']
+        for name in self.SOURCES.values():
+            self.assertEqual(self.pin(self.raw('validation/work/' + name)), final[name])
+        # These are incoming identities, so the core/examples remain old until
+        # their respective successful compile. Do not rewrite them as final.
+        for earlier, later, module in (
+                ('12-core', '13-bridge', 'lib/QleisliKernel/Semantics/OrdinaryValue.olean'),
+                ('14-examples', '15-raw-examples', 'lib/OrdinaryValueExamples.olean')):
+            before = self.decoded('validation/' + earlier + '-sources/inputs.json')
+            after = self.decoded('validation/' + later + '-sources/inputs.json')
+            self.assertNotEqual(before['already_compiled_candidate_modules'][module],
+                                after['already_compiled_candidate_modules'][module])
+
+    def test_import_cache_identities_preserve_source_closure_without_payloads(self):
+        for name in ('namespace-cache-pins.json', 'namespace-cache-audit-pins.json'):
+            manifest = self.decoded('validation/' + name)
+            self.assertEqual((manifest['format'], manifest['version'], manifest['link_kind']),
+                             ('qleisli.temporary-namespace-cache-overlay', 1, 'symlink'))
+            cached = manifest['cached_modules']
+            self.assertEqual(len(cached), 13)
+            self.assertEqual({'imports/' + row['source'] for row in cached.values()},
+                             {name for name in self.originals if name.startswith('imports/')})
+            for module, row in cached.items():
+                self.assertEqual(self.pin(self.raw('imports/' + row['source'])),
+                                 {key: row[key] for key in ('bytes', 'sha256')})
+                self.assertEqual(set(row['artifacts']),
+                                 {module.replace('.', '/') + suffix for suffix in ('.olean', '.ilean')})
+                for artifact, identity in row['artifacts'].items():
+                    self.assertTrue(identity['target'].endswith('/' + artifact))
+                    self.assertGreater(identity['bytes'], 0)
+                    self.assertRegex(identity['sha256'], r'^[0-9a-f]{64}$')
+
+    def test_fixed_summary_sizes_and_limited_scope(self):
+        v = self.validation
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertTrue(v['state'].startswith('PREPARED ONLY'))
+        self.assertEqual((v['original_files'], v['original_bytes'], v['unique_objects'],
+                          v['archive_members'], v['expanded_bytes']),
+                         (289, 156378431, 113, 114, 141896245))
+        self.assertEqual(v['index'], dict(path=self.STEM + 'index.json', bytes=108527, sha256=self.INDEX_SHA))
+        self.assertEqual(v['archive'], dict(path=self.STEM + 'first.tar.xz', bytes=1521176, sha256=self.ARCHIVE_SHA))
+        self.assertIs(v['fresh_audit_17_included'], True)
+        self.assertEqual(v['target_combined_bytes'], 1258291)
+        self.assertEqual(1521176 + 108527 + 8385, 1638088)  # Retained above the original target.
+        self.assertEqual(v['compression']['dictionary_bytes'], 16777216)
+        self.assertIn('No newly annotated phi output-tree correspondence', v['scope'])
+        self.assertIn('typed native replay, original whole-AST preservation', v['limitations'][2])
+        self.assertIn('No root adoption, acceptance path, new guarantee', v['limitations'][3])
+        self.assertIn('not a fresh import-closure rebuild or binary/source attestation', v['identities'])
+
+    def test_tampered_source_invocation_inventory_and_promoted_failure_are_rejected(self):
+        window = '16-audit'
+        inputs = self.decoded('validation/' + window + '-sources/inputs.json')
+        inputs['sources'][self.SOURCES['core']] = self.decoded(
+            'validation/03-core-sources/inputs.json')['sources'][self.SOURCES['core']]
+        with self.assertRaises(AssertionError):
+            self.check_sources(window, inputs)
+        report = self.decoded('validation/' + window + '/report.json')
+        plan = self.decoded('validation/' + window + '/plan.json')
+        inputs = self.decoded('validation/' + window + '-sources/inputs.json')
+        for record, key in ((report, 'argv'), (plan, 'argv'), (inputs, 'command')):
+            record[key] = [self.TOOLCHAIN + 'leanchecker', 'Unrelated']
+        with self.assertRaises(AssertionError):
+            self.check_window(window, report, plan, inputs)
+        report = self.decoded('validation/' + window + '/report.json')
+        report['after']['files']['invented.lean'] = '0' * 64
+        with self.assertRaises(AssertionError):
+            self.check_window(window, report)
+        report = self.decoded('validation/11-audit/report.json')
+        report['exit_code'], report['pass'] = 0, True
+        with self.assertRaises(AssertionError):
+            self.check_window('11-audit', report)
+
+    def test_tampered_audit_cache_and_original_metadata_are_rejected(self):
+        audit = json.loads(self.raw('validation/16-audit/stdout').splitlines()[0])
+        audit['declarations'].pop()
+        audit['checked'] -= 1
+        with self.assertRaises(AssertionError):
+            self.check_audit(audit, True)
+        audit = json.loads(self.raw('validation/16-audit/stdout').splitlines()[0])
+        audit['declarations'][0]['axioms'].append('sorryAx')
+        with self.assertRaises(AssertionError):
+            self.check_audit(audit, True)
+        fresh = self.decoded('validation/17-fresh-audit-sources/inputs.json')
+        old = self.decoded('validation/12-core-sources/inputs.json')
+        module = 'lib/QleisliKernel/Semantics/OrdinaryValue.olean'
+        fresh['already_compiled_candidate_modules'][module] = old['already_compiled_candidate_modules'][module]
+        with self.assertRaises(AssertionError):
+            self.check_fresh_inputs(fresh)
+        fresh = self.decoded('validation/17-fresh-audit-sources/inputs.json')
+        del fresh['already_compiled_candidate_modules']['lib/OrdinaryValueAudit.olean']
+        with self.assertRaises(AssertionError):
+            self.check_fresh_inputs(fresh)
+        name = 'first/provenance.json'
+        for field, value in (('original_mode', 0o755), ('bytes', 0)):
+            originals = dict(self.originals)
+            originals[name] = dict(originals[name], **{field: value})
+            with self.assertRaises(AssertionError):
+                self.check_original_map(originals)
+        originals = dict(self.originals)
+        del originals[name]
+        with self.assertRaises(AssertionError):
+            self.check_original_map(originals)
+
+    def test_promoted_summary_and_missing_window_are_rejected(self):
+        failed = next(row for row in self.validation['windows'] if row['window'] == '11-audit')
+        self.check_summary_row(failed)
+        promoted = dict(failed, exit_code=0, **{'pass': True})
+        with self.assertRaises(AssertionError):
+            self.check_summary_row(promoted)
+        altered = dict(failed, report_record='validation/16-audit/report.json')
+        with self.assertRaises(AssertionError):
+            self.check_summary_row(altered)
+        missing = [row for row in self.validation['windows'] if row['window'] != '11-audit']
+        with self.assertRaises(AssertionError):
+            self.check_summary_order(missing)
 
 
 if __name__ == '__main__':

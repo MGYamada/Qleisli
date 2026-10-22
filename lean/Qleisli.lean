@@ -15,6 +15,9 @@ import Qleisli.RawProtectedCommutation
 import Qleisli.RawFunction
 import Qleisli.RawPure
 import Qleisli.RawInstrument
+import Qleisli.Semantics.OrdinaryValue
+import Qleisli.OrdinaryValueExamples
+import Qleisli.OrdinaryValueRawExamples
 import Qleisli.Scope
 import Qleisli.ExclusiveScope
 import Qleisli.Transition

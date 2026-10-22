@@ -2838,7 +2838,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
+      "sha256": "d1af876aef0b925bd35b99663c95b9f4e5afae37f9222db19496c791b804ffca",
       "group": "hierarchy",
       "surface": null
     },
@@ -3486,13 +3486,13 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "5885f94948277286fc4523c98952ee58fdc6a7ee899047102c22c397ecea1280",
+      "sha256": "cb0af5e89ddb3169fb1496d4fabe46f7ee7ee1e6c988716771e92683fd80fe03",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "aaf8ba7380bee84eb73b5094c76bbe9be8eff3dcd04efdbbbcee041d8bacfbd4",
+      "sha256": "2d3011461d2e12dbf3c9a7464ae86fbc415c7824d13b52530d329b5d8253c5cd",
       "group": "raw-core",
       "surface": null
     },
@@ -7609,6 +7609,12 @@
         "functions": [],
         "capacity_constants": []
       }
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/OrdinaryValue.lean",
+      "sha256": "d814c7dbc54815d0bb7badf6ba9712e01711b66a566af8fdc4ed913afdc6001d",
+      "group": "finite-carrier",
+      "surface": null
     }
   ],
   "boundaries": [

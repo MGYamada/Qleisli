@@ -82,7 +82,9 @@ class MaintenanceRefusalTests(unittest.TestCase):
 
     def test_hosted_context_refuses_unrelated_or_mixed_producers(self):
         commit = "a" * 40
-        refs = ("refs/heads/codex/beta-finite-adts", "refs/heads/codex/beta-ordinary-adts")
+        refs = ("refs/heads/codex/beta-finite-adts", "refs/heads/codex/beta-ordinary-adts",
+                "refs/heads/codex/beta-typed-ordinary-runtime")
+        self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
             environment = dict(GITHUB_REPOSITORY="MGYamada/Qleisli", GITHUB_REF=ref, GITHUB_SHA=commit, GITHUB_JOB="produce-review-artifact", GITHUB_EVENT_NAME="push", GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1", GITHUB_WORKFLOW_REF=workflow + ref, GITHUB_WORKFLOW_SHA=commit)
@@ -93,8 +95,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
             for key, wrong in [("GITHUB_REPOSITORY", "other/repo"), ("GITHUB_REF", "refs/heads/main"), ("GITHUB_SHA", "b" * 40), ("GITHUB_JOB", "check-lean"), ("GITHUB_EVENT_NAME", "pull_request_target"), ("GITHUB_RUN_ID", "0"), ("GITHUB_RUN_ATTEMPT", "01"), ("GITHUB_WORKFLOW_SHA", "b" * 40)]:
                 with self.subTest(ref=ref, key=key), self.assertRaises(ValueError):
                     maintenance.hosted_context(commit, environment | {key: wrong})
-            other = next(value for value in refs if value != ref)
-            for wrong in (workflow + other, workflow + commit,
+            for wrong in (*(workflow + other for other in refs if other != ref), workflow + commit,
                           "other/repo/.github/workflows/current-proof-records.yml@" + ref,
                           "MGYamada/Qleisli/.github/workflows/ci.yml@" + ref, ""):
                 with self.subTest(ref=ref, workflow=wrong), self.assertRaises(ValueError):

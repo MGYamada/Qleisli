@@ -595,3 +595,26 @@ proof, new guarantee or Issue completion.
 After installing this repair history, all 73 passive history checks pass against
 the retained files. They preserve the failed and successful observations above;
 they do not rerun the archived commands or establish current proof validity.
+
+
+The [ordinary value reference history](ordinary-value-reference-first.tar.xz),
+[index](ordinary-value-reference-index.json) and
+[observations](ordinary-value-reference-validation.json) preserve all 289 original
+files and modes as 113 complete-byte objects. The first candidate remains
+uncompiled; pre-spawn, authoring and example failures are retained separately.
+Audit 11 detects three generated partial helpers among 301 declarations; after
+repairs, audit 16 records 284 declarations with standard axioms and audit 17
+records a successful fresh check of that candidate audit module. All complete
+source inventories, commands and streams remain inert data. Thirteen imported
+project modules and 26 cached artifacts retain identities, without cache payloads
+or a fresh imported-source rebuild. These records do not attest native binaries.
+
+The passive reader loads this bounded archive once, checks source/report/command
+bindings and the summary, and rejects focused source, invocation, audit and cache
+substitutions without executing saved commands or reading external originals.
+The three files total 1,638,088 bytes; the original 1.2 MiB preparation target is
+retained unchanged and exceeded to preserve all bytes, within the existing fixture
+caps. This independent ordinary-value reference and actual Raw old-value
+preservation do not establish new phi output-tree correspondence, typed native
+replay, source member privacy, whole-AST or runtime preservation. No acceptance
+path, guarantee or #64 completion is added.

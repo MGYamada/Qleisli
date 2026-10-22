@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add independent finite ordinary-value and storage semantics, with proofs for
+  classical lookup, copying and preservation of existing values through actual
+  Raw classical actions and simultaneous merges. Retain nominal identity, enum
+  range, field order and zero-width nodes in the representation relation, with
+  standard build/audit coverage and bounded examples. Typed runtime replay,
+  original-source member/privacy checks, new phi output-tree correspondence and
+  source preservation remain unfinished; no ordinary ADT execution is enabled.
 - Begin internal finite-carrier support with source-backed nominal trees,
   separate logical cardinalities and physical code layouts, and bounded exact
   code-isometry checking. Preserve first sources and both Lean study attempts.
