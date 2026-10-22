@@ -80,11 +80,17 @@ not authorized by this rule.
 The separate `current-proof-records` workflow prepares reviewable proof metadata
 for an exact clean checkout of the active beta branch. It runs the canonical
 builds, audits, full reductions and fixed protected-output comparisons before
-proposing changes to the schema registry and the three current-evidence records.
-Its full command streams and four-file patch are uploaded as a distinct artifact;
+proposing changes to the schema registry, three current-evidence records and the
+derived current continuity snapshot. Its full command streams and five-file
+patch are uploaded as a distinct artifact;
 failed or incomplete verification produces no successful patch. The checkout is
 restored before publication of the proposed files. Historical admissions,
 protected meanings and the alpha build observation remain unchanged.
+The mutable current extraction retains actual checker implementation dependencies.
+Its refresh must pass the existing fixed Raw projection against the immutable
+reviewed snapshot, preserving all protected meanings and original-subject bindings.
+The fixed review outputs still require byte-for-byte equality. An old current
+extraction cannot stand for a changed checker closure.
 
 This producer runs independently when stale evidence prevents ordinary source
 checks. It does not satisfy required CI, create a release receipt, commit changes

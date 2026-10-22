@@ -938,7 +938,13 @@ fn common_token_stream_includes_sized_punctuation_without_trivia_joining() {
     assert_eq!(tokens[0].span.start, "// λ\r\n".len());
     assert_eq!(&source[tokens[0].span.start..tokens[0].span.end], "==");
     assert_eq!(tokens.last().unwrap().span.start, source.len());
-    for source in [".", "!", "/", "!/*x*/="] {
+    let dot = lex(".").unwrap();
+    assert_eq!(dot.len(), 2);
+    assert_eq!(dot[0].kind, TokenKind::Dot);
+    assert_eq!((dot[0].span.start, dot[0].span.end), (0, 1));
+    assert_eq!(dot[1].kind, TokenKind::Eof);
+    assert_eq!((dot[1].span.start, dot[1].span.end), (1, 1));
+    for source in ["!", "/", "!/*x*/="] {
         let e = lex(source).unwrap_err();
         assert_eq!((e.span.start, e.span.end), (0, 1), "{source}");
         assert!(e.message.starts_with("unexpected character"));

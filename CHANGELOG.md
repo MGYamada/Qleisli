@@ -90,8 +90,12 @@ development milestones from the scope of their evidence.
   result sealed, with no ordinary execution, inverse/control or source-AST
   preservation claim.
   Add a separate proof-metadata CI producer with fixed command/output checks,
-  full stream retention and a reviewable four-file patch after successful fresh
+  full stream retention and a reviewable five-file patch after successful fresh
   proofs. It restores its checkout and grants no ordinary CI or release credit.
+  Refresh the mutable current extraction through the existing protected Raw
+  projection, keeping historical meanings and fixed review outputs unchanged.
+  Update punctuation and selected-CLI regressions for field projection while
+  retaining method-call refusal, access guidance and exact diagnostic spans.
   Register the finite-carrier proposal, native component, source adapter and
   checked-view routes in the verification inventory, retaining their explicit
   source/runtime proof gaps and constructor/capacity coverage.

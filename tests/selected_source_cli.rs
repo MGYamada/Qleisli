@@ -919,7 +919,7 @@ fn unsupported_method_receivers_keep_text_json_spans_before_native_dispatch() {
         let source = format!("// 日本語\r\npub {effect}fn main(q:{ty})->{ty}{{q.h();q}}");
         let files = SourceRoot::new(&source);
         let absent = files.0.join("must-not-start-a-native-checker");
-        let start = source.rfind('.').unwrap();
+        let start = source.rfind('(').unwrap();
         for json in [false, true] {
             let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
             command
@@ -940,12 +940,14 @@ fn unsupported_method_receivers_keep_text_json_spans_before_native_dispatch() {
                 assert!(output.stdout.is_empty());
                 String::from_utf8(output.stderr).unwrap()
             };
-            assert!(text.contains("field and method receiver syntax is unsupported"));
+            assert!(text.contains("method receiver syntax is unsupported"));
             assert!(text.contains("explicit `excl ...` or `ctrl ...`"));
             assert!(!text.contains("https://github.com"));
             if json {
                 assert!(text.contains("\"code\":\"parse\""));
                 assert!(text.contains(&format!("\"start\":{start},\"end\":{}", start + 1)));
+            } else {
+                assert!(text.starts_with(&format!("main:{start}..{}: parse: ", start + 1)));
             }
         }
     }

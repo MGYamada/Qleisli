@@ -7,7 +7,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy
+import gzip
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -29,7 +31,8 @@ SCHEMA = "lean/schema-registry.json"
 AUDIT = guarantees.CURRENT_AUDIT_PATH
 CURRENT = guarantees.CURRENT_PATH
 LEDGER = "governance/guarantees.json"
-ALLOWED = frozenset((SCHEMA, AUDIT, CURRENT, LEDGER))
+SNAPSHOT = continuity.CURRENT_PATH
+ALLOWED = frozenset((SCHEMA, AUDIT, CURRENT, LEDGER, SNAPSHOT))
 TRUSTED = "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb"
 BASE = "0bd108183649e0462cb5c5b1c8bae29d07e1c9fc"
 KERNEL = "lean-kernel/.lake/build/bin/qleisli-kernel"
@@ -104,7 +107,36 @@ def actual_result(code, stdout, stderr, expected=None):
 
 
 def exact_records(planned, actual):
-    require(set(planned) == ALLOWED and actual == planned, "planned four-record bytes changed after validation")
+    require(set(planned) == ALLOWED and actual == planned, "planned five-record bytes changed after validation")
+
+
+def verify_extraction(root, data, stderr):
+    """Preserve fixed admitted meanings while refreshing the current closure.
+
+    The current snapshot includes changing checker implementation dependencies;
+    it is derived evidence, not the immutable historical reference. The existing
+    Raw profile protects exact roots, meanings and original-subject bindings.
+    """
+    require(stderr == b"", "fresh extraction has nonempty stderr")
+    require(len(data) <= continuity.MAX_SNAPSHOT_BYTES, "fresh extraction exceeds reviewed capacity")
+    proposal = guarantees.json_object(guarantees.checked_file(root,
+        guarantees.PROPOSAL_PATH, guarantees.PROPOSAL_SHA256), "admitted guarantee proposal")
+    archive = guarantees.historical_sources(root, proposal)
+    baseline = continuity.baseline(root, archive)
+    for path, digest in ((continuity.RAW_EXTRACTOR, continuity.RAW_EXTRACTOR_SHA256),
+                         (continuity.RAW_REVIEW, continuity.RAW_REVIEW_SHA256)):
+        continuity.checked_file(root, path, digest)
+    reviewed = continuity.decompressed(continuity.checked_file(root,
+        continuity.REVIEWED_PATH, baseline["expressions"]["sha256"]))
+    return continuity.compare_raw_projection(data, reviewed)
+
+
+def compress_extraction(data):
+    require(len(data) <= continuity.MAX_SNAPSHOT_BYTES, "fresh extraction exceeds reviewed capacity")
+    target = io.BytesIO()
+    with gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0, compresslevel=9) as stream:
+        stream.write(data)
+    return target.getvalue()
 
 
 def complete_fixed_results(results):
@@ -148,7 +180,7 @@ def execute(argv, cwd, stdout, stderr, limit):
         return process.returncode, "timeout"
 
 
-def proposed(current, ledger, revision, audit_bytes, schema_bytes, results):
+def proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extraction):
     require(current["continuity"]["format"] == continuity.RAW_FORMAT, "unsupported current proof profile")
     fresh = copy.deepcopy(current)
     validation = fresh["validation"]
@@ -160,6 +192,11 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results):
     validation["commands"][1]["seconds"] = results["main"]["seconds"]
     fresh["binding_review"]["command"]["seconds"] = results["binding"]["seconds"]
     fresh["continuity"]["source_revision_sha256"] = revision["sha256"]
+    snapshot = compress_extraction(extraction)
+    require(fresh["continuity"]["stdout"]["path"] == SNAPSHOT and
+        fresh["continuity"]["stdout"]["compression"] == "gzip", "unexpected current extraction destination")
+    fresh["continuity"]["stdout"]["sha256"] = sha(snapshot)
+    fresh["continuity"]["stdout"]["uncompressed_sha256"] = sha(extraction)
     validation["native_binary_note"] = "observed_native_build remains immutable historical alpha data; the outside fresh proof artifact records the current checker only as a build identity, with no binary-source/runtime attestation."
     old = "Ordinary source ADT execution, host-selected roots, constructors/match/qmatch and source-function preservation remain pending."
     new = "Common static plans and classical constructors are implemented, and the explicit check-only source carrier adapter replays retained source steps against a fresh typed native body equation. Ordinary nominal runtime, match/qmatch and the original AST/source-function preservation theorem remain pending."
@@ -170,7 +207,7 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results):
     bindings = [row for row in updated["current_bindings"] if row["evidence"]["path"] == CURRENT]
     require(len(bindings) == 1, "ambiguous ledger current binding")
     bindings[0]["evidence"]["sha256"] = sha(payload)
-    return {AUDIT: audit_bytes, CURRENT: payload, LEDGER: encoded(updated)}
+    return {AUDIT: audit_bytes, CURRENT: payload, LEDGER: encoded(updated), SNAPSHOT: snapshot}
 
 
 def main():
@@ -227,17 +264,20 @@ def main():
         run("hierarchical-current", "lean-kernel", ["lake", "env", "lean", "-DwarningAsError=true", "../tests/fixtures/hierarchical_prepared_v030/Current.lean"], kernel=kernel)
         results = {}
         for label, cwd, argv, reference in FIXED:
-            expected = (ROOT / reference).read_bytes()
             if label == "extract":
-                expected = continuity.decompressed(expected)
-            results[label] = run(label, cwd, argv, expected, kernel)
+                results[label] = run(label, cwd, argv, kernel=kernel)
+                extraction = (output / label / "stdout").read_bytes()
+                report["extraction_projection"] = verify_extraction(ROOT, extraction,
+                    (output / label / "stderr").read_bytes())
+            else:
+                results[label] = run(label, cwd, argv, (ROOT / reference).read_bytes(), kernel)
         complete_fixed_results(results)
         for index, command in enumerate(audit["commands"]):
             for stream in ("stdout", "stderr"):
                 require(sha((output / "registry-commands" / f"{index:02d}" / stream).read_bytes()) == command[stream + "_sha256"], "retained canonical command stream changed")
         require(registry.source_revision(ROOT) == revision, "Lean source closure changed")
         schema_bytes = (ROOT / SCHEMA).read_bytes()
-        updates = proposed(current, ledger, revision, audit_bytes, schema_bytes, results)
+        updates = proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extraction)
         planned = {SCHEMA: schema_bytes, **updates}
         for name, data in updates.items():
             (ROOT / name).write_bytes(data)
