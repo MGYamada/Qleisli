@@ -31,7 +31,7 @@ pub use elaborate::{
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,
 };
-pub use raw::{CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
+pub use raw::{CheckedSourceCarrier, CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
 
 use super::error::Result;
 pub use qpe::QpeBindingProposal;
@@ -275,7 +275,7 @@ impl ParsedProgram {
                 .map(|(name, source)| (name, source.text()))
                 .collect(),
             super::check::SourceLimits::selected(),
-            |resolution, interfaces, helpers, _, order, indices, budget| {
+            |resolution, interfaces, helpers, _, order, indices, budget, nominals| {
                 let meaning_targets =
                     meaning::validate(&sources, resolution, interfaces, indices, order, budget)?;
                 let mut projections = BTreeMap::new();
@@ -289,9 +289,14 @@ impl ParsedProgram {
                     if original.kind == super::ast::FnKind::Static {
                         continue;
                     }
-                    let result =
-                        projection::project_declaration(original, &indices[&id], helpers, budget)
-                            .map_err(|e| e.in_module(&declaration.name.0));
+                    let result = projection::project_declaration(
+                        original,
+                        &indices[&id],
+                        helpers,
+                        budget,
+                        nominals,
+                    )
+                    .map_err(|e| e.in_module(&declaration.name.0));
                     if let Err(error) = &result {
                         if error.code == "limit" {
                             return Err(super::check::SourceError::from(error.clone()));

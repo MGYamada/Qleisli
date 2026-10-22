@@ -29,7 +29,7 @@ use std::sync::Arc;
 
 pub(super) type Ty = Type<Linear>;
 pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
-type NominalTypes = Arc<BTreeMap<TypeId, Ty>>;
+pub(in crate::frontend) type NominalTypes = Arc<BTreeMap<TypeId, Ty>>;
 #[derive(Clone, Debug)]
 pub(super) struct NominalUse {
     pub name: String,
@@ -791,7 +791,12 @@ pub(super) fn program_with<'a, R>(
     ) -> Result<R>,
 ) -> Result<(CheckedProgram, R)> {
     // AST-only unit tests cannot establish a nominal origin without original bytes.
-    program_with_sources(modules, BTreeMap::new(), limits, finish)
+    program_with_sources(
+        modules,
+        BTreeMap::new(),
+        limits,
+        |a, b, c, d, e, f, g, _| finish(a, b, c, d, e, f, g),
+    )
 }
 
 fn prepare_program<'a>(
@@ -885,6 +890,7 @@ pub(super) fn program_with_sources<'a, R>(
         &[DefId],
         &mut BTreeMap<DefId, Index<'a>>,
         &Budget,
+        &NominalTypes,
     ) -> Result<R>,
 ) -> Result<(CheckedProgram, R)> {
     let mut program = prepare_program(modules, sources, limits)?;
@@ -1026,6 +1032,7 @@ pub(super) fn program_with_sources<'a, R>(
         &dependency_order,
         &mut program.indices,
         &program.budget,
+        &program.nominals,
     )?;
     program
         .budget

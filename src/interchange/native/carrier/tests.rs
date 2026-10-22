@@ -7,7 +7,7 @@ use crate::interchange::carrier::{Atom, Interface, Origin, Owner};
 use crate::interchange::json::{self, Value};
 use crate::ir::*;
 
-const SOURCE: &str = "// enum Tri { Decoy }\npub enum Tri { A, B, C }\npub enum Four { A, B, C, D }\npub enum One { Only }\npub struct Empty {}\npub struct Wrapped { flags: (Unit, Bits<0>), tag: labels::Tri }";
+const SOURCE: &str = "// enum Tri { Decoy }\npub enum Tri { A, B, C }\npub enum Four { A, B, C, D }\npub enum One { Only }\npub struct Empty {}\npub struct Wrapped { flags: (Unit, Bits<0>), tag: labels::Tri }\npub struct Packet { tag: Tri, bit: Bit }\npub struct Reversed { bit: Bit, tag: Tri }";
 
 fn n(value: u32) -> Value {
     Value::Number(u64::from(value))
@@ -90,14 +90,14 @@ fn request() -> Request {
     }
 }
 
-fn body(action: Value) -> Value {
+fn body(action: Value, wires: &[u32]) -> Value {
     Value::object([
         (
             "quantum_inputs",
             Value::Array(vec![Value::object([
                 ("token", n(0)),
-                ("wires", array([7, 19])),
-                ("shape", Value::object([("bits", n(2))])),
+                ("wires", array(wires.iter().copied())),
+                ("shape", Value::object([("bits", n(wires.len() as u32))])),
             ])]),
         ),
         ("classical_inputs", Value::Array(vec![])),
@@ -123,20 +123,30 @@ fn body(action: Value) -> Value {
 }
 
 fn artifact(permutation: [u32; 4], phases: [u32; 4], indices: [u32; 2]) -> Vec<u8> {
+    artifact_for(&[7, 19], &permutation, &phases, &indices)
+}
+
+fn artifact_for(wires: &[u32], permutation: &[u32], phases: &[u32], indices: &[u32]) -> Vec<u8> {
     // Source rows are bound to reachable original function evidence; the new
     // carrier path never bypasses the existing sourcesUsed/dependency checks.
-    let implementation = body(Value::object([
-        ("tag", text("monomial")),
-        ("indices", array(indices)),
-        ("permutation", array(permutation)),
-        ("phases", array(phases)),
-    ]));
-    let root = body(Value::object([
-        ("tag", text("contract")),
-        ("indices", array([0, 1])),
-        ("evidence", n(0)),
-        ("adjoint", Value::Bool(false)),
-    ]));
+    let implementation = body(
+        Value::object([
+            ("tag", text("monomial")),
+            ("indices", array(indices.iter().copied())),
+            ("permutation", array(permutation.iter().copied())),
+            ("phases", array(phases.iter().copied())),
+        ]),
+        wires,
+    );
+    let root = body(
+        Value::object([
+            ("tag", text("contract")),
+            ("indices", array(0..wires.len() as u32)),
+            ("evidence", n(0)),
+            ("adjoint", Value::Bool(false)),
+        ]),
+        wires,
+    );
     json::encode(&Value::object([
         ("format", text("qleisli.finite-ir")),
         ("version", n(2)),
@@ -155,7 +165,7 @@ fn artifact(permutation: [u32; 4], phases: [u32; 4], indices: [u32; 2]) -> Vec<u
                 ("tag", text("circuit")),
                 (
                     "signature",
-                    Value::object([("tag", text("bits")), ("width", n(2))]),
+                    Value::object([("tag", text("bits")), ("width", n(wires.len() as u32))]),
                 ),
                 ("implementation", n(0)),
                 ("specification", n(0)),
@@ -196,6 +206,245 @@ fn observe(
         }
     );
     result
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn source_produced_descriptions_use_actual_native_ordered_code_equations() {
+    use crate::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+
+    // The type trees come from the real complete common source judgment. The
+    // physical test graphs remain explicit Raw fixtures, not compiled .qli
+    // bodies or evidence of source-function preservation.
+    let program = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([
+            ("labels".into(), SOURCE.into()),
+            ("facade".into(), "pub use labels::Packet;".into()),
+        ]),
+    )
+    .unwrap();
+    let describe = |name| {
+        program
+            .basis_binding(name)
+            .unwrap()
+            .carrier_description()
+            .unwrap()
+    };
+    let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
+    let make = |basis: Vec<Atom>, wires: &[u32], logical: Matrix| {
+        let owner = |token| Owner {
+            port: QuantumPort {
+                token: TokenId(token),
+                wires: wires.iter().copied().map(WireId).collect(),
+                shape: BasisShape {
+                    bits: wires.len() as u8,
+                },
+            },
+            basis: basis.clone(),
+        };
+        let interface = Interface {
+            inputs: vec![owner(0)],
+            outputs: vec![owner(1)],
+            public_effect: Effect::Unitary,
+        };
+        Request {
+            attached: interface.clone(),
+            required: interface,
+            logical,
+        }
+    };
+    let swap = |a, b| {
+        Matrix::new(
+            6,
+            6,
+            (0..36)
+                .map(|i| {
+                    let column = i % 6;
+                    let expected = if column == a {
+                        b
+                    } else if column == b {
+                        a
+                    } else {
+                        column
+                    };
+                    if i / 6 == expected {
+                        Exact::one()
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap()
+    };
+    let wires = [7, 19, 23];
+    let permutation = [0, 4, 2, 3, 1, 5, 6, 7];
+    let physical = artifact_for(&wires, &permutation, &[0; 8], &[0, 1, 2]);
+    let packet = make(describe("facade::Packet"), &wires, swap(1, 3));
+    observe(
+        &kernel,
+        "source-produced-first-field-fast",
+        &physical,
+        &packet,
+    )
+    .unwrap();
+    let reverse = make(describe("labels::Reversed"), &wires, swap(1, 4));
+    observe(
+        &kernel,
+        "source-produced-reversed-field-order",
+        &physical,
+        &reverse,
+    )
+    .unwrap();
+    let mut wrong = reverse.clone();
+    wrong.logical = packet.logical.clone();
+    assert!(
+        observe(
+            &kernel,
+            "same-width-wrong-logical-coordinates",
+            &physical,
+            &wrong
+        )
+        .is_err()
+    );
+    let wrong_axes = artifact_for(&wires, &permutation, &[0; 8], &[1, 0, 2]);
+    assert!(observe(&kernel, "source-produced-wrong-axes", &wrong_axes, &packet).is_err());
+    let mut phases = [0; 8];
+    phases[1] = 1;
+    let wrong_phase = artifact_for(&wires, &permutation, &phases, &[0, 1, 2]);
+    assert!(
+        observe(
+            &kernel,
+            "source-produced-wrong-phase",
+            &wrong_phase,
+            &packet
+        )
+        .is_err()
+    );
+    let original = make(describe("labels::Tri"), &[7, 19], request().logical);
+    observe(
+        &kernel,
+        "source-produced-three-cycle",
+        &artifact([1, 2, 0, 3], [0; 4], [0, 1]),
+        &original,
+    )
+    .unwrap();
+    let scalar = artifact_for(&[], &[0], &[0], &[]);
+    for name in ["labels::One", "labels::Empty"] {
+        let zero = make(describe(name), &[], Matrix::identity(1).unwrap());
+        let accepted = observe(&kernel, name, &scalar, &zero).unwrap();
+        assert_eq!(accepted.request().attached.inputs.len(), 1);
+        assert_eq!(accepted.request().attached.outputs.len(), 1);
+        assert!(accepted.request().attached.inputs[0].port.wires.is_empty());
+    }
+    assert!(log.summary().complete());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_rows_need_actual_carrier_references_without_synthetic_circuit_evidence() {
+    let raw = RawProgram {
+        quantum_inputs: vec![port(0)],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![TokenId(0)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let mut identity = request();
+    identity.attached.outputs[0].port.token = TokenId(0);
+    identity.required = identity.attached.clone();
+    identity.logical = Matrix::identity(3).unwrap();
+    let rows = vec![("labels".into(), SOURCE.into())];
+    let proposal =
+        Proposal::from_raw_with_sources(&raw, None, crate::interchange::Version::V2, None, &rows)
+            .unwrap();
+    let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
+    let accepted = observe(
+        &kernel,
+        "no-artificial-circuit-evidence",
+        proposal.artifact(),
+        &identity,
+    )
+    .unwrap();
+    assert_eq!(accepted.request(), &identity);
+    assert!(
+        kernel.accept(&proposal).is_err(),
+        "ordinary unused-source checking remains strict"
+    );
+    for (name, source) in [
+        ("unrelated", "pub enum Other{Only}"),
+        ("helper", "pub static fn width()->Nat{2}"),
+    ] {
+        let mut extra = rows.clone();
+        extra.push((name.into(), source.into()));
+        let proposal = Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &extra,
+        )
+        .unwrap();
+        assert!(observe(&kernel, name, proposal.artifact(), &identity).is_err());
+    }
+    for rows in [
+        vec![("wrong_label".into(), SOURCE.into())],
+        vec![("labels".into(), format!("{SOURCE}\n"))],
+    ] {
+        let proposal = Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &rows,
+        )
+        .unwrap();
+        assert!(
+            observe(
+                &kernel,
+                "mismatched-original-row",
+                proposal.artifact(),
+                &identity
+            )
+            .is_err()
+        );
+    }
+    let mut category = identity.clone();
+    for owner in category
+        .attached
+        .inputs
+        .iter_mut()
+        .chain(&mut category.attached.outputs)
+    {
+        owner.basis = vec![Atom::Record(
+            Arc::new(Origin {
+                module: "labels".into(),
+                declaration: "Tri".into(),
+                source: SOURCE.into(),
+            }),
+            vec![],
+        )];
+    }
+    category.required = category.attached.clone();
+    assert!(
+        observe(
+            &kernel,
+            "wrong-original-category",
+            proposal.artifact(),
+            &category
+        )
+        .is_err()
+    );
+    assert!(log.summary().complete());
 }
 
 #[test]

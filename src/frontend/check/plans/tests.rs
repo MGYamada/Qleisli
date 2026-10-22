@@ -93,6 +93,7 @@ fn control_snapshots_retain_original_alias_carry_types_and_call_order() {
                 interfaces,
                 resolution,
                 budget,
+                nominals: &Arc::default(),
             };
             let original = snapshots[1];
             let verify = |owners: &[RuntimeOwnerPlan]| {
@@ -413,7 +414,9 @@ fn basis_arguments_keep_type_tags_and_original_same_spelling_binders() {
     else {
         panic!("Basis arguments");
     };
-    let (Kind::Parameter(a_key), Kind::Parameter(b_key)) = (&a_ty.kind, &b_ty.kind) else {
+    let (ResolvedTypeKind::Parameter(a_key), ResolvedTypeKind::Parameter(b_key)) =
+        (&a_ty.kind, &b_ty.kind)
+    else {
         panic!("original opaque parameters");
     };
     assert_eq!(a_key.name, b_key.name);
@@ -424,11 +427,11 @@ fn basis_arguments_keep_type_tags_and_original_same_spelling_binders() {
     let ResolvedStaticKind::Basis(ty) = &call.arguments[0].value.kind else {
         panic!("concrete product");
     };
-    let Kind::Tuple(fields) = &ty.kind else {
+    let ResolvedTypeKind::Tuple(fields) = &ty.kind else {
         panic!("product tree");
     };
-    assert!(matches!(fields[0].kind, Kind::Unit));
-    assert!(matches!(fields[1].kind, Kind::Bits(_)));
+    assert!(matches!(fields[0].kind, ResolvedTypeKind::Unit));
+    assert!(matches!(fields[1].kind, ResolvedTypeKind::Bits(_)));
 }
 
 #[test]
@@ -476,6 +479,7 @@ fn with_validation(source: &str, inspect: impl FnOnce(&Validation<'_, '_>, &ast:
                 interfaces,
                 resolution,
                 budget,
+                nominals: &Arc::default(),
             };
             inspect(&validation, &module);
             Ok(())
@@ -526,6 +530,7 @@ fn original_natural_literals_operators_and_order_cannot_be_mutated() {
                 index: &validation.indices[&owner],
                 helpers: validation.helpers,
                 budget: validation.budget,
+                nominals: &Arc::default(),
             };
             let original = capture.natural(source).unwrap();
             validation.natural(owner, &original).unwrap();
@@ -589,6 +594,7 @@ fn helper_arguments_keep_original_reference_and_child_sites() {
                 index: &validation.indices[&owner],
                 helpers: validation.helpers,
                 budget: validation.budget,
+                nominals: &Arc::default(),
             }
             .natural(source)
             .unwrap();
@@ -639,6 +645,7 @@ fn static_constructor_sibling_reference_and_foreign_node_mutations_refuse() {
                 index: &validation.indices[&owner],
                 helpers: validation.helpers,
                 budget: validation.budget,
+                nominals: &Arc::default(),
             };
             let original = capture.operation(source).unwrap();
             validation.operation(owner, &original).unwrap();
@@ -692,6 +699,7 @@ fn static_constructor_sibling_reference_and_foreign_node_mutations_refuse() {
                 interfaces: validation.interfaces,
                 resolution: validation.resolution,
                 budget: &exhausted,
+                nominals: &Arc::default(),
             };
             assert_eq!(
                 bounded.operation(owner, &original).unwrap_err().code,
@@ -715,6 +723,7 @@ fn zero_repeat_keeps_count_kind_and_exact_original_child() {
                 index: &validation.indices[&owner],
                 helpers: validation.helpers,
                 budget: validation.budget,
+                nominals: &Arc::default(),
             }
             .operation(source)
             .unwrap();
@@ -755,6 +764,7 @@ fn basis_type_tags_order_and_reference_sites_are_exact() {
                     index: &validation.indices[&owner],
                     helpers: validation.helpers,
                     budget: validation.budget,
+                    nominals: &Arc::default(),
                 }
                 .operation(source)
                 .unwrap();
@@ -763,7 +773,7 @@ fn basis_type_tags_order_and_reference_sites_are_exact() {
                 let ResolvedStaticKind::Basis(ty) = &mut changed.kind else {
                     unreachable!()
                 };
-                let Kind::Tuple(fields) = &mut ty.kind else {
+                let ResolvedTypeKind::Tuple(fields) = &mut ty.kind else {
                     unreachable!()
                 };
                 fields.swap(0, 1);
@@ -1005,6 +1015,7 @@ fn fold_ancestry_keeps_original_index_and_bounds_even_with_shared_replacements()
             interfaces: validation.interfaces,
             resolution: validation.resolution,
             budget: &exhausted,
+            nominals: &Arc::default(),
         };
         assert_eq!(
             bounded
@@ -1057,4 +1068,228 @@ fn dormant_provider_evidence_uses_its_original_region_chain() {
                 .is_err()
         );
     });
+}
+
+fn nominal_program(
+    sources: &[(&str, &str)],
+    inspect: impl FnOnce(&Validation<'_, '_>, &ast::Module),
+) -> Result<CheckedProgram> {
+    let syntax = sources
+        .iter()
+        .map(|(_, text)| crate::frontend::parser::parse_module(text).unwrap())
+        .collect::<Vec<_>>();
+    super::super::program_with_sources(
+        sources
+            .iter()
+            .zip(&syntax)
+            .map(|((name, _), module)| (*name, module))
+            .collect(),
+        sources.iter().copied().collect(),
+        SourceLimits::selected(),
+        |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
+            let validation = Validation {
+                indices,
+                helpers,
+                interfaces,
+                resolution,
+                budget,
+                nominals,
+            };
+            let main = sources
+                .iter()
+                .position(|(name, _)| *name == "main")
+                .unwrap();
+            inspect(&validation, &syntax[main]);
+            Ok(())
+        },
+    )
+    .map(|(program, ())| program)
+}
+
+#[test]
+fn explicit_nominal_basis_keeps_alias_origin_closed_record_fields_and_helper_sources() {
+    let leaf = "pub static fn width[const n:Nat]()->Nat{n+1}
+        pub enum Tri { A,B,C }
+        pub struct Packet { pub tag:Tri, hidden:Bits<width[1]()>, pub zero:Unit }";
+    let main = "use alias::Packet;
+        unitary fn identity[const A:Basis](q:Q<A>)->Q<A>{q}
+        pub unitary fn f(q:Q<(Packet,Bit)>)->Q<(Packet,Bit)>{identity[type((Packet,Bit))](q)}";
+    let program = nominal_program(
+        &[
+            ("leaf", leaf),
+            ("alias", "pub use leaf::Packet;"),
+            ("main", main),
+        ],
+        |validation, module| {
+            let owner = validation.resolution.qualified("main::f").unwrap();
+            let source = &static_arguments(quantum_body(declaration(module, "f")))[0];
+            let captured = Capture {
+                index: &validation.indices[&owner],
+                helpers: validation.helpers,
+                budget: validation.budget,
+                nominals: validation.nominals,
+            }
+            .operation(source)
+            .unwrap();
+            validation.operation(owner, &captured).unwrap();
+            let ResolvedStaticKind::Basis(ResolvedType {
+                kind: ResolvedTypeKind::Tuple(fields),
+            }) = &captured.kind
+            else {
+                panic!("retained product");
+            };
+            let ResolvedTypeKind::Nominal { id, canonical } = &fields[0].kind else {
+                panic!("retained original declaration");
+            };
+            assert_eq!(captured.type_nodes.len(), 3);
+            assert_eq!(captured.type_references.len(), 1);
+            assert_eq!(
+                captured.type_references[0].target,
+                ResolvedUse::Global(resolve::Target::Type(*id))
+            );
+            let Kind::Nominal(nominal) = &canonical.kind else {
+                unreachable!()
+            };
+            let Kind::Nominal(original) = &validation.nominals[id].kind else {
+                unreachable!()
+            };
+            assert!(Arc::ptr_eq(nominal, original));
+            assert_eq!(nominal.origin.module, "leaf");
+            assert_eq!(nominal.origin.source.as_ref(), leaf);
+            let super::super::super::types::nominal::Body::Record(fields) = &nominal.body else {
+                panic!("canonical record");
+            };
+            assert_eq!(fields[1].ty, Ty::bits(Linear::constant(2)));
+            assert!(!fields[1].public);
+            assert!(matches!(fields[2].ty.kind, Kind::Unit));
+        },
+    )
+    .unwrap();
+    let resolve::Target::Type(id) = program.resolution.qualified_target("leaf::Packet").unwrap()
+    else {
+        unreachable!()
+    };
+    let uses = &program.nominal_uses[&id];
+    assert!(uses.iter().any(|usage| usage.name == "width"));
+    assert!(uses.iter().any(|usage| usage.name == "Tri"));
+}
+
+#[test]
+fn explicit_nominal_basis_validation_rejects_other_type_fresh_arc_and_foreign_collection() {
+    let source = "enum Tri { A,B,C } enum Four { A,B,C,D }
+        unitary fn identity[const A:Basis](q:Q<A>)->Q<A>{q}
+        pub unitary fn f(q:Q<Tri>)->Q<Tri>{identity[type(Tri)](q)}";
+    let other = nominal_program(&[("main", source)], |_, _| {}).unwrap();
+    nominal_program(&[("main", source)], |validation, module| {
+        let owner = validation.resolution.qualified("main::f").unwrap();
+        let original = &static_arguments(quantum_body(declaration(module, "f")))[0];
+        let kept = Capture {
+            index: &validation.indices[&owner],
+            helpers: validation.helpers,
+            budget: validation.budget,
+            nominals: validation.nominals,
+        }
+        .operation(original)
+        .unwrap();
+        validation.operation(owner, &kept).unwrap();
+        for mutation in 0..4 {
+            let mut wrong = kept.clone();
+            let ResolvedStaticKind::Basis(ResolvedType {
+                kind: ResolvedTypeKind::Nominal { id, canonical },
+            }) = &mut wrong.kind
+            else {
+                unreachable!()
+            };
+            match mutation {
+                0 => {
+                    let resolve::Target::Type(other_id) = validation
+                        .resolution
+                        .qualified_target("main::Four")
+                        .unwrap()
+                    else {
+                        unreachable!()
+                    };
+                    *id = other_id;
+                }
+                1 => {
+                    let Kind::Nominal(nominal) = &mut canonical.kind else {
+                        unreachable!()
+                    };
+                    *nominal = Arc::new((**nominal).clone());
+                }
+                2 => *canonical = other.nominals[id].clone(),
+                _ => {
+                    let Kind::Nominal(nominal) = &mut canonical.kind else {
+                        unreachable!()
+                    };
+                    let origin = (*nominal.origin).clone();
+                    Arc::make_mut(nominal).origin =
+                        Arc::new(super::super::super::types::nominal::Origin {
+                            source: Arc::from("enum Tri { C,B,A }"),
+                            ..origin
+                        });
+                }
+            }
+            assert_eq!(
+                validation.operation(owner, &wrong).unwrap_err().code,
+                "source",
+                "mutation {mutation}"
+            );
+        }
+        let limited = Budget {
+            remaining: Cell::new(0),
+            limits: SourceLimits::selected(),
+        };
+        let capture = Capture {
+            index: &validation.indices[&owner],
+            helpers: validation.helpers,
+            budget: &limited,
+            nominals: validation.nominals,
+        };
+        assert_eq!(capture.operation(original).unwrap_err().code, "limit");
+    })
+    .unwrap();
+}
+
+#[test]
+fn explicit_nominal_basis_names_honor_local_shadowing_and_private_type_visibility() {
+    for main in [
+        "enum Tri { A,B,C } unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}
+         pub unitary fn f(q:Q<Tri>,Tri:Bit)->Q<Tri>{id[type(Tri)](q)}",
+        "enum Tri { A,B,C } unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}
+         pub unitary fn f[const Tri:Nat](q:Q<Bit>)->Q<Bit>{id[type(Tri)](q)}",
+    ] {
+        let failure = nominal_program(&[("main", main)], |_, _| {}).unwrap_err();
+        assert_eq!(failure.code, "type");
+        assert_eq!(&main[failure.span.start..failure.span.end], "Tri");
+    }
+    let main = "unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}
+        pub unitary fn f(q:Q<Bit>)->Q<Bit>{id[type(leaf::Private)](q)}";
+    let failure =
+        nominal_program(&[("leaf", "enum Private { A }"), ("main", main)], |_, _| {}).unwrap_err();
+    assert_eq!(failure.code, "visibility");
+    assert_eq!(&main[failure.span.start..failure.span.end], "leaf::Private");
+    let source = "enum Tri { A,B,C }
+        unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q}
+        pub unitary fn f[const Tri:Basis](q:Q<Tri>)->Q<Tri>{id[type(Tri)](q)}";
+    nominal_program(&[("main", source)], |validation, module| {
+        let owner = validation.resolution.qualified("main::f").unwrap();
+        let source = &static_arguments(quantum_body(declaration(module, "f")))[0];
+        let plan = Capture {
+            index: &validation.indices[&owner],
+            helpers: validation.helpers,
+            budget: validation.budget,
+            nominals: validation.nominals,
+        }
+        .operation(source)
+        .unwrap();
+        assert!(matches!(
+            plan.kind,
+            ResolvedStaticKind::Basis(ResolvedType {
+                kind: ResolvedTypeKind::Parameter(_),
+            })
+        ));
+        validation.operation(owner, &plan).unwrap();
+    })
+    .unwrap();
 }

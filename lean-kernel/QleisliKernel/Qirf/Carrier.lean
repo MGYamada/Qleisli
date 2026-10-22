@@ -4,8 +4,9 @@ import QleisliKernel.Semantics.CarrierInterface
 
 /-! Bind finite carrier codes to a freshly checked original QIRF root and its
 dependencies. This component has no native entry point or accepted-handle API.
-Source declaration lookup and versioned typed-interface transport remain pending;
-equal proposed/requested metadata is not a source-preservation theorem.
+The Protocol.Carrier caller independently checks source declarations and typed
+interfaces; equal proposed/requested metadata is not an AST-to-body preservation
+theorem.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.Carrier
 open Semantics.Exact Semantics.CarrierInterface Finite
@@ -27,6 +28,32 @@ def ownerCode (owners : List Owner) : WorkM Matrix := do
   let code ← FiniteCarrier.code (forest owners)
   readOwners owners
   return code
+
+/-- Exact source rows referenced by the four typed owner forests. This does
+not include helper/import-only dependencies or arbitrary project rows. The
+protocol independently checks these original declarations before this gate. -/
+def sourceRows (attached required : Interface) : List (String × String) :=
+  ([attached.inputs,attached.outputs,required.inputs,required.outputs].flatten.flatMap
+    fun owner => owner.basis).filterMap fun atom => match atom with
+      | .enumeration origin _ | .record origin _ => some (origin.moduleName,origin.source)
+      | _ => none
+
+/-- Count on the borrowed forests before allocating concatenated source rows.
+The four owner/code checks have already bounded and charged these forests. -/
+def sourceNodes (attached required : Interface) : Nat :=
+  [attached.inputs,attached.outputs,required.inputs,required.outputs].foldl
+    (fun total owners => owners.foldl (fun count owner => count + 1 + owner.basis.length) total) 0
+
+/-- Charge the exact-row coverage comparisons before traversing them. Ordinary
+graph checking keeps its original zero-extra accounting and strict source use. -/
+def sourceRoot (artifact : Artifact) (order : Array Nat) (attached required : Interface) :
+    WorkM Validity.Root := do
+  exactWork (Exact.charge (4 * sourceNodes attached required + 5))
+  let extra := sourceRows attached required
+  let bytes := (artifact.sources.toList.map fun row =>
+    row.1.utf8ByteSize + row.2.utf8ByteSize).sum
+  exactWork (Exact.charge ((bytes + artifact.sources.size + 1) * (extra.length + 1)))
+  Validity.checkRootWithSources artifact order extra
 
 structure Checked where
   root : Validity.Root
@@ -53,7 +80,7 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
   guard (required.publicEffect != .unitary || logical.rows == logical.cols) .request
   let iso ← exactWork (Exact.Matrix.isometryWork logical)
   guard iso .notIsometric
-  let root ← Validity.checkRoot artifact order
+  let root ← sourceRoot artifact order attached required
   guard (root.program.inputs == attached.inputs.map (·.port) &&
     root.program.outputs == attached.outputs.map (·.port.token) &&
     root.program.classicalInputs.isEmpty && root.program.classicalOutputs.isEmpty &&
@@ -79,7 +106,7 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
   publicPure : required.publicEffect = .unitary ∨ required.publicEffect = .iso
   publicUnitary : required.publicEffect = .unitary → logical.rows = logical.cols
   logicalGram : ∃ a b, Exact.Matrix.isometry logical a = (.ok true,b)
-  root : ∃ a b, (Validity.checkRoot artifact order).run a = (.ok checked.root,b)
+  root : ∃ a b, (sourceRoot artifact order attached required).run a = (.ok checked.root,b)
   inputs : checked.root.program.inputs = attached.inputs.map (·.port)
   outputs : checked.root.program.outputs = attached.outputs.map (·.port.token)
   classicalInputs : checked.root.program.classicalInputs = []
@@ -92,6 +119,15 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
   equation : ∃ result a b c d,
     Exact.Matrix.compose checked.physical checked.inputCode a = (.ok result,b) ∧
     Exact.Matrix.compose checked.outputCode logical c = (.ok result,d)
+
+theorem sourceRoot_result (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (root : Validity.Root) (work left : Nat)
+    (ok : (sourceRoot artifact order attached required).run work = (.ok root,left)) :
+    ∃ after, (Validity.checkRootWithSources artifact order (sourceRows attached required)).run after =
+      (.ok root,left) := by
+  obtain ⟨_,charged,_,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,after,_,checked⟩ := bind_success _ _ _ _ _ rest
+  exact ⟨after,checked⟩
 
 theorem readOwner_conditions (owner : Owner) (code : Semantics.FiniteCarrier.Layout)
     (work left : Nat) (ok : (readOwner owner).run work = (.ok code,left)) :

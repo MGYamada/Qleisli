@@ -30,6 +30,11 @@ impl CarrierChecked {
     pub fn native(&self) -> &NativeChecked {
         &self.checked.imported.program.native
     }
+    /// The exact retained native-compared root, for the source-step adapter.
+    /// This grants no public Raw execution handle or inverse/control access.
+    pub(crate) fn raw(&self) -> &RawProgram {
+        self.checked.imported.program.raw()
+    }
 }
 
 impl Kernel {
@@ -40,7 +45,7 @@ impl Kernel {
         let request = Arc::new(Request::decode(
             subject.request.as_deref().expect("original request"),
         )?);
-        let prepared = Prepared::new(Arc::clone(&subject))?;
+        let prepared = Prepared::with_carrier(Arc::clone(&subject), Some(&request))?;
         let graph = carrier::complete(prepared.graph(), &request)?;
         let native = Self::submit_subject(
             subject,

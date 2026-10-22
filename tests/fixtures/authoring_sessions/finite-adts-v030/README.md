@@ -382,3 +382,75 @@ No maximum quantum case is added. Ordinary nominal execution, native source/valu
 routing, match/qmatch, source-function preservation and hosted CI/review remain
 pending. All 8 #64 criteria remain open; no #39/#63 extension, new guarantee,
 publication or release is claimed.
+
+The [carrier source history](carrier-source-first.tar.xz),
+[index](carrier-source-index.json) and [retention record](carrier-source-validation.json)
+retain 650 inert records / 8269775 expanded bytes /
+493792 stored archive bytes. The original first `.qli` projects,
+source snapshots, actual diagnostics and scripts remain unchanged. Repeated
+repository inventories are represented by their exact canonical counts and
+hashes; each compact observation retains the full local report's byte count
+and SHA-256. Those full reports and omitted duplicate inventories remain
+outside the repository without deletion. Source snapshots are deduplicated by
+complete bytes and hash, with each original record mapped to its object.
+
+The first direct nominal programs retain their transport refusals, and the
+explicit `type(Tri)` experiment retains its original missing-static-binder
+diagnostic. Later common planning preserves the original lexical type use,
+canonical nominal identity and declaration-rooted field sizes. The new bounded
+check-only carrier route checks independently supplied logical equations and
+native source rows before replaying retained source steps. It supplies no
+ordinary executable accepted program or source-preservation theorem. Public
+effects, exact body/port bindings, owner rules and existing unsupported gates
+remain explicit.
+
+The interrupted normal Rust observer remains failed. Its actually successful
+prefix and a separate successful completion cover the normal plan on the same
+Root, companion and checker bytes; sequential MSRV 1.85 completes its own full
+plan on that state. Each records 363 frontend, 33 integration and 23 native
+tests, seven actual CLI cases and 176 companion tests, with zero ignored or
+conditional native skips. Normal strict lint and format checks pass. These
+reports precede the later Lean-only integration and are retained with their
+own source windows; they are not silently relabelled as checks of later bytes.
+
+The 13 new source-row checker propositions pass in their isolated observation
+and are integrated under a separate namespace. The prior failed full-suite
+proof/reduction/resource attempts remain failed; the source-only serial split
+candidate and guarded evidence-refresh plans remain unexecuted candidates.
+The original census of 475 simple-colon examples remains unchanged beside the
+separate correction to 476 total examples. Four canonical registry attempts
+stop at the 2 GiB owned-process-group RSS ceiling without completing the
+canonical audit. The six protected comparisons also have a failed aggregate:
+five stop at that ceiling, while the separate fresh `Main` replay exits zero
+with identical empty output streams. The user then authorized a 3 GiB ceiling for one heavy process at a time.
+The separate 3 GiB registry and full 476-example attempts also stop at the
+RSS ceiling; their actual errors remain recorded. The current kernel-only
+compiled audit passes for 16,685 declarations with the three standard axioms.
+No successful full-suite or canonical registry run, protected evidence refresh
+or hosted CI is claimed here.
+
+The actual workspace `bin/qargo`, `bin/qlippy`, `bin/qlifmt` and `bin/qlidoc`
+pass the unchanged live companion runtime verifier with the intended
+Qleisli/std sources. Binary bytes, sizes and modes, the checker, companion
+sources and four preexisting dirty files stay unchanged. The observer peaks
+at 90,352 KiB and invokes no Cargo or Rustdoc. This is a developer runtime
+observation, not a binary/source attestation or release authorization.
+
+The deferred Carrier header candidate, its restored-original metadata, the
+13-proposition namespace integration record and prepared refresh plans are
+retained as inert bytes. Fixed passive tests verify original failures, source
+object/report identities, distinct Rust windows, failed proof boundaries and
+the staged runtime snapshots without executing archived code. Packaging and
+passive-reader results must be recorded separately after they actually run.
+No maximum quantum case is added. All 8 #64 criteria, ordinary nominal
+execution, match/qmatch, source-function preservation, hosted CI/review and
+the broader constitutional obligations remain open. No #39/#63 expansion,
+new guarantee, publication or release follows from this history.
+
+The fresh local passive checks pass 50 finite-ADT, 16 generic authoring and
+25 fixture-reference tests. The first consumer-install command stopped after
+copying the three files; its broad placeholder assertion was corrected. A
+separate first test invocation had an import-path error and remains failed.
+The working fixture budget passes at 17,228 files / 150,619,622 bytes, and local
+link checks pass. These are retention/packaging observations; all required
+proof and hosted checks above remain pending.

@@ -1,0 +1,1836 @@
+{
+  "format": "qleisli.carrier-source-retention-candidate",
+  "version": 1,
+  "status": "retention-candidate-not-validation-success",
+  "history": {
+    "archive": {
+      "path": "carrier-source-first.tar.xz",
+      "bytes": 493792,
+      "sha256": "21df188096ceff6675f1377abad656cd2cf08379b40c70c252aa40ae5b86684a"
+    },
+    "index": {
+      "path": "carrier-source-index.json",
+      "bytes": 127836,
+      "sha256": "431ca032f33b9c2077e81f908943050508b3987306037577207e65cdcaa43acb"
+    },
+    "records": 650,
+    "expanded_bytes": 8269775
+  },
+  "observations": [
+    {
+      "stage": "carrier-first-tests",
+      "pass": false,
+      "exit_code": 101,
+      "stop_reason": null,
+      "full_local_report_bytes": 6834692,
+      "full_local_report_sha256": "9bc3d6f652532fdddab84372ee9d0eb1faa197a555dbabb71e47e995956ddf81",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "f67334c315cb4525304b217ef2cecb0d678dcfd89823e22e07d3d511ffcacda8"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "f67334c315cb4525304b217ef2cecb0d678dcfd89823e22e07d3d511ffcacda8"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "cli-msrv",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 2818,
+      "full_local_report_sha256": "d06daa90a734980aac1c529dad06ab04e916db67e10b8133f5bd92a0222f2010",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "cli-normal",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 2818,
+      "full_local_report_sha256": "0fc0d3120d6f4262fb642b4b85492641438c0a1832889b50131fb0bf105e4600",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "common-first-tests",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6834646,
+      "full_local_report_sha256": "2ea13bde6d5820ad9683a2cf78ef46bfbc215eed2e2e356c0cae45235b1e51e3",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "70c911351820704ccfcdcdccbf62d3aafa55d4fb2a8d70f6cf329862610a43b0"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "70c911351820704ccfcdcdccbf62d3aafa55d4fb2a8d70f6cf329862610a43b0"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "control-dependencies-decide-cbv",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731261,
+      "full_local_report_sha256": "5b1b97f2690285e5b2a15501d8cacce54d00a385b0dc42fd92eda3f7de983f22",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "control-dependencies-proof-steps",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731658,
+      "full_local_report_sha256": "f57f06ec3dc5420bc2e4b9f1a23bf6690e8ecab4f9f21475b2281307e2dd6427",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "control-original-synchronous",
+      "pass": false,
+      "exit_code": 134,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731627,
+      "full_local_report_sha256": "f8e10c21aeb8e0982b058b5f49c631f979d1190451f830e247539d4c930ce8f6",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-basic-kernel",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731216,
+      "full_local_report_sha256": "e152fcee6deb81f98ee0d053e7283d6e0547467e40683c2819c28e0c1c146105",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-body-cbv",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731204,
+      "full_local_report_sha256": "b8f9a09bb201f9533cb12dd71ceec4ad1c4dccee1758630a19341ce20909d67b",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-body-cbv-depth2048",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731230,
+      "full_local_report_sha256": "92ce4889624a2394070f70d6c772b29c4a9e19cbe9b1e5d9113dc4019ed82c11",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-body-owner-stages",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731267,
+      "full_local_report_sha256": "7a14447458afcfbd23e1732667e985b92c52cd5414ed3fb279dc543b7500b2c0",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-cbv-first",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731598,
+      "full_local_report_sha256": "2e7f7c7535062fe566bed1658e1f7a6b76ba49cbcff4aa2b81f6b761dc10f9d2",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-decide-cbv-postconditions",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731292,
+      "full_local_report_sha256": "08fd0e549c5d1e32e2a22a4c4d40d9b98fe5e3a12de2df4443043099a5fdbd94",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-decide-cbv-postconditions-v2",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731662,
+      "full_local_report_sha256": "a7e72f3f2600eb7a4b46194d3407ff05e663ae0372a1756e3f1298705523f4f9",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "b0aaa3c7b2a94bcc2f515e1017ba6e1860cf5c655740bed9b487a2eaed8c382d"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "b0aaa3c7b2a94bcc2f515e1017ba6e1860cf5c655740bed9b487a2eaed8c382d"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-isolated",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731253,
+      "full_local_report_sha256": "394ced8f6ffb21ca110810f5a1d4e38e8731ec0e776b937a750c77bfa7152e94",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-negative-rfl",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731216,
+      "full_local_report_sha256": "e4f9d66144e3737ca6b14824a913e4ee9ad129f7097980421afac7423883b416",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-negatives-postcondition",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731295,
+      "full_local_report_sha256": "a43b654e5a161384334e4c7b76931d8d1ccec5644a844a79cf6e1f6d851a344e",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-negatives-postcondition-v2",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731299,
+      "full_local_report_sha256": "6b7874e61a21024b1a20170986bbba51a691ecfe98fa13962cedf96cf8441250",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-positive-rfl",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731245,
+      "full_local_report_sha256": "e08fec04f9dffadde9fc68d4cd021af39768b05bed9804696e713070b4c3be9d",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-source-prefix-cbv",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731226,
+      "full_local_report_sha256": "d40f49ab8d5c66da2e45b067238f6b88e6882c35a017e3868d13b715d89fe6fb",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "coverage-source-prefix-rfl",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731259,
+      "full_local_report_sha256": "8bb9bfcfd3b02a3dae7b5f820303ae218bf6347faeb6943202f7d305c1afcbc3",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "first",
+      "pass": null,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6837818,
+      "full_local_report_sha256": "5d73b4e3fb9eb47b63ee971609ee3276f8a907b628f1e9ef89c7ec9d58f0a5fa",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20221,
+          "canonical_bytes": 3202816,
+          "canonical_sha256": "4dd897f9a32dd6915e13d362490cfd067351b1ee1410922dac55269c4c694c2d"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20221,
+          "canonical_bytes": 3202816,
+          "canonical_sha256": "4dd897f9a32dd6915e13d362490cfd067351b1ee1410922dac55269c4c694c2d"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-audit-current-isolation",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6730974,
+      "full_local_report_sha256": "627be695a04e49345c6d8673d76d573ecc28ad11127fd8575ee28486110a6443",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-build-current-isolation",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6730660,
+      "full_local_report_sha256": "f292416f58cca756a5a254052f38a2cddc112cb353939d9aab1c8aab4896e254",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-tests-cbv-depth2048",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6733835,
+      "full_local_report_sha256": "1ab654db6b82e9cfade38aa52edc4251280d9ce0932d7c7149b53b87eb1c2a24",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-tests-cbv-synchronous",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6734182,
+      "full_local_report_sha256": "4f4614703f388af9fcefe46c5b9c08f76fc598d275244f191edcd181e1017c56",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-tests-current-3g",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6734491,
+      "full_local_report_sha256": "665f99d0059d20db71fa7e7ff9a3205897fdb9f349b7f6eba7757dadb9a6dbb6",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "kernel-tests-decide-cbv-proof-budget",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6745531,
+      "full_local_report_sha256": "1e2ddfc2470bf616abb5df13ca963bafbc94e9fb61c2893929e0f9004147cb43",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "lean-first",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6771028,
+      "full_local_report_sha256": "c306eed1daddaf6699c794088a7db40406765b16d8c7b01bfb4928551f86d1c8",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "d999e688d93ff2faeb006e7e6b76434b275c8efba22fd59f838f04d21712ad25"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "f44fe3423c45986d7c8cfebeae98c823409a693b601698be851e626dc4d3a2e2"
+        },
+        {
+          "json_path": "/lean_closure/files",
+          "files": 324,
+          "canonical_bytes": 36557,
+          "canonical_sha256": "c6c98c3c39762f186aeb417daca3b514704e7a5198f97e35e83830ccd05864f2"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "lean-fourth",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6772011,
+      "full_local_report_sha256": "5ea57e81e91f47942e567654ed5e69ec6b3718ccc9d90cf487768a08a2a37234",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "f67334c315cb4525304b217ef2cecb0d678dcfd89823e22e07d3d511ffcacda8"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/lean_closure/files",
+          "files": 324,
+          "canonical_bytes": 36557,
+          "canonical_sha256": "273c0b71ad15b71f421295fceb739ef05096ed74414bd52f32514615eee650b2"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "lean-second",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6770868,
+      "full_local_report_sha256": "bfb7d98d79c086aa0a5b45c7188eec4c9101014621a622e4031f57ecb7f5fb6f",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "41e002e745ec18fa98071eb3c030113f8ad6f064def97886910f566eb8119ffa"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "41e002e745ec18fa98071eb3c030113f8ad6f064def97886910f566eb8119ffa"
+        },
+        {
+          "json_path": "/lean_closure/files",
+          "files": 324,
+          "canonical_bytes": 36557,
+          "canonical_sha256": "957735746bf20dbaebef01160e467c1bbd9a5daf7998dfd45500f38f3f4d52d7"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "lean-tests-bounded",
+      "pass": false,
+      "exit_code": 134,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731096,
+      "full_local_report_sha256": "e13538654384ee7192db52b0bd274c56073621457626df78fc856d9aa24785e3",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "lean-third",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6770869,
+      "full_local_report_sha256": "ce8a0edd82af54aacb6d1a62cbfc6313bae2f3d84d30055ff749b8fdf6ebe7d1",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "70c911351820704ccfcdcdccbf62d3aafa55d4fb2a8d70f6cf329862610a43b0"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "70c911351820704ccfcdcdccbf62d3aafa55d4fb2a8d70f6cf329862610a43b0"
+        },
+        {
+          "json_path": "/lean_closure/files",
+          "files": 324,
+          "canonical_bytes": 36557,
+          "canonical_sha256": "4f070b0dd8ed0c1f6239101c1428cbac292ed0a193608126b22ec01ea9fd8582"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "msrv-current-bounded",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6842165,
+      "full_local_report_sha256": "4432d0e34d173d18616cddf58e0268e0de44eae1235d15bfbf85de3dc01a2949",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "native-first-tests",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6834673,
+      "full_local_report_sha256": "c60b5ea795694aba6c2ec48ac67a9d3d84fa80e1d0273fb25bb79f1b6cbfecde",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "normal-final",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6840648,
+      "full_local_report_sha256": "71064b68e43de0071dd3b887b4ec985b0ba309178cce774a9e597b8aaa61ce14",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "normal-remaining-bounded",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 6836926,
+      "full_local_report_sha256": "552bacad570d9f8310e5b2fa52d99e25f90cf06fb50e8cc1db44edf31ce3e3ae",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "previous-tests-isolated",
+      "pass": false,
+      "exit_code": 134,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731629,
+      "full_local_report_sha256": "043cb5770637e1b3ece783530f2c130fece84f451694ddaf9600911c41b78ccc",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-basis",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731227,
+      "full_local_report_sha256": "a6729f1adf1c1aaf4e1954ee36d55ef8bfe1ee18fc9f144cc88b79bf032af810",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-binding",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731177,
+      "full_local_report_sha256": "478f6762adbc8058867346cc2136637008b62b11a701fb3d795c6dd92240894f",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-comparisons-v3",
+      "pass": false,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 5757,
+      "full_local_report_sha256": "18a75ff706515a86f8cf4fa3a8164c9f3cd334790b86c3b6fd30113eb182c555",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-extract",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731197,
+      "full_local_report_sha256": "4549b1c08c1b9925180b63d256b47a20c0d9efae6436bf71c5dc1a4a699b6a64",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-main-replay",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6732200,
+      "full_local_report_sha256": "920f74c69e7634471b611ea85a7b762b7c001d48c2d9be60a5fc998d12c872fd",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-raw",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731221,
+      "full_local_report_sha256": "8658e2ea57210c080cf9f1d7a9542df47f95223c049c5160b9ddee8161ef9342",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "protected-review",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6731153,
+      "full_local_report_sha256": "1cda57971e51e7b7e4934f42f655bf8472f270a18f8651221ba385a11ef86fb2",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "registry-current-bounded",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6732346,
+      "full_local_report_sha256": "599c067c05e0e40192db2e33c502c374ec3a13229a0dac49b8c062a415e4624b",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "registry-current-bounded-3g",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6733081,
+      "full_local_report_sha256": "9edef53f231534aa321fbaddb7c4032a6e010441e40e590c2b78baab4b6cb12b",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "registry-current-bounded-no-header",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6732998,
+      "full_local_report_sha256": "d8e6f85f9266a9d6a6a7f858d68bc8a9d212aaf93e238ffdb3537d2658f18114",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "registry-current-bounded-purge",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6732997,
+      "full_local_report_sha256": "a13ccdeba63247b0bd9605ec5e907e6d4d998bcf9d5d78ff813926d746803089",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "registry-current-bounded-v2",
+      "pass": false,
+      "exit_code": -15,
+      "stop_reason": "owned-process-group-rss-limit",
+      "full_local_report_bytes": 6732993,
+      "full_local_report_sha256": "d260a8dd057185c188670e96b1e924d90c60162d4f6936c69510420a29479754",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "4f9584664d380a06016844e2ca38aad5dc0991115b06ce69d31a5ad88908f3ec"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "rust-current-join",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 1531,
+      "full_local_report_sha256": "71250c95b0f0f5470cd50c23602bb245077685ac779f8d3dc67b97561e6a68b2",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "rust-first-compile",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6834540,
+      "full_local_report_sha256": "017613f75f261963f24af7753c34078c497cd91aee8e4207ef9d66e5422d2a1b",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "41e002e745ec18fa98071eb3c030113f8ad6f064def97886910f566eb8119ffa"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "41e002e745ec18fa98071eb3c030113f8ad6f064def97886910f566eb8119ffa"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "staged-runtime-current",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 46328,
+      "full_local_report_sha256": "ad89a0318710bb86c13a514d2d3b2d7da3af7ec5343a03694291fa8be5ff396e",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "staged-runtime-window",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6733742,
+      "full_local_report_sha256": "49ec0bbfa30358d4b97413ee528b7c38c9bc8c83d2ce75af86841d52d5e76055",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "2634560ae2c5871df65981c6d8d4070ddebbc63ea50b22405e5e61b6b8aceedb"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "string-kernel-reduction",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 6731223,
+      "full_local_report_sha256": "433ae97b9cea5eb222e4239b6ff5f04c1fb7903760227ea6a7abf1ab47ddc6e3",
+      "inventory_representations": [
+        {
+          "json_path": "/before/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        },
+        {
+          "json_path": "/after/files",
+          "files": 20224,
+          "canonical_bytes": 3203156,
+          "canonical_sha256": "0980bad447719dd56d1afc7a1248ea6c6ccee8b8827a82ae2cb54efdb9537914"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "tool-help-first",
+      "pass": false,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 505,
+      "full_local_report_sha256": "0d87d09858e3fb08f1436a4c71dd076b2906f6ea9d7ea98e4503fefc09e9dbe1",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "tool-staging",
+      "pass": true,
+      "exit_code": null,
+      "stop_reason": null,
+      "full_local_report_bytes": 1710,
+      "full_local_report_sha256": "ed0670532700004f86fd874f9d903276d40bf9a8b04c17565f39ba90ccba4430",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "type-argument-first",
+      "pass": null,
+      "exit_code": 1,
+      "stop_reason": null,
+      "full_local_report_bytes": 643,
+      "full_local_report_sha256": "cf293c43172275bf027278e844b0491018cc16efb1c6cd96576ccc9904838f27",
+      "inventory_representations": [],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    },
+    {
+      "stage": "type-argument-window",
+      "pass": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "full_local_report_bytes": 6833804,
+      "full_local_report_sha256": "b25b6c4b6c908746f13ec27c135ed02e218f5e9f69cd5ffd0c64c15eff715375",
+      "inventory_representations": [
+        {
+          "json_path": "/before/root/files",
+          "files": 20221,
+          "canonical_bytes": 3202816,
+          "canonical_sha256": "4dd897f9a32dd6915e13d362490cfd067351b1ee1410922dac55269c4c694c2d"
+        },
+        {
+          "json_path": "/before/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        },
+        {
+          "json_path": "/after/root/files",
+          "files": 20221,
+          "canonical_bytes": 3202816,
+          "canonical_sha256": "4dd897f9a32dd6915e13d362490cfd067351b1ee1410922dac55269c4c694c2d"
+        },
+        {
+          "json_path": "/after/companion/files",
+          "files": 110,
+          "canonical_bytes": 10328,
+          "canonical_sha256": "29c079ca5c187262b6d85c819d6150af4d29cf1fa37ffb444de5997b507f2b9e"
+        }
+      ],
+      "scope": "Recorded terminal observation, not newly executed or independently upgraded."
+    }
+  ],
+  "prepared_captures": [
+    {
+      "stage": "hosted-refresh-candidate",
+      "scope": "UNEXECUTED draft hosted proof record producer; source preparation only, no checked command or CI success."
+    },
+    {
+      "stage": "isolation-inputs",
+      "scope": "Prepared Lean isolation sources, original Tests/prefix/suffix bytes and their manifests. This directory has no observation report; retaining these bytes establishes no execution, successful test or proof."
+    },
+    {
+      "stage": "lean-unit-split-candidate",
+      "scope": "UNEXECUTED source-only serial Lean test split candidate. Preserve the original Tests bytes, per-module sources, ownership mapping, census and runner inventory. Text reconstruction is not compilation, proof or validation; no adopted repository refactor is claimed."
+    },
+    {
+      "stage": "rust-before-format",
+      "scope": "Prepared pre-format Rust source capture. This directory has no observation report and establishes no successful build or test."
+    }
+  ],
+  "root_preparation_records": {
+    "carrier-header-candidate.lean.txt": {
+      "record": "preparation/carrier-header-candidate.lean.txt",
+      "bytes": 12488,
+      "sha256": "76d6c77c3420305f52429c6366d4780bd6ca72cd4366877f2630ef7e7fb80df5",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "carrier-header-deferred.json": {
+      "record": "preparation/carrier-header-deferred.json",
+      "bytes": 502,
+      "sha256": "18c2dd1df922a18550bc32b3d3bda649a19a0d3018c16be6854eb6a3809902b6",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "carrier-passive-consumer-proposal.patch.in": {
+      "record": "preparation/carrier-passive-consumer-proposal.patch.in",
+      "bytes": 4477,
+      "sha256": "1d0a5660a38eea70bf82b665bba87ea82a19c32d6ba1244fa8d33741afc7f3a1",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "carrier-passive-consumer-rootmeta-proposal.patch.in": {
+      "record": "preparation/carrier-passive-consumer-rootmeta-proposal.patch.in",
+      "bytes": 11343,
+      "sha256": "02f5c69b458f4ea6ff775d4b44ba3fc76c6d7057d9221ed140f0c63618764137",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "carrier-readme-addition.md": {
+      "record": "preparation/carrier-readme-addition.md",
+      "bytes": 4161,
+      "sha256": "76bfb8d05525b0ab74baa31a91fe8cdff6c53e7ac9afedf52146e95e60a4529f",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "cli-current.py": {
+      "record": "drivers/cli-current.py.txt",
+      "bytes": 3142,
+      "sha256": "ae390b893452067633b07b97ea9e234d01d7a37da56d67c31cb7107f6b4683fe",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "coverage-v2-root-tests-applied.json": {
+      "record": "preparation/coverage-v2-root-tests-applied.json",
+      "bytes": 456,
+      "sha256": "cfb24dd7c29884e0f3acdcc76d21490a5884b7f37e9185207dd2c682fd2f9762",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "first.py": {
+      "record": "drivers/first.py.txt",
+      "bytes": 3315,
+      "sha256": "e4a1fe4083713ceaa7f7d4f0a532cdfdaa918db84def26195d638cdb02f17997",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "hosted-current-record-refresh-blueprint.md": {
+      "record": "preparation/hosted-current-record-refresh-blueprint.md",
+      "bytes": 5206,
+      "sha256": "d1f56fd94df08c304782902a5e38d7828676cabbac611be0c9bcc3e8318fe7e1",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "isolate-current.py": {
+      "record": "drivers/isolate-current.py.txt",
+      "bytes": 867,
+      "sha256": "1c40f7fa0671faa263d088593fdd408f920a4230fb96585290ea82592c5dadbb",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "join-current-rust.py": {
+      "record": "drivers/join-current-rust.py.txt",
+      "bytes": 4573,
+      "sha256": "9dcb0d7e504e4da1a18ea946258e10c37c72e8a7a9e8f812815495c1e5d7eba5",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "memory-preference-20261021.json": {
+      "record": "preparation/memory-preference-20261021.json",
+      "bytes": 465,
+      "sha256": "d0a0738eba5cdf90e245ba93bb182720e27496d7deb52125d93689a5383184a3",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "observe.py": {
+      "record": "drivers/observe.py.txt",
+      "bytes": 2685,
+      "sha256": "a616c2b450ee3203bde1aaf176167097cd21bd35eff5aa8715b94331ada33bca",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "prepare-carrier-retention-lowmem.py": {
+      "record": "drivers/prepare-carrier-retention-lowmem.py.txt",
+      "bytes": 18368,
+      "sha256": "e757425cc4b633f25f0064359e24a823dcb5bbed6b543847f2d4b3217295b4bc",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "prepare-carrier-retention-rootmeta.py": {
+      "record": "drivers/prepare-carrier-retention-rootmeta.py.txt",
+      "bytes": 21370,
+      "sha256": "49c484da391682afa35e3698c3bc9cdd3da7f38e34111367d09a7fd4d29dbc04",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "prepare-carrier-retention.py": {
+      "record": "drivers/prepare-carrier-retention.py.txt",
+      "bytes": 15781,
+      "sha256": "1e2e711acba73d0e6b571597f6b18018a6a75e07e901c9c18625e584d3562a31",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "refresh-current-evidence-guarded-v2.preparation.json": {
+      "record": "preparation/refresh-current-evidence-guarded-v2.preparation.json",
+      "bytes": 1069,
+      "sha256": "6468bbce98c179179db361c56bf25c63f050a27bd3a970d907c29a27b9a712bf",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "refresh-current-evidence-guarded-v2.py": {
+      "record": "drivers/refresh-current-evidence-guarded-v2.py.txt",
+      "bytes": 130678,
+      "sha256": "54a80b217d6e4f4d11631287a8f46975c9250d019b37787ee84aafd7b6968cca",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "refresh-current-evidence-guarded-v3.preparation.json": {
+      "record": "preparation/refresh-current-evidence-guarded-v3.preparation.json",
+      "bytes": 1127,
+      "sha256": "7d48b627c5585cbc79244e5e4c2aa0c391d6ee4643aae721f016251d02838f33",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "refresh-current-evidence-guarded-v3.py": {
+      "record": "drivers/refresh-current-evidence-guarded-v3.py.txt",
+      "bytes": 130742,
+      "sha256": "00e851125a39a5466e66779a2c18d4bae93bb2be6e9fa1d1c0aee48c83adcac9",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "refresh-current-evidence-guarded-v4.preparation.json": {
+      "record": "preparation/refresh-current-evidence-guarded-v4.preparation.json",
+      "bytes": 3147,
+      "sha256": "51b7afd870845bcb8c9b2d0158f8397ff94484a1494c8e7ff04459a1a347600d",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "refresh-current-evidence-guarded-v4.py": {
+      "record": "drivers/refresh-current-evidence-guarded-v4.py.txt",
+      "bytes": 136121,
+      "sha256": "d0818076a373dd79c7f1391c0eb1e4bb93c2a2e2e91939fe6177af55f3e89cfa",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "refresh-current-evidence-guarded-v4.read-only-review.json": {
+      "record": "preparation/refresh-current-evidence-guarded-v4.read-only-review.json",
+      "bytes": 1576,
+      "sha256": "da6b7f34de7f3fbd86cadaaf338ba405d1bec47e9ac0f90eb2989717ff4b416b",
+      "observed_mode": 420,
+      "kind": "inert-preparation-record"
+    },
+    "run-bounded-3g.py": {
+      "record": "drivers/run-bounded-3g.py.txt",
+      "bytes": 4701,
+      "sha256": "eadec634efed586a2b8a73de98bcbd64645a7069d9c0a4f8d48eeefeaf9e73b8",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-bounded-stop-detail.py": {
+      "record": "drivers/run-bounded-stop-detail.py.txt",
+      "bytes": 4618,
+      "sha256": "54096dff356a73cb830b2e982022d84a48c2dc91480fef551ca5e1bfeea7dfdb",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-bounded.py": {
+      "record": "drivers/run-bounded.py.txt",
+      "bytes": 4485,
+      "sha256": "11eda65d9af1442c8df44ae07ca0261baf271406030b87cee5b0218323662cb5",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-control-probes.py": {
+      "record": "drivers/run-control-probes.py.txt",
+      "bytes": 553,
+      "sha256": "74a99e5f7c4a133fd4f8dca66d2ed94b495f82514e53335235f1bcace0a30f30",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-isolation-next.py": {
+      "record": "drivers/run-isolation-next.py.txt",
+      "bytes": 569,
+      "sha256": "1927b7d4e89e8de2f0a5a9b4cfc4c8888276d929b131d89c9b44ff5bffa379da",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-isolation-staged.py": {
+      "record": "drivers/run-isolation-staged.py.txt",
+      "bytes": 509,
+      "sha256": "752fa7ecd6bc6178da13e4218ae55e943ba49213ea60cf87f8f6a07b0b071fe8",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-proof-repairs.py": {
+      "record": "drivers/run-proof-repairs.py.txt",
+      "bytes": 626,
+      "sha256": "f97b297a1d0d908cd20f21bb6665afe9b48f1345196d6f709aa8ebfcf9342615",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-proof-suite-candidates.py": {
+      "record": "drivers/run-proof-suite-candidates.py.txt",
+      "bytes": 581,
+      "sha256": "b84680b5233f282ac0c009a2b956adb1ef63ecf325341dfeed282862c876c3f9",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-protected-comparisons-3g.py": {
+      "record": "drivers/run-protected-comparisons-3g.py.txt",
+      "bytes": 3665,
+      "sha256": "0e6d643d7282e3c7b962857ebc6f6f3e5a3a8271c3ae9d9e75d029425d8079cb",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-protected-comparisons-v2.py": {
+      "record": "drivers/run-protected-comparisons-v2.py.txt",
+      "bytes": 3739,
+      "sha256": "24fb3395381141fff5b19a4a3e27d84dd6f2ba5bd310a2b6094ca08f60ea44fb",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-protected-comparisons-v3.py": {
+      "record": "drivers/run-protected-comparisons-v3.py.txt",
+      "bytes": 3659,
+      "sha256": "4ef024948e8473705f223241f63d1a8aabb7fc8146fa3f6d3163c6ab10014969",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-protected-comparisons.py": {
+      "record": "drivers/run-protected-comparisons.py.txt",
+      "bytes": 3504,
+      "sha256": "959bf61808b40a42b50a524ffccc5774190b8aa6482d06cb9252f1eef47e4cba",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-registry-bounded-current-3g.py": {
+      "record": "drivers/run-registry-bounded-current-3g.py.txt",
+      "bytes": 5896,
+      "sha256": "28d8c04140c27a9aebfed478cad4a3f8abe7f675f22af81e5279a9193d170c70",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-registry-bounded-current-purge.py": {
+      "record": "drivers/run-registry-bounded-current-purge.py.txt",
+      "bytes": 5861,
+      "sha256": "18bb1b920bc9166cf6334ac3760a153c87d8533ab77baafdaf578375de2168b6",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-registry-bounded-current-v2.py": {
+      "record": "drivers/run-registry-bounded-current-v2.py.txt",
+      "bytes": 5813,
+      "sha256": "3d0879281f3191edb625cf70aecee62993b77245ee85233d1b7cbb4a913cc0f7",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "run-registry-bounded-current.py": {
+      "record": "drivers/run-registry-bounded-current.py.txt",
+      "bytes": 5680,
+      "sha256": "c7c8548a1ab25992cde24265e3ef40d6ba63e38191437ccb0a7106ed5b5e71a7",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "stage-current-tools.py": {
+      "record": "drivers/stage-current-tools.py.txt",
+      "bytes": 2277,
+      "sha256": "d41d40195097445bb5b02ddab0d2c8bd3c6dd7b0ab1453a300f5b41096054cf8",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "staged-runtime-current.py": {
+      "record": "drivers/staged-runtime-current.py.txt",
+      "bytes": 6649,
+      "sha256": "039f372042ff6dee977611844019c1816027f82ad8cc90141f0d173809cfe079",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "type-argument-first.py": {
+      "record": "drivers/type-argument-first.py.txt",
+      "bytes": 1265,
+      "sha256": "bb065270c21d7d45ef0dc1a080e64929a855b844caf6eb5cf64c00b3a47b7a38",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "validate-lean.py": {
+      "record": "drivers/validate-lean.py.txt",
+      "bytes": 5336,
+      "sha256": "6a7960673787136d03d787cc0ffb1535f6dd6a45e7004254d13d5551f2f299a4",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "validate-rust-bounded.py": {
+      "record": "drivers/validate-rust-bounded.py.txt",
+      "bytes": 5989,
+      "sha256": "35e58259b1537a0c16a661b6f0f214e14e260af2d65e9687b433edcafed48cc3",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    },
+    "validate-rust.py": {
+      "record": "drivers/validate-rust.py.txt",
+      "bytes": 4741,
+      "sha256": "f9860abc9282681246dc98aedbf84c7a0dcbb0ca2c386712adc801e55632ef46",
+      "observed_mode": 420,
+      "kind": "inert-driver-source"
+    }
+  },
+  "candidate_bundle_limit_bytes": 7360000,
+  "compression": {
+    "format": "xz",
+    "preset": 6,
+    "scope": "Storage encoding only; no source/checker/work/memory acceptance limit changed."
+  },
+  "recorded_outcomes": {
+    "explicit_false_stages": [
+      "carrier-first-tests",
+      "control-dependencies-decide-cbv",
+      "control-original-synchronous",
+      "coverage-basic-kernel",
+      "coverage-body-cbv",
+      "coverage-cbv-first",
+      "coverage-decide-cbv-postconditions",
+      "coverage-isolated",
+      "coverage-negative-rfl",
+      "coverage-negatives-postcondition",
+      "coverage-positive-rfl",
+      "coverage-source-prefix-rfl",
+      "kernel-tests-cbv-depth2048",
+      "kernel-tests-cbv-synchronous",
+      "kernel-tests-current-3g",
+      "kernel-tests-decide-cbv-proof-budget",
+      "lean-first",
+      "lean-fourth",
+      "lean-second",
+      "lean-tests-bounded",
+      "lean-third",
+      "normal-final",
+      "previous-tests-isolated",
+      "protected-basis",
+      "protected-binding",
+      "protected-comparisons-v3",
+      "protected-extract",
+      "protected-raw",
+      "protected-review",
+      "registry-current-bounded",
+      "registry-current-bounded-3g",
+      "registry-current-bounded-no-header",
+      "registry-current-bounded-purge",
+      "registry-current-bounded-v2",
+      "string-kernel-reduction",
+      "tool-help-first"
+    ],
+    "explicit_true_stages": [
+      "cli-msrv",
+      "cli-normal",
+      "common-first-tests",
+      "control-dependencies-proof-steps",
+      "coverage-body-cbv-depth2048",
+      "coverage-body-owner-stages",
+      "coverage-decide-cbv-postconditions-v2",
+      "coverage-negatives-postcondition-v2",
+      "coverage-source-prefix-cbv",
+      "kernel-audit-current-isolation",
+      "kernel-build-current-isolation",
+      "msrv-current-bounded",
+      "native-first-tests",
+      "normal-remaining-bounded",
+      "protected-main-replay",
+      "rust-current-join",
+      "rust-first-compile",
+      "staged-runtime-current",
+      "staged-runtime-window",
+      "tool-staging",
+      "type-argument-window"
+    ],
+    "no_boolean_pass_stages": [
+      "first",
+      "type-argument-first"
+    ],
+    "scope": "Copied historical report fields only; positive components never replace failed full-suite attempts."
+  },
+  "historical_notes": [
+    "Keep original failed Lean proof/reduction/resource-limit attempts and full streams separate from later components or proposed split sources.",
+    "Keep first 475 simple-colon example census manifest unchanged and retain the separate v2 correction to476 total examples; no source or outcome rewrite.",
+    "Prepared isolation and serial-split sources/mappings/inventories are inert candidates; reconstruction is not proof or successful fresh compilation.",
+    "Recorded older process caps remain original metadata; do not silently replace them with a later1536MiB observer policy.",
+    "Interrupted normal-final remains false; separate completion and byte-identical join retain only their expressly recorded Rust scope; complete MSRV is distinct.",
+    "The13 new checker propositions passed in isolation and were integrated under a separate namespace; full476 regression failures remain failures.",
+    "All four recorded canonical registry attempts failed owned-process RSS limits; do not infer a passing registry audit, current-proof refresh or full-suite completion.",
+    "Protected-comparisons-v3 aggregate remains false: review/binding/basis/raw/extract hit RSS limits; separate main-replay passed with identical empty streams.",
+    "Actual staged four-tool runtime passed on unchanged snapshots without Cargo/Rustdoc; this is not binary/source attestation or release readiness.",
+    "Carrier header candidate and deferral metadata remain inert history; a restored original header is not adoption of its candidate comment."
+  ],
+  "deferred_nonterminal_groups": [],
+  "scope": "Passive first .qli programs, original diagnostics and bounded carrier source/native/proof observations. Repeated repository inventories are represented by count and SHA-256 of canonical JSON. Full original local reports and unretained inventories remain external without deletion. Exact streams, original source objects and scripts are inert history. Observation outcomes are copied, not recomputed or upgraded. No source preservation theorem, issue completion, guarantee admission, CI completion or release approval follows from this retention candidate.",
+  "required_before_repository_acceptance": [
+    "Review recorded first sources, unchanged predictions and complete diagnostics.",
+    "Bind any final validated source manifest to its actual terminal observer window.",
+    "Independently read every inert archive member and compare index bytes/hashes; never execute history.",
+    "Add a bounded fixed passive reader and its fixture roots, then run unchanged fixture size/reference gates.",
+    "Report actual completed/failed/skipped checks; no guessed proof, native, MSRV or CI success."
+  ]
+}

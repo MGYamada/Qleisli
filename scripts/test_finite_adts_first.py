@@ -789,5 +789,201 @@ class FirstOrdinaryValues(unittest.TestCase):
                          '0b2aae13383acde445bbff974515418a79f61d3b32d652169188fca6f1fa6dfc')
 
 
+class CarrierSourceHistory(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history(
+            'carrier-source-index.json', 'carrier-source-first.tar.xz',
+            '431ca032f33b9c2077e81f908943050508b3987306037577207e65cdcaa43acb', 493792, '21df188096ceff6675f1377abad656cd2cf08379b40c70c252aa40ae5b86684a', 8269775)
+
+    def observation(self, stage):
+        return json.loads(self.data[stage + '/observation.json'])
+
+    def source(self, stage, original_name):
+        mapping = json.loads(self.data[stage + '/original-source-records.json'])
+        row = mapping[original_name]
+        raw = self.data[row['record']]
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                         (row['bytes'], row['sha256']))
+        return raw
+
+    def root_record(self, original_name):
+        mapping = json.loads(self.data['root-capture-records.json'])['records']
+        row = mapping[original_name]
+        raw = self.data[row['record']]
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                         (row['bytes'], row['sha256']))
+        return raw
+
+    def test_first_transport_barriers_and_original_static_plan_failure_are_retained(self):
+        first = self.observation('first')
+        self.assertTrue(first['stable'])
+        self.assertTrue(first['first_sources_unchanged'])
+        self.assertEqual(first['before'], first['after'])
+        self.assertEqual([row['code'] for row in first['commands']],
+                         ['unsupported'] * 4 + [None])
+        self.assertIn(b'Q<Tri>', self.source('first', 'direct-enum/main.qli'))
+        explicit = json.loads(self.data['type-argument-first/stdout'])
+        self.assertEqual(explicit['diagnostics'][0]['code'], 'source')
+        self.assertEqual(explicit['diagnostics'][0]['message'],
+                         'Basis plan requires its original static binder')
+        self.assertEqual(self.observation('type-argument-first')['exit_code'], 1)
+
+    def test_failed_full_lean_attempts_are_separate_from_prepared_and_isolated_work(self):
+        failed = self.observation('kernel-tests-decide-cbv-proof-budget')
+        self.assertFalse(failed['pass'])
+        self.assertEqual(failed['exit_code'], 1)
+        prepared = json.loads(self.data['lean-unit-split-candidate/prepared-capture.json'])
+        self.assertFalse(prepared['terminal_observation'])
+        self.assertIn('UNEXECUTED', prepared['scope'])
+        first = json.loads(self.source('isolation-inputs',
+            'tests-decide-cbv-proof-budget-manifest.json'))
+        corrected = json.loads(self.source('isolation-inputs',
+            'tests-decide-cbv-proof-budget-manifest-v2.json'))
+        self.assertEqual(first['original_examples'], 475)
+        self.assertEqual(corrected['original_examples'], 476)
+        self.assertIn('475', corrected['metadata_correction'])
+        self.assertNotEqual(first, corrected)
+        isolated = self.observation('coverage-decide-cbv-postconditions-v2')
+        self.assertTrue(isolated['pass'])
+        self.assertEqual(isolated['exit_code'], 0)
+        self.assertTrue(isolated['stable'])
+        actual = self.source('coverage-decide-cbv-postconditions-v2',
+            'explicit-inputs/CarrierSourceCoverageDecideCbvPostconditionsV2.lean')
+        self.assertEqual(sum(line.startswith(b'example :')
+                             for line in actual.splitlines()), 13)
+        applied = json.loads(self.root_record('coverage-v2-root-tests-applied.json'))
+        self.assertTrue(applied['namespace_only'])
+        self.assertEqual(applied['actual_isolated_report_sha256'],
+                         isolated['full_local_report_sha256'])
+        self.assertNotEqual(applied['before'], applied['after'])
+
+    def test_interrupted_normal_and_separate_completion_and_full_msrv_keep_their_scopes(self):
+        initial = self.observation('normal-final')
+        completion = self.observation('normal-remaining-bounded')
+        msrv = self.observation('msrv-current-bounded')
+        joined = self.observation('rust-current-join')
+        self.assertFalse(initial['pass'])
+        interrupted = next(row for row in initial['commands']
+                           if row['name'] == 'companion-tests')
+        self.assertTrue(interrupted['executed'])
+        self.assertEqual(interrupted['exit_code'], -15)
+        for report in (initial, completion, msrv):
+            self.assertTrue(report['stable'])
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['before'], initial['before'])
+        for report in (completion, msrv):
+            self.assertTrue(report['pass'])
+            self.assertTrue(all(row['executed'] and row['exit_code'] == 0
+                                for row in report['commands']))
+        self.assertEqual(msrv['selection'], 'all')
+        self.assertTrue(joined['pass'])
+        self.assertTrue(joined['normal_initial_interruption_preserved'])
+        self.assertEqual(set(completion['selection']),
+                         set(joined['normal_completion_selection']))
+        self.assertEqual(joined['normal_and_msrv'], {
+            'frontend': 363, 'integration': 33, 'native': 23, 'cli_cases': 7,
+            'companion': 176, 'ignored': 0, 'conditional_native_skips': 0})
+
+    def test_registry_stops_and_protected_partial_result_never_become_full_success(self):
+        for stage in ('registry-current-bounded', 'registry-current-bounded-v2',
+                      'registry-current-bounded-purge', 'registry-current-bounded-no-header'):
+            report = self.observation(stage)
+            self.assertFalse(report['pass'])
+            self.assertFalse(report['canonical_audit_checked'])
+            self.assertEqual(report['changed_files'], [])
+            self.assertEqual(report['exit_code'], -15)
+            self.assertEqual(report['stop_reason'], 'owned-process-group-rss-limit')
+            self.assertEqual(report['rss_group_limit_kib'], 2_097_152)
+        authorization = json.loads(self.root_record('memory-preference-20261021.json'))
+        self.assertEqual(authorization['reply'], '単独実行に限り3 GiBまで使う')
+        self.assertEqual(authorization['heavy_jobs'], 1)
+        for stage in ('registry-current-bounded-3g', 'kernel-tests-current-3g'):
+            report = self.observation(stage)
+            self.assertFalse(report['pass'])
+            self.assertEqual(report['stop_reason'], 'owned-process-group-rss-limit')
+            self.assertEqual(report['rss_group_limit_kib'], 3_145_728)
+            self.assertEqual(report['heavy_job_concurrency'], 1)
+        audit = self.observation('kernel-audit-current-isolation')
+        self.assertTrue(audit['pass'])
+        self.assertEqual(audit['exit_code'], 0)
+        self.assertIn(b'Audited 16685 kernel/transport declarations',
+                      self.data['kernel-audit-current-isolation/stdout'])
+        protected = self.observation('protected-comparisons-v3')
+        self.assertFalse(protected['pass'])
+        rows = {row['name']: row for row in protected['commands']}
+        self.assertEqual(set(rows), {'review', 'binding', 'basis', 'raw', 'extract', 'main-replay'})
+        for name in ('review', 'binding', 'basis', 'raw', 'extract'):
+            self.assertEqual(rows[name]['exit_code'], -15)
+            self.assertEqual(rows[name]['stop_reason'], 'owned-process-group-rss-limit')
+        replay = rows['main-replay']
+        self.assertEqual(replay['exit_code'], 0)
+        self.assertIsNone(replay['stop_reason'])
+        self.assertTrue(replay['identical_recorded_output'])
+        self.assertTrue(replay['source_and_kernel_window_unchanged'])
+        self.assertEqual(replay['stdout_sha256'], hashlib.sha256(b'').hexdigest())
+        self.assertEqual(replay['stderr_sha256'], hashlib.sha256(b'').hexdigest())
+
+    def test_staged_runtime_uses_actual_four_tools_and_preserves_its_snapshots(self):
+        window = self.observation('staged-runtime-window')
+        runtime = self.observation('staged-runtime-current')
+        self.assertTrue(window['pass'])
+        self.assertEqual(window['exit_code'], 0)
+        self.assertTrue(window['stable'])
+        self.assertEqual(window['peak_rss_kib'], 90_352)
+        self.assertTrue(runtime['pass'])
+        self.assertEqual(runtime['exit_code'], 0)
+        self.assertIsNone(runtime['exception'])
+        self.assertEqual(runtime['before'], runtime['after'])
+        self.assertTrue(all(runtime['checks'].values()))
+        self.assertEqual(set(runtime['before']['staged_workspace_binaries']),
+                         {'qargo', 'qlippy', 'qlifmt', 'qlidoc'})
+        self.assertEqual(len(runtime['before']['four_preexisting_dirty_files']), 4)
+        self.assertIn(b'no Cargo/Rustdoc invocation', self.data['staged-runtime-current/stdout'])
+        self.assertEqual(self.data['staged-runtime-current/stderr'], b'')
+        self.assertEqual(runtime['stdout']['sha256'],
+                         hashlib.sha256(self.data['staged-runtime-current/stdout']).hexdigest())
+
+    def test_deferred_header_and_prepared_refresh_plans_are_inert_records(self):
+        deferred = json.loads(self.root_record('carrier-header-deferred.json'))
+        candidate = self.root_record('carrier-header-candidate.lean.txt')
+        self.assertEqual(deferred['candidate_sha256'], hashlib.sha256(candidate).hexdigest())
+        self.assertNotEqual(deferred['candidate_sha256'], deferred['restored_sha256'])
+        self.assertIn('Original header is retained', deferred['scope'])
+        for version in ('v2', 'v3'):
+            prepared = json.loads(self.root_record(
+                'refresh-current-evidence-guarded-' + version + '.preparation.json'))
+            self.assertIn('PREPARED ONLY', prepared['status'])
+            self.assertFalse(prepared['root_edited'])
+            script = self.root_record('refresh-current-evidence-guarded-' + version + '.py')
+            self.assertEqual(prepared['sha256'], hashlib.sha256(script).hexdigest())
+
+    def test_every_source_root_record_and_full_external_report_identity_is_preserved(self):
+        originals = json.loads(self.data['original-external-records.json'])['records']
+        for name, raw in self.data.items():
+            if name.endswith('/original-source-records.json'):
+                for original_name, row in json.loads(raw).items():
+                    value = self.data[row['record']]
+                    self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                                     (row['bytes'], row['sha256']), original_name)
+            if name.endswith('/observation.json'):
+                stage = name.rsplit('/', 1)[0]
+                held = json.loads(raw)
+                original = originals[stage + '/report.json']
+                self.assertEqual(held['full_local_report_bytes'], original['bytes'])
+                self.assertEqual(held['full_local_report_sha256'], original['sha256'])
+        for name in json.loads(self.data['root-capture-records.json'])['records']:
+            self.root_record(name)
+        validation = json.loads((FIXTURES / 'carrier-source-validation.json').read_bytes())
+        self.assertEqual(validation['history']['records'], len(self.data))
+        self.assertEqual(validation['history']['expanded_bytes'], 8269775)
+        self.assertEqual(validation['history']['archive']['sha256'], '21df188096ceff6675f1377abad656cd2cf08379b40c70c252aa40ae5b86684a')
+        self.assertEqual(validation['history']['index']['sha256'], '431ca032f33b9c2077e81f908943050508b3987306037577207e65cdcaa43acb')
+        self.assertLessEqual(validation['history']['archive']['bytes'] +
+            validation['history']['index']['bytes'] +
+            (FIXTURES / 'carrier-source-validation.json').stat().st_size, 7_360_000)
+
+
+
 if __name__ == '__main__':
     unittest.main()

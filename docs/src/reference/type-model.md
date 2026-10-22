@@ -712,6 +712,14 @@ value or quantum owner. A runtime function named `type` remains an ordinary
 function; existing contextual static Nat names such as Bit retain their category.
 No argument is inferred from expected width, type or an available provider.
 
+Explicit `type(T)` also retains an original resolved finite enum or record,
+including aliases and closed Nat-helper field sizes. The common static plan
+binds that original type occurrence to its canonical declaration in the same
+checked collection. Field sizes remain rooted in the type declaration; they
+are not invented Nat occurrences in the calling function. Selected projection
+keeps the complete nominal source tree. This preparation grants no execution
+or inverse/control capability.
+
 The Rust API uses `BasisBinding::parse`, `ParsedProgram::basis_binding`,
 `instantiate_with_types` and `OperationBinding::with_types`.
 The context-free parser retains its built-in-only contract. The preparation's
@@ -722,6 +730,16 @@ transitive Nat-helper source bytes. Every receiving preparation rechecks that
 selection before closure/cache use; private names, changed dependencies and
 same-width substitute trees reject. A portable built-in description needs no
 source context. Host selection grants no module-private privilege.
+
+`BasisBinding::carrier_description()` produces the ordered prefix atoms for
+an untrusted internal carrier request. It retains exact nominal source bytes,
+variant/field order, product shape and singleton/zero-width nodes. Its existing
+carrier profile bounds are six physical bits, 128 nodes and prefix depth 32;
+producer work remains bounded by 100000 cells. Logical cardinality and code
+coordinates are separate from physical width. Constructing these atoms grants
+no accepted handle or source-preservation result; the complete typed ports,
+actual body/dependencies and exact logical request still need fresh native
+checking.
 
 The existing `instantiate` and provider `new`
 methods supply empty type maps. Entry types use `--type=A=Bit` or an exact
@@ -747,6 +765,26 @@ before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
 actual public-name/source checks, then the remaining transport refusal. This
 does not enable ordinary nominal execution, `match`, `qmatch` or a
 source-preservation theorem, and it grants no inverse/control access.
+
+The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
+has a separate bounded, check-only route. It uses the same common judgment,
+selected Builder and Raw emitter for pure quantum owners and ordinary Unit
+products, retaining complete nominal trees. The caller supplies the independent
+exact logical matrix; the adapter never infers the requested action from its
+emitted physical matrix. Fresh native checking binds typed input/output owner
+forests, public effects, original nominal declarations, actual Raw dependencies
+and the exact code/body equation. A second reader replays the retained source
+steps against that same immutable native-compared body.
+
+Original source rows must be covered by exact nominal origins in the request;
+unrelated rows and currently uncovered helper/import-only modules refuse.
+Ordinary native checking retains its evidence-only source-use rule. The returned
+`CheckedSourceCarrier` retains its complete source preparation privately and
+offers artifact/request inspection, with no ordinary accepted-program escape,
+runtime invocation, inverse or controlled access. `source_meaning_verified()`
+remains false: retained-step replay does not prove original AST elaboration.
+This route checks real enum/record identity and scalar bodies without enabling
+ordinary constructor values, match, qmatch or general source execution.
 
 Common source preparation also checks fieldless `Type::Variant` values,
 explicit `Type { field: expression, ... }` records and ordinary `value.field`

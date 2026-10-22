@@ -7,6 +7,9 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import subprocess
+import sys
 
 import check_schema_registry as registry
 
@@ -116,6 +119,58 @@ class RegistryTests(unittest.TestCase):
     def test_source_only_cannot_refresh_theorem_types(self):
         with self.assertRaisesRegex(registry.RegistryError, "requires rebuilt types"):
             registry.check(registry.ROOT, write=True, source_only=True)
+
+
+class StreamCaptureTests(unittest.TestCase):
+    def experiment(self, root, outside=None, failure=None):
+        manifest = registry.read_json((registry.ROOT / registry.MANIFEST).read_bytes())
+        revision = manifest["source_revision"]
+        export = registry.manifest_export(manifest)
+        target = root / registry.MANIFEST
+        target.parent.mkdir(parents=True, exist_ok=True)
+        original = b"original manifest must survive failure\n"
+        target.write_bytes(original)
+        outputs = [b"source-policy\xff\n", b"native build\n", b"native audit\n", b"math build\n", b"math audit\n", b"", json.dumps(export).encode()]
+        expected = [([sys.executable, "scripts/check_lean_kernel.py"], root), (["lake", "build"], root / "lean-kernel"), (["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / "lean-kernel"), (["lake", "build"], root / "lean"), (["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"], root / "lean"), (["lake", "env", "leanchecker", "--fresh", "QleisliKernel"], root / "lean-kernel"), (["lake", "env", "lean", "-DwarningAsError=true", "SchemaExport.lean"], root / "lean")]
+        calls, report = [], {}
+
+        def synthetic(argv, cwd, **kwargs):
+            index = len(calls)
+            self.assertEqual((argv, cwd), expected[index])
+            self.assertEqual(kwargs, {"capture_output": True, "check": False})
+            calls.append((argv, cwd))
+            return subprocess.CompletedProcess(argv, 1 if index == failure else 0, outputs[index], b"failed\xfe" if index == failure else b"")
+
+        with patch.object(registry, "source_revision", return_value=revision), patch.object(registry.subprocess, "run", side_effect=synthetic):
+            if failure is None:
+                registry.check(root, write=True, report=report, command_output_dir=outside)
+            else:
+                with self.assertRaises(registry.RegistryError):
+                    registry.check(root, write=True, report=report, command_output_dir=outside)
+        self.assertEqual(len(calls), 7 if failure is None else failure + 1)
+        if failure is not None:
+            self.assertEqual(target.read_bytes(), original)
+        if outside is not None:
+            for index, row in enumerate(report["commands"]):
+                self.assertEqual((outside / f"{index:02d}" / "stdout").read_bytes(), outputs[index])
+                self.assertEqual(registry.digest((outside / f"{index:02d}" / "stdout").read_bytes()), row["stdout_sha256"])
+            if failure is not None:
+                self.assertEqual((outside / f"{failure:02d}" / "stderr").read_bytes(), b"failed\xfe")
+        return report
+
+    def test_optional_streams_preserve_exact_seven_commands_and_report_shape(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            first = self.experiment(base / "default")
+            second = self.experiment(base / "captured", base / "streams")
+            self.assertEqual(set(first), set(second))
+            self.assertEqual([row["argv"] for row in first["commands"]], [row["argv"] for row in second["commands"]])
+            self.assertTrue(all(set(a) == set(b) for a, b in zip(first["commands"], second["commands"])))
+
+    def test_failure_preserves_actual_non_utf8_streams_without_writing_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            self.experiment(base / "failed", base / "streams", failure=3)
 
 
 if __name__ == "__main__":

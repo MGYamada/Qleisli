@@ -160,6 +160,29 @@ impl Encoder {
         }
         Ok(())
     }
+    fn source(&mut self, path: &str, text: &str) -> Result<usize> {
+        if let Some(&index) = self.source_ids.get(path) {
+            if self.sources[index].1 != text {
+                return Err(Error::format("conflicting source snapshots for one label"));
+            }
+            return Ok(index);
+        }
+        self.identity_remaining = self
+            .identity_remaining
+            .checked_sub(path.len() + text.len())
+            .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+        if self.sources.len() >= 128 {
+            return Err(Error::limit("more than 128 sources"));
+        }
+        self.source_remaining = self
+            .source_remaining
+            .checked_sub(text.len())
+            .ok_or_else(|| Error::limit("embedded source text exceeds 1 MiB"))?;
+        let index = self.sources.len();
+        self.sources.push((path.into(), text.into()));
+        self.source_ids.insert(path.into(), index);
+        Ok(index)
+    }
     fn program(&mut self, raw: &RawProgram) -> Result<usize> {
         proposal_depth(raw)?;
         self.object()?;
@@ -217,28 +240,7 @@ impl Encoder {
             .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
         let mut sources = Vec::new();
         for (path, text) in snapshot.iter() {
-            let index = if let Some(&index) = self.source_ids.get(path) {
-                if self.sources[index].1 != *text {
-                    return Err(Error::format("conflicting source snapshots for one label"));
-                }
-                index
-            } else {
-                self.identity_remaining = self
-                    .identity_remaining
-                    .checked_sub(path.len() + text.len())
-                    .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
-                if self.sources.len() >= 128 {
-                    return Err(Error::limit("more than 128 sources"));
-                }
-                self.source_remaining = self
-                    .source_remaining
-                    .checked_sub(text.len())
-                    .ok_or_else(|| Error::limit("embedded source text exceeds 1 MiB"))?;
-                let index = self.sources.len();
-                self.sources.push((path.clone(), text.clone()));
-                self.source_ids.insert(path.clone(), index);
-                index
-            };
+            let index = self.source(path, text)?;
             sources.push(Value::Number(index as u64));
         }
         let mut fields = vec![
@@ -861,6 +863,35 @@ impl std::fmt::Debug for DecodedGraph {
     }
 }
 fn decode_subject(subject: &Arc<native::Subject>, budget: &mut Budget) -> Result<DecodedGraph> {
+    decode_subject_with_carrier(subject, budget, None)
+}
+
+// This policy is private to the native carrier entry point. A row must be the
+// exact canonical original carried by a nominal atom, not an arbitrary project
+// dependency or a caller-provided permission to ignore unused source entries.
+fn carrier_source(request: &carrier::Request, path: &str, source: &str) -> bool {
+    [
+        &request.attached.inputs,
+        &request.attached.outputs,
+        &request.required.inputs,
+        &request.required.outputs,
+    ]
+    .into_iter()
+    .flatten()
+    .flat_map(|owner| &owner.basis)
+    .any(|atom| match atom {
+        carrier::Atom::Enum(origin, _) | carrier::Atom::Record(origin, _) => {
+            origin.module == path && origin.source == source
+        }
+        _ => false,
+    })
+}
+
+fn decode_subject_with_carrier(
+    subject: &Arc<native::Subject>,
+    budget: &mut Budget,
+    carrier: Option<&carrier::Request>,
+) -> Result<DecodedGraph> {
     let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
@@ -869,6 +900,44 @@ fn decode_subject(subject: &Arc<native::Subject>, budget: &mut Budget) -> Result
     let mut receipts = vec![None; entries.len()];
     let mut used = BTreeSet::new();
     let mut identity_bytes = MAX_SOURCE_BYTES;
+    if let Some(request) = carrier {
+        let forests = [
+            &request.attached.inputs,
+            &request.attached.outputs,
+            &request.required.inputs,
+            &request.required.outputs,
+        ];
+        let atoms = forests
+            .iter()
+            .flat_map(|owners| owners.iter())
+            .map(|owner| owner.basis.len())
+            .sum::<usize>();
+        let origins = forests
+            .iter()
+            .flat_map(|owners| owners.iter())
+            .flat_map(|owner| &owner.basis)
+            .filter(|atom| matches!(atom, carrier::Atom::Enum(..) | carrier::Atom::Record(..)))
+            .count();
+        let bytes = snapshot
+            .iter()
+            .map(|(p, s)| p.len() + s.len())
+            .sum::<usize>();
+        budget
+            .charge(
+                (bytes + snapshot.len() + 1)
+                    .saturating_mul(origins + 1)
+                    .saturating_add((atoms + 1).saturating_mul(snapshot.len() + 1)),
+            )
+            .map_err(|e| Error::limit(e.to_string()))?;
+        for (index, (path, source)) in snapshot.iter().enumerate() {
+            if carrier_source(request, path, source) {
+                identity_bytes = identity_bytes
+                    .checked_sub(path.len() + source.len())
+                    .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+                used.insert(index);
+            }
+        }
+    }
     let mut snapshots = Snapshots::new();
     for node in order {
         let decoder = Decoder {

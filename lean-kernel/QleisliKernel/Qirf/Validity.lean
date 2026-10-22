@@ -48,7 +48,9 @@ theorem inspect_projection (artifact : Qirf.Artifact) (order : Array Nat)
       match request with
       | none => pure ()
       | some request => requested artifact dependencies program request) := by
-  cases request <;> simp [inspect,check,checkRoot,checkGraph,sourcesUsed,requested,bind_assoc]
+  cases request <;> simp [inspect,check,checkRoot,checkRootWithSources,checkGraph,
+    checkGraphReceipts,sourcesUsedWithSources,sourceUses,requested,
+    bind_assoc,-bind_pure_comp] <;> rfl
 
 /-- Named stage facts keep acceptance decomposition out of semantic proofs.
 These are refinement facts, not a definition of semantic resource safety. -/
@@ -59,6 +61,19 @@ structure RootPostcondition (artifact : Qirf.Artifact) (order : Array Nat)
   dependencyBinding : root.dependencies = (before root.receipts).map Semantics.ObservingFunction.Receipt.dependency
   graph : ∃ left, (checkGraph artifact order).run work = (.ok root.dependencies,left)
   sources : sourcesUsed artifact = true
+  original : artifact.programs[artifact.root]? = some root.program
+  verification : ∃ a b,
+    (Raw.Observation.verify root.dependencies root.program).run a = (.ok root.checked,b)
+  interface : portInterfaceValid artifact root.program = true
+
+
+structure SourceRootPostcondition (artifact : Qirf.Artifact) (order : Array Nat) (extra : List (String × String))
+    (root : Root) (work : Nat) : Prop where
+  fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList root.receipts
+  complete : root.receipts.all Option.isSome = true
+  dependencyBinding : root.dependencies = (before root.receipts).map Semantics.ObservingFunction.Receipt.dependency
+  graph : ∃ left, (checkGraphWithSources artifact order extra).run work = (.ok root.dependencies,left)
+  sources : sourcesUsedWithSources artifact extra = true
   original : artifact.programs[artifact.root]? = some root.program
   verification : ∃ a b,
     (Raw.Observation.verify root.dependencies root.program).run a = (.ok root.checked,b)
@@ -84,10 +99,10 @@ structure Postcondition (artifact : Qirf.Artifact) (order : Array Nat)
     | some request => ∃ equation, checked.equation = some equation ∧
       EquationPostcondition artifact checked.root.dependencies checked.root.program request equation
 
-theorem checkRoot_postcondition (artifact : Qirf.Artifact) (order : Array Nat)
+theorem checkRootWithSources_postcondition (artifact : Qirf.Artifact) (order : Array Nat) (extra : List (String × String))
     (root : Root) (work left : Nat)
-    (ok : (checkRoot artifact order).run work = (.ok root,left)) :
-    RootPostcondition artifact order root work := by
+    (ok : (checkRootWithSources artifact order extra).run work = (.ok root,left)) :
+    SourceRootPostcondition artifact order extra root work := by
   obtain ⟨receipts,a,hg,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,b,hs,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨program,c,hp,h⟩ := bind_success _ _ _ _ _ h
@@ -98,9 +113,20 @@ theorem checkRoot_postcondition (artifact : Qirf.Artifact) (order : Array Nat)
   have present : artifact.programs[artifact.root]? = some program := by
     have found := (lift_success _ _ _ _ hp).1
     cases hf : artifact.programs[artifact.root]? <;> simp_all [readOption]
-  have graph := checkGraph_receipts_result artifact order receipts work a hg
-  obtain ⟨fresh,complete⟩ := checkGraphReceipts_fresh _ _ _ _ _ hg
+  have graph : (checkGraphWithSources artifact order extra).run work =
+      (.ok ((before receipts).map Semantics.ObservingFunction.Receipt.dependency),a) := by
+    rw [checkGraphWithSources,bind_run,hg]
+    rfl
+  obtain ⟨fresh,complete⟩ := checkGraphReceipts_freshWithSources _ _ _ _ _ _ hg
   exact ⟨fresh,complete,rfl,⟨a,graph⟩,(guard_success _ _ _ _ hs).1,present,⟨c,d,hv⟩,(guard_success _ _ _ _ hi).1⟩
+
+theorem checkRoot_postcondition (artifact : Qirf.Artifact) (order : Array Nat)
+    (root : Root) (work left : Nat)
+    (ok : (checkRoot artifact order).run work = (.ok root,left)) :
+    RootPostcondition artifact order root work := by
+  have facts := checkRootWithSources_postcondition artifact order [] root work left ok
+  exact ⟨facts.fresh,facts.complete,facts.dependencyBinding,facts.graph,facts.sources,
+    facts.original,facts.verification,facts.interface⟩
 
 theorem checkRequested_postcondition (artifact : Qirf.Artifact) (dependencies : List Dependency)
     (program : Program) (request : Request) (equation : Equation) (work left : Nat)

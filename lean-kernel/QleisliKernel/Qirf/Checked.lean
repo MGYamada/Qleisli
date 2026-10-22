@@ -77,16 +77,25 @@ def sourcesUsed (artifact : Qirf.Artifact) : Bool :=
     (Array.replicate artifact.sources.size false)
   used.all id
 
-/-- Preserve the complete original graph, root and independent event reader.
-The optional mathematical request is a separate stage with the same budget. -/
-def checkRoot (artifact : Qirf.Artifact) (order : Array Nat) : WorkM Root := do
-  let receipts ← checkGraphReceipts artifact order
+def sourcesUsedWithSources (artifact : Qirf.Artifact) (extra : List (String × String)) : Bool :=
+  (sourceUses artifact extra).all id
+
+/-- The same actual graph, original root and independent event reader. Only
+source-row coverage is parameterized; the carrier profile derives exact rows
+from checked original nominal declarations rather than a supplied flag. -/
+def checkRootWithSources (artifact : Qirf.Artifact) (order : Array Nat)
+    (extra : List (String × String)) : WorkM Root := do
+  let receipts ← checkGraphReceiptsWithSources artifact order extra
   let dependencies := (before receipts).map Semantics.ObservingFunction.Receipt.dependency
-  guard (sourcesUsed artifact)
+  guard (sourcesUsedWithSources artifact extra)
   let program ← lift (readOption artifact.programs[artifact.root]?)
   let checked ← Raw.Observation.verify dependencies program
   guard (portInterfaceValid artifact program) .request
   return ⟨receipts,dependencies,program,checked⟩
+
+/-- Ordinary checking retains strict evidence-only source use. -/
+def checkRoot (artifact : Qirf.Artifact) (order : Array Nat) : WorkM Root :=
+  checkRootWithSources artifact order []
 
 /-- Retain both original requested semantics and the reconstructed operator.
 Equality checking and whole-space unitarity still execute before returning. -/

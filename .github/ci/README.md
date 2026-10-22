@@ -75,6 +75,22 @@ the final tree. Splitting reviewable work must retain every required check and
 protected source, proof, evidence and history; deleting them to shrink a PR is
 not authorized by this rule.
 
+## Reviewable current proof records
+
+The separate `current-proof-records` workflow prepares reviewable proof metadata
+for an exact clean checkout of the active beta branch. It runs the canonical
+builds, audits, full reductions and fixed protected-output comparisons before
+proposing changes to the schema registry and the three current-evidence records.
+Its full command streams and four-file patch are uploaded as a distinct artifact;
+failed or incomplete verification produces no successful patch. The checkout is
+restored before publication of the proposed files. Historical admissions,
+protected meanings and the alpha build observation remain unchanged.
+
+This producer runs independently when stale evidence prevents ordinary source
+checks. It does not satisfy required CI, create a release receipt, commit changes
+or close an Issue. Review and apply its patch, then run ordinary required CI on
+the resulting commit. Local resource failures remain failed observations.
+
 ## Optional native test-driver consolidation
 
 The experimental `run_native_ci.py --shared-drivers` option implements the

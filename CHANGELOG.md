@@ -74,6 +74,24 @@ development milestones from the scope of their evidence.
   order/effects; reject implicit quantum projection and false pure labels.
   Keep nominal execution transport gates and existing syntax/work limits.
   Reduce recursive parser frames without increasing stack or nesting limits.
+  Retain explicit `type(Nominal)` static arguments through the common plans
+  and selected projection. Bind the original type occurrence to its canonical
+  declaration; keep record field Nat/helper provenance separate from caller
+  Nat nodes. Reject foreign collections and replaced type identities.
+  Generate ordered untrusted carrier descriptions from exact closed Basis
+  trees, preserving nominal source bytes, product shape and zero-width nodes
+  within the existing native capacity; no same-width conversion is introduced.
+  Connect an explicit check-only source carrier API to the shared selected
+  Builder, Raw emitter, fresh native typed equation and retained-step replay.
+  Require the caller's exact logical matrix and preserve actual ordered owner
+  ports and public effects. Admit original nominal source rows through their
+  independently checked exact type references; ordinary source-use checking
+  stays strict. Keep unsupported helper/import-only rows refused and the typed
+  result sealed, with no ordinary execution, inverse/control or source-AST
+  preservation claim.
+  Add a separate proof-metadata CI producer with fixed command/output checks,
+  full stream retention and a reviewable four-file patch after successful fresh
+  proofs. It restores its checkout and grants no ordinary CI or release credit.
 
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,

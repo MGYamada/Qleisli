@@ -479,6 +479,7 @@ impl Checker<'_, '_> {
             index: self.index(),
             helpers: &self.program.helpers,
             budget: &self.program.budget,
+            nominals: &self.program.nominals,
         }
     }
     fn plan_environment(&self, scope: &Scope, span: Span) -> Result<Arc<plans::StaticEnvironment>> {

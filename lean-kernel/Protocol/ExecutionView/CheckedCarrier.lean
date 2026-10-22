@@ -94,7 +94,8 @@ theorem Binding.root_safe {bytes supplied : ByteArray} {checked : Checked} {work
   obtain ⟨a,accepted⟩ := binding.original.core
   have facts := Qirf.Carrier.check_postcondition _ _ _ _ _ _ _ _ accepted
   obtain ⟨b,c,root⟩ := facts.root
-  have original := Qirf.Validity.checkRoot_postcondition _ _ _ _ _ root
+  obtain ⟨after,checkedRoot⟩ := Qirf.Carrier.sourceRoot_result _ _ _ _ _ _ _ root
+  have original := Qirf.Validity.checkRootWithSources_postcondition _ _ _ _ _ _ checkedRoot
   obtain ⟨d,e,verified⟩ := original.verification
   exact ⟨original.original,Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     Raw.Observation.verify_scopeSafe _ _ _ _ _ verified⟩

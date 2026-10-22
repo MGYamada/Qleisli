@@ -29,10 +29,10 @@ use types::finite_type;
 pub use report::ProjectCheckReport;
 
 pub use super::specialize::{
-    BasisBinding, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort, HierarchyEligibility,
-    HierarchyProposal, InitializationMove, Instantiation, OperationBinding, ParsedProgram,
-    PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition, SourceEvent,
-    SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
+    BasisBinding, CheckedSourceCarrier, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort,
+    HierarchyEligibility, HierarchyProposal, InitializationMove, Instantiation, OperationBinding,
+    ParsedProgram, PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition,
+    SourceEvent, SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -871,7 +871,7 @@ fn prepare_original_source<'ast>(
             .map(|(name, module)| (name.as_str(), module.source.as_str()))
             .collect(),
         SourceLimits::finite(),
-        |resolution, interfaces, helpers, _, _, indices, budget| {
+        |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
             check::require_nominal_transport(
                 project
                     .modules
@@ -895,6 +895,7 @@ fn prepare_original_source<'ast>(
                         indices,
                         helpers,
                         budget,
+                        nominals,
                     },
                 )
                 .map_err(|error| error.in_module(&record.name.0))?;

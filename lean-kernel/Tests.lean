@@ -1238,6 +1238,126 @@ example : !(SourceTypes.Imports.read ((List.replicate 65 "{") ++ ["a","::","Tri"
 
 end CarrierSourceExamples
 
+
+namespace CarrierSourceCoverageExamples
+set_option maxRecDepth 2048
+set_option maxHeartbeats 2000000
+set_option Elab.async false
+
+open Semantics.FiniteCarrier Semantics.CarrierInterface Semantics.Exact
+
+private def original := "pub enum Tri { A, B, C }"
+private def basis : Basis := [.enumeration ⟨"labels","Tri",original⟩ ["A","B","C"]]
+private def owner : Owner := ⟨⟨0,[0,1],2⟩,basis⟩
+private def interface : Interface := ⟨[owner],[owner],.unitary⟩
+private def identity : Matrix := ⟨3,3,[1,0,0,0,1,0,0,0,1].map fun n =>
+  ⟨.integer n,.integer 0,.integer 0,.integer 0⟩⟩
+-- The actual root has no circuit evidence. Its declarations are consumed only
+-- by the typed source reader, not by an invented self-comparison dependency.
+private def artifact (rows : Array (String × String)) : Qirf.Artifact :=
+  ⟨#[⟨[owner.port],[],[],[0],[],.unitary⟩],#[],rows,0,none⟩
+private def data := artifact #[("labels",original)]
+private def rows := Qirf.Carrier.sourceRows interface interface
+private def request : Protocol.Carrier.Request := ⟨interface,interface,identity⟩
+private def typed (value : Qirf.Artifact) (required : Protocol.Carrier.Request := request) := do
+  Protocol.Carrier.checkSources value.sources required
+  Qirf.Carrier.check value #[0] required.attached required.required required.logical
+private def accepts {α : Type} (action : Finite.WorkM α) : Bool :=
+  (action.run 2000000).1.isOk
+
+-- Source-coverage rejection tests use the actual checker postconditions.
+-- The carrier proof follows the retained root check; the typed proof passes
+-- the source check's actual remaining work to the carrier check.
+private theorem ordinary_refuses (value : Qirf.Artifact) (order : Array Nat)
+    (coverage : Qirf.Validity.sourcesUsed value = false) (work : Nat) :
+    ((Qirf.Validity.checkRoot value order).run work).1.isOk = false := by
+  cases checked : (Qirf.Validity.checkRoot value order).run work with
+  | mk result left =>
+    cases result with
+    | error error => rfl
+    | ok root =>
+      have facts := Qirf.Validity.checkRoot_postcondition value order root work left checked
+      have impossible : (true : Bool) = false := facts.sources.symm.trans coverage
+      cases impossible
+
+private theorem carrier_refuses (value : Qirf.Artifact) (order : Array Nat)
+    (attached required : Interface) (logical : Matrix)
+    (coverage : Qirf.Validity.sourcesUsedWithSources value
+      (Qirf.Carrier.sourceRows attached required) = false) (work : Nat) :
+    ((Qirf.Carrier.check value order attached required logical).run work).1.isOk = false := by
+  cases checked : (Qirf.Carrier.check value order attached required logical).run work with
+  | mk result left =>
+    cases result with
+    | error error => rfl
+    | ok accepted =>
+      have facts := Qirf.Carrier.check_postcondition value order attached required logical
+        accepted work left checked
+      obtain ⟨beforeRoot,afterRoot,root⟩ := facts.root
+      obtain ⟨afterCharges,checkedRoot⟩ := Qirf.Carrier.sourceRoot_result value order
+        attached required accepted.root beforeRoot afterRoot root
+      have actual := Qirf.Validity.checkRootWithSources_postcondition value order
+        (Qirf.Carrier.sourceRows attached required) accepted.root afterCharges afterRoot checkedRoot
+      have impossible : (true : Bool) = false := actual.sources.symm.trans coverage
+      cases impossible
+
+private theorem typed_refuses (value : Qirf.Artifact) (required : Protocol.Carrier.Request)
+    (refuses : ∀ work, ((Qirf.Carrier.check value #[0] required.attached
+      required.required required.logical).run work).1.isOk = false) (work : Nat) :
+    ((typed value required).run work).1.isOk = false := by
+  change ((Protocol.Carrier.checkSources value.sources required >>=
+    fun _ => Qirf.Carrier.check value #[0] required.attached required.required
+      required.logical).run work).1.isOk = false
+  rw [Finite.bind_run]
+  cases sourceStep : (Protocol.Carrier.checkSources value.sources required).run work with
+  | mk result remaining =>
+    cases result with
+    | error error => rfl
+    | ok sourceValue => exact refuses remaining
+
+example : Qirf.Validity.sourcesUsed data = false := by decide_cbv
+example : Qirf.Validity.sourcesUsedWithSources data rows = true := by decide_cbv
+example : accepts (Qirf.Validity.checkRoot data #[0]) = false := by
+  change ((Qirf.Validity.checkRoot data #[0]).run 2000000).1.isOk = false
+  exact ordinary_refuses data #[0] (by decide_cbv) 2000000
+example : accepts (typed data) = true := by decide_cbv
+-- The policy compares complete module/text rows, not labels or width alone.
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("other",original)]) rows = false := by decide_cbv
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("labels","pub enum Tri { A, C, B }")]) rows = false := by decide_cbv
+example : accepts (typed (artifact #[("other",original)])) = false := by decide_cbv
+example : accepts (typed (artifact #[("",original)])) = false := by decide_cbv
+example : accepts (Qirf.Validity.checkRootWithSources
+    (artifact #[("",original)]) #[0] [("",original)]) = false := by decide_cbv
+example : accepts (typed (artifact #[("labels","pub enum Tri { A, C, B }")])) = false :=
+  by decide_cbv
+-- Unrelated and helper-only dependencies are not nominal-origin references.
+private def helper := "pub static fn width() -> Nat {1}"
+example : Qirf.Validity.sourcesUsedWithSources
+    (artifact #[("labels",original),("helper",helper)]) rows = false := by decide_cbv
+example : accepts (typed (artifact #[("labels",original),("helper",helper)])) = false :=
+  by
+    have coverage : Qirf.Validity.sourcesUsedWithSources
+        (artifact #[("labels",original),("helper",helper)])
+        (Qirf.Carrier.sourceRows request.attached request.required) = false := by decide_cbv
+    change ((typed (artifact #[("labels",original),("helper",helper)]) request).run 2000000).1.isOk = false
+    exact typed_refuses (artifact #[("labels",original),("helper",helper)]) request
+      (fun remaining => carrier_refuses (artifact #[("labels",original),("helper",helper)])
+        #[0] request.attached request.required request.logical coverage remaining) 2000000
+-- An exact row reference cannot launder a fabricated nominal member order.
+private def reordered : Owner :=
+  ⟨owner.port,[.enumeration ⟨"labels","Tri",original⟩ ["A","C","B"]]⟩
+private def badInterface : Interface := ⟨[reordered],[reordered],.unitary⟩
+example : accepts (typed data ⟨badInterface,badInterface,identity⟩) = false := by decide_cbv
+
+#print axioms ordinary_refuses
+#print axioms carrier_refuses
+#print axioms typed_refuses
+#print axioms Qirf.checkGraphReceipts_freshWithSources
+#print axioms Qirf.Validity.checkRootWithSources_postcondition
+#print axioms Qirf.Carrier.sourceRoot_result
+end CarrierSourceCoverageExamples
+
 #print axioms SourceTypes.nominal_original
 #print axioms SourceTypes.check_original_declarations
 #print axioms Protocol.Carrier.check_binding

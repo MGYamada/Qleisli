@@ -15,7 +15,7 @@ fn prepare(sources: &[(&str, &str)]) -> Result<CheckedProgram> {
             .collect(),
         sources.iter().copied().collect(),
         SourceLimits::finite(),
-        |_, _, _, _, _, _, _| Ok(()),
+        |_, _, _, _, _, _, _, _| Ok(()),
     )
     .map(|(checked, ())| checked)
 }

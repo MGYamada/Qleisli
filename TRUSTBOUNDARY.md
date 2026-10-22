@@ -149,6 +149,14 @@ Simultaneous calls are proved against original predicate/body evaluation;
 produced templates and caller-supplied success receipts grant no authority.
 The helper environment is checked once across all ordered owner forests.
 This bounded raw component does not enable ordinary source ADT execution.
+The explicit source carrier adapter reuses the common judgment, selected
+Builder and Raw emitter, requires an independent exact logical request and
+replays retained source steps against the native-compared body. Extra original
+source rows are covered only by exact nominal origins after independent type
+checking; ordinary checking keeps evidence-only source usage. Uncovered
+helper/import-only rows refuse. Its sealed result retains the source graph and
+grants no ordinary runtime, inverse or controlled access; original AST-to-step
+preservation remains unproved and is reported as such.
 Neither declaration lookup nor these scalar checks supply a source-function
 preservation theorem, inverse/control access or a new human-admitted guarantee.
 All existing source/runtime/target assumptions remain.

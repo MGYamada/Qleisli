@@ -80,11 +80,15 @@ Common preparation retains and checks explicit fieldless `Type::Variant`,
 `Type { field: expression, ... }` and ordinary `value.field` forms, including
 original type/member identity, visibility and written initializer order; see
 the [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile).
-Ordinary `match` and concrete typed native transport remain pending.
-Both production source paths explicitly reject
+Ordinary `match` and general typed source execution remain pending.
+Both ordinary production source paths explicitly reject
 modules containing these declarations, including unused ones, after common
 type/body/effect preparation and before concrete lowering or native invocation.
 These frontend facts provide no execution evidence or accepted handle.
+An explicit Rust check-only carrier adapter uses the same complete judgment
+and source lowering to check an independently requested exact logical matrix;
+its sealed typed result grants no ordinary execution. Its precise scope and
+remaining AST-preservation duty are described in the linked type model.
 
 Nominal names already participate in the common module/import/reexport
 resolver as a distinct collection-local type category. Transparent reexports
