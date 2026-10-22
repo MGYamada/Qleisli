@@ -8586,7 +8586,7 @@
       "tests/fixtures/verification_v022/hierarchy/h.wrong-phase.request.json": "2680dc9e5af50c780436fed1d421f124177fbbaa38b7e4729601518af9b9c898",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
-      "scripts/test_verification_baseline.py": "8c1946dfc94d2151fb5eea502f9c29e9d302947d33ed3cb98dfcbf03e66d05ee",
+      "scripts/test_verification_baseline.py": "d0689cfbbb72db75bff6b641e5092cc2e13f2d118db52c8c13e7ef565f229ef6",
       "tests/verification_boundary.rs": "47a26dd39bc821af5662744fcc17fb4bb14e25a08fb81dba3bf870f935042dbd",
       "tests/hierarchical_host.rs": "0dd5925dadd9cbaf556f0a91f409cbdbb3e3491776c2c1950e42df54e66070b8",
       "scripts/test_hierarchical_readout.py": "abd79039ba7b295cdaeab3ad8af382d45427345cf15af02047446591879f6239",
