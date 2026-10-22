@@ -1448,6 +1448,22 @@ impl Parser {
             }
             maximum = maximum.max(depth);
             match &node.kind {
+                ExprKind::Match(selection) => {
+                    pending.push((&selection.scrutinee, depth + 1));
+                    for arm in &selection.arms {
+                        pending.push((&arm.body.result, depth + 1));
+                        pending.extend(arm.body.statements.iter().filter_map(|statement| {
+                            let value = match &statement.kind {
+                                StmtKind::StaticLet { .. } => return None,
+                                StmtKind::Let { value, .. }
+                                | StmtKind::MutableLet { value, .. }
+                                | StmtKind::Assign { value, .. }
+                                | StmtKind::Expr(value) => value,
+                            };
+                            Some((value, depth + 1))
+                        }));
+                    }
+                }
                 ExprKind::Record(record) => {
                     pending.extend(record.fields.iter().map(|field| (&field.value, depth + 1)))
                 }
@@ -1633,6 +1649,9 @@ impl Parser {
         if let Some(if_token) = self.consume(&TokenKind::If) {
             return self.classical_if(if_token);
         }
+        if let Some(start) = self.consume(&TokenKind::Match) {
+            return self.ordinary_match(start);
+        }
         if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
             return Err(self.retired_coherent_syntax());
         }
@@ -1688,6 +1707,65 @@ impl Parser {
             span: start.cover(body.span),
             kind: ExprKind::UnsupportedClosure(Box::new(UnsupportedClosure { parameters, body })),
         })
+    }
+
+    #[inline(never)]
+    fn ordinary_match(&mut self, start: Token) -> Result<Expr, ParseError> {
+        let scrutinee = Box::new(self.expr_mode(false)?);
+        let arms = self.match_arms(|parser| {
+            let body = if parser.at(&TokenKind::LBrace) {
+                parser.block()?
+            } else {
+                let result = parser.expr()?;
+                Block {
+                    span: result.span,
+                    implicit_result: false,
+                    statements: Vec::new(),
+                    result: Box::new(result),
+                }
+            };
+            let span = body.span;
+            Ok((body, span))
+        })?;
+        Ok(Expr {
+            span: start.span.cover(self.tokens[self.pos - 1].span),
+            kind: ExprKind::Match(Box::new(MatchExpr { scrutinee, arms })),
+        })
+    }
+
+    fn match_arms<A>(
+        &mut self,
+        mut read_body: impl FnMut(&mut Self) -> Result<(A, Span), ParseError>,
+    ) -> Result<Vec<MatchArm<A>>, ParseError> {
+        self.expect(&TokenKind::LBrace)?;
+        let mut arms = Vec::new();
+        while !self.at(&TokenKind::RBrace) {
+            // Refuse before allocating or parsing an additional branch body.
+            if arms.len() >= MAX_TUPLE_FIELDS {
+                return Err(self.error("ordinary match exceeds 64 arms"));
+            }
+            let name = self.reference_name()?;
+            if !name.text.contains("::") {
+                return Err(ParseError {
+                    message: "ordinary match requires an exact qualified enum label, such as `Tri::A`; wildcard and payload patterns are unsupported".into(),
+                    span: name.span,
+                });
+            }
+            let start = name.span;
+            let label = self.variant_value(name, self.pos);
+            self.expect(&TokenKind::FatArrow)?;
+            let (body, end) = read_body(self)?;
+            arms.push(MatchArm {
+                label,
+                body,
+                span: start.cover(end),
+            });
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        self.expect(&TokenKind::RBrace)?;
+        Ok(arms)
     }
 
     fn retired_operation_syntax(&self) -> ParseError {
@@ -2154,9 +2232,18 @@ impl Parser {
     }
 
     fn basis_expr(&mut self) -> Result<BasisExpr, ParseError> {
-        let expr = self.basis_xor()?;
-        Self::basis_depth(&expr)?;
-        Ok(expr)
+        self.basis_expr_mode(true)
+    }
+
+    fn basis_expr_mode(&mut self, allow_records: bool) -> Result<BasisExpr, ParseError> {
+        let previous = self.allow_record_literals;
+        self.allow_record_literals = allow_records;
+        let result = self.basis_xor().and_then(|expr| {
+            Self::basis_depth(&expr)?;
+            Ok(expr)
+        });
+        self.allow_record_literals = previous;
+        result
     }
 
     fn basis_depth(expr: &BasisExpr) -> Result<(), ParseError> {
@@ -2171,6 +2258,10 @@ impl Parser {
                 });
             }
             match &node.kind {
+                BasisExprKind::Match(selection) => {
+                    pending.push((&selection.scrutinee, depth + 1));
+                    pending.extend(selection.arms.iter().map(|arm| (&arm.body, depth + 1)));
+                }
                 BasisExprKind::Record(record) => {
                     pending.extend(record.fields.iter().map(|field| (&field.value, depth + 1)))
                 }
@@ -2261,6 +2352,9 @@ impl Parser {
     }
 
     fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
+        if let Some(start) = self.consume(&TokenKind::Match) {
+            return self.basis_match(start);
+        }
         if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
             return Err(self.retired_coherent_syntax());
         }
@@ -2270,7 +2364,7 @@ impl Parser {
         if let TokenKind::Ident(_) = self.current().kind {
             let ident = self.reference_name()?;
             let name_end = self.pos;
-            if self.at(&TokenKind::LBrace) {
+            if self.allow_record_literals && self.at(&TokenKind::LBrace) {
                 let start = ident.span;
                 let record = self.record_value(ident, |parser| {
                     let value = parser.basis_expr()?;
@@ -2347,6 +2441,20 @@ impl Parser {
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);
         Ok(left)
+    }
+
+    #[inline(never)]
+    fn basis_match(&mut self, start: Token) -> Result<BasisExpr, ParseError> {
+        let scrutinee = Box::new(self.basis_expr_mode(false)?);
+        let arms = self.match_arms(|parser| {
+            let body = parser.basis_expr()?;
+            let span = body.span;
+            Ok((body, span))
+        })?;
+        Ok(BasisExpr {
+            span: start.span.cover(self.tokens[self.pos - 1].span),
+            kind: BasisExprKind::Match(Box::new(MatchExpr { scrutinee, arms })),
+        })
     }
 
     // Type words retain their lexer classification and meaning in type/runtime

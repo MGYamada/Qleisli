@@ -808,6 +808,26 @@ and general const<T> remain outside these forms. Concrete nominal lowering,
 typed native value transport and source correspondence remain required before
 execution; successful common preparation supplies no accepted handle.
 
+Common preparation checks `match value { Type::A => expression, ... }` in
+both ordinary expression grammars. The scrutinee must have an ordinary enum
+type. Labels resolve through their original type declarations and visibility;
+equal spelling, width or cardinality cannot substitute a foreign enum. Every
+declared variant occurs exactly once. Wildcard, payload and complement patterns
+remain outside this initial form. A normal arm may contain a block; a classical
+arm is an ordinary expression. Parenthesize a record literal used within a
+scrutinee to distinguish its braces from the arm list.
+
+The checker visits the scrutinee once and checks every arm, including arms of
+a constant constructor in an unused function. Results have the same complete
+type tree, and each arm preserves the same outer owner frame, including
+zero-width owners. Calls and observation in any arm contribute their normal
+dependencies and effects; constant selection cannot hide an observing body
+behind a pure public label. A live `Q<T>` cannot be inspected by ordinary match.
+These source judgments retain the existing nominal execution refusal until
+typed native value transport and its actual runtime correspondence are connected.
+They provide no implicit measurement, coherent `qmatch`, general `const<T>` or
+source-preservation theorem.
+
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,
 normalization and solver work. Per-value type capacity is 4096 cells/depth 64;

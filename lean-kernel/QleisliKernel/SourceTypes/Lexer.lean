@@ -28,7 +28,7 @@ def identifier (s : String) : Bool :=
     !["use","meaning","static","Op","requires","Apply","Adjoint","Controlled",
       "permutation_by","phase_by","checked_op","bind_op","inverse_op","then_op",
       "tensor_op","controlled_op","repeat_op","conjugate_op","pub","enum","struct",
-      "classical","basis","isometry","iso","unitary","observe","fn","let","if",
+      "classical","basis","isometry","iso","unitary","observe","fn","let","if","match",
       "else","do","pure","with_computed","apply_contract","adjoint","repeat_static",
       "qif","qfor","true","false","not","xor","and","Unit","Bit","CBit","Q"].contains s
 

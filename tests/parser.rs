@@ -5,6 +5,151 @@ use qleisli::frontend::parser::parse_module;
 use qleisli::frontend::{ast::Span, lexer::lex};
 
 #[test]
+fn ordinary_match_retains_qualified_label_bytes_and_separate_arm_blocks() {
+    let source = "// λ\r\nfn f(t:Tri)->Bit{match t { alias /* λ */ :: Tri :: A => { let x=0; x }, Tri::B => 1, }}";
+    let module = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!()
+    };
+    let ExprKind::Match(selection) = &body.result.kind else {
+        panic!()
+    };
+    assert_eq!(
+        &source[body.result.span.start..body.result.span.end],
+        "match t { alias /* λ */ :: Tri :: A => { let x=0; x }, Tri::B => 1, }"
+    );
+    assert!(matches!(selection.scrutinee.kind, ExprKind::Name(_)));
+    let first = &selection.arms[0];
+    assert_eq!(first.label.type_name.text, "alias::Tri");
+    assert_eq!(
+        &source[first.label.type_name.span.start..first.label.type_name.span.end],
+        "alias /* λ */ :: Tri"
+    );
+    assert_eq!(
+        &source[first.label.variant.span.start..first.label.variant.span.end],
+        "A"
+    );
+    assert_eq!(
+        &source[first.span.start..first.span.end],
+        "alias /* λ */ :: Tri :: A => { let x=0; x }"
+    );
+    assert_eq!(first.body.statements.len(), 1);
+    let second = &selection.arms[1];
+    assert!(second.body.statements.is_empty());
+    assert!(!second.body.implicit_result);
+    assert_eq!(second.body.span, second.body.result.span);
+    assert_eq!(&source[second.body.span.start..second.body.span.end], "1");
+    check_token_prefixes(source, "ordinary match");
+}
+
+#[test]
+fn classical_match_retains_every_label_and_expression() {
+    let source =
+        "// λ\r\nclassical fn f(t:Tri)->Bit{match t { Tri :: A => 0, other::Tri::B => not g(t), }}";
+    let module = parse_module(source).unwrap();
+    let FnBody::Basis(body) = &module.decls[0].body else {
+        panic!()
+    };
+    let BasisExprKind::Match(selection) = &body.kind else {
+        panic!()
+    };
+    assert_eq!(selection.arms.len(), 2);
+    assert!(matches!(selection.scrutinee.kind, BasisExprKind::Name(_)));
+    assert_eq!(selection.arms[1].label.type_name.text, "other::Tri");
+    assert!(matches!(selection.arms[1].body.kind, BasisExprKind::Not(_)));
+    for arm in &selection.arms {
+        assert_eq!(
+            &source[arm.label.variant.span.start..arm.label.variant.span.end],
+            arm.label.variant.text
+        );
+        assert!(arm.span.start <= arm.body.span.start && arm.body.span.end <= arm.span.end);
+    }
+    check_token_prefixes(source, "classical match");
+}
+
+#[test]
+fn match_scrutinees_do_not_consume_arm_braces_or_disable_nested_records() {
+    for prefix in ["fn", "classical fn"] {
+        for expression in [
+            "match t { E::A => P{tag:t}.tag, E::B => t }",
+            "match (P{tag:t}.tag) { E::A => t, E::B => t }",
+            "match g(P{tag:t}) { E::A => t, E::B => t }",
+            "match match t { E::A => t, E::B => t } { E::A => t, E::B => t }",
+            "match t { E::A => match t { E::A => t, E::B => t }, E::B => t }",
+        ] {
+            parse_module(&format!("{prefix} f(t:E)->E{{{expression}}}")).unwrap();
+        }
+    }
+}
+
+#[test]
+fn match_labels_are_exact_and_general_patterns_remain_unavailable() {
+    for prefix in ["fn", "classical fn"] {
+        for label in ["_", "A", "E::A(x)", "E::A{x}", "E::A | E::B", "E::A if 1"] {
+            let source = format!("{prefix} f(t:E)->Bit{{match t{{{label}=>0}}}}");
+            assert!(parse_module(&source).is_err(), "{source}");
+        }
+        for body in ["E::A=>0 E::B=>1", "E::A=>0;", "E::A,", "=>0"] {
+            let source = format!("{prefix} f(t:E)->Bit{{match t{{{body}}}}}");
+            assert!(parse_module(&source).is_err(), "{source}");
+        }
+        // Duplicate, empty and foreign labels remain visible for common checking.
+        parse_module(&format!(
+            "{prefix} f(t:E)->Bit{{match t{{E::A=>0,E::A=>1,F::B=>0}}}}"
+        ))
+        .unwrap();
+        parse_module(&format!("{prefix} f(t:E)->Bit{{match t{{}}}}")).unwrap();
+    }
+    assert!(parse_module("classical fn f(t:E)->Bit{match t{E::A=>{let x=0;x}}}").is_err());
+}
+
+#[test]
+fn match_arm_and_ast_depth_limits_are_checked_without_selecting_a_branch() {
+    let arms = (0..64)
+        .map(|n| format!("E::V{n}=>0"))
+        .collect::<Vec<_>>()
+        .join(",");
+    for prefix in ["fn", "classical fn"] {
+        parse_module(&format!("{prefix} f(t:E)->Bit{{match t{{{arms}}}}}")).unwrap();
+        let source = format!("{prefix} f(t:E)->Bit{{match t{{{arms},E::Extra=>0}}}}");
+        let error = parse_module(&source).unwrap_err();
+        assert_eq!(error.message, "ordinary match exceeds 64 arms");
+        assert_eq!(&source[error.span.start..error.span.end], "E");
+        let nested = format!("{}0{}", "match t{E::A=>".repeat(65), "}".repeat(65));
+        assert!(
+            parse_module(&format!("{prefix} f(t:E)->Bit{{{nested}}}"))
+                .unwrap_err()
+                .message
+                .contains("64-level")
+        );
+        // The deep second branch must count even if the first label is repeated.
+        let nested = format!("match t{{E::A=>0,E::A=>{}0{}}}", "not ".repeat(64), "");
+        assert!(
+            parse_module(&format!("{prefix} f(t:E)->Bit{{{nested}}}"))
+                .unwrap_err()
+                .message
+                .contains("64-level")
+        );
+    }
+}
+
+#[test]
+fn ordinary_match_word_is_reserved_in_runtime_and_module_names() {
+    use qleisli::frontend::lexer::TokenKind;
+    assert_eq!(lex("match").unwrap()[0].kind, TokenKind::Match);
+    for source in [
+        "fn match()->Unit{()}",
+        "fn f(match:Bit)->Bit{match}",
+        "use match::f;",
+        "enum match { A }",
+    ] {
+        let error = parse_module(source).unwrap_err();
+        assert_eq!(&source[error.span.start..error.span.end], "match");
+        assert!(error.message.starts_with("expected"), "{error:?}");
+    }
+}
+
+#[test]
 fn finite_type_declarations_keep_names_members_shapes_and_original_spans() {
     use qleisli::frontend::ast::TypeDeclKind;
     let source = "pub enum Tri { A, B, C, } fn f(q:Q<labels::Tri>)->Q<labels::Tri>{q} struct Empty {} pub struct Tagged { pub tag: labels::Tri, flag: Bit, zero: Bits<0>, }";

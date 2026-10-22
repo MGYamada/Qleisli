@@ -452,6 +452,124 @@ fn nominal_rows_need_actual_carrier_references_without_synthetic_circuit_evidenc
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn match_keyword_is_refused_in_original_carrier_declarations_and_members() {
+    use crate::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+
+    let port = QuantumPort {
+        token: TokenId(0),
+        wires: vec![],
+        shape: BasisShape { bits: 0 },
+    };
+    let raw = RawProgram {
+        quantum_inputs: vec![port.clone()],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![TokenId(0)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
+    for (label, source, name, member, record, valid) in [
+        (
+            "valid-enum",
+            "pub enum Match { A }",
+            "Match",
+            "A",
+            false,
+            true,
+        ),
+        (
+            "valid-field",
+            "pub struct Label { matching: Unit }",
+            "Label",
+            "matching",
+            true,
+            true,
+        ),
+        (
+            "reserved-declaration",
+            "pub enum match { A }",
+            "match",
+            "A",
+            false,
+            false,
+        ),
+        (
+            "reserved-variant",
+            "pub enum Label { match }",
+            "Label",
+            "match",
+            false,
+            false,
+        ),
+        (
+            "reserved-field",
+            "pub struct Label { match: Unit }",
+            "Label",
+            "match",
+            true,
+            false,
+        ),
+    ] {
+        assert_eq!(
+            ParsedProgram::parse(
+                Edition::E2026,
+                BTreeMap::from([("labels".into(), source.into())]),
+            )
+            .is_ok(),
+            valid,
+            "ordinary parser: {label}"
+        );
+        let origin = Arc::new(Origin {
+            module: "labels".into(),
+            declaration: name.into(),
+            source: source.into(),
+        });
+        let basis = if record {
+            vec![Atom::Record(origin, vec![member.into()]), Atom::Unit]
+        } else {
+            vec![Atom::Enum(origin, vec![member.into()])]
+        };
+        let owner = Owner {
+            port: port.clone(),
+            basis,
+        };
+        let interface = Interface {
+            inputs: vec![owner.clone()],
+            outputs: vec![owner],
+            public_effect: Effect::Unitary,
+        };
+        let requested = Request {
+            attached: interface.clone(),
+            required: interface,
+            logical: Matrix::identity(1).unwrap(),
+        };
+        let proposal = Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &[("labels".into(), source.into())],
+        )
+        .unwrap();
+        // Bypass the ordinary parser with the actual original source/request;
+        // a valid zero-width physical identity cannot repair a reserved name.
+        let result = observe(&kernel, label, proposal.artifact(), &requested);
+        if valid {
+            assert_eq!(result.unwrap().request(), &requested);
+        } else {
+            assert_eq!(result.unwrap_err().code, "contract", "{label}");
+        }
+    }
+    assert!(log.summary().complete());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn original_carrier_body_source_and_logical_phase_are_bound() {
     let selected = Kernel::selected(Edition::E2026).unwrap();
     let (kernel, log) = selected.recording();

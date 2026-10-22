@@ -217,6 +217,20 @@ pub struct VariantValue {
     pub variant: Ident,
 }
 
+/// Ordinary finite-enum selection retains every written label and branch.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MatchExpr<E, A> {
+    pub scrutinee: Box<E>,
+    pub arms: Vec<MatchArm<A>>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MatchArm<A> {
+    pub label: VariantValue,
+    pub body: A,
+    pub span: Span,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordValue<E> {
     pub type_name: Ident,
@@ -243,6 +257,7 @@ pub struct UnsupportedClosure {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    Match(Box<MatchExpr<Expr, Block>>),
     Variant(Box<VariantValue>),
     Record(Box<RecordValue<Expr>>),
     Field {
@@ -474,6 +489,7 @@ pub struct BasisExpr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BasisExprKind {
+    Match(Box<MatchExpr<BasisExpr, BasisExpr>>),
     Variant(Box<VariantValue>),
     Record(Box<RecordValue<BasisExpr>>),
     Field {

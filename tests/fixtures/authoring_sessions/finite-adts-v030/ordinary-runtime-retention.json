@@ -1,0 +1,41 @@
+{
+  "archive": {
+    "bytes": 581156,
+    "path": "ordinary-runtime-first.tar.xz",
+    "sha256": "f8660884ef336f824e0c6b93600795e775304dc6636506585dab3aba14c8e2c7"
+  },
+  "archive_members": 41,
+  "deduplicated_full_windows": {
+    "canonical_algorithm": "UTF-8 json.dumps(sort_keys=True,separators=(comma,colon),ensure_ascii=False), without trailing newline",
+    "canonical_root_inventory_bytes": 3203939,
+    "canonical_root_inventory_sha256": "744b1f5a32762765faca58ff39fc529ef229516b3a57f17fc4587c0c221e7afb",
+    "complete_file_bytes": 3327228,
+    "complete_file_sha256": "f42b892f9ca52a30fcac1c85a8d6d9526eb39c119c5663748437fabfd8ac1527",
+    "paths": [
+      "observations-01/before.json",
+      "observations-01/after.json"
+    ],
+    "root_inventory_entries": 20230,
+    "same_complete_bytes": true,
+    "storage_policy": "One complete regular-file object is referenced by both original paths. No inventory fields were omitted, and both complete reports remain unchanged outside the repository."
+  },
+  "deterministic_encoding": "Sorted USTAR regular members, mode0644, uid/gid0, empty user/group names, mtime0; XZ/CRC64, preset6. No saved script was executed or file extracted.",
+  "expanded_archive_bytes": 3410855,
+  "format": "qleisli.inert-retention-proposal",
+  "index": {
+    "bytes": 26562,
+    "path": "ordinary-runtime-index.json",
+    "sha256": "458ea4695d8f9506ec9e2d7aef325a0e8224c98ec03c5245b867ca4d5b1bab58"
+  },
+  "inspection_sha256": "1d3d8f059255e8a849fb4f5fc33f9e9d9a0d1cb40d7723fed72b1d699a7e851e",
+  "manifest_sha256": "5bc7b8f56ccb6c1164bee1021401b7f15755fba7a7da6722883f9d638cbeff0c",
+  "original_bytes": 6721406,
+  "original_files": 58,
+  "packaging_observation": "New archive bytes were reread in memory; every member and all 58 reconstructed original byte strings matched their recorded length/hash and current external original. This is packaging identity only, not a project test or semantic validation.",
+  "pending": "Root adoption, passive-consumer integration and its actual tests, rooted fixture references and cumulative budgets have not been performed by this proposal.",
+  "scope": "Twelve original check commands all exit1; four nominal transport refusals and eight parser refusals. No run command, match semantic check, typed ordinary runtime acceptance, native invocation trace, source theorem, issue completion, guarantee admission or release follows. Existing source/binary identity limitations remain explicit.",
+  "source_root": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-runtime-first-20261022",
+  "unique_object_bytes": 3393928,
+  "unique_objects": 40,
+  "version": 1
+}

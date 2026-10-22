@@ -1,0 +1,152 @@
+{
+  "archive": {
+    "bytes": 1040248,
+    "path": "match-keyword-first.tar.xz",
+    "sha256": "8d17c4e2ea2e3ff627319d7ba4da9a580cb7727360a85c10422675a68b60ca94"
+  },
+  "archive_members": 66,
+  "compressed_target_bytes": 1572864,
+  "expanded_bytes": 51205220,
+  "format": "qleisli.inert-retention-proposal",
+  "index": {
+    "bytes": 39386,
+    "path": "match-keyword-index.json",
+    "sha256": "57c544788ac8dc3d4c3156179707d1088201d4d16a91b1c095270e2aba424220"
+  },
+  "limits": [
+    "Archived first expectations remain prepared-not-executed predictions; actual outcomes are retained separately.",
+    "First failed reader attempt is authoring failure, not a semantic refusal. Before-fix native variant/field cases were not reached.",
+    "Whole-file byte identity is preserved; no inventory map is omitted or newly extracted. Historical source windows are not binary/source attestation.",
+    "Full 479-case Lean suite, full proof-identity refresh, hosted producer/CI, source-function preservation, ordinary nominal runtime, Issue completion, guarantee admission and release are not claimed."
+  ],
+  "original_bytes": 51516603,
+  "original_files": 87,
+  "pending": "Root adoption, root passive-consumer integration and its checks, cumulative fixture budgets and required hosted proof-record production have not been performed by this proposal.",
+  "state": "PREPARED ONLY: historical observations, not root installation or current-source validation",
+  "unique_objects": 65,
+  "version": 1,
+  "windows": [
+    {
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "env",
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-match-keyword-repair-20261022-irep_f1x/first/BeforeReaderAcceptance.lean"
+      ],
+      "before": {
+        "bytes": 3327144,
+        "sha256": "602b9c73ea6da2dd5229aeb992eac44738eb18dd4aafb61da9a6c4c936cf6cb7"
+      },
+      "exit_code": 1,
+      "peak_rss_kib": 635440,
+      "report": {
+        "bytes": 6736013,
+        "sha256": "b0540fc6198adf1353a3d18620bce58f8bea3becda2fe09aa00a1fe6c6c2ddc5"
+      },
+      "reported_pass": false,
+      "scope": "Failed standalone authoring: missing Except DecidableEq; no semantic result.",
+      "seconds": 17.105811542001902,
+      "stable": true,
+      "window": "match-keyword-original-reader-01"
+    },
+    {
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "env",
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-match-keyword-repair-20261022-irep_f1x/BeforeReaderAcceptanceV2.lean"
+      ],
+      "before": {
+        "bytes": 3327140,
+        "sha256": "fadde396316598962ca379ad4c8cfd0c3433f8af8db173c931da103a4111b0ce"
+      },
+      "exit_code": 0,
+      "peak_rss_kib": 771264,
+      "report": {
+        "bytes": 6735999,
+        "sha256": "074331079d8977c09eaaedf6958243435b41a66650ee4f488d7b47122bf18e2b"
+      },
+      "reported_pass": true,
+      "scope": "Three concrete original-reader acceptance theorems; standard axiom listings retained.",
+      "seconds": 15.70007304099272,
+      "stable": true,
+      "window": "match-keyword-original-reader-02"
+    },
+    {
+      "argv": [
+        "/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/run_kernel_tests.py",
+        "/opt/homebrew/bin/cargo",
+        "test",
+        "--lib",
+        "interchange::native::carrier::tests::match_keyword_is_refused_in_original_carrier_declarations_and_members",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "before": {
+        "bytes": 3327102,
+        "sha256": "98a92dc98e52f71647abaf337e2a1f4a7c26f1263d0bf747287cb4d976a9d752"
+      },
+      "exit_code": 101,
+      "peak_rss_kib": 1134800,
+      "report": {
+        "bytes": 6735989,
+        "sha256": "5009db6494426f5a6fc08d218e3d4ba91dd61b6465a20a37af978876fa19f1bd"
+      },
+      "reported_pass": false,
+      "scope": "Two native controls accepted, then reserved declaration accepted and expected-negative regression failed; variant/field not reached.",
+      "seconds": 21.73824062499625,
+      "stable": true,
+      "window": "match-keyword-original-native-01"
+    },
+    {
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "build"
+      ],
+      "before": {
+        "bytes": 3326973,
+        "sha256": "eed694ad6ddd4f967192f31f0acd9aea15a87476dbedf2ef1efe2a929aa5bb16"
+      },
+      "exit_code": 0,
+      "peak_rss_kib": 741680,
+      "report": {
+        "bytes": 6736174,
+        "sha256": "74ba861a161e23a5fee455e9239698528cf5a499014e8dfc23e5436191ff4a72"
+      },
+      "reported_pass": true,
+      "scope": "Repaired native build; observer permits only fixed generated kernel-binary change; not binary/source attestation.",
+      "seconds": 25.853999874991132,
+      "stable": true,
+      "window": "match-keyword-native-build-01"
+    },
+    {
+      "argv": [
+        "/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/private/tmp/qleisli-match-keyword-repair-20261022-irep_f1x/verify-match-keyword-current.py",
+        "current-01"
+      ],
+      "before": {
+        "bytes": 3327142,
+        "sha256": "db808af2242c510e6934a54ca6d0889be72d2a288b1b829823177f078f28b53f"
+      },
+      "exit_code": 0,
+      "peak_rss_kib": 1193456,
+      "report": {
+        "bytes": 6736712,
+        "sha256": "6a8cf46ed2b54e0fc8ef87a33c13da16d00d1ce4b9c42644147101470f7c2b31"
+      },
+      "reported_pass": true,
+      "scope": "Focused actual Lean refusal cases, full compiled Audit, 11 normal native carrier tests, one focused MSRV test with five cases. No full 479-case Tests.lean or full proof-identity refresh.",
+      "seconds": 33.69445325000561,
+      "stable": true,
+      "window": "match-keyword-current-validation-01"
+    }
+  ]
+}

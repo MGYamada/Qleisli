@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "0e2955922045a9cf4c950186f67c7d721252d9a132e9b531d40c5b1ff015877c",
+    "sha256": "6f1cc3604c923b91fb91b8f300ecfcce835a3e6fd1d76b7aa7f230f27b68c9f7",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -308,7 +308,7 @@
       "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean": "b3d16328b51f28bb03244eaea5ef84dfbe9d27c56ac15da94d598f3c13c03620",
       "lean-kernel/QleisliKernel/SourceTypes/Declarations.lean": "fb5c4ac609fcd3aa08fbd343d9556b915b6a704cfe16cae87e08b2f7a1a265ee",
       "lean-kernel/QleisliKernel/SourceTypes/Imports.lean": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
-      "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean": "b7f750b747d45589b02309a9f1323f416844e742ce5f5cdbf1a47bfbecb3c24e",
       "lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean": "117935f8688c12206dc9c7072c2e211f474d13b55e2451f5debd146e64ae046e",
       "lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean": "493e036a35adda03af3461e34b2932e1966b418d8b8332a4d5712bc8913982f3",
       "lean-kernel/QleisliKernel/SourceTypes/NaturalConstraints.lean": "9d1ecd5f0f5210860b02ac7d5998281e7a3637c76e829740827a7fa2ad689f48",
@@ -325,7 +325,7 @@
       "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
       "lean-kernel/QleisliKernel/Uniform.lean": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
       "lean-kernel/QleisliKernel.lean": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
-      "lean-kernel/Tests.lean": "4d20771cecff172d445f2f1b9eeaecc6c3e32d229ef2ce000755d1367f6232e7",
+      "lean-kernel/Tests.lean": "5885f94948277286fc4523c98952ee58fdc6a7ee899047102c22c397ecea1280",
       "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
       "lean-kernel/lakefile.toml": "26f9918d7a1fb5655fd878deb3c9b0004d4677813d61e111d759bd5ed3d9271a",
       "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",

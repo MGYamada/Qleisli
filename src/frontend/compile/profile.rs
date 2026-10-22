@@ -120,7 +120,10 @@ fn block(block: &Block) -> Result<(), Failure> {
 }
 fn expr(expr: &Expr) -> Result<(), Failure> {
     match &expr.kind {
-        ExprKind::Variant(_) | ExprKind::Record(_) | ExprKind::Field { .. } => {
+        ExprKind::Variant(_)
+        | ExprKind::Record(_)
+        | ExprKind::Field { .. }
+        | ExprKind::Match(_) => {
             return Err((
                 expr.span,
                 "ordinary nominal values require their typed native transport",

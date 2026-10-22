@@ -964,6 +964,9 @@ impl<'ast> Task<'ast> {
                 _ => 2,
             },
             Self::Basis(n) => match &n.kind {
+                BasisExprKind::Match(selection) => {
+                    selection.arms.len().saturating_mul(2).saturating_add(1)
+                }
                 BasisExprKind::Variant(_) | BasisExprKind::Field { .. } => 1,
                 BasisExprKind::Record(record) => record.fields.len().saturating_add(1),
                 BasisExprKind::Name(_) | BasisExprKind::Not(_) => 1,
@@ -993,6 +996,9 @@ impl<'ast> Task<'ast> {
                 children
             }
             Self::Expression(n) => match &n.kind {
+                ExprKind::Match(selection) => {
+                    selection.arms.len().saturating_mul(2).saturating_add(1)
+                }
                 ExprKind::Variant(_) | ExprKind::Field { .. } => 1,
                 ExprKind::Record(record) => record.fields.len().saturating_add(1),
                 ExprKind::UnsupportedClosure(closure) => closure.parameters.len().saturating_add(3),
@@ -1378,6 +1384,15 @@ where
                     }
                 },
                 Task::Basis(expression) => match &expression.kind {
+                    BasisExprKind::Match(selection) => {
+                        for arm in selection.arms.iter().rev() {
+                            tasks.extend([
+                                Task::Basis(&arm.body),
+                                Task::Reference(&arm.label.type_name),
+                            ]);
+                        }
+                        tasks.push(Task::Basis(&selection.scrutinee));
+                    }
                     BasisExprKind::Variant(value) => tasks.push(Task::Reference(&value.type_name)),
                     BasisExprKind::Record(record) => {
                         tasks.extend(
@@ -1426,6 +1441,15 @@ where
                     }
                 }
                 Task::Expression(expression) => match &expression.kind {
+                    ExprKind::Match(selection) => {
+                        for arm in selection.arms.iter().rev() {
+                            tasks.extend([
+                                Task::Block(&arm.body),
+                                Task::Reference(&arm.label.type_name),
+                            ]);
+                        }
+                        tasks.push(Task::Expression(&selection.scrutinee));
+                    }
                     ExprKind::Variant(value) => tasks.push(Task::Reference(&value.type_name)),
                     ExprKind::Record(record) => {
                         tasks.extend(
@@ -1638,6 +1662,138 @@ mod tests {
         lookup
             .original_node_budgeted(id, |_, _| Ok::<_, std::convert::Infallible>(()))
             .unwrap_or_else(|never| match never {})
+    }
+
+    #[test]
+    fn ordinary_match_indexes_each_label_and_separate_arm_scope() {
+        let module =
+            parse_module("fn f(t:E,x:Bit)->Bit{let a=match t{E::A=>{let x=0;x},E::B=>x};x}")
+                .unwrap();
+        let declaration = &module.decls[0];
+        let target = Target::Type(super::super::TypeId(0));
+        let original = index(DefId(0), declaration, |n| (n == "E").then_some(target));
+        let FnBody::Quantum(body) = &declaration.body else {
+            panic!()
+        };
+        let StmtKind::Let { value, .. } = &body.statements[0].kind else {
+            panic!()
+        };
+        let ExprKind::Match(selection) = &value.kind else {
+            panic!()
+        };
+        let first = &selection.arms[0];
+        let second = &selection.arms[1];
+        let StmtKind::Let { pattern, .. } = &first.body.statements[0].kind else {
+            panic!()
+        };
+        let outer = original.binder(name(&declaration.params[1].pattern));
+        let inner = original.binder(name(pattern));
+        assert_ne!(outer, inner);
+        assert_eq!(
+            original.resolve(expression_name(&selection.scrutinee)),
+            ResolvedUse::Local(original.binder(name(&declaration.params[0].pattern)))
+        );
+        assert_eq!(
+            original.resolve(expression_name(&first.body.result)),
+            ResolvedUse::Local(inner)
+        );
+        assert_eq!(
+            original.resolve(expression_name(&second.body.result)),
+            ResolvedUse::Local(outer)
+        );
+        assert_eq!(
+            original.resolve(expression_name(&body.result)),
+            ResolvedUse::Local(outer)
+        );
+        assert_ne!(
+            original.node_id_block(&first.body),
+            original.node_id_block(&second.body)
+        );
+        for arm in &selection.arms {
+            assert_eq!(
+                original.resolve(&arm.label.type_name),
+                ResolvedUse::Global(target)
+            );
+            let Some(OriginalNode::Expression(retained)) =
+                original.original_node(original.node_id_expr(&arm.body.result))
+            else {
+                panic!("original arm result")
+            };
+            assert!(std::ptr::eq(retained, arm.body.result.as_ref()));
+        }
+    }
+
+    #[test]
+    fn every_match_body_is_resolved_even_after_a_constant_scrutinee() {
+        for prefix in ["fn", "classical fn"] {
+            let source = format!("{prefix} f()->Bit{{match E::A{{E::A=>0,E::B=>forbidden()}}}}");
+            let module = parse_module(&source).unwrap();
+            let mut seen = std::cell::RefCell::new(Vec::new());
+            let result = Index::new_budgeted(
+                DefId(0),
+                &module.decls[0],
+                |name, span| {
+                    seen.borrow_mut().push((name.to_owned(), span));
+                    if name == "forbidden" {
+                        Err(span)
+                    } else {
+                        Ok(None)
+                    }
+                },
+                |_, _| Ok(()),
+            );
+            let Err(span) = result else {
+                panic!("all match arms must resolve")
+            };
+            assert_eq!(&source[span.start..span.end], "forbidden");
+            let seen = seen.get_mut();
+            assert_eq!(seen.iter().filter(|(name, _)| name == "E").count(), 3);
+        }
+    }
+
+    #[test]
+    fn classical_match_indexes_every_original_branch_and_foreign_label() {
+        let module =
+            parse_module("classical fn f(t:E)->Bit{match t{E::A=>g(t),Foreign::E::B=>h(t)}}")
+                .unwrap();
+        let declaration = &module.decls[0];
+        let original = index(DefId(0), declaration, |n| match n {
+            "g" => Some(Target::Declaration(DefId(1))),
+            "h" => Some(Target::Declaration(DefId(2))),
+            _ => None,
+        });
+        let FnBody::Basis(body) = &declaration.body else {
+            panic!()
+        };
+        let BasisExprKind::Match(selection) = &body.kind else {
+            panic!()
+        };
+        for (position, arm) in selection.arms.iter().enumerate() {
+            let BasisExprKind::Call { callee, args } = &arm.body.kind else {
+                panic!()
+            };
+            assert_eq!(
+                original.resolve(callee),
+                ResolvedUse::Global(Target::Declaration(DefId(position + 1)))
+            );
+            assert!(
+                original
+                    .original_node(original.node_id_basis_expr(&arm.body))
+                    .is_some()
+            );
+            let BasisExprKind::Name(operand) = &args[0].kind else {
+                panic!()
+            };
+            assert_eq!(
+                original.resolve(operand),
+                ResolvedUse::Local(original.binder(name(&declaration.params[0].pattern)))
+            );
+            assert!(original.try_usage(&arm.label.type_name).is_some());
+        }
+        assert_eq!(
+            original.resolve(&selection.arms[1].label.type_name),
+            ResolvedUse::Unresolved
+        );
     }
 
     #[test]
