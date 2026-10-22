@@ -78,6 +78,8 @@ development milestones from the scope of their evidence.
   preserving original spans, canonical identity and separate arm scopes. Require
   exhaustive disjoint arms, exact result trees and complete owner-frame joins;
   inspect every arm's dependencies and effects even for a known constructor.
+  Keep the reserved `match` name consistent in independent native declaration,
+  variant and field checks; retain the original accepted counterexamples.
   Reject ordinary selection on live quantum owners. Typed nominal execution
   remains gated; these source checks do not complete ordinary runtime or qmatch.
   Reduce recursive parser frames without increasing stack or nesting limits.

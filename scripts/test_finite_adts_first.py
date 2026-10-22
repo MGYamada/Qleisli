@@ -31,6 +31,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Ordinary match history: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-index.json".
 # Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-match-validation.json".
+# Match-keyword repair history: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-index.json".
+# Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-validation.json".
 import gzip
 import hashlib
 import io
@@ -1396,6 +1399,162 @@ class OrdinaryMatchAuthoringHistory(unittest.TestCase):
         self.assertLessEqual(sum((FIXTURES / name).stat().st_size for name in (
             'ordinary-match-first.tar.xz', 'ordinary-match-index.json',
             'ordinary-match-validation.json')), 1_910_000)
+
+
+class MatchKeywordRepairHistory(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history(
+            'match-keyword-index.json', 'match-keyword-first.tar.xz',
+            '57c544788ac8dc3d4c3156179707d1088201d4d16a91b1c095270e2aba424220', 1040248,
+            '8d17c4e2ea2e3ff627319d7ba4da9a580cb7727360a85c10422675a68b60ca94', 51205220)
+        cls.originals = json.loads(cls.data['original-records.json'])['records']
+        cls.index = json.loads((FIXTURES / 'match-keyword-index.json').read_bytes())
+        raw = (FIXTURES / 'match-keyword-validation.json').read_bytes()
+        if (len(raw), hashlib.sha256(raw).hexdigest()) != (
+                6089, '670b6922ab2df06767b041405859278e3e5246e0249c66a0d3484c2e6be232c5'):
+            raise AssertionError('match keyword retention proposal changed')
+        cls.validation = json.loads(raw)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                         (row['bytes'], row['sha256']), name)
+        return value
+
+    def record(self, stage, name):
+        return json.loads(self.raw(stage + '/' + name))
+
+    def test_complete_originals_and_whole_file_deduplication(self):
+        self.assertEqual((len(self.originals), len(self.data)), (87, 66))
+        self.assertEqual(self.originals, self.index['original_records'])
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 51516603)
+        used = set()
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+            used.add(row['record'])
+        self.assertEqual(len(used), 65)
+        self.assertEqual(set(self.data), used | {'original-records.json'})
+
+    def test_original_sources_and_predicted_inputs_remain_unmodified(self):
+        first = self.record('prepared/first', 'expectations.json')
+        self.assertEqual(first['status'], 'prepared-not-executed')
+        self.assertEqual(len(first['cases']), 5)
+        for row in first['cases']:
+            self.assertIsNone(row['observed'])
+            self.assertEqual(row['status'], 'prepared-not-executed')
+        for name, digest in first['input_sha256'].items():
+            self.assertEqual(hashlib.sha256(self.raw('prepared/first/' + name)).hexdigest(), digest)
+        self.assertNotIn(b'deriving instance DecidableEq for Except',
+                         self.raw('prepared/first/BeforeReaderAcceptance.lean'))
+        self.assertIn(b'deriving instance DecidableEq for Except',
+                      self.raw('prepared/BeforeReaderAcceptanceV2.lean'))
+
+    def test_full_observation_windows_and_captured_sources(self):
+        self.assertEqual([row['exit_code'] for row in self.validation['windows']], [1, 0, 101, 0, 0])
+        self.assertEqual([row['reported_pass'] for row in self.validation['windows']],
+                         [False, True, False, True, True])
+        for summary in self.validation['windows']:
+            name = summary['window']
+            report = self.record(name, 'report.json')
+            before = self.record(name, 'before.json')
+            self.assertEqual(before, report['before'])
+            self.assertEqual(report['before']['files'], report['after']['files'])
+            self.assertEqual(report['before']['head'], report['after']['head'])
+            self.assertTrue(report['stable'])
+            self.assertIsNone(report['stop_reason'])
+            self.assertEqual(report['exit_code'], summary['exit_code'])
+            self.assertEqual(report['pass'], summary['reported_pass'])
+            self.assertEqual(report['rss_group_limit_kib'], 3145728)
+            self.assertEqual(report['heavy_job_concurrency'], 1)
+            self.assertLessEqual(report['peak_rss_kib'], 3145728)
+            self.assertEqual(self.record(name, 'plan.json')['argv'], report['argv'])
+            if name == 'match-keyword-native-build-01':
+                self.assertNotEqual(report['before']['kernel'], report['after']['kernel'])
+                self.assertIn('fixed native build output only', report['kernel_change_scope'])
+            else:
+                self.assertEqual(report['before'], report['after'])
+            for part in ('before', 'report'):
+                raw = self.raw(name + '/' + part + '.json')
+                self.assertEqual(summary[part],
+                                 {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+            prefix = name + '/sources/'
+            for source in self.originals:
+                if source.startswith(prefix):
+                    self.assertEqual(hashlib.sha256(self.raw(source)).hexdigest(),
+                                     before['files'][source[len(prefix):]])
+            for explicit, digest in before['explicit_inputs'].items():
+                original = name + '/explicit-inputs/' + PurePosixPath(explicit).name
+                self.assertEqual(hashlib.sha256(self.raw(original)).hexdigest(), digest)
+
+    def test_failed_first_probe_and_successful_original_reader_are_distinct(self):
+        failed = self.raw('match-keyword-original-reader-01/stdout')
+        self.assertEqual(failed.count(b'failed to synthesize'), 3)
+        self.assertNotIn(b'depends on axioms', failed)
+        passed = self.raw('match-keyword-original-reader-02/stdout')
+        for name in ('declaration', 'variant', 'field'):
+            self.assertIn(("'reserved_" + name + "_accepted' depends on axioms: "
+                           "[propext, Classical.choice, Quot.sound]").encode(), passed)
+        self.assertNotIn(b'sorryAx', passed)
+        self.assertNotIn(b'error:', passed)
+
+    def test_actual_before_fix_handle_is_a_failed_negative(self):
+        output = self.raw('match-keyword-original-native-01/stdout')
+        for label in ('valid-enum', 'valid-field', 'reserved-declaration'):
+            self.assertIn(('outcome ' + label + ' accepted').encode(), output)
+        self.assertIn(b'called `Result::unwrap_err()` on an `Ok` value', output)
+        self.assertIn(b'test result: FAILED. 0 passed; 1 failed; 0 ignored;', output)
+        for label in ('reserved-variant', 'reserved-field'):
+            self.assertNotIn(('outcome ' + label + ' ').encode(), output)
+
+    def test_current_refusals_and_bounded_native_runs_are_actual_separate_results(self):
+        report = self.record('current-01', 'report.json')
+        self.assertTrue(report['pass'])
+        self.assertEqual([row['name'] for row in report['commands']],
+                         ['reader', 'audit', 'native', 'msrv'])
+        self.assertEqual([row['exit_code'] for row in report['commands']], [0, 0, 0, 0])
+        source = self.raw('current-inputs/CurrentReaderRefusals.lean')
+        self.assertEqual(source.count(b'= .error .request := by decide +kernel'), 3)
+        tests = self.raw('match-keyword-current-validation-01/sources/lean-kernel/Tests.lean')
+        self.assertIn(source[source.index(b'-- Reserved words'):].rstrip(), tests)
+        self.assertEqual(self.raw('current-01/reader.stdout'), b'')
+        self.assertEqual(self.raw('current-01/audit.stderr'), b'')
+        self.assertIn(b'Audited 16685 kernel/transport declarations', self.raw('current-01/audit.stdout'))
+        self.assertNotIn(b'sorryAx', self.raw('current-01/audit.stdout'))
+        for row in report['commands']:
+            for name, digest in row['source_inputs'].items():
+                if name.endswith('/CurrentReaderRefusals.lean'):
+                    original = 'current-inputs/CurrentReaderRefusals.lean'
+                else:
+                    relative = name.split('/Qleisli/', 1)[1]
+                    original = 'match-keyword-current-validation-01/sources/' + relative
+                self.assertEqual(hashlib.sha256(self.raw(original)).hexdigest(), digest)
+        for tool, count, filtered in (('native', 11, 511), ('msrv', 1, 521)):
+            output = self.raw('current-01/' + tool + '.stdout')
+            for label in ('valid-enum', 'valid-field'):
+                self.assertIn(('outcome ' + label + ' accepted').encode(), output)
+            for label in ('reserved-declaration', 'reserved-variant', 'reserved-field'):
+                self.assertIn(('outcome ' + label + ' contract').encode(), output)
+            self.assertIn((f'test result: ok. {count} passed; 0 failed; 0 ignored; '
+                           f'0 measured; {filtered} filtered out;').encode(), output)
+            self.assertIn(b'native test gate: zero conditional native skips', output)
+
+    def test_proposal_scope_and_fixed_size_target(self):
+        self.assertEqual(self.validation['format'], 'qleisli.inert-retention-proposal')
+        self.assertIn('PREPARED ONLY', self.validation['state'])
+        self.assertIn('have not been performed by this proposal', self.validation['pending'])
+        self.assertIn('Full 479-case Lean suite', self.validation['limits'][3])
+        self.assertIn('full proof-identity refresh', self.validation['limits'][3])
+        self.assertLessEqual(sum((FIXTURES / name).stat().st_size for name in (
+            'match-keyword-first.tar.xz', 'match-keyword-index.json',
+            'match-keyword-validation.json')), 1572864)
 
 
 if __name__ == '__main__':

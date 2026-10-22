@@ -78,7 +78,9 @@ not authorized by this rule.
 ## Reviewable current proof records
 
 The separate `current-proof-records` workflow prepares reviewable proof metadata
-for an exact clean checkout of the active beta branch. It runs the canonical
+for an exact clean checkout of `codex/beta-finite-adts` or
+`codex/beta-ordinary-adts`. The selected branch and workflow source must agree.
+It runs the canonical
 builds, audits, full reductions and fixed protected-output comparisons before
 proposing changes to the schema registry, three current-evidence records and the
 derived current continuity snapshot. Its full command streams and five-file

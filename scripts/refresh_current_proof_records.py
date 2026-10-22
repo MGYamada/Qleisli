@@ -36,6 +36,8 @@ ALLOWED = frozenset((SCHEMA, AUDIT, CURRENT, LEDGER, SNAPSHOT))
 TRUSTED = "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb"
 BASE = "0bd108183649e0462cb5c5b1c8bae29d07e1c9fc"
 KERNEL = "lean-kernel/.lake/build/bin/qleisli-kernel"
+HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
+    "refs/heads/codex/beta-ordinary-adts"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),
@@ -90,12 +92,14 @@ def exact_head(expected, actual):
 
 
 def hosted_context(commit, environment):
-    expected = {"GITHUB_REPOSITORY": "MGYamada/Qleisli", "GITHUB_REF": "refs/heads/codex/beta-finite-adts", "GITHUB_SHA": commit, "GITHUB_JOB": "produce-review-artifact"}
+    ref = environment.get("GITHUB_REF")
+    require(ref in HOSTED_REFS, "wrong hosted repository/ref/head/job")
+    expected = {"GITHUB_REPOSITORY": "MGYamada/Qleisli", "GITHUB_REF": ref, "GITHUB_SHA": commit, "GITHUB_JOB": "produce-review-artifact"}
     require(all(environment.get(key) == value for key, value in expected.items()), "wrong hosted repository/ref/head/job")
     require(environment.get("GITHUB_EVENT_NAME") in {"push", "workflow_dispatch"}, "wrong hosted event")
     for key in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT"):
         require(re.fullmatch(r"[1-9][0-9]*", environment.get(key, "")) is not None, "invalid hosted run identity")
-    workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@refs/heads/codex/beta-finite-adts"
+    workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@" + ref
     require(environment.get("GITHUB_WORKFLOW_REF") == workflow and environment.get("GITHUB_WORKFLOW_SHA") == commit, "workflow source differs from selected head")
     return {key: environment[key] for key in (*expected, "GITHUB_EVENT_NAME", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_WORKFLOW_REF", "GITHUB_WORKFLOW_SHA")}
 

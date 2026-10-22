@@ -82,11 +82,27 @@ class MaintenanceRefusalTests(unittest.TestCase):
 
     def test_hosted_context_refuses_unrelated_or_mixed_producers(self):
         commit = "a" * 40
-        environment = dict(GITHUB_REPOSITORY="MGYamada/Qleisli", GITHUB_REF="refs/heads/codex/beta-finite-adts", GITHUB_SHA=commit, GITHUB_JOB="produce-review-artifact", GITHUB_EVENT_NAME="push", GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1", GITHUB_WORKFLOW_REF="MGYamada/Qleisli/.github/workflows/current-proof-records.yml@refs/heads/codex/beta-finite-adts", GITHUB_WORKFLOW_SHA=commit)
-        maintenance.hosted_context(commit, environment)
-        for key, wrong in [("GITHUB_REPOSITORY", "other/repo"), ("GITHUB_REF", "refs/heads/main"), ("GITHUB_SHA", "b" * 40), ("GITHUB_JOB", "check-lean"), ("GITHUB_EVENT_NAME", "pull_request_target"), ("GITHUB_RUN_ID", "0"), ("GITHUB_RUN_ATTEMPT", "01"), ("GITHUB_WORKFLOW_SHA", "b" * 40)]:
-            with self.subTest(key=key), self.assertRaises(ValueError):
-                maintenance.hosted_context(commit, environment | {key: wrong})
+        refs = ("refs/heads/codex/beta-finite-adts", "refs/heads/codex/beta-ordinary-adts")
+        workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
+        for ref in refs:
+            environment = dict(GITHUB_REPOSITORY="MGYamada/Qleisli", GITHUB_REF=ref, GITHUB_SHA=commit, GITHUB_JOB="produce-review-artifact", GITHUB_EVENT_NAME="push", GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1", GITHUB_WORKFLOW_REF=workflow + ref, GITHUB_WORKFLOW_SHA=commit)
+            for event in ("push", "workflow_dispatch"):
+                actual = environment | {"GITHUB_EVENT_NAME": event}
+                with self.subTest(ref=ref, event=event):
+                    self.assertEqual(maintenance.hosted_context(commit, actual), actual)
+            for key, wrong in [("GITHUB_REPOSITORY", "other/repo"), ("GITHUB_REF", "refs/heads/main"), ("GITHUB_SHA", "b" * 40), ("GITHUB_JOB", "check-lean"), ("GITHUB_EVENT_NAME", "pull_request_target"), ("GITHUB_RUN_ID", "0"), ("GITHUB_RUN_ATTEMPT", "01"), ("GITHUB_WORKFLOW_SHA", "b" * 40)]:
+                with self.subTest(ref=ref, key=key), self.assertRaises(ValueError):
+                    maintenance.hosted_context(commit, environment | {key: wrong})
+            other = next(value for value in refs if value != ref)
+            for wrong in (workflow + other, workflow + commit,
+                          "other/repo/.github/workflows/current-proof-records.yml@" + ref,
+                          "MGYamada/Qleisli/.github/workflows/ci.yml@" + ref, ""):
+                with self.subTest(ref=ref, workflow=wrong), self.assertRaises(ValueError):
+                    maintenance.hosted_context(commit, environment | {"GITHUB_WORKFLOW_REF": wrong})
+            for forbidden in ("refs/heads/main", ref + "-copy", "refs/tags/codex/beta-ordinary-adts", "refs/pull/428/merge", ""):
+                with self.subTest(ref=ref, forbidden=forbidden), self.assertRaises(ValueError):
+                    maintenance.hosted_context(commit, environment | {
+                        "GITHUB_REF": forbidden, "GITHUB_WORKFLOW_REF": workflow + forbidden})
 
     def test_only_fixed_five_derived_files_may_change(self):
         self.assertEqual(maintenance.SNAPSHOT, maintenance.continuity.CURRENT_PATH)

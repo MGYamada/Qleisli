@@ -570,3 +570,28 @@ this packet grants no new guarantee, issue completion or release.
 
 After installation, all 66 passive history checks pass against the retained
 files. This checks preservation only; the saved failures remain failures.
+
+
+The [match-keyword repair history](match-keyword-first.tar.xz),
+[index](match-keyword-index.json) and [bounded checks](match-keyword-validation.json)
+preserve 87 original records as 65 complete-byte objects. The first standalone
+Lean probe fails because it lacks structural Except equality; its separate V2
+proves three actual pre-fix reader acceptances with standard axioms. The original
+native negative test accepts its two controls and then the reserved declaration,
+so the assertion fails; variant/field native cases were not reached in that run.
+First sources, predictions, raw streams and full observation windows remain inert.
+
+The repaired reader reserves only `match`. Three concrete Lean refusals, the
+compiled audit, all 11 normal native carrier tests and one focused MSRV test
+pass in separate recorded stages. Both native runs retain two valid controls and
+three semantic `contract` refusals, with zero conditional native skips. The build
+observer explicitly permits the fixed generated checker binary to change while
+binding source identity; this is not binary/source attestation. The three retained
+files use 1,085,723 bytes, within the existing fixture caps. Full 479-case Lean
+replay, current proof-identity refresh and hosted CI remain separate required
+work. This repair grants no ordinary nominal execution, source-preservation
+proof, new guarantee or Issue completion.
+
+After installing this repair history, all 73 passive history checks pass against
+the retained files. They preserve the failed and successful observations above;
+they do not rerun the archived commands or establish current proof validity.

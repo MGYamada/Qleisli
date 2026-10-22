@@ -3486,7 +3486,7 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "4d20771cecff172d445f2f1b9eeaecc6c3e32d229ef2ce000755d1367f6232e7",
+      "sha256": "5885f94948277286fc4523c98952ee58fdc6a7ee899047102c22c397ecea1280",
       "group": "hierarchy",
       "surface": null
     },
@@ -7337,7 +7337,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean",
-      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "sha256": "b7f750b747d45589b02309a9f1323f416844e742ce5f5cdbf1a47bfbecb3c24e",
       "group": "finite-carrier",
       "surface": null
     },
@@ -7582,7 +7582,7 @@
     },
     {
       "path": "src/interchange/native/carrier/tests.rs",
-      "sha256": "c2d7257c3b5b6f9d89049c305975b78deede15bca510e7fc01f067a877c8a439",
+      "sha256": "edc9fbbbe24eb7a7e6d9ae845d8eb77ed745941a6495fea0f9f54582a3184975",
       "group": "finite-carrier",
       "surface": {
         "declarations": [],

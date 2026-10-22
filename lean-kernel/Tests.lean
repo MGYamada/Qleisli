@@ -1139,6 +1139,18 @@ example : refused (SourceTypes.check sources (.record ⟨"labels","Box",text⟩ 
 example : refused (SourceTypes.check #[("labels",text),("labels",text)] tri) := by decide +kernel
 example : refused (SourceTypes.check #[("labels",text ++ "\nenum Tri { D }")] tri) := by decide +kernel
 
+-- Reserved words must be refused in the actual independently reconstructed
+-- declaration/member positions, not only by the ordinary Rust parser.
+def reservedDeclaration := "pub enum match { A }"
+example : value (SourceTypes.check #[("labels",reservedDeclaration)]
+    [.enumeration ⟨"labels","match",reservedDeclaration⟩ ["A"]]) = .error .request := by decide +kernel
+def reservedVariant := "pub enum Label { match }"
+example : value (SourceTypes.check #[("labels",reservedVariant)]
+    [.enumeration ⟨"labels","Label",reservedVariant⟩ ["match"]]) = .error .request := by decide +kernel
+def reservedField := "pub struct Label { match: Unit }"
+example : value (SourceTypes.check #[("labels",reservedField)]
+    [.record ⟨"labels","Label",reservedField⟩ ["match"],.unit]) = .error .request := by decide +kernel
+
 def nested := "pub struct Pair { flags: (Bit, Bits<0>), tag: labels::Tri }"
 def nestedType : Basis := [.record ⟨"main","Pair",nested⟩ ["flags","tag"],.pair,.bit,.bits 0] ++ tri
 example : value (SourceTypes.check (sources.push ("main",nested)) nestedType) = .ok () := by decide +kernel
