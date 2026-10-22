@@ -18,6 +18,57 @@ from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch
 
 
 class NativeCI(unittest.TestCase):
+    def test_host_prebuild_and_workers_share_the_bound_native_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'run'
+            binding = {'head': 'a' * 40}
+            with (patch.object(sys, 'argv', ['run_native_ci.py', '--output', str(output)]),
+                  patch.object(run_native_ci, 'source_binding', return_value=binding) as source,
+                  patch.object(run_native_ci.native_harness, 'prepare'),
+                  patch.object(run_native_ci.native_harness, 'validate'),
+                  patch.object(run_native_ci, 'run_task', return_value={'status': 'passed'}) as build,
+                  patch.object(run_native_ci, 'execute', return_value=[]) as execute_groups,
+                  patch.object(run_native_ci, 'verify_coverage')):
+                self.assertEqual(run_native_ci.main(), 0)
+            selected = str((ROOT / 'lean-kernel/.lake/build/bin/qleisli-kernel').resolve())
+            build_task, build_root, _, build_timeout, build_env = build.call_args.args
+            self.assertEqual(build_task['commands'], [['cargo', 'build', '--locked', '--all-targets']])
+            self.assertEqual(build_root, ROOT)
+            self.assertEqual(build_timeout, 900)
+            self.assertEqual(build_env['QLEISLI_KERNEL'], selected)
+            tasks, _, _, _, timeout, worker_env, _ = execute_groups.call_args.args
+            self.assertEqual(timeout, 900)
+            self.assertEqual(worker_env['QLEISLI_KERNEL'], selected)
+            for call in source.call_args_list:
+                self.assertEqual(call.args[2]['QLEISLI_KERNEL'], selected)
+            # Every explicit current-manifest selection names this same checker.
+            for task in tasks:
+                resolved = run_native_ci.canonical_task_environment(task, ROOT)
+                self.assertTrue(all(value == selected for value in resolved.get('env', {}).values()))
+
+    def test_checker_paths_are_canonical_in_real_children_without_changing_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            kernel = root / 'checker'
+            script = "import json,os; print(json.dumps({key:os.environ.get(key) for key in ['QLEISLI_KERNEL','QLEISLI_HIERARCHY_KERNEL']}))"
+            tasks = [dict(id=name, commands=[[sys.executable, '-c', script]], env=env)
+                     for name, env in [
+                         ('native-paths', {'QLEISLI_KERNEL': 'checker'}),
+                         ('absolute', {'QLEISLI_KERNEL': str(kernel), 'QLEISLI_HIERARCHY_KERNEL': './checker'}),
+                         ('different', {'QLEISLI_KERNEL': 'another-checker'}),
+                         ('empty', {'QLEISLI_KERNEL': ''}),
+                         ('inherited', {})]]
+            original = copy.deepcopy(tasks)
+            results = execute(tasks, root, root, 2, 5, execution_environment() | {'QLEISLI_KERNEL': str(kernel)})
+            self.assertEqual(tasks, original)
+            for result in results:
+                self.assertEqual(result['status'], 'passed')
+                observed = json.loads(Path(result['log']).read_text().splitlines()[-1])
+                expected = str(root / 'another-checker') if result['id'] == 'different' else (
+                    '' if result['id'] == 'empty' else str(kernel))
+                self.assertEqual(observed['QLEISLI_KERNEL'], expected)
+                self.assertEqual(observed['QLEISLI_HIERARCHY_KERNEL'], str(kernel) if result['id'] == 'absolute' else None)
+
     def test_shared_driver_selection_is_confined_to_its_original_manifest_task(self):
         observed = {}
         tasks = [dict(id='lean-finite', commands=[['original-driver']]),
@@ -283,7 +334,8 @@ class NativeCI(unittest.TestCase):
                 lock = threading.Lock()
 
                 def fake(task, observed_root, directory, timeout, observed_environment):
-                    self.assertIs(task, next(row for row in tasks if row['id'] == task['id']))
+                    original_task = next(row for row in tasks if row['id'] == task['id'])
+                    self.assertEqual(task, original_task | {'env': {'QLEISLI_KERNEL': str((root / 'bound-kernel').resolve())}})
                     self.assertEqual(observed_root, root)
                     self.assertEqual(directory, root / task['id'])
                     self.assertEqual(timeout, 900)
@@ -331,7 +383,8 @@ class NativeCI(unittest.TestCase):
 
                 def fake(task, observed_root, directory, timeout, environment):
                     seen.append(task['id'])
-                    self.assertIn(task, selected)
+                    original = next(row for row in selected if row['id'] == task['id'])
+                    self.assertEqual(task, run_native_ci.canonical_task_environment(original, root))
                     self.assertEqual(directory, root / task['id'])
                     self.assertEqual(timeout, 900)
                     return dict(id=task['id'], status='passed', seconds=0)

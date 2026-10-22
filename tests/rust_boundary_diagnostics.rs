@@ -288,10 +288,11 @@ fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
                 &source,
                 "parse",
                 "parse",
-                at(&source, receiver, 1, 1),
-                "unexpected character `.`",
+                // Field projection is admitted; the call delimiter identifies
+                // the unsupported receiver call, including after q.inner.
+                at(&source, receiver, receiver.find('(').unwrap(), 1),
+                "method receiver syntax is unsupported",
             );
-            assert!(message.contains("field and method receiver syntax is unsupported"));
             assert!(message.contains("For quantum access"));
             assert!(message.contains("explicit `excl ...` or `ctrl ...`"));
             assert!(message.contains("cannot infer or forward quantum access"));

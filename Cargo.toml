@@ -17,6 +17,7 @@ exclude = [
     "/assets/logo-concepts/**",
     "/experimental/**",
     "/tests/fixtures/**/*.gz",
+    "/tests/fixtures/**/*.tar.xz",
     "/tests/fixtures/**/*.rs",
     "/tests/fixtures/**/*.lean",
     "/tests/fixtures/**/*.py",

@@ -96,8 +96,15 @@ development milestones from the scope of their evidence.
   projection, keeping historical meanings and fixed review outputs unchanged.
   Retain the earlier extraction as immutable history with its original Git
   provenance, so passive history checks remain valid after current updates.
-  Update punctuation and selected-CLI regressions for field projection while
+  Update punctuation, selected-CLI and Rust-boundary regressions for field projection while
   retaining method-call refusal, access guidance and exact diagnostic spans.
+  Exclude compressed `.tar.xz` history snapshots from registry packaging under
+  the existing archive policy; retain their complete bytes in Git/source archives
+  and keep the 10 MB crate limit unchanged.
+  Use the same canonical native-checker selection during CI host preparation
+  and comparisons, avoiding needless Rust rebuilds between workers. Preserve
+  bounded child diagnostics when verification-baseline commands time out;
+  command coverage and time limits stay unchanged.
   Register the finite-carrier proposal, native component, source adapter and
   checked-view routes in the verification inventory, retaining their explicit
   source/runtime proof gaps and constructor/capacity coverage.

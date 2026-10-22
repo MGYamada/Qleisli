@@ -3,15 +3,55 @@
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import json
+import io
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+from unittest.mock import patch
 
-from test_verification_baseline import FIXTURES, agrees, finite_comparisons, matrix, native_comparisons, oracle, unique, word_oracle
+from test_verification_baseline import FIXTURES, agrees, finite_comparisons, invoke, matrix, native_comparisons, oracle, unique, word_oracle
 
 
 class OracleTests(unittest.TestCase):
+    def test_timeout_retains_both_child_streams_without_passing(self):
+        command = [sys.executable, '-c',
+                   "import sys,time; print('stdout before timeout',flush=True); print('stderr before timeout',file=sys.stderr,flush=True); time.sleep(30)"]
+        diagnostics = io.StringIO()
+        with redirect_stderr(diagnostics), self.assertRaises(subprocess.TimeoutExpired) as raised:
+            invoke(command, timeout=1)
+        # Popen may report the remaining deadline after process launch.
+        self.assertGreater(raised.exception.timeout, 0)
+        self.assertLessEqual(raised.exception.timeout, 1)
+        self.assertEqual(raised.exception.stdout, b'stdout before timeout\n')
+        self.assertEqual(raised.exception.stderr, b'stderr before timeout\n')
+        record = json.loads(diagnostics.getvalue())
+        self.assertEqual(record, dict(event='process-timeout', command=command, timeout_seconds=1,
+            stdout='stdout before timeout\n', stderr='stderr before timeout\n',
+            stdout_truncated=False, stderr_truncated=False))
+
+    def test_timeout_diagnostics_keep_the_existing_per_stream_limit(self):
+        limit = 1_048_576
+        def timed_out(command, **kwargs):
+            self.assertEqual(kwargs['timeout'], 60)
+            kwargs['stdout'].write(b'o' * (limit + 7))
+            kwargs['stderr'].write(b'e' * (limit + 1))
+            raise subprocess.TimeoutExpired(command, kwargs['timeout'])
+        diagnostics = io.StringIO()
+        with (patch('test_verification_baseline.subprocess.run', side_effect=timed_out),
+              redirect_stderr(diagnostics), self.assertRaises(subprocess.TimeoutExpired) as raised):
+            invoke(['never-executed'])
+        self.assertEqual(raised.exception.timeout, 60)
+        self.assertEqual(raised.exception.stdout, b'o' * limit)
+        self.assertEqual(raised.exception.stderr, b'e' * limit)
+        record = json.loads(diagnostics.getvalue())
+        self.assertTrue(record['stdout_truncated'])
+        self.assertTrue(record['stderr_truncated'])
+        self.assertEqual(record['stdout'], 'o' * limit)
+        self.assertEqual(record['stderr'], 'e' * limit)
+
     def artifact(self,name):
         return json.loads((FIXTURES/f'finite/{name}.v2.qirf').read_text())
 
