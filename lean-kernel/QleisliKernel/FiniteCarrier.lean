@@ -2,9 +2,9 @@ import QleisliKernel.Semantics.FiniteCarrier
 import QleisliKernel.Finite
 
 /-! Bounded finite-carrier reading for #64. Reuse the existing exact arithmetic,
-work accounting and matrix/isometry checks. This component is not connected to
-the native protocol and issues no accepted handle. Original-body/dependency,
-typed-port/effect and source integration are still required.
+work accounting and matrix/isometry checks. Qirf.Carrier and Protocol.Carrier
+connect this reader to the actual body, dependencies, typed ports and original
+declarations. This reader alone grants no native decision or source preservation.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.FiniteCarrier
 open Semantics.FiniteCarrier Semantics.Exact Finite

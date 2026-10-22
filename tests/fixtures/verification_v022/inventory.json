@@ -140,7 +140,7 @@
       "id": "source",
       "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
       "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
-      "obligation": "Every original body, including unused/dead/zero forms and all eight actual ordinary bundled modules, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation. Public quantum declarations require explicit checked effects; external calls, providers, contracts, specialization and cache reuse use only the public bound, while same-original-module inference remains precise. Finite lowering admits complete ordered closed Basis/Nat/Op instances, ordinary and quantum registers up to twelve bits, original static aliases/branches/folds and symbolic powers within the existing budgets. Unit, Bit, Bits<0>, Bits<1> and complete product trees remain distinct; zero-width quantum owners stay linear, while ordinary words retain ordered classical identities and copy accounting. Original ordinary Nat arithmetic checks every u32 intermediate; normalized bounded affine/helper contracts retain their signed-i128/final-u32 and adopted requires-conjunction semantics. Complete original plan/owner/collection identity and each available actual/formal effect/Meaning/access/type obligation precede deferral, body expansion and cache reuse, including dormant and zero-count occurrences and instances first closed at a runtime fold index. Actual Raw effects and fresh native validation remain separate. Indexed/mutable places, implicit final Unit, runtime closure values and generic classical headers remain outside this finite execution profile. Inert retained first-study packets execute no recorded commands and establish no source meaning.",
+      "obligation": "Every original body, including unused/dead/zero forms and all eight actual ordinary bundled modules, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation. Public quantum declarations require explicit checked effects; external calls, providers, contracts, specialization and cache reuse use only the public bound, while same-original-module inference remains precise. Finite lowering admits complete ordered closed Basis/Nat/Op instances, ordinary and quantum registers up to twelve bits, original static aliases/branches/folds and symbolic powers within the existing budgets. Unit, Bit, Bits<0>, Bits<1> and complete product trees remain distinct; zero-width quantum owners stay linear, while ordinary words retain ordered classical identities and copy accounting. Original ordinary Nat arithmetic checks every u32 intermediate; normalized bounded affine/helper contracts retain their signed-i128/final-u32 and adopted requires-conjunction semantics. Complete original plan/owner/collection identity and each available actual/formal effect/Meaning/access/type obligation precede deferral, body expansion and cache reuse, including dormant and zero-count occurrences and instances first closed at a runtime fold index. Actual Raw effects and fresh native validation remain separate. Indexed/mutable places, implicit final Unit, runtime closure values and generic classical headers remain outside this finite execution profile. Inert retained first-study packets execute no recorded commands and establish no source meaning. Ordinary finite enum/record constructors and projections retain original declaration/member/field identity in both expression grammars. Their static checking does not enable ordinary nominal runtime; the separate explicit pure carrier adapter remains check-only with source_meaning_verified false.",
       "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
@@ -837,6 +837,28 @@
         "path": "src/interchange/engineering_openqasm/tests.rs",
         "test": "altered_original_ideal_tight_bound_or_cell_witness_refuses_without_fallback"
       }
+    },
+    {
+      "id": "finite-carrier",
+      "producer": "Untrusted complete carrier descriptors, original QIRF/request bytes and explicit source carrier proposals",
+      "consumer": "Fresh execution-only Kernel::check_carrier; explicit Instantiation::check_carrier retains a sealed check-only source association",
+      "obligation": "Independently read original nominal declarations, complete ordered owner/type forests, exact code/body equation and logical Gram identity; bind complete QDV1 graph/interfaces/matrix. Source-step replay is not original AST preservation, ordinary nominal execution, inverse/control access or guarantee admission.",
+      "reference": "docs/src/reference/type-model.md; docs/src/reference/production-boundary.md",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-25",
+        "VM-28",
+        "VM-29"
+      ],
+      "positive": {
+        "path": "src/interchange/native/carrier/tests.rs",
+        "test": "original_carrier_body_source_and_logical_phase_are_bound"
+      },
+      "negative": {
+        "path": "src/interchange/native/carrier/tests.rs",
+        "test": "hidden_observation_never_obtains_a_pure_carrier_label"
+      }
     }
   ],
   "enums": [
@@ -1403,6 +1425,18 @@
         "CertifiedComputed": {
           "declaration": "CertifiedComputed { source: Box<Expr>, function: Ident, logical: Box<Ident>, data_binder: Box<Ident>, ancilla_binder: Box<Ident>, body: Block, }",
           "group": "source"
+        },
+        "Record": {
+          "declaration": "Record(Box<RecordValue<Expr>>)",
+          "group": "source"
+        },
+        "Variant": {
+          "declaration": "Variant(Box<VariantValue>)",
+          "group": "source"
+        },
+        "Field": {
+          "declaration": "Field { receiver: Box<Expr>, field: Ident, }",
+          "group": "source"
         }
       }
     },
@@ -1495,7 +1529,7 @@
           "group": "source"
         },
         "Call": {
-          "declaration": "Call { callee: Ident, args: Vec<BasisExpr> }",
+          "declaration": "Call { callee: Ident, args: Vec<BasisExpr>, }",
           "group": "source"
         },
         "Not": {
@@ -1508,6 +1542,18 @@
         },
         "And": {
           "declaration": "And(Box<BasisExpr>, Box<BasisExpr>)",
+          "group": "source"
+        },
+        "Record": {
+          "declaration": "Record(Box<RecordValue<BasisExpr>>)",
+          "group": "source"
+        },
+        "Variant": {
+          "declaration": "Variant(Box<VariantValue>)",
+          "group": "source"
+        },
+        "Field": {
+          "declaration": "Field { receiver: Box<BasisExpr>, field: Ident, }",
           "group": "source"
         }
       }
@@ -1894,6 +1940,18 @@
         },
         "HeaderBang": {
           "declaration": "HeaderBang",
+          "group": "source"
+        },
+        "Enum": {
+          "declaration": "Enum",
+          "group": "source"
+        },
+        "Dot": {
+          "declaration": "Dot",
+          "group": "source"
+        },
+        "Struct": {
+          "declaration": "Struct",
           "group": "source"
         }
       }
@@ -2377,6 +2435,68 @@
           "group": "source"
         }
       }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "TypeDeclKind",
+      "members": {
+        "Enum": {
+          "declaration": "Enum { variants: Vec<Ident> }",
+          "group": "source"
+        },
+        "Record": {
+          "declaration": "Record { fields: Vec<RecordField> }",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/project.rs",
+      "name": "ImportKind",
+      "members": {
+        "Function": {
+          "declaration": "Function(FnKind)",
+          "group": "source"
+        },
+        "Type": {
+          "declaration": "Type",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/interchange/carrier.rs",
+      "name": "Atom",
+      "members": {
+        "Unit": {
+          "declaration": "Unit",
+          "group": "finite-carrier"
+        },
+        "Bit": {
+          "declaration": "Bit",
+          "group": "finite-carrier"
+        },
+        "Bits": {
+          "declaration": "Bits(u32)",
+          "group": "finite-carrier"
+        },
+        "Pair": {
+          "declaration": "Pair",
+          "group": "finite-carrier"
+        },
+        "Tuple": {
+          "declaration": "Tuple(u32)",
+          "group": "finite-carrier"
+        },
+        "Enum": {
+          "declaration": "Enum(Arc<Origin>, Vec<String>)",
+          "group": "finite-carrier"
+        },
+        "Record": {
+          "declaration": "Record(Arc<Origin>, Vec<String>)",
+          "group": "finite-carrier"
+        }
+      }
     }
   ],
   "sources": [
@@ -2652,13 +2772,13 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContext.lean",
-      "sha256": "d803be59b30d14756c4fbf3a48cacc87db9ff9d0b9ccc9c82ed8ac818b19655e",
+      "sha256": "44fa066828abb3269c42ce1cc6696673b6d1b5ea801dd1b717f1d0b1863cf21e",
       "group": "execution-view-encoding",
       "surface": null
     },
     {
       "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
-      "sha256": "835893ab570219b34a21e20dfcfd40b718014b7bd8bbd93e8eb22e83920819a1",
+      "sha256": "907edefed04b796f2146220155692f12e8c6f4997467b7d7dfbe44c127777797",
       "group": "execution-view-encoding",
       "surface": null
     },
@@ -2706,7 +2826,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "57b503631a86c6e479e13513edf594944a4d492d9bcbe43e173c0916bb93dd3b",
+      "sha256": "1837e8fff85b39b8d15c624159ac6eedaec447ec797017eb222989d0cf1f2b7d",
       "group": "hierarchy",
       "surface": null
     },
@@ -3030,13 +3150,13 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf.lean",
-      "sha256": "71e40b0cd3cff6cac58e8591bcbfb010156aa855155dc7b492c0aeb0970e2b9c",
+      "sha256": "75f2da1c11d6d6ebf05019cc8e1e594d3fe0b4ec62f8c330040e77734337bff2",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
-      "sha256": "bb48176956a2cbc69bc5db56f903fa22bc720728e387b2b1e2edd0ef7d7c7683",
+      "sha256": "727cac6a14ac84566626a12d43b327b78478c5bc253c9c3464a819c6a2bd58a1",
       "group": "hierarchy",
       "surface": null
     },
@@ -3096,7 +3216,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
-      "sha256": "345118000d825dbef897739bc85c058c5f4a5bc6d84ce35a1e09ae7eaec70b05",
+      "sha256": "735741461e666170f8fea2b060a3167f92f19223a9eab4b5973facc042901f3f",
       "group": "hierarchy",
       "surface": null
     },
@@ -3354,7 +3474,7 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "05961e76c99a3fe2b118a58bd6267d025771e5b3f548a4259be50a7d24a377da",
+      "sha256": "4d20771cecff172d445f2f1b9eeaecc6c3e32d229ef2ce000755d1367f6232e7",
       "group": "hierarchy",
       "surface": null
     },
@@ -3968,7 +4088,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "289fdf5d2d56488a5a18b20c5e1c16d7bf82ce7d6ccd6218f4e9e04129580f0e",
+      "sha256": "67737b8cb8e8820de4d23da3714fea7d091cd7d57f0fb07eaa48edc7cbaf06ef",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4174,7 +4294,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "3b92740eaf965b22deb56ab356a2ee2789bae592f29ffbc7e73b82a1a202ab10",
+      "sha256": "c20d032317b8518f9ade9f24f86921288834f2b39dbf38c1428bc2b730f27269",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4201,6 +4321,8 @@
           "PatternKind",
           "Predicate",
           "QuantumAccess",
+          "RecordField",
+          "RecordValue",
           "Requirement",
           "Span",
           "StaticOp",
@@ -4210,20 +4332,25 @@
           "Stmt",
           "StmtKind",
           "Type",
+          "TypeDecl",
+          "TypeDeclKind",
           "TypeKind",
           "UnsupportedClosure",
-          "UseDecl"
+          "UseDecl",
+          "ValueField",
+          "VariantValue"
         ],
         "functions": [
           "pub const fn cover(self, other: Self) -> Self",
-          "pub const fn new(start: usize, end: usize) -> Self"
+          "pub const fn new(start: usize, end: usize) -> Self",
+          "pub fn member_spans(&self) -> impl Iterator<Item = Span> + '_"
         ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "c6ed73a48abb81b2018e81bbd06e196841b031eb071e2084f42f0f5a46d5ba7a",
+      "sha256": "d5f5821fe2e972683480d49af1c723ad020ac90397e895c92266e3fbd5b30ccb",
       "surface": {
         "declarations": [],
         "functions": [
@@ -4241,7 +4368,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "e913875c397047bbff805934e9e21fbee05c265cb081c3cf12a9f9dfed311371",
+      "sha256": "cd3acc7d58b5ddd3a56dd339d0127f7c097821d4c33c1dfb94401e60f252900a",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4251,7 +4378,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "c4b43833bc15efc07c38c9b77c6a540ec2727c448fada6b6db119d263216437a",
+      "sha256": "84a18a240315d9cbe2dacde03a7daf5854c67c967bf9bc6af7f639c8d6a5763f",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4271,7 +4398,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "71d691a65c53370fc6bb1ac2367af647c8013bef0b6de37de8124e50d99c290f",
+      "sha256": "97d0c558c0aad08c1491ffb71e4cfac17e6a9a22b5a0d00f686816b88b908426",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4281,7 +4408,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "31b049334cee8af962a9f99d35cd2b1fa21bd0a900666ae7682460100e3157b8",
+      "sha256": "85c46dd68d1d70652914783a1df600f8af4fb89bdc4214d9cfb1c13bee22be47",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4291,7 +4418,7 @@
     },
     {
       "path": "src/frontend/check/normalize.rs",
-      "sha256": "7f5186573fecfdad9bff57f814d3987ed9ab58946f2e90f601800fee3e2a6481",
+      "sha256": "edeb26e79ace3296505dcc4844d49de719c0e45f196f03fa62261c25331a1368",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4301,7 +4428,7 @@
     },
     {
       "path": "src/frontend/check/plans.rs",
-      "sha256": "9e8fa006e3acdc57ec03538089d2683b4046cd7833a04e96f34d5bc72e5dd36c",
+      "sha256": "a6a3d41b6f3184d3258b616fcdb1550b158dbabdba070cc7c714ca528e83f99a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4328,7 +4455,7 @@
     },
     {
       "path": "src/frontend/check/plans/body_statics/tests.rs",
-      "sha256": "b34f9dcd828dbf45e971320f5ef3aad08f4d8cc6a565fd443e94780cc192d2d0",
+      "sha256": "a1368adce5b14215880a99db5329aae32dfab13d9d15c9a81783290b7b202691",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4338,7 +4465,7 @@
     },
     {
       "path": "src/frontend/check/plans/interface_naturals.rs",
-      "sha256": "c61c5a3629b8aaf259a74cdaf4bae3949b7ab0102f3b75791272311ac1d8a18b",
+      "sha256": "3b8b222ee4e41f0e4f5211b9387dbdff59552f4359eaf5c6e2632714b49ab972",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4360,7 +4487,7 @@
     },
     {
       "path": "src/frontend/check/plans/tests.rs",
-      "sha256": "73eba955bf35f12329377f6a34f3960e9421c7af8f71237a7ef5c2af4c1e5bfc",
+      "sha256": "f6d7855988df7a3abc979cec99a331a59d3b47e8027185eb0b2ee6213affb468",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4390,7 +4517,7 @@
     },
     {
       "path": "src/frontend/check/static_helpers.rs",
-      "sha256": "3f0188477d5e37f59e0c234e442bdc8508776830e8c71085bac739956d87f276",
+      "sha256": "dcf56ff262f9c484348a1a805540d115f98fbd9e353d981bf5281bb6543de307",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4400,7 +4527,7 @@
     },
     {
       "path": "src/frontend/closed.rs",
-      "sha256": "3111a8e14500fe53312b85f2328cb6f521bc03fae51020a534d17e65b5108d02",
+      "sha256": "11d571af8642db21e1f75501b531a1388f963dddae1ef2f974bcde620f376ebb",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4413,7 +4540,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "7d1142622c6973d8f599d9e7ced72cb60dbeff96233f86917b23445388feb499",
+      "sha256": "178faab1a174afc719091a58600d94754508de731a82ebdd626220e3c17f528a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4453,7 +4580,7 @@
     },
     {
       "path": "src/frontend/compile/dormant.rs",
-      "sha256": "75ba9785aad85769c0cb6161a179425d4091def019ab0d5e66a17b827a663517",
+      "sha256": "8449bb8c0dd3ac1ae425750d7b96dcdebd3e1bc7cc63c4c837b626e8e68d76bb",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4463,7 +4590,7 @@
     },
     {
       "path": "src/frontend/compile/dormant/controls.rs",
-      "sha256": "c30ee796ec9820fe02b40ed82afc2b7119724d49d629188832d8e15beefc2606",
+      "sha256": "dfc3d815adaa14adb2c437421f258c65577ce7cbab3a2eb8abe47f170c5fbed7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4503,7 +4630,7 @@
     },
     {
       "path": "src/frontend/compile/instances/closure.rs",
-      "sha256": "f721eb92406d1c786e47dfb1f1a4ee14ee364362df51e119f71e8d705aa4bc7e",
+      "sha256": "86c5f278ea7144370415b92f327bfba636fce8a72b9c6f270979bcde762a3928",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4593,7 +4720,7 @@
     },
     {
       "path": "src/frontend/compile/lower/classical.rs",
-      "sha256": "9f9dea946746dda8e29ce7e79dae16f7f5a3671ae411715510ddbbb5f13307fd",
+      "sha256": "bed70d0638b6177212dcce30cd61a52b6fb24098e6ec56b8203ea4ec15c94d86",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4633,7 +4760,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "f8a60aca332a4ba3542c920a7bf0ebdc723fc709bcc8708cb6c3cf71e97123cc",
+      "sha256": "ecbfa57f06ed30ea284430e7d10ff718d8a3236b02fe4135000bafe44a6ea1fe",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4723,7 +4850,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "f53b594945d8ea5ef199d5f76fe57a2ab95a8fd8b63928408ef45a6287ad0580",
+      "sha256": "44134f27f1fd1fb5e36e978b6c77df768853aab647076d20022f9b9ee43b2d5c",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4824,7 +4951,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "40cdd295d06ff67bad3e7dd02d79393ef6b96500e29efe8835fc39f3eeaf9f5b",
+      "sha256": "f38ffb1b033c34553af902f02eecf4aa02260b4e3cb07ae31647f14562224097",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4851,7 +4978,7 @@
     },
     {
       "path": "src/frontend/compile/sources.rs",
-      "sha256": "a9eaf6747cf84a47604f2a746d93e07d092e44b9d36277ed170ec785fd868b10",
+      "sha256": "7295fdb0e3f223ddc54982cbed5808ae8ea2559077c57b638958d0b308cd56b5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4861,7 +4988,7 @@
     },
     {
       "path": "src/frontend/compile/types.rs",
-      "sha256": "7bde4961d9dd01695722b667a9f4e3d24f8f2c097ee1a4d2865741c41be19864",
+      "sha256": "afed714e1aa655de66dc244d1a5187204391c7f02bb73a1d79914f1ee75e08df",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4902,7 +5029,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "f3244a91794063d77e8fe1381094a965e5bfd1d856f0649ba21dafdcd68901f6",
+      "sha256": "a1b0ee760c6011a728736d45bec2535ea9af98b50a46ac3e2a64e87068012be8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4989,7 +5116,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "467c94284fea7efe32b21d20533010c1de99d5c5bd3b68722cba4352a5a65f5b",
+      "sha256": "f6fcec1d931c70ea0c87b39882e063949c7ea039d24f518103315382e08fb779",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5062,7 +5189,7 @@
     },
     {
       "path": "src/frontend/ordinary.rs",
-      "sha256": "6f313a04ac0e4a6e2446b1e3b8fe93c998e9d372bdbb9c8fef5768c8b73adebf",
+      "sha256": "e56ea75768e728f4c6a253c5d3151bf3af3c467007500790eec227276a673eef",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5072,7 +5199,7 @@
     },
     {
       "path": "src/frontend/ordinary/finite.rs",
-      "sha256": "8fd5f24a45bf58497e241a2d08c6948acc318cbcc85e2d79dbed7079b4ad34be",
+      "sha256": "1163662b6a93886319c73a5e689c934cd3ebdea63c584a6314f92ab4530d1c19",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5082,7 +5209,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "5d23452e73c589b674e1802b5695e82e6ab3fdc8efdb0ad4338f52ae2f2cb91a",
+      "sha256": "0e11f0f01a717fe4068a17403ed5cfb11f4bfddb1fd3118236dd99f351333682",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5140,11 +5267,12 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "17d197f1888f4602799593115bcde5578f8e7eaa5dc03c404fb28fdc7e2bd1af",
+      "sha256": "5b3910a6593b118a706c1dafbe3ca67a9360ef780c8849b8e8820dac486324ae",
       "group": "source",
       "surface": {
         "declarations": [
           "BundledStd",
+          "ImportKind",
           "ImportOrigin",
           "ModuleOrigin",
           "Project",
@@ -5251,7 +5379,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "380be5b1b3f093d8960d239f7d817f88ec894e0f77d19cb961624f2c084b626e",
+      "sha256": "e1eef867f449080427e871a942f4f6208b4811bdca7999938624cd10773fecbd",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5261,6 +5389,7 @@
           "pub fn imports(&self, caller: ModuleId, ast: &Module) -> Result<Scope, Failure>",
           "pub fn imports_budgeted<E: From<Failure>>( &self, caller: ModuleId, ast: &Module, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Scope, E>",
           "pub fn local(&self, module: ModuleId, name: &str) -> Option<DefId>",
+          "pub fn local_target(&self, module: ModuleId, name: &str) -> Option<Target>",
           "pub fn lookup(&self, module: ModuleId, name: &str) -> Option<Target>",
           "pub fn lookup_visible( &self, caller: ModuleId, name: &str, ) -> Result<Option<Target>, FailureKind>",
           "pub fn module(&self, name: &str) -> Option<ModuleId>",
@@ -5269,10 +5398,15 @@
           "pub fn new_budgeted<'a, E: From<Failure>>( modules: impl IntoIterator<Item = (&'a str, &'a Module)>, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<Self, E>",
           "pub fn path(&self, id: DefId) -> String",
           "pub fn qualified(&self, path: &str) -> Result<DefId, FailureKind>",
+          "pub fn qualified_target(&self, path: &str) -> Result<Target, FailureKind>",
           "pub fn scope(&self, module: ModuleId) -> &Scope",
           "pub fn set_scope(&mut self, module: ModuleId, scope: Scope)",
           "pub fn set_scope_budgeted<E>( &mut self, module: ModuleId, scope: Scope, mut charge: impl FnMut(Span, usize) -> Result<(), E>, ) -> Result<(), E>",
+          "pub fn target_module(&self, target: Target) -> Option<ModuleId>",
+          "pub fn target_visible(&self, target: Target, requester: Option<ModuleId>) -> bool",
           "pub fn try_declaration(&self, id: DefId) -> Option<&Declaration>",
+          "pub fn try_type_declaration(&self, id: TypeId) -> Option<&TypeDeclaration>",
+          "pub fn type_declaration(&self, id: TypeId) -> &TypeDeclaration",
           "pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool",
           "pub fn visit_name_sources<E>( &self, caller: ModuleId, name: &str, mut visit: impl FnMut(ModuleId) -> Result<(), E>, ) -> Result<(), E>"
         ],
@@ -5281,7 +5415,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "0e3efde58f5e5623c42d3e88629cbf079bbff7b4d4ee09792f8b000f139efa2e",
+      "sha256": "8a65ec4abffd457aef4b91ddc3a7f5113106f259f05c363e87b55125d1f148d8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5394,7 +5528,7 @@
     },
     {
       "path": "src/frontend/specialize.rs",
-      "sha256": "678f5b1edbad0fb13e47bb637b7238348db6b8578515bfb31508f93008db1959",
+      "sha256": "3bc34c15d81b7c9c938b96d93e0889d0dd85c650dc866bffa9c04e66de6323f5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5404,6 +5538,7 @@
           "ParsedProgram"
         ],
         "functions": [
+          "pub fn basis_binding(&self, source: &str) -> Result<BasisBinding>",
           "pub fn definition(&self) -> &str",
           "pub fn documentation( &self, module: &str, ) -> Option<std::result::Result<String, super::parser::ParseError>>",
           "pub fn edition(&self) -> crate::edition::Edition",
@@ -5455,7 +5590,7 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "f2b50a4b8f14aca1833ceec912b79e2157b9115561b9a9339cd7cfdf863adbb3",
+      "sha256": "36e405951a8d6337338ac6dc813a62a434d3c313130600d2a99af93188d674c1",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5465,7 +5600,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "7911ec9bddb537314621f73541505770f3584f0341228cd50050ace6f01c67fb",
+      "sha256": "f4df30d0042ad7a6c7b2b1acb0d4d9fcd0b669db2c7aa7519a14b73d64412c09",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5575,7 +5710,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "f940e1b73962167beb2776b4bb403ffe754012fa3f593c679826f9c754a4b438",
+      "sha256": "d7d303197d3d495e1dc676b221eb38968113b0b8d51bfeda560cb97d9e91abd3",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5743,7 +5878,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "13645a5d662c625c2b3e1b3027174d3af4bc639796dc4c7d4ef8ca953e56b817",
+      "sha256": "e8f9086ea175ee26747f62f8b1ba7cfa4dd41e5ae67f0775bb79abc7a46f0300",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5769,7 +5904,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "8a83aacc3b7310fc2599c7a3cf5f472e817fb41dcf3a5a5584cd0d97d4ccf8cb",
+      "sha256": "6290418ccf7bb0da2d0a726ba54fb08ad94a4f56b9152e2af497407149114c51",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5795,7 +5930,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "4cf573574bb5395b13d7f3e50115fc0cfc634e01963512520d605da03bf68041",
+      "sha256": "3b0a2565a62f7a018c0fc5eb2e33e83350925dd2a11c4018220905404d604058",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -5865,7 +6000,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "9305fd3df5d1bf298eef4ca78da24b5be803aabdf3863fe8f2eba8f83ac239fa",
+      "sha256": "c82524caa98cdab57e1b611c801b9ff637efc8d83c077c4307be8e9bf25cca42",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5911,7 +6046,7 @@
     },
     {
       "path": "src/frontend/types.rs",
-      "sha256": "0b0a3775c8aaa600f01010c37a3c9d1dca20e909dd8fc218d3516f8bf92e1d8b",
+      "sha256": "a1f14c22a70ce3e8d26500b9ae63b810f0f67f7a5cee47984a78f1bfc362f2ec",
       "group": "source",
       "surface": {
         "declarations": [
@@ -6264,7 +6399,7 @@
     {
       "path": "src/interchange/execution_view/finite.rs",
       "group": "execution-view-encoding",
-      "sha256": "23d41d3c3493b1e61d9cbc5188f8f41f8c32eb0136731057ec9ae530b9214b67",
+      "sha256": "0bdf5b459854a677afb59c058f0ae632d15ffd54d2009b1ff8e8eb5d1ae87c5d",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -6589,7 +6724,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "e6ff32fb63b7cafb766137a19256498bdb02e90ca0427b7320cb85a86ecb98a7",
+      "sha256": "84c3cca1528aa55c7f4f539fd85f26877f8889d7e7ef73bd5255588043baa392",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -6597,6 +6732,7 @@
           "Imported",
           "RootInterface",
           "Version",
+          "carrier",
           "engineering_instrument",
           "engineering_openqasm",
           "engineering_pure",
@@ -6622,7 +6758,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "e48eb6595c4cd41760960dcfd1f60abcb5772b1ad73b497429ef5c9bf8344b76",
+      "sha256": "316501627afedefaf67da49e61a52dd079b830a4b0a6879c7fced04ad7e612aa",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -6699,7 +6835,7 @@
     },
     {
       "path": "src/interchange/native/reporting.rs",
-      "sha256": "55197d467f55629f751b51dc89e9281b04a894db59218ef35e8748b7378cc160",
+      "sha256": "f88c2b07d6d3a3ab0c005b2218c432097c90719894884f8a8664c163016c0a58",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -6719,7 +6855,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "9bacd204dfb4013fec5512c147a4fc73cf72b83d7359f6b3cbe4b4fd7d82d709",
+      "sha256": "7e562ed08dc819e3e35d085d90bb27c85e5b58f44bf7edbbfa8686901d36cb27",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -6739,7 +6875,7 @@
     },
     {
       "path": "src/interchange/native_context.rs",
-      "sha256": "3c75990b98e9791ca99e8d575556736e6cf8ceb5a960bf9f8e1412b1d8e6c89e",
+      "sha256": "00cc8db8c55442c12edff088fafd0802ddd57bd07c1cc9ff275fa9ef3ac827de",
       "group": "execution-view-encoding",
       "surface": {
         "declarations": [],
@@ -7105,7 +7241,7 @@
     },
     {
       "path": "src/frontend/resolve/exports.rs",
-      "sha256": "b9e24998e9de07fe0c5b121a039ce2fd205072dd216122a4d5edd1c0bcbc1efd",
+      "sha256": "8c1d337a8d585e68c7ce6130c49f9d66c5ac5089d1e31b1d4727fabdaea0c3b2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -7118,6 +7254,327 @@
       "sha256": "50a45e54b3e9d61e224dd0b64126fa1001ce080238c7cfdf0efa958dd687caac",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/Carrier.lean",
+      "sha256": "b12558cd284a75cdacf3d835e773ca412a63553cfd4fad248dc560935c710cb2",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean",
+      "sha256": "88aa733087c203172173d85537f309dcac8064b6d7dd87e3d788525e121bd301",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/FiniteCarrier.lean",
+      "sha256": "1b8ee2e29dc433a4758ffdbdf180d14f768af0be54970d7243774a8e508504d4",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Carrier.lean",
+      "sha256": "76d6c77c3420305f52429c6366d4780bd6ca72cd4366877f2630ef7e7fb80df5",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/CarrierInterface.lean",
+      "sha256": "01d776bcf8c0acf73aa1c8f10b0de26e1e321b2db2eb3636600d858350a5f687",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/FiniteCarrier.lean",
+      "sha256": "60b581d81f27ba1c3837e5679f2320e97c924df06071366db7beab655e41c0b2",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/SourceAffine.lean",
+      "sha256": "33ce2d583394d55efb4074097332ccfa486096d929990574dcd3a0fbd6588658",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/SourceNatural.lean",
+      "sha256": "b3d16328b51f28bb03244eaea5ef84dfbe9d27c56ac15da94d598f3c13c03620",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes.lean",
+      "sha256": "53d497964c7a31b61824935fdfe92e5e508021a22e1d0a9674f243df977050e7",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/Declarations.lean",
+      "sha256": "fb5c4ac609fcd3aa08fbd343d9556b915b6a704cfe16cae87e08b2f7a1a265ee",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/Imports.lean",
+      "sha256": "8d570305835b1ffccf515292d652ff484037b954610c21e14180516bbb386900",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean",
+      "sha256": "f3ad3291d2cc0b0ee0e53fde4804a9aaa14f82cab25bfc0c9745ea3ce2ab68f7",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalAffine.lean",
+      "sha256": "117935f8688c12206dc9c7072c2e211f474d13b55e2451f5debd146e64ae046e",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalCatalog.lean",
+      "sha256": "493e036a35adda03af3461e34b2932e1966b418d8b8332a4d5712bc8913982f3",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalConstraints.lean",
+      "sha256": "9d1ecd5f0f5210860b02ac7d5998281e7a3637c76e829740827a7fa2ad689f48",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalFrames.lean",
+      "sha256": "1522d373a6d6a3dac880abe64bc14ef666764ed9e8ac380e8a43407ddde347bb",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalHeaders.lean",
+      "sha256": "3ae2a0f8ffd7cb6fe69ce79cec8049ecc409aafc26359dcaa4208907b8099ffa",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalHelpers.lean",
+      "sha256": "6992ca59734941a7811a936226fdea08cb87302fbb7453cf51a4fccdab009abb",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalNormalize.lean",
+      "sha256": "0cfa129810d46c22432adeb8ccee6a0748a4f1e3182d4d1607902f5ab683fc08",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalPredicates.lean",
+      "sha256": "a82076d338759b683c4d4a302915fae14a3f904b6b565c8b756083cf2eddca09",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean",
+      "sha256": "aaedc456d5724d397b380601d6ac848a88f8c7ec8092b909eef6efc54b2aad40",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalSubstitute.lean",
+      "sha256": "42b2b41d6211752c8fb162c7ffffeaf3c246b13d470382d70489f6ec6f0e05ce",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean",
+      "sha256": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
+      "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "path": "src/frontend/check/body/aggregate.rs",
+      "sha256": "869561713779d2cbcc53783b47a865a23a5d69bdc269e873f4dbe5ad72d8f869",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/body/aggregate/tests.rs",
+      "sha256": "e2ecca0fadc4bd3248f8a83514004245d5bbeffeb3088025858a9fbbe656d249",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/nominal.rs",
+      "sha256": "6bb163656452d5bc195fc6dc6ceaf17cbe9617e0275511239acda88f97ea648b",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/check/nominal/tests.rs",
+      "sha256": "4ad1ee983a689477325a1e57577a129f8f7ba75cd9ceba9e8df4112ffa7d1cb2",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/parser/aggregate_tests.rs",
+      "sha256": "2ff17726627d78884d8824fdbbde88229efcf61de4db8211ab63aea5b4d324f6",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/resolve/nominal.rs",
+      "sha256": "f043a4ec6c1dca33fb67868d2c271cc5f000922a5a955e31abda396c033d0cc0",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/basis_binding.rs",
+      "sha256": "3a5e501a087e2adb7c0143a685ab949c325a45e57c4136451395c46be0cc7b87",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/basis_binding/carrier.rs",
+      "sha256": "f4352a478cd585eaaf8430089685a5a75389a518a367dbcab43eba4ed74367af",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn carrier_description(&self) -> Result<Vec<Atom>>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/carrier.rs",
+      "sha256": "3a5943f2fe345c502e674ce6d31fc4a57692889ffc0c5174c54519a9019366df",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [
+          "CheckedSourceCarrier"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check_carrier( &self, kernel: &native::Kernel, logical: &Matrix, budget: &mut Budget, ) -> Result<CheckedSourceCarrier>",
+          "pub fn entry(&self) -> &str",
+          "pub fn native(&self) -> &native::NativeChecked",
+          "pub fn request(&self) -> &Request",
+          "pub fn request_bytes(&self) -> &[u8]",
+          "pub fn source_meaning_verified(&self) -> bool"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/carrier/tests.rs",
+      "sha256": "0d9d917d9cd08f972e7e072e3b3a7e1490356fc1b9bfb912cb01f84c407c1b1f",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/types/nominal.rs",
+      "sha256": "a7d7ba2f35b36d257d3346d288c9c01f4a0da450e5f4f8e96bb9af72d1538cdc",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn fields(&self) -> impl DoubleEndedIterator<Item = &Type<N>> + ExactSizeIterator",
+          "pub fn map_parts<M, E>( &self, sizes: &mut impl FnMut(&N) -> Result<M, E>, bases: &mut impl FnMut(&TypeParameter) -> Result<Type<M>, E>, ) -> Result<Nominal<M>, E>",
+          "pub fn metadata_cells(&self) -> usize"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/carrier.rs",
+      "sha256": "bc762f15364c65fb18ab23db562d54deae54ac1308ac89afcb57ba084584d252",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [
+          "Atom",
+          "Interface",
+          "Origin",
+          "Owner",
+          "Request"
+        ],
+        "functions": [
+          "pub fn decode(bytes: &[u8]) -> Result<Self>",
+          "pub fn encode(&self) -> Result<Vec<u8>>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/execution_view/finite/carrier.rs",
+      "sha256": "e16d89f039d43281d9b70a7af778a6ff3eda85484afa947cd4fefd8036c20f3a",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/carrier.rs",
+      "sha256": "81632f7eea66c543d271dd28eb1038a685d26f867602ab1bcec6d151ef439f7c",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [
+          "CarrierChecked"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check_carrier(&self, artifact: &[u8], request: &[u8]) -> Result<CarrierChecked>",
+          "pub fn native(&self) -> &NativeChecked",
+          "pub fn request(&self) -> &Request",
+          "pub fn request_bytes(&self) -> &[u8]"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/carrier/tests.rs",
+      "sha256": "c2d7257c3b5b6f9d89049c305975b78deede15bca510e7fc01f067a877c8a439",
+      "group": "finite-carrier",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -7649,6 +8106,32 @@
       "replacement": [
         "VM-23",
         "VM-24",
+        "VM-28",
+        "VM-29"
+      ]
+    },
+    {
+      "id": "finite-carrier",
+      "group": "finite-carrier",
+      "entry_points": [
+        "interchange::carrier::{Origin,Atom,Owner,Interface,Request}; Request::{encode,decode}",
+        "BasisBinding::carrier_description (untrusted description)",
+        "interchange::native::Kernel::check_carrier",
+        "CarrierChecked::{artifact,request_bytes,request,native} (read-only retained binding)",
+        "Instantiation::check_carrier",
+        "CheckedSourceCarrier::{artifact,request_bytes,request,native,entry,source_meaning_verified}"
+      ],
+      "status": "Bounded fresh native pure code/body equation; explicit source adapter remains check-only",
+      "request": "Strict six-field qleisli.carrier-request version 1 / finite-carrier-pure-v1: complete attached and independently required ordered input/output owner forests, public effect and independent exact logical matrix. Nominal atoms retain original module/declaration/source identity and full member/field order; Unit, Bits<0>, singleton, empty and product trees remain distinct.",
+      "binding": "Freshly decode original QIRF and request bytes, independently check original type/import/Nat declarations, dependencies and full interfaces, reconstruct code matrices and the actual pure body, and check physical * inputCode = outputCode * logical plus the logical Gram identity. Extra source rows require exact nominal references in the four owner forests; ordinary root checking retains strict source use. The explicit source adapter uses the common judgment/Builder, an independent caller matrix and retained-step replay against the same fresh decoded root. Sealed handles expose no Raw/AcceptedProgram conversion; source_meaning_verified is always false.",
+      "encoding": "Execution-only explicit-edition QLV3 containing original QLV1 body/request and a QDV1 finite-carrier-pure-v1 record over the complete graph, both interfaces and logical matrix. Distinct --carrier-pure-check / qleisli.native-result 3 / accepted / execution context must match the invoked edition and complete product version; inspection/caller and old frames reject.",
+      "domain": "Bounded exact pure finite enums/records and structural trees with complete ordered logical owners, including zero-width owners and exact scalar phase. Public Observe and actual observation/reset/discard refuse. Public Isometry is not sharpened to Unitary by a square body. Ordinary nominal execution, match/qmatch and original AST-to-step/source-function preservation remain pending; no inverse/control, cleanup, target/resource or constitutional admission follows.",
+      "limits": "Existing six-physical-bit/dimension-64 exact domain, 128-node forests, zero-based prefix depth at most 32, at most 128 owners/members, canonical i128 dyadics and shared 10M native work/60s process limits. Existing 16 MiB original body/request and 64 MiB envelope/view limits remain; source host preparation keeps its separate existing budgets. No capacity is raised.",
+      "failure": "Reject wrong full trees/ports/member order/nominal identity/source/dependencies, false code/body or Gram/phase equations, observation under pure labels, unsupported source helper-only rows, stale graph/request/view, wrong mode/scope/edition/version and exceeded limits. Missing, failed or timed-out native checker has no fallback or imported-success route.",
+      "replacement": [
+        "VM-23",
+        "VM-24",
+        "VM-25",
         "VM-28",
         "VM-29"
       ]

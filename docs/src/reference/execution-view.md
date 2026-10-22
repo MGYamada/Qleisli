@@ -43,7 +43,7 @@ hierarchy payload retains its original bridge encoding. These inner payloads
 are checked by the existing definitions. Neither is accepted as an unwrapped
 external request after cutover. No compatibility retry is permitted.
 
-All thirteen native modes use `qleisli.native-result 3`. Successful replies
+All fourteen native modes use `qleisli.native-result 3`. Successful replies
 contain, one per line: claim (`accepted`, `pending`, `engineering-checked` or
 `checked`), checked edition, compiled complete product version, canonical mode
 argument, checked scope, and the mode's unchanged payload fields. A final
@@ -51,6 +51,13 @@ newline is required. Finite payloads retain exact work and the request-presence
 flag; hierarchy payloads retain structural/exact work and ordered obligations;
 engineering payloads retain exact work. Component payloads retain their
 original fields. These claims remain distinct.
+
+The internal `--carrier-pure-check` mode requires execution scope. Its
+`finite-carrier-pure-v1` QDV1 record compares the actual graph, attached and
+required ordered owner forests, public effects and exact logical matrix.
+Its private component result grants no ordinary source execution or
+source-preservation claim; the [carrier boundary](production-boundary.md#finite-nominal-carrier-requests)
+states the checked equations and remaining obligations.
 
 Errors contain only the header, `error`, the rejection code and final newline;
 they assert no successfully checked context. Hierarchy finite-decoder errors retain

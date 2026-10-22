@@ -171,6 +171,32 @@ ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'NativeContext.run_engineering_targ
          'or close S05-C1-C5, QS, PR, RS or EXACT obligations.'}
 
 
+FINITE_CARRIER_PROOF = {
+    'proof_scope': (
+        'NativeContext.run_carrier_binding connects the actual execution-only QLV3 dispatcher to '
+        'CheckedCarrier.run_binding and its exact QDV1 graph/interface/logical-matrix comparison. '
+        'Protocol.Carrier.check_binding retains the original body/request bytes, freshly decoded '
+        'artifact/order, original source declaration checks and one continuous-work core check. '
+        'Qirf.Carrier.check_postcondition binds the full ordered typed interface, independently read '
+        'input/output code matrices, logical Gram computation, actual pure body reconstruction and '
+        'literal physical * inputCode = outputCode * logical equation. CheckedCarrier.Binding.root_safe '
+        'derives independent ownership/classical scope for this actual root through the shared '
+        'checkRootWithSources result; this does not extend the human-admitted ordinary QLV1 ledger scope. '
+        'The explicit Rust source adapter uses the common judgment/Builder, caller-supplied independent '
+        'logical matrix and retained-step replay against the same native-compared decoded root.'
+    ),
+    'gaps': (
+        'Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function '
+        'preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, '
+        'source proposals and read-only views grant no native decision themselves; sealed carrier handles '
+        'have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, '
+        'decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource '
+        'certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission '
+        'or S05 closure follows. Fresh full proof replay remains an independent required check.'
+    ),
+}
+
+
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
                 native_modes=modes.split(),
@@ -181,6 +207,43 @@ def path_rule(classification, boundaries, modes, sources, tests):
 # Reviewed declarations/dispatch markers, not a proof of the code they describe.
 # Every inventory boundary and every NativeContext.Mode must have an explicit rule.
 PATHS = {
+    'carrier-proposal': path_rule('untrusted-proposal', 'finite-carrier', '', [
+        ('src/interchange/carrier.rs', ['pub struct Request', 'pub fn encode(', 'pub fn decode(']),
+        ('src/frontend/specialize/basis_binding/carrier.rs', ['pub fn carrier_description(']),
+    ], [('src/frontend/specialize/basis_binding/carrier.rs',
+         'original_aliases_record_order_and_zero_width_nominals_are_retained')]),
+    'carrier-check': path_rule('native-acceptance', 'finite-carrier', '--carrier-pure-check', [
+        ('src/interchange/native/carrier.rs', ['pub fn check_carrier(', 'Prepared::with_carrier(',
+            'carrier::complete(prepared.graph(), &request)?', '"--carrier-pure-check"', 'prepared.bind(native)?']),
+        ('src/interchange/execution_view/finite/carrier.rs', ['writer.text("finite-carrier-pure-v1")?',
+            'graph.write(&mut writer)?', 'interface(&mut view, &request.attached)?',
+            'interface(&mut view, &request.required)?', 'view.matrix(&request.logical)?']),
+        ('lean-kernel/Protocol/Carrier.lean', ['def check ', 'checkSources artifact.sources request',
+            'Qirf.Carrier.check artifact order request.attached request.required request.logical', 'theorem check_binding ']),
+        ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', ['def sourceRoot ', 'Validity.checkRootWithSources artifact order extra',
+            'def check ', 'guard (attached == required)', 'guard iso .notIsometric',
+            'guard (actual == specified) .equation', 'theorem check_postcondition ', 'theorem sourceRoot_result ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean', ['def check ', 'supplied.data == expected.data',
+            '.inspection | .caller => throw .packet', 'theorem check_binding ', 'theorem run_binding ', 'theorem Binding.root_safe ']),
+    ], [('src/interchange/native/carrier/tests.rs', 'original_carrier_body_source_and_logical_phase_are_bound'),
+        ('src/interchange/native/carrier/tests.rs', 'stale_carrier_view_and_wrong_invocation_scope_never_authorize_a_handle'),
+        ('src/interchange/native/carrier/tests.rs', 'hidden_observation_never_obtains_a_pure_carrier_label'),
+        ('src/interchange/native/carrier/tests.rs', 'nominal_rows_need_actual_carrier_references_without_synthetic_circuit_evidence')]),
+    'source-carrier-check': path_rule('native-acceptance', 'finite-carrier', '--carrier-pure-check', [
+        ('src/frontend/specialize/raw/carrier.rs', ['pub fn check_carrier(',
+            'super::super::elaborate::carrier_preparation(self)?', '.check_carrier(proposal.payload(), request)',
+            'preservation::validate_subject_with_meanings(', 'checked.raw()',
+            'pub fn source_meaning_verified(&self) -> bool {\n        false']),
+    ], [('src/frontend/specialize/raw/carrier/tests.rs', 'actual_enum_record_and_zero_width_source_bodies_use_typed_native_mode'),
+        ('src/frontend/specialize/raw/carrier/tests.rs', 'exact_requested_phase_is_independent_of_the_actual_source_body'),
+        ('src/frontend/specialize/raw/carrier/tests.rs', 'ordinary_preparation_still_refuses_nominal_execution'),
+        ('src/frontend/specialize/raw/carrier/tests.rs', 'helper_only_source_module_is_explicitly_unsupported_before_native_submission')]),
+    'carrier-views': path_rule('checked-view', 'finite-carrier', '', [
+        ('src/interchange/native/carrier.rs', ['pub struct CarrierChecked', 'checked: Checked,', 'pub fn request_bytes(',
+            'pub(crate) fn raw(']),
+        ('src/frontend/specialize/raw/carrier.rs', ['pub struct CheckedSourceCarrier', 'source: ElaboratedProgram,',
+            'checked: native::CarrierChecked,', 'pub fn source_meaning_verified(&self) -> bool {\n        false']),
+    ], [('src/frontend/specialize/raw/carrier/tests.rs', 'public_observing_contract_and_ordinary_nominals_cannot_use_pure_carrier_route')]),
     'raw-proposal': path_rule('untrusted-proposal', 'raw qirf-native-v029', '', [
         ('src/interchange/native.rs', ['pub struct Proposal', 'pub fn from_raw(']),
     ], [('tests/native_acceptance.rs', 'native_handles_execute_bell_and_feedback_without_legacy_receipts')]),
@@ -871,6 +934,7 @@ PATHS['hierarchy-qpe']['tests'].extend(
 NATIVE_DISPATCH = {
     '--qirf-native': '.ordinary',
     '--qirf-contract': '.contract',
+    '--carrier-pure-check': '.carrierPure',
     '--engineering-openqasm-check': '.engineeringOpenQasm',
     '--engineering-pure-check': '.engineeringPure',
     '--engineering-pure-tensor-check': '.engineeringPureTensor',
@@ -1355,6 +1419,8 @@ ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/te
 
 ROUTES['engineering-openqasm'] = ('src/interchange/engineering_openqasm/tests.rs', 'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering')
 ROUTES['source-edition-configuration'] = ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits')
+ROUTES['finite-carrier'] = ('src/interchange/native/carrier/tests.rs',
+                            'original_carrier_body_source_and_logical_phase_are_bound')
 
 
 PATHS['ordinary-acceptance']['source_bindings'].extend([
@@ -1423,6 +1489,8 @@ for _rule in PATHS.values():
         ]))
 
 for _id, _binding in {
+    'carrier-check': 'run_carrier_binding',
+    'source-carrier-check': 'run_carrier_binding',
     'ordinary-acceptance': 'run_ordinary_root_safe',
     'contract-acceptance': 'run_contract_binding',
     'hierarchy-inspect': 'run_hierarchy_binding',
@@ -1514,6 +1582,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'contract-acceptance':
             require({key: row[key] for key in CONTRACT_PROOF} == CONTRACT_PROOF,
                     'unreviewed native-contract proof scope')
+        if row['id'] in {'carrier-check', 'source-carrier-check'}:
+            require({key: row[key] for key in FINITE_CARRIER_PROOF} == FINITE_CARRIER_PROOF,
+                    'unreviewed finite-carrier proof scope')
         if row['id'] == 'engineering-pure-check':
             require({key: row[key] for key in ENGINEERING_PURE_PROOF} == ENGINEERING_PURE_PROOF,
                     'unreviewed engineering-pure proof scope')

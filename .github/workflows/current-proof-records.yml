@@ -7,6 +7,13 @@ on:
       - .github/workflows/current-proof-records.yml
       - scripts/refresh_current_proof_records.py
       - scripts/check_schema_registry.py
+      - lean/**
+      - lean-kernel/**
+      - src/**
+      - scripts/check_verification_inventory.py
+      - scripts/check_production_coverage.py
+      - tests/fixtures/verification_v022/inventory.json
+      - tests/fixtures/verification_v029/coverage.json
   workflow_dispatch:
 
 # This bootstrap artifact producer is intentionally independent of changes and

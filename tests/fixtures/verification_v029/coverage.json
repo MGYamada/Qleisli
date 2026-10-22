@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "52fbaec93ed6cc40b33fdaa1671c36a0a25d98d4b61c85c1f59a61784d604e3e",
+  "surface_sha256": "5cbe01030647172395f9cf4a42133b9f1346173172e63828467b4b762256b0bd",
   "groups": [
     {
       "id": "raw-core",
@@ -1143,6 +1143,32 @@
         "MIG-4",
         "MIG-5"
       ]
+    },
+    {
+      "id": "finite-carrier",
+      "status": "mixed-boundary",
+      "blocker": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check.",
+      "evidence": [
+        "src/interchange/native/carrier/tests.rs",
+        "src/frontend/specialize/raw/carrier/tests.rs",
+        "lean-kernel/Protocol/Carrier.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean",
+        "lean-kernel/QleisliKernel/Qirf/Carrier.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
     }
   ],
   "boundaries": [
@@ -2166,6 +2192,52 @@
       "paths": [
         "engineering-openqasm-check"
       ]
+    },
+    {
+      "id": "finite-carrier",
+      "entry_points": [
+        "interchange::carrier::{Origin,Atom,Owner,Interface,Request}; Request::{encode,decode}",
+        "BasisBinding::carrier_description (untrusted description)",
+        "interchange::native::Kernel::check_carrier",
+        "CarrierChecked::{artifact,request_bytes,request,native} (read-only retained binding)",
+        "Instantiation::check_carrier",
+        "CheckedSourceCarrier::{artifact,request_bytes,request,native,entry,source_meaning_verified}"
+      ],
+      "status": "mixed-boundary",
+      "blocker": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check.",
+      "evidence": [
+        "src/interchange/native/carrier/tests.rs",
+        "src/frontend/specialize/raw/carrier/tests.rs",
+        "lean-kernel/Protocol/Carrier.lean",
+        "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean",
+        "lean-kernel/QleisliKernel/Qirf/Carrier.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "src/interchange/native/carrier/tests.rs",
+        "test": "original_carrier_body_source_and_logical_phase_are_bound"
+      },
+      "selection": "Only the separate execution-only --carrier-pure-check issues a sealed carrier equation handle after the original source/type/body and complete QDV1 comparisons. Explicit source adaptation additionally replays retained steps but reports source_meaning_verified false; no ordinary runtime/Raw escape.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "carrier-check",
+        "carrier-proposal",
+        "carrier-views",
+        "source-carrier-check"
+      ]
     }
   ],
   "gates": [
@@ -2529,7 +2601,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -3072,7 +3144,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -4573,7 +4645,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -4701,7 +4773,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -4821,7 +4893,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -4941,7 +5013,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -5065,7 +5137,7 @@
         {
           "path": "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean",
           "markers": [
-            "let checked \u2190 Conditional.checkAll packet.artifact packet.order",
+            "let checked ← Conditional.checkAll packet.artifact packet.order",
             "theorem checkAll_conditions"
           ]
         },
@@ -5088,7 +5160,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -5185,7 +5257,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -5257,7 +5329,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -5425,7 +5497,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -5797,7 +5869,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -6088,7 +6160,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -6330,7 +6402,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -6583,7 +6655,7 @@
           "path": "lean-kernel/Protocol/NativeContext.lean",
           "markers": [
             "def run ",
-            "guard (requestedProduct == productVersion) .version\n  let input \u2190 lift (Packet.read bytes)\n  let value \u2190 check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return \u27e8input.edition,input.scope,value\u27e9",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
             "theorem run_binding ",
             "theorem run_edition ",
             "def Mode.status ",
@@ -6655,6 +6727,324 @@
       "checker": "Main -> NativeContext.Mode.parse -> Cli.runNativeContext -> NativeContext.run in its dedicated engineering mode -> the existing execution-only checked profile. native-result 3 retains engineering-checked and matching edition/product/mode/scope; no accepted-program conversion.",
       "proof_scope": "NativeContext.run_engineering_target_binding connects the explicit edition/product/scope decision to CheckedEngineeringOpenQasm.run_binding, which retains the actual execution-only QLV3 packet, original target body/request bytes and exact QDV1 comparison of the full typed context, literal target bytes, independently decoded ordered word, generated actual graph and freshly decoded ideal graph. Protocol.EngineeringOpenQasm.checkRetained_bound connects the original ideal read and target core to one continuous-work computation. Target.CanonicalOpenQasm.decode_original binds the literal target bytes; the independent Semantics.CanonicalTerminalQasm mapping retains and explicitly consumes the zero-width Unit owner. CanonicalOpenQasmGates.gate_matrix and gate_meaning bind all eight literal complex gate matrices before observation. NativeEngineeringOpenQasm.check_meaning and NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit signatures and ordered public outcomes to CompleteAdjointBound on every finite reference and observable at the caller's literal epsilon. The immutable private Rust report retains original target, ideal, request and selected checker path without an accepted-program conversion, including at epsilon zero.",
       "gaps": "Engineering-only canonical closed one-qubit target profile; the declared standard-gate mathematical meaning is an explicit specification assumption. This checks the target-bound complete-adjoint relation, not source/export preservation, exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional admission. Composition and synthesis/resource certificates, source/compiler/export correctness, decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound or close S05-C1-C5, QS, PR, RS or EXACT obligations."
+    },
+    {
+      "id": "carrier-proposal",
+      "classification": "untrusted-proposal",
+      "boundaries": [
+        "finite-carrier"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interchange/carrier.rs",
+          "markers": [
+            "pub struct Request",
+            "pub fn encode(",
+            "pub fn decode("
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/basis_binding/carrier.rs",
+          "markers": [
+            "pub fn carrier_description("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/frontend/specialize/basis_binding/carrier.rs",
+          "test": "original_aliases_record_order_and_zero_width_nominals_are_retained"
+        }
+      ],
+      "entry_path": "Request encode/decode and BasisBinding::carrier_description construct only untrusted complete typed request data.",
+      "checked_artifact": "Untrusted attached/required owner forests, original nominal sources, public effect and independent logical matrix.",
+      "checker": "Bounded Rust description/serialization only; no acceptance decision.",
+      "proof_scope": "Source/type and data preparation only. The actual carrier equation requires a separate fresh native invocation.",
+      "gaps": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check."
+    },
+    {
+      "id": "carrier-check",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "finite-carrier"
+      ],
+      "native_modes": [
+        "--carrier-pure-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/native/carrier.rs",
+          "markers": [
+            "pub fn check_carrier(",
+            "Prepared::with_carrier(",
+            "carrier::complete(prepared.graph(), &request)?",
+            "\"--carrier-pure-check\"",
+            "prepared.bind(native)?"
+          ]
+        },
+        {
+          "path": "src/interchange/execution_view/finite/carrier.rs",
+          "markers": [
+            "writer.text(\"finite-carrier-pure-v1\")?",
+            "graph.write(&mut writer)?",
+            "interface(&mut view, &request.attached)?",
+            "interface(&mut view, &request.required)?",
+            "view.matrix(&request.logical)?"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/Carrier.lean",
+          "markers": [
+            "def check ",
+            "checkSources artifact.sources request",
+            "Qirf.Carrier.check artifact order request.attached request.required request.logical",
+            "theorem check_binding "
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/Carrier.lean",
+          "markers": [
+            "def sourceRoot ",
+            "Validity.checkRootWithSources artifact order extra",
+            "def check ",
+            "guard (attached == required)",
+            "guard iso .notIsometric",
+            "guard (actual == specified) .equation",
+            "theorem check_postcondition ",
+            "theorem sourceRoot_result "
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean",
+          "markers": [
+            "def check ",
+            "supplied.data == expected.data",
+            ".inspection | .caller => throw .packet",
+            "theorem check_binding ",
+            "theorem run_binding ",
+            "theorem Binding.root_safe "
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_carrier_binding "
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/interchange/native/carrier/tests.rs",
+          "test": "original_carrier_body_source_and_logical_phase_are_bound"
+        },
+        {
+          "path": "src/interchange/native/carrier/tests.rs",
+          "test": "stale_carrier_view_and_wrong_invocation_scope_never_authorize_a_handle"
+        },
+        {
+          "path": "src/interchange/native/carrier/tests.rs",
+          "test": "hidden_observation_never_obtains_a_pure_carrier_label"
+        },
+        {
+          "path": "src/interchange/native/carrier/tests.rs",
+          "test": "nominal_rows_need_actual_carrier_references_without_synthetic_circuit_evidence"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
+        }
+      ],
+      "entry_path": "Kernel::check_carrier retains original body/request, constructs the typed view, invokes the distinct fresh native mode and seals CarrierChecked.",
+      "checked_artifact": "Exact original QLV1 body/request inside explicit-edition execution-only QLV3, complete graph and attached/required ordered forests and logical matrix in QDV1.",
+      "checker": "Main -> NativeContext .carrierPure -> CheckedCarrier.run -> Protocol.Carrier.check -> Qirf.Carrier.check, with no inspection/caller fallback.",
+      "proof_scope": "NativeContext.run_carrier_binding connects the actual execution-only QLV3 dispatcher to CheckedCarrier.run_binding and its exact QDV1 graph/interface/logical-matrix comparison. Protocol.Carrier.check_binding retains the original body/request bytes, freshly decoded artifact/order, original source declaration checks and one continuous-work core check. Qirf.Carrier.check_postcondition binds the full ordered typed interface, independently read input/output code matrices, logical Gram computation, actual pure body reconstruction and literal physical * inputCode = outputCode * logical equation. CheckedCarrier.Binding.root_safe derives independent ownership/classical scope for this actual root through the shared checkRootWithSources result; this does not extend the human-admitted ordinary QLV1 ledger scope. The explicit Rust source adapter uses the common judgment/Builder, caller-supplied independent logical matrix and retained-step replay against the same native-compared decoded root.",
+      "gaps": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check."
+    },
+    {
+      "id": "source-carrier-check",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "finite-carrier"
+      ],
+      "native_modes": [
+        "--carrier-pure-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/frontend/specialize/raw/carrier.rs",
+          "markers": [
+            "pub fn check_carrier(",
+            "super::super::elaborate::carrier_preparation(self)?",
+            ".check_carrier(proposal.payload(), request)",
+            "preservation::validate_subject_with_meanings(",
+            "checked.raw()",
+            "pub fn source_meaning_verified(&self) -> bool {\n        false"
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/NativeContext.lean",
+          "markers": [
+            "def runNativeContext ",
+            "Protocol.NativeContext.run mode requestedProduct bytes",
+            "Protocol.NativeContext.reply mode work result left"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext.lean",
+          "markers": [
+            "def run ",
+            "guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)\n  let value ← check mode bytes\n  guard (decide (scope mode value = input.scope)) .packet\n  return ⟨input.edition,input.scope,value⟩",
+            "theorem run_binding ",
+            "theorem run_edition ",
+            "def Mode.status ",
+            "\"qleisli.native-result 3\",mode.status,toString decision.edition.code,productVersion"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/ExecutionView/Packet.lean",
+          "markers": [
+            "def header ",
+            "bytes.extract 0 4 != \"QLV3\".toUTF8",
+            "else if u32 bytes 4 != 2026 then .error .edition",
+            "theorem read_edition "
+          ]
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "markers": [
+            "pub(super) struct CheckedContext",
+            "pub(super) fn parse(",
+            "fields[1] != mode.status()",
+            "fields[2] != edition.as_str()",
+            "fields[3] != env!(\"CARGO_PKG_VERSION\")",
+            "fields[4] != mode.argument()",
+            "fields[5] != scope.name()",
+            "!mode.permits(scope)"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContext/Bindings.lean",
+          "markers": [
+            "theorem run_carrier_binding "
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/frontend/specialize/raw/carrier/tests.rs",
+          "test": "actual_enum_record_and_zero_width_source_bodies_use_typed_native_mode"
+        },
+        {
+          "path": "src/frontend/specialize/raw/carrier/tests.rs",
+          "test": "exact_requested_phase_is_independent_of_the_actual_source_body"
+        },
+        {
+          "path": "src/frontend/specialize/raw/carrier/tests.rs",
+          "test": "ordinary_preparation_still_refuses_nominal_execution"
+        },
+        {
+          "path": "src/frontend/specialize/raw/carrier/tests.rs",
+          "test": "helper_only_source_module_is_explicitly_unsupported_before_native_submission"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "every_mode_requires_its_own_explicit_context_and_claim_class"
+        },
+        {
+          "path": "src/interchange/native_context.rs",
+          "test": "failures_have_no_success_context_and_legacy_frames_never_fall_back"
+        }
+      ],
+      "entry_path": "Instantiation::check_carrier uses the common checked original source/Builder and Raw emitter, caller-supplied logical matrix, fresh carrier equation and retained-step replay.",
+      "checked_artifact": "The same exact native-compared original QIRF and typed request plus private complete source preparation; original AST-to-step semantics are not certified.",
+      "checker": "Kernel::check_carrier plus validate_subject_with_meanings against checked.raw(); sealed CheckedSourceCarrier always reports source_meaning_verified false.",
+      "proof_scope": "NativeContext.run_carrier_binding connects the actual execution-only QLV3 dispatcher to CheckedCarrier.run_binding and its exact QDV1 graph/interface/logical-matrix comparison. Protocol.Carrier.check_binding retains the original body/request bytes, freshly decoded artifact/order, original source declaration checks and one continuous-work core check. Qirf.Carrier.check_postcondition binds the full ordered typed interface, independently read input/output code matrices, logical Gram computation, actual pure body reconstruction and literal physical * inputCode = outputCode * logical equation. CheckedCarrier.Binding.root_safe derives independent ownership/classical scope for this actual root through the shared checkRootWithSources result; this does not extend the human-admitted ordinary QLV1 ledger scope. The explicit Rust source adapter uses the common judgment/Builder, caller-supplied independent logical matrix and retained-step replay against the same native-compared decoded root.",
+      "gaps": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check."
+    },
+    {
+      "id": "carrier-views",
+      "classification": "checked-view",
+      "boundaries": [
+        "finite-carrier"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interchange/native/carrier.rs",
+          "markers": [
+            "pub struct CarrierChecked",
+            "checked: Checked,",
+            "pub fn request_bytes(",
+            "pub(crate) fn raw("
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw/carrier.rs",
+          "markers": [
+            "pub struct CheckedSourceCarrier",
+            "source: ElaboratedProgram,",
+            "checked: native::CarrierChecked,",
+            "pub fn source_meaning_verified(&self) -> bool {\n        false"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/frontend/specialize/raw/carrier/tests.rs",
+          "test": "public_observing_contract_and_ordinary_nominals_cannot_use_pure_carrier_route"
+        }
+      ],
+      "entry_path": "CarrierChecked and CheckedSourceCarrier read-only artifact/request/native/source-entry accessors.",
+      "checked_artifact": "Previously retained immutable carrier association; no public constructor or Raw/AcceptedProgram conversion.",
+      "checker": "No fresh decision from a view; construction requires the classified native/source carrier gates.",
+      "proof_scope": "Read-only identity association only; source_meaning_verified remains false.",
+      "gaps": "Check-only carrier equation, not ordinary nominal runtime or original AST-to-step/source-function preservation. CheckedSourceCarrier.source_meaning_verified always returns false. Descriptors, source proposals and read-only views grant no native decision themselves; sealed carrier handles have no Raw/AcceptedProgram conversion or runtime/inverse/control capability. Match/qmatch, decoder/walker/native-compiler/deployed-binary/runtime preservation, cleanup, target/resource certification and broader QS/PR/RS/EXACT discharge remain separate; no new guarantee admission or S05 closure follows. Fresh full proof replay remains an independent required check."
     }
   ]
 }

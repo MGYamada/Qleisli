@@ -10,7 +10,7 @@ import re
 import sys
 
 sys.dont_write_bytecode = True
-from check_docs import rust_code, rust_references
+from check_docs import rust_code
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = 'tests/fixtures/verification_v022/inventory.json'
@@ -238,6 +238,63 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
  'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29']}
 
 
+# Existing #64 bounded component only; descriptions and source preparation do
+# not inherit the fresh native decision or establish original-source meaning.
+FINITE_CARRIER_BOUNDARY = {
+    'id': 'finite-carrier', 'group': 'finite-carrier',
+    'entry_points': [
+        'interchange::carrier::{Origin,Atom,Owner,Interface,Request}; Request::{encode,decode}',
+        'BasisBinding::carrier_description (untrusted description)',
+        'interchange::native::Kernel::check_carrier',
+        'CarrierChecked::{artifact,request_bytes,request,native} (read-only retained binding)',
+        'Instantiation::check_carrier',
+        'CheckedSourceCarrier::{artifact,request_bytes,request,native,entry,source_meaning_verified}',
+    ],
+    'status': 'Bounded fresh native pure code/body equation; explicit source adapter remains check-only',
+    'request': (
+        'Strict six-field qleisli.carrier-request version 1 / finite-carrier-pure-v1: '
+        'complete attached and independently required ordered input/output owner forests, public effect '
+        'and independent exact logical matrix. Nominal atoms retain original module/declaration/source '
+        'identity and full member/field order; Unit, Bits<0>, singleton, empty and product trees remain distinct.'
+    ),
+    'binding': (
+        'Freshly decode original QIRF and request bytes, independently check original type/import/Nat '
+        'declarations, dependencies and full interfaces, reconstruct code matrices and the actual pure '
+        'body, and check physical * inputCode = outputCode * logical plus the logical Gram identity. '
+        'Extra source rows require exact nominal references in the four owner forests; ordinary root '
+        'checking retains strict source use. The explicit source adapter uses the common judgment/Builder, '
+        'an independent caller matrix and retained-step replay against the same fresh decoded root. '
+        'Sealed handles expose no Raw/AcceptedProgram conversion; source_meaning_verified is always false.'
+    ),
+    'encoding': (
+        'Execution-only explicit-edition QLV3 containing original QLV1 body/request and a QDV1 '
+        'finite-carrier-pure-v1 record over the complete graph, both interfaces and logical matrix. '
+        'Distinct --carrier-pure-check / qleisli.native-result 3 / accepted / execution context must '
+        'match the invoked edition and complete product version; inspection/caller and old frames reject.'
+    ),
+    'domain': (
+        'Bounded exact pure finite enums/records and structural trees with complete ordered logical '
+        'owners, including zero-width owners and exact scalar phase. Public Observe and actual '
+        'observation/reset/discard refuse. Public Isometry is not sharpened to Unitary by a square body. '
+        'Ordinary nominal execution, match/qmatch and original AST-to-step/source-function preservation '
+        'remain pending; no inverse/control, cleanup, target/resource or constitutional admission follows.'
+    ),
+    'limits': (
+        'Existing six-physical-bit/dimension-64 exact domain, 128-node forests, zero-based prefix '
+        'depth at most 32, at most 128 owners/members, canonical i128 dyadics and shared 10M native '
+        'work/60s process limits. Existing 16 MiB original body/request and 64 MiB envelope/view '
+        'limits remain; source host preparation keeps its separate existing budgets. No capacity is raised.'
+    ),
+    'failure': (
+        'Reject wrong full trees/ports/member order/nominal identity/source/dependencies, false code/body '
+        'or Gram/phase equations, observation under pure labels, unsupported source helper-only rows, '
+        'stale graph/request/view, wrong mode/scope/edition/version and exceeded limits. Missing, failed '
+        'or timed-out native checker has no fallback or imported-success route.'
+    ),
+    'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
+}
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -328,7 +385,12 @@ def test_names(path):
     if path.suffix == '.py':
         return {n.name for n in ast.walk(ast.parse(path.read_text()))
                 if isinstance(n, ast.FunctionDef) and n.name.startswith('test_')}
-    return rust_references(path.read_text())[1]
+    # Native tests may put a multi-line cfg_attr between #[test] and fn.
+    # Mask comments/literals first, so prose cannot invent a test attribute.
+    code = rust_code(path.read_text())
+    return set(re.findall(
+        r'#\[\s*test\s*\]\s*(?:#\[[^]]*\]\s*)*'
+        r'(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+([A-Za-z_]\w*)\s*\(', code))
 
 
 def check(root=ROOT, data=None):
@@ -417,6 +479,8 @@ def check(root=ROOT, data=None):
                 raise ValueError('unreviewed engineering-openqasm boundary contract')
             if boundary['id'] == 'engineering-pure-tensor' and boundary != ENGINEERING_PURE_TENSOR_BOUNDARY:
                 raise ValueError('unreviewed engineering-pure-tensor boundary contract')
+            if boundary['id'] == 'finite-carrier' and boundary != FINITE_CARRIER_BOUNDARY:
+                raise ValueError('unreviewed finite-carrier boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
             raise ValueError('duplicate boundary')
         if ('src/interchange/engineering_instrument.rs' in paths and
@@ -428,6 +492,9 @@ def check(root=ROOT, data=None):
         if ('src/interchange/engineering_pure_tensor.rs' in paths and
                 'engineering-pure-tensor' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-pure-tensor public boundary')
+        if ('src/interchange/carrier.rs' in paths and
+                'finite-carrier' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing finite-carrier public boundary')
         for capacity in data['capacities']:
             if set(capacity) != {'id','scope','value','source','test','replacement'} or capacity['source'] not in paths:
                 raise ValueError('incomplete capacity scope')

@@ -49,6 +49,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | `CheckedContract::check`, its checked compositions, and `check_computed` | QIRF root and `qleisli.native-contract` encoded equation | `Kernel::check_encoded` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.checkContract` | `Protocol.NativeContract.check_acceptance` binds the original bytes, decoded request and actual checking states. `Qleisli.NativeContract.check_encoded_sound` / `encoded_meaning` connect success to original-root `BodyMeaning`, the exact Basis interface and requested encoded equation. `Wrapper.circuitMatrix_entries` proves the actual wrapper's coefficient equality with the original matrix; `encoded_reference` extends the equation to any reference amplitude function. Source/compiler, compiled I/O, runtime/export, clean-release and quantitative resource claims remain separate; these theorems are not ledger admissions. |
 | `finite_leaf::{check_unitary,check_serialized_unitary}` | QIRF root, signature, ordered input/output ports and exact matrix request | `Kernel::check_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Validity.checkRoot` and `Qirf.check` | `Qleisli.NativeContract.check_sound` / `leaf_meaning` compose native byte acceptance to original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix, signature and ordered ports. The output port is tied to an actual verification. `leaf_reference_laws` extends both whole-space inverse laws to every finite reference. Source/runtime and broader effect/clean-release claims remain separate. |
 | `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | `pure_leaf_meaning` binds fresh graph/root checking to the original body and exact Gram identity. `pure_leaf_reference` preserves inner products for arbitrary joint reference amplitudes. This grants neither inverse nor control access, source/runtime correspondence, target realization or quantitative resource evidence. |
+| `Kernel::check_carrier`; explicit `Instantiation::check_carrier` source adapter | Original QIRF/dependencies, both ordered nominal owner forests, original declaration sources and an independent exact logical matrix | `--carrier-pure-check` → `ExecutionView.CheckedCarrier.run` → `Protocol.Carrier.check` → original source checks and `Qirf.Carrier.check` | The binding retains the original packet and exact QDV1 comparison; the core postcondition binds actual body/code and Gram equations. The source adapter adds retained-step replay, without ordinary runtime, inverse/control access or an AST-preservation theorem. |
 | `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | Literal canonical target bytes, original ideal/dependencies, exact Unit/Bit signatures, closed epsilon/majorants and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → independent byte decode and unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is engineering-only, without an actual `AcceptedProgram`, source/export-preservation, pure/control, cleanup, hardware, resources or constitutional PR/RS claim. |
 | `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition remains open. |
 | `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
@@ -59,7 +60,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
 | `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
 
-`lean-kernel/Main.lean` dispatches thirteen explicitly versioned native modes,
+`lean-kernel/Main.lean` dispatches fourteen explicitly versioned native modes,
 including four mechanically separate engineering-only comparisons.
 `lean-kernel/Cli/NativeContext.lean` invokes the pure
 `Protocol.NativeContext.run` dispatcher and its single reply projection. It
@@ -85,6 +86,41 @@ the original root's `BodyMeaning`, complete Basis interface and checked encoded
 equation through `EncodedMeaning`, `encoded_meaning` and `check_encoded_sound`.
 Those bounded original-root results do not establish source, deployed-binary
 or host execution correspondence.
+
+### Finite nominal carrier requests
+
+The internal `--carrier-pure-check` mode accepts a strict version-1
+`qleisli.carrier-request` with profile `finite-carrier-pure-v1`. Its fields
+are `format`, `version`, `profile`, `attached`, `required` and `logical`.
+Both interfaces retain complete ordered owner forests and public effects.
+Nominal atoms retain original module/declaration/source identities and member
+order, independently of logical cardinality and physical width. Singleton
+enums and empty records remain distinct from Unit and Bits<0>.
+
+`Protocol.Carrier.check` reconstructs the original declarations, import paths
+and existing field Nat helpers before checking the actual graph and root.
+The core freshly checks both canonical code Gram equations, the logical map's
+Gram equation and `physical * E_in = E_out * logical`. Logical dimensions
+govern the Unitary label; a larger physical unitary does not justify a logical
+Unitary claim. Observation, reset and discard cannot be hidden as pure.
+The existing source, matrix and work limits remain in force.
+
+`CheckedCarrier.run_binding` binds the execution-only QLV3 packet and actual
+QDV1 comparison of the graph, both interfaces and logical matrix. Its
+`Binding.root_safe` follows the actual checked root to the independent
+ownership and classical-scope properties. Extra source rows require exact
+nominal origins after source checking; ordinary checking retains its previous
+source-use rule. Uncovered helper/import-only rows refuse.
+
+The explicit source adapter uses the common judgment, selected Builder and Raw
+emitter. It requires an independent logical request and replays retained source
+steps against the checked body. Its sealed `CheckedSourceCarrier` retains that
+source graph and always reports `source_meaning_verified() == false`.
+Descriptors and source preparation grant no acceptance. Neither this result nor
+the private native carrier holder converts to an ordinary execution handle or
+grants inverse/control access. Ordinary nominal runtime, match/qmatch and
+original AST-to-step preservation remain unfinished. These component results
+admit no new guarantee and do not widen the two existing ledger scopes.
 
 ### Rectangular pure-leaf requests
 
@@ -512,15 +548,16 @@ runtime correspondence duties remain pending.
 
 `tests/fixtures/verification_v029/coverage.json` separates current implementation,
 published 0.2.9 validation, unpublished development and open proof obligations.
-It retains 45 coverage groups, 24 boundary entry lists, current constructor
+It retains 46 coverage groups, 25 boundary entry lists, current constructor
 variants and the 19 RawOp variants. The original groups and boundary lists are
-preserved; engineering-only comparisons have distinct classifications.
+preserved; engineering-only comparisons and the check-only nominal carrier
+component have distinct classifications. There are 30 classified paths.
 Mixed boundary rows refer to individually
 classified paths; a public surface containing a constructor or `doc` is not
 counted wholesale as native acceptance.
 
 `scripts/check_production_coverage.py` checks the reviewed public surface,
-complete path classifications, all thirteen native modes and dispatch targets,
+complete path classifications, all fourteen native modes and dispatch targets,
 named source/declaration bindings and existing regression functions. It fails
 on an omitted route, a newly exposed boundary, changed dispatch, missing binding
 or a proposal misclassified as acceptance. The native-contract proof scope also

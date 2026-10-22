@@ -92,6 +92,9 @@ development milestones from the scope of their evidence.
   Add a separate proof-metadata CI producer with fixed command/output checks,
   full stream retention and a reviewable four-file patch after successful fresh
   proofs. It restores its checkout and grants no ordinary CI or release credit.
+  Register the finite-carrier proposal, native component, source adapter and
+  checked-view routes in the verification inventory, retaining their explicit
+  source/runtime proof gaps and constructor/capacity coverage.
 
 
 - Add the small ordinary derived `std::prelude`, transparent public reexports,

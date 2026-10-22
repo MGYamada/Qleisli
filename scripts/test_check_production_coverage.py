@@ -17,13 +17,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 45)
-        self.assertEqual(result['public_boundaries'], 24)
+        self.assertEqual(result['groups'], 46)
+        self.assertEqual(result['public_boundaries'], 25)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 26)
-        self.assertEqual(result['native_modes'], 13)
+        self.assertEqual(result['production_paths'], 30)
+        self.assertEqual(result['native_modes'], 14)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -62,7 +62,7 @@ class ProductionCoverage(unittest.TestCase):
         paths = {row['id']: row for row in self.data['paths']}
         for name in ('raw-proposal', 'finite-proposal', 'source-documentation',
                      'sized-proposal', 'host-execution', 'hierarchy-execution',
-                     'foreign-export', 'checked-views'):
+                     'foreign-export', 'checked-views', 'carrier-proposal', 'carrier-views'):
             data = copy.deepcopy(self.data)
             row = next(row for row in data['paths'] if row['id'] == name)
             self.assertEqual(paths[name]['native_modes'], [])
@@ -75,6 +75,41 @@ class ProductionCoverage(unittest.TestCase):
         row['native_modes'] = ['--qirf-native']
         with self.assertRaisesRegex(ValueError, 'classification or binding'):
             coverage.check(coverage.ROOT, self.data, self.inventory)
+
+    def test_carrier_gate_requires_its_own_execution_mode_and_sealed_scope(self):
+        for name in ('carrier-check', 'source-carrier-check'):
+            for field, value in (
+                ('native_modes', ['--qirf-native']),
+                ('classification', 'untrusted-proposal'),
+                ('boundaries', ['finite-leaf']),
+            ):
+                data = copy.deepcopy(self.data)
+                next(row for row in data['paths'] if row['id'] == name)[field] = value
+                with self.subTest(path=name, field=field), self.assertRaisesRegex(ValueError, 'classification or binding'):
+                    coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_carrier_proof_scope_cannot_claim_source_or_guarantee_completion(self):
+        for name in ('carrier-check', 'source-carrier-check'):
+            for field, value in (
+                ('proof_scope', 'Equal metadata proves the full original function AST'),
+                ('gaps', 'All runtime, inverse/control and admitted constitutional guarantees are complete'),
+            ):
+                data = copy.deepcopy(self.data)
+                next(row for row in data['paths'] if row['id'] == name)[field] = value
+                with self.subTest(path=name, field=field), self.assertRaisesRegex(ValueError, 'finite-carrier proof scope'):
+                    coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_carrier_requires_original_source_body_view_and_false_source_claim(self):
+        for path, marker in (
+            ('lean-kernel/Protocol/Carrier.lean', 'checkSources artifact.sources request'),
+            ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'guard (actual == specified) .equation'),
+            ('lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean', '.inspection | .caller => throw .packet'),
+            ('lean-kernel/Protocol/NativeContext/Bindings.lean', 'theorem run_carrier_binding '),
+            ('src/frontend/specialize/raw/carrier.rs', 'preservation::validate_subject_with_meanings('),
+            ('src/frontend/specialize/raw/carrier.rs', 'pub fn source_meaning_verified(&self) -> bool {\n        false'),
+        ):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed reviewed binding')
 
     def test_contract_bridge_does_not_widen_encoded_or_admitted_guarantees(self):
         for field, claim in (
@@ -301,7 +336,7 @@ class ProductionCoverage(unittest.TestCase):
             else:
                 checker(coverage.ROOT)
 
-    def test_current_native_dispatch_uses_all_thirteen_canonical_modes(self):
+    def test_current_native_dispatch_uses_all_fourteen_canonical_modes(self):
         self.assertEqual(coverage.check_native_dispatch(coverage.ROOT),
                          {mode for row in self.data['paths'] for mode in row['native_modes']})
 
