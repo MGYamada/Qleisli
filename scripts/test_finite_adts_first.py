@@ -23,11 +23,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Native history: "tests/fixtures/authoring_sessions/finite-adts-v030/native-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/native-index.json".
 # Native checks: "tests/fixtures/authoring_sessions/finite-adts-v030/native-validation.json".
+# Immutable extraction: "tests/fixtures/authoring_sessions/finite-adts-v030/native-v2-extract-stdout.json.gz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/native-v2-extract-recovery.json".
+import gzip
 import hashlib
 import io
 import json
 from pathlib import Path, PurePosixPath
 import tarfile
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,6 +68,56 @@ def read_history(index_name, archive_name, index_hash, stored_size, archive_hash
     if set(data) != set(index['records']) or total != expanded:
         raise AssertionError('first history is incomplete')
     return data
+
+
+NATIVE_EXTRACT_GZIP = 'native-v2-extract-stdout.json.gz'
+NATIVE_EXTRACT_RECOVERY = 'native-v2-extract-recovery.json'
+NATIVE_EXTRACT_RECOVERY_SHA256 = '1de948c6192e148ccc19020fe9dea5040713e8e7ebc32acae7c24bd39a703e08'
+
+
+def historical_native_stdout(reference_raw, provenance_raw, packed):
+    """Resolve one fixed archived reference from inert local bytes, without Git."""
+    if (len(provenance_raw) > 4096
+            or hashlib.sha256(provenance_raw).hexdigest() != NATIVE_EXTRACT_RECOVERY_SHA256):
+        raise AssertionError('historical extraction recovery metadata changed')
+    provenance = json.loads(provenance_raw)
+    original = provenance['historical_reference']
+    if ((len(reference_raw), hashlib.sha256(reference_raw).hexdigest())
+            != (original['bytes'], original['sha256'])):
+        raise AssertionError('historical extraction reference changed')
+    reference = json.loads(reference_raw)
+    retained, stdout = provenance['retained_gzip'], provenance['original_stdout']
+    if (reference['canonical_gzip'] != provenance['recovery']['git_path']
+            or reference['byte_identical_to_decompressed_canonical'] is not True
+            or reference['gzip_sha256'] != retained['sha256']
+            or (reference['observed_stdout_bytes'], reference['observed_stdout_sha256'])
+            != (stdout['bytes'], stdout['sha256'])
+            or retained['path'] != 'tests/fixtures/authoring_sessions/finite-adts-v030/' + NATIVE_EXTRACT_GZIP):
+        raise AssertionError('historical extraction association changed')
+    if ((len(packed), hashlib.sha256(packed).hexdigest())
+            != (retained['bytes'], retained['sha256'])):
+        raise AssertionError('historical extraction gzip changed')
+    blob = hashlib.sha1(b'blob ' + str(len(packed)).encode('ascii') + b'\0' + packed).hexdigest()
+    if blob != provenance['recovery']['git_blob']:
+        raise AssertionError('historical extraction recovery blob changed')
+    # Reading one byte beyond the fixed original length bounds decompression
+    # and rejects extra gzip members; no archived source or command is run.
+    with gzip.GzipFile(fileobj=io.BytesIO(packed)) as stream:
+        actual = stream.read(stdout['bytes'] + 1)
+    if ((len(actual), hashlib.sha256(actual).hexdigest())
+            != (stdout['bytes'], stdout['sha256'])):
+        raise AssertionError('historical extraction stdout changed')
+    return actual
+
+
+def read_historical_native_stdout(fixtures, reference_raw):
+    contents = []
+    for name, limit in [(NATIVE_EXTRACT_RECOVERY, 4096), (NATIVE_EXTRACT_GZIP, 251833)]:
+        path = fixtures / name
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > limit:
+            raise AssertionError('missing or oversized local historical extraction fixture')
+        contents.append(path.read_bytes())
+    return historical_native_stdout(reference_raw, *contents)
 
 
 class FirstFiniteADTs(unittest.TestCase):
@@ -308,15 +362,52 @@ class FirstCarrierNative(unittest.TestCase):
         self.assertEqual(len(lean['output_comparisons']), 6)
         self.assertTrue(all(row['identical_recorded_output'] for row in lean['output_comparisons']))
 
-    def test_exact_duplicated_extraction_uses_its_existing_canonical_fixture(self):
-        import gzip
-        reference = json.loads(self.data['native-v2-lean-validation/extract-stdout-reference.json'])
-        packed = (ROOT / reference['canonical_gzip']).read_bytes()
-        self.assertEqual(hashlib.sha256(packed).hexdigest(), reference['gzip_sha256'])
-        actual = gzip.decompress(packed)
+    def test_original_extraction_uses_immutable_recovery_not_live_current_evidence(self):
+        reference_raw = self.data['native-v2-lean-validation/extract-stdout-reference.json']
+        reference = json.loads(reference_raw)
+        actual = read_historical_native_stdout(FIXTURES, reference_raw)
         self.assertEqual(len(actual), reference['observed_stdout_bytes'])
         self.assertEqual(hashlib.sha256(actual).hexdigest(), reference['observed_stdout_sha256'])
         self.assertTrue(reference['byte_identical_to_decompressed_canonical'])
+
+    def test_historical_extraction_reader_is_portable_without_git_or_live_evidence(self):
+        reference_raw = self.data['native-v2-lean-validation/extract-stdout-reference.json']
+        reference = json.loads(reference_raw)
+        with tempfile.TemporaryDirectory() as temporary:
+            fixtures = Path(temporary)
+            for name in [NATIVE_EXTRACT_RECOVERY, NATIVE_EXTRACT_GZIP]:
+                (fixtures / name).write_bytes((FIXTURES / name).read_bytes())
+            self.assertFalse((fixtures / '.git').exists())
+            self.assertFalse((fixtures / reference['canonical_gzip']).exists())
+            actual = read_historical_native_stdout(fixtures, reference_raw)
+            self.assertEqual(hashlib.sha256(actual).hexdigest(), reference['observed_stdout_sha256'])
+
+    def test_historical_extraction_refuses_changed_compressed_blob(self):
+        reference_raw = self.data['native-v2-lean-validation/extract-stdout-reference.json']
+        provenance = (FIXTURES / NATIVE_EXTRACT_RECOVERY).read_bytes()
+        packed = (FIXTURES / NATIVE_EXTRACT_GZIP).read_bytes()
+        changed = packed[:-1] + bytes([packed[-1] ^ 1])
+        with self.assertRaisesRegex(AssertionError, 'historical extraction gzip changed'):
+            historical_native_stdout(reference_raw, provenance, changed)
+
+    def test_historical_extraction_refuses_changed_original_reference(self):
+        reference = json.loads(self.data['native-v2-lean-validation/extract-stdout-reference.json'])
+        reference['canonical_gzip'] = '../../unrelated-current-evidence.json.gz'
+        changed = json.dumps(reference).encode('utf-8')
+        with self.assertRaisesRegex(AssertionError, 'historical extraction reference changed'):
+            historical_native_stdout(changed, (FIXTURES / NATIVE_EXTRACT_RECOVERY).read_bytes(),
+                                     (FIXTURES / NATIVE_EXTRACT_GZIP).read_bytes())
+
+    def test_historical_extraction_refuses_changed_recovery_provenance(self):
+        reference = self.data['native-v2-lean-validation/extract-stdout-reference.json']
+        original = (FIXTURES / NATIVE_EXTRACT_RECOVERY).read_bytes()
+        for field in ['git_commit', 'git_blob']:
+            with self.subTest(field=field):
+                provenance = json.loads(original)
+                provenance['recovery'][field] = '0' * 40
+                changed = json.dumps(provenance).encode('utf-8')
+                with self.assertRaisesRegex(AssertionError, 'historical extraction recovery metadata changed'):
+                    historical_native_stdout(reference, changed, (FIXTURES / NATIVE_EXTRACT_GZIP).read_bytes())
 
 
 # Type-import history: "tests/fixtures/authoring_sessions/finite-adts-v030/aliases-first.tar.xz"

@@ -94,6 +94,8 @@ development milestones from the scope of their evidence.
   proofs. It restores its checkout and grants no ordinary CI or release credit.
   Refresh the mutable current extraction through the existing protected Raw
   projection, keeping historical meanings and fixed review outputs unchanged.
+  Retain the earlier extraction as immutable history with its original Git
+  provenance, so passive history checks remain valid after current updates.
   Update punctuation and selected-CLI regressions for field projection while
   retaining method-call refusal, access guidance and exact diagnostic spans.
   Register the finite-carrier proposal, native component, source adapter and

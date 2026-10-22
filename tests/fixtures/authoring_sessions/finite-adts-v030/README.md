@@ -447,6 +447,21 @@ execution, match/qmatch, source-function preservation, hosted CI/review and
 the broader constitutional obligations remain open. No #39/#63 expansion,
 new guarantee, publication or release follows from this history.
 
+The native history's original extraction reference names the then-current
+constitutional expression fixture. That live fixture changes after fresh proof
+replay. Its archived reference, expected hashes and archive/index stay unchanged.
+The [immutable historical gzip](native-v2-extract-stdout.json.gz) and
+[recovery provenance](native-v2-extract-recovery.json) retain the exact original
+251,833 compressed bytes and 8,186,631 stdout bytes, recovered from native
+checkpoint `21f094b8fe73de15f54035701f57a376ca4d176c`, blob
+`6bf06707cfe5b55994418e50655c92a8e2207bdb`. The passive reader checks the fixed
+original-reference association, provenance, Git blob identity and both byte
+hashes from local data, with bounded decompression. It requires neither Git
+history nor the live current-evidence file and executes no saved source or
+command. The first 50-test consumer failure remains outside the repository;
+it is not relabeled as a proof failure or successful validation. Recovery is
+historical byte preservation, not a new proof replay or guarantee admission.
+
 The fresh local passive checks pass 50 finite-ADT, 16 generic authoring and
 25 fixture-reference tests. The first consumer-install command stopped after
 copying the three files; its broad placeholder assertion was corrected. A

@@ -1,0 +1,29 @@
+{
+  "format": "qleisli.historical-extraction-recovery",
+  "version": 1,
+  "historical_reference": {
+    "archive": "tests/fixtures/authoring_sessions/finite-adts-v030/native-first.tar.xz",
+    "archive_sha256": "8598d9e9caf991c6a1464afeae13cb4551ad9607c0ac862ed5694a0bae33a18f",
+    "index": "tests/fixtures/authoring_sessions/finite-adts-v030/native-index.json",
+    "index_sha256": "9bb7854efc3166cf4cfcb1e4f847dbc6eab7417fdd3608b150a9ce3e9ef12ddb",
+    "record": "native-v2-lean-validation/extract-stdout-reference.json",
+    "bytes": 386,
+    "sha256": "2ab111166f665aadf6d1c02aa0788df0358a22ae65e59c7deca120d0aadf1ed5"
+  },
+  "recovery": {
+    "git_commit": "21f094b8fe73de15f54035701f57a376ca4d176c",
+    "git_path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.gz",
+    "git_blob": "6bf06707cfe5b55994418e50655c92a8e2207bdb",
+    "role": "Recovery provenance from the commit that introduced the native history. This is not a proof invocation timestamp, source/binary attestation or a new validation of the archived stdout."
+  },
+  "retained_gzip": {
+    "path": "tests/fixtures/authoring_sessions/finite-adts-v030/native-v2-extract-stdout.json.gz",
+    "bytes": 251833,
+    "sha256": "791cefeb8cd02427079da67d2fbe2f5d2a528d2b1c747867b344dfef32307c05"
+  },
+  "original_stdout": {
+    "bytes": 8186631,
+    "sha256": "79a3c723c2c779054502731555b8d3c05451d8042374102f9fc31e9c53d9583b"
+  },
+  "scope": "The archived reference, archive/index and expected hashes are unchanged. These exact historical gzip bytes were recovered once from Git; ordinary passive readers use only this fixed local copy and metadata, without Git, extraction or execution. The separate current-expressions fixture remains mutable current proof evidence and is not this historical input. No issue completion, semantic acceptance, guarantee admission or release follows."
+}
