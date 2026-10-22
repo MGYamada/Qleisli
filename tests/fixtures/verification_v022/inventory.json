@@ -4418,7 +4418,7 @@
     },
     {
       "path": "src/frontend/check/normalize.rs",
-      "sha256": "edeb26e79ace3296505dcc4844d49de719c0e45f196f03fa62261c25331a1368",
+      "sha256": "06e4541ee64f7f40c9f613f2557045ae80c96cc8b683218db1c0f4eff8ee79a1",
       "surface": {
         "declarations": [],
         "functions": [],
