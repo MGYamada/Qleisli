@@ -2514,7 +2514,7 @@
   "sources": [
     {
       "path": "lean-kernel/Audit.lean",
-      "sha256": "15aa91d53d840dd7da6e43877c4846ac401b6792f6cc0dc1905fe468958ef59c",
+      "sha256": "a662bc3fcb0dea537696f457b42da30a22871f039ea61cf05407fe95cb1b2a9a",
       "group": "hierarchy",
       "surface": null
     },
@@ -2838,7 +2838,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "d1af876aef0b925bd35b99663c95b9f4e5afae37f9222db19496c791b804ffca",
+      "sha256": "085d1b89056a3638435c14db93e30c8394863696c177c3912941397860921126",
       "group": "hierarchy",
       "surface": null
     },
@@ -3486,13 +3486,13 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "cb0af5e89ddb3169fb1496d4fabe46f7ee7ee1e6c988716771e92683fd80fe03",
+      "sha256": "b93e934d6e8cfc1046e5f0bb0ca614e956440a29693a100d4e78fe3315b4ab48",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "2d3011461d2e12dbf3c9a7464ae86fbc415c7824d13b52530d329b5d8253c5cd",
+      "sha256": "33415c9589a01a0f22f238528701266a01c4c397c13776c8e437dbd2d05db9ad",
       "group": "raw-core",
       "surface": null
     },
@@ -7325,7 +7325,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/SourceTypes/Declarations.lean",
-      "sha256": "fb5c4ac609fcd3aa08fbd343d9556b915b6a704cfe16cae87e08b2f7a1a265ee",
+      "sha256": "9217b00a4d795ca2779552ace23247d88c89bccd1c5be0e6dd86d4ac58128dc5",
       "group": "finite-carrier",
       "surface": null
     },
@@ -7337,7 +7337,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/SourceTypes/Lexer.lean",
-      "sha256": "b7f750b747d45589b02309a9f1323f416844e742ce5f5cdbf1a47bfbecb3c24e",
+      "sha256": "9c86197359237f470cf570a2e87e2e2765926495cfb22ea121db85ed8bf37499",
       "group": "finite-carrier",
       "surface": null
     },
@@ -7614,6 +7614,66 @@
       "path": "lean-kernel/QleisliKernel/Semantics/OrdinaryValue.lean",
       "sha256": "d814c7dbc54815d0bb7badf6ba9712e01711b66a566af8fdc4ed913afdc6001d",
       "group": "finite-carrier",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/SourceTypes/LocatedFacts.lean",
+      "sha256": "b021d49879d48d9cd5d0e5a3ca93f3f64f31e2a8a2052961621b1d96cb5acd03",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/SourceTypes/Members.lean",
+      "sha256": "413f0a6bf84b24615bd1b839b6c1246792b2dd16de6e5c37ec1108fa98a487ac",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers.lean",
+      "sha256": "27167ea38015b2d13ab51fddf6a72f87907a23155f7d9e7d4244f09e2dad186e",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/BoundaryProbes.lean",
+      "sha256": "37d027b000cdecbf04b310f28a6fc6b681e2bcc1312f8adb2d402366e61f6463",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/Legacy/Declarations.lean",
+      "sha256": "1d713efd4024a904ad6892ed878a3c0a90fa5027fe603759b64afd9a4f34ed47",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/Legacy/Imports.lean",
+      "sha256": "041e02b1c702e3fe362afded5d4310c7aa65f090e35d0caa4c84400927b786d6",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/Legacy/Lexer.lean",
+      "sha256": "0b317053a3ce4145bade45a4ac8b221d9db6f942b49f79880a019c2248c20710",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/LegacyComparison.lean",
+      "sha256": "5f30943c57de9d93186ee84240ceacd545fb596626a9350d016b66e9d0635989",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/SmallExamples.lean",
+      "sha256": "62364c1daffb58c1f1f22d1f795a0c7c9367e1b217ebe5423f4f427de3dae452",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean",
+      "sha256": "8ae0e4260bcd53466ec7f36fb22f0d968b806a3ab9dd611f33bed5736ae230de",
       "surface": null
     }
   ],

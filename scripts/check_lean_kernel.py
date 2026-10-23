@@ -121,6 +121,11 @@ def transport_module(name: str) -> bool:
     return name in {"Main", "Protocol"} or name.startswith(("Protocol.", "Cli."))
 
 
+def test_module(name: str) -> bool:
+    """Separate audited reduction modules, never production dependencies."""
+    return name == "QleisliKernel.Tests" or name.startswith("QleisliKernel.Tests.")
+
+
 def check_kernel(root: Path) -> tuple[list[str], int]:
     package = root / "lean-kernel"
     errors = []
@@ -141,9 +146,15 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
         for error in source_errors(path.read_text(encoding="utf-8")):
             errors.append(f"{path.relative_to(root)}: {error}")
 
-    visited = set()
+    # Check every production edge, including disconnected modules. Separate
+    # test reachability must not make a production helper appear audited.
+    test_sources = {name for name in sources if test_module(name)}
+    for name in sorted(sources.keys() - test_sources):
+        for dependency in lean_imports(sources[name].read_text(encoding="utf-8")):
+            if test_module(dependency):
+                errors.append(f"production module imports test-only module: {name} -> {dependency}")
 
-    def visit(name, transport, stack):
+    def visit(name, transport, stack, visited, testing=False):
         if name in stack:
             errors.append(f"cyclic kernel import: {name}")
             return
@@ -151,6 +162,8 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
         if key in visited:
             return
         visited.add(key)
+        if test_module(name) and not testing:
+            return  # The forbidden production edge was reported above.
         if name not in sources:
             if name == "Init" or name.startswith("Init."):
                 return
@@ -169,21 +182,38 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
                     dependency == "Std" or dependency.startswith("Std.") or
                     dependency.startswith("QleisliKernel.Semantics.")):
                 errors.append(f"reference semantics imports checker/transport: {name} -> {dependency}")
-            visit(dependency, transport, stack | {name})
+            visit(dependency, transport, stack | {name}, visited, testing)
 
+    visited = set()
     for name in ["QleisliKernel", "Main"]:
         if name not in sources:
             errors.append(f"missing kernel root: {name}")
         else:
-            visit(name, name == "Main", set())
+            visit(name, name == "Main", set(), visited)
     reachable = {name for name, _ in visited}
-    for name in sorted(sources.keys() - reachable):
+    for name in sorted(sources.keys() - test_sources - reachable):
         errors.append(f"kernel module absent from root import/audit: {name}")
     audit = package / "Audit.lean"
+    audit_imports = set()
     if not audit.is_file():
         errors.append("missing compiled kernel audit")
-    elif not {"QleisliKernel", "Main"} <= set(lean_imports(audit.read_text(encoding="utf-8"))):
-        errors.append("compiled audit must import both QleisliKernel and Main")
+    else:
+        audit_imports = set(lean_imports(audit.read_text(encoding="utf-8")))
+        if not {"QleisliKernel", "Main"} <= audit_imports:
+            errors.append("compiled audit must import both QleisliKernel and Main")
+    tests = package / "Tests.lean"
+    test_roots = {name for name in lean_imports(tests.read_text(encoding="utf-8"))
+                  if test_module(name)} if tests.is_file() else set()
+    if test_roots != {name for name in audit_imports if test_module(name)}:
+        errors.append("Tests.lean and Audit.lean must import the same test-only roots")
+    if test_sources and not test_roots:
+        errors.append("test-only modules require explicit roots in Tests.lean and Audit.lean")
+    test_visited = set()
+    for name in sorted(test_roots):
+        visit(name, False, set(), test_visited, testing=True)
+    test_reachable = {name for name, _ in test_visited}
+    for name in sorted(test_sources - test_reachable):
+        errors.append(f"test-only module absent from test/audit roots: {name}")
     try:
         manifest = tomllib.loads((package / "lakefile.toml").read_text(encoding="utf-8"))
         if manifest.get("require"):
@@ -215,7 +245,7 @@ def main() -> int:
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1
-    print(f"Checked {count} executable kernel/transport source modules; no external Lake dependencies.")
+    print(f"Checked {count} kernel/transport/test source modules; no external Lake dependencies.")
     return 0
 
 

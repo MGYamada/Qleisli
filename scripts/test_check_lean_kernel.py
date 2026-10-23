@@ -11,7 +11,8 @@ import sys
 import tempfile
 import unittest
 
-from check_lean_kernel import ROOT, TOOLCHAIN, check_kernel, lean_code, source_errors
+from check_docs import lean_imports
+from check_lean_kernel import ROOT, TOOLCHAIN, check_kernel, lean_code, source_errors, test_module
 
 
 COMPILED = "--compiled" in sys.argv
@@ -40,6 +41,109 @@ class RuntimeSourcePolicy(unittest.TestCase):
 
     def errors(self):
         return check_kernel(self.root)[0]
+
+    def separate_tests(self):
+        self.write("Tests.lean", "import QleisliKernel\nimport QleisliKernel.Tests.SourceMembers\n")
+        self.write("Audit.lean", "import QleisliKernel\nimport Main\n"
+                   "import QleisliKernel.Tests.SourceMembers\n")
+        self.write("QleisliKernel/Tests/SourceMembers.lean",
+                   "import QleisliKernel.Tests.SourceMembers.Examples\n")
+        self.write("QleisliKernel/Tests/SourceMembers/Examples.lean",
+                   "import QleisliKernel.Check\nnamespace Other\n"
+                   "example : true = true := by decide +kernel\nend Other\n")
+
+    def test_separate_test_roots_are_generic_and_audited_without_runtime_imports(self):
+        self.separate_tests()
+        self.assertEqual(check_kernel(self.root), ([], 6))
+        self.write("QleisliKernel/Tests/Other.lean", "import Std\nexample : True := True.intro\n")
+        for harness in ["Tests.lean", "Audit.lean"]:
+            original = (self.root / "lean-kernel" / harness).read_text()
+            self.write(harness, original + "import QleisliKernel.Tests.Other\n")
+        self.assertEqual(check_kernel(self.root), ([], 7))
+
+    def test_every_production_module_rejects_test_dependencies(self):
+        self.separate_tests()
+        for module in ["QleisliKernel/Check.lean", "Protocol.lean", "Main.lean",
+                       "QleisliKernel/Disconnected.lean"]:
+            path = self.root / "lean-kernel" / module
+            original = path.read_text() if path.exists() else None
+            for dependency in ["QleisliKernel.Tests.SourceMembers",
+                               "QleisliKernel.Tests.SourceMembers.Examples"]:
+                with self.subTest(module=module, dependency=dependency):
+                    self.write(module, f"import {dependency}\n" + (original or ""))
+                    self.assertTrue(any("production module imports test-only module" in error
+                                        for error in self.errors()))
+            if original is None:
+                path.unlink()
+            else:
+                self.write(module, original)
+        self.assertEqual(self.errors(), [])
+
+    def test_test_entrypoints_must_match_and_missing_roots_fail(self):
+        self.separate_tests()
+        for harness in ["Tests.lean", "Audit.lean"]:
+            path = self.root / "lean-kernel" / harness
+            original = path.read_text()
+            with self.subTest(harness=harness):
+                self.write(harness, original.replace("import QleisliKernel.Tests", "-- import QleisliKernel.Tests"))
+                self.assertTrue(any("must import the same test-only roots" in error for error in self.errors()))
+                path.unlink()
+                self.assertTrue(self.errors())
+                self.write(harness, original)
+        for harness in ["Tests.lean", "Audit.lean"]:
+            self.write(harness, (self.root / "lean-kernel" / harness).read_text() +
+                       "import QleisliKernel.Tests.Missing\n")
+        self.assertTrue(any("missing or forbidden kernel import: QleisliKernel.Tests.Missing" in error
+                            for error in self.errors()))
+
+    def test_test_reachability_cannot_hide_or_rescue_modules(self):
+        self.separate_tests()
+        self.write("QleisliKernel/Tests/Hidden.lean", "def hidden := true\n")
+        self.assertTrue(any("test-only module absent from test/audit roots: QleisliKernel.Tests.Hidden" in error
+                            for error in self.errors()))
+        self.write("QleisliKernel/Tests/SourceMembers.lean",
+                   "import QleisliKernel.Tests.SourceMembers.Examples\nimport QleisliKernel.Tests.Hidden\n")
+        self.assertEqual(self.errors(), [])
+        self.write("QleisliKernel/OnlyFromTests.lean", "def hidden := true\n")
+        self.write("QleisliKernel/Tests/Hidden.lean", "import QleisliKernel.OnlyFromTests\n")
+        self.assertTrue(any("kernel module absent from root import/audit: QleisliKernel.OnlyFromTests" in error
+                            for error in self.errors()))
+
+    def test_test_modules_require_explicit_entrypoints_in_both_harnesses(self):
+        self.separate_tests()
+        self.write("Tests.lean", "import QleisliKernel\n")
+        self.write("Audit.lean", "import QleisliKernel\nimport Main\n")
+        self.assertTrue(any("test-only modules require explicit roots" in error for error in self.errors()))
+        self.assertTrue(any("test-only module absent from test/audit roots" in error for error in self.errors()))
+
+    def test_test_closure_keeps_pure_import_restrictions_and_cycle_detection(self):
+        self.separate_tests()
+        for dependency in ["Main", "Protocol", "Lean", "Lean.Data.Json", "Mathlib",
+                           "Batteries", "Audit", "Tests"]:
+            with self.subTest(dependency=dependency):
+                self.write("QleisliKernel/Tests/SourceMembers/Examples.lean", f"import {dependency}\n")
+                self.assertTrue(any("pure kernel imports transport" in error or
+                                    "missing or forbidden kernel import" in error for error in self.errors()))
+        self.write("QleisliKernel/Tests/SourceMembers/Examples.lean",
+                   "import QleisliKernel.Tests.SourceMembers\n")
+        self.assertTrue(any("cyclic kernel import" in error for error in self.errors()))
+
+    def test_test_sources_keep_all_executable_source_restrictions(self):
+        self.separate_tests()
+        for module in ["QleisliKernel/Tests/SourceMembers.lean",
+                       "QleisliKernel/Tests/SourceMembers/Examples.lean"]:
+            original = (self.root / "lean-kernel" / module).read_text()
+            for body in ["private unsafe def f : Nat := 0\n",
+                         "private partial def f (n : Nat) : Nat := f n\n",
+                         "example : False := by sorry\n", "#eval 1979563\n",
+                         "example : True := by decide +native\n",
+                         '@[extern "native_f"] def f : Nat := 0\n']:
+                with self.subTest(module=module, body=body):
+                    self.write(module, original + body)
+                    self.assertTrue(any(module in error and ("forbidden" in error or "native proof" in error)
+                                        for error in self.errors()))
+            self.write(module, original)
+        self.assertEqual(self.errors(), [])
 
     def test_separate_transport_imports_are_allowed(self):
         self.assertEqual(check_kernel(self.root), ([], 4))
@@ -218,7 +322,7 @@ class CompiledAudit(unittest.TestCase):
         cls.audit_source = (ROOT / "lean-kernel/Audit.lean").read_text(encoding="utf-8")
 
     def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n",
-              *, module="QleisliKernel", transport=False):
+              *, module="QleisliKernel", transport=False, test_only=False):
         """Compile mutations without the source scanner to test metadata independently."""
         with tempfile.TemporaryDirectory(prefix="qleisli-kernel-audit-") as directory:
             root = Path(directory)
@@ -229,9 +333,20 @@ class CompiledAudit(unittest.TestCase):
             modules = [module]
             if module != "QleisliKernel":
                 (root / "QleisliKernel.lean").write_text(
-                    "import Init\ndef seed := true\n" if transport else f"import {module}\n",
+                    "import Init\ndef seed := true\n" if transport or test_only else f"import {module}\n",
                     encoding="utf-8")
                 modules.append("QleisliKernel")
+            # The real audit imports reduction roots separately from runtime.
+            # Supply minimal counterparts without depending on production test
+            # artifacts; mutation targets remain owned by their actual module.
+            for name in sorted(filter(test_module, lean_imports(self.audit_source))):
+                if name != module:
+                    path = root / (name.replace(".", "/") + ".lean")
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    dependency = module if test_only and module.startswith(name + ".") else "Init"
+                    path.write_text(f"import {dependency}\nnamespace {name}\n"
+                                    "def fixtureMarker := true\nend " + name + "\n", encoding="utf-8")
+                    modules.append(name)
             (root / "Main.lean").write_text(
                 f"import {module}\n" + main if transport else main, encoding="utf-8")
             (root / "Audit.lean").write_text(self.audit_source, encoding="utf-8")
@@ -248,6 +363,22 @@ class CompiledAudit(unittest.TestCase):
         code, output = self.audit("def value : Nat := 1\n")
         self.assertEqual(code, 0, output)
         self.assertIn("Audited", output)
+
+    def test_separate_test_declarations_are_audited_by_module_ownership(self):
+        module = "QleisliKernel.Tests.SourceMembers.Private"
+        code, output = self.audit("namespace Outside\ndef value : Nat := 1\nend Outside\n",
+                                  module=module, test_only=True)
+        self.assertEqual(code, 0, output)
+        for body, expected in [
+                ("private unsafe def value : Nat := 1\n", "unsafe project"),
+                ("private partial def loop (n : Nat) : Nat := loop (n + 1)\n", "partial project"),
+                ("axiom forged : False\n", "project axiom")]:
+            with self.subTest(expected=expected):
+                code, output = self.audit("namespace Outside\n" + body + "end Outside\n",
+                                          module=module, test_only=True)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn(expected, output)
+                self.assertIn("Outside", output)
 
     def test_compiled_escape_hatches_fail_including_private_helpers(self):
         cases = [

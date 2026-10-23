@@ -1,4 +1,5 @@
 import QleisliKernel
+import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Qirf.ControlAccess
 import Protocol.NativeContext.Bindings
 

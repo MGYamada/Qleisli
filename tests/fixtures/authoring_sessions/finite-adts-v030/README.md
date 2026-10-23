@@ -618,3 +618,79 @@ caps. This independent ordinary-value reference and actual Raw old-value
 preservation do not establish new phi output-tree correspondence, typed native
 replay, source member privacy, whole-AST or runtime preservation. No acceptance
 path, guarantee or #64 completion is added.
+
+
+The [phi/effects first history](ordinary-phi-effects-first.tar.xz),
+[index](ordinary-phi-effects-index.json) and
+[observations](ordinary-phi-effects-validation.json) retain 253 focused original
+records, including the first candidates, repairs, control examples and actual
+failed and successful diagnostics. Pre-spawn permission failure and an aborted
+approval attempt remain distinct from the later real compile. Original phi
+auditing records 114 declarations; effects auditing records 20 declarations.
+
+The separate [production-path history](ordinary-phi-effects-production-first.tar.xz),
+[index](ordinary-phi-effects-production-index.json) and
+[observations](ordinary-phi-effects-production-validation.json) retain 135 focused
+original records. Seven successful bounded stages freshly compile six canonical
+modules and the actual Audit body with ten explicit imports; the focused audit
+records 417 declarations. Imported project/cache identities are retained without
+binary payloads or a fresh imported-source rebuild. The umbrella source edits
+are pinned, but this local run does not compile the full mathematical umbrella.
+
+Whole-file deduplication preserves the selected original bytes and modes.
+Routine full before/report inventories remain unchanged outside fixtures with
+exact path, byte count and SHA-256 references. Compact window fields are labeled
+derived observations; the passive reader cannot independently replay the omitted
+full source inventories. It reads each bounded archive once and checks original
+maps, source/invocation bindings, outcomes, prior artifact identities and summary
+consistency without executing saved commands or opening external originals.
+
+These helpers cover selected-arm phi storage transport (including reused IDs)
+and ordinary-value preservation under actual Raw effects. They do not add typed
+native replay, source member privacy, whole-AST/runtime preservation, a native
+acceptance route, an adopted guarantee or #64 completion. Full umbrella replay,
+hosted current-proof refresh and final integration validation remain separate.
+
+The six retained files total **312,847 bytes**. Both passive consumer candidates passed all seven focused checks against these
+exact archive bytes in external runs, including the exact input-inventory checks. The complete history suite (82 existing checks plus seven new checks) has
+not yet run after installation; its result and the fixture/reference gates must
+be recorded separately. These passive results preserve observations and do not
+rerun Lean or establish current proof validity.
+
+
+The [ordinary member history](ordinary-members-first.tar.xz),
+[index](ordinary-members-index.json) and
+[compressed observations](ordinary-members-validation.json.gz) preserve 932
+original files and modes as 508 complete-byte objects. The original first
+candidate retains its uncompiled status. Ten recorded runs contain 77 bounded
+stages, preserving the Lexer, LocatedFacts, Members and test-authoring failures.
+The v9 full attempt stops at stage 25; its first two separate tails fail at
+stages 25 and 26. The third tail passes all 71 legacy comparisons and seven small
+examples, then the unchanged audit detects the generated partial declaration
+`LocatedFacts.checkOrdered._unsafe_rec`.
+
+The subsequent totality repair changes only `checkOrdered` to use `List.foldr`,
+preserving its Boolean equations and proof statement/body. A separate three-stage
+diagnostic freshly compiles LocatedFacts and Members, then passes the unchanged
+full declaration audit: 17,252 project declarations with the three standard
+axioms. Its 18 unaffected prefix modules and 168 common cached modules retain
+recorded identities; they are not claimed as fresh imported-source rebuilds.
+No historical full 28-stage attempt or final `AllCompiledImports` stage passes.
+Canonical repository build, Audit and Tests results are separate current records.
+
+The index and archive retain every selected original byte and map. Only the
+validation JSON's storage uses deterministic gzip; bounded reads check both its
+compressed identity and the exact 303,775 decoded bytes. The complete raw JSON
+remains an unchanged external original. Routine full before/report inventories
+also remain external with exact references. Compact fields are explicitly
+derived and cannot independently replay those omitted inventories. The passive
+reader opens the three fixed fixtures, loads the bounded history once and checks
+source, invocation, outcome, cache and audit bindings without executing saved
+commands or opening external originals. Its installed test result and fixture
+budget/reference gates must be recorded separately.
+
+These records concern byte locations, declaration/member metadata and the stated
+local refinement facts. They do not establish complete member-subtree refinement,
+member privacy authorization, whole-source preservation, typed native replay or
+ordinary nominal runtime execution. No acceptance path, guarantee or #64
+completion is added.

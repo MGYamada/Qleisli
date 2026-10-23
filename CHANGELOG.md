@@ -7,12 +7,18 @@ development milestones from the scope of their evidence.
 ## 0.3.0-beta — 2026-10-12
 
 - Add independent finite ordinary-value and storage semantics, with proofs for
-  classical lookup, copying and preservation of existing values through actual
-  Raw classical actions and simultaneous merges. Retain nominal identity, enum
-  range, field order and zero-width nodes in the representation relation, with
-  standard build/audit coverage and bounded examples. Typed runtime replay,
-  original-source member/privacy checks, new phi output-tree correspondence and
+  classical lookup, copying and preservation through actual Raw classical
+  actions, simultaneous phi outputs and pure/erase events. Ordered tree transport
+  includes unchanged leaves and retains nominal identity, enum range, field order
+  and zero-width nodes. Erasure lemmas retain every outcome and state the actual
+  fresh output Bit under explicit freshness premises; quantum actions need not
+  be identities. Typed native replay, original-source member/privacy checks and
   source preservation remain unfinished; no ordinary ADT execution is enabled.
+- Retain original UTF-8 token and declaration-body locations in the independent
+  source reader. Add source-bound nominal member catalogues and proofs for their
+  byte, name and whole-layout boundaries; check legacy lexer/declaration results
+  and malformed locations. Caller privacy, field subtree correspondence and
+  typed execution remain unfinished.
 - Begin internal finite-carrier support with source-backed nominal trees,
   separate logical cardinalities and physical code layouts, and bounded exact
   code-isometry checking. Preserve first sources and both Lean study attempts.

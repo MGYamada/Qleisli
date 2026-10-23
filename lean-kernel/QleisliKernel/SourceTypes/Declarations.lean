@@ -13,7 +13,31 @@ structure Declaration where
   body : List String
   deriving BEq, DecidableEq, Repr
 
+deriving instance ReflBEq, LawfulBEq for Declaration
+
+/-- A brace body found by the shared declaration scanner. The complete header
+and inner tokens retain original locations. A function envelope is syntax data,
+not proof that its header/body is well-typed or that it authorizes a caller. -/
+structure BodyOccurrence where
+  declaration : Declaration
+  nameToken : LocatedToken
+  header : List LocatedToken
+  openBrace : LocatedToken
+  body : List LocatedToken
+  closeBrace : LocatedToken
+  deriving BEq, DecidableEq, Repr
+
+structure SourceCatalogue where
+  declarations : List Declaration
+  bodies : List BodyOccurrence
+  deriving BEq, DecidableEq, Repr
+
 private structure Items where
+  leading : List LocatedToken := []
+  nameToken : Option LocatedToken := none
+  openBrace : Option LocatedToken := none
+  locatedBody : List LocatedToken := []
+  occurrences : List BodyOccurrence := []
   depth : Nat := 0
   isPublic : Bool := false
   kind : String := ""
@@ -25,9 +49,11 @@ private structure Items where
   importing : Bool := false
   importTokens : List String := []
 
-private def item (s : Items) (token : String) : Except String Items := do
+private def item (s : Items) (located : LocatedToken) : Except String Items := do
+  let token := located.text
+  let s := if s.depth == 0 then {s with leading := located :: s.leading} else s
   if s.depth > 0 then
-    if token == "{" then return {s with depth := s.depth+1,body := token :: s.body}
+    if token == "{" then return {s with depth := s.depth+1,body := token :: s.body,locatedBody := located :: s.locatedBody}
     if token == "}" then
       if s.depth == 1 then
         let declarations := if s.kind == "enum" || s.kind == "struct" then
@@ -35,46 +61,78 @@ private def item (s : Items) (token : String) : Except String Items := do
           else if s.kind == "static-fn" then
             ⟨s.name,s.isPublic,s.kind,s.header.reverse ++ ["{"] ++ s.body.reverse ++ ["}"]⟩ :: s.declarations
           else s.declarations
-        return {s with depth := 0,isPublic := false,kind := "",name := "",body := [],header := [],staticPrefix := false,declarations}
-      return {s with depth := s.depth-1,body := token :: s.body}
-    return {s with body := if s.kind.isEmpty then [] else token :: s.body}
+        let occurrences ← if ["enum","struct","fn","static-fn"].contains s.kind then do
+          let some nameToken := s.nameToken | throw "missing original declaration name token"
+          let some openBrace := s.openBrace | throw "missing original declaration opening brace"
+          let body := if s.kind == "enum" || s.kind == "struct" then s.body.reverse
+            else if s.kind == "static-fn" then s.header.reverse ++ ["{"] ++ s.body.reverse ++ ["}"]
+            else []
+          let decl : Declaration := ⟨s.name,s.isPublic,s.kind,body⟩
+          pure (⟨decl,nameToken,s.leading.reverse.dropLast,openBrace,
+            s.locatedBody.reverse,located⟩ :: s.occurrences)
+        else pure s.occurrences
+        return {s with
+          depth := 0
+          isPublic := false
+          kind := ""
+          name := ""
+          body := []
+          header := []
+          staticPrefix := false
+          declarations
+          leading := []
+          nameToken := none
+          openBrace := none
+          locatedBody := []
+          occurrences}
+      return {s with depth := s.depth-1,body := token :: s.body,locatedBody := located :: s.locatedBody}
+    return {s with
+      body := if s.kind.isEmpty then [] else token :: s.body
+      locatedBody := if s.kind.isEmpty then [] else located :: s.locatedBody}
   if s.importing then
     if token != ";" then return {s with importTokens := token :: s.importTokens}
     let paths ← Imports.read s.importTokens.reverse
     let declarations ← paths.foldlM (fun declarations path => do
       let name :: _ := path | throw "empty import path"
       pure (⟨name,s.isPublic,"import",path⟩ :: declarations)) s.declarations
-    return {s with importing := false,importTokens := [],isPublic := false,staticPrefix := false,declarations}
+    return {s with importing := false,importTokens := [],isPublic := false,staticPrefix := false,declarations,leading := []}
   if token == "}" then throw "unmatched source brace"
   if !s.kind.isEmpty && s.name.isEmpty then
     if !identifier token then throw "invalid declaration name"
     let declarations := if s.kind == "fn" || s.kind == "meaning" then
         ⟨token,s.isPublic,s.kind,[]⟩ :: s.declarations else s.declarations
-    return {s with name := token,declarations}
+    return {s with name := token,nameToken := some located,declarations}
   if token == "{" then
     if (s.kind == "enum" || s.kind == "struct") && s.name.isEmpty then
       throw "missing type name"
-    return {s with depth := 1,body := []}
+    return {s with depth := 1,body := [],openBrace := some located,locatedBody := []}
   if s.kind == "static-fn" && !s.name.isEmpty then
     if token == ";" then throw "static helper requires an expression body"
     return {s with header := token :: s.header}
-  if token == ";" then return {s with kind := "",name := "",isPublic := false,staticPrefix := false,header := []}
+  if token == ";" then return {s with kind := "",name := "",isPublic := false,staticPrefix := false,header := [],leading := [],nameToken := none}
   if token == "pub" then return {s with isPublic := true}
   if token == "static" && s.kind.isEmpty then return {s with staticPrefix := true}
   if token == "use" then return {s with importing := true,importTokens := []}
   if ["enum","struct","fn","meaning"].contains token then
     if s.staticPrefix && token != "fn" then throw "invalid static declaration category"
-    return {s with kind := if s.staticPrefix then "static-fn" else token,name := "",header := []}
+    return {s with kind := if s.staticPrefix then "static-fn" else token,name := "",nameToken := none,header := []}
   -- Only a brace may follow a fieldless enum/record name in this profile.
   if s.kind == "enum" || s.kind == "struct" then throw "unsupported type declaration header"
   return s
 
-def declarations (source : String) : Except String (List Declaration) := do
-  let s ← (← lex source).foldlM item {}
+def sourceCatalogue (source : String) : Except String SourceCatalogue := do
+  let s ← (← lexLocated source).foldlM item {}
   if s.depth != 0 || s.importing || s.kind == "enum" || s.kind == "struct" ||
       s.kind == "static-fn" || s.staticPrefix then
     throw "incomplete source declaration"
-  return s.declarations.reverse
+  return ⟨s.declarations.reverse,s.occurrences.reverse⟩
+
+/-- Original import/type consumers share the same declaration scan. -/
+def declarations (source : String) : Except String (List Declaration) :=
+  (sourceCatalogue source).map SourceCatalogue.declarations
+
+theorem sourceCatalogue_erases (source : String) :
+    (sourceCatalogue source).map SourceCatalogue.declarations = declarations source := rfl
 
 abbrev Sources := Array (String × String)
 

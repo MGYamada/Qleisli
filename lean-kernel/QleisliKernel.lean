@@ -7,7 +7,9 @@ import QleisliKernel.ExactMatrix
 import QleisliKernel.Finite
 import QleisliKernel.FiniteCarrier
 import QleisliKernel.Semantics.OrdinaryValue
+import QleisliKernel.Semantics.OrdinaryValueTransport
 import QleisliKernel.SourceTypes
+import QleisliKernel.SourceTypes.Members
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation

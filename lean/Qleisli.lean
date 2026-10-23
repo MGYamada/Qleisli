@@ -18,6 +18,11 @@ import Qleisli.RawInstrument
 import Qleisli.Semantics.OrdinaryValue
 import Qleisli.OrdinaryValueExamples
 import Qleisli.OrdinaryValueRawExamples
+import Qleisli.Semantics.OrdinaryValuePhi
+import Qleisli.Semantics.OrdinaryValueEffects
+import Qleisli.OrdinaryValuePhiExamples
+import Qleisli.OrdinaryValuePhiTypes
+import Qleisli.OrdinaryValueEffectsExamples
 import Qleisli.Scope
 import Qleisli.ExclusiveScope
 import Qleisli.Transition

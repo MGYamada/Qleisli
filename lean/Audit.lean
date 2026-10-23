@@ -49,7 +49,10 @@ open Lean in
 run_cmd do
   let env ← getEnv
   let targetModules := #[`QleisliKernel.Semantics.OrdinaryValue,
-    `Qleisli.Semantics.OrdinaryValue, `Qleisli.OrdinaryValueExamples, `Qleisli.OrdinaryValueRawExamples]
+    `Qleisli.Semantics.OrdinaryValue, `Qleisli.OrdinaryValueExamples, `Qleisli.OrdinaryValueRawExamples,
+    `QleisliKernel.Semantics.OrdinaryValueTransport, `Qleisli.Semantics.OrdinaryValuePhi,
+    `Qleisli.Semantics.OrdinaryValueEffects, `Qleisli.OrdinaryValuePhiExamples,
+    `Qleisli.OrdinaryValuePhiTypes, `Qleisli.OrdinaryValueEffectsExamples]
   let allowedAxioms := #[``propext, ``Classical.choice, ``Quot.sound]
   let mut present : NameSet := {}
   let mut checked := 0
@@ -60,7 +63,14 @@ run_cmd do
     (`Qleisli.Semantics.OrdinaryValue,
       #[`QleisliKernel.Semantics.OrdinaryValue, `Qleisli.Semantics.RawInstrument]),
     (`Qleisli.OrdinaryValueExamples, #[`QleisliKernel.Semantics.OrdinaryValue]),
-    (`Qleisli.OrdinaryValueRawExamples, #[`Qleisli.Semantics.OrdinaryValue])]
+    (`Qleisli.OrdinaryValueRawExamples, #[`Qleisli.Semantics.OrdinaryValue]),
+    (`QleisliKernel.Semantics.OrdinaryValueTransport, #[`QleisliKernel.Semantics.OrdinaryValue]),
+    (`Qleisli.Semantics.OrdinaryValuePhi,
+      #[`QleisliKernel.Semantics.OrdinaryValueTransport, `Qleisli.Semantics.OrdinaryValue]),
+    (`Qleisli.Semantics.OrdinaryValueEffects, #[`Qleisli.Semantics.OrdinaryValue]),
+    (`Qleisli.OrdinaryValuePhiExamples, #[`Qleisli.Semantics.OrdinaryValuePhi]),
+    (`Qleisli.OrdinaryValuePhiTypes, #[`Qleisli.Semantics.OrdinaryValuePhi]),
+    (`Qleisli.OrdinaryValueEffectsExamples, #[`Qleisli.Semantics.OrdinaryValueEffects])]
   for (moduleName, expected) in expectedImports do
     match env.getModuleIdx? moduleName with
     | none => failures := failures.push s!"Missing target module {moduleName}"
@@ -185,6 +195,176 @@ example : ∀ (fuel : Nat) (frame : RawTrace.Interface) (bit : Bool) (id : Nat),
       some (frame,[.classical (.constant bit) id]) := read_constant_frame
 end RawStatements
 
+-- Explicit types check all public core/bridge theorem statements, including
+-- binder and premise order. These are not aliases with inferred result types.
+section TransportCoreStatements
+open QleisliKernel.Semantics.FiniteCarrier
+open QleisliKernel.Semantics.OrdinaryValue
+
+example : ∀ {relation : Nat → Nat → Prop} {sources targets : List Nat},
+    IdsTransport relation sources targets → sources.length = targets.length :=
+  @IdsTransport.lengths
+
+example : ∀ {relation : Nat → Nat → Prop} {sources targets : List (String × Storage)},
+    FieldsTransport relation sources targets →
+      sources.map Prod.fst = targets.map Prod.fst := @FieldsTransport.names
+
+example : ∀ {relation : Nat → Nat → Prop} {before after : Valuation}
+    {sources targets : List Nat} {bits : List Bool},
+    Reads before sources bits → IdsTransport relation sources targets →
+      LookupAlong relation before after → Reads after targets bits := @Reads.transport
+
+example : ∀ {values : Valuation} {bases : List Basis} {items : List Value}
+    {stores : List Storage},
+    RepresentsMany values bases items stores → bases.length = stores.length :=
+  @RepresentsMany.storage_lengths
+
+example : ∀ {relation : Nat → Nat → Prop} {names : List String}
+    {stores : List Storage} {targets : List (String × Storage)},
+    FieldsTransport relation (names.zip stores) targets →
+      names.length = stores.length →
+      ∃ output, targets = names.zip output ∧ StoresTransport relation stores output :=
+  @FieldsTransport.zip_sources
+
+example : ∀ {relation : Nat → Nat → Prop} {before after : Valuation}
+    {basis : Basis} {logical : Value} {source : Storage},
+    Represents before basis logical source → LookupAlong relation before after →
+      ∀ {target : Storage}, StorageTransport relation source target →
+        Represents after basis logical target := @Represents.transport
+
+-- Also fix the generic lookup premise itself independently of the theorem.
+example (relation : Nat → Nat → Prop) (before after : Valuation) :
+    LookupAlong relation before after =
+      (∀ source target, relation source target →
+        ∀ bit, lookup before source = some bit → lookup after target = some bit) := rfl
+end TransportCoreStatements
+
+section PhiStatements
+open QleisliKernel.Semantics
+open QleisliKernel.Semantics.FiniteCarrier
+open QleisliKernel.Semantics.OrdinaryValue
+open Qleisli.Semantics.RawInstrument
+open Qleisli.Semantics.OrdinaryValue
+
+example : ∀ {choice : Bool} {phis : List Observation.ClassicalPhi}
+    {before added : Valuation},
+    phiBindings choice phis before = some added →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      ∀ {phi : Observation.ClassicalPhi}, phi ∈ phis →
+        lookup added phi.output =
+          lookup before (if choice then phi.thenId else phi.elseId) := @phiBindings_lookup
+
+example : ∀ (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      LookupAlong (PhiEdge choice phis) before.values after.values := merged_lookup_along
+
+example : ∀ {basis : Basis} {logical : Value} {source target : Storage}
+    (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Represents before.values basis logical source →
+      StorageTransport (PhiEdge choice phis) source target →
+      Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      Represents after.values basis logical target ∧
+        after.hidden = before.hidden ∧ after.operator = before.operator := @merged_transports
+
+-- Actual lowering may retain an identical ordinary leaf without emitting a
+-- phi. That case follows from actual append preservation, not an assumed
+-- output value or an unconstrained relation.
+example : ∀ (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      Extends before.values after.values := merged_extends
+
+example : ∀ (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      LookupAlong (KeptOrPhiEdge choice phis) before.values after.values := merged_kept_lookup_along
+
+example : ∀ {basis : Basis} {logical : Value} {source target : Storage}
+    (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Represents before.values basis logical source →
+      StorageTransport (KeptOrPhiEdge choice phis) source target →
+      Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      Represents after.values basis logical target ∧
+        after.hidden = before.hidden ∧ after.operator = before.operator := @merged_transports_kept
+
+-- A phi edge is literal selected-source/output membership; it assumes no
+-- lookup result, target representation, solver outcome or source fidelity.
+example (choice : Bool) (phis : List Observation.ClassicalPhi) (source target : Nat) :
+    PhiEdge choice phis source target =
+      (∃ phi ∈ phis, (if choice then phi.thenId else phi.elseId) = source ∧
+        phi.output = target) := rfl
+
+example (choice : Bool) (phis : List Observation.ClassicalPhi) (source target : Nat) :
+    KeptOrPhiEdge choice phis source target =
+      (source = target ∨ PhiEdge choice phis source target) := rfl
+
+-- Check the compiled statements exported by the separate type-probe module.
+example : ∀ {relation : Nat → Nat → Prop} {before after : Valuation}
+    {basis : Basis} {logical : Value} {source : Storage},
+    Represents before basis logical source → LookupAlong relation before after →
+      ∀ {target : Storage}, StorageTransport relation source target →
+        Represents after basis logical target := @PhiTypes.generic_transport_contract
+
+example : ∀ {basis : Basis} {logical : Value} {source target : Storage}
+    (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Represents before.values basis logical source →
+      StorageTransport (PhiEdge choice phis) source target →
+      Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      Represents after.values basis logical target ∧
+        after.hidden = before.hidden ∧ after.operator = before.operator :=
+  @PhiTypes.actual_merge_contract
+
+example : ∀ {basis : Basis} {logical : Value} {source target : Storage}
+    (before after : History) (choice : Bool) (phis : List Observation.ClassicalPhi),
+    Represents before.values basis logical source →
+      StorageTransport (KeptOrPhiEdge choice phis) source target →
+      Qleisli.Semantics.RawInstrument.merged choice phis before = some after →
+      (∀ phi ∈ phis, lookup before.values phi.output = none) →
+      (phis.map Observation.ClassicalPhi.output).Nodup →
+      Represents after.values basis logical target ∧
+        after.hidden = before.hidden ∧ after.operator = before.operator :=
+  @PhiTypes.actual_kept_merge_contract
+end PhiStatements
+
+section ExactEffectsStatements
+open QleisliKernel.Semantics
+open QleisliKernel.Semantics.FiniteCarrier
+open QleisliKernel.Semantics.OrdinaryValue
+open Qleisli.Semantics.RawInstrument
+open Qleisli.Semantics.OrdinaryValue
+
+example : ∀ {basis : Basis} {logical : Value} {storage : Storage}
+    {event : QleisliKernel.Semantics.Raw.Event} {initial : History} {next : List History}
+    {dependencies : List Finite.Dependency},
+    Represents initial.values basis logical storage →
+      Action dependencies (.pure event) initial next →
+      ∀ after ∈ next, Represents after.values basis logical storage := @pure_preserves_existing
+
+example : ∀ {basis : Basis} {logical : Value} {storage : Storage}
+    {bits : Nat} {axes : List Nat} {output : Option Nat}
+    {initial : History} {next : List History} {dependencies : List Finite.Dependency},
+    Represents initial.values basis logical storage →
+      Action dependencies (.erase bits axes output) initial next →
+      ∀ after ∈ next, Represents after.values basis logical storage := @erase_preserves_existing
+
+example : ∀ {bits : Nat} {axes : List Nat} {output : Nat}
+    {initial : History} {next : List History} {dependencies : List Finite.Dependency},
+    Action dependencies (.erase bits axes (some output)) initial next →
+      lookup initial.values output = none →
+      ∀ after ∈ next, ∃ outcome ∈ List.range (2^axes.length),
+        after.hidden = initial.hidden ++ [outcome] ∧
+        Represents after.values [.bit] (.bit (outcome == 1)) (.bit output) := @erase_fresh_bit
+
+end ExactEffectsStatements
+
 -- Expose the independent meanings and constructor obligations for review.
 set_option pp.universes true
 set_option pp.fullNames true
@@ -204,3 +384,19 @@ set_option format.width 120
 #print QleisliKernel.Semantics.OrdinaryValue.Represents
 #print QleisliKernel.Semantics.OrdinaryValue.RepresentsMany
 #print Qleisli.Semantics.OrdinaryValue.phiBindings
+
+#print QleisliKernel.Semantics.OrdinaryValue.IdsTransport
+#print QleisliKernel.Semantics.OrdinaryValue.StorageTransport
+#print QleisliKernel.Semantics.OrdinaryValue.StoresTransport
+#print QleisliKernel.Semantics.OrdinaryValue.FieldsTransport
+#print QleisliKernel.Semantics.OrdinaryValue.LookupAlong
+#print Qleisli.Semantics.OrdinaryValue.PhiEdge
+#print Qleisli.Semantics.OrdinaryValue.KeptOrPhiEdge
+#print Qleisli.Semantics.RawInstrument.merged
+
+#print Qleisli.Semantics.RawInstrument.Action
+#print Qleisli.Semantics.RawInstrument.Erased
+#print Qleisli.Semantics.RawInstrument.ErasureMeaning
+#print Qleisli.Semantics.OrdinaryValue.pure_preserves_existing
+#print Qleisli.Semantics.OrdinaryValue.erase_preserves_existing
+#print Qleisli.Semantics.OrdinaryValue.erase_fresh_bit
