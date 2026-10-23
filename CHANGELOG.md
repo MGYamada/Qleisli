@@ -14,6 +14,7 @@ development milestones from the scope of their evidence.
   existing branch/phi implementation, retaining original type identity, tag
   order and complete owner frames. Public execution stays gated on typed native
   transport; records, coherent selection and source preservation remain pending.
+  Regression failures report the missing enum shape without printing internal values.
 - Add independent finite ordinary-value and storage semantics, with proofs for
   classical lookup, copying and preservation through actual Raw classical
   actions, simultaneous phi outputs and pure/erase events. Ordered tree transport

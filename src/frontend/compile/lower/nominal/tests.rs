@@ -155,7 +155,7 @@ fn classical_history(ops: &[RawOp], outcome: bool, values: &mut BTreeMap<Classic
 
 fn assert_enum(value: &Value, name: &str, labels: &[&str], width: usize) {
     let Value::Enumeration(ty, ids) = value else {
-        panic!("lost typed enum: {value:?}");
+        panic!("lost typed enum");
     };
     let Kind::Nominal(nominal) = &ty.kind else {
         panic!("lost original type");
