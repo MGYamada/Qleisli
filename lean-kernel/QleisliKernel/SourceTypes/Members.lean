@@ -404,4 +404,220 @@ theorem readOriginal_boundary (sources : Sources) (moduleName declarationName : 
     Boundary sources moduleName declarationName result :=
   (readOriginal_facts sources moduleName declarationName result work left ok).1
 
+
+/-- One exact prefix, followed only by the splitter-selected comma or EOF.
+No token, span, field name or type token is synthesized by this relation. -/
+inductive PartSlice : List LocatedToken → List LocatedToken → List LocatedToken → Prop
+  | final (part : List LocatedToken) : PartSlice part part []
+  | comma (part : List LocatedToken) (separator : LocatedToken) (remaining : List LocatedToken)
+      (isComma : separator.text = ",") :
+      PartSlice (part ++ (separator :: remaining)) part remaining
+
+/-- Ordered consumption of original tokens. An empty final remainder rules out
+omitted tokens. Only comma separators may be omitted between retained parts. -/
+inductive PartSequence : List LocatedToken → List (List LocatedToken) → List LocatedToken → Prop
+  | nil (remaining : List LocatedToken) : PartSequence remaining [] remaining
+  | cons {tokens part following remaining : List LocatedToken} {parts : List (List LocatedToken)}
+      (first : PartSlice tokens part following) (rest : PartSequence following parts remaining) :
+      PartSequence tokens (part :: parts) remaining
+
+private theorem partSequence_append {tokens middle remaining : List LocatedToken}
+    {firstParts restParts : List (List LocatedToken)}
+    (first : PartSequence tokens firstParts middle)
+    (rest : PartSequence middle restParts remaining) :
+    PartSequence tokens (firstParts ++ restParts) remaining := by
+  induction first generalizing restParts remaining with
+  | nil _ => exact rest
+  | cons head tail ih => exact .cons head (ih rest)
+
+/-- String-error specialization of the existing Finite/Exact success lemma.
+It describes the actual Except result and adds no accepting computation. -/
+private theorem string_bind_success {α β : Type} (first : Except String α)
+    (next : α → Except String β) (result : β) (ok : (first >>= next) = .ok result) :
+    ∃ value, first = .ok value ∧ next value = .ok result := by
+  cases first with
+  | error error => simp [bind,Except.bind] at ok
+  | ok value => exact ⟨value,rfl,ok⟩
+
+private theorem string_fold_invariant {α β : Type} (step : β → α → Except String β)
+    (property : β → Prop)
+    (preserve : ∀ before item after, property before → step before item = .ok after → property after)
+    (items : List α) (initial result : β) (start : property initial)
+    (ok : items.foldlM step initial = .ok result) : property result := by
+  induction items generalizing initial with
+  | nil =>
+    simp only [List.foldlM_nil,pure,Except.pure,Except.ok.injEq] at ok
+    simpa [← ok] using start
+  | cons item items ih =>
+    simp only [List.foldlM_cons] at ok
+    obtain ⟨next,stepOk,tailOk⟩ := string_bind_success _ _ _ ok
+    exact ih next (preserve initial item next start stepOk) tailOk
+
+private theorem string_map_relation {α β : Type} (step : α → Except String β)
+    (relation : α → β → Prop)
+    (preserve : ∀ item value, step item = .ok value → relation item value)
+    (items : List α) (values : List β) (ok : items.mapM step = .ok values) :
+    Exact.ListRel relation items values := by
+  induction items generalizing values with
+  | nil =>
+    simp only [List.mapM_nil,pure,Except.pure,Except.ok.injEq] at ok
+    subst values
+    trivial
+  | cons item items ih =>
+    simp only [List.mapM_cons] at ok
+    obtain ⟨value,stepOk,h⟩ := string_bind_success _ _ _ ok
+    obtain ⟨rest,tailOk,h⟩ := string_bind_success _ _ _ h
+    simp only [pure,Except.pure,Except.ok.injEq] at h
+    subst values
+    exact ⟨preserve item value stepOk,ih rest tailOk⟩
+
+/-- The actual located splitter consumes the original token list in order.
+This proves its local prefix/separator behavior; it does not prove the lexical
+reader complete, or independently validate a full source expression grammar. -/
+theorem locateParts_consumes (tokens : List LocatedToken) (parts : List (List LocatedToken))
+    (ok : locateParts tokens = .ok parts) : PartSequence tokens parts [] := by
+  unfold locateParts at ok
+  obtain ⟨textParts,_,h⟩ := string_bind_success _ _ _ ok
+  obtain ⟨state,foldOk,h⟩ := string_bind_success _ _ _ h
+  rcases state with ⟨remaining,reversed⟩
+  cases remaining with
+  | cons token remaining =>
+    change (Except.error "unconsumed member tokens" : Except String (List (List LocatedToken))) =
+      .ok parts at h
+    cases h
+  | nil =>
+    have same : reversed.reverse = parts := by
+      change (Except.ok reversed.reverse : Except String (List (List LocatedToken))) = .ok parts at h
+      exact Except.ok.inj h
+    rw [← same]
+    refine string_fold_invariant _
+      (fun state : List LocatedToken × List (List LocatedToken) =>
+        PartSequence tokens state.2.reverse state.1) ?_
+      textParts (tokens,[]) ([],reversed) (.nil tokens) foldOk
+    intro before part after beforeOk stepOk
+    rcases before with ⟨suffix,previous⟩
+    dsimp only at beforeOk stepOk ⊢
+    dsimp only [bind,Except.bind,pure,Except.pure,Functor.map,Except.map,
+      throw,throwThe] at stepOk
+    by_cases aligned : (suffix.take part.length).map LocatedToken.text = part
+    · cases dropped : suffix.drop part.length with
+      | nil =>
+        have sameAfter : ([],suffix.take part.length :: previous) = after := by
+          simpa [aligned,dropped] using stepOk
+        subst after
+        have sliced : PartSlice (suffix.take part.length ++ suffix.drop part.length)
+            (suffix.take part.length) [] := by
+          rw [dropped]
+          simpa only [List.append_nil] using (PartSlice.final (suffix.take part.length))
+        have original : PartSlice suffix (suffix.take part.length) [] := by
+          simpa only [List.take_append_drop] using sliced
+        simpa only [List.reverse_cons] using
+          (partSequence_append beforeOk (.cons original (.nil [])))
+      | cons separator rest =>
+        by_cases isComma : separator.text = ","
+        · have sameAfter : (rest,suffix.take part.length :: previous) = after := by
+            simpa [aligned,dropped,isComma] using stepOk
+          subst after
+          have sliced : PartSlice (suffix.take part.length ++ suffix.drop part.length)
+              (suffix.take part.length) rest := by
+            rw [dropped]
+            exact .comma (suffix.take part.length) separator rest isComma
+          have original : PartSlice suffix (suffix.take part.length) rest := by
+            simpa only [List.take_append_drop] using sliced
+          simpa only [List.reverse_cons] using
+            (partSequence_append beforeOk (.cons original (.nil rest)))
+        · simp [aligned,dropped,isComma] at stepOk
+    · simp only [List.map_take] at aligned
+      simp [aligned] at stepOk
+
+/-- Each returned member retains its exact original token part at the same
+position. PartMember fixes full typeTokens, pub markers, names and covering spans;
+PartSequence fixes original token identity, order and complete consumption. -/
+def OriginalMemberParts (occurrence : BodyOccurrence) (members : List Member) : Prop :=
+  ∃ parts, PartSequence occurrence.body parts [] ∧
+    Exact.ListRel (PartMember (occurrence.declaration.kind == "enum")) parts members
+
+private theorem readSyntax_member_runs (source : String) (occurrence : BodyOccurrence)
+    (members : List Member) (ok : readSyntax source occurrence = .ok members) :
+    ∃ parts, locateParts occurrence.body = .ok parts ∧
+      parts.mapM (member (occurrence.declaration.kind == "enum")) = .ok members := by
+  cases located : locateParts occurrence.body with
+  | error error =>
+    dsimp only [readSyntax,bind,Except.bind,pure,Except.pure,Functor.map,Except.map,
+      throw,throwThe] at ok
+    simp only [located] at ok
+    repeat first
+      | contradiction
+      | simp_all (config := { failIfUnchanged := true }) only [bind,Except.bind,pure,Except.pure,Functor.map,Except.map,
+          throw,throwThe,Except.ok.injEq]
+      | split at ok
+  | ok parts =>
+    cases mapped : parts.mapM (member (occurrence.declaration.kind == "enum")) with
+    | error error =>
+      dsimp only [readSyntax,bind,Except.bind,pure,Except.pure,Functor.map,Except.map,
+        throw,throwThe] at ok
+      simp only [located,mapped] at ok
+      repeat first
+        | contradiction
+        | simp_all (config := { failIfUnchanged := true }) only [Except.ok.injEq]
+        | split at ok
+    | ok selected =>
+      have same : selected = members := by
+        dsimp only [readSyntax,bind,Except.bind,pure,Except.pure,Functor.map,Except.map,
+          throw,throwThe] at ok
+        simp only [located,mapped] at ok
+        repeat first
+          | contradiction
+          | simp_all (config := { failIfUnchanged := true }) only [Except.ok.injEq]
+          | split at ok
+      subst members
+      exact ⟨parts,rfl,mapped⟩
+
+/-- Lift the actual per-part extraction proof through the actual mapM run. -/
+theorem readSyntax_originalParts (source : String) (occurrence : BodyOccurrence)
+    (members : List Member) (ok : readSyntax source occurrence = .ok members) :
+    OriginalMemberParts occurrence members := by
+  obtain ⟨parts,located,mapped⟩ := readSyntax_member_runs source occurrence members ok
+  exact ⟨parts,locateParts_consumes _ _ located,
+    string_map_relation _ _ (member_refines _) _ _ mapped⟩
+
+/-- Actual readOriginal success yields ordered exact member parts for that same
+returned occurrence. This retains the discarded syntax bind from the existing
+boundary proof; it assumes no caller privilege, AST fidelity or success receipt. -/
+theorem readOriginal_memberParts (sources : Sources) (moduleName declarationName : String)
+    (result : Catalogue) (work left : Nat)
+    (ok : (readOriginal sources moduleName declarationName).run work = (.ok result,left)) :
+    OriginalMemberParts result.occurrence result.members := by
+  unfold readOriginal at ok
+  obtain ⟨_,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨_,w₂,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₃,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨entry,w₄,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  rcases entry with ⟨source,decl⟩
+  obtain ⟨occurrence,w₅,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₆,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₇,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₈,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₉,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨members,w₁₀,syntaxRun,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨basis,w₁₁,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨layoutValue,w₁₂,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨_,w₁₃,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  have sameResult := (Finite.pure_success _ _ _ _ h).1
+  subst result
+  exact readSyntax_originalParts source occurrence members (adapt_value _ _ _ _ syntaxRun)
+
+/-- Exact indexed consequence, using the existing kernel ListRel lemmas. The
+complete logical field subtree is still a separate, unproved elaboration link. -/
+theorem originalMemberParts_ordered (occurrence : BodyOccurrence) (members : List Member)
+    (facts : OriginalMemberParts occurrence members) :
+    ∃ parts, PartSequence occurrence.body parts [] ∧ ∃ sameLength : members.length = parts.length,
+      ∀ (index : Nat) (within : index < parts.length),
+        PartMember (occurrence.declaration.kind == "enum") (parts[index]'within)
+          (members[index]'(by rw [sameLength]; exact within)) := by
+  obtain ⟨parts,consumed,related⟩ := facts
+  refine ⟨parts,consumed,Exact.listRel_length _ _ _ related,?_⟩
+  intro index within
+  exact Exact.listRel_getElem _ _ _ related index within
+
 end QleisliKernel.SourceTypes.Members

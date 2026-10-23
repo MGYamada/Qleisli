@@ -694,3 +694,38 @@ local refinement facts. They do not establish complete member-subtree refinement
 member privacy authorization, whole-source preservation, typed native replay or
 ordinary nominal runtime execution. No acceptance path, guarantee or #64
 completion is added.
+
+The separate [canonical member-part validation](ordinary-member-parts-current.json)
+binds a later kernel/Main build, strict 17,614-declaration audit and complete
+Tests run after the Parts import entered the canonical aggregator. All three
+stages pass in one stable window, peaking at 2,928,096 KiB under the unchanged
+3 GiB cap. The referenced full reports remain external originals. A first
+history-packaging attempt exceeded its proposed 150,000-byte allocation and
+remains a failed observation; repeated metadata is removed separately without
+dropping original records. Full hosted proof refresh and ordinary CI remain
+pending, as do typed runtime, field-subtree/privacy and source preservation.
+
+The ordinary-member-parts history retains the first proof drafts, original
+canonical proposal, both actual failures, repaired sources and four bounded
+external runs. The first run failed compiling Members; v2's focused run passed
+Members alone; v2's full run failed Parts; v3 passed eight stages and its strict
+audit reported 17,614 project declarations with only propext, Classical.choice
+and Quot.sound. The archive also retains the later integration proposal. That
+proposal adds Parts to the canonical test aggregator; its compilation is not
+established by the earlier overlay, whose Audit imported Parts directly.
+
+The files `ordinary-member-parts-first.tar.xz`, `ordinary-member-parts-index.json`
+and `ordinary-member-parts-validation.json` use the existing passive reader.
+Whole-file deduplication preserves all 184 selected original files byte-for-byte,
+including source/provenance/commands and complete stdout/stderr. The first actual
+observer invocation differs from the saved unexecuted invocation proposal; both
+remain distinct. Full repeated before/after inventories and outer observer
+reports remain unchanged external originals with exact path, byte-count and
+SHA-256 references. Compact observer/inventory fields are explicitly derived;
+the local fixtures cannot independently replay omitted inventories. The 189
+cached artifact identities and compiled output identities retain their original
+scope; no binary payloads or fresh cache rebuild is claimed.
+
+The passive tests execute no retained commands and require no external original
+paths. This history adds no native runtime acceptance, caller privilege, semantic
+field-subtree theorem, whole-source preservation or completion claim for #64.

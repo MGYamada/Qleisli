@@ -17,7 +17,9 @@ development milestones from the scope of their evidence.
 - Retain original UTF-8 token and declaration-body locations in the independent
   source reader. Add source-bound nominal member catalogues and proofs for their
   byte, name and whole-layout boundaries; check legacy lexer/declaration results
-  and malformed locations. Caller privacy, field subtree correspondence and
+  and malformed locations. Prove that member extraction consumes the original
+  token parts in order and retains each member's full type tokens and visibility.
+  Caller privacy, field subtree correspondence and
   typed execution remain unfinished.
 - Begin internal finite-carrier support with source-backed nominal trees,
   separate logical cardinalities and physical code layouts, and bounded exact

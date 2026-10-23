@@ -2912,5 +2912,261 @@ local instance exceptDecidableEq {α : Type} [DecidableEq α] :
         self.assertIs(self.windows('v9-tail3')[-1]['pass'], False)
 
 
+
+
+# History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-first.tar.xz"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-index.json"
+# Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-validation.json"
+class OrdinaryMemberPartsHistory(unittest.TestCase):
+    """Historical source/command binding; no external originals or commands run."""
+    META = {'archive': {'bytes': 73072, 'path': 'ordinary-member-parts-first.tar.xz', 'sha256': 'edc490521be4794501986471a9582b02f79e504dcbe5520eb8db8a28dbafa804'}, 'expanded_bytes': 1358228, 'index': {'bytes': 20442, 'path': 'ordinary-member-parts-index.json', 'sha256': 'f593c74e74557718a5bcb7f8ce69f930e2a61097870daa7f20a569d9b7c98f69'}, 'validation': {'bytes': 20930, 'path': 'ordinary-member-parts-validation.json', 'sha256': 'a172b541aa8b90b7242585b3afa8c2eb08d7e74e797455fd57c99e3bd96fac7a'}}
+    HEAD = '82bf2a17c32625fefc1ae58f80be2364f3f63a26'
+    ORDER = ('QleisliKernel.SourceTypes.Members', 'QleisliKernel.Tests.SourceMembers.Parts',
+             'QleisliKernel', 'QleisliKernel.Tests.SourceMembers.BoundaryProbes',
+             'QleisliKernel.Tests.SourceMembers.LegacyComparison',
+             'QleisliKernel.Tests.SourceMembers.SmallExamples',
+             'QleisliKernel.Tests.SourceMembers', 'Audit')
+    ROOTS = {'authoring': '/private/tmp/qleisli-member-parts-proof-NY4iVEJD',
+             'first': '/private/tmp/qleisli-member-parts-canonical-_4e5d43a',
+             'v2': '/private/tmp/qleisli-member-parts-repair-v2-g191kxfl',
+             'v3': '/private/tmp/qleisli-member-parts-repair-v3-0mdvzibt',
+             'integration': '/private/tmp/qleisli-member-parts-integration-9hi5a8ut',
+             'runner': '/private/tmp/qleisli-member-parts-runner-kIu08K'}
+
+    @staticmethod
+    def pin(data):
+        return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        contents = {}
+        for key in ('index', 'validation', 'archive'):
+            row = cls.META[key]
+            path = FIXTURES / row['path']
+            if path.is_symlink() or not path.is_file() or path.stat().st_size != row['bytes']:
+                raise AssertionError('Parts fixture size or file kind changed')
+            if key != 'archive':
+                with path.open('rb') as stream:
+                    raw = stream.read(row['bytes'] + 1)
+                if cls.pin(raw) != {k: row[k] for k in ('bytes', 'sha256')}:
+                    raise AssertionError('Parts metadata changed')
+                contents[key] = json.loads(raw)
+        cls.index, cls.validation = contents['index'], contents['validation']
+        m = cls.META
+        cls.data = read_history(m['index']['path'], m['archive']['path'], m['index']['sha256'],
+                                m['archive']['bytes'], m['archive']['sha256'], m['expanded_bytes'])
+        mapping = json.loads(cls.data['original-records.json'])
+        if (mapping['format'], mapping['version']) != ('qleisli.inert-original-records', 1):
+            raise AssertionError('Parts original map format changed')
+        cls.originals = mapping['records']
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('index', 'validation', 'originals', 'data'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {k: row[k] for k in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def path_record(self, original):
+        roots = dict(self.ROOTS)
+        for run in self.validation['runs']:
+            roots[run['prefix']] = run['directory']
+            roots[run['observer_prefix']] = run['observer_directory']
+        matches = [key + original[len(root):] for key, root in roots.items()
+                   if original.startswith(root + '/')]
+        self.assertEqual(len(matches), 1)
+        return matches[0]
+
+    def test_complete_originals_and_external_scope(self):
+        v = self.validation
+        self.assertEqual(set(self.index), {'format', 'version', 'records'})
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual(set(self.index['records']), set(self.data))
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertEqual((len(self.originals), v['original_files'], v['original_bytes']),
+                         (184, 184, 2643219))
+        self.assertEqual(sum(r['bytes'] for r in self.originals.values()), v['original_bytes'])
+        self.assertEqual((v['unique_objects'], v['archive_members'], len(self.data)), (109, 110, 110))
+        self.assertEqual(v['expanded_bytes'], self.META['expanded_bytes'])
+        self.assertEqual(v['archive'], self.META['archive'])
+        self.assertEqual(v['index'], self.META['index'])
+        self.assertLess(sum(self.META[k]['bytes'] for k in ('archive', 'index', 'validation')), 150000)
+        self.assertEqual(self.decoded_map(), self.originals)
+        self.assertEqual({r['record'] for r in self.originals.values()}, set(self.data) - {'original-records.json'})
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertNotIn('lib', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertIn(row['original_mode'], (0o644, 0o755))
+            self.assertFalse(name.endswith(('.olean', '.ilean', '.ir', '.pyc')))
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+        for name in ('authoring/candidate-v1/lean-kernel/QleisliKernel/SourceTypes/Members.lean',
+                     'authoring/candidate-v2/lean-kernel/QleisliKernel/SourceTypes/Members.lean',
+                     'first/first-compile-invocation.json', 'first/source-pins.json',
+                     'v2/provenance.json', 'v3/provenance.json', 'integration/integration.patch'):
+            self.assertIn(name, self.originals)
+        self.assertEqual(len(v['external_records']), 38)
+        self.assertIn('not self-contained verification', v['derivation'])
+        self.assertIs(v['canonical_aggregation_tested'], False)
+        for name, row in v['external_records'].items():
+            self.assertNotIn(name, self.originals)
+            self.assertTrue(name.endswith(('/before.json', '/after.json', '/report.json')))
+            self.assertGreater(row['bytes'], 0)
+            self.assertRegex(row['sha256'], r'^[0-9a-f]{64}$')
+            self.assertTrue(row['source'].startswith('/private/tmp/'))
+
+    def decoded_map(self):
+        mapping = json.loads(self.data['original-records.json'])
+        self.assertEqual((mapping['format'], mapping['version']), ('qleisli.inert-original-records', 1))
+        return mapping['records']
+
+    def test_actual_runs_commands_sources_and_cumulative_outputs(self):
+        expected = [('first', False, 1, [1], 1000), ('v2-first', True, 1, [0], 900),
+                    ('v2-full', False, 8, [0, 1], 7200), ('v3-full', True, 8, [0] * 8, 7200)]
+        self.assertEqual([r['name'] for r in self.validation['runs']], [r[0] for r in expected])
+        cache = None
+        for run, (name, passed, planned, exits, timeout) in zip(self.validation['runs'], expected):
+            with self.subTest(run=name):
+                prefix, obs = run['prefix'], run['observer_prefix']
+                report, inputs = self.decoded(prefix + '/report.json'), self.decoded(prefix + '/inputs.json')
+                outer, identity = run['derived_observer'], run['derived_identity']
+                plan = self.decoded(obs + '/plan.json')
+                self.assertEqual(report['root_head'], self.HEAD)
+                self.assertEqual(inputs['root_head'], self.HEAD)
+                self.assertEqual(report['planned_stages'], planned)
+                self.assertEqual([s['exit_code'] for s in report['stages']], exits)
+                self.assertEqual([s['module'] for s in report['stages']], list(self.ORDER[:len(exits)]))
+                self.assertEqual(report['status'], 'stages-pass-awaiting-outer-observer' if passed else 'failed')
+                self.assertIs(report['stages_pass'], passed)
+                self.assertIs(run['pass'], passed)
+                self.assertIs(outer['pass'], passed)
+                self.assertIs(type(outer['exit_code']), int)
+                self.assertEqual(outer['exit_code'], 0 if passed else 1)
+                self.assertIs(outer['stable'], True)
+                self.assertIsNone(outer['stop_reason'])
+                self.assertEqual((outer['rss_group_limit_kib'], outer['heavy_job_concurrency']), (3145728, 1))
+                self.assertGreater(outer['peak_rss_kib'], 0)
+                self.assertLessEqual(outer['peak_rss_kib'], 3145728)
+                self.assertGreaterEqual(outer['seconds'], 0)
+                self.assertEqual((identity['before_head'], identity['after_head']), (self.HEAD, self.HEAD))
+                self.assertEqual(identity['before_explicit_inputs'], identity['after_explicit_inputs'])
+                self.assertEqual((plan['argv'], plan['cwd']), (outer['argv'], outer['cwd']))
+                self.assertEqual(plan['time_limit_seconds'], timeout)
+                self.assertEqual(outer['argv'][0], inputs['python']['path'])
+                self.assertEqual(outer['argv'][-4:], ['--output', run['directory'], '--max-stages', str(planned)])
+                self.assertIn('--single-heavy-lane-reserved', outer['argv'])
+                driver = next(a for a in outer['argv'] if a.endswith('/run.py'))
+                driver_bytes = self.raw(self.path_record(driver))
+                self.assertEqual(self.raw(prefix + '/runner.py.txt'), driver_bytes)
+                self.assertEqual(self.raw(obs + '/explicit-inputs/run.py'), driver_bytes)
+                self.assertEqual(identity['before_explicit_inputs'], {driver: self.pin(driver_bytes)['sha256']})
+                self.assertEqual(self.pin(self.raw(obs + '/observer.py.txt')),
+                                 {k: inputs['monitor'][k] for k in ('bytes', 'sha256')})
+                self.assertEqual(len(inputs['cache_artifacts']), 189)
+                if cache is None:
+                    cache = inputs['cache_artifacts']
+                self.assertEqual(inputs['cache_artifacts'], cache)
+                self.assertEqual([s['module'] for s in inputs['stages']], list(self.ORDER))
+                for stage in inputs['stages']:
+                    source = stage['source']
+                    captured = prefix + '/src/' + stage['module'].replace('.', '/') + '.lean'
+                    self.assertEqual(self.raw(captured), self.raw(self.path_record(source['path'])))
+                    self.assertEqual(self.pin(self.raw(captured)), {k: source[k] for k in ('bytes', 'sha256')})
+                    self.assertEqual(self.originals[captured]['original_mode'], source['mode'])
+                completed = 0
+                self.assertEqual(len(run['stages']), len(exits))
+                for i, (stage, derived, code) in enumerate(zip(report['stages'], run['stages'], exits), 1):
+                    folder = f'{i:02d}-' + stage['module'].replace('.', '-')
+                    self.assertEqual(derived['directory'], folder)
+                    self.assertEqual((stage['index'], stage['status']), (i, 'pass' if code == 0 else 'failed'))
+                    cmd = self.decoded(prefix + '/' + folder + '/command.json')
+                    rel = stage['module'].replace('.', '/')
+                    self.assertEqual(cmd['argv'], [inputs['lean']['path'], '-j1', '-DautoImplicit=false', '-DwarningAsError=true',
+                                                  '-o', run['directory'] + '/lib/' + rel + '.olean',
+                                                  run['directory'] + '/src/' + rel + '.lean'])
+                    self.assertEqual(cmd['cwd'], run['directory'] + '/src')
+                    self.assertEqual(cmd['timeout_seconds'], 900)
+                    self.assertEqual(cmd['environment']['LEAN_NUM_THREADS'], '1')
+                    self.assertEqual(cmd['environment']['LEAN_PATH'], run['directory'] + '/lib:' + inputs['toolchain'] + '/lib/lean')
+                    self.assertEqual(cmd['environment']['LEAN_SRC_PATH'], run['directory'] + '/src:/Users/masa/git/Qleisli/lean-kernel:' + inputs['toolchain'] + '/src/lean')
+                    self.assertEqual(cmd['environment']['PYTHONDONTWRITEBYTECODE'], '1')
+                    self.assertEqual(self.raw(prefix + '/' + folder + '/stderr'), b'')
+                    outputs = self.decoded(prefix + '/' + folder + '/outputs.json')
+                    self.assertEqual(set(outputs), {rel + '.olean'} if code == 0 else set())
+                    for value in outputs.values():
+                        self.assertGreater(value['bytes'], 0)
+                        self.assertIsNone(value['link'])
+                        self.assertEqual(value['path'], cmd['argv'][-2])
+                        self.assertRegex(value['sha256'], r'^[0-9a-f]{64}$')
+                    self.assertEqual(derived['before_artifacts'], 189 + completed)
+                    completed += code == 0
+                    self.assertEqual(derived['after_artifacts'], 189 + completed)
+                    for key in ('sources_stable', 'cache_and_prior_outputs_stable', 'outputs_match'):
+                        self.assertIs(derived[key], True)
+                    for key, suffix in [('before_ref', '/before.json'), ('after_ref', '/after.json')]:
+                        self.assertEqual(derived[key], prefix + '/' + folder + suffix)
+                        self.assertIn(derived[key], self.validation['external_records'])
+                self.assertEqual(run['report_ref'], obs + '/report.json')
+                self.assertIn(run['report_ref'], self.validation['external_records'])
+
+    def test_failed_sources_diagnostics_and_repairs_are_not_promoted(self):
+        member = 'lean-kernel/QleisliKernel/SourceTypes/Members.lean'
+        parts = 'lean-kernel/QleisliKernel/Tests/SourceMembers/Parts.lean'
+        first = self.raw('runs/first/01-QleisliKernel-SourceTypes-Members/stdout')
+        second = self.raw('runs/v2-full/02-QleisliKernel-Tests-SourceMembers-Parts/stdout')
+        self.assertIn(b'error:', first)
+        self.assertIn(b'unsolved goals', first)
+        self.assertIn(b'Dependent elimination failed', second)
+        self.assertNotEqual(self.raw('first/candidate/' + member), self.raw('v2/candidate/' + member))
+        self.assertEqual(self.raw('v2/candidate/' + member), self.raw('integration/candidate/' + member))
+        self.assertNotEqual(self.raw('first/candidate/' + parts), self.raw('v3/candidate/' + parts))
+        self.assertEqual(self.raw('v3/candidate/' + parts), self.raw('integration/candidate/' + parts))
+        for name, code in [('first', 1), ('v2-full', 1)]:
+            report = self.decoded('runs/' + name + '/report.json')
+            self.assertEqual(report['stages'][-1]['exit_code'], code)
+            self.assertIn('compile failed:', report['error'])
+        proposed = self.decoded('runner/invoke-first.json')
+        actual = self.decoded('observers/first/plan.json')
+        self.assertNotEqual(proposed['inner_argv'], actual['argv'])
+        self.assertIn('-I', proposed['inner_argv'])
+        self.assertNotIn('-I', actual['argv'])
+        self.assertIn('UNEXECUTED', proposed['state'])
+
+    def test_overlay_audit_and_untested_integration_remain_distinct(self):
+        stdout = self.raw('runs/v3-full/08-Audit/stdout')
+        self.assertIn(b'Audited 17614 kernel/transport declarations, 1166 pure import modules and 1210 executable import modules;', stdout)
+        self.assertIn(b'axioms used: [propext,\n Classical.choice,\n Quot.sound]', stdout)
+        aggregate = 'lean-kernel/QleisliKernel/Tests/SourceMembers.lean'
+        old = self.raw('first/validation-sources/' + aggregate)
+        new = self.raw('integration/candidate/' + aggregate)
+        added = b'import QleisliKernel.Tests.SourceMembers.Parts\n'
+        self.assertNotIn(added, old)
+        self.assertEqual(new.replace(added, b''), old)
+        self.assertIn(added, self.raw('first/validation-sources/lean-kernel/Audit.lean'))
+        manifest = self.decoded('integration/manifest.json')
+        self.assertIn('not yet compiled', manifest['state'])
+        self.assertIn('NOT covered', manifest['actual_passed_window']['scope'])
+        self.assertEqual(manifest['actual_passed_window']['stages'], self.decoded('runs/v3-full/report.json')['stages'])
+        for ref in manifest['preserved_failures'] + [manifest['actual_passed_window']['audit_stdout'], manifest['actual_passed_window']['report']]:
+            self.assertEqual(self.pin(self.raw(self.path_record(ref['path']))), {k: ref[k] for k in ('bytes', 'sha256')})
+        outer = manifest['actual_passed_window']['outer_report']
+        external = self.validation['external_records']['observers/v3-full/report.json']
+        self.assertEqual({k: external[k] for k in ('bytes', 'sha256')}, {k: outer[k] for k in ('bytes', 'sha256')})
+        for relative, ref in manifest['sources'].items():
+            self.assertEqual(self.pin(self.raw('integration/candidate/' + relative)), {k: ref[k] for k in ('bytes', 'sha256')})
+        self.assertIs(self.validation['canonical_aggregation_tested'], False)
+
+
 if __name__ == '__main__':
     unittest.main()

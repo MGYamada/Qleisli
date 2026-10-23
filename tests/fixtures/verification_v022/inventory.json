@@ -7625,13 +7625,13 @@
     {
       "group": "finite-carrier",
       "path": "lean-kernel/QleisliKernel/SourceTypes/Members.lean",
-      "sha256": "413f0a6bf84b24615bd1b839b6c1246792b2dd16de6e5c37ec1108fa98a487ac",
+      "sha256": "1779d436e1afdcce021866b177a4652b687e8a49683e1bac99bec403378d837f",
       "surface": null
     },
     {
       "group": "finite-carrier",
       "path": "lean-kernel/QleisliKernel/Tests/SourceMembers.lean",
-      "sha256": "27167ea38015b2d13ab51fddf6a72f87907a23155f7d9e7d4244f09e2dad186e",
+      "sha256": "c65d6d930e14204d9211f6dd8278061d450e52fc4300d524acc97086c03b5abd",
       "surface": null
     },
     {
@@ -7674,6 +7674,12 @@
       "group": "finite-carrier",
       "path": "lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean",
       "sha256": "8ae0e4260bcd53466ec7f36fb22f0d968b806a3ab9dd611f33bed5736ae230de",
+      "surface": null
+    },
+    {
+      "group": "finite-carrier",
+      "path": "lean-kernel/QleisliKernel/Tests/SourceMembers/Parts.lean",
+      "sha256": "c3237808c50f2a405754d5952163a3643d2032d0647784fe90dece4baf02ccd2",
       "surface": null
     }
   ],
