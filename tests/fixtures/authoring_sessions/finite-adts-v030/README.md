@@ -729,3 +729,37 @@ scope; no binary payloads or fresh cache rebuild is claimed.
 The passive tests execute no retained commands and require no external original
 paths. This history adds no native runtime acceptance, caller privilege, semantic
 field-subtree theorem, whole-source preservation or completion claim for #64.
+
+The ordinary-enum history retains the exact first Rust patch, first measured-Tri
+program, new producer/test modules, three complete nominal test-source versions,
+and both repair deltas. Complete commands and stdout/stderr distinguish the first
+Rust compilation error (no tests ran), the second attempt's 10 passes and parser
+failure in the remaining test, and the third attempt's 11 nominal-test passes.
+The third run used the same filtered suite; the two separate finite-type tests,
+broader Rust checks, MSRV and native acceptance are not established by it.
+
+`ordinary-enum-first.tar.xz`, `ordinary-enum-index.json` and
+`ordinary-enum-validation.json` use the existing inert history reader. Whole-file
+deduplication retains all 42 selected originals byte-for-byte. Unchanged Rust
+file context is represented by the first exact patch and manifest; complete
+observer source snapshots and repeated before/report inventories remain external
+originals with exact path, byte-count, mode and SHA-256 references. Compact
+observer/source fields are derived, not self-contained raw-window verification.
+The original uncompiled proposal status remains historical and unchanged.
+
+The same archive retains the separate CI null-input repair patch, preserved
+original gate, synthetic event/reproducer and actual first error report. It does
+not present that synthetic event as a downloaded hosted event or claim the
+repair's candidate tests passed. Historical ordinary/selected parse refusals are
+also preserved separately from the later Rust attempts. Passive tests run no
+saved command and require no external originals. No public enum execution,
+source preservation, member privilege or #64 completion is claimed here.
+
+The separate [current Rust validation](ordinary-enum-current.json) binds the
+reviewed ten-file proposal to serial Rust 1.99.1 and MSRV 1.85.0 observations:
+50 focused tests each, all-target compilation and strict Clippy, plus normal
+format checking. Both windows are stable, with zero ignored tests; peak RSS is
+1,478,944 KiB below the unchanged 3 GiB limit. Full reports and command streams
+remain external, exactly identified records. Existing native built-in controls
+use the observed unchanged checker, not a fresh build attestation. These checks
+do not enable public enum execution or complete the pending typed native route.

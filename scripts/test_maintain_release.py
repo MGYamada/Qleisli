@@ -132,5 +132,76 @@ class ReleaseMaintenance(unittest.TestCase):
         self.assertEqual(data['error'], 'audit failed')
 
 
+    def test_write_compacts_only_inventory_sources_and_keeps_report_format(self):
+        runtime = 'python/qleisli/__init__.py'
+        unchanged = 'python/aaa_metadata.py'
+        old_runtime = '__version__ = "0.2.8"\n# ζ ≤ [quoted] and \\escaped\n'
+        new_runtime = old_runtime.replace('"0.2.8"', '"0.2.9"', 1)
+        self.write(runtime, old_runtime)
+        self.write(unchanged, 'LABEL = "unchanged"\n')
+        inventory = {
+            'format': 'serializer regression',
+            'before': {'sources': [], 'note': 'ζ ≤ [brackets] "quoted"\n literal \\u03b6'},
+            'sources': [
+                {'path': runtime, 'sha256': release.digest(old_runtime.encode()),
+                 'surface': None, 'group': 'source-config'},
+                {'surface': None, 'group': 'source \"ζ\"\n[config]', 'path': unchanged,
+                 'sha256': release.digest((self.root / unchanged).read_bytes())},
+            ],
+            'after': {'note': '雪\nnewline\ttab\\backslash', 'nested': [{}, []]},
+        }
+        # The source order is deliberately not lexical, and each row has a
+        # different key order. Nested sources and escaped text are not markers.
+        original = json.dumps(inventory, indent=2, ensure_ascii=False) + '\n'
+        self.write(release.INVENTORY, original)
+        expected = json.loads(original)
+        expected['sources'][0]['sha256'] = release.digest(new_runtime.encode())
+        report = self.root / 'report.json'
+        with patch.object(release, 'command') as command:
+            code = release.main(['--root', str(self.root), '--version', '0.2.9',
+                                 '--write', '--report', str(report)])
+        self.assertEqual(code, 0)
+        self.assertEqual([call.args[0][1:] for call in command.call_args_list], [
+            ['scripts/check_verification_inventory.py'],
+            ['scripts/check_schema_registry.py', '--source-only'],
+            ['scripts/check_docs.py'],
+            ['scripts/check_editions.py'],
+        ])
+        self.assertTrue(all(call.args[1] == self.root.resolve() for call in command.call_args_list))
+        self.assertEqual((self.root / runtime).read_text(), new_runtime)
+        self.assertEqual((self.root / unchanged).read_text(), 'LABEL = "unchanged"\n')
+        actual = (self.root / release.INVENTORY).read_text()
+        parsed = json.loads(actual)
+        self.assertEqual(parsed, expected)
+        self.assertEqual(list(parsed), list(inventory))
+        self.assertEqual([list(row) for row in parsed['sources']],
+                         [list(row) for row in inventory['sources']])
+        self.assertEqual([row['path'] for row in parsed['sources']], [runtime, unchanged])
+        marker = '\n  "sources": '
+        old_prefix, old_tail = original.split(marker, 1)
+        new_prefix, new_tail = actual.split(marker, 1)
+        _, old_end = json.JSONDecoder().raw_decode(old_tail)
+        _, new_end = json.JSONDecoder().raw_decode(new_tail)
+        self.assertEqual(new_prefix, old_prefix)
+        self.assertEqual(new_tail[new_end:], old_tail[old_end:])
+        source_lines = new_tail[:new_end].splitlines()
+        self.assertEqual(source_lines, [
+            '[',
+            '    ' + json.dumps(expected['sources'][0], separators=(',', ':'), ensure_ascii=False) + ',',
+            '    ' + json.dumps(expected['sources'][1], separators=(',', ':'), ensure_ascii=False),
+            '  ]',
+        ])
+        self.assertTrue(actual.endswith('\n'))
+        raw_report = report.read_bytes()
+        result = json.loads(raw_report)
+        self.assertEqual(result['status'], 'passed')
+        self.assertEqual(result['version'], '0.2.9')
+        self.assertEqual([(row['path'], row['classification']) for row in result['source_review']],
+                         [(runtime, 'version-only')])
+        # The inventory-specific formatter must not change report encoding.
+        self.assertEqual(raw_report, (json.dumps(result, indent=2) + '\n').encode())
+        self.assertIn(b'\\u03b6', raw_report)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -3169,5 +3169,185 @@ class OrdinaryMemberPartsHistory(unittest.TestCase):
         self.assertIs(self.validation['canonical_aggregation_tested'], False)
 
 
+
+
+# History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-first.tar.xz"
+# Current validation: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-current.json"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-index.json"
+# Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-validation.json"
+class OrdinaryEnumFirstHistory(unittest.TestCase):
+    """Inert first sources and observed failures; no saved command is executed."""
+    META = {'archive': {'bytes': 31248, 'path': 'ordinary-enum-first.tar.xz', 'sha256': 'c0cdac3149b2a32cbd6a4323a49e517c6ccfbf7a45541c39734becd7b6a3f394'}, 'expanded_bytes': 182818, 'index': {'bytes': 6705, 'path': 'ordinary-enum-index.json', 'sha256': '644d4937ff66d60f81ccc919c9d5d6f8e5c26376ee6accb86491c9c400f7ea19'}, 'validation': {'bytes': 15527, 'path': 'ordinary-enum-validation.json', 'sha256': '591e0f3a10ffd1d573602f85864ca3a29ca3181db1b6024b6dceeee4bb48f53f'}}
+    TEST = 'src/frontend/compile/lower/nominal/tests.rs'
+
+    @staticmethod
+    def pin(raw):
+        return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        contents = {}
+        for key in ('index', 'validation', 'archive'):
+            row = cls.META[key]
+            path = FIXTURES / row['path']
+            if path.is_symlink() or not path.is_file() or path.stat().st_size != row['bytes']:
+                raise AssertionError('Enum history file kind or size changed')
+            if key != 'archive':
+                with path.open('rb') as stream:
+                    raw = stream.read(row['bytes'] + 1)
+                if cls.pin(raw) != {k: row[k] for k in ('bytes', 'sha256')}:
+                    raise AssertionError('Enum metadata changed')
+                contents[key] = json.loads(raw)
+        cls.index, cls.validation = contents['index'], contents['validation']
+        m = cls.META
+        cls.data = read_history(m['index']['path'], m['archive']['path'], m['index']['sha256'],
+                                m['archive']['bytes'], m['archive']['sha256'], m['expanded_bytes'])
+        mapping = json.loads(cls.data['original-records.json'])
+        if (mapping['format'], mapping['version']) != ('qleisli.inert-original-records', 1):
+            raise AssertionError('Enum original map changed')
+        cls.originals = mapping['records']
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('index', 'validation', 'data', 'originals'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        raw = self.data[row['record']]
+        self.assertEqual(self.pin(raw), {k: row[k] for k in ('bytes', 'sha256')})
+        return raw
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def test_complete_original_bytes_and_first_proposal_scope(self):
+        v = self.validation
+        self.assertEqual(set(self.index), {'format', 'version', 'records'})
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertEqual(set(self.index['records']), set(self.data))
+        self.assertEqual((len(self.originals), v['original_files'], v['original_bytes']), (42, 42, 200174))
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 200174)
+        self.assertEqual((v['unique_objects'], v['archive_members'], len(self.data)), (35, 36, 36))
+        self.assertEqual({row['record'] for row in self.originals.values()}, set(self.data) - {'original-records.json'})
+        self.assertEqual(v['expanded_bytes'], self.META['expanded_bytes'])
+        for key in ('archive', 'index'):
+            self.assertEqual(v[key], self.META[key])
+        self.assertLessEqual(sum(self.META[k]['bytes'] for k in ('archive', 'index', 'validation')), 58977)
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertIn(row['original_mode'], (0o644, 0o755))
+            self.raw(name)
+        self.assertEqual(len(v['external_records']), 33)
+        for name, row in v['external_records'].items():
+            self.assertNotIn(name, self.originals)
+            self.assertTrue(row['source'].startswith('/private/tmp/'))
+            self.assertRegex(row['sha256'], r'^[0-9a-f]{64}$')
+            self.assertGreater(row['bytes'], 0)
+        self.assertIn('not self-contained raw-window verification', v['derivation'])
+        self.assertIs(v['native_acceptance_claimed'], False)
+        self.assertIs(v['broader_rust_validation_claimed'], False)
+        manifest = self.decoded('proposal/manifest.json')
+        self.assertEqual(manifest['state'], 'source candidate, not compiled or tested')
+        self.assertEqual(manifest['base_head'], '82bf2a17c32625fefc1ae58f80be2364f3f63a26')
+        self.assertEqual(self.pin(self.raw('proposal/integration.patch')), manifest['patch'])
+        self.assertEqual(self.pin(self.raw('proposal/first/main.qli')), manifest['first_source'])
+        self.assertIn(self.raw('proposal/first/main.qli'), self.raw('proposal/candidate/' + self.TEST))
+        self.assertEqual(len(manifest['files']), 10)
+        for suffix in ('04-runtime-tri-match-ordinary', '05-runtime-tri-match-selected-raw'):
+            prefix = 'proposal/historical-first/observations-01/' + suffix
+            self.assertIn(b'expected `}`', self.raw(prefix + '/stdout'))
+            self.assertEqual(self.raw(prefix + '/stderr'), b'')
+            self.decoded(prefix + '/command.json')
+
+    def test_observed_compile_failure_parser_failure_and_eleven_passes(self):
+        v = self.validation
+        self.assertEqual([run['name'] for run in v['runs']],
+                         ['first-observer-01', 'repair-observer-02', 'repair-observer-03'])
+        manifest = self.decoded('proposal/manifest.json')
+        expected_sources = {row['path']: row['candidate'] for row in manifest['files']}
+        for index, run in enumerate(v['runs'], 1):
+            prefix, outer = run['prefix'], run['observer']
+            plan = self.decoded(prefix + '/plan.json')
+            self.assertEqual(prefix, f'runs/{index:02d}')
+            self.assertEqual(run['head'], '9030ad4e37f72bd46b954efbafcd556e1700448b')
+            self.assertEqual(run['kernel_sha256'], '5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12')
+            self.assertEqual(run['explicit_inputs'], {})
+            self.assertIs(run['inventory_stable'], True)
+            self.assertIs(outer['stable'], True)
+            self.assertIsNone(outer['stop_reason'])
+            self.assertIs(type(outer['exit_code']), int)
+            self.assertEqual(outer['exit_code'], 0 if index == 3 else 101)
+            self.assertIs(outer['pass'], index == 3)
+            self.assertEqual((outer['rss_group_limit_kib'], outer['heavy_job_concurrency']), (3145728, 1))
+            self.assertGreater(outer['peak_rss_kib'], 0)
+            self.assertLessEqual(outer['peak_rss_kib'], 3145728)
+            self.assertGreaterEqual(outer['seconds'], 0)
+            self.assertEqual(plan['argv'], ['/opt/homebrew/bin/cargo', 'test', '--lib',
+                                           'frontend::compile::lower::nominal::tests', '--', '--nocapture'])
+            self.assertEqual((plan['argv'], plan['cwd']), (outer['argv'], outer['cwd']))
+            self.assertEqual(plan['cwd'], '/Users/masa/git/Qleisli')
+            self.assertEqual((plan['time_limit_seconds'], plan['rss_group_limit_kib']), (900, 3145728))
+            self.assertEqual(plan['environment'], {'CARGO_BUILD_JOBS': '1', 'RUST_TEST_THREADS': '1', 'LEAN_NUM_THREADS': '1'})
+            self.assertEqual(self.raw(prefix + '/observer.py.txt'), self.raw('runs/01/observer.py.txt'))
+            self.assertEqual((run['report_ref'], run['before_ref']), (prefix + '/report.json', prefix + '/before.json'))
+            self.assertIn(run['report_ref'], v['external_records'])
+            self.assertIn(run['before_ref'], v['external_records'])
+            self.assertEqual(set(run['source_refs']), set(expected_sources))
+            for path, name in run['source_refs'].items():
+                self.assertEqual(name, prefix + '/sources/' + path)
+                row = self.originals[name] if name in self.originals else v['external_records'][name]
+                if index == 1 or path != self.TEST:
+                    self.assertEqual({k: row[k] for k in ('bytes', 'sha256')}, expected_sources[path])
+                self.assertEqual(row['original_mode'], 0o644)
+        self.assertEqual(self.raw('runs/01/stdout'), b'')
+        self.assertIn(b'error[E0277]', self.raw('runs/01/stderr'))
+        self.assertIn(b'doesn\'t implement `Debug`', self.raw('runs/01/stderr'))
+        self.assertIn(b'finite type declaration exceeds 64 members', self.raw('runs/02/stderr'))
+        self.assertIn(b'test result: FAILED. 10 passed; 1 failed; 0 ignored;', self.raw('runs/02/stdout'))
+        self.assertIn(b'test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 524 filtered out;', self.raw('runs/03/stdout'))
+
+    def test_exact_repairs_and_separate_null_input_first_diagnostic(self):
+        first, second, third = [self.raw(f'runs/{index:02d}/sources/' + self.TEST) for index in (1, 2, 3)]
+        self.assertEqual(first, self.raw('proposal/candidate/' + self.TEST))
+        old = b'        .expect_err("no unrestricted four-row table for Tri");'
+        new = b'        .err()\n        .expect("no unrestricted four-row table for Tri");'
+        self.assertEqual(first.count(old), 1)
+        self.assertEqual(first.replace(old, new), second)
+        old = (b'    // This is a small classical syntax case; no quantum dimensions are created.\n'
+               b'    let labels: Vec<_> = (0..70).map(|i| format!("V{i}")).collect();')
+        new = (b'    // Stay within the source member limit so this reaches lowering. The\n'
+               b'    // surrounding function/expression frames also consume the depth budget.\n'
+               b'    // This classical syntax case creates no quantum dimensions.\n'
+               b'    let labels: Vec<_> = (0..64).map(|i| format!("V{i}")).collect();')
+        self.assertEqual(second.count(old), 1)
+        self.assertEqual(second.replace(old, new), third)
+        self.assertEqual([run['repair_delta'] for run in self.validation['runs']],
+                         [None, 'repairs/01-to-02.patch', 'repairs/02-to-03.patch'])
+        self.assertIn(b'-.expect_err', self.raw('repairs/01-to-02.patch').replace(b' ', b''))
+        self.assertIn(b'+    let labels: Vec<_> = (0..64)', self.raw('repairs/02-to-03.patch'))
+        self.assertEqual(first.count(b'#[test]'), 11)
+        self.assertEqual(third.count(b'#[test]'), 11)
+        provenance = self.decoded('ci-null/provenance.json')
+        self.assertEqual(provenance['reported_hosted_failure']['run_id'], 39937620424)
+        self.assertIn('not executed', provenance['state'])
+        for name in ('integration.patch', 'synthetic-null-input-event.json', 'reproduce_first.py'):
+            self.assertEqual(self.pin(self.raw('ci-null/' + name)), provenance[name])
+        self.assertEqual(self.pin(self.raw('ci-null/first/scripts/check_pr_size.py')),
+                         provenance['first']['scripts/check_pr_size.py'])
+        self.assertEqual(self.decoded('ci-null/synthetic-null-input-event.json'),
+                         {'repository': {'full_name': 'MGYamada/Qleisli'}, 'inputs': None})
+        self.assertEqual(self.decoded('ci-null/actual-first-report.json'),
+                         {'format': 1, 'status': 'error', 'limit': 1000000,
+                          'reason': "'NoneType' object has no attribute 'get'"})
+        self.assertIn('synthetic', self.validation['ci_reproduction_scope'])
+
+
 if __name__ == '__main__':
     unittest.main()

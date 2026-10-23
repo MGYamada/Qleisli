@@ -8,6 +8,12 @@ development milestones from the scope of their evidence.
 
 - Accept GitHub's null inputs for manually dispatched workflows without inputs;
   keep malformed input containers rejected and retain size/reference checks.
+- Keep current source-inventory rows compact during release synchronization,
+  preserving all data and historical fixtures within the existing size limits.
+- Prepare internal ordinary enum constructors and match lowering through the
+  existing branch/phi implementation, retaining original type identity, tag
+  order and complete owner frames. Public execution stays gated on typed native
+  transport; records, coherent selection and source preservation remain pending.
 - Add independent finite ordinary-value and storage semantics, with proofs for
   classical lookup, copying and preservation through actual Raw classical
   actions, simultaneous phi outputs and pure/erase events. Ordered tree transport

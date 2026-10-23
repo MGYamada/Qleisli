@@ -842,10 +842,7 @@ struct PreparedSource<'ast> {
     interface_naturals: BTreeMap<Key, check::plans::InterfaceNaturals>,
 }
 
-fn prepare_original_source<'ast>(
-    root: &Path,
-    project: &'ast Project,
-) -> Result<PreparedSource<'ast>, CompileError> {
+fn validate_original_edition(project: &Project) -> Result<(), CompileError> {
     project.validate_edition_context().map_err(|failure| {
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
@@ -856,7 +853,99 @@ fn prepare_original_source<'ast>(
             column,
             message: failure.error.message,
         }
-    })?;
+    })
+}
+
+fn capture_original_plans<'ast>(
+    project: &'ast Project,
+    resolution: &super::resolve::Resolution,
+    interfaces: &BTreeMap<Key, Interface>,
+    helpers: &check::StaticHelpers,
+    indices: &mut BTreeMap<Key, super::resolve::locals::Index<'ast>>,
+    budget: &check::Budget,
+    nominals: &check::NominalTypes,
+) -> check::Result<(
+    OccurrencesForest<'ast>,
+    BTreeMap<Key, check::plans::InterfaceNaturals>,
+)> {
+    let mut interface_naturals = BTreeMap::new();
+    // Capture every signature before moving any original occurrence
+    // association out of the common checker's indices.
+    budget.charge(Span::default(), interfaces.len())?;
+    for id in interfaces.keys() {
+        let record = resolution.declaration(*id);
+        let declaration = &project.modules[&record.name.0].ast.decls[record.ast_index];
+        let original = check::plans::capture_interface_naturals_budgeted(
+            check::plans::InterfaceNaturalContext {
+                owner: *id,
+                declaration,
+                resolution,
+                interfaces,
+                indices,
+                helpers,
+                budget,
+                nominals,
+            },
+        )
+        .map_err(|error| error.in_module(&record.name.0))?;
+        budget
+            .charge(declaration.span, 1)
+            .map_err(|error| error.in_module(&record.name.0))?;
+        interface_naturals.insert(*id, original);
+    }
+    let mut occurrences = OccurrencesForest::default();
+    for (id, index) in indices {
+        let declaration = resolution.declaration(*id);
+        let span = project.modules[&declaration.name.0].ast.decls[declaration.ast_index].span;
+        occurrences
+            .insert_budgeted(index.take_occurrences(), span, &mut |span, cells| {
+                budget.charge(span, cells)
+            })
+            .map_err(|error| error.in_module(&declaration.name.0))?;
+    }
+    Ok((occurrences, interface_naturals))
+}
+
+/// Test-only original-source preparation for inspecting an untrusted producer.
+/// It retains the full common judgment and original occurrence plans, and
+/// grants no native acceptance. Production preparation keeps its own gate.
+#[cfg(test)]
+fn prepare_untrusted_source_test<'ast>(
+    root: &Path,
+    project: &'ast Project,
+) -> Result<PreparedSource<'ast>, CompileError> {
+    validate_original_edition(project)?;
+    let (checked, (occurrences, interface_naturals)) = check::program_with_sources(
+        project
+            .modules
+            .iter()
+            .map(|(name, module)| (name.as_str(), &module.ast))
+            .collect(),
+        project
+            .modules
+            .iter()
+            .map(|(name, module)| (name.as_str(), module.source.as_str()))
+            .collect(),
+        SourceLimits::finite(),
+        |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
+            capture_original_plans(
+                project, resolution, interfaces, helpers, indices, budget, nominals,
+            )
+        },
+    )
+    .map_err(|error| source_error(project, root, error))?;
+    Ok(PreparedSource {
+        checked,
+        occurrences,
+        interface_naturals,
+    })
+}
+
+fn prepare_original_source<'ast>(
+    root: &Path,
+    project: &'ast Project,
+) -> Result<PreparedSource<'ast>, CompileError> {
+    validate_original_edition(project)?;
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
     let (source, (occurrences, interface_naturals)) = check::program_with_sources(
@@ -879,43 +968,9 @@ fn prepare_original_source<'ast>(
                     .map(|(name, module)| (name.as_str(), &module.ast)),
                 |span, cells| budget.charge(span, cells),
             )?;
-            let mut interface_naturals = BTreeMap::new();
-            // Capture every signature before moving any original occurrence
-            // association out of the common checker's indices.
-            budget.charge(Span::default(), interfaces.len())?;
-            for id in interfaces.keys() {
-                let record = resolution.declaration(*id);
-                let declaration = &project.modules[&record.name.0].ast.decls[record.ast_index];
-                let original = check::plans::capture_interface_naturals_budgeted(
-                    check::plans::InterfaceNaturalContext {
-                        owner: *id,
-                        declaration,
-                        resolution,
-                        interfaces,
-                        indices,
-                        helpers,
-                        budget,
-                        nominals,
-                    },
-                )
-                .map_err(|error| error.in_module(&record.name.0))?;
-                budget
-                    .charge(declaration.span, 1)
-                    .map_err(|error| error.in_module(&record.name.0))?;
-                interface_naturals.insert(*id, original);
-            }
-            let mut occurrences = OccurrencesForest::default();
-            for (id, index) in indices {
-                let declaration = resolution.declaration(*id);
-                let span =
-                    project.modules[&declaration.name.0].ast.decls[declaration.ast_index].span;
-                occurrences
-                    .insert_budgeted(index.take_occurrences(), span, &mut |span, cells| {
-                        budget.charge(span, cells)
-                    })
-                    .map_err(|error| error.in_module(&declaration.name.0))?;
-            }
-            Ok((occurrences, interface_naturals))
+            capture_original_plans(
+                project, resolution, interfaces, helpers, indices, budget, nominals,
+            )
         },
     )
     .map_err(|error| source_error(project, root, error))?;

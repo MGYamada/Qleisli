@@ -66,6 +66,9 @@ pub(super) enum Value {
     /// One ordinary Bits<n> value, in its declared low-axis-first bit order.
     /// It is neither an ordinary tuple nor an ordinary Bit at width one.
     Bits(Vec<ClassicalId>),
+    /// Full ordinary enum identity and low-axis-first tag storage. Width alone
+    /// is not its logical domain; a singleton retains this zero-width node.
+    Enumeration(Ty, Vec<ClassicalId>),
     /// Retains the complete Q type, including zero-width basis owners.
     Quantum(Slot, Ty),
     Pair(Box<Value>, Box<Value>),
@@ -83,7 +86,7 @@ impl Value {
             match value {
                 Value::Quantum(..) => (1, 0),
                 Value::Classical(_) => (0, 1),
-                Value::Bits(ids) => (0, ids.len()),
+                Value::Bits(ids) | Value::Enumeration(_, ids) => (0, ids.len()),
                 Value::Pair(a, b) => {
                     let a = counts(a);
                     let b = counts(b);
@@ -114,7 +117,7 @@ impl Value {
         match self {
             Self::Quantum(slot, _) => quantum.push(registers[slot].token),
             Self::Classical(id) => classical.push(*id),
-            Self::Bits(ids) => classical.extend_from_slice(ids),
+            Self::Bits(ids) | Self::Enumeration(_, ids) => classical.extend_from_slice(ids),
             Self::Pair(a, b) => {
                 a.write_outputs(registers, quantum, classical);
                 b.write_outputs(registers, quantum, classical);
@@ -164,7 +167,7 @@ impl Value {
                 }
                 // Count the data cells copied with this ordinary word, while
                 // retaining one structural Bits leaf and its original depth.
-                Value::Bits(ids) => size.nodes += ids.len(),
+                Value::Bits(ids) | Value::Enumeration(_, ids) => size.nodes += ids.len(),
                 _ => {}
             }
         }
@@ -181,9 +184,31 @@ impl Value {
             Self::Bits(ids) => Ty::bits(
                 u32::try_from(ids.len()).expect("finite word storage has a checked u32 width"),
             ),
-            Self::Quantum(_, ty) => ty.clone(),
+            Self::Quantum(_, ty) | Self::Enumeration(ty, _) => ty.clone(),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
             Self::Tuple(fields) => Ty::tuple(fields.iter().map(Self::ty).collect()),
+        }
+    }
+
+    /// Equality may inspect complete original source and label metadata. Charge
+    /// those bytes separately from structural/data-cell copy accounting.
+    pub(super) fn nominal_type_work(ty: &Ty) -> usize {
+        match &ty.kind {
+            Kind::Nominal(nominal) => nominal.metadata_cells(),
+            Kind::Tuple(fields) => total_size(fields.iter().map(Self::nominal_type_work)),
+            Kind::Q(inner) => Self::nominal_type_work(inner),
+            _ => 0,
+        }
+    }
+
+    pub(super) fn nominal_equality_work(&self) -> usize {
+        match self {
+            Self::Enumeration(ty, _) | Self::Quantum(_, ty) => Self::nominal_type_work(ty),
+            Self::Pair(a, b) => a
+                .nominal_equality_work()
+                .saturating_add(b.nominal_equality_work()),
+            Self::Tuple(fields) => total_size(fields.iter().map(Self::nominal_equality_work)),
+            _ => 0,
         }
     }
 
