@@ -15,6 +15,7 @@ mod function_contract;
 mod nominal;
 mod operations;
 mod primitives;
+mod record;
 mod runtime_transforms;
 mod scope;
 mod static_primitives;
@@ -145,7 +146,9 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
 
     fn pattern_type<'v>(&self, value: &'v Value) -> Cow<'v, Ty> {
         match value {
-            Value::Quantum(_, ty) | Value::Enumeration(ty, _) => Cow::Borrowed(ty),
+            Value::Quantum(_, ty) | Value::Enumeration(ty, _) | Value::Record(ty, _) => {
+                Cow::Borrowed(ty)
+            }
             _ => Cow::Owned(value.ty()),
         }
     }
@@ -1253,12 +1256,17 @@ impl Lowerer<'_, '_> {
                     |lower, module, body, env| lower.block(module, body, env),
                 )
             }
-            ExprKind::Record(_) | ExprKind::Field { .. } => Err(self.error(
+            ExprKind::Record(record) => self.record_value(
                 module,
                 expr.span,
-                ErrorCode::Unsupported,
-                "ordinary nominal values require their typed native transport",
-            )),
+                record,
+                env,
+                |lower, module, value, env| lower.expr(module, value, env),
+            ),
+            ExprKind::Field { receiver, field } => {
+                let receiver = self.expr(module, receiver, env)?;
+                self.record_field(module, field, receiver)
+            }
             ExprKind::UnsupportedClosure(_) => Err(self.error(
                 module,
                 expr.span,

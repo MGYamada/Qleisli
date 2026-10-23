@@ -129,14 +129,49 @@ def inventory_plan(root, replacements, reviewed):
     return data, rows
 
 
+def current_metadata_json(data):
+    """Readable current inventory/coverage rows without changing data or order.
+
+    Keep top-level sections indented. Compact nested rows/cells up to 480
+    UTF-8 bytes and wrap larger records between complete child entries.
+    Source rows retain their established single line layout; individual JSON
+    strings are never split. This is not used for reports or historical records.
+    """
+    def render(value, path=(), depth=0):
+        compact = json.dumps(value, separators=(',', ':'), ensure_ascii=False)
+        if not isinstance(value, (dict, list)) or not value:
+            return compact
+        source_row = len(path) == 2 and path[0] == 'sources'
+        if source_row or (depth >= 2 and len(compact.encode('utf-8')) <= 480):
+            return compact
+        indent = '  ' * depth
+        if isinstance(value, list):
+            opening, closing = '[', ']'
+            rows = [render(item, path + (index,), depth + 1)
+                    for index, item in enumerate(value)]
+        else:
+            opening, closing = '{', '}'
+            separator = ':' if depth >= 2 else ': '
+            rows = [json.dumps(key, ensure_ascii=False) + separator +
+                    render(item, path + (key,), depth + 1) for key, item in value.items()]
+        lines = []
+        for row in rows:
+            # Reserve two bytes for a closing delimiter and the parent comma.
+            # Multiline children and indivisible long strings stay separate.
+            if (depth >= 2 and lines and '\n' not in lines[-1] and '\n' not in row
+                    and len((lines[-1] + ',' + row).encode('utf-8')) <= 478):
+                lines[-1] += ',' + row
+            else:
+                lines.append(indent + '  ' + row)
+        if depth >= 2:
+            lines[0] = opening + lines[0].lstrip()
+            lines[-1] += closing
+            return ',\n'.join(lines)
+        return opening + '\n' + ',\n'.join(lines) + '\n' + indent + closing
+    return render(data) + '\n'
+
 def inventory_json(data):
-    """Keep source rows compact; all other inventory sections retain indent=2."""
-    text = json.dumps({**data, 'sources': []}, indent=2, ensure_ascii=False)
-    if data['sources']:
-        rows = ',\n'.join('    ' + json.dumps(row, separators=(',', ':'), ensure_ascii=False)
-                          for row in data['sources'])
-        text = text.replace('\n  "sources": []', '\n  "sources": [\n' + rows + '\n  ]', 1)
-    return text + '\n'
+    return current_metadata_json(data)
 
 
 def command(argv, root, report):

@@ -304,6 +304,30 @@ impl Lowerer<'_, '_> {
                 let outputs = self.merge_classical_word(module, span, a, b, classical)?;
                 Ok(Value::Enumeration(ty, outputs))
             }
+            (Value::Record(ty, a), Value::Record(other, b)) => {
+                self.validate_record(module, span, &ty, &a)?;
+                self.validate_record(module, span, &other, &b)?;
+                if !super::super::operations::same_port_budgeted(&ty, &other, &mut |cells| {
+                    self.compiler.charge(module, span, cells)
+                })? {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "record branch results require the same complete original type",
+                    ));
+                }
+                self.compiler
+                    .charge(module, span, a.len().saturating_add(1))?;
+                let fields = a
+                    .into_iter()
+                    .zip(b)
+                    .map(|(a, b)| {
+                        self.merge_results(module, span, a, b, a_regs, b_regs, quantum, classical)
+                    })
+                    .collect::<Result<_, _>>()?;
+                Ok(Value::Record(ty, fields))
+            }
             (Value::Quantum(a, ty), Value::Quantum(b, _)) => {
                 let a = a_regs.remove(&a).ok_or_else(|| {
                     self.error(

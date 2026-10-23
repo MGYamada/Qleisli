@@ -288,4 +288,71 @@ theorem check_original_declarations (sources : Sources) (basis : Basis) (work le
   obtain ⟨remaining,c,fold,_⟩ := Finite.bind_success _ _ _ _ _ h
   exact fold_original _ sources basis.length basis basis remaining b c fold
 
+
+/-- Read a complete original member type with the existing type grammar and
+original helper environment. The caller must separately establish the origin
+of these tokens; this function grants neither member access nor acceptance. -/
+def typeExpression (sources : Sources) (moduleName : String) (tokens : List String) :
+    Finite.WorkM Basis := do
+  let helpers ← sourceHelpers sources
+  (readers helpers 65).ty sources moduleName tokens
+
+/-- A checked field width denotes the actual original Nat expression, under
+bindings read from its declaring module and an actually prepared original
+helper environment. The value relation is the existing independent semantics;
+preparation and name lookup are separately explicit provenance facts. -/
+def NaturalWidthMeaning (sources : Sources) (moduleName : String)
+    (tokens : List String) (width : Nat) : Prop :=
+  ∃ helpers expression bindings,
+    (∃ work left, (NaturalHelpers.prepare sources).run work = (.ok helpers,left)) ∧
+    NaturalSyntax.read tokens = .ok expression ∧
+    (∃ work left, (NaturalCatalog.expressionBindings sources
+      (helpers.map (·.original)) moduleName expression).run work = (.ok bindings,left)) ∧
+    Semantics.SourceNatural.Value (NaturalFrames.names ⟨[]⟩ (fun _ => 0))
+      (NaturalHelpers.interpretation helpers bindings) expression width
+
+private theorem sourceHelpers_prepared (sources : Sources)
+    (helpers : List NaturalHelpers.Entry) (work left : Nat)
+    (ok : (sourceHelpers sources).run work = (.ok helpers,left)) :
+    ∃ before, (NaturalHelpers.prepare sources).run before = (.ok helpers,left) := by
+  obtain ⟨_,before,_,prepared⟩ := Finite.bind_success _ _ _ _ _ ok
+  exact ⟨before,prepared⟩
+
+theorem typeExpression_unit (sources : Sources) (moduleName : String)
+    (result : Basis) (work left : Nat)
+    (ok : (typeExpression sources moduleName ["Unit"]).run work = (.ok result,left)) :
+    result = [.unit] := by
+  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ok
+  change (pure [.unit] : Finite.WorkM Basis).run middle = (.ok result,left) at body
+  exact (Finite.pure_success _ _ _ _ body).1
+
+theorem typeExpression_bit (sources : Sources) (moduleName : String)
+    (result : Basis) (work left : Nat)
+    (ok : (typeExpression sources moduleName ["Bit"]).run work = (.ok result,left)) :
+    result = [.bit] := by
+  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ok
+  change (pure [.bit] : Finite.WorkM Basis).run middle = (.ok result,left) at body
+  exact (Finite.pure_success _ _ _ _ body).1
+
+/-- The Bits leaf is not inferred from a machine width or producer tree.
+Its exact source Nat expression has the existing independent value semantics. -/
+theorem typeExpression_bits (sources : Sources) (moduleName : String)
+    (rest : List String) (result : Basis) (work left : Nat)
+    (ok : (typeExpression sources moduleName ("Bits" :: "<" :: rest)).run work =
+      (.ok result,left)) :
+    ∃ width, result = [.bits width] ∧ rest.getLast? = some ">" ∧
+      NaturalWidthMeaning sources moduleName rest.dropLast width := by
+  obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ok
+  change ((do
+    Finite.guard (rest.getLast? == some ">") .request
+    let checked ← naturalWidth sources helpers moduleName rest.dropLast
+    pure [.bits checked.value]) : Finite.WorkM Basis).run middle = (.ok result,left) at body
+  obtain ⟨_,a,closed,h⟩ := Finite.bind_success _ _ _ _ _ body
+  obtain ⟨checked,b,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  obtain ⟨before,helperRun⟩ := sourceHelpers_prepared sources helpers work middle prepared
+  refine ⟨checked.value,(Finite.pure_success _ _ _ _ h).1,
+    beq_iff_eq.mp (Finite.guard_success _ _ _ _ closed).1,?_⟩
+  exact ⟨helpers,checked.original.expression,checked.original.bindings,
+    ⟨before,middle,helperRun⟩,checked.original.parsed,checked.original.resolved,checked.meaning⟩
+
 end QleisliKernel.SourceTypes

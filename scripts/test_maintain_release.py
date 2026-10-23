@@ -132,7 +132,7 @@ class ReleaseMaintenance(unittest.TestCase):
         self.assertEqual(data['error'], 'audit failed')
 
 
-    def test_write_compacts_only_inventory_sources_and_keeps_report_format(self):
+    def test_write_compact_inventory_rows_keeps_data_order_and_report_format(self):
         runtime = 'python/qleisli/__init__.py'
         unchanged = 'python/aaa_metadata.py'
         old_runtime = '__version__ = "0.2.8"\n# ζ ≤ [quoted] and \\escaped\n'
@@ -183,7 +183,8 @@ class ReleaseMaintenance(unittest.TestCase):
         _, old_end = json.JSONDecoder().raw_decode(old_tail)
         _, new_end = json.JSONDecoder().raw_decode(new_tail)
         self.assertEqual(new_prefix, old_prefix)
-        self.assertEqual(new_tail[new_end:], old_tail[old_end:])
+        self.assertIn('    \"nested\": [{},[]]', new_tail[new_end:])
+        self.assertNotEqual(new_tail[new_end:], old_tail[old_end:])
         source_lines = new_tail[:new_end].splitlines()
         self.assertEqual(source_lines, [
             '[',
@@ -201,6 +202,64 @@ class ReleaseMaintenance(unittest.TestCase):
         # The inventory-specific formatter must not change report encoding.
         self.assertEqual(raw_report, (json.dumps(result, indent=2) + '\n').encode())
         self.assertIn(b'\\u03b6', raw_report)
+
+
+    def test_current_metadata_small_rows_and_large_records_are_readable(self):
+        long = 'x' * 500
+        value = {'format': 'row format', 'rows': [
+            {'b': 2, 'a': [True, None, 'ζ']},
+            {'long': long, 'nested': {'z': 0, 'a': False}},
+        ], 'empty': {}}
+        actual = release.current_metadata_json(value)
+        expected = ('{\n  "format": "row format",\n  "rows": [\n'
+                    '    {"b":2,"a":[true,null,"ζ"]},\n'
+                    '    {"long":"' + long + '",\n'
+                    '      "nested":{"z":0,"a":false}}\n'
+                    '  ],\n  "empty": {}\n}\n')
+        self.assertEqual(actual, expected)
+        self.assertEqual(release.current_metadata_json(json.loads(actual)), actual)
+
+    def test_current_metadata_preserves_recursive_pairs_escapes_and_source_rows(self):
+        value = {'groups': [{'two': 2, 'one': 1, 'cells': [-3, 0.25, False, None]}],
+                 'sources': [{'path': '雪/"quoted"\nline\t\\literal', 'long': 'x' * 600,
+                              'surface': {'z': [3, 2], 'a': []}}],
+                 'other': {'sources': [{'long': 'y' * 600, 'value': 1}],
+                           'key': 'literal \\u03b6'}}
+        expected = json.dumps(value, ensure_ascii=False)
+        actual = release.current_metadata_json(value)
+        self.assertEqual(json.loads(actual, object_pairs_hook=list),
+                         json.loads(expected, object_pairs_hook=list))
+        source = '    ' + json.dumps(value['sources'][0], separators=(',', ':'), ensure_ascii=False)
+        self.assertIn(source, actual.splitlines())
+        self.assertIn('{"long":"' + 'y' * 600 + '",\n', actual)
+        nested_row = json.dumps(value['other']['sources'][0], separators=(',', ':'))
+        self.assertNotIn(nested_row, actual)
+        self.assertEqual(release.inventory_json(value), actual)
+        self.assertTrue(actual.endswith('\n'))
+
+    def test_current_metadata_limit_counts_utf8_bytes(self):
+        # These rows fit 480 characters but exceed 480 UTF-8 bytes.
+        value = {'rows': [{'text': '雪' * 170, 'tail': 0}]}
+        actual = release.current_metadata_json(value)
+        self.assertIn('    {"text":"' + '雪' * 170 + '",\n', actual)
+        self.assertEqual(json.loads(actual), value)
+
+
+    def test_current_metadata_wraps_complete_utf8_entries_and_keeps_json_kinds(self):
+        value = {'rows': [['雪' * 70 + str(i) for i in range(7)]],
+                 'kinds': {'object': {}, 'array': [], 'bool': False, 'integer': 0,
+                           'float': 0.0, 'null': None, 'text': '[\"a\", true]'}}
+        actual = release.current_metadata_json(value)
+        def tagged(item):
+            if isinstance(item, dict):
+                return ('object', tuple((key, tagged(child)) for key, child in item.items()))
+            if isinstance(item, list):
+                return ('array', tuple(tagged(child) for child in item))
+            return (type(item).__name__, item)
+        self.assertEqual(tagged(json.loads(actual)), tagged(value))
+        self.assertTrue(all(len(line.encode('utf-8')) <= 480 for line in actual.splitlines()))
+        self.assertEqual(actual.count('雪' * 70), 7)
+        self.assertEqual(release.current_metadata_json(json.loads(actual)), actual)
 
 
 if __name__ == '__main__':

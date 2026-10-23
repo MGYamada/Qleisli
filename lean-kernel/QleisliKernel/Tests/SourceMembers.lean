@@ -1,3 +1,6 @@
+import QleisliKernel.Tests.SourceMembers.FieldTypes
+import QleisliKernel.Tests.SourceMembers.FieldExamples
+import QleisliKernel.Tests.SourceMembers.ResolveReferenceFacts
 import QleisliKernel.Tests.SourceMembers.BoundaryProbes
 import QleisliKernel.Tests.SourceMembers.LegacyComparison
 import QleisliKernel.Tests.SourceMembers.SmallExamples

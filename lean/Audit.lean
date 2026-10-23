@@ -52,7 +52,9 @@ run_cmd do
     `Qleisli.Semantics.OrdinaryValue, `Qleisli.OrdinaryValueExamples, `Qleisli.OrdinaryValueRawExamples,
     `QleisliKernel.Semantics.OrdinaryValueTransport, `Qleisli.Semantics.OrdinaryValuePhi,
     `Qleisli.Semantics.OrdinaryValueEffects, `Qleisli.OrdinaryValuePhiExamples,
-    `Qleisli.OrdinaryValuePhiTypes, `Qleisli.OrdinaryValueEffectsExamples]
+    `Qleisli.OrdinaryValuePhiTypes, `Qleisli.OrdinaryValueEffectsExamples,
+    `Qleisli.Semantics.OrdinaryValueBranch, `Qleisli.OrdinaryValueBranchTypes,
+    `Qleisli.OrdinaryValueBranchExamples]
   let allowedAxioms := #[``propext, ``Classical.choice, ``Quot.sound]
   let mut present : NameSet := {}
   let mut checked := 0
@@ -70,7 +72,10 @@ run_cmd do
     (`Qleisli.Semantics.OrdinaryValueEffects, #[`Qleisli.Semantics.OrdinaryValue]),
     (`Qleisli.OrdinaryValuePhiExamples, #[`Qleisli.Semantics.OrdinaryValuePhi]),
     (`Qleisli.OrdinaryValuePhiTypes, #[`Qleisli.Semantics.OrdinaryValuePhi]),
-    (`Qleisli.OrdinaryValueEffectsExamples, #[`Qleisli.Semantics.OrdinaryValueEffects])]
+    (`Qleisli.OrdinaryValueEffectsExamples, #[`Qleisli.Semantics.OrdinaryValueEffects]),
+    (`Qleisli.Semantics.OrdinaryValueBranch, #[`Qleisli.Semantics.OrdinaryValuePhi]),
+    (`Qleisli.OrdinaryValueBranchTypes, #[`Qleisli.Semantics.OrdinaryValueBranch]),
+    (`Qleisli.OrdinaryValueBranchExamples, #[`Qleisli.Semantics.OrdinaryValueBranch])]
   for (moduleName, expected) in expectedImports do
     match env.getModuleIdx? moduleName with
     | none => failures := failures.push s!"Missing target module {moduleName}"

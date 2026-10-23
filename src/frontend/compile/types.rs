@@ -3,7 +3,7 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 use super::*;
-use crate::frontend::types::nominal::{Body, Nominal};
+use crate::frontend::types::nominal::{Body, Field, Nominal};
 
 #[derive(Clone, Copy)]
 enum Location<'a> {
@@ -139,7 +139,17 @@ fn measure<'a, N: FiniteRegisterSize>(
     depth: usize,
     visited: &mut usize,
 ) -> Result<Measured, Failure> {
-    let original = original.into();
+    measure_inner(original.into(), checked, stage, depth, visited, false)
+}
+
+fn measure_inner<N: FiniteRegisterSize>(
+    original: Location<'_>,
+    checked: &crate::frontend::types::Type<N>,
+    stage: Stage,
+    depth: usize,
+    visited: &mut usize,
+    ordinary: bool,
+) -> Result<Measured, Failure> {
     if depth > MAX_TREE_DEPTH || *visited >= MAX_TREE_NODES {
         return Err(Failure::at(original, FailureKind::TreeLimit));
     }
@@ -175,31 +185,46 @@ fn measure<'a, N: FiniteRegisterSize>(
         }
         Kind::Parameter(_) => return Err(Failure::at(original, FailureKind::Parameter)),
         Kind::Nominal(nominal) => {
-            if !matches!(&nominal.body, Body::Enum(_)) {
-                return Err(Failure::at(original, FailureKind::Nominal));
-            }
             let metadata_work = nominal.metadata_cells();
-            Measured {
+            let mut result = Measured {
                 nodes: 1,
-                copy_work: metadata_work
-                    .checked_add(1)
-                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?,
+                copy_work: metadata_work,
                 metadata_work,
-                // An ordinary enum keeps its exact declaration. It is not a
-                // power-of-two coherent basis or a Bits representation.
+                // Ordinary nominal storage is never a coherent Basis encoding.
                 basis_bits: None,
+            };
+            for field in nominal.fields() {
+                let child = measure_inner(original, field, stage, depth + 1, visited, true)?;
+                result.nodes = result
+                    .nodes
+                    .checked_add(child.nodes)
+                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
+                result.copy_work = result
+                    .copy_work
+                    .checked_add(child.copy_work)
+                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
+                result.metadata_work = result
+                    .metadata_work
+                    .checked_add(child.metadata_work)
+                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
             }
+            result.copy_work = result
+                .copy_work
+                .checked_add(result.nodes)
+                .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
+            result
         }
         Kind::Q(basis) => {
-            if stage == Stage::Basis {
+            if stage == Stage::Basis || ordinary {
                 return Err(Failure::at(original, FailureKind::QuantumBasis));
             }
-            let child = measure(
+            let child = measure_inner(
                 original_basis(original),
                 basis,
                 Stage::Basis,
                 depth + 1,
                 visited,
+                true,
             )?;
             if child.basis_bits.is_none() {
                 return Err(Failure::at(original, FailureKind::Nominal));
@@ -232,12 +257,13 @@ fn measure<'a, N: FiniteRegisterSize>(
                 basis_bits: Some(0),
             };
             for (ordinal, field) in fields.iter().enumerate() {
-                let child = measure(
+                let child = measure_inner(
                     original_field(original, fields.len(), ordinal),
                     field,
                     stage,
                     depth + 1,
                     visited,
+                    ordinary,
                 )?;
                 result.nodes = result
                     .nodes
@@ -292,7 +318,22 @@ fn copy_reserved<'a, N: FiniteRegisterSize>(
                 origin: Arc::clone(&nominal.origin),
                 body: Body::Enum(variants.clone()),
             })),
-            Body::Record(_) => Err(Failure::at(original, FailureKind::Nominal)),
+            Body::Record(fields) => {
+                let mut copied = Vec::with_capacity(fields.len());
+                for field in fields {
+                    copied.push(Field {
+                        name: field.name.clone(),
+                        public: field.public,
+                        // The borrowed preflight has already refused every Q
+                        // below this ordinary record, before any allocation.
+                        ty: copy_reserved(original, &field.ty, stage)?,
+                    });
+                }
+                Ok(Ty::nominal(Nominal {
+                    origin: Arc::clone(&nominal.origin),
+                    body: Body::Record(copied),
+                }))
+            }
         },
         Kind::Q(_) if stage == Stage::Basis => {
             Err(Failure::at(original, FailureKind::QuantumBasis))
@@ -715,7 +756,7 @@ mod tests {
     }
 
     #[test]
-    fn enum_runtime_capacity_does_not_open_coherent_or_record_types() {
+    fn enum_runtime_capacity_does_not_open_coherent_types() {
         let original = named(Span { start: 1, end: 2 });
         let checked = enumeration("main", &["A"]);
         let Kind::Nominal(nominal) = &checked.kind else {
@@ -740,7 +781,7 @@ mod tests {
             origin: Arc::clone(&nominal.origin),
             body: Body::Record(Vec::new()),
         });
-        for invalid in [Closed::quantum(checked), record] {
+        for invalid in [Closed::quantum(checked), Closed::quantum(record)] {
             let error = reserve_and_copy(
                 &original,
                 &invalid,
@@ -752,5 +793,134 @@ mod tests {
             .unwrap_err();
             assert_eq!(error.kind, FailureKind::Nominal);
         }
+    }
+
+    fn record(fields: Vec<Field<u32>>) -> Closed {
+        Closed::nominal(Nominal {
+            origin: Arc::new(crate::frontend::types::nominal::Origin {
+                module: "main".to_owned(),
+                name: "Packet".to_owned(),
+                source: Arc::from("struct Packet{}"),
+                span: Span::default(),
+            }),
+            body: Body::Record(fields),
+        })
+    }
+
+    #[test]
+    fn record_copy_preserves_order_privacy_zero_children_and_reserves_before_allocation() {
+        let original = named(Span { start: 0, end: 1 });
+        let checked = record(vec![
+            Field {
+                name: "one".into(),
+                public: true,
+                ty: enumeration("main", &["Only"]),
+            },
+            Field {
+                name: "empty".into(),
+                public: false,
+                ty: record(Vec::new()),
+            },
+            Field {
+                name: "bits".into(),
+                public: true,
+                ty: Closed::bits(0),
+            },
+        ]);
+        let Kind::Nominal(nominal) = &checked.kind else {
+            panic!("record fixture");
+        };
+        let metadata = nominal.metadata_cells()
+            + nominal
+                .fields()
+                .map(|field| match &field.kind {
+                    Kind::Nominal(child) => child.metadata_cells(),
+                    _ => 0,
+                })
+                .sum::<usize>();
+        // Four nodes: three leaf copies plus the four-node root traversal.
+        let cost = metadata + 7;
+        assert_eq!(
+            measure(&original, &checked, Stage::Runtime, MAX_TREE_DEPTH, &mut 0)
+                .unwrap_err()
+                .kind,
+            FailureKind::TreeLimit
+        );
+        let mut visited = MAX_TREE_NODES - 1;
+        assert_eq!(
+            measure(&original, &checked, Stage::Runtime, 1, &mut visited)
+                .unwrap_err()
+                .kind,
+            FailureKind::TreeLimit
+        );
+        for available in [cost - 1, cost] {
+            let copied = Cell::new(false);
+            let result = reserve_and_copy(
+                &original,
+                &checked,
+                Stage::Runtime,
+                |failure| failure,
+                |span, amount| {
+                    assert_eq!(amount, cost);
+                    if amount > available {
+                        return Err(Failure {
+                            span,
+                            kind: FailureKind::WorkOverflow,
+                        });
+                    }
+                    Ok(())
+                },
+                |checked| {
+                    copied.set(true);
+                    copy_reserved(&original, checked, Stage::Runtime)
+                },
+            );
+            assert_eq!(copied.get(), available == cost);
+            assert_eq!(result.is_ok(), available == cost);
+            if let Ok(actual) = result {
+                assert_eq!(actual, checked);
+                assert_eq!(actual.basis_bits(), None);
+                let Kind::Nominal(nominal) = &actual.kind else {
+                    panic!("record type");
+                };
+                let Body::Record(fields) = &nominal.body else {
+                    panic!("record declaration");
+                };
+                assert_eq!(
+                    fields
+                        .iter()
+                        .map(|field| field.name.as_str())
+                        .collect::<Vec<_>>(),
+                    ["one", "empty", "bits"]
+                );
+                assert!(!fields[1].public);
+            }
+        }
+        assert!(
+            closed_basis_capacity(&checked, original.span, &mut |_, _| {
+                panic!("record coherent basis refuses before reservation")
+            })
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn record_children_cannot_hide_quantum_ownership_even_in_runtime_tuples() {
+        let original = named(Span::default());
+        let invalid = record(vec![Field {
+            name: "hidden".into(),
+            public: false,
+            ty: Closed::pair(Closed::unit(), Closed::quantum(Closed::unit())),
+        }]);
+        let error = reserve_and_copy(
+            &original,
+            &invalid,
+            Stage::Runtime,
+            |failure| failure,
+            |_, _| panic!("ordinary record owner must refuse before reservation"),
+            |_| panic!("ordinary record owner must refuse before copying"),
+        )
+        .unwrap_err();
+        assert_eq!(error.kind, FailureKind::QuantumBasis);
     }
 }

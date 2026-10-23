@@ -1,6 +1,8 @@
 //! Raw-only producer probes: no native request or accepted handle is constructed.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
+
+mod records;
 use crate::frontend::compile::lower::call_state_tests::untrusted_compiler;
 use crate::frontend::project::{ModuleOrigin, ProjectEdition, SourceModule};
 

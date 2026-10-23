@@ -23,6 +23,9 @@ import Qleisli.Semantics.OrdinaryValueEffects
 import Qleisli.OrdinaryValuePhiExamples
 import Qleisli.OrdinaryValuePhiTypes
 import Qleisli.OrdinaryValueEffectsExamples
+import Qleisli.Semantics.OrdinaryValueBranch
+import Qleisli.OrdinaryValueBranchTypes
+import Qleisli.OrdinaryValueBranchExamples
 import Qleisli.Scope
 import Qleisli.ExclusiveScope
 import Qleisli.Transition

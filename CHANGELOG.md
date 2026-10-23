@@ -6,9 +6,19 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prepare internal ordinary record construction, projection and branch lowering,
+  retaining original field privacy, complete nominal trees, written initializer
+  order and zero-width children. Preserve first sources and actual source/runner
+  failures. Public nominal execution still requires its unfinished native route.
+- Connect ordered original member tokens to complete field subtrees and prove
+  canonical reference lookup facts. Add conditional branch preservation from
+  actual arm runs through simultaneous phis, retaining hidden outcomes and
+  unnormalized operators. Caller-site authentication and source preservation
+  remain unfinished.
 - Accept GitHub's null inputs for manually dispatched workflows without inputs;
   keep malformed input containers rejected and retain size/reference checks.
-- Keep current source-inventory rows compact during release synchronization,
+- Keep current source-inventory and coverage rows compact and readable during
+  release synchronization,
   preserving all data and historical fixtures within the existing size limits.
 - Prepare internal ordinary enum constructors and match lowering through the
   existing branch/phi implementation, retaining original type identity, tag
@@ -28,8 +38,7 @@ development milestones from the scope of their evidence.
   byte, name and whole-layout boundaries; check legacy lexer/declaration results
   and malformed locations. Prove that member extraction consumes the original
   token parts in order and retains each member's full type tokens and visibility.
-  Caller privacy, field subtree correspondence and
-  typed execution remain unfinished.
+  Caller-site privacy and typed execution remain unfinished.
 - Begin internal finite-carrier support with source-backed nominal trees,
   separate logical cardinalities and physical code layouts, and bounded exact
   code-isometry checking. Preserve first sources and both Lean study attempts.
