@@ -129,6 +129,16 @@ def inventory_plan(root, replacements, reviewed):
     return data, rows
 
 
+def inventory_json(data):
+    """Keep source rows compact; all other inventory sections retain indent=2."""
+    text = json.dumps({**data, 'sources': []}, indent=2, ensure_ascii=False)
+    if data['sources']:
+        rows = ',\n'.join('    ' + json.dumps(row, separators=(',', ':'), ensure_ascii=False)
+                          for row in data['sources'])
+        text = text.replace('\n  "sources": []', '\n  "sources": [\n' + rows + '\n  ]', 1)
+    return text + '\n'
+
+
 def command(argv, root, report):
     result = subprocess.run(argv, cwd=root, capture_output=True, text=True)
     report['commands'].append(dict(command=argv, exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr))
@@ -163,7 +173,7 @@ def main(argv=None):
             for name, text in replacements.items():
                 (root / name).write_text(text)
             if review:
-                (root / INVENTORY).write_text(json.dumps(inventory, indent=2) + '\n')
+                (root / INVENTORY).write_text(inventory_json(inventory))
             if args.refresh_registry:
                 command([sys.executable, 'scripts/check_schema_registry.py', '--write'], root, report)
             command([sys.executable, 'scripts/check_verification_inventory.py'], root, report)

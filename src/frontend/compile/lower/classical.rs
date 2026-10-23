@@ -148,6 +148,23 @@ impl Lowerer<'_, '_> {
         expr: &BasisExpr,
         env: &mut Env,
     ) -> Result<Value, CompileError> {
+        // Inspect the same borrowed AST nodes; do not synthesize a second body
+        // or reinterpret enum storage as an ordinary Bits value.
+        match &expr.kind {
+            BasisExprKind::Variant(value) => return self.variant_value(module, expr.span, value),
+            BasisExprKind::Match(selection) => {
+                let scrutinee = self.classical_expr(module, &selection.scrutinee, env)?;
+                return self.match_value(
+                    module,
+                    expr.span,
+                    scrutinee,
+                    &selection.arms,
+                    env,
+                    |lower, module, body, env| lower.classical_expr(module, body, env),
+                );
+            }
+            _ => {}
+        }
         match ordinary::runtime_expression(expr) {
             RuntimeExpression::Nominal => Err(self.error(
                 module,

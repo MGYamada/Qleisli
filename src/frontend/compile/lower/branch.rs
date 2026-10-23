@@ -5,7 +5,7 @@
 //! Renaming a wire at a phi preserves its correlations; it prepares no state.
 
 use super::super::{CompileError, ErrorCode, total_size};
-use super::{Env, Lowerer, Register, Slot, Value, env_size};
+use super::{Binding, Env, Lowerer, Register, Slot, Value, env_size};
 use crate::frontend::ast::{Block, Span};
 use crate::ir::{ClassicalId, ClassicalPhi, QuantumPhi, RawOp};
 use std::collections::BTreeMap;
@@ -19,6 +19,27 @@ impl Lowerer<'_, '_> {
         then_block: &Block,
         else_block: &Block,
         env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        self.branch_evaluate(
+            module,
+            span,
+            condition,
+            env,
+            |lower, env| lower.block(module, then_block, env),
+            |lower, env| lower.block(module, else_block, env),
+        )
+    }
+
+    /// Both source block arms and ordinary classical match arms use this same
+    /// register/effect snapshot and simultaneous result/frame merge.
+    pub(super) fn branch_evaluate(
+        &mut self,
+        module: &str,
+        span: Span,
+        condition: ClassicalId,
+        env: &mut Env,
+        then_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
+        else_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
     ) -> Result<Value, CompileError> {
         self.compiler.charge(
             module,
@@ -34,7 +55,7 @@ impl Lowerer<'_, '_> {
         let entry_contract_effect = self.contract_effect;
         let entry_effect_source = self.effect_source.clone();
         let mut then_env = env.clone();
-        let then_result = self.block(module, then_block, &mut then_env)?;
+        let then_result = then_arm(self, &mut then_env)?;
         let then_ops = std::mem::take(&mut self.raw.operations);
         let then_sources = std::mem::take(&mut self.operation_sources);
         let mut then_registers =
@@ -46,7 +67,7 @@ impl Lowerer<'_, '_> {
         self.contract_effect = entry_contract_effect;
         self.effect_source = entry_effect_source;
         let mut else_env = env.clone();
-        let else_result = self.block(module, else_block, &mut else_env)?;
+        let else_result = else_arm(self, &mut else_env)?;
         let else_ops = std::mem::replace(&mut self.raw.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
         let mut else_registers = std::mem::take(&mut self.raw.registers);
@@ -55,6 +76,17 @@ impl Lowerer<'_, '_> {
         }
         self.effect = self.effect.max(then_effect);
         self.contract_effect = self.contract_effect.max(then_contract_effect);
+        self.compiler.charge(
+            module,
+            span,
+            total_size(
+                then_env
+                    .values()
+                    .chain(else_env.values())
+                    .filter_map(Binding::as_ref)
+                    .map(Value::nominal_equality_work),
+            ),
+        )?;
         if then_env != else_env {
             return Err(self.error(
                 module,
@@ -70,7 +102,9 @@ impl Lowerer<'_, '_> {
             then_result
                 .tree_size()
                 .nodes
-                .saturating_add(else_result.tree_size().nodes),
+                .saturating_add(else_result.tree_size().nodes)
+                .saturating_add(then_result.nominal_equality_work())
+                .saturating_add(else_result.nominal_equality_work()),
         )?;
         if then_result.ty() != else_result.ty() {
             return Err(self.error(
@@ -135,6 +169,46 @@ impl Lowerer<'_, '_> {
             classical_phis,
         });
         Ok(result)
+    }
+
+    fn merge_classical_word(
+        &mut self,
+        module: &str,
+        span: Span,
+        a: Vec<ClassicalId>,
+        b: Vec<ClassicalId>,
+        classical: &mut Vec<ClassicalPhi>,
+    ) -> Result<Vec<ClassicalId>, CompileError> {
+        let growth = if classical.len().saturating_add(a.len()) > classical.capacity() {
+            classical.len().saturating_mul(3)
+        } else {
+            0
+        };
+        self.compiler.charge(
+            module,
+            span,
+            a.len()
+                .saturating_mul(6)
+                .saturating_add(growth)
+                .saturating_add(1),
+        )?;
+        classical.reserve_exact(a.len());
+        let mut outputs = Vec::with_capacity(a.len());
+        for (a, b) in a.into_iter().zip(b) {
+            let output = if a == b {
+                a
+            } else {
+                let output = self.classical();
+                classical.push(ClassicalPhi {
+                    then_id: a,
+                    else_id: b,
+                    output,
+                });
+                output
+            };
+            outputs.push(output);
+        }
+        Ok(outputs)
     }
 
     fn merge_register(
@@ -204,39 +278,31 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(Value::Classical(output))
             }
-            (Value::Bits(a), Value::Bits(b)) if a.len() == b.len() => {
-                // Retain the word constructor and original bit order. Its
-                // component phis remain simultaneous Raw classical outputs.
-                let growth = if classical.len().saturating_add(a.len()) > classical.capacity() {
-                    classical.len().saturating_mul(3)
-                } else {
-                    0
-                };
+            (Value::Bits(a), Value::Bits(b)) if a.len() == b.len() => self
+                .merge_classical_word(module, span, a, b, classical)
+                .map(Value::bits),
+            (Value::Enumeration(ty, a), Value::Enumeration(other, b)) => {
                 self.compiler.charge(
                     module,
                     span,
-                    a.len()
-                        .saturating_mul(6)
-                        .saturating_add(growth)
-                        .saturating_add(1),
+                    Value::nominal_type_work(&ty).saturating_add(Value::nominal_type_work(&other)),
                 )?;
-                classical.reserve_exact(a.len());
-                let mut outputs = Vec::with_capacity(a.len());
-                for (a, b) in a.into_iter().zip(b) {
-                    let output = if a == b {
-                        a
-                    } else {
-                        let output = self.classical();
-                        classical.push(ClassicalPhi {
-                            then_id: a,
-                            else_id: b,
-                            output,
-                        });
-                        output
-                    };
-                    outputs.push(output);
+                let enum_shape = matches!(&ty.kind, super::super::Kind::Nominal(nominal)
+                    if matches!(&nominal.body, crate::frontend::types::nominal::Body::Enum(labels) if !labels.is_empty()));
+                if !enum_shape
+                    || ty != other
+                    || a.len() != b.len()
+                    || ty.basis_width() != u32::try_from(a.len()).ok()
+                {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "enum branch results require the same original type and tag coordinates",
+                    ));
                 }
-                Ok(Value::bits(outputs))
+                let outputs = self.merge_classical_word(module, span, a, b, classical)?;
+                Ok(Value::Enumeration(ty, outputs))
             }
             (Value::Quantum(a, ty), Value::Quantum(b, _)) => {
                 let a = a_regs.remove(&a).ok_or_else(|| {

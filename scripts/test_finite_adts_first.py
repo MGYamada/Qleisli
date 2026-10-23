@@ -34,6 +34,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # Match-keyword repair history: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-first.tar.xz"
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-index.json".
 # Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-validation.json".
+# Ordinary value reference: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-first.tar.xz"
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-index.json".
+# Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-validation.json".
 import gzip
 import hashlib
 import io
@@ -1555,6 +1558,1795 @@ class MatchKeywordRepairHistory(unittest.TestCase):
         self.assertLessEqual(sum((FIXTURES / name).stat().st_size for name in (
             'match-keyword-first.tar.xz', 'match-keyword-index.json',
             'match-keyword-validation.json')), 1572864)
+
+
+class OrdinaryValueReferenceHistory(unittest.TestCase):
+    """Read one bounded archive; saved code, paths and commands remain inert data."""
+
+    STEM = 'ordinary-value-reference-'
+    INDEX_SHA = '9e691dbce382e92ba1df58ab6532687f18fcaca6ac715bb4dc0451345598756a'
+    ARCHIVE_SHA = 'ad3da88dbe714eedb4eec6d14d934d6e26de12251d07ce2e4933b37bae330557'
+    VALIDATION_SHA = '89b2d632dc623e8ae3738b31a7ba17dfb33f558a5a79be6b91f785258d9960f3'
+    # Historical strings are compared only, never resolved or opened.
+    ACTUAL = '/private/tmp/qleisli-ordinary-value-validation-20261022-3rgzx7ko'
+    TOOLCHAIN = '/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/'
+    SOURCES = {
+        'core': 'lean-kernel/QleisliKernel/Semantics/OrdinaryValue.lean',
+        'bridge': 'lean/Qleisli/Semantics/OrdinaryValue.lean',
+        'examples': 'tests/OrdinaryValueExamples.lean',
+        'raw-examples': 'tests/OrdinaryValueRawExamples.lean',
+        'audit': 'tests/OrdinaryValueAudit.lean',
+    }
+    WINDOWS = {
+        '02-core': 1, '03-core': 1, '04-core': 0, '05-bridge': 1,
+        '06-bridge': 0, '07-examples': 1, '09-examples': 0,
+        '10-raw-examples': 0, '11-audit': 1, '12-core': 0,
+        '13-bridge': 0, '14-examples': 0, '15-raw-examples': 0,
+        '16-audit': 0, '17-fresh-audit': 0,
+    }
+
+    @staticmethod
+    def pin(value):
+        return {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        index = (FIXTURES / (cls.STEM + 'index.json')).read_bytes()
+        validation = (FIXTURES / (cls.STEM + 'validation.json')).read_bytes()
+        if cls.pin(index) != {'bytes': 108527, 'sha256': cls.INDEX_SHA}:
+            raise AssertionError('ordinary value index changed')
+        if cls.pin(validation) != {'bytes': 8385, 'sha256': cls.VALIDATION_SHA}:
+            raise AssertionError('ordinary value summary changed')
+        cls.index, cls.validation = json.loads(index), json.loads(validation)
+        cls.originals = cls.index['original_records']
+        cls.data = read_history(cls.STEM + 'index.json', cls.STEM + 'first.tar.xz',
+                                cls.INDEX_SHA, 1521176, cls.ARCHIVE_SHA, 141896245)
+
+    @classmethod
+    def tearDownClass(cls):
+        # The complete original inventories are large; do not retain a second
+        # decoded copy or keep their byte objects after this class finishes.
+        for name in ('data', 'originals', 'index', 'validation'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {key: row[key] for key in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def check_original_map(self, originals):
+        self.assertEqual(len(originals), 289)
+        self.assertEqual(sum(row['bytes'] for row in originals.values()), 156378431)
+        self.assertEqual({row['record'] for row in originals.values()},
+                         set(self.data) - {'original-records.json'})
+        for name, row in originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertNotIn('/lib/', name)
+            self.assertFalse(name.endswith(('.olean', '.ilean', '.pyc')))
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertEqual(self.pin(self.data[row['record']]),
+                             {key: row[key] for key in ('bytes', 'sha256')})
+        mapped = json.loads(self.data['original-records.json'])
+        self.assertEqual(mapped, {'format': 'qleisli.inert-original-records',
+                                  'version': 1, 'records': originals})
+
+    def check_sources(self, window, inputs):
+        prefix = 'validation/' + window + '-sources/'
+        expected = set(self.SOURCES.values())
+        if int(window[:2]) < 11:
+            expected.remove(self.SOURCES['audit'])
+        self.assertEqual(set(inputs['sources']), expected)
+        self.assertEqual({name[len(prefix):] for name in self.originals
+                          if name.startswith(prefix) and name.endswith('.lean')}, expected)
+        for name, pin in inputs['sources'].items():
+            self.assertEqual(self.pin(self.raw(prefix + name)), pin)
+        if int(window[:2]) >= 3:
+            audit = int(window[:2]) >= 11
+            manifest = 'namespace-cache-audit-pins.json' if audit else 'namespace-cache-pins.json'
+            observer = 'attempt-v3.py' if audit else 'attempt-v2.py'
+            self.assertEqual(self.raw(prefix + manifest), self.raw('validation/' + manifest))
+            self.assertEqual(inputs['namespace_cache_pins'], self.pin(self.raw(prefix + manifest)))
+            self.assertEqual(self.raw(prefix + observer), self.raw('validation/' + observer))
+
+    def invocation(self, window):
+        if window == '17-fresh-audit':
+            return ([self.TOOLCHAIN + 'leanchecker', '--fresh', 'OrdinaryValueAudit'],
+                    self.ACTUAL + '/work/tests', None)
+        source = self.SOURCES[window.split('-', 1)[1]]
+        root, module = source.split('/', 1)
+        output = module.removesuffix('.lean') + '.olean'
+        return ([self.TOOLCHAIN + 'lean', '-j1', '-DautoImplicit=false',
+                 '-DwarningAsError=true', '-o', self.ACTUAL + '/lib/' + output,
+                 self.ACTUAL + '/work/' + source], self.ACTUAL + '/work/' + root, source)
+
+    def check_window(self, window, report=None, plan=None, inputs=None):
+        prefix = 'validation/' + window
+        if report is None:
+            report = self.decoded(prefix + '/report.json')
+        if plan is None:
+            plan = self.decoded(prefix + '/plan.json')
+        if inputs is None:
+            inputs = self.decoded(prefix + '-sources/inputs.json')
+        self.assertEqual((report['format'], report['version']),
+                         ('qleisli.bounded-current-validation', 1))
+        code = self.WINDOWS[window]
+        self.assertIs(type(report['exit_code']), int)
+        self.assertEqual(report['exit_code'], code)
+        self.assertIs(report['pass'], code == 0)
+        self.assertIs(report['stable'], True)
+        self.assertIsNone(report['stop_reason'])
+        before = report['before']
+        self.assertTrue(before == self.decoded(prefix + '/before.json'), 'captured source inventory changed')
+        self.assertTrue(before == report['after'], 'window source inventory changed')
+        early = window in ('02-core', '03-core', '04-core')
+        self.assertEqual(before['head'], '239e0546d24bfe952020a413fd24ae7f65a66d92' if early
+                         else 'e936505ecc156d3cc31b8f5dffda780be7a1ef99')
+        for name, digest in before['files'].items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertRegex(digest, r'^[0-9a-f]{64}$')
+        self.assertRegex(before['kernel'], r'^[0-9a-f]{64}$')
+        argv, cwd, source = self.invocation(window)
+        self.assertEqual(report['argv'], argv)
+        self.assertEqual(report['cwd'], cwd)
+        self.assertEqual(plan['argv'], argv)
+        self.assertEqual(plan['cwd'], cwd)
+        self.assertEqual(inputs['command'], argv)
+        self.assertEqual(inputs['cwd'], cwd)
+        live = self.decoded(prefix + '/live.json')
+        self.assertEqual(live['argv'], argv)
+        self.assertEqual(live['limit_seconds'], 600)
+        self.assertEqual(plan['time_limit_seconds'], 600)
+        self.assertEqual(inputs['timeout_seconds'], 600)
+        for limit in (report['rss_group_limit_kib'], plan['rss_group_limit_kib'],
+                      inputs['group_rss_limit_kib']):
+            self.assertEqual(limit, 3145728)
+        self.assertEqual(report['heavy_job_concurrency'], 1)
+        self.assertEqual(inputs['heavy_concurrency'], 1)
+        self.assertGreater(report['peak_rss_kib'], 0)
+        self.assertLess(report['peak_rss_kib'], 3145728)
+        self.assertGreater(report['seconds'], 0)
+        self.assertLess(report['seconds'], 600)
+        self.assertEqual(plan['environment'], {'CARGO_BUILD_JOBS': '1',
+                                             'RUST_TEST_THREADS': '1', 'LEAN_NUM_THREADS': '1'})
+        self.assertEqual(self.raw(prefix + '/observer.py.txt'),
+                         self.raw('validation/run-bounded-runtime-3g.py'))
+        self.check_sources(window, inputs)
+        explicit = {} if source is None else {
+            self.ACTUAL + '/work/' + source: inputs['sources'][source]['sha256']}
+        self.assertEqual(before['explicit_inputs'], explicit)
+        for absolute, digest in explicit.items():
+            value = self.raw(prefix + '/explicit-inputs/' + PurePosixPath(absolute).name)
+            self.assertEqual(self.pin(value)['sha256'], digest)
+            self.assertEqual(value, self.raw(prefix + '-sources/' + source))
+        for name in self.originals:
+            if name.startswith(prefix + '/sources/'):
+                relative = name[len(prefix + '/sources/'):]
+                self.assertEqual(self.pin(self.raw(name))['sha256'], before['files'][relative])
+        return dict(window=window, **{key: report[key] for key in (
+            'exit_code', 'pass', 'stable', 'stop_reason', 'peak_rss_kib', 'seconds')},
+            head_before=before['head'], head_after=report['after']['head'],
+            report_record=prefix + '/report.json')
+
+    def check_summary_order(self, rows):
+        self.assertEqual([row['window'] for row in rows], ['01-core', *self.WINDOWS])
+        self.assertEqual(rows[0], dict(window='01-core',
+                                      result='No final report; 01 stopped before Lean spawn.', lean_result=None))
+
+    def check_summary_row(self, row):
+        window = row['window']
+        self.assertIn(window, self.WINDOWS)
+        record = 'validation/' + window + '/report.json'
+        report = self.decoded(record)
+        self.assertEqual(row, dict(window=window, **{key: report[key] for key in (
+            'exit_code', 'pass', 'stable', 'stop_reason', 'peak_rss_kib', 'seconds')},
+            head_before=report['before']['head'], head_after=report['after']['head'], report_record=record))
+
+    def check_audit(self, audit, repaired):
+        count = 284 if repaired else 301
+        self.assertEqual((audit['format'], audit['version']),
+                         ('qleisli.ordinary-value-candidate-audit', 1))
+        rows = audit['declarations']
+        self.assertEqual(audit['checked'], count)
+        self.assertEqual(len(rows), count)
+        self.assertEqual(len({row['name'] for row in rows}), count)
+        self.assertEqual({row['module'] for row in rows}, {
+            'QleisliKernel.Semantics.OrdinaryValue', 'Qleisli.Semantics.OrdinaryValue',
+            'OrdinaryValueExamples', 'OrdinaryValueRawExamples'})
+        self.assertEqual({axiom for row in rows for axiom in row['axioms']},
+                         {'propext', 'Classical.choice', 'Quot.sound'})
+        self.assertTrue(all(row['unsafe'] is False for row in rows))
+        partial = {row['name'] for row in rows if row['partial']}
+        expected = set() if repaired else {
+            'QleisliKernel.Semantics.OrdinaryValue.littleEndian._unsafe_rec',
+            'QleisliKernel.Semantics.OrdinaryValue.instReprValue.repr._unsafe_rec',
+            'QleisliKernel.Semantics.OrdinaryValue.instReprStorage.repr._unsafe_rec'}
+        self.assertEqual(partial, expected)
+        self.assertEqual(audit['status'], 'pass' if repaired else 'fail')
+        self.assertEqual(set(audit['failures']), {name + ': partial declaration' for name in expected})
+        self.assertEqual(len(audit['failures']), len(expected))
+
+    def check_fresh_inputs(self, fresh):
+        final = self.decoded('validation/16-audit-sources/inputs.json')
+        self.assertEqual(fresh['sources'], final['sources'])
+        expected = dict(final['already_compiled_candidate_modules'])
+        self.assertEqual(len(expected), 4)
+        expected['lib/OrdinaryValueAudit.olean'] = {
+            'bytes': 4992, 'sha256': '646ccca2865a41929fc10790b965001fe38ad2f6abd245153acf5f52c52eee3d'}
+        self.assertEqual(fresh['already_compiled_candidate_modules'], expected)
+        self.assertEqual(fresh['namespace_cache_pins'], final['namespace_cache_pins'])
+
+    def test_complete_original_bytes_modes_and_map(self):
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual(len(self.data), 114)
+        self.assertEqual(sum(map(len, self.data.values())), 141896245)
+        self.check_original_map(self.originals)
+        self.assertEqual({prefix: sum(name.startswith(prefix + '/') for name in self.originals)
+                          for prefix in ('design', 'first', 'imports', 'validation')},
+                         {'design': 1, 'first': 9, 'imports': 13, 'validation': 266})
+        required17 = {'validation/17-fresh-audit/' + name for name in (
+            'observer.py.txt', 'live.json', 'stderr', 'stdout', 'report.json', 'plan.json', 'before.json')}
+        required17 |= {'validation/17-fresh-audit-sources/' + name for name in (
+            *self.SOURCES.values(), 'attempt-v3.py', 'inputs.json', 'namespace-cache-audit-pins.json')}
+        self.assertEqual({name for name in self.originals if name.startswith('validation/17-')}, required17)
+
+    def test_uncompiled_first_sources_and_original_failed_observations(self):
+        first = self.decoded('first/provenance.json')
+        self.assertEqual(first['status'], 'uncompiled-candidate-only')
+        for field in ('repository_modified_by_candidate', 'lean_cargo_build_or_axiom_audit_run',
+                      'source_preservation_or_acceptance_claim'):
+            self.assertIs(first[field], False)
+        self.assertEqual(len(first['candidate_files']), 8)
+        for name, pin in first['candidate_files'].items():
+            self.assertEqual(self.pin(self.raw('first/' + name)), pin)
+        closure = first['consulted_project_import_closure']
+        self.assertEqual(len(closure), 13)
+        self.assertEqual({'imports/' + name for name in closure},
+                         {name for name in self.originals if name.startswith('imports/')})
+        for name, pin in closure.items():
+            self.assertEqual(self.pin(self.raw('imports/' + name)), pin)
+        self.assertEqual(self.pin(self.raw('design/PROPOSAL.md')),
+                         {key: first['base_proposal'][key] for key in ('bytes', 'sha256')})
+        blocked = self.decoded('validation/BLOCKED.json')
+        self.assertIs(blocked['attempt_01']['lean_spawned'], False)
+        self.assertIs(blocked['attempt_01']['final_report_exists'], False)
+        self.assertIs(blocked['attempt_02']['lean_spawned'], False)
+        self.assertIs(blocked['attempt_02']['attempt_directory_exists'], False)
+        self.assertIn('/bin/ps', blocked['attempt_01']['failure'])
+        for name in ('report.json', 'live.json'):
+            self.assertNotIn('validation/01-core/' + name, self.originals)
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw('validation/01-core/' + stream), b'')
+        self.check_sources('01-core', self.decoded('validation/01-core-sources/inputs.json'))
+        self.assertFalse(any(name.startswith('validation/08-') for name in self.originals))
+        for window, text in (('02-core', 'FiniteCarrier.olean'), ('03-core', 'congrArg₂'),
+                             ('05-bridge', 'Type mismatch'), ('07-examples', 'Dependent elimination failed')):
+            self.assertIn(text.encode(), self.raw('validation/' + window + '/stdout'))
+
+    def test_actual_windows_bind_source_inventories_invocations_and_summary(self):
+        summaries = [dict(window='01-core', result='No final report; 01 stopped before Lean spawn.',
+                          lean_result=None)]
+        reports = {name.split('/')[1] for name in self.originals
+                   if name.endswith('/report.json') and name.startswith('validation/')}
+        self.assertEqual(reports, set(self.WINDOWS))
+        for window in self.WINDOWS:
+            with self.subTest(window=window):
+                # Decode and discard one complete source inventory at a time.
+                summaries.append(self.check_window(window))
+        self.check_summary_order(self.validation['windows'])
+        self.assertEqual(self.validation['windows'], summaries)
+
+    def test_failed_and_repaired_audits_and_fresh_compiled_inputs(self):
+        for window, repaired in (('11-audit', False), ('16-audit', True)):
+            self.check_audit(json.loads(self.raw('validation/' + window + '/stdout').splitlines()[0]), repaired)
+        self.check_fresh_inputs(self.decoded('validation/17-fresh-audit-sources/inputs.json'))
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw('validation/17-fresh-audit/' + stream), b'')
+        final = self.decoded('validation/16-audit-sources/inputs.json')['sources']
+        for name in self.SOURCES.values():
+            self.assertEqual(self.pin(self.raw('validation/work/' + name)), final[name])
+        # These are incoming identities, so the core/examples remain old until
+        # their respective successful compile. Do not rewrite them as final.
+        for earlier, later, module in (
+                ('12-core', '13-bridge', 'lib/QleisliKernel/Semantics/OrdinaryValue.olean'),
+                ('14-examples', '15-raw-examples', 'lib/OrdinaryValueExamples.olean')):
+            before = self.decoded('validation/' + earlier + '-sources/inputs.json')
+            after = self.decoded('validation/' + later + '-sources/inputs.json')
+            self.assertNotEqual(before['already_compiled_candidate_modules'][module],
+                                after['already_compiled_candidate_modules'][module])
+
+    def test_import_cache_identities_preserve_source_closure_without_payloads(self):
+        for name in ('namespace-cache-pins.json', 'namespace-cache-audit-pins.json'):
+            manifest = self.decoded('validation/' + name)
+            self.assertEqual((manifest['format'], manifest['version'], manifest['link_kind']),
+                             ('qleisli.temporary-namespace-cache-overlay', 1, 'symlink'))
+            cached = manifest['cached_modules']
+            self.assertEqual(len(cached), 13)
+            self.assertEqual({'imports/' + row['source'] for row in cached.values()},
+                             {name for name in self.originals if name.startswith('imports/')})
+            for module, row in cached.items():
+                self.assertEqual(self.pin(self.raw('imports/' + row['source'])),
+                                 {key: row[key] for key in ('bytes', 'sha256')})
+                self.assertEqual(set(row['artifacts']),
+                                 {module.replace('.', '/') + suffix for suffix in ('.olean', '.ilean')})
+                for artifact, identity in row['artifacts'].items():
+                    self.assertTrue(identity['target'].endswith('/' + artifact))
+                    self.assertGreater(identity['bytes'], 0)
+                    self.assertRegex(identity['sha256'], r'^[0-9a-f]{64}$')
+
+    def test_fixed_summary_sizes_and_limited_scope(self):
+        v = self.validation
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertTrue(v['state'].startswith('PREPARED ONLY'))
+        self.assertEqual((v['original_files'], v['original_bytes'], v['unique_objects'],
+                          v['archive_members'], v['expanded_bytes']),
+                         (289, 156378431, 113, 114, 141896245))
+        self.assertEqual(v['index'], dict(path=self.STEM + 'index.json', bytes=108527, sha256=self.INDEX_SHA))
+        self.assertEqual(v['archive'], dict(path=self.STEM + 'first.tar.xz', bytes=1521176, sha256=self.ARCHIVE_SHA))
+        self.assertIs(v['fresh_audit_17_included'], True)
+        self.assertEqual(v['target_combined_bytes'], 1258291)
+        self.assertEqual(1521176 + 108527 + 8385, 1638088)  # Retained above the original target.
+        self.assertEqual(v['compression']['dictionary_bytes'], 16777216)
+        self.assertIn('No newly annotated phi output-tree correspondence', v['scope'])
+        self.assertIn('typed native replay, original whole-AST preservation', v['limitations'][2])
+        self.assertIn('No root adoption, acceptance path, new guarantee', v['limitations'][3])
+        self.assertIn('not a fresh import-closure rebuild or binary/source attestation', v['identities'])
+
+    def test_tampered_source_invocation_inventory_and_promoted_failure_are_rejected(self):
+        window = '16-audit'
+        inputs = self.decoded('validation/' + window + '-sources/inputs.json')
+        inputs['sources'][self.SOURCES['core']] = self.decoded(
+            'validation/03-core-sources/inputs.json')['sources'][self.SOURCES['core']]
+        with self.assertRaises(AssertionError):
+            self.check_sources(window, inputs)
+        report = self.decoded('validation/' + window + '/report.json')
+        plan = self.decoded('validation/' + window + '/plan.json')
+        inputs = self.decoded('validation/' + window + '-sources/inputs.json')
+        for record, key in ((report, 'argv'), (plan, 'argv'), (inputs, 'command')):
+            record[key] = [self.TOOLCHAIN + 'leanchecker', 'Unrelated']
+        with self.assertRaises(AssertionError):
+            self.check_window(window, report, plan, inputs)
+        report = self.decoded('validation/' + window + '/report.json')
+        report['after']['files']['invented.lean'] = '0' * 64
+        with self.assertRaises(AssertionError):
+            self.check_window(window, report)
+        report = self.decoded('validation/11-audit/report.json')
+        report['exit_code'], report['pass'] = 0, True
+        with self.assertRaises(AssertionError):
+            self.check_window('11-audit', report)
+
+    def test_tampered_audit_cache_and_original_metadata_are_rejected(self):
+        audit = json.loads(self.raw('validation/16-audit/stdout').splitlines()[0])
+        audit['declarations'].pop()
+        audit['checked'] -= 1
+        with self.assertRaises(AssertionError):
+            self.check_audit(audit, True)
+        audit = json.loads(self.raw('validation/16-audit/stdout').splitlines()[0])
+        audit['declarations'][0]['axioms'].append('sorryAx')
+        with self.assertRaises(AssertionError):
+            self.check_audit(audit, True)
+        fresh = self.decoded('validation/17-fresh-audit-sources/inputs.json')
+        old = self.decoded('validation/12-core-sources/inputs.json')
+        module = 'lib/QleisliKernel/Semantics/OrdinaryValue.olean'
+        fresh['already_compiled_candidate_modules'][module] = old['already_compiled_candidate_modules'][module]
+        with self.assertRaises(AssertionError):
+            self.check_fresh_inputs(fresh)
+        fresh = self.decoded('validation/17-fresh-audit-sources/inputs.json')
+        del fresh['already_compiled_candidate_modules']['lib/OrdinaryValueAudit.olean']
+        with self.assertRaises(AssertionError):
+            self.check_fresh_inputs(fresh)
+        name = 'first/provenance.json'
+        for field, value in (('original_mode', 0o755), ('bytes', 0)):
+            originals = dict(self.originals)
+            originals[name] = dict(originals[name], **{field: value})
+            with self.assertRaises(AssertionError):
+                self.check_original_map(originals)
+        originals = dict(self.originals)
+        del originals[name]
+        with self.assertRaises(AssertionError):
+            self.check_original_map(originals)
+
+    def test_promoted_summary_and_missing_window_are_rejected(self):
+        failed = next(row for row in self.validation['windows'] if row['window'] == '11-audit')
+        self.check_summary_row(failed)
+        promoted = dict(failed, exit_code=0, **{'pass': True})
+        with self.assertRaises(AssertionError):
+            self.check_summary_row(promoted)
+        altered = dict(failed, report_record='validation/16-audit/report.json')
+        with self.assertRaises(AssertionError):
+            self.check_summary_row(altered)
+        missing = [row for row in self.validation['windows'] if row['window'] != '11-audit']
+        with self.assertRaises(AssertionError):
+            self.check_summary_order(missing)
+
+
+# Focused history: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-index.json"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-validation.json"
+# Production history: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-production-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-production-index.json"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-phi-effects-production-validation.json"
+
+
+class _PhiEffectsHistory:
+    """Passive original-byte checks; external report references are never opened."""
+    HEAD = 'e4652ccaf001fd90cd53276165f0b78231e87c65'
+    PHI = '/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm'
+    EFFECTS = '/private/tmp/qleisli-ordinary-effects-first-o5c7k82j'
+
+    @staticmethod
+    def pin(value):
+        return {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        m = cls.META
+        index = (FIXTURES / m['index']['path']).read_bytes()
+        validation = (FIXTURES / m['validation']['path']).read_bytes()
+        if cls.pin(index) != {k: m['index'][k] for k in ('bytes', 'sha256')} or cls.pin(validation) != {k: m['validation'][k] for k in ('bytes', 'sha256')}:
+            raise AssertionError('focused history metadata changed')
+        cls.index, cls.validation = json.loads(index), json.loads(validation)
+        cls.originals = cls.index['original_records']
+        cls.data = read_history(m['index']['path'], m['archive']['path'], m['index']['sha256'],
+                                m['archive']['bytes'], m['archive']['sha256'], m['expanded_bytes'])
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('data', 'originals', 'index', 'validation'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {k: row[k] for k in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_map_and_external_scope(self):
+        self.assertEqual(json.loads(self.data['original-records.json']),
+                         {'format': 'qleisli.inert-original-records', 'version': 1, 'records': self.originals})
+        self.assertEqual({row['record'] for row in self.originals.values()}, set(self.data) - {'original-records.json'})
+        self.assertEqual(len(self.originals), self.validation['original_files'])
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), self.validation['original_bytes'])
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertNotIn('lib', path.parts)
+            self.assertFalse(name.endswith(('/before.json', '/report.json', '.olean', '.ilean', '.ir', '.pyc')))
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+        self.assertEqual(self.validation['format'], 'qleisli.inert-retention-proposal')
+        self.assertEqual(self.validation['version'], 1)
+        self.assertEqual(self.validation['unique_objects'], len(self.data) - 1)
+        self.assertEqual(self.validation['archive_members'], len(self.data))
+        self.assertEqual(self.validation['expanded_bytes'], self.META['expanded_bytes'])
+        self.assertEqual(self.validation['archive'], self.META['archive'])
+        self.assertEqual(self.validation['index'], self.META['index'])
+        self.assertIn('not an original report or self-contained verification', self.validation['windows'][0]['derivation'])
+        for name, ref in self.validation['external_records'].items():
+            self.assertNotIn(name, self.originals)
+            self.assertTrue(name.endswith(('/before.json', '/report.json')))
+            self.assertGreater(ref['bytes'], 0)
+            self.assertRegex(ref['sha256'], r'^[0-9a-f]{64}$')
+
+    def check_window(self, row, expected_exit):
+        self.assertIs(type(row['exit_code']), int)
+        self.assertEqual(row['exit_code'], expected_exit)
+        self.assertIs(row['pass'], expected_exit == 0)
+        self.assertIs(row['stable'], True)
+        self.assertIs(row['full_window_equal'], True)  # Recorded derived field, not a fresh full-map check.
+        self.assertIsNone(row['stop_reason'])
+        self.assertEqual(row['before'], row['after'])
+        self.assertEqual(row['before']['head'], self.HEAD)
+        self.assertEqual((row['rss_group_limit_kib'], row['heavy_job_concurrency']), (3145728, 1))
+        self.assertTrue(0 < row['peak_rss_kib'] <= 3145728)
+        self.assertTrue(0 <= row['seconds'] < float('inf'))
+        ref = self.validation['external_records'][row['prefix'] + '/report.json']
+        self.assertEqual(row['report_reference'], {'path': ref['source'], **{k: ref[k] for k in ('bytes', 'sha256')}})
+        before = self.validation['external_records'][row['prefix'] + '/before.json']
+        self.assertEqual(row['before_reference'], {k: before[k] for k in ('source', 'bytes', 'sha256')})
+        plan = self.decoded(row['prefix'] + '/plan.json')
+        inputs = self.decoded(row['inputs_record'])
+        argv = inputs['command'] if row['kind'] == 'phi' else inputs['argv']
+        self.assertEqual(plan['argv'], argv)
+        self.assertEqual(row['argv'], argv)
+        self.assertEqual(row['cwd'], plan['cwd'])
+        self.assertEqual(len(argv), 7)
+        self.assertEqual(argv[:5], ['/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean',
+                                    '-j1', '-DautoImplicit=false', '-DwarningAsError=true', '-o'])
+        self.assertEqual((plan['time_limit_seconds'], plan['rss_group_limit_kib']), (600, 3145728))
+        source = argv[-1]
+        if row['kind'] == 'phi':
+            self.assertEqual(inputs['cwd'], row['cwd'])
+            relative = source.removeprefix(self.PHI + '/work/')
+            for name, digest in inputs['sources'].items():
+                self.assertEqual(self.pin(self.raw(row['source_prefix'] + name)), digest)
+            source_bytes = self.raw(row['source_prefix'] + relative)
+            cache_names = [name for name in self.originals if name.startswith(row['source_prefix'] + 'namespace-cache-')]
+            self.assertEqual(len(cache_names), 1)
+            self.assertEqual(self.pin(self.raw(cache_names[0])), inputs['namespace_cache_pins'])
+            after = self.decoded(row['source_prefix'] + 'after.json')
+            self.assertEqual(after['observer_exit'], expected_exit)
+            self.assertIs(after['candidate_sources_stable'], True)
+            self.assertIs(after['import_sources_and_cache_stable'], True)
+            self.assertEqual(after['output'], argv[-2])
+        elif row['kind'] == 'effects':
+            source_bytes = self.raw(row['source_prefix'] + PurePosixPath(source).name)
+            result = self.decoded(row['source_prefix'] + 'result.json')
+            for key, value in inputs.items():
+                self.assertEqual(result[key], value)
+            self.assertEqual(inputs['source'], source)
+            self.assertEqual(self.pin(source_bytes), inputs['source_pin'])
+            self.assertEqual(result['exit_code'], expected_exit)
+            self.assertIs(result['imports_stable'], True)
+            self.assertIs(result['source_stable'], True)
+            self.assertEqual(str(PurePosixPath(source).parent), row['cwd'])
+            if row['window'] != 'effects-01-first':
+                self.assertIs(result['prior_stages_stable'], True)
+                self.assertEqual(self.pin(self.raw(row['source_prefix'] + 'run_stage.py')), inputs['driver'])
+        else:
+            self.assertEqual(inputs['cwd'], row['cwd'])
+            source_bytes = self.raw(row['source_prefix'] + inputs['stage']['source'])
+            for name, digest in inputs['candidate_sources'].items():
+                self.assertEqual(self.pin(self.raw(row['source_prefix'] + name)), digest)
+            self.assertEqual(inputs['namespace_cache_pin'], self.pin(self.raw('production/namespace-cache.json')))
+        self.assertEqual(self.raw(row['prefix'] + '/stderr'), b'')
+        self.assertEqual(row['before']['explicit_inputs'], {source: self.pin(source_bytes)['sha256']})
+        self.assertEqual(source_bytes, self.raw(row['prefix'] + '/explicit-inputs/' + PurePosixPath(source).name))
+        return inputs
+
+    def check_audit(self, row, expected_format, modules, count):
+        self.assertEqual(row['exit_code'], 0)
+        self.assertIs(row['pass'], True)
+        found = []
+        for line in self.raw(row['prefix'] + '/stdout').decode().splitlines():
+            try:
+                item = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(item, dict) and item.get('format') == expected_format:
+                found.append(item)
+        self.assertEqual(len(found), 1)
+        audit = found[0]
+        self.assertEqual((audit['version'], audit['status'], audit['failures']), (1, 'pass', []))
+        rows = audit['declarations']
+        self.assertEqual(audit['checked'], count)
+        self.assertEqual(len(rows), count)
+        self.assertEqual(len({r['name'] for r in rows}), count)
+        self.assertEqual({r['module'] for r in rows}, set(modules))
+        for record in rows:
+            self.assertIs(record['unsafe'], False)
+            self.assertIs(record['partial'], False)
+            for override in ('csimp', 'extern', 'implemented_by'):
+                if override in record:
+                    self.assertIs(record[override], False)
+            self.assertTrue(set(record['axioms']) <= {'propext', 'Classical.choice', 'Quot.sound'})
+        return audit
+
+
+class OrdinaryPhiEffectsHistory(_PhiEffectsHistory, unittest.TestCase):
+    META = {'archive': {'bytes': 50068,
+             'path': 'ordinary-phi-effects-first.tar.xz',
+             'sha256': 'c7cbd2c6481875c78b553cfdda00e4d707fd61b4e62682329e0a3ceba27232ee'},
+ 'expanded_bytes': 580445,
+ 'index': {'bytes': 97039,
+           'path': 'ordinary-phi-effects-index.json',
+           'sha256': 'db9b41ad49de8d67e68c7354f6fc9ca4a9d62400bfa0b0bd25bea3e7d195fcde'},
+ 'validation': {'bytes': 39364,
+                'path': 'ordinary-phi-effects-validation.json',
+                'sha256': 'df9aaa32caf48acd4fc8974be949a540eb8f900d2bf68c1812936682f978f29b'}}
+    OUTCOMES = [('02-core', 1), ('03-core', 1), ('04-core', 0), ('05-bridge', 1),
+                ('06-bridge', 0), ('07-examples', 0), ('08-types', 0), ('09-audit', 0),
+                ('effects-01-first', 0), ('effects-02-examples', 1), ('effects-03-examples', 0), ('effects-04-audit', 0)]
+
+    def check_complete_input_maps(self, row, inputs, outputs):
+        if row['kind'] == 'phi':
+            prefix = row['source_prefix']
+            expected = {name[len(prefix):] for name in self.originals
+                        if name.startswith(prefix) and name.endswith('.lean')}
+            self.assertEqual(set(inputs['sources']), expected)
+            self.assertEqual({self.PHI + '/' + name: digest for name, digest in
+                              inputs['already_compiled_candidate_modules'].items()}, outputs)
+        else:
+            expected = set()
+            if row['window'] != 'effects-01-first':
+                expected.update(['first/OrdinaryValueEffects.lean', '01-first/result.json',
+                                 '01-first/lib/OrdinaryValueEffects.olean'])
+            if row['window'] == 'effects-04-audit':
+                expected.update(['source-controls-v2-pno0Zu/OrdinaryValueEffectsExamples.lean',
+                                 '03-examples/result.json',
+                                 '03-examples/lib/OrdinaryValueEffectsExamples.olean'])
+            self.assertEqual(set(inputs.get('prior_stage_inputs', {})),
+                             {self.EFFECTS + '/' + name for name in expected})
+
+    def test_failed_and_passing_windows_keep_source_and_prior_output_bindings(self):
+        rows = self.validation['windows']
+        self.assertEqual([r['window'] for r in rows], [w for w, _ in self.OUTCOMES])
+        outputs = {}
+        for row, (_, code) in zip(rows, self.OUTCOMES):
+            inputs = self.check_window(row, code)
+            self.check_complete_input_maps(row, inputs, outputs)
+            if row['kind'] == 'phi':
+                for name, digest in inputs['already_compiled_candidate_modules'].items():
+                    self.assertEqual(digest, outputs[self.PHI + '/' + name])
+                after = self.decoded(row['source_prefix'] + 'after.json')
+                if code == 0:
+                    outputs[after['output']] = after['output_pin']
+            else:
+                result = self.decoded(row['source_prefix'] + 'result.json')
+                for path, digest in inputs.get('prior_stage_inputs', {}).items():
+                    if '/lib/' in path:
+                        self.assertEqual(digest, outputs[path])
+                    else:
+                        self.assertEqual(digest, self.pin(self.raw('effects/' + path.removeprefix(self.EFFECTS + '/'))))
+                if code == 0:
+                    outputs[inputs['argv'][-2]] = result['output']
+        self.check_audit(rows[7], 'qleisli.ordinary-value-phi-candidate-audit',
+                         ['OrdinaryValuePhiExamples', 'OrdinaryValuePhiTypes', 'Qleisli.Semantics.OrdinaryValuePhi',
+                          'QleisliKernel.Semantics.OrdinaryValueTransport'], 114)
+        self.check_audit(rows[-1], 'qleisli.ordinary-value-effects-candidate-audit',
+                         ['OrdinaryValueEffects', 'OrdinaryValueEffectsExamples'], 20)
+
+    def test_pre_spawn_failure_is_not_the_later_real_second_attempt(self):
+        blocked = self.decoded('phi-validation/BLOCKED.json')
+        self.assertIs(blocked['attempt_01']['lean_spawned'], False)
+        self.assertIs(blocked['attempt_01']['observer_report_exists'], False)
+        self.assertIs(blocked['attempt_02']['attempt_directory_exists'], False)
+        self.assertIn('aborted by user', blocked['attempt_02']['tool_result'])
+        self.assertIn(b'/bin/ps', self.raw('phi-validation/01-driver.stderr'))
+        self.assertEqual(self.raw('phi-validation/01-core/stdout'), b'')
+        self.assertEqual(self.raw('phi-validation/01-core/stderr'), b'')
+        self.assertNotIn('phi-validation/01-core/report.json', self.validation['external_records'])
+        self.assertEqual(self.validation['windows'][0]['window'], '02-core')
+
+    def test_changed_failure_and_source_commands_are_rejected(self):
+        row = self.validation['windows'][3]
+        with self.assertRaises(AssertionError):
+            self.check_window(dict(row, exit_code=0, **{'pass': True}), 1)
+        changed = dict(row, argv=[*row['argv'][:-1], row['argv'][-1] + '.changed'])
+        with self.assertRaises(AssertionError):
+            self.check_window(changed, 1)
+        inputs = self.decoded(row['inputs_record'])
+        outputs = {self.PHI + '/' + name: digest for name, digest in
+                   inputs['already_compiled_candidate_modules'].items()}
+        for field in ('sources', 'already_compiled_candidate_modules'):
+            with self.assertRaises(AssertionError):
+                self.check_complete_input_maps(row, dict(inputs, **{field: {}}), outputs)
+        effects = self.validation['windows'][-2]
+        inputs = self.decoded(effects['inputs_record'])
+        with self.assertRaises(AssertionError):
+            self.check_complete_input_maps(effects, dict(inputs, prior_stage_inputs={}), {})
+
+
+class OrdinaryPhiEffectsProductionHistory(_PhiEffectsHistory, unittest.TestCase):
+    META = {'archive': {'bytes': 52968,
+             'path': 'ordinary-phi-effects-production-first.tar.xz',
+             'sha256': '4c0970dc387323ff6fc08bec203c9b3a47b9fd8e26c007d06766d88b16dcf2ec'},
+ 'expanded_bytes': 558111,
+ 'index': {'bytes': 50141,
+           'path': 'ordinary-phi-effects-production-index.json',
+           'sha256': '5524ee6e225cc649cd9778b8c8f8408b8bea8c6d53cd9d0c2f2fc806a3e2eeb9'},
+ 'validation': {'bytes': 23267,
+                'path': 'ordinary-phi-effects-production-validation.json',
+                'sha256': 'befce7ce4644c5f367b1fa05a35b9c9892d86928679accb92ae7b43ed6fc1996'}}
+
+    def test_seven_completed_canonical_stages_and_exact_audit_body(self):
+        plan = self.decoded('production/plan.json')
+        summary = self.decoded('production/summary.json')
+        rows = self.validation['windows']
+        self.assertEqual(len(plan['stages']), 7)
+        self.assertEqual([r['window'] for r in rows], [s['label'] for s in plan['stages']])
+        self.assertEqual(summary['status'], 'pass')
+        self.assertEqual((summary['root_head'], plan['root_head']), (self.HEAD, self.HEAD))
+        self.assertEqual((summary['group_rss_limit_kib'], summary['heavy_job_concurrency']), (3145728, 1))
+        self.assertEqual([s['label'] for s in summary['stages']], [r['window'] for r in rows])
+        self.assertIs(summary['candidate_sources_stable'], True)
+        self.assertIs(summary['pinned_imports_and_tools_stable'], True)
+        self.assertIs(summary['full_math_hosted_pending'], True)
+        outputs = {}
+        for row, stage, result in zip(rows, plan['stages'], summary['stages']):
+            inputs = self.check_window(row, 0)
+            self.assertEqual(inputs['stage'], stage)
+            self.assertEqual(inputs['prior_fresh_modules'], outputs)
+            self.assertEqual((result['observer_exit'], result['status'], result['stable']), (0, 'pass', True))
+            self.assertEqual(result['report'], row['report_reference']['path'])
+            self.assertEqual((result['seconds'], result['peak_rss_kib']), (row['seconds'], row['peak_rss_kib']))
+            output_name = '/'.join(stage['module'].split('.')) + '.olean'
+            self.assertEqual(summary['fresh_artifacts'][output_name], result['output'])
+            outputs[output_name] = result['output']
+        self.assertEqual(outputs, summary['fresh_artifacts'])
+        original = self.raw('integration/lean/Audit.lean')
+        focused = self.raw('production/sources/focused/Audit.lean')
+        prefix = ''.join('import ' + m + '\n' for m in plan['audit_modules']).encode()
+        self.assertTrue(original.startswith(b'import Qleisli\n'))
+        self.assertEqual(focused, prefix + original[len(b'import Qleisli\n'):])
+        manifest = self.decoded('integration/manifest.json')
+        for name, digest in manifest['candidate_files'].items():
+            self.assertEqual(self.pin(self.raw('production/sources/' + name)), digest)
+        cache = self.decoded('production/namespace-cache.json')
+        self.assertEqual((len(cache['cached_modules']), len(cache['direct_external_imports'])), (17, 11))
+        audit = self.check_audit(rows[-1], 'qleisli.ordinary-value-audit', plan['audit_modules'], 417)
+        self.assertEqual(audit, self.decoded('production/focused-audit-inventory.json'))
+        self.assertEqual(summary['stages'][-1]['audited_declarations'], 417)
+
+    def test_early_audit_json_cannot_promote_failed_whole_invocation(self):
+        row = dict(self.validation['windows'][-1], exit_code=1, **{'pass': False})
+        with self.assertRaises(AssertionError):
+            self.check_audit(row, 'qleisli.ordinary-value-audit', [], 417)
+
+
+# Inert member-authoring history; external full inventories remain referenced only.
+# Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+# History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-first.tar.xz"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-index.json"
+# Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-validation.json.gz"
+class OrdinaryMemberHistory(unittest.TestCase):
+    STEM = 'ordinary-members-'
+    HEAD = 'e4652ccaf001fd90cd53276165f0b78231e87c65'
+    AUTHORING = '/private/tmp/qleisli-ordinary-members-20261023-iCLsR0/'
+    REPAIR = '/private/tmp/qleisli-member-v9-test-repair-sh_6y56k/'
+    REPAIR2 = '/private/tmp/qleisli-member-v9-test-repair2-xnnp5kyx/'
+    REPAIR3 = '/private/tmp/qleisli-member-v9-test-repair3-mlau62wy/'
+    TOTALITY_REPAIR = '/private/tmp/qleisli-member-totality-repair-8d65tczl/'
+    LEAN = '/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean'
+    MEMBERS = 'QleisliKernel.SourceTypes.Members'
+    TOTALITY_ORDER = ('QleisliKernel.SourceTypes.LocatedFacts', MEMBERS, 'MemberFullAudit')
+    ORDER = (
+        'CachedCompiledImports', 'QleisliKernel.SourceTypes.Lexer',
+        'QleisliKernel.SourceTypes.Imports', 'QleisliKernel.SourceTypes.Declarations',
+        'QleisliKernel.SourceTypes.NaturalSyntax', 'QleisliKernel.SourceTypes.NaturalHeaders',
+        'QleisliKernel.SourceTypes.NaturalCatalog', 'QleisliKernel.SourceTypes.NaturalFrames',
+        'QleisliKernel.SourceTypes.NaturalPrepare', 'QleisliKernel.SourceTypes.NaturalHelpers',
+        'QleisliKernel.SourceTypes', 'Protocol.Carrier', 'Protocol.ExecutionView.CheckedCarrier',
+        'Protocol.NativeContext', 'Cli.NativeContext', 'Protocol.NativeContext.Bindings',
+        'Main', 'QleisliKernel', 'QleisliKernel.SourceTypes.LocatedFacts', MEMBERS,
+        'QleisliKernel.SourceTypesLegacy.Lexer', 'QleisliKernel.SourceTypesLegacy.Imports',
+        'QleisliKernel.SourceTypesLegacy.Declarations', 'MemberBoundaryProbes',
+        'MemberLegacyComparison', 'MemberSmallExamples', 'MemberFullAudit', 'AllCompiledImports',
+    )
+    # Fixed history, not inferred from a success flag. The reported totality
+    # pass is admitted only when its completed archived records also pass.
+    RUNS = {'v5-full': (2, False), 'v6-full': (19, False), 'v7-full': (20, False),
+            'v8-diagnostic': (1, False), 'v9-diagnostic': (1, True),
+            'v9-full': (25, False), 'v9-tail': (1, False),
+            'v9-tail2': (2, False), 'v9-tail3': (3, False), 'totality-core': (3, True)}
+    DERIVED = ('Compact fields copied from externally pinned full reports and inputs; '
+               'not an original report or self-contained verification of omitted '
+               'root/source/artifact inventories.')
+    META = {'archive_bytes': 249204,
+     'archive_members': 509,
+     'archive_sha256': '6cb34ee69a66e02236a29dfe1126acf3e0249050066e3d1a83b3dd91f6691f0c',
+     'audit_marker': 'Audited 17252 kernel/transport declarations, 1163 pure import modules and 1210 '
+                     'executable import modules, 1059 member-reader import modules; axioms used: '
+                     '[propext,\n'
+                     ' Classical.choice,\n'
+                     ' Quot.sound]',
+     'authoring_original_map_sha256': 'f828502e4e6eecee0704e5a99a2d4ead851c0c6aae84b0e981b4dc05c13622a5',
+     'cached_compiled_report_sha256': '1a91cf179160f7ea8c086a62ea9766dd1e6ff804c8c5f7394c7c323e84feb17b',
+     'expanded_bytes': 6104591,
+     'external_records_sha256': 'f0186028c91347972bc026eda5ce5fd4ed8c1fec114bb0235232063d7e3422f8',
+     'index_bytes': 329291,
+     'index_sha256': '749f55f720f06a3b6b497ab91406f5fae06fccf94d09bb3bb1e96ec6199bd947',
+     'original_bytes': 9311455,
+     'original_files': 932,
+     'original_map_sha256': '9242810ebcc8b663895297fa4d0b4bcbdfc1e1f9577e49bff41eb79f495205f0',
+     'remaining_work': 1979563,
+     'unique_objects': 508,
+     'validation_bytes': 303775,
+     'validation_gzip_bytes': 37714,
+     'validation_gzip_sha256': '794addcd03982f4f27c01ccff50fd1657fd74e3b658463aafe3012e4e9572960',
+     'validation_sha256': '89781be464f08953c4bc6ba23f2c4346734949e0b8f4e75dbb1b6e84521bac2b'}
+
+    @staticmethod
+    def pin(value):
+        return {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+
+    @staticmethod
+    def json_digest(value):
+        return hashlib.sha256(json.dumps(value, sort_keys=True,
+                                        separators=(',', ':')).encode()).hexdigest()
+
+    @classmethod
+    def setUpClass(cls):
+        missing = [key for key, value in cls.META.items() if value is None]
+        if missing:
+            raise AssertionError('Fill completed-retention META first: ' + ', '.join(missing))
+        index = (FIXTURES / (cls.STEM + 'index.json')).read_bytes()
+        with (FIXTURES / (cls.STEM + 'validation.json.gz')).open('rb') as stream:
+            compressed = stream.read(cls.META['validation_gzip_bytes'] + 1)
+        if cls.pin(compressed) != {'bytes': cls.META['validation_gzip_bytes'],
+                                   'sha256': cls.META['validation_gzip_sha256']}:
+            raise AssertionError('ordinary member compressed validation changed')
+        with gzip.GzipFile(fileobj=io.BytesIO(compressed), mode='rb') as stream:
+            validation = stream.read(cls.META['validation_bytes'] + 1)
+        for label, raw in (('index', index), ('validation', validation)):
+            if cls.pin(raw) != {'bytes': cls.META[label + '_bytes'],
+                                'sha256': cls.META[label + '_sha256']}:
+                raise AssertionError('ordinary member ' + label + ' changed')
+        cls.index, cls.validation = json.loads(index), json.loads(validation)
+        cls.originals = cls.index['original_records']
+        cls.data = read_history(cls.STEM + 'index.json', cls.STEM + 'first.tar.xz',
+                                cls.META['index_sha256'], cls.META['archive_bytes'],
+                                cls.META['archive_sha256'], cls.META['expanded_bytes'])
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('data', 'originals', 'index', 'validation'):
+            if hasattr(cls, name):
+                delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {key: row[key] for key in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def windows(self, run):
+        return [row for row in self.validation['windows'] if row['run'] == run]
+
+    def root_for(self, run):
+        if run == 'totality-core':
+            return '/private/tmp/qleisli-member-totality-diagnostic-first'
+        if run == 'v9-tail3':
+            return '/private/tmp/qleisli-member-v9-tail-validation-third'
+        if run == 'v9-tail2':
+            return '/private/tmp/qleisli-member-v9-tail-validation-second'
+        version, kind = run.split('-', 1)
+        suffix = 'diagnostic-first' if kind == 'diagnostic' else (
+            'tail-validation-first' if kind == 'tail' else 'validation-first')
+        return '/private/tmp/qleisli-member-' + version + '-' + suffix
+
+    @staticmethod
+    def is_tail(run):
+        return run in ('v9-tail', 'v9-tail2', 'v9-tail3')
+
+    def expected(self, run):
+        count, passed = self.RUNS[run]
+        if run == 'totality-core':
+            return [(i, name, passed or j < count - 1)
+                    for j, (i, name) in enumerate(zip(range(19, 19 + count), self.TOTALITY_ORDER))]
+        names = [self.MEMBERS] if run.endswith('diagnostic') else list(
+            self.ORDER[24:] if self.is_tail(run) else self.ORDER[:count])
+        start = 25 if self.is_tail(run) else 1
+        return [(i, name, passed or j < count - 1)
+                for j, (i, name) in enumerate(zip(range(start, start + count), names))]
+
+    def original_source_name(self, path):
+        # String association only. Never resolve/open a historical path.
+        if path.startswith(self.AUTHORING):
+            return 'authoring/' + path[len(self.AUTHORING):]
+        if path.startswith(self.REPAIR):
+            return 'test-repair/' + path[len(self.REPAIR):]
+        if path.startswith(self.REPAIR2):
+            return 'test-repair2/' + path[len(self.REPAIR2):]
+        if path.startswith(self.REPAIR3):
+            return 'test-repair3/' + path[len(self.REPAIR3):]
+        if path.startswith(self.TOTALITY_REPAIR):
+            return 'totality-repair/' + path[len(self.TOTALITY_REPAIR):]
+        return None
+
+    def reference(self, name):
+        self.assertNotIn(name, self.originals)
+        row = self.validation['external_records'][name]
+        self.assertEqual(set(row), {'source', 'bytes', 'sha256', 'original_mode'})
+        self.assertIs(type(row['bytes']), int)
+        self.assertGreaterEqual(row['bytes'], 0)
+        self.assertRegex(row['sha256'], r'^[0-9a-f]{64}$')
+        self.assertIs(type(row['original_mode']), int)
+        self.assertTrue(PurePosixPath(row['source']).is_absolute())
+        return row
+
+    def check_outcome(self, window):
+        expected = {index: (name, passed) for index, name, passed in self.expected(window['run'])}
+        self.assertIn(window['index'], expected)
+        name, passed = expected[window['index']]
+        self.assertEqual(window['module'], name)
+        self.assertIs(type(window['exit_code']), int)
+        self.assertEqual(window['exit_code'], 0 if passed else 1)
+        self.assertIs(window['pass'], passed)
+
+    def check_window(self, window, plan=None):
+        self.check_outcome(window)
+        run, module, index = window['run'], window['module'], window['index']
+        diagnostic = run.endswith('diagnostic')
+        name = f'{index:02d}-' + module.replace('.', '-')
+        prefix = run if diagnostic else run + '/' + name
+        root = self.root_for(run)
+        relative = module.replace('.', '/')
+        source = root + '/src/' + relative + '.lean'
+        argv = [self.LEAN, '-j1', '-DautoImplicit=false', '-DwarningAsError=true',
+                '-o', root + '/lib/' + relative + '.olean', source]
+        self.assertEqual((window['window'], window['prefix']), (name, prefix))
+        self.assertEqual(window['kind'], 'diagnostic' if diagnostic else
+                         'tail' if self.is_tail(run) else 'totality' if run == 'totality-core' else 'full')
+        self.assertEqual(window['argv'], argv)
+        self.assertEqual(window['cwd'], root + '/src')
+        self.assertEqual(window['derivation'], self.DERIVED)
+        self.assertIs(window['full_window_equal'], True)  # Recorded derived assertion only.
+        self.assertIs(window['stable'], True)
+        self.assertIsNone(window['stop_reason'])
+        self.assertEqual((window['rss_group_limit_kib'], window['heavy_job_concurrency']), (3145728, 1))
+        self.assertIs(type(window['peak_rss_kib']), int)
+        self.assertGreater(window['peak_rss_kib'], 0)
+        self.assertLessEqual(window['peak_rss_kib'], 3145728)
+        self.assertIn(type(window['seconds']), (int, float))
+        self.assertTrue(0 <= window['seconds'] < float('inf'))
+        self.assertRegex(window['root_state_sha256'], r'^[0-9a-f]{64}$')
+        self.assertEqual(window['plan_record'], prefix + '/monitor/plan.json')
+        if plan is None:
+            plan = self.decoded(window['plan_record'])
+        self.assertEqual((plan['argv'], plan['cwd']), (argv, root + '/src'))
+        self.assertEqual(plan['time_limit_seconds'], 900)
+        self.assertEqual(plan['rss_group_limit_kib'], 3145728)
+        self.assertEqual(window['source_record'], prefix + '/monitor/explicit-inputs/' + relative.split('/')[-1] + '.lean')
+        raw = self.raw(window['source_record'])
+        self.assertEqual(window['source_pin'], self.pin(raw))
+        for state in (window['before'], window['after']):
+            self.assertEqual(set(state), {'head', 'kernel', 'explicit_inputs'})
+            self.assertEqual(state['head'], self.HEAD)
+            self.assertRegex(state['kernel'], r'^[0-9a-f]{64}$')
+            self.assertEqual(state['explicit_inputs'], {source: self.pin(raw)['sha256']})
+        self.assertEqual(window['before'], window['after'])
+        for field, suffix in (('report_reference', '/monitor/report.json'),
+                              ('before_reference', '/monitor/before.json')):
+            self.assertEqual(window[field], prefix + suffix)
+            self.reference(window[field])
+        manifest = self.decoded(run + '/input-manifest.json')
+        self.assertEqual(manifest['head'], self.HEAD)
+        self.assertEqual(self.raw(run + '/input-manifest.json'),
+                         self.raw('runners/' + run + '/input-manifest.json'))
+        if diagnostic:
+            selected = manifest['source']
+            self.assertEqual(window['inputs_record'], prefix + '/inputs.json')
+            inputs = self.decoded(window['inputs_record'])
+            self.assertEqual((inputs['argv'], inputs['cwd']), (argv, root + '/src'))
+            self.assertEqual({k: inputs['source'][k] for k in ('bytes', 'sha256')}, self.pin(raw))
+        else:
+            self.assertEqual(window['inputs_reference'], prefix + '/inputs.json')
+            self.reference(window['inputs_reference'])
+            selected = (manifest['modules'][module]['source'] if module in manifest['modules']
+                        else manifest['support_sources'][module])
+            outputs = self.decoded(prefix + '/outputs.json')
+            self.assertEqual({k: outputs['source_after'][k] for k in ('bytes', 'sha256')}, self.pin(raw))
+            self.assertEqual(outputs['source_after']['path'], source)
+        self.assertEqual({k: selected[k] for k in ('bytes', 'sha256')}, self.pin(raw))
+        retained = self.original_source_name(selected['path'])
+        if retained is not None:
+            self.assertEqual(raw, self.raw(retained))
+        elif module in ('CachedCompiledImports', 'AllCompiledImports'):
+            self.assertEqual(raw, self.raw('runners/' + run + '/sources/' + module + '.lean'))
+        observer = self.raw(prefix + '/monitor/observer.py.txt')
+        self.assertEqual(self.pin(observer), {k: manifest['monitor'][k] for k in ('bytes', 'sha256')})
+        result_name = prefix + '/result.json'
+        if result_name in self.originals:
+            result = self.decoded(result_name)
+            self.assertIs(result['pass'], window['pass'])
+            self.assertEqual(result['observer_exit_code'], 0 if window['pass'] else 1)
+            if diagnostic:
+                self.assertIs(result['inputs_stable'], True)
+                self.assertEqual(result['report_pin']['sha256'], self.reference(window['report_reference'])['sha256'])
+            else:
+                self.assertEqual((result['index'], result['module']), (index, module))
+                self.assertEqual(result['report_sha256'], self.reference(window['report_reference'])['sha256'])
+
+    def check_failure_binding(self, failure, window, copies):
+        self.assertIs(window['pass'], False)
+        self.assertEqual(failure['fields'], {key: window[key] for key in
+                         ('exit_code', 'pass', 'stable', 'stop_reason', 'seconds', 'peak_rss_kib')})
+        records = failure['records']
+        self.assertEqual([PurePosixPath(pin['path']).name for pin in records],
+                         ['report.json', 'plan.json', 'stdout', 'stderr'])
+        for pin in records:
+            basename = PurePosixPath(pin['path']).name
+            record = window['prefix'] + '/monitor/' + basename
+            source = self.root_for(window['run']) + '/' + window['window'] + '/monitor/' + basename
+            self.assertEqual((pin['path'], pin['resolved'], pin['link']), (source, source, None))
+            retained = self.reference(record) if basename == 'report.json' else self.originals[record]
+            self.assertEqual({key: pin[key] for key in ('bytes', 'sha256')},
+                             {key: retained[key] for key in ('bytes', 'sha256')})
+            self.assertEqual(pin['mode'], retained['original_mode'])
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw(copies + stream + '.txt'),
+                             self.raw(window['prefix'] + '/monitor/' + stream))
+
+    def test_complete_original_bytes_modes_map_and_scope(self):
+        self.assertEqual((self.index['format'], self.index['version']), ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual(len(self.data), self.META['archive_members'])
+        self.assertEqual(sum(map(len, self.data.values())), self.META['expanded_bytes'])
+        self.assertEqual(len(self.originals), self.META['original_files'])
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), self.META['original_bytes'])
+        self.assertEqual(self.json_digest(self.originals), self.META['original_map_sha256'])
+        authoring = {name: {k: row[k] for k in ('bytes', 'sha256', 'original_mode')}
+                     for name, row in self.originals.items() if name.startswith('authoring/')}
+        self.assertEqual(self.json_digest(authoring), self.META['authoring_original_map_sha256'])
+        self.assertEqual({row['record'] for row in self.originals.values()}, set(self.data) - {'original-records.json'})
+        self.assertEqual(len(self.data) - 1, self.META['unique_objects'])
+        self.assertEqual(json.loads(self.data['original-records.json']),
+                         {'format': 'qleisli.inert-original-records', 'version': 1, 'records': self.originals})
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertFalse(name.endswith(('.olean', '.olean.server', '.olean.private', '.ilean', '.ir', '.pyc')))
+            self.assertIs(type(row['original_mode']), int)
+            self.assertGreaterEqual(row['original_mode'], 0)
+            self.assertLessEqual(row['original_mode'], 0o777)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+        v = self.validation
+        self.assertEqual((v['format'], v['version'], v['packet']), ('qleisli.inert-retention-proposal', 1, 'history'))
+        for field in ('original_files', 'original_bytes', 'unique_objects', 'archive_members', 'expanded_bytes'):
+            self.assertEqual(v[field], self.META[field])
+        for field, suffix in (('index', 'index.json'), ('archive', 'first.tar.xz')):
+            self.assertEqual(v[field], {'path': self.STEM + suffix, 'bytes': self.META[field + '_bytes'],
+                                        'sha256': self.META[field + '_sha256']})
+        self.assertEqual(self.json_digest(v['external_records']), self.META['external_records_sha256'])
+        for name in v['external_records']:
+            self.reference(name)
+        self.assertEqual(v['state'], 'Retained historical observations; not current proof validity or full source-window replay.')
+        self.assertEqual(v['limitations'], [
+            'Full original before/report inventories are unchanged external records, not archived members.',
+            'Compact window fields are explicitly derived and cannot independently recheck the omitted root inventories.',
+            'Cached/generated binary payloads are omitted; their recorded identities do not attest a fresh import rebuild.',
+            'No saved command is executed, no source preservation or new acceptance/guarantee/Issue completion is claimed.'])
+
+    def test_first_uncompiled_provenance_candidates_and_totality_only_repair(self):
+        first = self.decoded('authoring/first-provenance.json')
+        self.assertEqual(first['status'], 'uncompiled-source-review-candidate')
+        self.assertEqual(first['executed_commands'], [])
+        self.assertEqual(first['source_commit'], self.HEAD)
+        self.assertEqual(len(first['files']), 11)
+        for version in range(1, 10):
+            provenance = first if version == 1 else self.decoded(f'authoring/candidate-v{version}-provenance.json')
+            self.assertEqual(provenance['source_commit'], self.HEAD)
+            self.assertIn('uncompiled', provenance['status'].lower())
+            for name, pin in provenance['files'].items():
+                self.assertEqual(self.pin(self.raw('authoring/' + name)), {k: pin[k] for k in ('bytes', 'sha256')})
+            candidate = 'first-candidate' if version == 1 else f'candidate-v{version}'
+            self.raw('authoring/' + candidate + '/lean-kernel/QleisliKernel/SourceTypes/Members.lean')
+        patch = first['integration_patch']
+        self.assertEqual(self.pin(self.raw('authoring/' + patch['path'])), {k: patch[k] for k in ('bytes', 'sha256')})
+        self.assertEqual({name.rsplit('/', 1)[-1] for name in self.originals if name.startswith('authoring/first-sources/')},
+                         {'client.qli', 'comments.qli', 'duplicate.qli', 'facade.qli', 'nested.qli', 'owner.qli', 'unsupported-header.qli'})
+        owner = self.raw('authoring/first-sources/owner.qli')
+        self.assertIn(b'\r\n', owner)
+        self.assertIn('日本語'.encode(), owner)
+        self.assertIn(b'r.hidden', self.raw('authoring/first-sources/client.qli'))
+        self.assertIn(b'client.bad is intentionally unauthorized', self.raw('authoring/FIRST-CONTRACT.md'))
+        totality = self.decoded('totality-repair/provenance.json')
+        self.assertEqual((totality['format'], totality['version'], totality['status'], totality['source_commit']),
+                         ('qleisli.member-checkOrdered-totality-repair', 1,
+                          'uncompiled executable totality repair', self.HEAD))
+        self.assertEqual(totality['previous_candidate'], self.AUTHORING + 'candidate-v9')
+        base = 'lean-kernel/QleisliKernel/SourceTypes/'
+        self.assertEqual(set(totality['files']), {base + name + '.lean' for name in
+                                               ('Lexer', 'Declarations', 'LocatedFacts', 'Members')})
+        self.assertEqual(totality['changed'], [base + 'LocatedFacts.lean'])
+        old_definition = '''def checkOrdered (bytes : ByteArray) (lower : Nat) : List LocatedToken → Bool
+  | [] => true
+  | token :: tokens =>
+    decide (lower ≤ token.span.startByte ∧ TokenBytes bytes token) &&
+      checkOrdered bytes token.span.endByte tokens'''.encode()
+        new_definition = '''def checkOrdered (bytes : ByteArray) (lower : Nat) (tokens : List LocatedToken) : Bool :=
+  (tokens.foldr (fun token next lower =>
+    decide (lower ≤ token.span.startByte ∧ TokenBytes bytes token) &&
+      next token.span.endByte) (fun _ => true)) lower'''.encode()
+        for name, pin in totality['files'].items():
+            old = self.raw('authoring/candidate-v9/' + name)
+            retained = 'totality-repair/candidate/' + name
+            new = self.raw(retained)
+            source = self.TOTALITY_REPAIR + 'candidate/' + name
+            self.assertEqual((pin['path'], pin['resolved'], pin['link']), (source, source, None))
+            self.assertEqual({key: pin[key] for key in ('bytes', 'sha256')}, self.pin(new))
+            self.assertEqual(pin['mode'], self.originals[retained]['original_mode'])
+            if name.endswith('/LocatedFacts.lean'):
+                self.assertEqual(old.count(old_definition), 1)
+                self.assertEqual(new, old.replace(old_definition, new_definition, 1))
+                self.assertEqual(new, self.raw('totality-core/19-QleisliKernel-SourceTypes-LocatedFacts/monitor/explicit-inputs/LocatedFacts.lean'))
+            else:
+                self.assertEqual(new, old)
+        delta = self.raw('totality-repair/delta.patch')
+        self.assertTrue(delta.startswith(('--- ' + self.AUTHORING + 'candidate-v9/' + base + 'LocatedFacts.lean\n+++ ' +
+                                         self.TOTALITY_REPAIR + 'candidate/' + base + 'LocatedFacts.lean\n').encode()))
+        self.assertIn(b'+  (tokens.foldr (fun token next lower =>', delta)
+        self.assertIn(b' theorem checkOrdered_sound ', delta)
+        self.check_failure_binding(totality['failure'], self.windows('v9-tail3')[-1],
+                                   'totality-repair/tail3-audit-failure-')
+        failure = self.raw('totality-repair/tail3-audit-failure-stdout.txt')
+        self.assertIn(b'LocatedFacts.checkOrdered._unsafe_rec', failure)
+        self.assertIn(b'partial project declaration', failure)
+
+    def test_exact_run_outcomes_and_cumulative_fresh_output_fingerprints(self):
+        self.assertEqual(self.validation['expected_stage_order'], list(self.ORDER))
+        self.assertIs(self.validation['final_full_window_included'], True)
+        self.assertIs(self.validation['tail_window_included'], True)
+        self.assertIs(self.validation['tail2_window_included'], True)
+        self.assertIs(self.validation['tail3_window_included'], True)
+        self.assertIs(self.validation['core_window_included'], True)
+        self.assertEqual([row['run'] for row in self.validation['runs']], list(self.RUNS))
+        self.assertEqual(len(self.validation['windows']), 77)
+        for run, (count, passed) in self.RUNS.items():
+            windows = self.windows(run)
+            self.assertEqual([(w['index'], w['module'], w['pass']) for w in windows], self.expected(run))
+            summary_name = run + ('/result.json' if run.endswith('diagnostic') else '/report.json')
+            summary = self.decoded(summary_name)
+            self.assertIs(summary['pass'], passed)
+            scope = 'diagnostic-only' if run.endswith('diagnostic') else (
+                'four-stage-tail-after-prefix24' if self.is_tail(run) else
+                'three-stage-totality-diagnostic-after-prefix18' if run == 'totality-core' else
+                'fresh-full28-attempt')
+            row = next(r for r in self.validation['runs'] if r['run'] == run)
+            self.assertEqual(row, {'run': run, 'scope': scope, 'summary_record': summary_name,
+                                  'pass': passed, 'observed_stage_count': count,
+                                  'module_order': [w['module'] for w in windows],
+                                  'manifest_record': run + '/input-manifest.json', 'final_full28_pass': False})
+            if run.endswith('diagnostic'):
+                self.assertEqual(summary['scope'], 'single-module diagnostic only; no full28 pass')
+            else:
+                self.assertEqual(summary['status'], 'bounded-diagnostic-pass' if passed else 'failed')
+                self.assertEqual([(r['index'], r['module'], r['pass']) for r in summary['stages']], self.expected(run))
+                if passed:
+                    self.assertEqual((summary['completed_stages'], summary['planned_stages']), (3, 3))
+                    self.assertEqual(summary['scope'], 'three-stage totality diagnostic after separately pinned18-stage unaffected prefix; no full28 or example pass')
+                else:
+                    self.assertEqual(summary['stages'][-1]['status'], 'failed')
+            prior = {}
+            for window in windows:
+                self.check_outcome(window)
+                self.assertNotIn('prior_fresh_outputs', window)
+                self.assertEqual(window['prior_fresh_output_count'], len(prior))
+                self.assertEqual(window['prior_fresh_outputs_sha256'], self.json_digest(prior))
+                if not run.endswith('diagnostic') and window['pass']:
+                    outputs = self.decoded(window['prefix'] + '/outputs.json')['artifacts']
+                    self.assertTrue(outputs)
+                    self.assertFalse(set(prior) & set(outputs))
+                    for pin in outputs.values():
+                        self.assertIsNone(pin['link'])
+                    prior.update(outputs)
+            self.assertEqual(len({w['root_state_sha256'] for w in windows}), 1)
+
+    def test_source_command_plan_result_bindings(self):
+        for window in self.validation['windows']:
+            with self.subTest(run=window['run'], index=window['index']):
+                self.check_window(window)
+
+    def test_failed_windows_cannot_be_promoted_or_redirected(self):
+        for run in ('v5-full', 'v6-full', 'v7-full', 'v8-diagnostic', 'v9-full', 'v9-tail', 'v9-tail2', 'v9-tail3'):
+            promoted = dict(self.windows(run)[-1], exit_code=0, **{'pass': True})
+            with self.assertRaises(AssertionError):
+                self.check_outcome(promoted)
+        changed = json.loads(json.dumps(self.windows('totality-core')[-1]))
+        plan = self.decoded(changed['plan_record'])
+        changed['argv'][-1] = plan['argv'][-1] = changed['argv'][-1].replace('MemberFullAudit', 'CachedCompiledImports')
+        with self.assertRaises(AssertionError):
+            self.check_window(changed, plan)
+
+    def test_reused_prefix_and_cached_artifact_fingerprints(self):
+        for run in self.RUNS:
+            m = self.decoded(run + '/input-manifest.json')
+            seeded = self.is_tail(run) or run == 'totality-core'
+            if seeded:
+                count = 18 if run == 'totality-core' else 24
+                prefix = self.windows('v9-full')[:count]
+                seeds = {w['module']: self.decoded(w['prefix'] + '/outputs.json')['artifacts'] for w in prefix}
+                self.assertEqual(list(seeds), list(self.ORDER[:count]))
+                captured_sources = {p['path']: p for w in prefix for p in
+                                    [self.decoded(w['prefix'] + '/outputs.json')['source_after']]}
+                self.assertEqual(m['seed_artifacts'], seeds)
+                self.assertEqual({p['path']: p for p in m['seed_source_pins']}, captured_sources)
+                self.assertEqual(m['seed_root_state_sha256'], prefix[0]['root_state_sha256'])
+                if run == 'totality-core':
+                    self.assertEqual(m['diagnostic_order'], list(self.TOTALITY_ORDER))
+                    self.assertNotIn('tail_order', m)
+                else:
+                    self.assertEqual(m['tail_order'], list(self.ORDER[24:]))
+            if run.endswith('diagnostic'):
+                cached = self.decoded(run + '/inputs.json')['artifacts']
+            else:
+                cached = {}
+                originals = [(module.replace('.', '/') + pin['suffix'], pin)
+                             for module in m['cached_order'] for pin in m['modules'][module]['cache']]
+                if seeded:
+                    originals += [(rel, pin) for artifacts in m['seed_artifacts'].values() for rel, pin in artifacts.items()]
+                for rel, pin in originals:
+                    cached[rel] = {'path': self.root_for(run) + '/lib/' + rel, 'resolved': pin['resolved'],
+                                   'link': pin['path'], **{k: pin[k] for k in ('bytes', 'mode', 'sha256')}}
+            self.assertTrue(all(pin['link'] is not None for pin in cached.values()))
+            for window in self.windows(run):
+                self.assertEqual(window['cached_artifact_count'], len(cached))
+                self.assertEqual(window['cached_artifacts_sha256'], self.json_digest(cached))
+                if seeded:
+                    self.assertEqual(window['root_state_sha256'], m['seed_root_state_sha256'])
+
+    def test_cached_import_inventory_totality_audit_and_historical_probes(self):
+        cached = self.windows('v9-full')[0]
+        self.check_outcome(cached)
+        report = self.decoded(cached['prefix'] + '/compiled-imports.json')
+        self.assertEqual(self.json_digest(report), self.META['cached_compiled_report_sha256'])
+        self.assertEqual((report['format'], report['status']), ('qleisli.member-v9-exact-compiled-imports', 'pass'))
+        manifest = self.decoded('v9-full/input-manifest.json')
+        self.assertEqual((len(manifest['fresh_order']), len(manifest['cached_order']), len(manifest['test_order'])), (19, 168, 6))
+        self.assertEqual([r['module'] for r in report['modules']], manifest['cached_order'])
+        self.assertEqual(len(report['modules']), 168)
+        self.assertFalse(any(w['module'] == 'AllCompiledImports' for w in self.validation['windows']))
+        self.assertEqual(len(set(report['loaded_modules'])), len(report['loaded_modules']))
+        for row in report['modules']:
+            self.assertEqual(row['source'], row['module'].replace('.', '/') + '.lean')
+            self.assertIs(type(row['is_module']), bool)
+            self.assertIn(row['module'], report['loaded_modules'])
+            for imported in row['imports']:
+                for flag in ('exported', 'meta', 'all'):
+                    self.assertIs(type(imported[flag]), bool)
+        for module in report['loaded_modules']:
+            self.assertTrue(module in manifest['cached_order'] or module.split('.')[0] in ('Init', 'Std', 'Lean'))
+        emitted = [json.loads(line) for line in self.raw(cached['prefix'] + '/monitor/stdout').splitlines()
+                   if line.startswith(b'{')]
+        self.assertEqual([r for r in emitted if r.get('format') == report['format']], [report])
+        self.check_outcome(self.windows('totality-core')[-1])
+        audit = self.raw('totality-core/21-MemberFullAudit/monitor/stdout').decode()
+        marker = self.META['audit_marker']
+        self.assertTrue(marker.startswith('Audited ') and 'member-reader import modules; axioms used:' in marker)
+        self.assertEqual(audit.count(marker), 1)
+        self.assertEqual(audit.count('Audited '), 1)
+        axioms = marker.split('axioms used:', 1)[1]
+        self.assertEqual(axioms.replace('[', '').replace(']', '').replace(',', ' ').split(),
+                         ['propext', 'Classical.choice', 'Quot.sound'])
+        audit_source = self.raw('authoring/preparation-v5/MemberFullAudit.lean')
+        self.assertEqual(audit_source, self.raw('totality-core/21-MemberFullAudit/monitor/explicit-inputs/MemberFullAudit.lean'))
+        for marker in (b'info.isUnsafe', b'info.isPartial', b'isNoncomputable', b'getImplementedBy?',
+                       b'getExternAttrData?', b'.axiomInfo', b'collectAxioms', b'run_cmd'):
+            self.assertIn(marker, audit_source)
+        probe = self.raw('v9-full/24-MemberBoundaryProbes/monitor/stdout')
+        for marker in (b'readOriginal_facts', b'readOriginal_boundary', b'checkOrdered_sound',
+                       b'Boundary', b'ReaderBindings', b'PartMember', b'member_refines'):
+            self.assertIn(marker, probe)
+        remaining = self.raw('v9-tail3/26-MemberSmallExamples/monitor/stdout').decode().strip()
+        self.assertEqual(remaining, str(self.META['remaining_work']))
+        self.assertEqual(remaining, '1979563')
+        self.assertIs(type(self.META['remaining_work']), int)
+        self.assertTrue(0 <= self.META['remaining_work'] <= 2000000)
+
+    def test_all_71_legacy_cases_survive_complete_except_equality_repair(self):
+        old = self.raw('authoring/preparation-v5/MemberLegacyComparison.lean')
+        repaired = self.raw('test-repair/MemberLegacyComparison.lean')
+        final = self.raw('test-repair2/MemberLegacyComparison.lean')
+        equality = '''
+
+/-- Test-local total equality, including exact error text and complete success values. -/
+local instance exceptDecidableEq {α : Type} [DecidableEq α] :
+    DecidableEq (Except String α)
+  | .error first, .error second =>
+      if equal : first = second then .isTrue (by cases equal; rfl)
+      else .isFalse (by intro result; cases result; exact equal rfl)
+  | .ok first, .ok second =>
+      if equal : first = second then .isTrue (by cases equal; rfl)
+      else .isFalse (by intro result; cases result; exact equal rfl)
+  | .error _, .ok _ => .isFalse (by intro result; cases result)
+  | .ok _, .error _ => .isFalse (by intro result; cases result)
+'''.encode()
+
+        def normalize_proof_repair(raw):
+            self.assertEqual(raw.count(equality), 1)
+            return raw.replace(equality, b'', 1).replace(b':= by decide +kernel', b':= by decide_cbv')
+
+        marker = b'-- Separate proofs keep first failures attributable and bound each reduction.'
+        self.assertEqual(old.split(marker, 1)[1], repaired.split(marker, 1)[1])
+        # Full byte equality after this exact proof-only normalization preserves
+        # all statements, data and budgets, not just the number of examples.
+        self.assertEqual(normalize_proof_repair(final), repaired)
+        for raw in (old, repaired, final):
+            self.assertEqual(raw.count(b'\nexample :'), 71)
+        self.assertIn(b'| .error first, .error second => decide (first = second)', repaired)
+        self.assertIn(b'| .ok first, .ok second => decide (first = second)', repaired)
+        self.assertIn(b'| _, _ => false', repaired)
+        self.assertIn(b'sameExcept (SourceTypes.lex source) (SourceTypesLegacy.lex source) &&', repaired)
+        self.assertIn(b'sameExcept (newDecls source) (oldDecls source)', repaired)
+        self.assertEqual(old, self.raw('v9-full/25-MemberLegacyComparison/monitor/explicit-inputs/MemberLegacyComparison.lean'))
+        self.assertEqual(repaired, self.raw('v9-tail/25-MemberLegacyComparison/monitor/explicit-inputs/MemberLegacyComparison.lean'))
+        self.assertEqual(final, self.raw('v9-tail2/25-MemberLegacyComparison/monitor/explicit-inputs/MemberLegacyComparison.lean'))
+        self.assertEqual(final, self.raw('v9-tail3/25-MemberLegacyComparison/monitor/explicit-inputs/MemberLegacyComparison.lean'))
+        small = self.raw('test-repair2/MemberSmallExamples.lean')
+        self.assertEqual(normalize_proof_repair(small), self.raw('authoring/preparation-v5/MemberSmallExamples.lean'))
+        self.assertEqual(small.count(b'\nexample :'), 7)
+        self.assertEqual(small, self.raw('v9-tail2/26-MemberSmallExamples/monitor/explicit-inputs/MemberSmallExamples.lean'))
+        generic_small = self.raw('test-repair3/MemberSmallExamples.lean')
+        string_signature = ('local instance exceptDecidableEq {α : Type} [DecidableEq α] :\n'
+                            '    DecidableEq (Except String α)').encode()
+        generic_signature = ('local instance exceptDecidableEq {ε α : Type} [DecidableEq ε] [DecidableEq α] :\n'
+                             '    DecidableEq (Except ε α)').encode()
+        self.assertEqual(small.count(string_signature), 1)
+        self.assertEqual(generic_small, small.replace(string_signature, generic_signature, 1))
+        self.assertEqual(generic_small, self.raw('v9-tail3/26-MemberSmallExamples/monitor/explicit-inputs/MemberSmallExamples.lean'))
+        repair3 = self.decoded('test-repair3/provenance.json')
+        self.assertEqual((repair3['format'], repair3['version'], repair3['status'], repair3['source_commit']),
+                         ('qleisli.member-v9-test-generic-except-repair', 1, 'uncompiled test-only repair', self.HEAD))
+        self.assertEqual(repair3['unchanged_statement_count'], 7)
+        self.assertIs(repair3['production_sources_changed'], False)
+        for field, source, raw in (('before', self.REPAIR2 + 'MemberSmallExamples.lean', small),
+                                   ('after', self.REPAIR3 + 'MemberSmallExamples.lean', generic_small)):
+            pin = repair3[field]
+            self.assertEqual((pin['path'], pin['resolved'], pin['link']), (source, source, None))
+            self.assertEqual({key: pin[key] for key in ('bytes', 'sha256')}, self.pin(raw))
+            self.assertEqual(pin['mode'], self.originals[self.original_source_name(source)]['original_mode'])
+        delta = self.raw('test-repair3/delta.patch')
+        self.assertTrue(delta.startswith(('--- ' + self.REPAIR2 + 'MemberSmallExamples.lean\n+++ ' +
+                                         self.REPAIR3 + 'MemberSmallExamples.lean\n').encode()))
+        for prefix, signature in ((b'-', string_signature), (b'+', generic_signature)):
+            for line in signature.splitlines():
+                self.assertIn(prefix + line + b'\n', delta)
+        failed = self.windows('v9-tail2')[-1]
+        self.assertEqual((failed['index'], failed['module'], failed['pass']), (26, 'MemberSmallExamples', False))
+        self.check_failure_binding(repair3['failure'], failed, 'test-repair3/tail2-failure-')
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(self.raw('test-repair2/tail1-failure-' + stream + '.txt'),
+                             self.raw('v9-tail/25-MemberLegacyComparison/monitor/' + stream))
+        failed_stdout = self.raw('test-repair3/tail2-failure-stdout.txt')
+        self.assertIn(b'1979563', failed_stdout.splitlines())
+        self.assertIn(b'failed to synthesize', failed_stdout)
+        self.assertIn(b'BEq', self.raw('v9-full/25-MemberLegacyComparison/monitor/stdout'))
+        self.assertIs(self.windows('v9-full')[-1]['pass'], False)
+        self.assertIs(self.windows('v9-tail')[0]['pass'], False)
+        self.assertIs(self.windows('v9-tail2')[0]['pass'], True)
+        self.assertIs(self.windows('v9-tail2')[-1]['pass'], False)
+        self.assertIs(self.windows('v9-tail3')[1]['pass'], True)
+        self.assertIs(self.windows('v9-tail3')[-1]['pass'], False)
+
+
+
+
+# History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-first.tar.xz"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-index.json"
+# Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-validation.json"
+# Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-current.json"
+class OrdinaryMemberPartsHistory(unittest.TestCase):
+    """Historical source/command binding; no external originals or commands run."""
+    META = {'archive': {'bytes': 73072, 'path': 'ordinary-member-parts-first.tar.xz', 'sha256': 'edc490521be4794501986471a9582b02f79e504dcbe5520eb8db8a28dbafa804'}, 'expanded_bytes': 1358228, 'index': {'bytes': 20442, 'path': 'ordinary-member-parts-index.json', 'sha256': 'f593c74e74557718a5bcb7f8ce69f930e2a61097870daa7f20a569d9b7c98f69'}, 'validation': {'bytes': 20930, 'path': 'ordinary-member-parts-validation.json', 'sha256': 'a172b541aa8b90b7242585b3afa8c2eb08d7e74e797455fd57c99e3bd96fac7a'}}
+    HEAD = '82bf2a17c32625fefc1ae58f80be2364f3f63a26'
+    ORDER = ('QleisliKernel.SourceTypes.Members', 'QleisliKernel.Tests.SourceMembers.Parts',
+             'QleisliKernel', 'QleisliKernel.Tests.SourceMembers.BoundaryProbes',
+             'QleisliKernel.Tests.SourceMembers.LegacyComparison',
+             'QleisliKernel.Tests.SourceMembers.SmallExamples',
+             'QleisliKernel.Tests.SourceMembers', 'Audit')
+    ROOTS = {'authoring': '/private/tmp/qleisli-member-parts-proof-NY4iVEJD',
+             'first': '/private/tmp/qleisli-member-parts-canonical-_4e5d43a',
+             'v2': '/private/tmp/qleisli-member-parts-repair-v2-g191kxfl',
+             'v3': '/private/tmp/qleisli-member-parts-repair-v3-0mdvzibt',
+             'integration': '/private/tmp/qleisli-member-parts-integration-9hi5a8ut',
+             'runner': '/private/tmp/qleisli-member-parts-runner-kIu08K'}
+
+    @staticmethod
+    def pin(data):
+        return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        contents = {}
+        for key in ('index', 'validation', 'archive'):
+            row = cls.META[key]
+            path = FIXTURES / row['path']
+            if path.is_symlink() or not path.is_file() or path.stat().st_size != row['bytes']:
+                raise AssertionError('Parts fixture size or file kind changed')
+            if key != 'archive':
+                with path.open('rb') as stream:
+                    raw = stream.read(row['bytes'] + 1)
+                if cls.pin(raw) != {k: row[k] for k in ('bytes', 'sha256')}:
+                    raise AssertionError('Parts metadata changed')
+                contents[key] = json.loads(raw)
+        cls.index, cls.validation = contents['index'], contents['validation']
+        m = cls.META
+        cls.data = read_history(m['index']['path'], m['archive']['path'], m['index']['sha256'],
+                                m['archive']['bytes'], m['archive']['sha256'], m['expanded_bytes'])
+        mapping = json.loads(cls.data['original-records.json'])
+        if (mapping['format'], mapping['version']) != ('qleisli.inert-original-records', 1):
+            raise AssertionError('Parts original map format changed')
+        cls.originals = mapping['records']
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('index', 'validation', 'originals', 'data'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        value = self.data[row['record']]
+        self.assertEqual(self.pin(value), {k: row[k] for k in ('bytes', 'sha256')})
+        return value
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def path_record(self, original):
+        roots = dict(self.ROOTS)
+        for run in self.validation['runs']:
+            roots[run['prefix']] = run['directory']
+            roots[run['observer_prefix']] = run['observer_directory']
+        matches = [key + original[len(root):] for key, root in roots.items()
+                   if original.startswith(root + '/')]
+        self.assertEqual(len(matches), 1)
+        return matches[0]
+
+    def test_complete_originals_and_external_scope(self):
+        v = self.validation
+        self.assertEqual(set(self.index), {'format', 'version', 'records'})
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual(set(self.index['records']), set(self.data))
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertEqual((len(self.originals), v['original_files'], v['original_bytes']),
+                         (184, 184, 2643219))
+        self.assertEqual(sum(r['bytes'] for r in self.originals.values()), v['original_bytes'])
+        self.assertEqual((v['unique_objects'], v['archive_members'], len(self.data)), (109, 110, 110))
+        self.assertEqual(v['expanded_bytes'], self.META['expanded_bytes'])
+        self.assertEqual(v['archive'], self.META['archive'])
+        self.assertEqual(v['index'], self.META['index'])
+        self.assertLess(sum(self.META[k]['bytes'] for k in ('archive', 'index', 'validation')), 150000)
+        self.assertEqual(self.decoded_map(), self.originals)
+        self.assertEqual({r['record'] for r in self.originals.values()}, set(self.data) - {'original-records.json'})
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertNotIn('lib', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertIn(row['original_mode'], (0o644, 0o755))
+            self.assertFalse(name.endswith(('.olean', '.ilean', '.ir', '.pyc')))
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.raw(name)
+        for name in ('authoring/candidate-v1/lean-kernel/QleisliKernel/SourceTypes/Members.lean',
+                     'authoring/candidate-v2/lean-kernel/QleisliKernel/SourceTypes/Members.lean',
+                     'first/first-compile-invocation.json', 'first/source-pins.json',
+                     'v2/provenance.json', 'v3/provenance.json', 'integration/integration.patch'):
+            self.assertIn(name, self.originals)
+        self.assertEqual(len(v['external_records']), 38)
+        self.assertIn('not self-contained verification', v['derivation'])
+        self.assertIs(v['canonical_aggregation_tested'], False)
+        for name, row in v['external_records'].items():
+            self.assertNotIn(name, self.originals)
+            self.assertTrue(name.endswith(('/before.json', '/after.json', '/report.json')))
+            self.assertGreater(row['bytes'], 0)
+            self.assertRegex(row['sha256'], r'^[0-9a-f]{64}$')
+            self.assertTrue(row['source'].startswith('/private/tmp/'))
+
+    def decoded_map(self):
+        mapping = json.loads(self.data['original-records.json'])
+        self.assertEqual((mapping['format'], mapping['version']), ('qleisli.inert-original-records', 1))
+        return mapping['records']
+
+    def test_actual_runs_commands_sources_and_cumulative_outputs(self):
+        expected = [('first', False, 1, [1], 1000), ('v2-first', True, 1, [0], 900),
+                    ('v2-full', False, 8, [0, 1], 7200), ('v3-full', True, 8, [0] * 8, 7200)]
+        self.assertEqual([r['name'] for r in self.validation['runs']], [r[0] for r in expected])
+        cache = None
+        for run, (name, passed, planned, exits, timeout) in zip(self.validation['runs'], expected):
+            with self.subTest(run=name):
+                prefix, obs = run['prefix'], run['observer_prefix']
+                report, inputs = self.decoded(prefix + '/report.json'), self.decoded(prefix + '/inputs.json')
+                outer, identity = run['derived_observer'], run['derived_identity']
+                plan = self.decoded(obs + '/plan.json')
+                self.assertEqual(report['root_head'], self.HEAD)
+                self.assertEqual(inputs['root_head'], self.HEAD)
+                self.assertEqual(report['planned_stages'], planned)
+                self.assertEqual([s['exit_code'] for s in report['stages']], exits)
+                self.assertEqual([s['module'] for s in report['stages']], list(self.ORDER[:len(exits)]))
+                self.assertEqual(report['status'], 'stages-pass-awaiting-outer-observer' if passed else 'failed')
+                self.assertIs(report['stages_pass'], passed)
+                self.assertIs(run['pass'], passed)
+                self.assertIs(outer['pass'], passed)
+                self.assertIs(type(outer['exit_code']), int)
+                self.assertEqual(outer['exit_code'], 0 if passed else 1)
+                self.assertIs(outer['stable'], True)
+                self.assertIsNone(outer['stop_reason'])
+                self.assertEqual((outer['rss_group_limit_kib'], outer['heavy_job_concurrency']), (3145728, 1))
+                self.assertGreater(outer['peak_rss_kib'], 0)
+                self.assertLessEqual(outer['peak_rss_kib'], 3145728)
+                self.assertGreaterEqual(outer['seconds'], 0)
+                self.assertEqual((identity['before_head'], identity['after_head']), (self.HEAD, self.HEAD))
+                self.assertEqual(identity['before_explicit_inputs'], identity['after_explicit_inputs'])
+                self.assertEqual((plan['argv'], plan['cwd']), (outer['argv'], outer['cwd']))
+                self.assertEqual(plan['time_limit_seconds'], timeout)
+                self.assertEqual(outer['argv'][0], inputs['python']['path'])
+                self.assertEqual(outer['argv'][-4:], ['--output', run['directory'], '--max-stages', str(planned)])
+                self.assertIn('--single-heavy-lane-reserved', outer['argv'])
+                driver = next(a for a in outer['argv'] if a.endswith('/run.py'))
+                driver_bytes = self.raw(self.path_record(driver))
+                self.assertEqual(self.raw(prefix + '/runner.py.txt'), driver_bytes)
+                self.assertEqual(self.raw(obs + '/explicit-inputs/run.py'), driver_bytes)
+                self.assertEqual(identity['before_explicit_inputs'], {driver: self.pin(driver_bytes)['sha256']})
+                self.assertEqual(self.pin(self.raw(obs + '/observer.py.txt')),
+                                 {k: inputs['monitor'][k] for k in ('bytes', 'sha256')})
+                self.assertEqual(len(inputs['cache_artifacts']), 189)
+                if cache is None:
+                    cache = inputs['cache_artifacts']
+                self.assertEqual(inputs['cache_artifacts'], cache)
+                self.assertEqual([s['module'] for s in inputs['stages']], list(self.ORDER))
+                for stage in inputs['stages']:
+                    source = stage['source']
+                    captured = prefix + '/src/' + stage['module'].replace('.', '/') + '.lean'
+                    self.assertEqual(self.raw(captured), self.raw(self.path_record(source['path'])))
+                    self.assertEqual(self.pin(self.raw(captured)), {k: source[k] for k in ('bytes', 'sha256')})
+                    self.assertEqual(self.originals[captured]['original_mode'], source['mode'])
+                completed = 0
+                self.assertEqual(len(run['stages']), len(exits))
+                for i, (stage, derived, code) in enumerate(zip(report['stages'], run['stages'], exits), 1):
+                    folder = f'{i:02d}-' + stage['module'].replace('.', '-')
+                    self.assertEqual(derived['directory'], folder)
+                    self.assertEqual((stage['index'], stage['status']), (i, 'pass' if code == 0 else 'failed'))
+                    cmd = self.decoded(prefix + '/' + folder + '/command.json')
+                    rel = stage['module'].replace('.', '/')
+                    self.assertEqual(cmd['argv'], [inputs['lean']['path'], '-j1', '-DautoImplicit=false', '-DwarningAsError=true',
+                                                  '-o', run['directory'] + '/lib/' + rel + '.olean',
+                                                  run['directory'] + '/src/' + rel + '.lean'])
+                    self.assertEqual(cmd['cwd'], run['directory'] + '/src')
+                    self.assertEqual(cmd['timeout_seconds'], 900)
+                    self.assertEqual(cmd['environment']['LEAN_NUM_THREADS'], '1')
+                    self.assertEqual(cmd['environment']['LEAN_PATH'], run['directory'] + '/lib:' + inputs['toolchain'] + '/lib/lean')
+                    self.assertEqual(cmd['environment']['LEAN_SRC_PATH'], run['directory'] + '/src:/Users/masa/git/Qleisli/lean-kernel:' + inputs['toolchain'] + '/src/lean')
+                    self.assertEqual(cmd['environment']['PYTHONDONTWRITEBYTECODE'], '1')
+                    self.assertEqual(self.raw(prefix + '/' + folder + '/stderr'), b'')
+                    outputs = self.decoded(prefix + '/' + folder + '/outputs.json')
+                    self.assertEqual(set(outputs), {rel + '.olean'} if code == 0 else set())
+                    for value in outputs.values():
+                        self.assertGreater(value['bytes'], 0)
+                        self.assertIsNone(value['link'])
+                        self.assertEqual(value['path'], cmd['argv'][-2])
+                        self.assertRegex(value['sha256'], r'^[0-9a-f]{64}$')
+                    self.assertEqual(derived['before_artifacts'], 189 + completed)
+                    completed += code == 0
+                    self.assertEqual(derived['after_artifacts'], 189 + completed)
+                    for key in ('sources_stable', 'cache_and_prior_outputs_stable', 'outputs_match'):
+                        self.assertIs(derived[key], True)
+                    for key, suffix in [('before_ref', '/before.json'), ('after_ref', '/after.json')]:
+                        self.assertEqual(derived[key], prefix + '/' + folder + suffix)
+                        self.assertIn(derived[key], self.validation['external_records'])
+                self.assertEqual(run['report_ref'], obs + '/report.json')
+                self.assertIn(run['report_ref'], self.validation['external_records'])
+
+    def test_failed_sources_diagnostics_and_repairs_are_not_promoted(self):
+        member = 'lean-kernel/QleisliKernel/SourceTypes/Members.lean'
+        parts = 'lean-kernel/QleisliKernel/Tests/SourceMembers/Parts.lean'
+        first = self.raw('runs/first/01-QleisliKernel-SourceTypes-Members/stdout')
+        second = self.raw('runs/v2-full/02-QleisliKernel-Tests-SourceMembers-Parts/stdout')
+        self.assertIn(b'error:', first)
+        self.assertIn(b'unsolved goals', first)
+        self.assertIn(b'Dependent elimination failed', second)
+        self.assertNotEqual(self.raw('first/candidate/' + member), self.raw('v2/candidate/' + member))
+        self.assertEqual(self.raw('v2/candidate/' + member), self.raw('integration/candidate/' + member))
+        self.assertNotEqual(self.raw('first/candidate/' + parts), self.raw('v3/candidate/' + parts))
+        self.assertEqual(self.raw('v3/candidate/' + parts), self.raw('integration/candidate/' + parts))
+        for name, code in [('first', 1), ('v2-full', 1)]:
+            report = self.decoded('runs/' + name + '/report.json')
+            self.assertEqual(report['stages'][-1]['exit_code'], code)
+            self.assertIn('compile failed:', report['error'])
+        proposed = self.decoded('runner/invoke-first.json')
+        actual = self.decoded('observers/first/plan.json')
+        self.assertNotEqual(proposed['inner_argv'], actual['argv'])
+        self.assertIn('-I', proposed['inner_argv'])
+        self.assertNotIn('-I', actual['argv'])
+        self.assertIn('UNEXECUTED', proposed['state'])
+
+    def test_overlay_audit_and_untested_integration_remain_distinct(self):
+        stdout = self.raw('runs/v3-full/08-Audit/stdout')
+        self.assertIn(b'Audited 17614 kernel/transport declarations, 1166 pure import modules and 1210 executable import modules;', stdout)
+        self.assertIn(b'axioms used: [propext,\n Classical.choice,\n Quot.sound]', stdout)
+        aggregate = 'lean-kernel/QleisliKernel/Tests/SourceMembers.lean'
+        old = self.raw('first/validation-sources/' + aggregate)
+        new = self.raw('integration/candidate/' + aggregate)
+        added = b'import QleisliKernel.Tests.SourceMembers.Parts\n'
+        self.assertNotIn(added, old)
+        self.assertEqual(new.replace(added, b''), old)
+        self.assertIn(added, self.raw('first/validation-sources/lean-kernel/Audit.lean'))
+        manifest = self.decoded('integration/manifest.json')
+        self.assertIn('not yet compiled', manifest['state'])
+        self.assertIn('NOT covered', manifest['actual_passed_window']['scope'])
+        self.assertEqual(manifest['actual_passed_window']['stages'], self.decoded('runs/v3-full/report.json')['stages'])
+        for ref in manifest['preserved_failures'] + [manifest['actual_passed_window']['audit_stdout'], manifest['actual_passed_window']['report']]:
+            self.assertEqual(self.pin(self.raw(self.path_record(ref['path']))), {k: ref[k] for k in ('bytes', 'sha256')})
+        outer = manifest['actual_passed_window']['outer_report']
+        external = self.validation['external_records']['observers/v3-full/report.json']
+        self.assertEqual({k: external[k] for k in ('bytes', 'sha256')}, {k: outer[k] for k in ('bytes', 'sha256')})
+        for relative, ref in manifest['sources'].items():
+            self.assertEqual(self.pin(self.raw('integration/candidate/' + relative)), {k: ref[k] for k in ('bytes', 'sha256')})
+        self.assertIs(self.validation['canonical_aggregation_tested'], False)
+
+
+
+
+# History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-first.tar.xz"
+# Current validation: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-current.json"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-index.json"
+# Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-enum-validation.json"
+class OrdinaryEnumFirstHistory(unittest.TestCase):
+    """Inert first sources and observed failures; no saved command is executed."""
+    META = {'archive': {'bytes': 31248, 'path': 'ordinary-enum-first.tar.xz', 'sha256': 'c0cdac3149b2a32cbd6a4323a49e517c6ccfbf7a45541c39734becd7b6a3f394'}, 'expanded_bytes': 182818, 'index': {'bytes': 6705, 'path': 'ordinary-enum-index.json', 'sha256': '644d4937ff66d60f81ccc919c9d5d6f8e5c26376ee6accb86491c9c400f7ea19'}, 'validation': {'bytes': 15527, 'path': 'ordinary-enum-validation.json', 'sha256': '591e0f3a10ffd1d573602f85864ca3a29ca3181db1b6024b6dceeee4bb48f53f'}}
+    TEST = 'src/frontend/compile/lower/nominal/tests.rs'
+
+    @staticmethod
+    def pin(raw):
+        return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+    @classmethod
+    def setUpClass(cls):
+        contents = {}
+        for key in ('index', 'validation', 'archive'):
+            row = cls.META[key]
+            path = FIXTURES / row['path']
+            if path.is_symlink() or not path.is_file() or path.stat().st_size != row['bytes']:
+                raise AssertionError('Enum history file kind or size changed')
+            if key != 'archive':
+                with path.open('rb') as stream:
+                    raw = stream.read(row['bytes'] + 1)
+                if cls.pin(raw) != {k: row[k] for k in ('bytes', 'sha256')}:
+                    raise AssertionError('Enum metadata changed')
+                contents[key] = json.loads(raw)
+        cls.index, cls.validation = contents['index'], contents['validation']
+        m = cls.META
+        cls.data = read_history(m['index']['path'], m['archive']['path'], m['index']['sha256'],
+                                m['archive']['bytes'], m['archive']['sha256'], m['expanded_bytes'])
+        mapping = json.loads(cls.data['original-records.json'])
+        if (mapping['format'], mapping['version']) != ('qleisli.inert-original-records', 1):
+            raise AssertionError('Enum original map changed')
+        cls.originals = mapping['records']
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('index', 'validation', 'data', 'originals'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        row = self.originals[name]
+        raw = self.data[row['record']]
+        self.assertEqual(self.pin(raw), {k: row[k] for k in ('bytes', 'sha256')})
+        return raw
+
+    def decoded(self, name):
+        return json.loads(self.raw(name))
+
+    def test_complete_original_bytes_and_first_proposal_scope(self):
+        v = self.validation
+        self.assertEqual(set(self.index), {'format', 'version', 'records'})
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual((v['format'], v['version']), ('qleisli.inert-retention-proposal', 1))
+        self.assertEqual(set(self.index['records']), set(self.data))
+        self.assertEqual((len(self.originals), v['original_files'], v['original_bytes']), (42, 42, 200174))
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 200174)
+        self.assertEqual((v['unique_objects'], v['archive_members'], len(self.data)), (35, 36, 36))
+        self.assertEqual({row['record'] for row in self.originals.values()}, set(self.data) - {'original-records.json'})
+        self.assertEqual(v['expanded_bytes'], self.META['expanded_bytes'])
+        for key in ('archive', 'index'):
+            self.assertEqual(v[key], self.META[key])
+        self.assertLessEqual(sum(self.META[k]['bytes'] for k in ('archive', 'index', 'validation')), 58977)
+        for name, row in self.originals.items():
+            path = PurePosixPath(name)
+            self.assertFalse(path.is_absolute())
+            self.assertNotIn('..', path.parts)
+            self.assertEqual(str(path), name)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertIn(row['original_mode'], (0o644, 0o755))
+            self.raw(name)
+        self.assertEqual(len(v['external_records']), 33)
+        for name, row in v['external_records'].items():
+            self.assertNotIn(name, self.originals)
+            self.assertTrue(row['source'].startswith('/private/tmp/'))
+            self.assertRegex(row['sha256'], r'^[0-9a-f]{64}$')
+            self.assertGreater(row['bytes'], 0)
+        self.assertIn('not self-contained raw-window verification', v['derivation'])
+        self.assertIs(v['native_acceptance_claimed'], False)
+        self.assertIs(v['broader_rust_validation_claimed'], False)
+        manifest = self.decoded('proposal/manifest.json')
+        self.assertEqual(manifest['state'], 'source candidate, not compiled or tested')
+        self.assertEqual(manifest['base_head'], '82bf2a17c32625fefc1ae58f80be2364f3f63a26')
+        self.assertEqual(self.pin(self.raw('proposal/integration.patch')), manifest['patch'])
+        self.assertEqual(self.pin(self.raw('proposal/first/main.qli')), manifest['first_source'])
+        self.assertIn(self.raw('proposal/first/main.qli'), self.raw('proposal/candidate/' + self.TEST))
+        self.assertEqual(len(manifest['files']), 10)
+        for suffix in ('04-runtime-tri-match-ordinary', '05-runtime-tri-match-selected-raw'):
+            prefix = 'proposal/historical-first/observations-01/' + suffix
+            self.assertIn(b'expected `}`', self.raw(prefix + '/stdout'))
+            self.assertEqual(self.raw(prefix + '/stderr'), b'')
+            self.decoded(prefix + '/command.json')
+
+    def test_observed_compile_failure_parser_failure_and_eleven_passes(self):
+        v = self.validation
+        self.assertEqual([run['name'] for run in v['runs']],
+                         ['first-observer-01', 'repair-observer-02', 'repair-observer-03'])
+        manifest = self.decoded('proposal/manifest.json')
+        expected_sources = {row['path']: row['candidate'] for row in manifest['files']}
+        for index, run in enumerate(v['runs'], 1):
+            prefix, outer = run['prefix'], run['observer']
+            plan = self.decoded(prefix + '/plan.json')
+            self.assertEqual(prefix, f'runs/{index:02d}')
+            self.assertEqual(run['head'], '9030ad4e37f72bd46b954efbafcd556e1700448b')
+            self.assertEqual(run['kernel_sha256'], '5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12')
+            self.assertEqual(run['explicit_inputs'], {})
+            self.assertIs(run['inventory_stable'], True)
+            self.assertIs(outer['stable'], True)
+            self.assertIsNone(outer['stop_reason'])
+            self.assertIs(type(outer['exit_code']), int)
+            self.assertEqual(outer['exit_code'], 0 if index == 3 else 101)
+            self.assertIs(outer['pass'], index == 3)
+            self.assertEqual((outer['rss_group_limit_kib'], outer['heavy_job_concurrency']), (3145728, 1))
+            self.assertGreater(outer['peak_rss_kib'], 0)
+            self.assertLessEqual(outer['peak_rss_kib'], 3145728)
+            self.assertGreaterEqual(outer['seconds'], 0)
+            self.assertEqual(plan['argv'], ['/opt/homebrew/bin/cargo', 'test', '--lib',
+                                           'frontend::compile::lower::nominal::tests', '--', '--nocapture'])
+            self.assertEqual((plan['argv'], plan['cwd']), (outer['argv'], outer['cwd']))
+            self.assertEqual(plan['cwd'], '/Users/masa/git/Qleisli')
+            self.assertEqual((plan['time_limit_seconds'], plan['rss_group_limit_kib']), (900, 3145728))
+            self.assertEqual(plan['environment'], {'CARGO_BUILD_JOBS': '1', 'RUST_TEST_THREADS': '1', 'LEAN_NUM_THREADS': '1'})
+            self.assertEqual(self.raw(prefix + '/observer.py.txt'), self.raw('runs/01/observer.py.txt'))
+            self.assertEqual((run['report_ref'], run['before_ref']), (prefix + '/report.json', prefix + '/before.json'))
+            self.assertIn(run['report_ref'], v['external_records'])
+            self.assertIn(run['before_ref'], v['external_records'])
+            self.assertEqual(set(run['source_refs']), set(expected_sources))
+            for path, name in run['source_refs'].items():
+                self.assertEqual(name, prefix + '/sources/' + path)
+                row = self.originals[name] if name in self.originals else v['external_records'][name]
+                if index == 1 or path != self.TEST:
+                    self.assertEqual({k: row[k] for k in ('bytes', 'sha256')}, expected_sources[path])
+                self.assertEqual(row['original_mode'], 0o644)
+        self.assertEqual(self.raw('runs/01/stdout'), b'')
+        self.assertIn(b'error[E0277]', self.raw('runs/01/stderr'))
+        self.assertIn(b'doesn\'t implement `Debug`', self.raw('runs/01/stderr'))
+        self.assertIn(b'finite type declaration exceeds 64 members', self.raw('runs/02/stderr'))
+        self.assertIn(b'test result: FAILED. 10 passed; 1 failed; 0 ignored;', self.raw('runs/02/stdout'))
+        self.assertIn(b'test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 524 filtered out;', self.raw('runs/03/stdout'))
+
+    def test_exact_repairs_and_separate_null_input_first_diagnostic(self):
+        first, second, third = [self.raw(f'runs/{index:02d}/sources/' + self.TEST) for index in (1, 2, 3)]
+        self.assertEqual(first, self.raw('proposal/candidate/' + self.TEST))
+        old = b'        .expect_err("no unrestricted four-row table for Tri");'
+        new = b'        .err()\n        .expect("no unrestricted four-row table for Tri");'
+        self.assertEqual(first.count(old), 1)
+        self.assertEqual(first.replace(old, new), second)
+        old = (b'    // This is a small classical syntax case; no quantum dimensions are created.\n'
+               b'    let labels: Vec<_> = (0..70).map(|i| format!("V{i}")).collect();')
+        new = (b'    // Stay within the source member limit so this reaches lowering. The\n'
+               b'    // surrounding function/expression frames also consume the depth budget.\n'
+               b'    // This classical syntax case creates no quantum dimensions.\n'
+               b'    let labels: Vec<_> = (0..64).map(|i| format!("V{i}")).collect();')
+        self.assertEqual(second.count(old), 1)
+        self.assertEqual(second.replace(old, new), third)
+        self.assertEqual([run['repair_delta'] for run in self.validation['runs']],
+                         [None, 'repairs/01-to-02.patch', 'repairs/02-to-03.patch'])
+        self.assertIn(b'-.expect_err', self.raw('repairs/01-to-02.patch').replace(b' ', b''))
+        self.assertIn(b'+    let labels: Vec<_> = (0..64)', self.raw('repairs/02-to-03.patch'))
+        self.assertEqual(first.count(b'#[test]'), 11)
+        self.assertEqual(third.count(b'#[test]'), 11)
+        provenance = self.decoded('ci-null/provenance.json')
+        self.assertEqual(provenance['reported_hosted_failure']['run_id'], 39937620424)
+        self.assertIn('not executed', provenance['state'])
+        for name in ('integration.patch', 'synthetic-null-input-event.json', 'reproduce_first.py'):
+            self.assertEqual(self.pin(self.raw('ci-null/' + name)), provenance[name])
+        self.assertEqual(self.pin(self.raw('ci-null/first/scripts/check_pr_size.py')),
+                         provenance['first']['scripts/check_pr_size.py'])
+        self.assertEqual(self.decoded('ci-null/synthetic-null-input-event.json'),
+                         {'repository': {'full_name': 'MGYamada/Qleisli'}, 'inputs': None})
+        self.assertEqual(self.decoded('ci-null/actual-first-report.json'),
+                         {'format': 1, 'status': 'error', 'limit': 1000000,
+                          'reason': "'NoneType' object has no attribute 'get'"})
+        self.assertIn('synthetic', self.validation['ci_reproduction_scope'])
 
 
 if __name__ == '__main__':

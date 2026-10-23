@@ -2,7 +2,7 @@ name: Produce reviewable current proof records
 
 on:
   push:
-    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts]
+    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts, codex/beta-typed-ordinary-runtime]
     paths:
       - .github/workflows/current-proof-records.yml
       - scripts/refresh_current_proof_records.py
@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 90
     env:
       SOURCE_COMMIT: ${{ github.sha }}
-      LEAN_NUM_THREADS: '1'
+      LEAN_NUM_THREADS: '2'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

@@ -78,8 +78,9 @@ not authorized by this rule.
 ## Reviewable current proof records
 
 The separate `current-proof-records` workflow prepares reviewable proof metadata
-for an exact clean checkout of `codex/beta-finite-adts` or
-`codex/beta-ordinary-adts`. The selected branch and workflow source must agree.
+for an exact clean checkout of `codex/beta-finite-adts`,
+`codex/beta-ordinary-adts` or `codex/beta-typed-ordinary-runtime`.
+The selected branch and workflow source must agree.
 It runs the canonical
 builds, audits, full reductions and fixed protected-output comparisons before
 proposing changes to the schema registry, three current-evidence records and the
@@ -295,6 +296,14 @@ recorded admission; they cannot supply the human adequacy judgment or complete
 production-wide QS, PR or RS.
 
 ## Progressive test-oriented CI (#223)
+
+Lean reduction helpers may live under `QleisliKernel.Tests`. Their explicit
+roots must match in `Tests.lean` and `Audit.lean`, and every test module must
+be reachable from those roots. Production modules cannot import this namespace;
+test reachability cannot satisfy a production module's root requirement. The
+same source restrictions and compiled ownership audit cover test declarations,
+including private and generated helpers. Test sources use kernel-checked
+reductions rather than `#eval` or native proof evaluation.
 
 | Lane | Selection | Work |
 | --- | --- | --- |

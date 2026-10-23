@@ -4,12 +4,42 @@ use super::*;
 use crate::frontend::project::{ModuleOrigin, SourceModule};
 
 pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
+    let prepared = prepare_original_source(Path::new("main.qli"), project)
+        .expect("complete original source judgment");
+    compiler_from_prepared(
+        project,
+        prepared,
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
+            .expect("explicit test kernel"),
+    )
+}
+
+/// Raw-producer probes cannot select an executable or obtain a native handle.
+pub(super) fn untrusted_compiler(project: &Project) -> Compiler<'_> {
+    let prepared = prepare_untrusted_source_test(Path::new("main.qli"), project)
+        .expect("complete original source judgment for an untrusted proposal");
+    compiler_from_prepared(
+        project,
+        prepared,
+        crate::interchange::native::Kernel::new(
+            std::env::current_exe()
+                .expect("running Rust test executable")
+                .join("raw_producer_tests_must_not_invoke_a_native_kernel"),
+            crate::edition::Edition::E2026,
+        ),
+    )
+}
+
+fn compiler_from_prepared<'p>(
+    project: &'p Project,
+    prepared: PreparedSource<'p>,
+    kernel: crate::interchange::native::Kernel,
+) -> Compiler<'p> {
     let PreparedSource {
         checked: source,
         occurrences,
         interface_naturals,
-    } = prepare_original_source(Path::new("main.qli"), project)
-        .expect("complete original source judgment");
+    } = prepared;
     let declarations = source
         .resolution
         .declarations()
@@ -21,8 +51,7 @@ pub(super) fn checked_compiler(project: &Project) -> Compiler<'_> {
         })
         .collect();
     Compiler {
-        kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
-            .expect("explicit test kernel"),
+        kernel,
         project,
         source,
         interface_naturals,

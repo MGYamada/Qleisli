@@ -1,0 +1,226 @@
+{
+  "archive": {
+    "bytes": 1521176,
+    "path": "ordinary-value-reference-first.tar.xz",
+    "sha256": "ad3da88dbe714eedb4eec6d14d934d6e26de12251d07ce2e4933b37bae330557"
+  },
+  "archive_members": 114,
+  "compression": {
+    "dictionary_bytes": 16777216,
+    "exact_ustar_bytes_preserved": true,
+    "format": "xz",
+    "original_ustar_sha256": "b6ccf7102d40a434016a311443a783564903b2752c5408f6f40851daf157a3c7",
+    "preset": 7
+  },
+  "expanded_bytes": 141896245,
+  "format": "qleisli.inert-retention-proposal",
+  "fresh_audit_17_included": true,
+  "identities": "All cached/generated .olean/.ilean payloads are excluded. Existing namespace manifests and each inputs.json preserve source, cache and compiled-candidate identities; they are not a fresh import-closure rebuild or binary/source attestation.",
+  "index": {
+    "bytes": 108527,
+    "path": "ordinary-value-reference-index.json",
+    "sha256": "9e691dbce382e92ba1df58ab6532687f18fcaca6ac715bb4dc0451345598756a"
+  },
+  "limitations": [
+    "Source stability is per observed window, not across the whole session: root heads changed between 04 and 05.",
+    "Audit 11 detects three generated partial helpers among 301 declarations. Audit 16 records 284 candidate declarations without failures after repairs.",
+    "Complete layout/encoding correspondence, source declaration/member authentication and privacy, full branch/interval coverage, typed native replay, original whole-AST preservation and runtime correspondence remain pending.",
+    "No root adoption, acceptance path, new guarantee, production-wide QS/PR/RS/EXACT, Issue completion, normal CI or release is claimed."
+  ],
+  "numbering": "No 08 window exists. BLOCKED.json attempt_02 is an earlier aborted escalation, distinct from actual later 02-core.",
+  "original_bytes": 156378431,
+  "original_files": 289,
+  "original_status": "First provenance and reviews remain uncompiled-candidate-only; later results refer to revised captured sources.",
+  "scope": "Independent ordinary typing/representation, exact ordered SSA reads and structural copy/projection; actual Raw old-value preservation and fresh Bit under explicit premises. No newly annotated phi output-tree correspondence.",
+  "state": "PREPARED ONLY: preserved historical observations, not root installation or current proof validity",
+  "target_combined_bytes": 1258291,
+  "unique_objects": 113,
+  "version": 1,
+  "windows": [
+    {
+      "lean_result": null,
+      "result": "No final report; 01 stopped before Lean spawn.",
+      "window": "01-core"
+    },
+    {
+      "exit_code": 1,
+      "head_after": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "head_before": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "pass": false,
+      "peak_rss_kib": 71920,
+      "report_record": "validation/02-core/report.json",
+      "seconds": 10.645223166997312,
+      "stable": true,
+      "stop_reason": null,
+      "window": "02-core"
+    },
+    {
+      "exit_code": 1,
+      "head_after": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "head_before": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "pass": false,
+      "peak_rss_kib": 618560,
+      "report_record": "validation/03-core/report.json",
+      "seconds": 16.701502124997205,
+      "stable": true,
+      "stop_reason": null,
+      "window": "03-core"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "head_before": "239e0546d24bfe952020a413fd24ae7f65a66d92",
+      "pass": true,
+      "peak_rss_kib": 516032,
+      "report_record": "validation/04-core/report.json",
+      "seconds": 14.71828541700961,
+      "stable": true,
+      "stop_reason": null,
+      "window": "04-core"
+    },
+    {
+      "exit_code": 1,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": false,
+      "peak_rss_kib": 2336352,
+      "report_record": "validation/05-bridge/report.json",
+      "seconds": 29.287045874996693,
+      "stable": true,
+      "stop_reason": null,
+      "window": "05-bridge"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2303040,
+      "report_record": "validation/06-bridge/report.json",
+      "seconds": 30.190044666000176,
+      "stable": true,
+      "stop_reason": null,
+      "window": "06-bridge"
+    },
+    {
+      "exit_code": 1,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": false,
+      "peak_rss_kib": 283408,
+      "report_record": "validation/07-examples/report.json",
+      "seconds": 5.162979832995916,
+      "stable": true,
+      "stop_reason": null,
+      "window": "07-examples"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 468496,
+      "report_record": "validation/09-examples/report.json",
+      "seconds": 7.199808416000451,
+      "stable": true,
+      "stop_reason": null,
+      "window": "09-examples"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2309792,
+      "report_record": "validation/10-raw-examples/report.json",
+      "seconds": 24.283743583000614,
+      "stable": true,
+      "stop_reason": null,
+      "window": "10-raw-examples"
+    },
+    {
+      "exit_code": 1,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": false,
+      "peak_rss_kib": 2351392,
+      "report_record": "validation/11-audit/report.json",
+      "seconds": 37.91049579100218,
+      "stable": true,
+      "stop_reason": null,
+      "window": "11-audit"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 546144,
+      "report_record": "validation/12-core/report.json",
+      "seconds": 12.80627616700076,
+      "stable": true,
+      "stop_reason": null,
+      "window": "12-core"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2293024,
+      "report_record": "validation/13-bridge/report.json",
+      "seconds": 28.632840999998734,
+      "stable": true,
+      "stop_reason": null,
+      "window": "13-bridge"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 494816,
+      "report_record": "validation/14-examples/report.json",
+      "seconds": 12.352085417005583,
+      "stable": true,
+      "stop_reason": null,
+      "window": "14-examples"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2319520,
+      "report_record": "validation/15-raw-examples/report.json",
+      "seconds": 30.308381833005114,
+      "stable": true,
+      "stop_reason": null,
+      "window": "15-raw-examples"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2339488,
+      "report_record": "validation/16-audit/report.json",
+      "seconds": 34.83057779099909,
+      "stable": true,
+      "stop_reason": null,
+      "window": "16-audit"
+    },
+    {
+      "exit_code": 0,
+      "head_after": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "head_before": "e936505ecc156d3cc31b8f5dffda780be7a1ef99",
+      "pass": true,
+      "peak_rss_kib": 2624528,
+      "report_record": "validation/17-fresh-audit/report.json",
+      "seconds": 409.32309504199657,
+      "stable": true,
+      "stop_reason": null,
+      "window": "17-fresh-audit"
+    }
+  ]
+}

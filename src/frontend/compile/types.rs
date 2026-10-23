@@ -3,6 +3,7 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 use super::*;
+use crate::frontend::types::nominal::{Body, Nominal};
 
 #[derive(Clone, Copy)]
 enum Location<'a> {
@@ -103,6 +104,7 @@ impl Failure {
 struct Measured {
     nodes: usize,
     copy_work: usize,
+    metadata_work: usize,
     basis_bits: Option<usize>,
 }
 
@@ -128,7 +130,8 @@ fn original_field(original: Location<'_>, arity: usize, ordinal: usize) -> Locat
 
 /// This bounded preflight uses only borrowed nodes and fixed-size stack frames.
 /// It creates no temporary Vec, Box or copied type. The total copy charge is
-/// exactly the former sum of subtree.tree_size().nodes over every copied node.
+/// the former sum of subtree.tree_size().nodes over every copied node, plus
+/// complete nominal metadata. It reserves that work before cloning labels.
 fn measure<'a, N: FiniteRegisterSize>(
     original: impl Into<Location<'a>>,
     checked: &crate::frontend::types::Type<N>,
@@ -145,11 +148,13 @@ fn measure<'a, N: FiniteRegisterSize>(
         Kind::Unit => Measured {
             nodes: 1,
             copy_work: 1,
+            metadata_work: 0,
             basis_bits: Some(0),
         },
         Kind::Bit => Measured {
             nodes: 1,
             copy_work: 1,
+            metadata_work: 0,
             basis_bits: Some(1),
         },
         Kind::Bits(size) => {
@@ -164,11 +169,27 @@ fn measure<'a, N: FiniteRegisterSize>(
             Measured {
                 nodes: 1,
                 copy_work: 1,
+                metadata_work: 0,
                 basis_bits: Some(width),
             }
         }
         Kind::Parameter(_) => return Err(Failure::at(original, FailureKind::Parameter)),
-        Kind::Nominal(_) => return Err(Failure::at(original, FailureKind::Nominal)),
+        Kind::Nominal(nominal) => {
+            if !matches!(&nominal.body, Body::Enum(_)) {
+                return Err(Failure::at(original, FailureKind::Nominal));
+            }
+            let metadata_work = nominal.metadata_cells();
+            Measured {
+                nodes: 1,
+                copy_work: metadata_work
+                    .checked_add(1)
+                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?,
+                metadata_work,
+                // An ordinary enum keeps its exact declaration. It is not a
+                // power-of-two coherent basis or a Bits representation.
+                basis_bits: None,
+            }
+        }
         Kind::Q(basis) => {
             if stage == Stage::Basis {
                 return Err(Failure::at(original, FailureKind::QuantumBasis));
@@ -180,6 +201,9 @@ fn measure<'a, N: FiniteRegisterSize>(
                 depth + 1,
                 visited,
             )?;
+            if child.basis_bits.is_none() {
+                return Err(Failure::at(original, FailureKind::Nominal));
+            }
             let nodes = child
                 .nodes
                 .checked_add(1)
@@ -190,6 +214,7 @@ fn measure<'a, N: FiniteRegisterSize>(
                     .copy_work
                     .checked_add(nodes)
                     .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?,
+                metadata_work: child.metadata_work,
                 basis_bits: None,
             }
         }
@@ -203,6 +228,7 @@ fn measure<'a, N: FiniteRegisterSize>(
             let mut result = Measured {
                 nodes: 1,
                 copy_work: 0,
+                metadata_work: 0,
                 basis_bits: Some(0),
             };
             for (ordinal, field) in fields.iter().enumerate() {
@@ -220,6 +246,10 @@ fn measure<'a, N: FiniteRegisterSize>(
                 result.copy_work = result
                     .copy_work
                     .checked_add(child.copy_work)
+                    .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
+                result.metadata_work = result
+                    .metadata_work
+                    .checked_add(child.metadata_work)
                     .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
                 result.basis_bits = match (result.basis_bits, child.basis_bits) {
                     (Some(a), Some(b)) => Some(
@@ -257,15 +287,23 @@ fn copy_reserved<'a, N: FiniteRegisterSize>(
             })?))
         }
         Kind::Parameter(_) => Err(Failure::at(original, FailureKind::Parameter)),
-        Kind::Nominal(_) => Err(Failure::at(original, FailureKind::Nominal)),
+        Kind::Nominal(nominal) => match &nominal.body {
+            Body::Enum(variants) => Ok(Ty::nominal(Nominal {
+                origin: Arc::clone(&nominal.origin),
+                body: Body::Enum(variants.clone()),
+            })),
+            Body::Record(_) => Err(Failure::at(original, FailureKind::Nominal)),
+        },
         Kind::Q(_) if stage == Stage::Basis => {
             Err(Failure::at(original, FailureKind::QuantumBasis))
         }
-        Kind::Q(basis) => Ok(Ty::quantum(copy_reserved(
-            original_basis(original),
-            basis,
-            Stage::Basis,
-        )?)),
+        Kind::Q(basis) => {
+            let copied = copy_reserved(original_basis(original), basis, Stage::Basis)?;
+            if copied.basis_bits().is_none() {
+                return Err(Failure::at(original_basis(original), FailureKind::Nominal));
+            }
+            Ok(Ty::quantum(copied))
+        }
         Kind::Tuple(fields) => {
             if fields.len() < 2 {
                 return Err(Failure::at(original, FailureKind::TupleArity));
@@ -380,7 +418,15 @@ fn capacity_at(
         };
         SourceError::new(code, failure.span, message)
     })?;
-    charge(span, measured.nodes)
+    if stage == Stage::Basis && measured.basis_bits.is_none() {
+        return Err(SourceError::new(
+            "type",
+            span,
+            "ordinary nominal types have no coherent finite basis encoding",
+        ));
+    }
+    // Keep built-in accounting unchanged; nominal metadata is additional work.
+    charge(span, measured.nodes + measured.metadata_work)
 }
 
 #[cfg(test)]
@@ -612,5 +658,99 @@ mod tests {
             result.unwrap_err().kind,
             FailureKind::RegisterWidth(RegisterWidthError::Unresolved)
         );
+    }
+    fn enumeration(module: &str, labels: &[&str]) -> Closed {
+        Closed::nominal(Nominal {
+            origin: Arc::new(crate::frontend::types::nominal::Origin {
+                module: module.to_owned(),
+                name: "Tri".to_owned(),
+                source: Arc::from("enum Tri { A, B, C }"),
+                span: Span { start: 0, end: 20 },
+            }),
+            body: Body::Enum(labels.iter().map(|label| (*label).to_owned()).collect()),
+        })
+    }
+
+    #[test]
+    fn enum_copy_reserves_metadata_and_retains_exact_declaration() {
+        let original = named(Span { start: 0, end: 3 });
+        let checked = enumeration("main", &["A", "B", "C"]);
+        let Kind::Nominal(nominal) = &checked.kind else {
+            panic!("enum fixture")
+        };
+        let cost = nominal.metadata_cells() + 1;
+        for available in [cost - 1, cost] {
+            let copied = Cell::new(false);
+            let result = reserve_and_copy(
+                &original,
+                &checked,
+                Stage::Basis,
+                |failure| failure,
+                |span, amount| {
+                    assert_eq!(amount, cost);
+                    if amount > available {
+                        return Err(Failure {
+                            span,
+                            kind: FailureKind::WorkOverflow,
+                        });
+                    }
+                    Ok(())
+                },
+                |checked| {
+                    copied.set(true);
+                    copy_reserved(&original, checked, Stage::Basis)
+                },
+            );
+            assert_eq!(copied.get(), available == cost);
+            if let Ok(value) = result {
+                assert_eq!(value, checked);
+                assert_ne!(value, enumeration("foreign", &["A", "B", "C"]));
+                assert_ne!(value, enumeration("main", &["B", "A", "C"]));
+                assert_ne!(value, Closed::bits(2));
+                assert_eq!(value.basis_bits(), None);
+            } else {
+                assert_eq!(available, cost - 1);
+            }
+        }
+    }
+
+    #[test]
+    fn enum_runtime_capacity_does_not_open_coherent_or_record_types() {
+        let original = named(Span { start: 1, end: 2 });
+        let checked = enumeration("main", &["A"]);
+        let Kind::Nominal(nominal) = &checked.kind else {
+            panic!("enum fixture")
+        };
+        let mut charge = 0;
+        closed_capacity(&checked, original.span, &mut |_, cells| {
+            charge += cells;
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(charge, nominal.metadata_cells() + 1);
+        assert_ne!(checked, Closed::unit());
+        assert_ne!(checked, Closed::bits(0));
+        assert!(
+            closed_basis_capacity(&checked, original.span, &mut |_, _| {
+                panic!("nominal coherent basis must refuse before reservation")
+            })
+            .is_err()
+        );
+        let record = Closed::nominal(Nominal {
+            origin: Arc::clone(&nominal.origin),
+            body: Body::Record(Vec::new()),
+        });
+        for invalid in [Closed::quantum(checked), record] {
+            let error = reserve_and_copy(
+                &original,
+                &invalid,
+                Stage::Runtime,
+                |failure| failure,
+                |_, _| panic!("unsupported types must refuse before reservation"),
+                |_| panic!("unsupported types must refuse before copying"),
+            )
+            .unwrap_err();
+            assert_eq!(error.kind, FailureKind::Nominal);
+        }
     }
 }

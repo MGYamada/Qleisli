@@ -1,0 +1,143 @@
+{
+  "format": "qleisli.current-component-validation",
+  "version": 1,
+  "scope": "Canonical member-part proof integration: current kernel/Main build, strict Audit and complete Tests. External full observer remains referenced, not copied or independently replayed by this summary.",
+  "base_head": "82bf2a17c32625fefc1ae58f80be2364f3f63a26",
+  "sources": {
+    "lean-kernel/QleisliKernel/SourceTypes/Members.lean": "1779d436e1afdcce021866b177a4652b687e8a49683e1bac99bec403378d837f",
+    "lean-kernel/QleisliKernel/Tests/SourceMembers.lean": "c65d6d930e14204d9211f6dd8278061d450e52fc4300d524acc97086c03b5abd",
+    "lean-kernel/QleisliKernel/Tests/SourceMembers/Parts.lean": "c3237808c50f2a405754d5952163a3643d2032d0647784fe90dece4baf02ccd2"
+  },
+  "observer": {
+    "path": "/private/tmp/qleisli-member-parts-canonical-final-observer/report.json",
+    "bytes": 6754328,
+    "sha256": "4f5ce32106cd626e906a51be294266e0160ef15e3d2b6abcafe2de5f1b448a26"
+  },
+  "observer_source": {
+    "path": "/private/tmp/qleisli-member-parts-canonical-final-observer/observer.py.txt",
+    "bytes": 4781,
+    "sha256": "86d7a0d17b7fd7537d2cf8f56cbe875aea91d6e18eca59bc5f922dc01f8e01d9"
+  },
+  "runner": {
+    "path": "/private/tmp/qleisli-member-parts-canonical-final-runner.py",
+    "bytes": 1099,
+    "sha256": "ebd918b764ab6465617bde6f1810ac44667329cf56c8a9888131b1cfa2016dd5"
+  },
+  "observation": {
+    "pass": true,
+    "stable": true,
+    "exit_code": 0,
+    "stop_reason": null,
+    "peak_rss_kib": 2928096,
+    "rss_group_limit_kib": 3145728,
+    "heavy_job_concurrency": 1,
+    "seconds": 257.32296666699403
+  },
+  "stages": [
+    {
+      "name": "build",
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "build",
+        "QleisliKernel",
+        "+Main"
+      ],
+      "exit_code": 0,
+      "seconds": 32.696093542006565,
+      "records": {
+        "command.json": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/build/command.json",
+          "bytes": 257,
+          "sha256": "de854d9586351df6171faae9e56dab8c5c8a6da77a9882ea33bb91e6934c429b"
+        },
+        "stdout": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/build/stdout",
+          "bytes": 141910,
+          "sha256": "47f02cec7ee712179c278afc320e48ce89ba39a952893a9d713ccbc9dfb39cd1"
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/build/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "audit",
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 2.7992247079964727,
+      "records": {
+        "command.json": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/audit/command.json",
+          "bytes": 280,
+          "sha256": "d0671704863593ffc10fd6266d28592e8e9acc18f70bf27d596832e48c4f7534"
+        },
+        "stdout": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/audit/stdout",
+          "bytes": 161,
+          "sha256": "4feb64621cfdcdb058be46ae69348228041e35ff47e9847437951cfea8826aa4"
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/audit/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "tests",
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 207.48104741699353,
+      "records": {
+        "command.json": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/tests/command.json",
+          "bytes": 280,
+          "sha256": "67fb49aff510b9819a0fb8b1eb7eab32c5c4369e960d9020802cac90f2434605"
+        },
+        "stdout": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/tests/stdout",
+          "bytes": 1966,
+          "sha256": "85ff8f14cf5002e200a5929b045166afe0056cf61699e140b1267c131d0e310c"
+        },
+        "stderr": {
+          "path": "/private/tmp/qleisli-member-parts-canonical-final/tests/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "audit_declarations": 17614,
+  "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "remaining": [
+    "Hosted complete mathematical build, audits, fresh replay and fixed protected comparisons; review current proof records before ordinary required CI.",
+    "No rebuilt native checker or Rust/MSRV runtime comparisons in this component validation.",
+    "Ordinary ADT execution, typed native replay, field-subtree/privacy and source preservation remain unfinished."
+  ],
+  "history_packaging_failure": {
+    "path": "/private/tmp/qleisli-member-parts-retention-build-observer/report.json",
+    "bytes": 6746068,
+    "sha256": "9431c0cc847899259ae978309ce3f082351a21bb190ed2cc69eba5f758cf1187"
+  }
+}

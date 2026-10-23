@@ -1,4 +1,5 @@
 import QleisliKernel
+import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Qirf.ControlAccess
 import Protocol.NativeContext.Bindings
 
@@ -1544,3 +1545,19 @@ example : canonical #[ ("defs",validHelper),("private","use defs::previous;")]
 example : canonical #[ ("main",validHelper ++ " fn previous() -> Bit {0}")]
   "main" ["previous"] = none := by decide +kernel
 end SourceNaturalAffineExamples
+
+
+namespace OrdinaryValueKernelTests
+open QleisliKernel.Semantics.OrdinaryValue
+
+-- Exercise the public pure-kernel import without requiring the Mathlib bridge.
+example : Represents [] [.unit] .unit .unit := .unit
+example : Represents [] [.bits 0] (.bits []) (.bits []) := .bits [] [] .nil
+example : ¬ Represents [] [.unit] (.bits []) (.bits []) := by
+  intro represented
+  cases represented
+example : littleEndian [false,true] = 2 := rfl
+example : Represents [] [.pair,.unit,.unit] (.pair .unit .unit) (.pair .unit .unit) :=
+  Represents.copy (Represents.unit : Represents [] [.unit] .unit .unit)
+
+end OrdinaryValueKernelTests

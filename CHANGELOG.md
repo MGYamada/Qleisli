@@ -6,6 +6,30 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Accept GitHub's null inputs for manually dispatched workflows without inputs;
+  keep malformed input containers rejected and retain size/reference checks.
+- Keep current source-inventory rows compact during release synchronization,
+  preserving all data and historical fixtures within the existing size limits.
+- Prepare internal ordinary enum constructors and match lowering through the
+  existing branch/phi implementation, retaining original type identity, tag
+  order and complete owner frames. Public execution stays gated on typed native
+  transport; records, coherent selection and source preservation remain pending.
+  Regression failures report the missing enum shape without printing internal values.
+- Add independent finite ordinary-value and storage semantics, with proofs for
+  classical lookup, copying and preservation through actual Raw classical
+  actions, simultaneous phi outputs and pure/erase events. Ordered tree transport
+  includes unchanged leaves and retains nominal identity, enum range, field order
+  and zero-width nodes. Erasure lemmas retain every outcome and state the actual
+  fresh output Bit under explicit freshness premises; quantum actions need not
+  be identities. Typed native replay, original-source member/privacy checks and
+  source preservation remain unfinished; no ordinary ADT execution is enabled.
+- Retain original UTF-8 token and declaration-body locations in the independent
+  source reader. Add source-bound nominal member catalogues and proofs for their
+  byte, name and whole-layout boundaries; check legacy lexer/declaration results
+  and malformed locations. Prove that member extraction consumes the original
+  token parts in order and retains each member's full type tokens and visibility.
+  Caller privacy, field subtree correspondence and
+  typed execution remain unfinished.
 - Begin internal finite-carrier support with source-backed nominal trees,
   separate logical cardinalities and physical code layouts, and bounded exact
   code-isometry checking. Preserve first sources and both Lean study attempts.

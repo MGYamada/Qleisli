@@ -12,6 +12,7 @@ mod classical;
 mod computed_phase;
 mod dormant_access;
 mod function_contract;
+mod nominal;
 mod operations;
 mod primitives;
 mod runtime_transforms;
@@ -143,7 +144,10 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
     }
 
     fn pattern_type<'v>(&self, value: &'v Value) -> Cow<'v, Ty> {
-        Cow::Owned(value.ty())
+        match value {
+            Value::Quantum(_, ty) | Value::Enumeration(ty, _) => Cow::Borrowed(ty),
+            _ => Cow::Owned(value.ty()),
+        }
     }
 
     fn consume_fields(&mut self, value: Value) -> Vec<Value> {
@@ -485,6 +489,13 @@ impl Lowerer<'_, '_> {
             });
             self.compiler
                 .charge(module, span, value.tree_size().nodes)?;
+            self.compiler.charge(
+                module,
+                span,
+                value
+                    .nominal_equality_work()
+                    .saturating_add(Value::nominal_type_work(&ty)),
+            )?;
             if value.ty() != ty {
                 let argument = match &param.pattern.kind {
                     PatternKind::Name(name) => format!("argument `{}`", name.text),
@@ -524,6 +535,13 @@ impl Lowerer<'_, '_> {
             };
             self.compiler
                 .charge(&key_name.0, result_span, value.tree_size().nodes)?;
+            self.compiler.charge(
+                &key_name.0,
+                result_span,
+                value
+                    .nominal_equality_work()
+                    .saturating_add(Value::nominal_type_work(&return_ty)),
+            )?;
             if value.ty() != return_ty {
                 return Err(self.error(
                     &key_name.0,
@@ -682,6 +700,17 @@ impl Lowerer<'_, '_> {
         {
             self.compiler.charge(module, block.span, env_size(&entry))?;
         }
+        self.compiler.charge(
+            module,
+            block.span,
+            total_size(
+                entry
+                    .values()
+                    .chain(local.values())
+                    .filter_map(Binding::as_ref)
+                    .map(Value::nominal_equality_work),
+            ),
+        )?;
         scope::close_scope_with_updates(&mut entry, &local, self.access_updates.last().expect("block updates")).map_err(|name| {
             let span = self.compiler.locals().info(name.id).span;
             self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
@@ -698,6 +727,8 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
         names: &mut BTreeSet<String>,
     ) -> Result<(), CompileError> {
+        self.compiler
+            .charge(module, pattern.span, value.nominal_equality_work())?;
         pattern::bind(
             pattern,
             value,
@@ -1210,10 +1241,19 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
-            ExprKind::Variant(_)
-            | ExprKind::Record(_)
-            | ExprKind::Field { .. }
-            | ExprKind::Match(_) => Err(self.error(
+            ExprKind::Variant(value) => self.variant_value(module, expr.span, value),
+            ExprKind::Match(selection) => {
+                let scrutinee = self.expr(module, &selection.scrutinee, env)?;
+                self.match_value(
+                    module,
+                    expr.span,
+                    scrutinee,
+                    &selection.arms,
+                    env,
+                    |lower, module, body, env| lower.block(module, body, env),
+                )
+            }
+            ExprKind::Record(_) | ExprKind::Field { .. } => Err(self.error(
                 module,
                 expr.span,
                 ErrorCode::Unsupported,

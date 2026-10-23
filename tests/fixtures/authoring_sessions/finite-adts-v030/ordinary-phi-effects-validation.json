@@ -1,0 +1,811 @@
+{
+  "archive": {
+    "bytes": 50068,
+    "path": "ordinary-phi-effects-first.tar.xz",
+    "sha256": "c7cbd2c6481875c78b553cfdda00e4d707fd61b4e62682329e0a3ceba27232ee"
+  },
+  "archive_members": 109,
+  "compression": {
+    "dictionary_bytes": 16777216,
+    "format": "xz",
+    "preset": 7
+  },
+  "expanded_bytes": 580445,
+  "external_records": {
+    "effects-observed-01-first/before.json": {
+      "bytes": 3328568,
+      "original_mode": 420,
+      "sha256": "a38838f29c3902f4dc96ea70d90b26cd26754b2e9634cd75572c229ec42d1ce9",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-01-first/before.json"
+    },
+    "effects-observed-01-first/report.json": {
+      "bytes": 6739236,
+      "original_mode": 420,
+      "sha256": "15c7605d8b739269d6a9a27820e6910d56a5c0fb188e09f8ae95b747f1c097cb",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-01-first/report.json"
+    },
+    "effects-observed-02-examples/before.json": {
+      "bytes": 3328593,
+      "original_mode": 420,
+      "sha256": "3cfff815e37c42e14e13061ddcad989ace194fcec7470054a5df19510fdceb43",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-02-examples/before.json"
+    },
+    "effects-observed-02-examples/report.json": {
+      "bytes": 6739339,
+      "original_mode": 420,
+      "sha256": "619e09bc8eeee7bcb931a67ee3dc6f8895a8abe08acaf280df72dad1d7d13c1f",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-02-examples/report.json"
+    },
+    "effects-observed-03-examples/before.json": {
+      "bytes": 3328596,
+      "original_mode": 420,
+      "sha256": "1886079140010aac6857e99975ad94eee2b114259aaba24068cd62ffeccc372a",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-03-examples/before.json"
+    },
+    "effects-observed-03-examples/report.json": {
+      "bytes": 6739351,
+      "original_mode": 420,
+      "sha256": "950b2915921fbbadceec2a86d3039b5abfef753562441815643113d5ab8ce1bc",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-03-examples/report.json"
+    },
+    "effects-observed-04-audit/before.json": {
+      "bytes": 3328593,
+      "original_mode": 420,
+      "sha256": "2d438625a260dbc47b5ad205d52ce2d98a142568adff717d30e9477e595e73c1",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-04-audit/before.json"
+    },
+    "effects-observed-04-audit/report.json": {
+      "bytes": 6739335,
+      "original_mode": 420,
+      "sha256": "61b5e0bec541c411c998a6d425ae996d27b8e39581da42e04665c5b1639eea98",
+      "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-04-audit/report.json"
+    },
+    "phi-validation/01-core/before.json": {
+      "bytes": 3328613,
+      "original_mode": 420,
+      "sha256": "09ec0357b780d16e759e80bad5b6706603abc220fa43b03a31b045c1a279c5e7",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/01-core/before.json"
+    },
+    "phi-validation/02-core/before.json": {
+      "bytes": 3328613,
+      "original_mode": 420,
+      "sha256": "09ec0357b780d16e759e80bad5b6706603abc220fa43b03a31b045c1a279c5e7",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/02-core/before.json"
+    },
+    "phi-validation/02-core/report.json": {
+      "bytes": 6739148,
+      "original_mode": 420,
+      "sha256": "028acd74ef22f971f2e331b76da6a8d03fc41a0c378c5cb58bebb00aba820b9d",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/02-core/report.json"
+    },
+    "phi-validation/03-core/before.json": {
+      "bytes": 3328613,
+      "original_mode": 420,
+      "sha256": "77ab915779bd76f245a804618543a400673fc721da5954af9c62b0d796b6092e",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/03-core/before.json"
+    },
+    "phi-validation/03-core/report.json": {
+      "bytes": 6739148,
+      "original_mode": 420,
+      "sha256": "173ccab36fa8fed2423b79a730336c5ae939b5c90e2be361a304a2de65eb994d",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/03-core/report.json"
+    },
+    "phi-validation/04-core/before.json": {
+      "bytes": 3328613,
+      "original_mode": 420,
+      "sha256": "c32143a18b4f40dfe3ec79fe9ce44fa5409e7ca15d9f560ce3960fb3453e9213",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/04-core/before.json"
+    },
+    "phi-validation/04-core/report.json": {
+      "bytes": 6739147,
+      "original_mode": 420,
+      "sha256": "338fb869cb07868ced3c404907c9c97ac4d032f8fe22e5a8258363f93e5f0f42",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/04-core/report.json"
+    },
+    "phi-validation/05-bridge/before.json": {
+      "bytes": 3328594,
+      "original_mode": 420,
+      "sha256": "556fb4276c724043c78e7211a27458884796936ca6517fe0b0cdee84b5f6a0fe",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/05-bridge/before.json"
+    },
+    "phi-validation/05-bridge/report.json": {
+      "bytes": 6739340,
+      "original_mode": 420,
+      "sha256": "36e2bed6cabea4cff5816ac95152587102353c1a3ba1d918d024fcec88666bc9",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/05-bridge/report.json"
+    },
+    "phi-validation/06-bridge/before.json": {
+      "bytes": 3328594,
+      "original_mode": 420,
+      "sha256": "26ca80c4af54e8a4b59ce07abe3485e8dc330d985a1bbf366ddca8ab14b60484",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/06-bridge/before.json"
+    },
+    "phi-validation/06-bridge/report.json": {
+      "bytes": 6739339,
+      "original_mode": 420,
+      "sha256": "711eb1e0e1e902e3fd5e6fcbdcbfbe2f873a89a396159502bbfefd8194df9b14",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/06-bridge/report.json"
+    },
+    "phi-validation/07-examples/before.json": {
+      "bytes": 3328585,
+      "original_mode": 420,
+      "sha256": "39a13eb28e21a475a73fe8dbc60d762069e33f8c63bedf9c6ba6ef41a5f9c601",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/07-examples/before.json"
+    },
+    "phi-validation/07-examples/report.json": {
+      "bytes": 6739302,
+      "original_mode": 420,
+      "sha256": "673e3d73a573f59e23a66dd18014b92f3e60fd62ec72af864e8b248d249f9b36",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/07-examples/report.json"
+    },
+    "phi-validation/08-types/before.json": {
+      "bytes": 3328582,
+      "original_mode": 420,
+      "sha256": "f8a71d9ab64d73b3554a43f30a3d810c7e857b8e206c667d7c8c8966d0af3849",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/08-types/before.json"
+    },
+    "phi-validation/08-types/report.json": {
+      "bytes": 6739024,
+      "original_mode": 420,
+      "sha256": "7fc723f8b6d8338aa2d1a8079cc1825340d86fe343c62674fb61eaec6177d997",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/08-types/report.json"
+    },
+    "phi-validation/09-audit/before.json": {
+      "bytes": 3328582,
+      "original_mode": 420,
+      "sha256": "e1e5fc739af2a417d1ab066fa6cc5f102597e9de1e2831931e4c6086f8b74115",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/09-audit/before.json"
+    },
+    "phi-validation/09-audit/report.json": {
+      "bytes": 6739290,
+      "original_mode": 420,
+      "sha256": "4b602f811b0651e3e18b099d6784243a4ede1a5191afc675d393e98bec65393f",
+      "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/09-audit/report.json"
+    }
+  },
+  "format": "qleisli.inert-retention-proposal",
+  "index": {
+    "bytes": 97039,
+    "path": "ordinary-phi-effects-index.json",
+    "sha256": "db9b41ad49de8d67e68c7354f6fc9ca4a9d62400bfa0b0bd25bea3e7d195fcde"
+  },
+  "limitations": [
+    "Full original before/report inventories are unchanged external records, not archived members.",
+    "Compact window fields are explicitly derived and cannot independently recheck the omitted root inventories.",
+    "Cached/generated binary payloads are omitted; their recorded identities do not attest a fresh import rebuild.",
+    "No saved command is executed, no source preservation or new acceptance/guarantee/Issue completion is claimed."
+  ],
+  "original_bytes": 1443326,
+  "original_files": 253,
+  "packet": "history",
+  "scope": "Focused original sources, diagnostics, commands, source/cache identities and audit outputs only. Full before/report inventories remain unchanged externally and are referenced by exact path/hash/size; compact observations are derived, not self-contained full-window replay.",
+  "state": "Retained historical observations; not current proof validity or full source-window replay.",
+  "unique_objects": 108,
+  "version": 1,
+  "windows": [
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "42c599a5b681ede88fb456db866c4aa962a760339788db2f2177f85bffe0df3b"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/QleisliKernel/Semantics/OrdinaryValueTransport.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "42c599a5b681ede88fb456db866c4aa962a760339788db2f2177f85bffe0df3b"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328613,
+        "sha256": "09ec0357b780d16e759e80bad5b6706603abc220fa43b03a31b045c1a279c5e7",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/02-core/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 1,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/02-core-sources/inputs.json",
+      "kind": "phi",
+      "pass": false,
+      "peak_rss_kib": 510096,
+      "prefix": "phi-validation/02-core",
+      "report_reference": {
+        "bytes": 6739148,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/02-core/report.json",
+        "sha256": "028acd74ef22f971f2e331b76da6a8d03fc41a0c378c5cb58bebb00aba820b9d"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 14.597018625005148,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/02-core-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "02-core"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "be0c53df636e7f3f079914d2e95dc67eec7d6aea234c3b4cc8ab3622c1140bd3"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/QleisliKernel/Semantics/OrdinaryValueTransport.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "be0c53df636e7f3f079914d2e95dc67eec7d6aea234c3b4cc8ab3622c1140bd3"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328613,
+        "sha256": "77ab915779bd76f245a804618543a400673fc721da5954af9c62b0d796b6092e",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/03-core/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 1,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/03-core-sources/inputs.json",
+      "kind": "phi",
+      "pass": false,
+      "peak_rss_kib": 489904,
+      "prefix": "phi-validation/03-core",
+      "report_reference": {
+        "bytes": 6739148,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/03-core/report.json",
+        "sha256": "173ccab36fa8fed2423b79a730336c5ae939b5c90e2be361a304a2de65eb994d"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 14.152561583003262,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/03-core-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "03-core"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "6ff24edcffdba286b39acb4857ccd86fc8b3db8d94557c9fe1440157e6bf6cc1"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/QleisliKernel/Semantics/OrdinaryValueTransport.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel/QleisliKernel/Semantics/OrdinaryValueTransport.lean": "6ff24edcffdba286b39acb4857ccd86fc8b3db8d94557c9fe1440157e6bf6cc1"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328613,
+        "sha256": "c32143a18b4f40dfe3ec79fe9ce44fa5409e7ca15d9f560ce3960fb3453e9213",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/04-core/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean-kernel",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/04-core-sources/inputs.json",
+      "kind": "phi",
+      "pass": true,
+      "peak_rss_kib": 594656,
+      "prefix": "phi-validation/04-core",
+      "report_reference": {
+        "bytes": 6739147,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/04-core/report.json",
+        "sha256": "338fb869cb07868ced3c404907c9c97ac4d032f8fe22e5a8258363f93e5f0f42"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 16.348917041003006,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/04-core-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "04-core"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean": "4b4a6ed2a01ac68d46df2d310df4a91900e88864f73f47b8c3adc7cbae18a9db"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/Qleisli/Semantics/OrdinaryValuePhi.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean": "4b4a6ed2a01ac68d46df2d310df4a91900e88864f73f47b8c3adc7cbae18a9db"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328594,
+        "sha256": "556fb4276c724043c78e7211a27458884796936ca6517fe0b0cdee84b5f6a0fe",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/05-bridge/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 1,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/05-bridge-sources/inputs.json",
+      "kind": "phi",
+      "pass": false,
+      "peak_rss_kib": 2315104,
+      "prefix": "phi-validation/05-bridge",
+      "report_reference": {
+        "bytes": 6739340,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/05-bridge/report.json",
+        "sha256": "36e2bed6cabea4cff5816ac95152587102353c1a3ba1d918d024fcec88666bc9"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 31.474020499998005,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/05-bridge-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "05-bridge"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean": "b9b0c960d961d347377e301a745f568cf9b881ef4c3ff8376ed4cfba708b5a54"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/Qleisli/Semantics/OrdinaryValuePhi.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean/Qleisli/Semantics/OrdinaryValuePhi.lean": "b9b0c960d961d347377e301a745f568cf9b881ef4c3ff8376ed4cfba708b5a54"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328594,
+        "sha256": "26ca80c4af54e8a4b59ce07abe3485e8dc330d985a1bbf366ddca8ab14b60484",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/06-bridge/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/lean",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/06-bridge-sources/inputs.json",
+      "kind": "phi",
+      "pass": true,
+      "peak_rss_kib": 2322944,
+      "prefix": "phi-validation/06-bridge",
+      "report_reference": {
+        "bytes": 6739339,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/06-bridge/report.json",
+        "sha256": "711eb1e0e1e902e3fd5e6fcbdcbfbe2f873a89a396159502bbfefd8194df9b14"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 30.748467541998252,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/06-bridge-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "06-bridge"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiExamples.lean": "adfa1c394bcb1b195d6e042a570c5d3b5949ff5a5df5f61de87be36491d04f26"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/OrdinaryValuePhiExamples.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiExamples.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiExamples.lean": "adfa1c394bcb1b195d6e042a570c5d3b5949ff5a5df5f61de87be36491d04f26"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328585,
+        "sha256": "39a13eb28e21a475a73fe8dbc60d762069e33f8c63bedf9c6ba6ef41a5f9c601",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/07-examples/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/07-examples-sources/inputs.json",
+      "kind": "phi",
+      "pass": true,
+      "peak_rss_kib": 2315744,
+      "prefix": "phi-validation/07-examples",
+      "report_reference": {
+        "bytes": 6739302,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/07-examples/report.json",
+        "sha256": "673e3d73a573f59e23a66dd18014b92f3e60fd62ec72af864e8b248d249f9b36"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 32.64536824999959,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/07-examples-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "07-examples"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiTypes.lean": "475c175815e3534a5569df85b75fe86368a53a5c88511d5ccedb0d3636ddb965"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/OrdinaryValuePhiTypes.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiTypes.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiTypes.lean": "475c175815e3534a5569df85b75fe86368a53a5c88511d5ccedb0d3636ddb965"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328582,
+        "sha256": "f8a71d9ab64d73b3554a43f30a3d810c7e857b8e206c667d7c8c8966d0af3849",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/08-types/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/08-types-sources/inputs.json",
+      "kind": "phi",
+      "pass": true,
+      "peak_rss_kib": 2247472,
+      "prefix": "phi-validation/08-types",
+      "report_reference": {
+        "bytes": 6739024,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/08-types/report.json",
+        "sha256": "7fc723f8b6d8338aa2d1a8079cc1825340d86fe343c62674fb61eaec6177d997"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 25.133290584009956,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/08-types-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "08-types"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiAudit.lean": "d5ed11c5f1bd9dc25348dd796665681599004a6e579a0c13ad90444688e93fe2"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/lib/OrdinaryValuePhiAudit.olean",
+        "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiAudit.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests/OrdinaryValuePhiAudit.lean": "d5ed11c5f1bd9dc25348dd796665681599004a6e579a0c13ad90444688e93fe2"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328582,
+        "sha256": "e1e5fc739af2a417d1ab066fa6cc5f102597e9de1e2831931e4c6086f8b74115",
+        "source": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/09-audit/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/work/tests",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "phi-validation/09-audit-sources/inputs.json",
+      "kind": "phi",
+      "pass": true,
+      "peak_rss_kib": 2368592,
+      "prefix": "phi-validation/09-audit",
+      "report_reference": {
+        "bytes": 6739290,
+        "path": "/private/tmp/qleisli-ordinary-phi-validation-20261022-5ZSOXm/09-audit/report.json",
+        "sha256": "4b602f811b0651e3e18b099d6784243a4ede1a5191afc675d393e98bec65393f"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 38.03810499999963,
+      "source_file_count": 20250,
+      "source_prefix": "phi-validation/09-audit-sources/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "09-audit"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/first/OrdinaryValueEffects.lean": "bd65f87c6b40f335cf17be83fd97168319101352c6f12247addb8085c33b7bcf"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/01-first/lib/OrdinaryValueEffects.olean",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/first/OrdinaryValueEffects.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/first/OrdinaryValueEffects.lean": "bd65f87c6b40f335cf17be83fd97168319101352c6f12247addb8085c33b7bcf"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328568,
+        "sha256": "a38838f29c3902f4dc96ea70d90b26cd26754b2e9634cd75572c229ec42d1ce9",
+        "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-01-first/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/first",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "effects/01-first/inputs.json",
+      "kind": "effects",
+      "pass": true,
+      "peak_rss_kib": 2311120,
+      "prefix": "effects-observed-01-first",
+      "report_reference": {
+        "bytes": 6739236,
+        "path": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-01-first/report.json",
+        "sha256": "15c7605d8b739269d6a9a27820e6910d56a5c0fb188e09f8ae95b747f1c097cb"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 29.438190208995366,
+      "source_file_count": 20250,
+      "source_prefix": "effects/01-first/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "effects-01-first"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-uSds8p/OrdinaryValueEffectsExamples.lean": "8ddbd6d0e2d168602e9d0ecf90db79d54fec9c75c0a944cbc6d308da54f5c5e7"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/02-examples/lib/OrdinaryValueEffectsExamples.olean",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-uSds8p/OrdinaryValueEffectsExamples.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-uSds8p/OrdinaryValueEffectsExamples.lean": "8ddbd6d0e2d168602e9d0ecf90db79d54fec9c75c0a944cbc6d308da54f5c5e7"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328593,
+        "sha256": "3cfff815e37c42e14e13061ddcad989ace194fcec7470054a5df19510fdceb43",
+        "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-02-examples/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-uSds8p",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 1,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "effects/02-examples/inputs.json",
+      "kind": "effects",
+      "pass": false,
+      "peak_rss_kib": 2273328,
+      "prefix": "effects-observed-02-examples",
+      "report_reference": {
+        "bytes": 6739339,
+        "path": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-02-examples/report.json",
+        "sha256": "619e09bc8eeee7bcb931a67ee3dc6f8895a8abe08acaf280df72dad1d7d13c1f"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 29.229898999998113,
+      "source_file_count": 20250,
+      "source_prefix": "effects/02-examples/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "effects-02-examples"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsExamples.lean": "d22d1319f4a8eff760cad3c972d521b133872996745bc489e4ac93a832b661b3"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/03-examples/lib/OrdinaryValueEffectsExamples.olean",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsExamples.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsExamples.lean": "d22d1319f4a8eff760cad3c972d521b133872996745bc489e4ac93a832b661b3"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328596,
+        "sha256": "1886079140010aac6857e99975ad94eee2b114259aaba24068cd62ffeccc372a",
+        "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-03-examples/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "effects/03-examples/inputs.json",
+      "kind": "effects",
+      "pass": true,
+      "peak_rss_kib": 2351344,
+      "prefix": "effects-observed-03-examples",
+      "report_reference": {
+        "bytes": 6739351,
+        "path": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-03-examples/report.json",
+        "sha256": "950b2915921fbbadceec2a86d3039b5abfef753562441815643113d5ab8ce1bc"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 30.689745458003017,
+      "source_file_count": 20250,
+      "source_prefix": "effects/03-examples/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "effects-03-examples"
+    },
+    {
+      "after": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsAudit.lean": "a88741e6a923d4eac8016f929d42edd2568da50de22fc6ba35f717f7a029223d"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "argv": [
+        "/Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean",
+        "-j1",
+        "-DautoImplicit=false",
+        "-DwarningAsError=true",
+        "-o",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/04-audit/lib/OrdinaryValueEffectsAudit.olean",
+        "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsAudit.lean"
+      ],
+      "before": {
+        "explicit_inputs": {
+          "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu/OrdinaryValueEffectsAudit.lean": "a88741e6a923d4eac8016f929d42edd2568da50de22fc6ba35f717f7a029223d"
+        },
+        "head": "e4652ccaf001fd90cd53276165f0b78231e87c65",
+        "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+      },
+      "before_reference": {
+        "bytes": 3328593,
+        "sha256": "2d438625a260dbc47b5ad205d52ce2d98a142568adff717d30e9477e595e73c1",
+        "source": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-04-audit/before.json"
+      },
+      "cwd": "/private/tmp/qleisli-ordinary-effects-first-o5c7k82j/source-controls-v2-pno0Zu",
+      "derivation": "Compact fields copied from the externally retained full report. This is not an original report or self-contained verification of its full root inventory.",
+      "exit_code": 0,
+      "full_window_equal": true,
+      "heavy_job_concurrency": 1,
+      "inputs_record": "effects/04-audit/inputs.json",
+      "kind": "effects",
+      "pass": true,
+      "peak_rss_kib": 2389968,
+      "prefix": "effects-observed-04-audit",
+      "report_reference": {
+        "bytes": 6739335,
+        "path": "/private/tmp/qleisli-carrier-bridge-20261021.9pNvkAQk/ordinary-effects-04-audit/report.json",
+        "sha256": "61b5e0bec541c411c998a6d425ae996d27b8e39581da42e04665c5b1639eea98"
+      },
+      "rss_group_limit_kib": 3145728,
+      "seconds": 34.541353374996106,
+      "source_file_count": 20250,
+      "source_prefix": "effects/04-audit/",
+      "stable": true,
+      "stop_reason": null,
+      "window": "effects-04-audit"
+    }
+  ]
+}

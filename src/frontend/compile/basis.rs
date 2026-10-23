@@ -50,6 +50,14 @@ impl Compiler<'_> {
         ty: &Ty,
         label: u16,
     ) -> Result<BTreeMap<BinderKey, BasisValue>, CompileError> {
+        if ty.basis_bits().is_none() {
+            return Err(self.error(
+                module,
+                pattern.span,
+                ErrorCode::Unsupported,
+                "finite label patterns require a closed built-in basis type",
+            ));
+        }
         let mut env = BTreeMap::new();
         let mut pending = vec![(pattern, ty, label)];
         while let Some((pattern, ty, label)) = pending.pop() {
@@ -106,6 +114,18 @@ impl Compiler<'_> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
         let (params, result) = self.signature(key)?;
+        if params
+            .iter()
+            .chain(std::iter::once(&result))
+            .any(|ty| ty.basis_bits().is_none())
+        {
+            return Err(self.error(
+                &key_name.0,
+                decl.span,
+                ErrorCode::Unsupported,
+                "finite tables require closed built-in basis types",
+            ));
+        }
         let bits: usize = params
             .iter()
             .map(|ty| ty.basis_bits().expect("basis parameter"))

@@ -595,3 +595,171 @@ proof, new guarantee or Issue completion.
 After installing this repair history, all 73 passive history checks pass against
 the retained files. They preserve the failed and successful observations above;
 they do not rerun the archived commands or establish current proof validity.
+
+
+The [ordinary value reference history](ordinary-value-reference-first.tar.xz),
+[index](ordinary-value-reference-index.json) and
+[observations](ordinary-value-reference-validation.json) preserve all 289 original
+files and modes as 113 complete-byte objects. The first candidate remains
+uncompiled; pre-spawn, authoring and example failures are retained separately.
+Audit 11 detects three generated partial helpers among 301 declarations; after
+repairs, audit 16 records 284 declarations with standard axioms and audit 17
+records a successful fresh check of that candidate audit module. All complete
+source inventories, commands and streams remain inert data. Thirteen imported
+project modules and 26 cached artifacts retain identities, without cache payloads
+or a fresh imported-source rebuild. These records do not attest native binaries.
+
+The passive reader loads this bounded archive once, checks source/report/command
+bindings and the summary, and rejects focused source, invocation, audit and cache
+substitutions without executing saved commands or reading external originals.
+The three files total 1,638,088 bytes; the original 1.2 MiB preparation target is
+retained unchanged and exceeded to preserve all bytes, within the existing fixture
+caps. This independent ordinary-value reference and actual Raw old-value
+preservation do not establish new phi output-tree correspondence, typed native
+replay, source member privacy, whole-AST or runtime preservation. No acceptance
+path, guarantee or #64 completion is added.
+
+
+The [phi/effects first history](ordinary-phi-effects-first.tar.xz),
+[index](ordinary-phi-effects-index.json) and
+[observations](ordinary-phi-effects-validation.json) retain 253 focused original
+records, including the first candidates, repairs, control examples and actual
+failed and successful diagnostics. Pre-spawn permission failure and an aborted
+approval attempt remain distinct from the later real compile. Original phi
+auditing records 114 declarations; effects auditing records 20 declarations.
+
+The separate [production-path history](ordinary-phi-effects-production-first.tar.xz),
+[index](ordinary-phi-effects-production-index.json) and
+[observations](ordinary-phi-effects-production-validation.json) retain 135 focused
+original records. Seven successful bounded stages freshly compile six canonical
+modules and the actual Audit body with ten explicit imports; the focused audit
+records 417 declarations. Imported project/cache identities are retained without
+binary payloads or a fresh imported-source rebuild. The umbrella source edits
+are pinned, but this local run does not compile the full mathematical umbrella.
+
+Whole-file deduplication preserves the selected original bytes and modes.
+Routine full before/report inventories remain unchanged outside fixtures with
+exact path, byte count and SHA-256 references. Compact window fields are labeled
+derived observations; the passive reader cannot independently replay the omitted
+full source inventories. It reads each bounded archive once and checks original
+maps, source/invocation bindings, outcomes, prior artifact identities and summary
+consistency without executing saved commands or opening external originals.
+
+These helpers cover selected-arm phi storage transport (including reused IDs)
+and ordinary-value preservation under actual Raw effects. They do not add typed
+native replay, source member privacy, whole-AST/runtime preservation, a native
+acceptance route, an adopted guarantee or #64 completion. Full umbrella replay,
+hosted current-proof refresh and final integration validation remain separate.
+
+The six retained files total **312,847 bytes**. Both passive consumer candidates passed all seven focused checks against these
+exact archive bytes in external runs, including the exact input-inventory checks. The complete history suite (82 existing checks plus seven new checks) has
+not yet run after installation; its result and the fixture/reference gates must
+be recorded separately. These passive results preserve observations and do not
+rerun Lean or establish current proof validity.
+
+
+The [ordinary member history](ordinary-members-first.tar.xz),
+[index](ordinary-members-index.json) and
+[compressed observations](ordinary-members-validation.json.gz) preserve 932
+original files and modes as 508 complete-byte objects. The original first
+candidate retains its uncompiled status. Ten recorded runs contain 77 bounded
+stages, preserving the Lexer, LocatedFacts, Members and test-authoring failures.
+The v9 full attempt stops at stage 25; its first two separate tails fail at
+stages 25 and 26. The third tail passes all 71 legacy comparisons and seven small
+examples, then the unchanged audit detects the generated partial declaration
+`LocatedFacts.checkOrdered._unsafe_rec`.
+
+The subsequent totality repair changes only `checkOrdered` to use `List.foldr`,
+preserving its Boolean equations and proof statement/body. A separate three-stage
+diagnostic freshly compiles LocatedFacts and Members, then passes the unchanged
+full declaration audit: 17,252 project declarations with the three standard
+axioms. Its 18 unaffected prefix modules and 168 common cached modules retain
+recorded identities; they are not claimed as fresh imported-source rebuilds.
+No historical full 28-stage attempt or final `AllCompiledImports` stage passes.
+Canonical repository build, Audit and Tests results are separate current records.
+
+The index and archive retain every selected original byte and map. Only the
+validation JSON's storage uses deterministic gzip; bounded reads check both its
+compressed identity and the exact 303,775 decoded bytes. The complete raw JSON
+remains an unchanged external original. Routine full before/report inventories
+also remain external with exact references. Compact fields are explicitly
+derived and cannot independently replay those omitted inventories. The passive
+reader opens the three fixed fixtures, loads the bounded history once and checks
+source, invocation, outcome, cache and audit bindings without executing saved
+commands or opening external originals. Its installed test result and fixture
+budget/reference gates must be recorded separately.
+
+These records concern byte locations, declaration/member metadata and the stated
+local refinement facts. They do not establish complete member-subtree refinement,
+member privacy authorization, whole-source preservation, typed native replay or
+ordinary nominal runtime execution. No acceptance path, guarantee or #64
+completion is added.
+
+The separate [canonical member-part validation](ordinary-member-parts-current.json)
+binds a later kernel/Main build, strict 17,614-declaration audit and complete
+Tests run after the Parts import entered the canonical aggregator. All three
+stages pass in one stable window, peaking at 2,928,096 KiB under the unchanged
+3 GiB cap. The referenced full reports remain external originals. A first
+history-packaging attempt exceeded its proposed 150,000-byte allocation and
+remains a failed observation; repeated metadata is removed separately without
+dropping original records. Full hosted proof refresh and ordinary CI remain
+pending, as do typed runtime, field-subtree/privacy and source preservation.
+
+The ordinary-member-parts history retains the first proof drafts, original
+canonical proposal, both actual failures, repaired sources and four bounded
+external runs. The first run failed compiling Members; v2's focused run passed
+Members alone; v2's full run failed Parts; v3 passed eight stages and its strict
+audit reported 17,614 project declarations with only propext, Classical.choice
+and Quot.sound. The archive also retains the later integration proposal. That
+proposal adds Parts to the canonical test aggregator; its compilation is not
+established by the earlier overlay, whose Audit imported Parts directly.
+
+The files `ordinary-member-parts-first.tar.xz`, `ordinary-member-parts-index.json`
+and `ordinary-member-parts-validation.json` use the existing passive reader.
+Whole-file deduplication preserves all 184 selected original files byte-for-byte,
+including source/provenance/commands and complete stdout/stderr. The first actual
+observer invocation differs from the saved unexecuted invocation proposal; both
+remain distinct. Full repeated before/after inventories and outer observer
+reports remain unchanged external originals with exact path, byte-count and
+SHA-256 references. Compact observer/inventory fields are explicitly derived;
+the local fixtures cannot independently replay omitted inventories. The 189
+cached artifact identities and compiled output identities retain their original
+scope; no binary payloads or fresh cache rebuild is claimed.
+
+The passive tests execute no retained commands and require no external original
+paths. This history adds no native runtime acceptance, caller privilege, semantic
+field-subtree theorem, whole-source preservation or completion claim for #64.
+
+The ordinary-enum history retains the exact first Rust patch, first measured-Tri
+program, new producer/test modules, three complete nominal test-source versions,
+and both repair deltas. Complete commands and stdout/stderr distinguish the first
+Rust compilation error (no tests ran), the second attempt's 10 passes and parser
+failure in the remaining test, and the third attempt's 11 nominal-test passes.
+The third run used the same filtered suite; the two separate finite-type tests,
+broader Rust checks, MSRV and native acceptance are not established by it.
+
+`ordinary-enum-first.tar.xz`, `ordinary-enum-index.json` and
+`ordinary-enum-validation.json` use the existing inert history reader. Whole-file
+deduplication retains all 42 selected originals byte-for-byte. Unchanged Rust
+file context is represented by the first exact patch and manifest; complete
+observer source snapshots and repeated before/report inventories remain external
+originals with exact path, byte-count, mode and SHA-256 references. Compact
+observer/source fields are derived, not self-contained raw-window verification.
+The original uncompiled proposal status remains historical and unchanged.
+
+The same archive retains the separate CI null-input repair patch, preserved
+original gate, synthetic event/reproducer and actual first error report. It does
+not present that synthetic event as a downloaded hosted event or claim the
+repair's candidate tests passed. Historical ordinary/selected parse refusals are
+also preserved separately from the later Rust attempts. Passive tests run no
+saved command and require no external originals. No public enum execution,
+source preservation, member privilege or #64 completion is claimed here.
+
+The separate [current Rust validation](ordinary-enum-current.json) binds the
+reviewed ten-file proposal to serial Rust 1.99.1 and MSRV 1.85.0 observations:
+50 focused tests each, all-target compilation and strict Clippy, plus normal
+format checking. Both windows are stable, with zero ignored tests; peak RSS is
+1,478,944 KiB below the unchanged 3 GiB limit. Full reports and command streams
+remain external, exactly identified records. Existing native built-in controls
+use the observed unchanged checker, not a fresh build attestation. These checks
+do not enable public enum execution or complete the pending typed native route.

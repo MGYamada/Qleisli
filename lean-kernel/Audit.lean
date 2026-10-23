@@ -1,4 +1,5 @@
 import QleisliKernel
+import QleisliKernel.Tests.SourceMembers
 import Main
 import Lean.Util.CollectAxioms
 import Lean.Compiler.ImplementedByAttr

@@ -120,6 +120,16 @@ def policy_result(counts: dict, repository: str | None = None,
                 **counts)
 
 
+def event_inputs(event: dict) -> dict:
+    """GitHub may encode a workflow with no declared inputs as JSON null."""
+    inputs = event.get("inputs")
+    if inputs is None:
+        return {}
+    if not isinstance(inputs, dict):
+        raise ValueError("workflow inputs must be an object or null")
+    return inputs
+
+
 def hosted_context(root: Path, event_name: str, event: dict, expected_sha: str,
                    ref: str, repository: str) -> dict:
     """GitHub-provided context is trusted by the workflow, not authenticated here."""
@@ -135,7 +145,7 @@ def hosted_context(root: Path, event_name: str, event: dict, expected_sha: str,
             "pull_request" in event
         ):
             raise ValueError("malformed non-PR workflow context")
-        selected = event.get("inputs", {}).get("completion_pr", "") if event_name == "workflow_dispatch" else ""
+        selected = event_inputs(event).get("completion_pr", "") if event_name == "workflow_dispatch" else ""
         if selected:
             if not isinstance(selected, str) or not re.fullmatch(r"[1-9][0-9]{0,9}", selected) or int(selected) > 2**31 - 1:
                 raise ValueError("invalid completion PR number")
