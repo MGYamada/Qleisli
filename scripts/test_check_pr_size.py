@@ -219,6 +219,20 @@ class GitBoundPolicy(unittest.TestCase):
                 size.hosted_context(self.root, name, event, self.merge,
                                     "refs/heads/main", "MGYamada/Qleisli")
 
+    def test_manual_absent_or_null_inputs_are_empty_but_malformed_containers_refuse(self):
+        event = {"repository": {"full_name": "MGYamada/Qleisli"}}
+        with patch("check_pr_size.completion_pr") as fetch:
+            results = [size.hosted_context(self.root, "workflow_dispatch", payload, self.merge,
+                                          "refs/heads/main", "MGYamada/Qleisli")
+                       for payload in (event, {**event, "inputs": None}, {**event, "inputs": {}})]
+            self.assertEqual(results, [results[0]] * 3)
+            self.assertEqual(results[0]["status"], "not-applicable")
+            for inputs in ([], "", 0, False, ["completion_pr"], "307", 307, True):
+                with self.subTest(inputs=inputs), self.assertRaisesRegex(ValueError, "workflow inputs"):
+                    size.hosted_context(self.root, "workflow_dispatch", {**event, "inputs": inputs},
+                                        self.merge, "refs/heads/main", "MGYamada/Qleisli")
+            fetch.assert_not_called()
+
     def test_manual_completion_binds_actual_pr_head_and_cumulative_counts(self):
         self.git("checkout", "--quiet", "--detach", self.head)
         event = {"repository": {"full_name": "MGYamada/Qleisli"}, "inputs": {"completion_pr": "308"}}

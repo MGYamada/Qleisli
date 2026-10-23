@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Accept GitHub's null inputs for manually dispatched workflows without inputs;
+  keep malformed input containers rejected and retain size/reference checks.
 - Add independent finite ordinary-value and storage semantics, with proofs for
   classical lookup, copying and preservation through actual Raw classical
   actions, simultaneous phi outputs and pure/erase events. Ordered tree transport

@@ -203,6 +203,39 @@ class RetainedSourceGraph(unittest.TestCase):
 
 
 class GitInspection(unittest.TestCase):
+    def test_manual_input_normalization_preserves_reference_inspection_and_release_base(self):
+        head, previous = "a" * 40, "b" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            event = Path(directory) / "event.json"
+            environment = dict(GITHUB_ACTIONS="true", GITHUB_EVENT_PATH=str(event),
+                               GITHUB_EVENT_NAME="workflow_dispatch", GITHUB_SHA=head,
+                               GITHUB_REF="refs/heads/main", GITHUB_REPOSITORY="owner/repo")
+            # Isolate this second reader from the PR-size reader so neither can
+            # conceal a regression in the other's handling of GitHub null.
+            with (patch.object(check, "hosted_context", return_value={"checkout_sha": head}),
+                  patch.dict(os.environ, environment, clear=True)):
+                for inputs, expected in (({}, None), ({"inputs": None}, None),
+                                         ({"inputs": {}}, None),
+                                         ({"inputs": {"release_base": ""}}, None),
+                                         ({"inputs": {"release_base": previous}}, previous)):
+                    event.write_text(json.dumps({"repository": {"full_name": "owner/repo"}, **inputs}))
+                    output = io.StringIO()
+                    with (self.subTest(inputs=inputs), contextlib.redirect_stdout(output),
+                          patch.object(check, "inspect", return_value={"status": "forbidden"}) as inspect):
+                        self.assertEqual(check.main(["--hosted"]), 1)
+                        inspect.assert_called_once_with(check.ROOT, check.BASELINE, head, expected)
+                    self.assertEqual(json.loads(output.getvalue())["status"], "forbidden")
+                for inputs in ([], "", 0, False, ["release_base"], previous, 307, True):
+                    event.write_text(json.dumps({"inputs": inputs}))
+                    output = io.StringIO()
+                    with (self.subTest(inputs=inputs), contextlib.redirect_stdout(output),
+                          patch.object(check, "inspect") as inspect):
+                        self.assertEqual(check.main(["--hosted"]), 1)
+                        inspect.assert_not_called()
+                    report = json.loads(output.getvalue())
+                    self.assertEqual(report["status"], "error")
+                    self.assertIn("workflow inputs", report["reason"])
+
     def test_hosted_reference_gate_precedes_validation_selection(self):
         workflow = (check.ROOT / ".github/workflows/ci.yml").read_text()
         changes = workflow.split("  changes:\n")[1].split("  check-rust:\n")[0]

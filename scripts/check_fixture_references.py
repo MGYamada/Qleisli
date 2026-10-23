@@ -15,7 +15,7 @@ import re
 import subprocess
 import sys
 
-from check_pr_size import ROOT, exact_commit, git, hosted_context, unique_object
+from check_pr_size import ROOT, event_inputs, exact_commit, git, hosted_context, unique_object
 from check_authoring_sessions import retained_source_record_index
 
 # Reviewed pre-retention tree. Existing records are not retroactively deleted
@@ -322,7 +322,7 @@ def main(argv=None):
                     raise ValueError("push reference inspection requires the exact previous commit")
                 changed_since = None if previous == "0" * 40 else previous
             elif changed_since is None and os.environ["GITHUB_EVENT_NAME"] == "workflow_dispatch":
-                changed_since = event.get("inputs", {}).get("release_base") or None
+                changed_since = event_inputs(event).get("release_base") or None
         else:
             head = args.head or git(ROOT, "rev-parse", "HEAD").decode().strip()
             changed_since = args.changed_since
