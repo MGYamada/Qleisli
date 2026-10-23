@@ -2917,6 +2917,7 @@ local instance exceptDecidableEq {α : Type} [DecidableEq α] :
 # History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-first.tar.xz"
 # Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-index.json"
 # Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-validation.json"
+# Current checks: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-member-parts-current.json"
 class OrdinaryMemberPartsHistory(unittest.TestCase):
     """Historical source/command binding; no external originals or commands run."""
     META = {'archive': {'bytes': 73072, 'path': 'ordinary-member-parts-first.tar.xz', 'sha256': 'edc490521be4794501986471a9582b02f79e504dcbe5520eb8db8a28dbafa804'}, 'expanded_bytes': 1358228, 'index': {'bytes': 20442, 'path': 'ordinary-member-parts-index.json', 'sha256': 'f593c74e74557718a5bcb7f8ce69f930e2a61097870daa7f20a569d9b7c98f69'}, 'validation': {'bytes': 20930, 'path': 'ordinary-member-parts-validation.json', 'sha256': 'a172b541aa8b90b7242585b3afa8c2eb08d7e74e797455fd57c99e3bd96fac7a'}}
