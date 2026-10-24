@@ -293,6 +293,79 @@ call/depth/work limits. Total classical declarations instead have acyclic
 calls and their separate [finite expression grammar](source-text.md#total-classical-declarations).
 No general recursion or runtime unbounded loop is introduced.
 
+## Finite runtime control and resources
+
+For each closed static instance, the currently admitted control forms describe
+a finite execution structure. The following rules compose with the existing
+type, effect, owner, provider and concrete-profile checks; they do not enable
+a form that its production path currently refuses.
+
+| Form | Termination and resource structure |
+|---|---|
+| Ordinary `if` | Evaluate an ordinary Bit condition and execute one finite arm per history. Both original arms must check and return the same complete result and live-owner interface. Measurement-dependent choices retain every complete history and its weight. |
+| `if static` | Check both original arms under their respective premises, then select the arm determined by the closed static comparison. The unselected arm cannot hide a source obligation. |
+| `for static` and `qfor static` | Evaluate the initializer once, then thread the exact carry through the finite half-open range. A zero range returns that initializer and still checks the original body. Bounds cannot depend on runtime classical data or measurement outcomes. |
+| `power(U, count)` | Apply the checked provider a finite static number of times, subject to the existing count and materialization capacities. Evaluate the runtime input once. Zero count still checks the original provider, Meaning and requested access. |
+| Ordinary calls | Use the checked dependency and static-specialization rules above. A direct self call requires nonincreasing static Nat arguments and at least one proved strict decrease. Mutual cycles and general recursion reject; concrete expansion also enforces its existing call, depth and work capacities. |
+| Coherent `qif` and controlled operation descriptions | Use finite provider bodies with their independently checked controlled access and ordered interfaces. Coherent selector sectors are not ordinary alternative execution histories; preserve their relative phase and actual controlled action. |
+
+Each branch and iteration respects its complete declared owner interface and
+the surrounding caller frame, including zero-width owners and correlations
+with an external reference. Declared consumption and fresh returned owners
+retain their existing operation contracts. Internal workspace must satisfy
+its declared consumption or return contract. An empty
+fold, an unselected arm or a successful measurement result grants no implicit
+discard, reset or clean release. Exact clean release retains its all-input,
+reference-safe zero-return obligation. These requirements also apply when a
+finite body contains further branches, folds or calls.
+
+For an additive **per-execution/per-history** work measure, sequencing composes
+bounds by addition, a finite fold by the finite sum of its iteration bounds,
+and an ordinary conditional by its condition and merge overhead plus the
+maximum arm bound. These are composition rules for a declared measure, not
+target costs inferred from source spelling. Whole-ensemble evaluation and
+checking may process both arms and all histories and require their own bounds.
+The resource cost of coherent control must account for its actual controlled
+implementation; it is not obtained by choosing the cheaper sector or by
+applying the ordinary conditional rule to the two source arms. Peak live
+storage follows owner and workspace lifetimes, including the caller frame;
+summing separate peaks gives only a conservative upper bound.
+
+Resource Safety can quantify over this finite structure for the specified
+closed instance. A quantitative claim must still bind the actual artifact,
+target, measures, schedule and checked bounds required by the
+[realization contract](realization.md#quantitative-resource-claims).
+Source-level summaries, compiler/checker capacities and target resource
+certificates are distinct. General source/resource preservation and the
+quantitative RS theorem remain separate obligations. Finiteness alone proves
+neither a particular target budget nor that correspondence.
+
+The current core has no runtime-counted loop, unbounded `while`, general or
+mutual recursion, or source-level retry/RUS construct. Measurement outcomes
+cannot supply a fold bound or replace the checked static decrease for self-calls.
+Decreasing static Nat specialization is not recursion on a measured runtime value.
+Nominal `match` and coherent `qmatch` retain their existing implementation and
+native-transport boundaries; this finite-control contract does not make them
+executable.
+
+A bounded unrolling may return a success Bit together with its declared
+owners only while retaining both success and failure outcomes in the complete
+instrument. It cannot keep only favorable outcomes or normalize them into a
+successful operation: the [postselection boundary](source-text.md#observation-and-postselection)
+still applies. The bounded host trial driver is separate: it retains no
+quantum state, requires fresh quantum trials and reports retries, exhaustion
+and execution errors. Its callback-count bound is not a bound on an arbitrary
+callback's running time or permission for a source-level quantum retry loop.
+
+A future RUS extension requires a separate termination and resource contract,
+including success and failure semantics, owners and workspace on every exit,
+composition with arbitrary references, and the meaning of exhaustion or a
+resource failure. It must distinguish a hard finite bound from an expected
+cost or a probabilistic tail claim and supply the evidence appropriate to the
+requested guarantee. Almost-sure termination alone grants neither a current
+core construct nor a worst-case resource bound. No RUS API or new acceptance
+path is introduced here.
+
 ## Operation repetition and access
 
 Capability predicates in a `requires` clause are `Applicable(U)`,
