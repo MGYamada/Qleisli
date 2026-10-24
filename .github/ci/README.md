@@ -195,6 +195,15 @@ sources, counterexamples and changed-result evidence instead of copying complete
 logs or source inventories for each toolchain. Consolidating another historical
 group requires checking its current consumers and exact original inventory.
 
+The two maintained current inventory/coverage views use only their explicit
+`.json.xz` paths through `scripts/current_metadata.py`: one CRC64 XZ stream,
+16 MiB stored/decoded limits, 64 MiB decoder memory, and deterministic preset 6
+with a 4 MiB writer dictionary. Plain/gzip siblings and other codecs reject.
+Immutable-Git reference inspection reads the exact selected XZ blob. It refuses
+a historical gzip current-view HEAD explicitly, rather than omitting decoded
+fixture edges; its matching historical checker remains in Git. Base comparisons
+still use path-only trees. No historical metadata or proof result is rewritten.
+
 Fixture retention separates live test inputs/expected outputs and their source
 maps from historical validation/provenance. Keep authoring first sources and
 observations, active inputs, protected constitutional records and notices. A

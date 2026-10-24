@@ -233,7 +233,13 @@ def snapshot(root, commit):
             continue
         rows[path] = (oid, int(size))
     paths = set(rows)
+    # Never silently lose the decoded fixture edges of a former current gzip
+    # HEAD. Its matching historical checker remains in Git; no codec fallback.
+    if paths & current_metadata.OBSOLETE_GZIP_PATHS:
+        raise ValueError("obsolete gzip current metadata Git snapshot; use its historical checker")
     for path in paths & current_metadata.CURRENT_PATHS:
+        if paths.intersection(current_metadata.obsolete_paths(path)):
+            raise ValueError("obsolete plain/gzip duplicate in current metadata Git snapshot")
         if rows[path][1] > current_metadata.MAX_BYTES:
             raise ValueError("current metadata stored size exceeds capacity")
     selected = [(p, oid, size) for p, (oid, size) in rows.items()

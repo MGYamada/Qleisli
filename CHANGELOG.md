@@ -7,7 +7,7 @@ development milestones from the scope of their evidence.
 ## 0.3.0-beta — 2026-10-12
 
 - Store the two maintained source-inventory and coverage views in bounded,
-  lossless gzip containers. Preserve decoded bytes, existing checks and historical
+  lossless CRC64 XZ containers. Preserve decoded bytes, existing checks and historical
   evidence; retain their rooted fixture references and release synchronization.
 - Consolidate finite runtime control, static-decrease and resource-composition
   rules, keeping per-history bounds, ensemble work and coherent target costs

@@ -392,20 +392,22 @@ class CurrentMetadataGitSnapshot(unittest.TestCase):
             git('add', '.'); git('commit', '--quiet', '-m', 'current compressed view')
             head = git('rev-parse', 'HEAD')
             # This later malformed checkout cannot replace the committed blob.
-            path.write_bytes(b'not gzip; do not read from checkout')
+            path.write_bytes(b'not XZ; do not read from checkout')
             contents, _ = check.snapshot(root, head)
             self.assertEqual(contents[name].encode(), raw)
             result = check.inspect(root, base, head)
             self.assertEqual(result['unreferenced'], [orphan])
             git('add', '.'); git('commit', '--quiet', '-m', 'malformed current container')
-            with self.assertRaisesRegex(ValueError, 'gzip'):
+            with self.assertRaisesRegex(ValueError, 'XZ'):
                 check.snapshot(root, git('rev-parse', 'HEAD'))
 
-    def snapshot(self, stored, *, size=None):
-        name = check.current_metadata.INVENTORY
+    def snapshot(self, stored, *, size=None, name=None, other_paths=()):
+        name = name or check.current_metadata.INVENTORY
         root_source = 'scripts/current_reader.py'
         source = ('read("' + name + '")\n').encode()
         blobs = [(root_source, '1' * 40, source), (name, '2' * 40, stored)]
+        blobs.extend((path, f'{index + 3:040x}', b'old current view')
+                     for index, path in enumerate(other_paths))
         tree = b''.join(('100644 blob ' + oid + ' ' + str(
             len(raw) if path != name or size is None else size) + '\t' + path).encode() + b'\0'
             for path, oid, raw in blobs)
@@ -432,30 +434,32 @@ class CurrentMetadataGitSnapshot(unittest.TestCase):
         self.assertNotIn(orphan, reached)
 
     def test_unlisted_compressed_blob_is_not_decoded_as_a_manifest(self):
-        unknown = 'tests/fixtures/current-metadata/unlisted.json.gz'
         used = 'tests/fixtures/current-metadata/used.bin'
-        source = ('read("' + unknown + '")\n').encode()
         stored = check.current_metadata.encode_bytes(check.current_metadata.INVENTORY,
             json.dumps({'input': used}).encode())
-        tree = (f'100644 blob {"1" * 40} {len(source)}\tscripts/read.py\0'
-                f'100644 blob {"2" * 40} {len(stored)}\t{unknown}\0').encode()
-        reply = (f'{"1" * 40} blob {len(source)}\n').encode() + source + b'\n'
-        with patch.object(check, 'git', return_value=tree), \
-             patch.object(check.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, reply)):
-            contents, paths = check.snapshot(Path('/unused-checkout'), '3' * 40)
-        self.assertNotIn(unknown, contents)
-        self.assertNotIn(used, check.reachability(contents, paths | {used}))
+        for suffix in ('.json.gz', '.json.xz'):
+            unknown = 'tests/fixtures/current-metadata/unlisted' + suffix
+            source = ('read("' + unknown + '")\n').encode()
+            tree = (f'100644 blob {"1" * 40} {len(source)}\tscripts/read.py\0'
+                    f'100644 blob {"2" * 40} {len(stored)}\t{unknown}\0').encode()
+            reply = (f'{"1" * 40} blob {len(source)}\n').encode() + source + b'\n'
+            with self.subTest(suffix=suffix), \
+                 patch.object(check, 'git', return_value=tree), \
+                 patch.object(check.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, reply)):
+                contents, paths = check.snapshot(Path('/unused-checkout'), '3' * 40)
+            self.assertNotIn(unknown, contents)
+            self.assertNotIn(used, check.reachability(contents, paths | {used}))
 
     def test_duplicate_current_keys_at_top_level_and_nested_stop_snapshot(self):
         for raw in (b'{"same": 1, "same": 2}',
                     b'{"nested": {"same": 1, "same": 2}}'):
             # Bypass the production writer, which must reject these inputs too.
-            output = io.BytesIO()
-            with check.current_metadata.gzip.GzipFile(filename='', mode='wb', fileobj=output,
-                                                     compresslevel=9, mtime=0) as stream:
-                stream.write(raw)
+            stored = check.current_metadata.lzma.compress(raw,
+                format=check.current_metadata.lzma.FORMAT_XZ,
+                check=check.current_metadata.lzma.CHECK_CRC64,
+                filters=[{'id': check.current_metadata.lzma.FILTER_LZMA2, 'dict_size': 4 * 1024 * 1024}])
             with self.subTest(raw=raw), self.assertRaisesRegex(ValueError, 'duplicate'):
-                self.snapshot(output.getvalue())
+                self.snapshot(stored)
 
     def test_current_container_corruption_and_nonobject_stop_snapshot(self):
         name = check.current_metadata.INVENTORY
@@ -463,12 +467,20 @@ class CurrentMetadataGitSnapshot(unittest.TestCase):
         for raw in (stored[:-1], stored + b'\0', stored + stored):
             with self.subTest(raw=raw[:10]), self.assertRaises(ValueError):
                 self.snapshot(raw)
-        output = io.BytesIO()
-        with check.current_metadata.gzip.GzipFile(filename='', mode='wb', fileobj=output,
-                                                 compresslevel=9, mtime=0) as stream:
-            stream.write(b'[]\n')
+        nonobject = check.current_metadata.lzma.compress(b'[]\n',
+            format=check.current_metadata.lzma.FORMAT_XZ,
+            check=check.current_metadata.lzma.CHECK_CRC64,
+            filters=[{'id': check.current_metadata.lzma.FILTER_LZMA2, 'dict_size': 4 * 1024 * 1024}])
         with self.assertRaisesRegex(ValueError, 'JSON object'):
-            self.snapshot(output.getvalue())
+            self.snapshot(nonobject)
+        for duplicate in check.current_metadata.obsolete_paths(name):
+            with self.subTest(duplicate=duplicate), self.assertRaisesRegex(ValueError, 'obsolete'):
+                self.snapshot(stored, other_paths=(duplicate,))
+        # Historical gzip HEADs fail explicitly instead of silently dropping
+        # their decoded fixture edges. No current filesystem fallback exists.
+        for old_name in check.current_metadata.OBSOLETE_GZIP_PATHS:
+            with self.subTest(old_name=old_name), self.assertRaisesRegex(ValueError, 'historical checker'):
+                self.snapshot(b'old gzip blob', name=old_name)
         with self.assertRaisesRegex(ValueError, 'stored size'):
             self.snapshot(stored, size=check.current_metadata.MAX_BYTES + 1)
 
