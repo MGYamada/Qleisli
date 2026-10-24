@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Store the current Raw proof extraction losslessly in a bounded XZ container,
+  preserving its decoded bytes, protected meanings and historical gzip records.
+  Check both stored and decoded identities; this repack is not a fresh proof replay.
 - Prepare internal ordinary record construction, projection and branch lowering,
   retaining original field privacy, complete nominal trees, written initializer
   order and zero-width children. Preserve first sources and actual source/runner

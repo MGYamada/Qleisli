@@ -83,6 +83,17 @@ refreshed after covered implementation maintenance; it cannot redefine the
 historical baseline. Trusted-base checks protect the continuity files after
 first introduction, independently of the earlier admission stage.
 
+The current Raw extraction uses the explicit `current-expressions.json.xz`
+container (CRC64, fixed 4 MiB dictionary). Its reader checks the stored hash,
+limits XZ decoder memory to 64 MiB and decoded output to the existing 16 MiB
+capacity, rejects incomplete or trailing streams, and then checks the exact
+decoded hash and unchanged protected projection. Historical gzip snapshots and
+materialized legacy bindings keep their original path/codec and identity rules.
+The current producer writes XZ only; it does not detect codecs or migrate files.
+A lossless technical repack of an already checked extraction changes storage
+and its current container binding, not the decoded proof evidence. Such a repack
+is not a fresh Lean extraction, new guarantee or completion claim.
+
 The default `check_initial_guarantees.py` checks saved file and source identities
 only. Saved hashes and claimed exit codes cannot authenticate execution. The
 `--verify-lean` path reruns the historical type/axiom review, the full binding

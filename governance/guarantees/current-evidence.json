@@ -479,9 +479,9 @@
       "exit_code": 0
     },
     "stdout": {
-      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.gz",
-      "compression": "gzip",
-      "sha256": "98e197b1afb53b14d60fd0b4e24cbd3f340d0f1bb286cd08b027fe7190dd6027",
+      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.xz",
+      "compression": "xz",
+      "sha256": "2924daaa62633ded3ca0e98ab19bb5aca89c91e4f99f7b54c28da3d98ffec86b",
       "uncompressed_sha256": "c407e8bef51ea084621f87dd9f34e50eae31870d2cd553a0474b6fad48d66f6c"
     },
     "stderr": {

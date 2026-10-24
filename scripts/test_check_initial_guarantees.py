@@ -6,6 +6,8 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import copy
 import gzip
 import json
+import lzma
+import zlib
 import os
 from pathlib import Path
 import re
@@ -33,7 +35,7 @@ def copy_evidence_fixture(destination):
     continuity = checker.continuity
     baseline = json.loads((ROOT / continuity.BASELINE_PATH).read_bytes())
     names.update({continuity.BASELINE_PATH, continuity.EXTRACTOR_PATH, continuity.REVIEWED_PATH,
-                  continuity.CURRENT_PATH, continuity.STDERR_PATH, *baseline["generation_evidence"]})
+                  continuity.STDERR_PATH, *baseline["generation_evidence"]})
     for name in names:
         path = destination / name
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -479,6 +481,12 @@ class InitialGuaranteeEvidence(unittest.TestCase):
                 self.write_json(checker.CURRENT_PATH, current)
                 self.rejected()
 
+    def test_historical_identity_profile_cannot_switch_to_xz(self):
+        current = json.loads((self.root / checker.CURRENT_PATH).read_bytes())
+        current["continuity"]["stdout"].update(path=checker.continuity.XZ_PATH, compression="xz")
+        self.write_json(checker.CURRENT_PATH, current)
+        self.rejected("current continuity expression identity")
+
     def test_historical_continuity_artifacts_are_confined_and_cannot_be_rebound(self):
         for name in (checker.continuity.BASELINE_PATH, checker.continuity.EXTRACTOR_PATH,
                      checker.continuity.REVIEWED_PATH, checker.continuity.CURRENT_PATH,
@@ -630,6 +638,11 @@ class CheckedBasisTransportProfile(unittest.TestCase):
              patch.object(checker.continuity, "compare_protected_projection", return_value={}):
             return checker.continuity.validate(ROOT, self.binding, self.revision, {})
 
+    def test_basis_profile_cannot_switch_to_current_raw_xz_container(self):
+        self.binding["stdout"].update(path=checker.continuity.XZ_PATH, compression="xz")
+        with self.assertRaisesRegex(PacketError, "basis snapshot"):
+            self.validate()
+
     def test_recorded_projection_and_live_extraction_are_both_checked(self):
         c = checker.continuity
         with patch.object(c, "baseline", return_value=self.expected):
@@ -749,10 +762,27 @@ class CheckedRawTransportProfile(unittest.TestCase):
         c = checker.continuity
         read = checker.read_file
         def contents(root, name):
-            return self.compressed if name == c.CURRENT_PATH else read(root, name)
+            return self.compressed if name == self.binding["stdout"]["path"] else read(root, name)
         with patch.object(c, "baseline", return_value=self.expected), \
              patch("check_ratification_packet.read_file", side_effect=contents):
             return c.validate(ROOT, self.binding, self.revision, {})
+
+    def test_xz_raw_profile_preserves_projection_and_exact_live_extraction(self):
+        c = checker.continuity
+        self.compressed = lzma.compress(self.output, format=lzma.FORMAT_XZ,
+                                        check=lzma.CHECK_CRC64, preset=0)
+        self.binding["stdout"].update(path=c.XZ_PATH, compression="xz", sha256=c.digest(self.compressed))
+        self.validate()
+        # The same actual replay and failure controls must run through XZ.
+        self.test_live_review_and_extraction_both_required()
+        changed = copy.deepcopy(self.snapshot)
+        name = c.raw_rename(c.SEMANTIC_ROOTS[0])
+        next(row for row in changed["declarations"] if c.expression_name(row["name"]) == name)["declaration"] = ["const", c.elaborated_name("True"), []]
+        output = json.dumps(changed).encode()
+        self.compressed = lzma.compress(output, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=0)
+        self.binding["stdout"].update(sha256=c.digest(self.compressed), uncompressed_sha256=c.digest(output))
+        with self.assertRaises(PacketError):
+            self.validate()
 
     def test_real_typed_proof_files_and_all_historical_meanings_required(self):
         result = checker.continuity.compare_raw_projection(self.output, self.reviewed)
@@ -827,7 +857,7 @@ class CheckedRawTransportProfile(unittest.TestCase):
         c = checker.continuity
         read = checker.read_file
         def contents(root, name):
-            return self.compressed if name == c.CURRENT_PATH else read(root, name)
+            return self.compressed if name == self.binding["stdout"]["path"] else read(root, name)
         outputs = {tuple(c.TRANSPORT_ARGV): read(ROOT, c.TRANSPORT_STDOUT),
                    tuple(c.RAW_REVIEW_ARGV): read(ROOT, c.RAW_STDOUT), tuple(c.RAW_ARGV): self.output}
         for fail in (None, "typed", "extraction", "warning", "exit"):
@@ -849,6 +879,83 @@ class CheckedRawTransportProfile(unittest.TestCase):
                 else:
                     with self.assertRaises(PacketError):
                         c.replay(ROOT, self.binding, self.revision, {})
+
+
+class CurrentRawContainerTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.data = b"exact current extraction\x00\xff\n"
+
+    def materialize(self, compressed, *, path=None, codec="xz"):
+        c = checker.continuity
+        name = c.XZ_PATH if path is None else path
+        target = self.root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(compressed)
+        return dict(path=name, compression=codec, sha256=c.digest(compressed),
+                    uncompressed_sha256=c.digest(self.data))
+
+    def test_explicit_pairs_preserve_exact_bytes_without_codec_fallback(self):
+        c = checker.continuity
+        packed = lzma.compress(self.data, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=0)
+        binding = self.materialize(packed)
+        self.assertEqual(c.raw_snapshot(self.root, binding), self.data)
+        legacy = self.materialize(gzip.compress(self.data, mtime=0), path=c.CURRENT_PATH, codec="gzip")
+        self.assertEqual(c.raw_snapshot(self.root, legacy), self.data)
+        for path, codec in ((c.CURRENT_PATH, "xz"), (c.XZ_PATH, "gzip"), (c.XZ_PATH, "auto"),
+                            (c.REVIEWED_PATH, "xz"), ("other.json.xz", "xz")):
+            with self.subTest(path=path, codec=codec), patch.object(c, "checked_file") as read, \
+                 self.assertRaisesRegex(PacketError, "path/compression"):
+                c.raw_snapshot(self.root, binding | dict(path=path, compression=codec))
+            read.assert_not_called()
+        with self.assertRaises(PacketError):
+            c.raw_snapshot(self.root, binding | {"optional_codec": "gzip"})
+
+    def test_stored_and_decoded_pins_are_checked_separately(self):
+        c = checker.continuity
+        packed = lzma.compress(self.data, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=0)
+        binding = self.materialize(packed)
+        with patch.object(c, "xz_decompressed") as decode, self.assertRaisesRegex(PacketError, "SHA-256 mismatch"):
+            c.raw_snapshot(self.root, binding | {"sha256": "0" * 64})
+        decode.assert_not_called()
+        with self.assertRaisesRegex(PacketError, "corrupt Raw snapshot"):
+            c.raw_snapshot(self.root, binding | {"uncompressed_sha256": "0" * 64})
+
+    def test_truncated_wrong_codec_corrupt_and_extra_members_are_rejected(self):
+        c = checker.continuity
+        packed = lzma.compress(self.data, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=0)
+        damaged = bytearray(packed)
+        damaged[len(damaged) // 2] ^= 1
+        variants = (packed[:-1], packed + b"trailing", packed + packed, bytes(damaged),
+                    gzip.compress(self.data, mtime=0),
+                    lzma.compress(self.data, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC32, preset=0))
+        for index, data in enumerate(variants):
+            with self.subTest(index=index), self.assertRaises(PacketError):
+                c.raw_snapshot(self.root, self.materialize(data))
+
+    def test_output_input_and_dictionary_limits_are_independent(self):
+        c = checker.continuity
+        self.assertEqual(c.MAX_SNAPSHOT_BYTES, 16 * 1024 * 1024)
+        self.assertEqual(c.XZ_MEMORY_LIMIT, 64 * 1024 * 1024)
+        packed = lzma.compress(b"x" * 9, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64, preset=0)
+        with patch.object(c, "MAX_SNAPSHOT_BYTES", 8), self.assertRaisesRegex(PacketError, "capacity"):
+            c.xz_decompressed(packed)
+        with patch.object(c, "MAX_STORED_SNAPSHOT_BYTES", 8), \
+             patch.object(c.lzma, "LZMADecompressor") as decoder, self.assertRaisesRegex(PacketError, "capacity"):
+            c.xz_decompressed(b"x" * 9)
+        decoder.assert_not_called()
+        # Rewrite only the tiny stream's LZMA2 dictionary declaration and its
+        # header CRC. No large dictionary allocation is needed to create it.
+        bomb = bytearray(lzma.compress(b"x", format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64,
+            filters=[dict(id=lzma.FILTER_LZMA2, dict_size=1 << 20)]))
+        self.assertEqual(bomb[13:16], b"\x00\x21\x01")
+        end = 12 + (bomb[12] + 1) * 4
+        bomb[16] = 40  # XZ LZMA2 property: maximum dictionary, above 64 MiB.
+        bomb[end - 4:end] = zlib.crc32(bomb[12:end - 4]).to_bytes(4, "little")
+        with self.assertRaisesRegex(PacketError, "over-memory"):
+            c.xz_decompressed(bytes(bomb))
 
 
 if __name__ == "__main__":

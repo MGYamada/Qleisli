@@ -13,6 +13,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 import gzip
 import hashlib
 import io
+import lzma
 from pathlib import Path
 import subprocess
 
@@ -26,9 +27,12 @@ EXTRACTOR_PATH = f"{FIXTURE}/Extract.lean"
 EXTRACTOR_SHA256 = "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
 REVIEWED_PATH = f"{FIXTURE}/reviewed-expressions.json.gz"
 CURRENT_PATH = f"{FIXTURE}/current-expressions.json.gz"
+XZ_PATH = f"{FIXTURE}/current-expressions.json.xz"
 STDERR_PATH = f"{FIXTURE}/empty.stderr.txt"
 ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{EXTRACTOR_PATH}"]
 MAX_SNAPSHOT_BYTES = 16 * 1024 * 1024
+MAX_STORED_SNAPSHOT_BYTES = MAX_SNAPSHOT_BYTES + 64 * 1024
+XZ_MEMORY_LIMIT = 64 * 1024 * 1024
 
 
 def require(condition, message):
@@ -48,6 +52,32 @@ def decompressed(data):
         raise PacketError("invalid compressed continuity expressions") from error
     require(len(result) <= MAX_SNAPSHOT_BYTES, "continuity expressions exceed the reviewed capacity")
     return result
+
+
+def xz_decompressed(data):
+    """Decode one bounded current Raw container, with no trailing member/data."""
+    require(len(data) <= MAX_STORED_SNAPSHOT_BYTES, "compressed continuity expressions exceed capacity")
+    try:
+        stream = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=XZ_MEMORY_LIMIT)
+        result = stream.decompress(data, max_length=MAX_SNAPSHOT_BYTES + 1)
+    except lzma.LZMAError as error:
+        raise PacketError("invalid or over-memory XZ continuity expressions") from error
+    require(len(result) <= MAX_SNAPSHOT_BYTES, "continuity expressions exceed the reviewed capacity")
+    require(stream.eof and not stream.unused_data, "incomplete or trailing XZ continuity expressions")
+    require(stream.check == lzma.CHECK_CRC64, "unexpected XZ continuity integrity check")
+    return result
+
+
+def raw_snapshot(root, stdout):
+    """The old materialized Raw binding and current XZ binding are explicit."""
+    exact_keys(stdout, {"path", "compression", "sha256", "uncompressed_sha256"}, "Raw snapshot")
+    pair = (stdout["path"], stdout["compression"])
+    require(pair == (CURRENT_PATH, "gzip") or pair == (XZ_PATH, "xz"), "unexpected Raw snapshot path/compression")
+    data = checked_file(root, stdout["path"], stdout["sha256"])
+    require(len(data) <= MAX_STORED_SNAPSHOT_BYTES, "compressed continuity expressions exceed capacity")
+    current = decompressed(data) if pair == (CURRENT_PATH, "gzip") else xz_decompressed(data)
+    require(digest(current) == stdout["uncompressed_sha256"], "corrupt Raw snapshot")
+    return current
 
 
 def baseline(root, archive):
@@ -212,7 +242,7 @@ def validate(root, binding, revision, archive):
     return validate_basis_record(root, binding, revision, archive)
 
 
-def validate_basis_record(root, binding, revision, archive, *, projection=None):
+def validate_basis_record(root, binding, revision, archive, *, projection=None, raw_container=False):
     projection = compare_protected_projection if projection is None else projection
     exact_keys(binding, {"format", "version", "baseline", "extractor", "source_revision_sha256",
                          "command", "stdout", "stderr", "transport"}, "basis transport evidence")
@@ -222,11 +252,15 @@ def validate_basis_record(root, binding, revision, archive, *, projection=None):
     require_fields(binding["extractor"], dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256), "fixed extractor")
     require(binding["source_revision_sha256"] == revision["sha256"], "stale continuity extraction")
     expected = baseline(root, archive)
-    exact_keys(binding["stdout"], {"path", "compression", "sha256", "uncompressed_sha256"}, "basis snapshot")
-    require_fields({k: binding["stdout"][k] for k in ("path", "compression")},
-                   dict(path=CURRENT_PATH, compression="gzip"), "basis snapshot")
-    current = decompressed(checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"]))
-    require(digest(current) == binding["stdout"]["uncompressed_sha256"], "corrupt basis snapshot")
+    if raw_container:
+        # Only validate_raw enables this; identity/Basis retain their gzip checks.
+        current = raw_snapshot(root, binding["stdout"])
+    else:
+        exact_keys(binding["stdout"], {"path", "compression", "sha256", "uncompressed_sha256"}, "basis snapshot")
+        require_fields({k: binding["stdout"][k] for k in ("path", "compression")},
+                       dict(path=CURRENT_PATH, compression="gzip"), "basis snapshot")
+        current = decompressed(checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"]))
+        require(digest(current) == binding["stdout"]["uncompressed_sha256"], "corrupt basis snapshot")
     reviewed = decompressed(checked_file(root, REVIEWED_PATH, expected["expressions"]["sha256"]))
     projection(current, reviewed)
     require_fields(binding["stderr"], dict(path=STDERR_PATH, sha256=digest(b"")), "continuity stderr")
@@ -417,7 +451,7 @@ def validate_raw(root, binding, revision, archive):
     require_fields(adapted["command"], dict(argv=RAW_ARGV, cwd="lean", exit_code=0), "fixed Raw extraction command")
     adapted.update(format=BASIS_FORMAT, extractor=dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256),
                    command=dict(argv=ARGV, cwd="lean", exit_code=0))
-    expected = validate_basis_record(root, adapted, revision, archive, projection=compare_raw_projection)
+    expected = validate_basis_record(root, adapted, revision, archive, projection=compare_raw_projection, raw_container=True)
     require_fields(raw_transport, dict(
         sources=RAW_SOURCES, review=dict(path=RAW_REVIEW, sha256=RAW_REVIEW_SHA256),
         stdout=dict(path=RAW_STDOUT, sha256=RAW_STDOUT_SHA256),
@@ -438,7 +472,7 @@ def replay_raw(root, binding, revision, archive):
     replay_transport(root)
     for argv, expected_stdout, label in (
         (RAW_REVIEW_ARGV, checked_file(root, RAW_STDOUT, RAW_STDOUT_SHA256), "Raw typed transport review"),
-        (RAW_ARGV, decompressed(checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"])), "Raw extraction"),
+        (RAW_ARGV, raw_snapshot(root, binding["stdout"]), "Raw extraction"),
     ):
         try:
             result = subprocess.run(argv, cwd=Path(root) / "lean", capture_output=True, check=False)

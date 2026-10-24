@@ -2,7 +2,7 @@
 """Pure maintenance refusal checks. Never execute Lean or a captured command."""
 import copy
 import contextlib
-import gzip
+import lzma
 import io
 import json
 from pathlib import Path
@@ -106,7 +106,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                         "GITHUB_REF": forbidden, "GITHUB_WORKFLOW_REF": workflow + forbidden})
 
     def test_only_fixed_five_derived_files_may_change(self):
-        self.assertEqual(maintenance.SNAPSHOT, maintenance.continuity.CURRENT_PATH)
+        self.assertEqual(maintenance.SNAPSHOT, maintenance.continuity.XZ_PATH)
+        self.assertNotIn(maintenance.continuity.CURRENT_PATH, maintenance.ALLOWED)
         self.assertEqual(maintenance.ALLOWED, {
             maintenance.SCHEMA, maintenance.AUDIT, maintenance.CURRENT,
             maintenance.LEDGER, maintenance.SNAPSHOT,
@@ -137,7 +138,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
         self.assertEqual(set(result), {maintenance.AUDIT, maintenance.CURRENT, maintenance.LEDGER, maintenance.SNAPSHOT})
         fresh = maintenance.json.loads(result[maintenance.CURRENT])
         compressed = result[maintenance.SNAPSHOT]
-        self.assertEqual(gzip.decompress(compressed), extraction)
+        self.assertEqual(maintenance.continuity.xz_decompressed(compressed), extraction)
         expected_continuity = copy.deepcopy(current["continuity"])
         expected_continuity["source_revision_sha256"] = "fresh"
         expected_continuity["stdout"]["sha256"] = maintenance.sha(compressed)
@@ -158,13 +159,24 @@ class MaintenanceRefusalTests(unittest.TestCase):
         self.assertEqual(current, original_current)
         self.assertEqual(ledger, original_ledger)
 
+    def test_writer_requires_the_explicit_current_xz_pair(self):
+        current = json.loads((maintenance.ROOT / maintenance.CURRENT).read_bytes())
+        ledger = json.loads((maintenance.ROOT / maintenance.LEDGER).read_bytes())
+        for path, codec in ((maintenance.continuity.CURRENT_PATH, "gzip"),
+                            (maintenance.SNAPSHOT, "gzip"), (maintenance.continuity.CURRENT_PATH, "xz")):
+            changed = copy.deepcopy(current)
+            changed["continuity"]["stdout"].update(path=path, compression=codec)
+            with self.subTest(path=path, codec=codec), self.assertRaisesRegex(ValueError, "destination"):
+                maintenance.proposed(changed, ledger, {"sha256": "fresh"}, b"audit", b"schema",
+                    {label: {"seconds": 2} for label in ("review", "main", "binding")}, b"synthetic extraction")
+
     def test_current_snapshot_compression_is_deterministic_and_has_no_filename_or_timestamp(self):
         data = b"fresh actual extraction\x00\xff\n" * 100
         first = maintenance.compress_extraction(data)
         self.assertEqual(first, maintenance.compress_extraction(data))
-        self.assertEqual(gzip.decompress(first), data)
-        self.assertEqual(first[:4], b"\x1f\x8b\x08\x00")
-        self.assertEqual(first[4:8], b"\x00" * 4)
+        self.assertEqual(maintenance.continuity.xz_decompressed(first), data)
+        self.assertEqual(first[:6], b"\xfd7zXZ\x00")
+        self.assertEqual(lzma.decompress(first, format=lzma.FORMAT_XZ), data)
 
     def test_new_output_directory_refuses_existing_inside_traversal_and_symlink(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -203,8 +215,8 @@ class ExtractionProjectionTests(unittest.TestCase):
     def setUpClass(cls):
         # Saved repository data is inert input to the existing fixed projection.
         # This exercises no Lean process, historical command or external receipt.
-        cls.saved = maintenance.continuity.decompressed(
-            (maintenance.ROOT / maintenance.continuity.CURRENT_PATH).read_bytes())
+        current = json.loads((maintenance.ROOT / maintenance.CURRENT).read_bytes())
+        cls.saved = maintenance.continuity.raw_snapshot(maintenance.ROOT, current["continuity"]["stdout"])
 
     @staticmethod
     def snapshot_bytes(snapshot):
@@ -280,7 +292,7 @@ class MaintenanceLifecycleTests(unittest.TestCase):
             current = {
                 "continuity": {
                     "format": maintenance.continuity.RAW_FORMAT, "source_revision_sha256": "old",
-                    "stdout": {"path": maintenance.SNAPSHOT, "compression": "gzip",
+                    "stdout": {"path": maintenance.SNAPSHOT, "compression": "xz",
                                "sha256": "old-compressed", "uncompressed_sha256": "old-uncompressed"},
                 },
                 "binding_review": {"command": {"seconds": 1}},
@@ -295,7 +307,7 @@ class MaintenanceLifecycleTests(unittest.TestCase):
                 maintenance.AUDIT: b"original audit\n",
                 maintenance.CURRENT: maintenance.encoded(current),
                 maintenance.LEDGER: maintenance.encoded({"current_bindings": [{"evidence": {"path": maintenance.CURRENT, "sha256": "old"}}], "discharged_guarantees": ["unchanged"]}),
-                maintenance.SNAPSHOT: gzip.compress(b"old current implementation extraction\n", mtime=0),
+                maintenance.SNAPSHOT: maintenance.compress_extraction(b"old current implementation extraction\n"),
             }
             tracked = set(original)
             fixed_outputs = {}
@@ -388,7 +400,7 @@ class MaintenanceLifecycleTests(unittest.TestCase):
             def fake_verify_extraction(actual_root, data, stderr):
                 self.assertEqual(actual_root, root)
                 self.assertEqual(data, fixed_outputs[tuple(maintenance.continuity.RAW_ARGV)])
-                self.assertNotEqual(data, gzip.decompress(original[maintenance.SNAPSHOT]))
+                self.assertNotEqual(data, maintenance.continuity.xz_decompressed(original[maintenance.SNAPSHOT]))
                 self.assertEqual(seen[-1], tuple(maintenance.continuity.RAW_ARGV))
                 if fault == "extract-stderr":
                     self.assertEqual(stderr, b"unexpected extraction diagnostic\n")
@@ -470,7 +482,7 @@ class MaintenanceLifecycleTests(unittest.TestCase):
                 self.assertEqual(fresh["validation"]["observed_native_build"], current["validation"]["observed_native_build"])
                 compressed = (output / "proposed" / maintenance.SNAPSHOT).read_bytes()
                 extraction = fixed_outputs[tuple(maintenance.continuity.RAW_ARGV)]
-                self.assertEqual(gzip.decompress(compressed), extraction)
+                self.assertEqual(maintenance.continuity.xz_decompressed(compressed), extraction)
                 self.assertEqual(fresh["continuity"]["stdout"]["sha256"], maintenance.sha(compressed))
                 self.assertEqual(fresh["continuity"]["stdout"]["uncompressed_sha256"], maintenance.sha(extraction))
             else:
