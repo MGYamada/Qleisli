@@ -11,9 +11,9 @@ import sys
 
 sys.dont_write_bytecode = True
 from check_docs import rust_code
+from current_metadata import INVENTORY, read_json
 
 ROOT = Path(__file__).resolve().parents[1]
-INVENTORY = 'tests/fixtures/verification_v022/inventory.json'
 PACKETS = {'VM-23', 'VM-24', 'VM-25', 'VM-26', 'VM-27', 'VM-28', 'VM-29'}
 
 # Reviewed source identities, not a theorem of minimality or a new admission.
@@ -397,7 +397,7 @@ def check(root=ROOT, data=None):
     try:
         check_language_primitives(root)
         if data is None:
-            data = json.loads((root / INVENTORY).read_text())
+            data = read_json(root, INVENTORY)
         expected = {'format','version','packet','release','authority','groups','enums','sources','boundaries','capacities','corpus','native_packaging','comparison'}
         if set(data) != expected or data['format'] != 'qleisli.verification-inventory' or data['version'] != 1 or data['packet'] != 'VM-22':
             raise ValueError('unknown inventory format/fields')
@@ -545,7 +545,7 @@ def main():
     if errors:
         for error in errors: print(error,file=sys.stderr)
         return 1
-    data = json.loads((ROOT/INVENTORY).read_text())
+    data = read_json(ROOT, INVENTORY)
     print(f"VM-22: {sum(len(e['members']) for e in data['enums'])} constructors, {len(data['sources'])} source snapshots, {len(data['boundaries'])} boundaries; native authority selected by #276; full Soundness remains open.")
     return 0
 

@@ -10,9 +10,9 @@ import sys
 import textwrap
 import tomllib
 from check_verification_inventory import INVENTORY, test_names
+from current_metadata import COVERAGE, read_json
 
 ROOT = Path(__file__).resolve().parents[1]
-COVERAGE = 'tests/fixtures/verification_v029/coverage.json'
 GATES = {'S05-C1', 'S05-C2', 'S05-C3', 'S05-C4', 'S05-C5'}
 CUTOVER = {'MIG-1', 'MIG-2', 'MIG-3', 'MIG-4', 'MIG-5'}
 PUBLICATION = 'tests/fixtures/releases/v0.2.9/publication.json'
@@ -1521,8 +1521,8 @@ def surface_identity(inventory):
 
 
 def check(root, data=None, inventory=None):
-    data = json.loads((root/COVERAGE).read_text()) if data is None else data
-    inventory = json.loads((root/INVENTORY).read_text()) if inventory is None else inventory
+    data = read_json(root, COVERAGE) if data is None else data
+    inventory = read_json(root, INVENTORY) if inventory is None else inventory
     def require(value, message):
         if not value:
             raise ValueError(message)

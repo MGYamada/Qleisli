@@ -1,5 +1,12 @@
 # VM-22: frozen verification boundaries
 
+The maintained current JSON view uses an explicit single-member gzip container.
+The [bounded codec](../../../scripts/current_metadata.py) preserves every decoded
+byte, including the existing readable formatting. Current schema, source/surface
+checks, authority and proof-status fields are unchanged. Only this current view
+moves; historical reports, original snapshots and their old path/hash mentions
+remain byte-identical. No published evidence is recompressed or rebaselined.
+
 The baseline timeout-diagnostic repair refreshes only the current
 `scripts/test_verification_baseline.py` comparison-source pin. Its invocation
 helper now retains bounded stdout/stderr before re-raising a timeout. Independent
@@ -39,7 +46,7 @@ Implemented for unreleased 0.2.2 on 2026-09-30. Rust remains the production
 authority. These development fixtures add no public format, dependency,
 acceptance rule or proof. The original baseline comparisons use at most three qubits.
 
-[inventory.json](inventory.json) freezes 232 public enum constructors (including
+[current inventory](inventory.json.gz) freezes 232 public enum constructors (including
 all 19 `RawOp` forms), public signatures and capacity constants in 155 reviewed
 source snapshots at that checkpoint, including VM-23 arithmetic and the VM-24 finite component.
 Thirty-six coverage groups give producers, consumers, obligations,
