@@ -27,7 +27,7 @@ EXTRACTOR_PATH = f"{FIXTURE}/Extract.lean"
 EXTRACTOR_SHA256 = "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
 REVIEWED_PATH = f"{FIXTURE}/reviewed-expressions.json.gz"
 CURRENT_PATH = f"{FIXTURE}/current-expressions.json.gz"
-XZ_PATH = f"{FIXTURE}/current-expressions.json.xz"
+XZ_PATH = "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.xz"
 STDERR_PATH = f"{FIXTURE}/empty.stderr.txt"
 ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{EXTRACTOR_PATH}"]
 MAX_SNAPSHOT_BYTES = 16 * 1024 * 1024
