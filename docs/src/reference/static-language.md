@@ -341,11 +341,12 @@ quantitative RS theorem remain separate obligations. Finiteness alone proves
 neither a particular target budget nor that correspondence.
 
 The current core has no runtime-counted loop, unbounded `while`, general or
-mutual recursion, or loop whose termination depends on measurement outcomes.
+mutual recursion, or source-level retry/RUS construct. Measurement outcomes
+cannot supply a fold bound or replace the checked static decrease for self-calls.
 Decreasing static Nat specialization is not recursion on a measured runtime value.
-Nominal `match`
-and coherent `qmatch` retain their existing implementation and native-transport
-boundaries; this finite-control contract does not make them executable.
+Nominal `match` and coherent `qmatch` retain their existing implementation and
+native-transport boundaries; this finite-control contract does not make them
+executable.
 
 A bounded unrolling may return a success Bit together with its declared
 owners only while retaining both success and failure outcomes in the complete
