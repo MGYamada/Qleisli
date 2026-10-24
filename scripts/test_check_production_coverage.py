@@ -7,12 +7,13 @@ import unittest
 from unittest.mock import patch
 import check_production_coverage as coverage
 from check_verification_inventory import variants
+from current_metadata import read_json
 
 
 class ProductionCoverage(unittest.TestCase):
     def setUp(self):
-        self.data = json.loads((coverage.ROOT/coverage.COVERAGE).read_text())
-        self.inventory = json.loads((coverage.ROOT/coverage.INVENTORY).read_text())
+        self.data = read_json(coverage.ROOT, coverage.COVERAGE)
+        self.inventory = read_json(coverage.ROOT, coverage.INVENTORY)
 
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)

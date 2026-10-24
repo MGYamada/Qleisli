@@ -17,6 +17,7 @@ import sys
 
 from check_pr_size import ROOT, event_inputs, exact_commit, git, hosted_context, unique_object
 from check_authoring_sessions import retained_source_record_index
+import current_metadata
 
 # Reviewed pre-retention tree. Existing records are not retroactively deleted
 # or declared consumed. New paths remain checked on pushes as well as PRs.
@@ -43,7 +44,7 @@ def rooted_source(name):
 
 
 def strings(name, text):
-    if name.endswith(".json"):
+    if name.endswith(".json") or name in current_metadata.CURRENT_PATHS:
         try:
             value = json.loads(text, object_pairs_hook=unique_object)
         except (ValueError, RecursionError):
@@ -232,9 +233,12 @@ def snapshot(root, commit):
             continue
         rows[path] = (oid, int(size))
     paths = set(rows)
+    for path in paths & current_metadata.CURRENT_PATHS:
+        if rows[path][1] > current_metadata.MAX_BYTES:
+            raise ValueError("current metadata stored size exceeds capacity")
     selected = [(p, oid, size) for p, (oid, size) in rows.items()
                 if size <= TEXT_LIMIT and (rooted_source(p) or p.startswith(PREFIX)
-                                          and (PurePosixPath(p).suffix in {".json", ".toml"}
+                                          and (p in current_metadata.CURRENT_PATHS or PurePosixPath(p).suffix in {".json", ".toml"}
                                                or p.startswith(RETAINED_PREFIX) and p.endswith(".qli.txt")))]
     reply = subprocess.run(["git", "--no-replace-objects", "cat-file", "--batch"], cwd=root,
                            input="".join(oid + "\n" for _, oid, _ in selected).encode(),
@@ -249,6 +253,9 @@ def snapshot(root, commit):
         if len(body) != size or reply[start + size:start + size + 1] != b"\n":
             raise ValueError("truncated fixture consumer blob")
         offset = start + size + 1
+        if path in current_metadata.CURRENT_PATHS:
+            body = current_metadata.decode_bytes(path, body)
+            current_metadata.json_object(body)  # malformed current views fail closed
         try:
             if b"\0" not in body:
                 contents[path] = body.decode("utf-8")
