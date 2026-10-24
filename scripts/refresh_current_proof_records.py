@@ -7,10 +7,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
 import copy
-import gzip
 import hashlib
-import io
 import json
+import lzma
 import os
 from pathlib import Path
 import re
@@ -31,7 +30,7 @@ SCHEMA = "lean/schema-registry.json"
 AUDIT = guarantees.CURRENT_AUDIT_PATH
 CURRENT = guarantees.CURRENT_PATH
 LEDGER = "governance/guarantees.json"
-SNAPSHOT = continuity.CURRENT_PATH
+SNAPSHOT = continuity.XZ_PATH
 ALLOWED = frozenset((SCHEMA, AUDIT, CURRENT, LEDGER, SNAPSHOT))
 TRUSTED = "28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb"
 BASE = "0bd108183649e0462cb5c5b1c8bae29d07e1c9fc"
@@ -43,7 +42,7 @@ FIXED = (
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),
     ("basis", "lean", continuity.TRANSPORT_ARGV, continuity.TRANSPORT_STDOUT),
     ("raw", "lean", continuity.RAW_REVIEW_ARGV, continuity.RAW_STDOUT),
-    ("extract", "lean", continuity.RAW_ARGV, continuity.CURRENT_PATH),
+    ("extract", "lean", continuity.RAW_ARGV, SNAPSHOT),
     ("main", "lean-kernel", guarantees.REPLAY_ARGV, guarantees.REPLAY_STDOUT),
 )
 TIMEOUTS = dict(size=180, fixtures=180, references=180, registry=900, review=180,
@@ -137,10 +136,11 @@ def verify_extraction(root, data, stderr):
 
 def compress_extraction(data):
     require(len(data) <= continuity.MAX_SNAPSHOT_BYTES, "fresh extraction exceeds reviewed capacity")
-    target = io.BytesIO()
-    with gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0, compresslevel=9) as stream:
-        stream.write(data)
-    return target.getvalue()
+    # Fixed preset 4e uses a 4 MiB dictionary; no filenames or timestamps.
+    result = lzma.compress(data, format=lzma.FORMAT_XZ, check=lzma.CHECK_CRC64,
+                           preset=4 | lzma.PRESET_EXTREME)
+    require(len(result) <= continuity.MAX_STORED_SNAPSHOT_BYTES, "compressed extraction exceeds capacity")
+    return result
 
 
 def complete_fixed_results(results):
@@ -198,7 +198,7 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extr
     fresh["continuity"]["source_revision_sha256"] = revision["sha256"]
     snapshot = compress_extraction(extraction)
     require(fresh["continuity"]["stdout"]["path"] == SNAPSHOT and
-        fresh["continuity"]["stdout"]["compression"] == "gzip", "unexpected current extraction destination")
+        fresh["continuity"]["stdout"]["compression"] == "xz", "unexpected current extraction destination")
     fresh["continuity"]["stdout"]["sha256"] = sha(snapshot)
     fresh["continuity"]["stdout"]["uncompressed_sha256"] = sha(extraction)
     validation["native_binary_note"] = "observed_native_build remains immutable historical alpha data; the outside fresh proof artifact records the current checker only as a build identity, with no binary-source/runtime attestation."

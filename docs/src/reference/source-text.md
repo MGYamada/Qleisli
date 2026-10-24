@@ -360,6 +360,120 @@ conservative Observe annotations on pure bodies cannot select a pure-contract
 fallback. Such refusals disclose a concrete-profile limit, not a false pure
 label, source effect error or general preservation theorem.
 
+## Instruments and ordinary feed-forward
+
+The judgment `Γ ; Δ ⊢ e : T ! Observe` gives an upper bound on the quantum
+behavior of the complete expression. Fix the ordinary inputs `x`. Let `A` and
+`B` be its complete input and output quantum interfaces, including the live
+caller frame retained by the ownership judgment, and let `c` range over the
+ordinary projection of its declared result. The intended meaning is a finite
+quantum instrument with completely positive, trace-nonincreasing maps
+`Φ[x,c] : L(A) -> L(B)` whose complete sum is trace preserving.
+
+For the complete hidden histories `h` and their public-result projection, write:
+
+```text
+Φ[x,c](ρ) = Σ_{h : public(x,h) = c} K[x,h] ρ K[x,h]†
+Σ_h K[x,h]† K[x,h] = I_A
+```
+
+Every history contributes its unnormalized weight. Hidden measurement, reset
+and discard outcomes remain in the sum even when they are not returned as
+ordinary data. If the ordinary result is Unit, its public outcome set is the
+singleton `{()}`. For every finite external reference `E`, the same instrument
+acts on an arbitrary joint input through `Φ[x,c] ⊗ id_E`; separate owners do
+not imply a product state. Normalizing a selected branch or comparing only
+outcome probabilities does not establish this contract.
+
+The effect order `Unitary <= Isometry <= Observe` is an order of permitted
+quantum behavior. For fixed ordinary inputs, a pure implementation has one
+public result and acts by its exact `U[x]` or `V[x]`, with `U†U = UU† = I` or
+`V†V = I` respectively. Their density maps are singleton instruments. The
+underlying pure meanings still retain exact phase and their separate inverse
+and controlled-access obligations. Instrument equality cannot erase those
+contracts or turn a public Observe interface into a pure capability.
+
+An Observe bound permits a pure implementation and does not require every call
+to create a public Bit. Body inference remains independent, and callers across
+an original module boundary use the checked public bound. Observation, reset
+and discard still infer Observe under the existing compositional rules, even
+when a separately described public channel happens to be pure.
+
+Destructive `measure_z : Q<Bit> -> Bit` consumes its input owner. For result
+`b`, its map uses `K[b] = <b|`, retaining the conditional state and weight of
+all other owners and references. The existing state-retaining example is
+`std::measurement::parity_zz`: it returns both data owners and a Bit, consumes
+its internal meter, and acts by `P[s] = (I + (-1)^s Z tensor Z)/2`. Coherence
+within each parity sector is retained. Retaining an owner does not promise an
+unchanged state. The explicit discard-plus-preparation implementation of reset
+instead consumes the original owner and returns a fresh zero owner.
+
+Ordinary `if` uses an ordinary Bit. Following observation it selects the next
+operation separately in each complete history; both arms must pass checking
+and return the same complete result and live-owner shape, including zero-width
+owners. Sequential composition retains every intermediate history and its weight;
+only histories with the same final public result are summed. A coherent `qif` uses its separately checked coherent
+operation and preserves coherence between selector sectors. An ordinary branch
+cannot inspect a live `Q<Bit>` or insert an implicit measurement.
+
+These are normative source obligations. Ordinary native validity currently
+checks its stated structural ownership and classical-scope properties; general
+EffectSound/CPTP and source preservation remain unfinished. The dedicated
+[original-artifact instrument request](production-boundary.md#original-artifact-observing-instrument-requests)
+checks both original bodies, complete Kraus sums, requested complete signature
+trees and their ordered root-port projections, and every unnormalized public
+map on arbitrary finite references within its bounded profile. Recovering the
+original source type trees remains a separate obligation. That profile requires genuinely observing original artifacts;
+a conservative public Observe bound on a pure implementation can therefore be
+well typed while this particular request refuses it. Its refusal supplies no
+pure-contract fallback. The [primitive boundary](primitive-boundary.md) and
+[standard-library contracts](stdlib.md) give the admitted measurement actions.
+
+## Observation and postselection
+
+Ordinary Observe has the complete-instrument contract above: the sum of all
+outcome maps is trace preserving. An individual outcome map may decrease trace;
+its trace is that outcome's probability, not permission to discard the other
+outcomes and advertise the selected map as the whole operation.
+
+Qleisli 0.3.0 provides no source postselection effect or construct. Keeping only
+chosen outcomes and continuing on their renormalized state is not authorized by
+Observe, an ordinary `if`, a successful check or a clean-release operation.
+Returning a success Bit together with the declared owners is an ordinary
+instrument only when both success and failure outcomes remain in its semantics.
+Classical feed-forward executes the selected arm for each history; it does not
+remove histories whose measured Bit selects the other arm. Hidden outcomes of
+explicit discard also remain in the complete sum.
+
+A future postselection proposal would need a distinct semantic category. For a
+chosen outcome set `S`, it would have to specify the trace-nonincreasing map
+`Φ_S = Σ_{c in S} Φ[c]`, its success probability `p_S(ρ) = Tr(Φ_S(ρ))`, and any
+conditional state `Φ_S(ρ) / p_S(ρ)` only where `p_S(ρ) > 0`. It must expose
+success and failure outcomes, ownership on both outcomes, composition with
+surrounding operations and reference systems, and resource accounting for any
+requested retries. A zero-probability event supplies no conditional state.
+This describes requirements for a future proposal, not an admitted API or an
+extension of the current effect order.
+
+Postselection is distinct from the [checking and external failures](#checking-failures-and-quantum-execution)
+already described above. A failed check, panic, target fault or exhausted host
+budget supplies no accepted successful quantum branch. The bounded host trial
+driver separately reports retries, exhaustion and execution errors; it retains
+no quantum state and grants no source-level postselection or clean-release
+capability. Exact clean release still requires its independently checked
+all-input and reference-safe zero-return obligation, without conditioning on a
+favorable observation.
+
+Numerical trajectory sampling may normalize a branch after drawing its outcome
+from the supplied random source. That representation does not permit the source
+to choose a favorable outcome, erase its probability or omit alternative outcomes
+from the instrument contract; simulation retains its stated numerical and runtime
+assumptions. The observing Physical Realizability target concerns the complete
+instrument and actual admitted realization without hidden conditioning, as in
+[the realization contract](realization.md). This boundary does not discharge
+ordinary-root EffectSound/CPTP, source/runtime preservation or the broader
+QS, PR, quantitative RS and EXACT obligations.
+
 ## Total classical declarations
 
 Provisional `static fn` declarations instead return static Nat values through

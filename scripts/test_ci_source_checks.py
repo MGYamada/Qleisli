@@ -126,6 +126,7 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_generic_dormant_first.py'],
             ['python3', 'scripts/test_native_edition_first.py'],
             ['python3', 'scripts/test_prelude_first.py'],
+            ['python3', 'scripts/test_history_index.py'],
             ['python3', 'scripts/test_finite_adts_first.py'],
         ])
         later = checks.plan('repository-integrity')
