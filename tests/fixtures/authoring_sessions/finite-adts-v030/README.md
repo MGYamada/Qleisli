@@ -763,3 +763,47 @@ format checking. Both windows are stable, with zero ignored tests; peak RSS is
 remain external, exactly identified records. Existing native built-in controls
 use the observed unchanged checker, not a fresh build attestation. These checks
 do not enable public enum execution or complete the pending typed native route.
+
+
+The [ordinary field/branch component history](ordinary-fields-branch-first.tar.xz),
+[index](ordinary-fields-branch-index.json) and
+[observations](ordinary-fields-branch-validation.json.gz) preserve 96 selected
+originals / 171,964 original bytes in 57,959 stored bytes. First desired sources,
+separate executable translations, proof/control sources and actual import,
+Bool-binder and resolver-elaboration failures remain intact. Later component
+windows pass: four branch stages with an 11-declaration focused audit, 19 field
+modules, and 26 field/resolver modules with strict full kernel Audit/Tests. The
+first-module pass remains a prefix only. All runs use the unchanged 3 GiB cap.
+The later combined mathematical umbrella/Audit wiring is not validated by these
+component observations; record and original-body candidates are not included.
+
+The existing bounded passive reader loads the history once and checks exact
+bytes/modes, repairs, observed outcomes and retained command/stream bindings.
+No saved command executes and no external original is opened. Routine full
+source/cache/window maps remain external exact references; compact observations
+are derived, not self-contained replay of those omitted maps. Validation gzip
+preserves the exact decoded JSON. New passive-test and installation results must
+be recorded separately; none is claimed by this history preparation.
+These components do not authenticate a caller site, authorize private-field
+execution, enable native nominal acceptance, prove whole-source preservation,
+or complete #64 or broader guarantee obligations.
+
+### Ordinary record producer history
+
+The archive retains both first `.qli` programs, Rust/repair patches, original
+candidate manifests, runner/invocation sources and complete terminal failure-stage
+and observer streams: unavailable `x`, symlinked fixture root and cached-library
+refusal. Initial uncompiled status and later observations remain distinct.
+
+First/width sources use Git `02985131c611f930f1f7143614c97f9722de4a02`;
+executed/translated sources use `4d92fbf45345ea9847ab0cac9df0c5b1f80dbafd`,
+preserving its CodeQL repair. All32 source comparisons checked full bytes/modes.
+Recovery needs those Git objects; passive tests execute no saved code or commands.
+V4 snapshot code plus its checked patch recovers v5. The identical observer is
+already retained in pinned ordinary-enum history. Every executed plan/invocation
+remains. Routine passed preliminary logs, result/snapshot inventories and prose
+have exact external references; derived fields are not raw-window verification.
+
+Current normal/MSRV records each bind62 tests, check and strictClippy; normal also
+checked fmt. Native/dependency caches were reused. Public nominal gates stay
+closed; accepted record execution and source preservation are not established.

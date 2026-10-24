@@ -1,3 +1,4 @@
+import QleisliKernel.SourceTypes.MemberFields
 import QleisliKernel.Raw.StreamedInstrument
 import QleisliKernel.Raw.BranchFunction
 import QleisliKernel.PhaseWord

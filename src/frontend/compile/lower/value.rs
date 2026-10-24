@@ -69,6 +69,9 @@ pub(super) enum Value {
     /// Full ordinary enum identity and low-axis-first tag storage. Width alone
     /// is not its logical domain; a singleton retains this zero-width node.
     Enumeration(Ty, Vec<ClassicalId>),
+    /// Complete original record type and children in declaration order. Empty
+    /// and zero-width children remain distinct typed nodes, never tuple fields.
+    Record(Ty, Vec<Value>),
     /// Retains the complete Q type, including zero-width basis owners.
     Quantum(Slot, Ty),
     Pair(Box<Value>, Box<Value>),
@@ -92,10 +95,12 @@ impl Value {
                     let b = counts(b);
                     (a.0 + b.0, a.1 + b.1)
                 }
-                Value::Tuple(fields) => fields.iter().fold((0, 0), |total, field| {
-                    let child = counts(field);
-                    (total.0 + child.0, total.1 + child.1)
-                }),
+                Value::Tuple(fields) | Value::Record(_, fields) => {
+                    fields.iter().fold((0, 0), |total, field| {
+                        let child = counts(field);
+                        (total.0 + child.0, total.1 + child.1)
+                    })
+                }
                 Value::Unit | Value::EmptyBits => (0, 0),
             }
         }
@@ -122,7 +127,7 @@ impl Value {
                 a.write_outputs(registers, quantum, classical);
                 b.write_outputs(registers, quantum, classical);
             }
-            Self::Tuple(fields) => {
+            Self::Tuple(fields) | Self::Record(_, fields) => {
                 for field in fields {
                     field.write_outputs(registers, quantum, classical);
                 }
@@ -153,7 +158,7 @@ impl Value {
                     visit(a, depth + 1, size);
                     visit(b, depth + 1, size);
                 }
-                Value::Tuple(fields) => {
+                Value::Tuple(fields) | Value::Record(_, fields) => {
                     for field in fields {
                         visit(field, depth + 1, size);
                     }
@@ -184,7 +189,7 @@ impl Value {
             Self::Bits(ids) => Ty::bits(
                 u32::try_from(ids.len()).expect("finite word storage has a checked u32 width"),
             ),
-            Self::Quantum(_, ty) | Self::Enumeration(ty, _) => ty.clone(),
+            Self::Quantum(_, ty) | Self::Enumeration(ty, _) | Self::Record(ty, _) => ty.clone(),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
             Self::Tuple(fields) => Ty::tuple(fields.iter().map(Self::ty).collect()),
         }
@@ -194,7 +199,9 @@ impl Value {
     /// those bytes separately from structural/data-cell copy accounting.
     pub(super) fn nominal_type_work(ty: &Ty) -> usize {
         match &ty.kind {
-            Kind::Nominal(nominal) => nominal.metadata_cells(),
+            Kind::Nominal(nominal) => nominal
+                .metadata_cells()
+                .saturating_add(total_size(nominal.fields().map(Self::nominal_type_work))),
             Kind::Tuple(fields) => total_size(fields.iter().map(Self::nominal_type_work)),
             Kind::Q(inner) => Self::nominal_type_work(inner),
             _ => 0,
@@ -204,6 +211,8 @@ impl Value {
     pub(super) fn nominal_equality_work(&self) -> usize {
         match self {
             Self::Enumeration(ty, _) | Self::Quantum(_, ty) => Self::nominal_type_work(ty),
+            Self::Record(ty, fields) => Self::nominal_type_work(ty)
+                .saturating_add(total_size(fields.iter().map(Self::nominal_equality_work))),
             Self::Pair(a, b) => a
                 .nominal_equality_work()
                 .saturating_add(b.nominal_equality_work()),
@@ -216,7 +225,7 @@ impl Value {
         match self {
             Self::Quantum(_, ty) => ty.linear(),
             Self::Pair(a, b) => a.owns_quantum() || b.owns_quantum(),
-            Self::Tuple(fields) => fields.iter().any(Self::owns_quantum),
+            Self::Tuple(fields) | Self::Record(_, fields) => fields.iter().any(Self::owns_quantum),
             _ => false,
         }
     }

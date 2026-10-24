@@ -196,4 +196,120 @@ def resolveReference (sources : Sources) (caller : String) (tokens : List String
   -- modules than the already bounded original source table.
   resolveBinding sources.size sources caller moduleName name localName []
 
+
+/-- Success of the existing error adapter retains the original result. -/
+private theorem resolverAdapt_value {α : Type} (value : Except String α)
+    (result : α) (work left : Nat)
+    (ok : (adapt value).run work = (.ok result,left)) : value = .ok result := by
+  have bound := (Finite.lift_success _ _ _ _ ok).1
+  cases value <;> simp_all [Except.mapError]
+
+private theorem resolverOriginalBinding_rows (sources : Sources) (moduleName name source : String)
+    (decl : Declaration) (ok : originalBinding sources moduleName name = .ok (source,decl)) :
+    sources.toList.filter (fun row => row.1 == moduleName) = [(moduleName,source)] ∧
+      decl.name = name := by
+  dsimp only [originalBinding, bind, Except.bind, pure, Except.pure, Functor.map, Except.map,
+    throw, throwThe] at ok
+  cases rows : sources.toList.filter (fun row => row.1 == moduleName) with
+  | nil => simp_all
+  | cons row rest =>
+    cases rest with
+    | cons second rest => simp_all
+    | nil =>
+      rcases row with ⟨owner,original⟩
+      have present : (owner,original) ∈ sources.toList.filter (fun row => row.1 == moduleName) := by
+        simp [rows]
+      have sameOwner : owner = moduleName := by
+        simpa using (List.mem_filter.mp present).2
+      subst owner
+      cases declarationsRead : declarations original with
+      | error error => simp_all
+      | ok items =>
+        cases selected : items.filter (fun item => item.name == name) with
+        | nil => simp_all
+        | cons item tail =>
+          cases tail with
+          | cons other tail => simp_all
+          | nil =>
+            have same : (original,item) = (source,decl) := by
+              simp_all
+            have sameSource : original = source := congrArg Prod.fst same
+            have sameDeclaration : item = decl := congrArg Prod.snd same
+            subst source
+            subst decl
+            have member : item ∈ items.filter (fun item => item.name == name) := by
+              simp [selected]
+            exact ⟨rfl,by simpa using (List.mem_filter.mp member).2⟩
+
+/-- Actual recursive lookup retains its terminal original declaration. Caller
+visibility is read from the final guard at each level, including import chains. -/
+private theorem resolveBinding_facts (fuel : Nat) (sources : Sources)
+    (caller moduleName name : String) (localImports : Bool)
+    (active : List (String × String)) (result : Resolved) (work left : Nat)
+    (ok : (resolveBinding fuel sources caller moduleName name localImports active).run work =
+      (.ok result,left)) :
+    (result.declaration.isPublic = true ∨ result.moduleName = caller) ∧
+      originalBinding sources result.moduleName result.declaration.name =
+        .ok (result.source,result.declaration) := by
+  induction fuel generalizing sources caller moduleName name localImports active result work left with
+  | zero => cases ok
+  | succ fuel ih =>
+    obtain ⟨_,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok
+    obtain ⟨_,w₂,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+    obtain ⟨_,w₃,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+    obtain ⟨entry,w₄,original,h⟩ := Finite.bind_success _ _ _ _ _ h
+    rcases entry with ⟨source,decl⟩
+    have originalRead := resolverAdapt_value _ _ _ _ original
+    -- Reduce the bound pair match and the early-return continuation before
+    -- splitting the actual import condition; no resolver step is replaced.
+    simp only [pure_bind] at h
+    split at h
+    · obtain ⟨_,w₅,visible,h⟩ := Finite.bind_success _ _ _ _ _ h
+      have sameResult := (Finite.pure_success _ _ _ _ h).1
+      subst result
+      have permission := (Finite.guard_success _ _ _ _ visible).1
+      have sameName := (resolverOriginalBinding_rows _ _ _ _ _ originalRead).2
+      constructor
+      · simpa only [Bool.or_eq_true_iff,beq_iff_eq] using permission
+      · simpa only [sameName] using originalRead
+    · obtain ⟨_,w₅,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+      cases body : decl.body with
+      | nil =>
+        simp only [body] at h
+        cases h
+      | cons target modules =>
+        simp only [body] at h
+        obtain ⟨_,w₆,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨_,w₇,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨resolved,w₈,recursive,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨_,w₉,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨_,w₁₀,visible,h⟩ := Finite.bind_success _ _ _ _ _ h
+        have sameResult := (Finite.pure_success _ _ _ _ h).1
+        subst result
+        have provenance := ih sources moduleName
+          (String.intercalate "::" modules.reverse) target false
+          ((moduleName,name)::active) resolved w₇ w₈ recursive
+        have permission := (Finite.guard_success _ _ _ _ visible).1
+        exact ⟨by simpa only [Bool.or_eq_true_iff,beq_iff_eq] using permission,provenance.2⟩
+
+/-- A successful executable reference lookup returns its exact canonical
+original binding and satisfies the lookup's visibility guard for the supplied
+caller. The caller argument is not authenticated to an original source site by
+this theorem; it establishes neither field access nor source/native acceptance. -/
+theorem resolveReference_facts (sources : Sources) (caller : String) (tokens : List String)
+    (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
+    (result.declaration.isPublic = true ∨ result.moduleName = caller) ∧
+      originalBinding sources result.moduleName result.declaration.name =
+        .ok (result.source,result.declaration) := by
+  unfold resolveReference at ok
+  obtain ⟨names,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  cases last : names.getLast? with
+  | none =>
+    simp only [last] at h
+    cases h
+  | some name =>
+    simp only [last] at h
+    exact resolveBinding_facts _ _ _ _ _ _ _ _ _ _ h
+
 end QleisliKernel.SourceTypes

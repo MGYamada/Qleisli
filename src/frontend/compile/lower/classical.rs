@@ -152,6 +152,19 @@ impl Lowerer<'_, '_> {
         // or reinterpret enum storage as an ordinary Bits value.
         match &expr.kind {
             BasisExprKind::Variant(value) => return self.variant_value(module, expr.span, value),
+            BasisExprKind::Record(record) => {
+                return self.record_value(
+                    module,
+                    expr.span,
+                    record,
+                    env,
+                    |lower, module, value, env| lower.classical_expr(module, value, env),
+                );
+            }
+            BasisExprKind::Field { receiver, field } => {
+                let receiver = self.classical_expr(module, receiver, env)?;
+                return self.record_field(module, field, receiver);
+            }
             BasisExprKind::Match(selection) => {
                 let scrutinee = self.classical_expr(module, &selection.scrutinee, env)?;
                 return self.match_value(
