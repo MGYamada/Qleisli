@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Consolidate finite runtime control, static-decrease and resource-composition
+  rules, keeping per-history bounds, ensemble work and coherent target costs
+  distinct. State the separate future RUS boundary without enabling new loops
+  or claiming general resource preservation or quantitative RS.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.
