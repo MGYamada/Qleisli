@@ -83,7 +83,8 @@ binding identity. Moving a value removes its linear ownership from subsequent
 use; copying an ordinary value neither creates nor consumes a quantum owner.
 Static bindings cannot be used as runtime values. The judgment describes the
 source contract; it is not a claim that a general source-soundness theorem has
-been discharged.
+been discharged. The normative [Observe instrument judgment](source-text.md#instruments-and-ordinary-feed-forward)
+relates this effect to complete outcome maps and quantum-owner interfaces.
 
 The surface follows three distinct roles. A `q` construct, such as `qif` or
 `qfor`, explicitly supplies coherent control or a quantum-owner fold. `Q<A>`

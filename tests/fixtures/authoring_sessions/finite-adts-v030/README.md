@@ -807,3 +807,53 @@ have exact external references; derived fields are not raw-window verification.
 Current normal/MSRV records each bind62 tests, check and strictClippy; normal also
 checked fmt. Native/dependency caches were reused. Public nominal gates stay
 closed; accepted record execution and source preservation are not established.
+
+### Observe instrument experiment (#87)
+
+The new inert history retains both unchanged first open-input projects, every
+new harness source/repair, and complete actual commands and diagnostic streams.
+Three failed windows remain distinct: output-directory collision, public
+closed-entry refusal, and selected public runtime-if refusal after destructive
+measurement passed. The later internal common-lowerer experiment passed six
+source probes, six paired native inspections and seven result rows under the
+3 GiB observer. It checked independent complete unnormalized destructive and
+parity/feedforward maps, residual-state/public-label faults, owner loss and a
+pure implementation behind an external public Observe bound.
+
+The internal adapter is experimental, not a new public API or ordinary default
+test. Paired replies have inspection scope. Ordinary acceptance, source replay,
+general EffectSound/CPTP and guarantee admission remain separate. Complete
+routine source/tool/cache/observer inventories remain external with exact
+references; validation summaries are explicitly derived. The passive consumer
+checks retained bytes and bindings without running commands, consulting Git or
+claiming to reconstruct those external windows. The new gzip index/validation
+retain exact decoded bytes under fixed size and hash bounds. Earlier histories
+are unchanged; no issue completion follows from these records alone.
+
+Fixed records: [archive](issue87-first.tar.xz), [index](issue87-index.json.gz),
+[derived observations](issue87-validation.json.gz).
+
+### Observe Unit history (#125)
+
+The issue #125 history preserves two first one-qubit programs verbatim:
+measuring and branching to Unit on either Bit, and measuring while ignoring the
+Bit before returning Unit. The original fixed-RSS-policy draft was never run.
+The successor reused the pinned #87 internal finite test adapter and native
+checker, with no fresh build or new public API. Its observed two source probes
+and two paired native inspections passed. Independent exact Kraus/Choi/Gram
+checks retain both hidden histories and distinguish their complete map from the
+K0-only mathematical counterfactual; that counterfactual was not a native artifact.
+
+The whole-file deduplicated history retains first projects, runner/policy repair,
+all performed command payloads and streams, exact artifacts and source bindings,
+oracle records, and the first/current monitor sources and lifecycle-smoke records.
+Original maps bind every retained byte and mode. Complete routine root inventories
+and reports remain external at exact path/size/hash references; compact observer
+fields are explicitly derived observations, not passive full-window verification.
+The separately retained #87 source/build history supplies reused-input provenance.
+The passive history reader executes no saved command, uses no external path or Git,
+and does not reconstruct omitted cache binaries. These are bounded integration
+observations, not whole-source fidelity or general ordinary CPTP/PR proofs.
+
+Fixed records: [archive](issue125-first.tar.xz), [index](issue125-index.json.gz),
+[derived observations](issue125-validation.json.gz).

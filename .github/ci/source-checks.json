@@ -172,6 +172,10 @@
         ],
         [
           "python3",
+          "scripts/test_history_index.py"
+        ],
+        [
+          "python3",
           "scripts/test_finite_adts_first.py"
         ]
       ],

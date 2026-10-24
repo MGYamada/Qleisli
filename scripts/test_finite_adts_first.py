@@ -45,15 +45,60 @@ from pathlib import Path, PurePosixPath
 import tarfile
 import tempfile
 import unittest
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / 'tests/fixtures/authoring_sessions/finite-adts-v030'
 
 
-def read_history(index_name, archive_name, index_hash, stored_size, archive_hash, expanded):
-    index_bytes = (FIXTURES / index_name).read_bytes()
-    if hashlib.sha256(index_bytes).hexdigest() != index_hash:
-        raise AssertionError('first index changed')
+# New compressed indices have fixed container bounds; legacy JSON is unchanged.
+MAX_GZIP_HISTORY_INDEX_BYTES = 4 * 1024 * 1024
+MAX_DECODED_HISTORY_INDEX_BYTES = 4 * 1024 * 1024
+
+
+def read_history_index(index_name, index_hash, *, index_gzip=None):
+    """Read pinned inert JSON bytes; gzip is explicit, never suffix-detected."""
+    if index_gzip is None:
+        index_bytes = (FIXTURES / index_name).read_bytes()
+        if hashlib.sha256(index_bytes).hexdigest() != index_hash:
+            raise AssertionError('first index changed')
+        return index_bytes
+    if type(index_gzip) is not dict or set(index_gzip) != {'bytes', 'decoded_bytes', 'decoded_sha256'}:
+        raise AssertionError('invalid gzip index pins')
+    stored_size, decoded_size = index_gzip['bytes'], index_gzip['decoded_bytes']
+    if (type(stored_size) is not int or not 0 < stored_size <= MAX_GZIP_HISTORY_INDEX_BYTES
+            or type(decoded_size) is not int or not 0 < decoded_size <= MAX_DECODED_HISTORY_INDEX_BYTES):
+        raise AssertionError('gzip index exceeds fixed capacity')
+    for identity in (index_hash, index_gzip['decoded_sha256']):
+        if (type(identity) is not str or len(identity) != 64
+                or any(char not in '0123456789abcdef' for char in identity)):
+            raise AssertionError('invalid gzip index digest')
+    relative = PurePosixPath(index_name)
+    path = FIXTURES / index_name
+    if (relative.is_absolute() or '..' in relative.parts or str(relative) != index_name
+            or path.is_symlink() or not path.is_file()
+            or not path.resolve().is_relative_to(FIXTURES.resolve())):
+        raise AssertionError('gzip index must be a local regular fixture')
+    with path.open('rb') as stream:
+        stored = stream.read(stored_size + 1)
+    if (len(stored), hashlib.sha256(stored).hexdigest()) != (stored_size, index_hash):
+        raise AssertionError('stored gzip index changed')
+    try:
+        decoder = zlib.decompressobj(wbits=16 + zlib.MAX_WBITS)
+        index_bytes = decoder.decompress(stored, decoded_size + 1)
+    except zlib.error as error:
+        raise AssertionError('invalid gzip index stream') from error
+    if (not decoder.eof or decoder.unused_data or decoder.unconsumed_tail
+            or len(index_bytes) != decoded_size):
+        raise AssertionError('gzip index is truncated, trailing, or exceeds decoded length')
+    if hashlib.sha256(index_bytes).hexdigest() != index_gzip['decoded_sha256']:
+        raise AssertionError('decoded gzip index changed')
+    return index_bytes
+
+
+def read_history(index_name, archive_name, index_hash, stored_size, archive_hash, expanded,
+                 *, index_gzip=None):
+    index_bytes = read_history_index(index_name, index_hash, index_gzip=index_gzip)
     index = json.loads(index_bytes)
     stored = (FIXTURES / archive_name).read_bytes()
     if (len(stored), hashlib.sha256(stored).hexdigest()) != (stored_size, archive_hash):
@@ -3771,6 +3816,256 @@ class OrdinaryRecordFirstHistory(unittest.TestCase):
         for key, name in (('source', 'SOURCE.json'), ('preparation', 'PREPARATION-PINS.json')):
             row = self.validation['external_records']['runner-04/' + name]
             self.assertEqual(current[key], {'path': row['source'], 'bytes': row['bytes'], 'sha256': row['sha256']})
+
+# Fixed inert fixtures; the original paths inside their maps are keys, never opened.
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue87-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue87-index.json.gz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue87-validation.json.gz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue125-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue125-index.json.gz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/issue125-validation.json.gz"
+class _ObserveHistoryData:
+    @classmethod
+    def setUpClass(cls):
+        index_sha, index_size, decoded_size, decoded_sha = cls.INDEX
+        cls.data = read_history(cls.PREFIX + '-index.json.gz', cls.PREFIX + '-first.tar.xz',
+            index_sha, cls.ARCHIVE[0], cls.ARCHIVE[1], cls.EXPANDED,
+            index_gzip={'bytes': index_size, 'decoded_bytes': decoded_size, 'decoded_sha256': decoded_sha})
+        validation_sha, size, decoded_size, decoded_sha = cls.VALIDATION
+        cls.validation = json.loads(read_history_index(cls.PREFIX + '-validation.json.gz', validation_sha,
+            index_gzip={'bytes': size, 'decoded_bytes': decoded_size, 'decoded_sha256': decoded_sha}))
+        cls.originals = json.loads(cls.data['original-records.json'])
+        cls.context = json.loads(cls.data['git-and-external-context.json'])
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('data', 'validation', 'originals', 'context'):
+            delattr(cls, name)
+
+    def raw(self, path):
+        return self.data[self.originals[path]['member']]
+
+    def record(self, path):
+        return json.loads(self.raw(path))
+
+    def assert_original_pin(self, reference):
+        value = self.raw(reference['path'])
+        self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                         (reference['bytes'], reference['sha256']))
+
+    def assert_whole_file_map(self, count, objects):
+        self.assertEqual(len(self.originals), count)
+        members = set()
+        for path, row in self.originals.items():
+            self.assertEqual(row.get('path', path), path)
+            self.assertEqual(row['mode'], 0o644)
+            self.assertEqual(row['member'], 'objects/' + row['sha256'])
+            self.assert_original_pin(dict(row, path=path))
+            members.add(row['member'])
+        self.assertEqual(len(members), objects)
+        self.assertEqual(set(self.data), members | {'original-records.json', 'git-and-external-context.json'})
+        self.assertEqual((self.validation['selected_originals'], self.validation['unique_original_objects'],
+                          self.validation['expanded_payload_bytes']), (count, objects, self.EXPANDED))
+
+    def assert_command(self, directory, exit_code):
+        result, invocation = self.record(directory + '/result.json'), self.record(directory + '/invocation.json')
+        for key in ('argv', 'cwd', 'environment'):
+            self.assertEqual(result[key], invocation[key])
+        self.assertIs(type(result['exit_code']), int)
+        self.assertEqual(result['exit_code'], exit_code)
+        for stream in ('stdout', 'stderr'):
+            self.assertEqual(result[stream]['path'], directory + '/' + stream)
+            self.assert_original_pin(result[stream])
+        return result
+
+    def assert_source_binding(self, row):
+        self.assert_original_pin(row['artifact'])
+        self.assert_original_pin(row['source_binding'])
+        binding = self.record(row['source_binding']['path'])
+        self.assertEqual((binding['canonical'], binding['entry']), ('main::main', 'main::main'))
+        for key in ('internal_integration_only', 'production_source_gate', 'public'):
+            self.assertIs(binding[key], True)
+        for key in ('closed_input_substitution', 'common_ast_to_raw_replay'):
+            self.assertIs(binding[key], False)
+        for source in binding['sources']:
+            self.assertEqual(source['text'].encode(), self.raw(source['file']))
+
+
+class ObserveInstrumentFirstHistory(_ObserveHistoryData, unittest.TestCase):
+    PREFIX = 'issue87'
+    INDEX = ('4bad1d113150f430bd34508856ec8233e990eefff6acb6b0052cfda30feb167b', 8508, 32246,
+             '885bceaa1b88723e992b1522c24d8c7e2022d10bc79579eff29ad9e4796802bf')
+    ARCHIVE = (52284, '95cfd4204efbb0391dad3d2f7ca37829d02ef5c8273f82fcc13e288f31e40432')
+    VALIDATION = ('6a0777aa40fdf23668ba1895851d8f85d6b35a6faf1dbfa9dcadeea0e37e86e1', 3902, 12350,
+                  '1330cdaca34d0e7f7acb68cae6e15c835bb7a50b99446d42416ea9a3d426ab7a')
+    EXPANDED = 559139
+
+    def test_complete_original_map_and_unchanged_first_projects(self):
+        self.assert_whole_file_map(299, 172)
+        first, current = self.validation['windows'][0]['packet'], self.validation['windows'][-1]['packet']
+        for case in ('destructive', 'retaining-feedforward'):
+            for name in ('Qargo.toml', 'main.qli'):
+                relative = '/projects/' + case + '/' + name
+                self.assertEqual(self.raw(first + relative), self.raw(current + relative))
+        scope = self.validation['scope']
+        self.assertIs(scope['derived_from_pinned_external_reports'], True)
+        self.assertEqual(scope['native_paired_result_scope'], 'inspection')
+        for key in ('raw_windows_self_contained', 'public_open_api_conformance', 'common_ast_to_raw_replay',
+                    'ordinary_effectsound_cptp', 'issue_completion_or_guarantee_admission', 'test_hook_integrable_unchanged'):
+            self.assertIs(scope[key], False)
+
+    def test_three_failures_and_pass_keep_performed_command_bindings(self):
+        windows = self.validation['windows']
+        self.assertEqual([row['classification'] for row in windows], [
+            'failed-output-directory-before-oracles', 'failed-public-closed-entry',
+            'failed-selected-public-runtime-if-after-destructive-pass', 'passed-internal-finite-seven-rows'])
+        for index, window in enumerate(windows):
+            packet = window['packet']
+            self.assert_original_pin(window['plan'])
+            self.assert_original_pin(window['observer_invocation'])
+            plan = self.record(window['plan']['path'])
+            outer = self.record(window['observer_invocation']['path'])
+            self.assertEqual(json.loads(outer['argv'][5])[-1], packet + '/run.py')
+            self.assertEqual(outer['cwd'], packet)
+            observed = window['observed']
+            self.assertIs(observed['pass'], index == 3)
+            self.assertIs(observed['stable'], True)
+            self.assertIs(type(observed['exit_code']), int)
+            self.assertEqual(observed['exit_code'], 0 if index == 3 else 1)
+            self.assertIsNone(observed['stop_reason'])
+            self.assertEqual(observed['rss_group_limit_kib'], 3145728)
+            self.assertEqual(self.context['external_records'][window['observer_external']['path']]['sha256'],
+                             window['observer_external']['sha256'])
+            self.assertEqual([s['name'] for s in window['performed_stages']], [s['name'] for s in plan['stages']])
+            for stage, expected in zip(window['performed_stages'], plan['stages']):
+                self.assert_original_pin(stage['record'])
+                result = self.assert_command(packet + '/normal-results/' + stage['name'], stage['exit_code'])
+                self.assertEqual((result['argv'], result['cwd'], result['environment']),
+                                 (expected['argv'], expected['cwd'], plan['environment']))
+            self.assertEqual(window['performed_stages'][-1]['exit_code'], 0 if index == 3 else 1)
+        self.assertIn(b'FileExistsError', self.raw(windows[0]['packet'] + '/normal-results/conformance/stderr'))
+        self.assertIn(b'source-code=invalid_entry', self.raw(windows[1]['packet'] + '/normal-results/conformance/evidence/destructive-compile/stderr'))
+        self.assertIn(b'unsupported runtime expression', self.raw(windows[2]['packet'] + '/normal-results/conformance/evidence/retaining-feedforward-compile/stderr'))
+
+    def test_actual_seven_rows_bind_sources_and_inspection_only_results(self):
+        self.assert_original_pin(self.validation['current_result'])
+        self.assert_original_pin(self.validation['current_experiment'])
+        current = self.record(self.validation['current_result']['path'])
+        result = self.record(self.validation['current_experiment']['path'])
+        self.assertEqual(current['experiment'], self.validation['current_experiment'])
+        self.assertEqual((current['status'], result['status']), ('pass', 'pass'))
+        self.assertIs(current['source_stable'], True)
+        self.assertIs(current['native_rebuilt'], False)
+        self.assertIs(current['inspection_only_pair_claim'], True)
+        self.assertIs(current['no_full_ordinary_CPTP_claim'], True)
+        self.assertEqual((result['source_probes'], result['native_pairs'], result['physical_qubit_bound']), (6, 6, 3))
+        self.assertIs(result['first_desired_executed_verbatim'], True)
+        self.assertEqual([row['name'] for row in result['cases']], ['destructive', 'retaining-feedforward',
+            'changed-residual', 'changed-label', 'public-pure-observe', 'missing-owner', 'missing-native-owner'])
+        self.assertEqual([{k: row[k] for k in ('name', 'relation', 'status')} for row in result['cases']], self.validation['cases'])
+        evidence = self.validation['windows'][-1]['packet'] + '/normal-results/conformance/evidence'
+        for row in result['cases']:
+            self.assertEqual(row['status'], 'pass')
+            if 'artifact' in row:
+                self.assert_source_binding(row)
+        expected = {'destructive': 0, 'retaining-feedforward': 0, 'changed-residual': 1,
+                    'changed-label': 1, 'public-pure-observe': 1, 'missing-owner': 1}
+        for name, exit_code in expected.items():
+            directory = evidence + '/' + name + '-paired-inspection'
+            command = self.assert_command(directory, exit_code)
+            self.assertEqual(command['argv'], [self.validation['native_checker']['path'], '--qirf-contract', '0.3.0-beta'])
+            self.assertTrue(self.raw(directory + '/stdin').startswith(b'QLV3'))
+            if exit_code == 0:
+                self.assertIn(b'\n--qirf-contract\ninspection\n', self.raw(directory + '/stdout'))
+        self.assert_command(evidence + '/missing-owner-compile', 21)
+
+
+class ObserveUnitFirstHistory(_ObserveHistoryData, unittest.TestCase):
+    PREFIX = 'issue125'
+    INDEX = ('926d26f3fec8e971e300ff6515243201ab3ec639025f3a85fa2f1e804e51166f', 4516, 19818,
+             'e01110c51db9fb2c54db3575e5f5113d688a10b1103e693a3cbc8fa644313ec6')
+    ARCHIVE = (37040, '7a3e4e89e8d04488ce63efe2e136597cb33ce89ac291b2a2de35ba8e650cb12f')
+    VALIDATION = ('8df57df3a89a1b148abcc9f3ba79be7b46f59d47c8be3ad53678fb0a928f4d42', 3720, 16474,
+                  'a4889050bf9665dad81ed5b726c1fa4cf0040c5c4c7755bda06cf85b90f8e6b9')
+    EXPANDED = 260444
+
+    def test_complete_map_preserves_unexecuted_draft_and_actual_current_policy(self):
+        self.assert_whole_file_map(129, 88)
+        first, executed = self.validation['first_draft'], self.validation['executed']
+        self.assertEqual(first['status'], 'unexecuted-policy-draft')
+        for row in (first, executed):
+            self.assert_original_pin(row['manifest'])
+        for case in ('measured-if-unit', 'ignored-measurement-unit'):
+            for name in ('main.qli', 'Qargo.toml'):
+                suffix = '/projects/' + case + '/' + name
+                self.assertEqual(self.raw(first['path'] + suffix), self.raw(executed['path'] + suffix))
+        self.assertEqual(self.record(first['path'] + '/plan.json')['rss_group_limit_kib'], 3145728)
+        plan = self.record(executed['path'] + '/observer/plan.json')
+        invocation = self.record(executed['path'] + '/observer-invocation.json')
+        self.assertEqual(json.loads(invocation['argv'][6]), plan['argv'])
+        self.assertEqual(invocation['argv'][5], plan['cwd'])
+        observer = self.validation['observer']
+        self.assertIs(observer['derived'], True)
+        self.assertEqual(self.context['records'][observer['source_report']['path']]['sha256'], observer['source_report']['sha256'])
+        fields = observer['fields']
+        self.assertEqual(fields['argv'], plan['argv'])
+        self.assertIs(fields['pass'], True)
+        self.assertIs(fields['stable'], True)
+        self.assertIs(type(fields['exit_code']), int)
+        self.assertEqual(fields['exit_code'], 0)
+        self.assertIsNone(fields['stop_reason'])
+        self.assertIsNone(fields['rss_group_limit_kib'])
+        self.assertEqual(fields['host_memory_free_floor_percent'], 5)
+        self.assertIs(fields['cleanup']['complete'], True)
+        self.assertEqual(fields['cleanup']['remaining_live_members'], [])
+
+    def test_two_actual_open_sources_and_native_pairs_bind_the_reused_build(self):
+        executed = self.validation['executed']
+        self.assert_original_pin(executed['result'])
+        result = self.record(executed['result']['path'])
+        self.assertEqual(result, self.validation['result'])
+        self.assertEqual((result['status'], result['source_probes'], result['native_pairs'], result['physical_qubit_bound']), ('pass', 2, 2, 1))
+        self.assertIs(result['fresh_build'], False)
+        self.assertIs(result['first_desired_executed_verbatim'], True)
+        self.assertIs(result['k0_only_is_counterfactual_not_native_artifact'], True)
+        self.assertEqual(result['paired_scope'], 'inspection')
+        self.assertEqual(result['historical_reused_rss_group_limit_kib'], 3145728)
+        self.assertEqual([row['name'] for row in result['cases']], ['measured-if-unit', 'ignored-measurement-unit'])
+        base = executed['path'] + '/results'
+        for name in ('identity-before.json', 'identity-after.json'):
+            identity = self.record(base + '/' + name)
+            self.assertEqual(identity['status'], 'pass')
+            self.assertIs(identity['fresh_build'], False)
+            self.assertEqual(identity['executable'], result['reused_compiled_executable'])
+        for row in result['cases']:
+            self.assertEqual((row['status'], row['complete_histories'], row['public_result']), ('pass', 2, 'unit'))
+            self.assert_original_pin(row['source'])
+            self.assert_source_binding(row)
+            source = base + '/' + row['name'] + '-source-emit'
+            command = self.assert_command(source, 0)
+            self.assertEqual(command['argv'][0], result['reused_compiled_executable']['path'])
+            self.assertEqual(command['environment']['QLEISLI_ISSUE87_MODE'], 'emit')
+            self.assertEqual(command['environment']['QLEISLI_ISSUE87_PROJECT'] + '/main.qli', row['source']['path'])
+            paired = base + '/' + row['name'] + '-paired-inspection'
+            command = self.assert_command(paired, 0)
+            native = self.record(executed['path'] + '/SOURCE.json')['native']['path']
+            self.assertEqual(command['argv'], [native, '--qirf-contract', '0.3.0-beta'])
+            self.assertTrue(self.raw(paired + '/stdin').startswith(b'QLV3'))
+            self.assertIn(b'\n--qirf-contract\ninspection\n', self.raw(paired + '/stdout'))
+
+    def test_both_hidden_histories_remain_and_k0_is_only_a_counterfactual(self):
+        base = self.validation['executed']['path'] + '/results/'
+        full = self.record(base + 'independent-complete-histories.json')
+        counterfactual = self.record(base + 'counterfactual-k0-only.json')
+        self.assertEqual([row['hidden'] for row in full], [[0], [1]])
+        self.assertEqual([row['results'] for row in full], [[], []])
+        self.assertEqual(counterfactual, full[:1])
+        self.assertNotEqual(full, counterfactual)
+        for name in ('measured-if-unit', 'ignored-measurement-unit'):
+            self.assertEqual(self.record(base + name + '-histories.json'), full)
+        for row in full:
+            self.assertEqual((row['operator']['rows'], row['operator']['cols']), (1, 2))
+
 
 
 if __name__ == '__main__':
