@@ -79,7 +79,8 @@ not authorized by this rule.
 
 The separate `current-proof-records` workflow prepares reviewable proof metadata
 for an exact clean checkout of `codex/beta-finite-adts`,
-`codex/beta-ordinary-adts` or `codex/beta-typed-ordinary-runtime`.
+`codex/beta-ordinary-adts`, `codex/beta-typed-ordinary-runtime` or
+`codex/beta-qmatch`.
 The selected branch and workflow source must agree.
 It runs the canonical
 builds, audits, full reductions and fixed protected-output comparisons before

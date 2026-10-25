@@ -4539,5 +4539,189 @@ class QmatchRuntimeHistory(unittest.TestCase):
             FIXTURES = saved_fixtures
 
 
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-index.json"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-validation.json"
+class QmatchKeywordBeforeHistory(unittest.TestCase):
+    """Passive original bytes and actual pre-repair observations, not replay."""
+    META = {'archive': {'path': 'qmatch-keyword-before-first.tar.xz', 'bytes': 46056, 'sha256': 'f2bee0ffd32b0f9e67961184582af7562c2f57dcddc5b4bc4245ddf5500fb8a9'}, 'index': {'path': 'qmatch-keyword-before-index.json', 'bytes': 28420, 'sha256': 'a9850fcfbfdb8626efb1d9dc1fe2f7778b3664eac3544d7985c089823aae4c0a'}, 'validation': {'path': 'qmatch-keyword-before-validation.json', 'bytes': 4403, 'sha256': 'f3376d574c50f496881c8988f01205e14649a7994da1ee78e96920daf2a83d69'}, 'expanded': 387097, 'originals': 46, 'members': 44}
+
+    @classmethod
+    def setUpClass(cls):
+        if cls.META is None:
+            raise AssertionError('unfinalized source-only history proposal')
+        meta = cls.META
+        cls.data = read_history(meta['index']['path'], meta['archive']['path'],
+                                meta['index']['sha256'], meta['archive']['bytes'],
+                                meta['archive']['sha256'], meta['expanded'])
+        cls.originals = json.loads(cls.data['original-records.json'])['records']
+        cls.index_raw = (FIXTURES / meta['index']['path']).read_bytes()
+        cls.index = json.loads(cls.index_raw)
+        raw = (FIXTURES / meta['validation']['path']).read_bytes()
+        if (len(raw), hashlib.sha256(raw).hexdigest()) != (
+                meta['validation']['bytes'], meta['validation']['sha256']):
+            raise AssertionError('qmatch keyword observation summary changed')
+        cls.validation = json.loads(raw)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.data.clear()
+        cls.originals.clear()
+        cls.index.clear()
+        cls.validation.clear()
+        cls.index_raw = b''
+
+    def raw(self, name):
+        row = self.originals[name]
+        raw = self.data[row['record']]
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                         (row['bytes'], row['sha256']), name)
+        return raw
+
+    def test_complete_first_originals_modes_and_immutable_base(self):
+        self.assertEqual((len(self.originals), len(self.data)),
+                         (self.META['originals'], self.META['members']))
+        self.assertEqual((len(self.originals), len(self.data)), (46, 44))
+        self.assertEqual(self.originals, self.index['original_records'])
+        used = set()
+        for name, row in self.originals.items():
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertFalse(PurePosixPath(name).is_absolute())
+            self.assertNotIn('..', PurePosixPath(name).parts)
+            self.raw(name)
+            used.add(row['record'])
+        self.assertEqual(set(self.data), used | {'original-records.json'})
+        base = json.loads(self.raw('prepared/BASE.json'))
+        self.assertEqual(base['head'], '9b6c12715493df9f4249b36baaae078e116f17ba')
+        self.assertEqual(base['status'], '')
+        for row in base['original_sources']:
+            relative = row['path'].split('/Qleisli/', 1)[1]
+            self.assertEqual(self.raw('prepared/before/' + relative),
+                             self.raw('git-9b/' + relative))
+        self.assertIn(b'"qmatch" => TokenKind::Qmatch', self.raw('git-9b/src/frontend/lexer.rs'))
+        self.assertNotIn(b'"qmatch"', self.raw('git-9b/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean'))
+
+    def test_five_original_triples_are_complete_zero_wire_identity_requests(self):
+        first = json.loads(self.raw('prepared/first/EXPECTATIONS.json'))
+        self.assertEqual(first['status'], 'prepared predictions only; no Lean/native execution')
+        self.assertEqual(len(first['cases']), 5)
+        for case in first['cases']:
+            self.assertEqual(case['actual_observation'], 'not executed')
+            label = case['case']
+            source = self.raw('prepared/first/' + label + '.qli')
+            self.assertEqual(source.decode(), case['source'])
+            for original in case['prepared_inputs']:
+                value = self.raw('prepared/first/' + PurePosixPath(original['path']).name)
+                self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                                 (original['bytes'], original['sha256']))
+            ir = json.loads(self.raw('prepared/first/' + label + '.qirf.json'))
+            request = json.loads(self.raw('prepared/first/' + label + '.request.json'))
+            self.assertEqual(ir['sources'], [{'path': 'labels', 'text': source.decode()}])
+            self.assertEqual(ir['root'], 0)
+            self.assertEqual(ir['evidence'], [])
+            self.assertEqual(ir['programs'], [{'classical_inputs': [], 'classical_outputs': [],
+                'declared_effect': 'unitary', 'operations': [],
+                'quantum_inputs': [{'shape': {'bits': 0}, 'token': 0, 'wires': []}],
+                'quantum_outputs': [0]}])
+            self.assertEqual(request['required'], request['attached'])
+            self.assertEqual(request['profile'], 'finite-carrier-pure-v1')
+            self.assertEqual(request['logical'], {'cols': 1, 'domain': 'zeta8-dyadic-v1',
+                'entries': [[{'denominator_bits': 0, 'numerator': '1'}] +
+                            [{'denominator_bits': 0, 'numerator': '0'}] * 3],
+                'format': 'qleisli.finite-matrix', 'rows': 1, 'version': 1})
+            origins = []
+            def inspect(value):
+                if isinstance(value, dict):
+                    if 'origin' in value:
+                        origins.append(value['origin'])
+                    for child in value.values():
+                        inspect(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        inspect(child)
+            inspect(request)
+            self.assertTrue(origins)
+            for origin in origins:
+                self.assertEqual((origin['module'], origin['source']), ('labels', source.decode()))
+            for direction in ('inputs', 'outputs'):
+                self.assertEqual(len(request['attached'][direction]), 1)
+                self.assertEqual(request['attached'][direction][0]['port'],
+                                 {'bits': 0, 'token': 0, 'wires': []})
+
+    def test_actual_before_discrepancies_controls_and_observer_scope(self):
+        labels = ['valid-qmatch-enum', 'valid-qmatch-field', 'reserved-qmatch-declaration',
+                  'reserved-qmatch-variant', 'reserved-qmatch-field']
+        lines = self.raw('before-observer/stdout').decode().splitlines()
+        self.assertEqual(len(lines), 6)
+        for i, label in enumerate(labels):
+            cells = lines[i].split('\t')
+            self.assertEqual(cells[:3], [label, 'parser=' + ('true' if i < 2 else 'false'),
+                                        'native=true'])
+            self.assertEqual(cells[-1], 'native_error=None')
+            if i < 2:
+                self.assertEqual(cells[3], 'parse_error=None')
+            else:
+                start, end = [(9, 15), (17, 23), (19, 25)][i - 2]
+                self.assertIn(f'start: {start}, end: {end}', cells[3])
+                self.assertIn('expected an identifier', cells[3])
+        self.assertEqual(lines[-1], 'observed_before_controls=2, observed_reserved_discrepancies=3')
+        source = self.raw('public-probe/src/main.rs')
+        self.assertIn(b'kernel.check_carrier(&artifact, &request)', source)
+        self.assertIn(b'ParsedProgram::parse(Edition::E2026', source)
+        observation = self.validation['observation']
+        command = json.loads(self.raw('public-probe/command.json'))
+        plan = json.loads(self.raw('before-observer/plan.json'))
+        self.assertEqual(observation['argv'], command['argv'])
+        self.assertEqual(observation['argv'], plan['argv'])
+        self.assertEqual(observation['cwd'], '/private/tmp/qleisli-qmatch-keyword-public-probe-first-01')
+        self.assertEqual((observation['pass'], observation['exit_code'], observation['stable']),
+                         (True, 0, True))
+        self.assertIsNone(observation['stop_reason'])
+        self.assertIsNone(observation['monitor_error'])
+        self.assertIsNone(observation['rss_group_limit_kib'])
+        self.assertEqual(observation['host_memory_free_floor_percent'], 5)
+        self.assertEqual(observation['heavy_job_concurrency'], 1)
+        self.assertEqual(observation['peak_rss_kib'], 1017248)
+        self.assertTrue(observation['cleanup']['complete'])
+        self.assertEqual(observation['cleanup']['remaining_live_members'], [])
+        self.assertEqual(self.validation['before'], self.validation['after'])
+        self.assertEqual(self.validation['before']['file_count'], 20323)
+        self.assertEqual(self.validation['before']['explicit_inputs'], {})
+        self.assertIn('no independent before/after external-source freeze',
+                      self.validation['external_probe_input_window'])
+        self.assertIsNone(self.validation['after_repair_actual'])
+        self.assertIsNone(self.validation['full_proof_refresh'])
+
+    def test_container_corruption_and_rebound_wrong_member_hash_are_refused(self):
+        from unittest.mock import patch
+        meta = self.META
+        stored = (FIXTURES / meta['archive']['path']).read_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            archive_path = temporary / meta['archive']['path']
+            index_path = temporary / meta['index']['path']
+            index_path.write_bytes(self.index_raw)
+            damaged = bytearray(stored)
+            damaged[len(damaged) // 2] ^= 1
+            archive_path.write_bytes(damaged)
+            with patch(__name__ + '.FIXTURES', temporary):
+                with self.assertRaisesRegex(AssertionError, 'first archive changed'):
+                    read_history(meta['index']['path'], meta['archive']['path'],
+                                 meta['index']['sha256'], meta['archive']['bytes'],
+                                 meta['archive']['sha256'], meta['expanded'])
+                archive_path.write_bytes(stored)
+                changed = json.loads(self.index_raw)
+                record = self.originals['public-probe/src/main.rs']['record']
+                old = changed['records'][record]['sha256']
+                changed['records'][record]['sha256'] = ('0' if old[0] != '0' else '1') + old[1:]
+                raw = (json.dumps(changed, indent=2, sort_keys=True) + '\n').encode()
+                index_path.write_bytes(raw)
+                with self.assertRaisesRegex(AssertionError, 'historical bytes changed'):
+                    read_history(meta['index']['path'], meta['archive']['path'],
+                                 hashlib.sha256(raw).hexdigest(), meta['archive']['bytes'],
+                                 meta['archive']['sha256'], meta['expanded'])
+
+
 if __name__ == '__main__':
     unittest.main()

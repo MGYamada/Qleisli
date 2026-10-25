@@ -1152,6 +1152,18 @@ def reservedField := "pub struct Label { match: Unit }"
 example : value (SourceTypes.check #[("labels",reservedField)]
     [.record ⟨"labels","Label",reservedField⟩ ["match"],.unit]) = .error .request := by decide +kernel
 
+-- qmatch is also reserved by the shared source grammar. These assertions
+-- exercise the actual independent declaration/member reader.
+def reservedQmatchDeclaration := "pub enum qmatch { A }"
+example : value (SourceTypes.check #[("labels",reservedQmatchDeclaration)]
+    [.enumeration ⟨"labels","qmatch",reservedQmatchDeclaration⟩ ["A"]]) = .error .request := by decide +kernel
+def reservedQmatchVariant := "pub enum Label { qmatch }"
+example : value (SourceTypes.check #[("labels",reservedQmatchVariant)]
+    [.enumeration ⟨"labels","Label",reservedQmatchVariant⟩ ["qmatch"]]) = .error .request := by decide +kernel
+def reservedQmatchField := "pub struct Label { qmatch: Unit }"
+example : value (SourceTypes.check #[("labels",reservedQmatchField)]
+    [.record ⟨"labels","Label",reservedQmatchField⟩ ["qmatch"],.unit]) = .error .request := by decide +kernel
+
 def nested := "pub struct Pair { flags: (Bit, Bits<0>), tag: labels::Tri }"
 def nestedType : Basis := [.record ⟨"main","Pair",nested⟩ ["flags","tag"],.pair,.bit,.bits 0] ++ tri
 example : value (SourceTypes.check (sources.push ("main",nested)) nestedType) = .ok () := by decide +kernel

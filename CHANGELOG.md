@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reserve `qmatch` consistently in the independent native type reader and Rust
+  grammar, including declaration, variant and field names. Preserve the original
+  five zero-wire requests and observed parser/native discrepancies separately
+  from the corrected-reader regression results.
 - Preserve the three historical v0.2.7 raw-completion log files in the existing
   lossless archive format, retaining every original byte and executable mode
   against their immutable Git inventory. Current executable fixtures and

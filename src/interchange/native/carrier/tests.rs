@@ -511,6 +511,46 @@ fn match_keyword_is_refused_in_original_carrier_declarations_and_members() {
             true,
             false,
         ),
+        (
+            "valid-qmatch-enum",
+            "pub enum Qmatch { A }",
+            "Qmatch",
+            "A",
+            false,
+            true,
+        ),
+        (
+            "valid-qmatch-field",
+            "pub struct Label { qmatching: Unit }",
+            "Label",
+            "qmatching",
+            true,
+            true,
+        ),
+        (
+            "reserved-qmatch-declaration",
+            "pub enum qmatch { A }",
+            "qmatch",
+            "A",
+            false,
+            false,
+        ),
+        (
+            "reserved-qmatch-variant",
+            "pub enum Label { qmatch }",
+            "Label",
+            "qmatch",
+            false,
+            false,
+        ),
+        (
+            "reserved-qmatch-field",
+            "pub struct Label { qmatch: Unit }",
+            "Label",
+            "qmatch",
+            true,
+            false,
+        ),
     ] {
         assert_eq!(
             ParsedProgram::parse(
