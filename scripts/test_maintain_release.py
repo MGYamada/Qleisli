@@ -6,6 +6,7 @@ import tomllib
 import unittest
 from unittest.mock import patch
 import maintain_release as release
+import current_metadata
 
 
 class ReleaseMaintenance(unittest.TestCase):
@@ -24,7 +25,10 @@ class ReleaseMaintenance(unittest.TestCase):
     def write(self, name, text):
         path = self.root / name
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
+        if name == release.INVENTORY:
+            current_metadata.write_bytes(self.root, name, text.encode('utf-8'))
+        else:
+            path.write_text(text)
 
     def test_plan_is_read_only_and_preserves_dependency_versions(self):
         before = (self.root/'Cargo.toml').read_bytes()
@@ -170,7 +174,7 @@ class ReleaseMaintenance(unittest.TestCase):
         self.assertTrue(all(call.args[1] == self.root.resolve() for call in command.call_args_list))
         self.assertEqual((self.root / runtime).read_text(), new_runtime)
         self.assertEqual((self.root / unchanged).read_text(), 'LABEL = "unchanged"\n')
-        actual = (self.root / release.INVENTORY).read_text()
+        actual = current_metadata.read_bytes(self.root, release.INVENTORY).decode('utf-8')
         parsed = json.loads(actual)
         self.assertEqual(parsed, expected)
         self.assertEqual(list(parsed), list(inventory))

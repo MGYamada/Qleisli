@@ -194,6 +194,9 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_repository_checks_keep_prior_coverage_and_separate_continuity(self):
         commands = checks.plan('repository-integrity')
+        codec = ['python3', 'scripts/test_current_metadata.py']
+        self.assertEqual(commands.count(codec), 1)
+        commands = [command for command in commands if command != codec]
         # Move exactly one policy regression earlier; keep every prior command.
         release = ['python3', 'scripts/test_check_release_ready.py']
         self.assertNotIn(release, commands)

@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from current_metadata import read_json
 
 from check_verification_inventory import ROOT, INVENTORY, check, check_language_primitives, digest, public_surface, test_names, variants
 
@@ -18,7 +19,7 @@ class InventoryTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory(prefix='qleisli-vm22-inventory-')
         cls.addClassCleanup(cls.temp.cleanup)
         cls.root = Path(cls.temp.name)
-        cls.baseline = json.loads((ROOT/INVENTORY).read_text())
+        cls.baseline = read_json(ROOT, INVENTORY)
         files = {s['path'] for s in cls.baseline['sources']}
         files |= set(cls.baseline['corpus']['pinned_files'])
         files |= set(cls.baseline['comparison']['pinned_files'])

@@ -15,6 +15,7 @@ import sys
 import tomllib
 
 from check_verification_inventory import INVENTORY, public_surface
+from current_metadata import read_json, write_bytes as write_metadata_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS = {'Cargo.toml': 'package', 'lean/lakefile.toml': '',
@@ -100,7 +101,7 @@ def version_plan(root, version):
 
 
 def inventory_plan(root, replacements, reviewed):
-    data = json.loads((root / INVENTORY).read_text())
+    data = read_json(root, INVENTORY)
     sources = {row['path']: row for row in data['sources']}
     if set(reviewed) - sources.keys():
         raise ValueError('review names a file outside the existing inventory')
@@ -208,7 +209,7 @@ def main(argv=None):
             for name, text in replacements.items():
                 (root / name).write_text(text)
             if review:
-                (root / INVENTORY).write_text(inventory_json(inventory))
+                write_metadata_bytes(root, INVENTORY, inventory_json(inventory).encode('utf-8'))
             if args.refresh_registry:
                 command([sys.executable, 'scripts/check_schema_registry.py', '--write'], root, report)
             command([sys.executable, 'scripts/check_verification_inventory.py'], root, report)

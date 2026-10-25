@@ -546,7 +546,7 @@ runtime correspondence duties remain pending.
 
 ## Durable coverage check
 
-`tests/fixtures/verification_v029/coverage.json` separates current implementation,
+`tests/fixtures/verification_v029/coverage.json.xz` separates current implementation,
 published 0.2.9 validation, unpublished development and open proof obligations.
 It retains 46 coverage groups, 25 boundary entry lists, current constructor
 variants and the 19 RawOp variants. The original groups and boundary lists are

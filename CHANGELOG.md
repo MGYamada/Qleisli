@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Store the two maintained source-inventory and coverage views in bounded,
+  lossless CRC64 XZ containers. Preserve decoded bytes, existing checks and historical
+  evidence; retain their rooted fixture references and release synchronization.
+- Preserve original ordinary-body authoring and proof history losslessly, checking
+  exact bytes and modes, failed attempts and the 17 passed propositions as inert
+  records. This does not enable ADT execution or prove source-to-Raw preservation.
 - Consolidate finite runtime control, static-decrease and resource-composition
   rules, keeping per-history bounds, ensemble work and coherent target costs
   distinct. State the separate future RUS boundary without enabling new loops

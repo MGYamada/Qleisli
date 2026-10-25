@@ -1,6 +1,21 @@
 # VM29 selected public paths and boundary migration
 
-[Coverage](coverage.json) accounts for 36 VM22 groups, 20 public boundaries,
+The maintained current JSON view uses an explicit single-stream XZ container with CRC64.
+For deliberate reviewed updates, serialize with `maintain_release.current_metadata_json`
+and store those UTF-8 bytes with `current_metadata.write_bytes(ROOT, COVERAGE, bytes)`;
+there is no legacy-path fallback. Version/source synchronization of the inventory
+uses the same codec through `scripts/maintain_release.py`.
+The [bounded codec](../../../scripts/current_metadata.py) preserves every decoded
+byte, including the existing readable formatting. Current schema, source/surface
+checks, authority and proof-status fields are unchanged. Only this current view
+moves; historical reports, original snapshots and their old path/hash mentions
+remain byte-identical. No published evidence is recompressed or rebaselined.
+Stored and decoded bytes retain the 16 MiB limits; decoder memory is bounded to
+64 MiB. The writer uses preset 6 and a 4 MiB dictionary. Obsolete plain/gzip
+siblings are rejected. The prior gzip view remains in
+[Git at 871b1e47](https://github.com/MGYamada/Qleisli/tree/871b1e479b6e8dd08baf0af724fa7da0421e6775/tests/fixtures/verification_v029).
+
+[Coverage](coverage.json.xz) accounts for 36 VM22 groups, 20 public boundaries,
 82 inventoried Rust source surfaces and 232 constructor variants. The checker
 binds the reviewed APIs, constructors, capacities and non-Rust/CLI sources to
 that inventory; changed surfaces or omitted/duplicate rows fail CI. Each row

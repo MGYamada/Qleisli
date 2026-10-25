@@ -857,3 +857,33 @@ observations, not whole-source fidelity or general ordinary CPTP/PR proofs.
 
 Fixed records: [archive](issue125-first.tar.xz), [index](issue125-index.json.gz),
 [derived observations](issue125-validation.json.gz).
+
+### Original ordinary-body proof history (#64)
+
+The [fixed chunked archive](ordinary-original-body-chunked-first.tar.xz) and
+[pinned index](ordinary-original-body-chunked-index.json.gz) retain the exact
+14,141,440-byte original USTAR: 1,268 members representing all 3,405 original
+files, including modes, first sources, repairs, complete command streams and
+inner reports. The explicit inert transport uses two bounded byte chunks;
+existing reader capacities are unchanged. Live repository code checks the
+canonical inner headers, content-addressed map and references. It never imports
+or executes saved code. Its compact validation reconstructs all 191,309 bytes
+of the preceding derived record after removing only the wrapper metadata.
+
+Thirty observed windows remain distinct, including rejected partial helpers,
+failed proof elaborations and two stops under the former 3 GiB RSS policy.
+The final uncapped-RSS window passed all 17 unchanged propositions, 23 checkpoint
+rules, two literal rules and a strict audit of 905 declarations using only the
+three standard axioms. This is scoped source-component evidence. Cached imports
+were not rebuilt, and the diagnostic 100M work allowance is not native 10M
+capacity. Caller-site/whole-source-to-Raw refinement and typed native acceptance
+remain open. Later allframes attempts are not included in these 3,405 originals.
+
+New packaging provenance is separate from those originals. The
+[independent packaging observation](ordinary-original-body-packaging.json)
+records the completed fourth construction, including its then-over-budget result;
+subsequent current-metadata savings permit installation without changing history.
+Complete routine observer maps remain external exact references. Their compact
+fields do not reproduce full root-window checks; omitted compiled payloads are
+represented only by observed identities. Reading this history establishes no
+new theorem, guarantee or issue completion.
