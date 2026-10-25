@@ -46,6 +46,7 @@ import tarfile
 import tempfile
 import unittest
 import zlib
+import inert_original_body_history as body_history
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / 'tests/fixtures/authoring_sessions/finite-adts-v030'
@@ -4066,6 +4067,276 @@ class ObserveUnitFirstHistory(_ObserveHistoryData, unittest.TestCase):
         for row in full:
             self.assertEqual((row['operator']['rows'], row['operator']['cols']), (1, 2))
 
+
+
+
+class OriginalOrdinaryBodyHistory(unittest.TestCase):
+    # Fixed fixtures are also explicit static reference roots.
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-original-body-chunked-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-original-body-chunked-index.json.gz"
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-original-body-packaging.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.outer = read_history(
+            'ordinary-original-body-chunked-index.json.gz',
+            'ordinary-original-body-chunked-first.tar.xz',
+            '066bbe8ba50e541858355f6ef3a65dc5269c0f890f4ac9ad9e0c58defa4457b0',
+            429120, '0254b55d4cf435fa467ed24cf7212f874989c4b0c3f02e7117eaff863506a9b3',
+            14377478, index_gzip={'bytes': 935, 'decoded_bytes': 1699,
+                                 'decoded_sha256': 'f62ce6708eaf30d2df65044230578ddc1ab503ce145cbf7d7e7820bb772ced41'})
+        cls.data, cls.originals, cls.metadata, cls.validation = body_history.recover_original_body_history(cls.outer)
+        path = FIXTURES / 'ordinary-original-body-packaging.json'
+        if path.is_symlink() or not path.is_file():
+            raise AssertionError('packaging observation must be a regular fixture')
+        with path.open('rb') as stream:
+            raw = stream.read(2619)
+        if (len(raw), hashlib.sha256(raw).hexdigest()) != (
+                2618, 'db5ec64a9391dd7d16111ab96fe80132a258684c3c1bcbc01044aa667fb12baf'):
+            raise AssertionError('packaging observation changed')
+        cls.observation = body_history._chunk_json(raw)
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in ('outer', 'data', 'originals', 'metadata', 'validation', 'observation'):
+            delattr(cls, name)
+
+    def raw(self, name):
+        if name.startswith('/private/tmp/'):
+            name = name[len('/private/tmp/'):]
+        return self.data[self.originals[name]['record']]
+
+    def record(self, name):
+        return body_history._chunk_json(self.raw(name))
+
+    def assert_original_pin(self, row):
+        path = row['path'].removeprefix('/private/tmp/')
+        original = self.originals[path]
+        self.assertEqual((original['bytes'], original['sha256'], original['original_mode']),
+                         (row['bytes'], row['sha256'], row['mode']))
+
+    def test_exact_original_bytes_modes_and_reversible_metadata(self):
+        self.assertEqual((len(self.outer), len(self.data), len(self.originals)), (5, 1268, 3405))
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 31260484)
+        self.assertEqual(sum(map(len, self.data.values())), 13187499)
+        self.assertEqual(self.metadata['transport']['inner_tar'], body_history.ORIGINAL_TAR)
+        self.assertEqual(body_history._chunk_tar_size(map(len, self.outer.values())), 14387200)
+        self.assertFalse(any('allframes' in name for name in self.originals))
+        self.assertFalse(any(name.endswith(('.olean', '.ilean', '.ir')) for name in self.originals))
+        self.assertEqual(len(self.validation['external_records']), 68)
+        self.assertEqual(len(self.validation['runs']), 30)
+        self.assertIn('Diagnostic100M work is not native10M capacity.', self.validation['final_scope']['remaining'])
+
+    def test_all_actual_windows_bind_complete_commands_streams_and_reports(self):
+        expected_counts = [(0,1,0),(2,0,1),(2,1,0),(2,1,0),(1,1,0),(2,1,0),
+                           (0,1,0),(3,0,0),(0,0,0),(1,1,0),(3,0,0),(4,0,0),
+                           (2,1,0),(2,1,0),(4,0,0),(3,1,0),(3,0,1),(3,0,0),
+                           (3,1,0),(3,1,0),(5,0,0),(3,1,0),(5,1,0),(6,0,0),
+                           (5,1,0),(3,1,0),(5,0,0),(5,0,0),(4,1,0),(22,0,0)]
+        for number, (run, counts) in enumerate(zip(self.validation['runs'], expected_counts), 1):
+            with self.subTest(window=number):
+                self.assertEqual(run['order'], number)
+                self.assertEqual(run['fresh_stage_results'], dict(zip(('success','failed','unfinished'), counts)))
+                observed = run['observer_report']
+                external = self.validation['external_records'][observed['source']['path'].removeprefix('/private/tmp/')]
+                self.assertEqual((observed['source']['bytes'], observed['source']['sha256']),
+                                 (external['bytes'], external['sha256']))
+                # Only compact observed fields are portable; full root maps stay external.
+                plan = self.record(run['observer_directory'] + '/plan.json')
+                self.assertEqual(observed['argv'], plan['argv'])
+                self.assertEqual(observed['cwd'], plan['cwd'])
+                results = []
+                for stage in run['stages']:
+                    records = stage['records']
+                    command = self.record(records['command.json'])
+                    for stream in ('stdout', 'stderr'):
+                        self.assertIsInstance(self.raw(records[stream]), bytes)
+                    if 'result.json' not in records:
+                        self.assertIsNone(stage['result'])
+                        continue
+                    result = self.record(records['result.json'])
+                    self.assertEqual({key: result[key] for key in command}, command)
+                    for stream in ('stdout', 'stderr'):
+                        row = result['streams'][stream]
+                        self.assertEqual(row['path'].removeprefix('/private/tmp/'), records[stream])
+                        self.assert_original_pin(row)
+                    results.append(result)
+                if run['inner_report'] is not None:
+                    report = self.record(run['inner_report']['record'])
+                    self.assertEqual(report['commands'], results)
+                if 'input_plan_record' in run:
+                    self.record(run['input_plan_record'])
+
+    def test_first_failures_old_stops_and_untrusted_observations_stay_distinct(self):
+        runs = self.validation['runs']
+        for index in (1, 16):
+            stopped = runs[index]
+            self.assertIsNone(stopped['inner_report'])
+            self.assertEqual(stopped['observer_report']['rss_group_limit_kib'], 3145728)
+            self.assertEqual(stopped['observer_report']['stop_reason'], 'owned-process-group-rss-limit')
+            self.assertEqual(stopped['observer_report']['exit_code'], -15)
+            self.assertEqual(stopped['fresh_stage_results']['unfinished'], 1)
+        self.assertIs(runs[2]['observer_report']['stable'], False)
+        guard = self.record(runs[8]['inner_report']['record'])
+        self.assertEqual(guard['commands'], [])
+        self.assertIn('complete original source or token witness changed', guard['error'])
+        rejected = self.record(runs[5]['inner_report']['record'])
+        self.assertIs(rejected['pass_'], False)
+        diagnostic = b'\n'.join(self.raw(s['records']['stdout']) for s in runs[5]['stages'])
+        self.assertIn(b'_unsafe_rec', diagnostic)
+        self.assertIn(b'partial', diagnostic)
+        for index in (13, 25, 28):
+            report = self.record(runs[index]['inner_report']['record'])
+            self.assertIs(report['pass_'], False)
+            self.assertIn(b'sorryAx', b'\n'.join(self.raw(s['records']['stdout']) for s in runs[index]['stages']))
+        first17 = self.record(runs[28]['inner_report']['record'])
+        self.assertEqual(first17['completed_original_cases'], [])
+        self.assertIs(first17['all17_audit_passed'], False)
+        runtime = self.raw('qleisli-original-body-runtime-validation-full-03/04-runtime-observation/stdout')
+        self.assertIn(b'reader-ok', runtime)
+        self.assertIn('Observation only', runs[11]['outcome_distinction'])
+
+    def test_final_seventeen_exact_sources_commands_and_strict_audit(self):
+        run = self.validation['runs'][-1]
+        root = run['validation_directory']
+        report = self.record(run['inner_report']['record'])
+        plan = self.record(run['input_plan_record'])
+        self.assertEqual(hashlib.sha256(self.raw(run['input_plan_record'])).hexdigest(), report['plan_sha256'])
+        self.assertEqual(report['plan_sha256'], '985522f29efe47d32a82daa3447efd2447838383d98d418399bf6435d54bdb61')
+        self.assertEqual(report['root_head'], 'ad630a16900e8dcb219c6b4f328a969848019c1a')
+        self.assertIs(report['pass_'], True)
+        self.assertIs(report['complete_profile'], True)
+        self.assertIs(report['all17_audit_passed'], True)
+        self.assertEqual(report['planned_modules'], report['requested_modules'])
+        self.assertEqual(report['requested_modules'], plan['stage_order'])
+        self.assertEqual((len(plan['fresh']), len(plan['reused']), len(report['commands'])), (22,28,23))
+        cases = json.loads(self.raw('qleisli-original17-kernel-v2-nm520d0v/CASES.json'))
+        self.assertEqual(len(cases), 17)
+        modules = ['QleisliKernel.Tests.OrdinaryBody.OriginalCase%02d' % n for n in range(1,18)]
+        names = ['OrdinaryBodyExamples.originalCase%02d' % n for n in range(1,18)]
+        self.assertEqual(report['completed_original_cases'], modules)
+        self.assertEqual(report['original17_cases']['modules'], modules)
+        self.assertEqual(report['original17_cases']['theorems'], names)
+        self.assertEqual(report['original17_cases']['checked'], 17)
+        for case, module, name in zip(cases, modules, names):
+            self.assertEqual((case['module'],case['theorem'],case['proof']), (module,name,'decide +kernel'))
+            self.assertEqual(hashlib.sha256(case['proposition'].encode()).hexdigest(), case['proposition_sha256'])
+            self.assertIn(case['original_line'].encode(), self.raw('qleisli-original-body-staged-first-3thv3b8w/first/v4-OrdinaryBodyExamples.lean'))
+            source = self.raw(plan['fresh'][module]['path'])
+            self.assertIn(('theorem ' + name.split('.')[-1] + ' : ' + case['proposition'] + ' := by decide +kernel').encode(), source)
+        for module, source in plan['fresh'].items():
+            self.assert_original_pin(source)
+            relative = module.replace('.', '/') + '.lean'
+            self.assertEqual(self.raw(root + '/src/' + relative), self.raw(source['path']))
+        for command, module in zip(report['commands'][1:], plan['stage_order']):
+            self.assertEqual(command['argv'], [plan['lean']['path'], '-j1', '-DautoImplicit=false',
+                '-DwarningAsError=true', '-o', root + '/lib/' + module.replace('.', '/') + '.olean',
+                root + '/src/' + module.replace('.', '/') + '.lean'])
+            self.assertEqual(command['exit_code'], 0)
+            self.assertIsNone(command['stop_reason'])
+            self.assertEqual(command['environment']['LEAN_NUM_THREADS'], '1')
+        audit_stream = self.raw(root + '/22-OrdinaryOriginal17Audit/stdout').decode()
+        markers = [json.loads(line) for line in audit_stream.splitlines() if line.startswith('{')]
+        for field in ('audit','checkpoint_rules','literal_ground_rules','original17_cases'):
+            self.assertEqual([row for row in markers if row.get('format') == report[field]['format']], [report[field]])
+            self.assertEqual(report[field]['status'], 'pass')
+        audit = report['audit']
+        self.assertEqual((audit['checked'],len(audit['declarations']),audit['failures']), (905,905,[]))
+        self.assertEqual(audit['modules'], plan['stage_order'][:-1])
+        self.assertEqual(len({row['name'] for row in audit['declarations']}), 905)
+        axioms = set()
+        for row in audit['declarations']:
+            self.assertIs(row['unsafe'], False)
+            self.assertIs(row['partial'], False)
+            axioms.update(row['axioms'])
+        self.assertEqual(axioms, {'propext','Classical.choice','Quot.sound'})
+        self.assertEqual((report['checkpoint_rules']['checked'],report['literal_ground_rules']['checked']), (23,2))
+        for name, module in zip(names, modules):
+            self.assertEqual([(row['name'],row['module']) for row in audit['declarations'] if row['name']==name], [(name,module)])
+        observed = run['observer_report']
+        self.assertIs(observed['pass'], True)
+        self.assertIs(observed['stable'], True)
+        self.assertEqual(observed['exit_code'], 0)
+        self.assertIsNone(observed['stop_reason'])
+        self.assertIsNone(observed['rss_group_limit_kib'])
+        self.assertEqual(observed['peak_rss_kib'], 7177040)
+        self.assertEqual(observed['heavy_job_concurrency'], 1)
+        self.assertEqual(observed['host_memory_free_floor_percent'], 5)
+        self.assertIsNone(observed['monitor_error'])
+        self.assertIs(observed['cleanup']['complete'], True)
+        self.assertEqual(observed['cleanup']['remaining_live_members'], [])
+
+    def test_packaging_producers_and_completed_external_observation(self):
+        provenance = self.metadata['provenance']
+        self.assertEqual(provenance['format'], 'qleisli.inert-chunk-wrapper-producer-provenance')
+        for group in ('predecessor_files','chunk_producer_files'):
+            for row in provenance[group].values():
+                raw = row['utf8'].encode()
+                self.assertEqual((len(raw),hashlib.sha256(raw).hexdigest()), (row['bytes'],row['sha256']))
+                self.assertIs(type(row['mode']), int)
+                self.assertTrue(0 <= row['mode'] <= 0o777)
+        self.assertEqual(len(provenance['predecessor_files']), 40)
+        self.assertIn('chunk03-observation/tool-result.json', provenance['predecessor_files'])
+        self.assertIn('metadata02-producer/repack_metadata.py', provenance['predecessor_files'])
+        observation = self.observation
+        self.assertEqual(observation['argv'], provenance['invocation']['argv'])
+        seal = provenance['chunk_producer_files']['MANIFEST.json']
+        self.assertEqual({k:seal[k] for k in ('bytes','sha256','mode')},
+                         {k:observation['producer_manifest'][k] for k in ('bytes','sha256','mode')})
+        manifest = json.loads(seal['utf8'])
+        for name, row in manifest['files'].items():
+            actual = provenance['chunk_producer_files'][name]
+            self.assertEqual({k:actual[k] for k in ('bytes','sha256','mode')}, row)
+        self.assertEqual(observation['source_files_observed'], len(provenance['chunk_producer_files']))
+        self.assertIs(observation['source_and_seal_pins_stable'], True)
+        self.assertIs(observation['single_attempt'], True)
+        self.assertEqual(observation['tool_result']['exit_code'], 0)
+        for row in observation['streams'].values():
+            raw = row['utf8'].encode()
+            self.assertEqual((len(raw),hashlib.sha256(raw).hexdigest()), (row['bytes'],row['sha256']))
+        self.assertEqual(observation['streams']['stderr']['utf8'], '')
+        summary = json.loads(observation['streams']['stdout']['utf8'])
+        self.assertEqual(summary['stored_bytes'], 430055)
+        self.assertIs(summary['within_target'], False)  # Historical sizing before later current-data savings.
+        self.assertEqual(summary['remaining_after_reserve'], -15056)
+
+    def repinned_inner(self, raw):
+        outer = dict(self.outer)
+        transport = json.loads(outer['transport.json'])
+        pieces = [raw[:8000000],raw[8000000:]]
+        for row, piece in zip(transport['chunks'], pieces):
+            outer[row['record']] = piece
+            row.update(bytes=len(piece),sha256=hashlib.sha256(piece).hexdigest())
+        transport['inner_tar'] = {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+        outer['transport.json'] = json.dumps(transport).encode()
+        return outer
+
+    def test_structural_tamper_refusals_beyond_self_reported_hashes(self):
+        transport = self.metadata['transport']
+        raw = b''.join(self.outer[row['record']] for row in transport['chunks'])
+        changed = bytearray(raw)
+        changed[0] = ord('/')  # Invalid absolute member name, with all outer/inner digests repinned.
+        with self.assertRaisesRegex(AssertionError, 'noncanonical inert original name'):
+            body_history.validate_chunked_tar_history(self.repinned_inner(bytes(changed)))
+        changed = bytearray(raw)
+        changed[-1] = 1  # Nonzero canonical end padding; digests alone would accept it.
+        with self.assertRaisesRegex(AssertionError, 'trailing or noncanonical USTAR padding'):
+            body_history.validate_chunked_tar_history(self.repinned_inner(bytes(changed)))
+        extra = dict(self.outer)
+        extra['unexpected'] = b''
+        with self.assertRaisesRegex(AssertionError, 'missing or extra outer inert member'):
+            body_history.validate_chunked_tar_history(extra)
+        duplicate = dict(self.outer)
+        duplicate['transport.json'] = b'{"version":1,"version":1}'
+        with self.assertRaisesRegex(AssertionError, 'duplicate inert JSON key'):
+            body_history.validate_chunked_tar_history(duplicate)
+
+    def test_reference_tamper_does_not_relabel_a_failure_as_success(self):
+        outer = dict(self.outer)
+        compact = json.loads(outer['derived/validation.json'])
+        compact['runs'][0]['observer']['pass'] = True
+        outer['derived/validation.json'] = json.dumps(compact).encode()
+        with self.assertRaisesRegex(AssertionError, 'reference recovery changed retained observations'):
+            body_history.recover_original_body_history(outer)
 
 
 if __name__ == '__main__':
