@@ -110,10 +110,83 @@ impl Compiler<'_> {
         Ok(env)
     }
 
+    /// Keep eager built-in tables. A nominal interface is an ordinary source
+    /// type, not permission to enumerate every physical tag. Actual table
+    /// consumers retain an explicit unsupported result for those interfaces.
+    pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
+        fn has_nominal(ty: &Ty) -> bool {
+            match &ty.kind {
+                Kind::Nominal(_) => true,
+                Kind::Tuple(fields) => fields.iter().any(has_nominal),
+                _ => false,
+            }
+        }
+        for ordinal in 0..self.source.dependency_order.len() {
+            let key = self.source.dependency_order[ordinal];
+            self.checking = Some(key);
+            if self.declarations[&key].kind != FnKind::Classical {
+                continue;
+            }
+            let (params, result) = self.signature(&key)?;
+            let span = self.declarations[&key].span;
+            let module = self.dormant_module(key, span)?;
+            self.charge(
+                &module,
+                span,
+                total_size(params.iter().map(|ty| ty.tree_size().nodes))
+                    .saturating_add(result.tree_size().nodes)
+                    .saturating_add(1),
+            )?;
+            if params.iter().any(has_nominal) || has_nominal(&result) {
+                self.deferred_nominal_tables.insert(key);
+                continue;
+            }
+            let function = self.compile_basis_with_signature(&key, params, result)?;
+            self.basis.insert(key, function);
+        }
+        Ok(())
+    }
+
+    pub(super) fn missing_basis_reason(
+        &self,
+        key: &Key,
+        otherwise: &'static str,
+    ) -> (ErrorCode, &'static str) {
+        if self.deferred_nominal_tables.contains(key) {
+            (
+                ErrorCode::Unsupported,
+                "finite tables require closed built-in basis types",
+            )
+        } else {
+            (ErrorCode::TypeMismatch, otherwise)
+        }
+    }
+
+    pub(super) fn missing_basis_error(
+        &self,
+        module: &str,
+        span: Span,
+        key: &Key,
+        otherwise: &'static str,
+    ) -> CompileError {
+        let (code, message) = self.missing_basis_reason(key, otherwise);
+        self.error(module, span, code, message)
+    }
+
+    #[cfg(test)]
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
+        let (params, result) = self.signature(key)?;
+        self.compile_basis_with_signature(key, params, result)
+    }
+
+    fn compile_basis_with_signature(
+        &mut self,
+        key: &Key,
+        params: Vec<Ty>,
+        result: Ty,
+    ) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
-        let (params, result) = self.signature(key)?;
         if params
             .iter()
             .chain(std::iter::once(&result))
@@ -376,10 +449,10 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
             }
         };
         let function = self.compiler.basis.get(&key).ok_or_else(|| {
-            self.compiler.error(
+            self.compiler.missing_basis_error(
                 self.module,
                 callee.span,
-                ErrorCode::TypeMismatch,
+                &key,
                 "basis expressions may call only classical functions",
             )
         })?;

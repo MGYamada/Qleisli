@@ -299,10 +299,10 @@ impl Compiler<'_> {
             ));
         };
         let f = self.basis.get(&fkey).ok_or_else(|| {
-            self.error(
+            self.missing_basis_error(
                 &key_name.0,
                 function.span,
-                ErrorCode::TypeMismatch,
+                &fkey,
                 "meaning requires an ordinary total classical function",
             )
         })?;

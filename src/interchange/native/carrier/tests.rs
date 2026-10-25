@@ -1294,3 +1294,29 @@ fn original_field_helper_imports_keep_source_visibility() {
         }
     }
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn recheck_refuses_private_carrier_handle_without_ordinary_fallback() {
+    let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
+    let bytes = artifact([1, 2, 0, 3], [0; 4], [0, 1]);
+    let requested = request().encode().unwrap();
+    let carrier = kernel.check_carrier(&bytes, &requested).unwrap();
+    assert_eq!(carrier.native().mode(), "--carrier-pure-check");
+    let before = log.summary();
+    // Public CarrierChecked has no AcceptedProgram escape. Even this module's
+    // access to its private holder must not make ordinary rechecking erase the
+    // typed request, ordered owner forests or logical matrix.
+    assert_eq!(
+        kernel
+            .check_program(carrier.checked.program())
+            .unwrap_err()
+            .code,
+        "kernel",
+    );
+    assert_eq!(log.summary().decisions(), before.decisions());
+    assert_eq!(log.summary().requests_checked(), before.requests_checked());
+}

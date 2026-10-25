@@ -1236,6 +1236,14 @@ impl<'ast> Validation<'_, 'ast> {
                 ..
             } => (index.usage(implementation) == site || index.usage(specification) == site)
                 .then_some(&[][..]),
+            ast::ExprKind::QuantumMatch(selection) => {
+                self.budget.charge(span, selection.arms.len())?;
+                selection
+                    .arms
+                    .iter()
+                    .any(|arm| index.usage(&arm.operation) == site)
+                    .then_some(&[][..])
+            }
             ast::ExprKind::QuantumIf { zero, one, .. } => {
                 (index.usage(zero) == site || index.usage(one) == site).then_some(&[][..])
             }

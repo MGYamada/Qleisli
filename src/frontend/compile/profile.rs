@@ -44,6 +44,7 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
     }
     Ok(())
 }
+
 fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
     match &ty.kind {
         // Full instance closure validates every actual (including unused
@@ -120,6 +121,10 @@ fn block(block: &Block) -> Result<(), Failure> {
 }
 fn expr(expr: &Expr) -> Result<(), Failure> {
     match &expr.kind {
+        ExprKind::QuantumMatch(selection) => {
+            self::expr(&selection.selector)?;
+            self::expr(&selection.target)?;
+        }
         ExprKind::Variant(_)
         | ExprKind::Record(_)
         | ExprKind::Field { .. }
@@ -229,4 +234,27 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
         ExprKind::Name(_) | ExprKind::Unit | ExprKind::Bit(_) => {}
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod quantum_match_tests {
+    use super::*;
+    use std::collections::BTreeMap;
+
+    #[test]
+    fn common_checked_bit_qmatch_reaches_the_finite_lowering_obligation() {
+        let source = "pub unitary fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qmatch(s,q){0=>h,1=>global_phase_eighth}}";
+        let syntax = crate::frontend::parser::parse_module(source).unwrap();
+        let (checked, ()) = check::program_with_sources(
+            BTreeMap::from([("main", &syntax)]),
+            BTreeMap::from([("main", source)]),
+            SourceLimits::finite(),
+            |_, _, _, _, _, _, _, _| Ok(()),
+        )
+        .unwrap();
+        let interface = checked.interfaces.values().next().unwrap();
+        // Profile eligibility does not issue a handle or discharge the native
+        // whole-circuit equation required by the concrete lowering path.
+        check(&syntax.decls[0], interface).unwrap();
+    }
 }

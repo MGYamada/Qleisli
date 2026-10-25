@@ -58,6 +58,7 @@ fn compiler_from_prepared<'p>(
         locals: Forest::from_occurrences(occurrences),
         declarations,
         basis: BTreeMap::new(),
+        deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),

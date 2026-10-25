@@ -394,6 +394,12 @@ impl Projection<'_, '_> {
                     "ordinary nominal values require their typed native transport",
                 ));
             }
+            source::ExprKind::QuantumMatch(_) => {
+                return Err(unsupported(
+                    expr.span,
+                    "qmatch requires independently checked coherent lowering and typed native transport",
+                ));
+            }
             source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)?),
             source::ExprKind::Unit => ExprKind::Unit,
             source::ExprKind::Bit(value) => ExprKind::Boolean(Boolean::Constant(*value), vec![]),

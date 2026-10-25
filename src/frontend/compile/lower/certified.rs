@@ -59,10 +59,10 @@ impl Lowerer<'_, '_> {
             ));
         };
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
-            self.error(
+            self.compiler.missing_basis_error(
                 module,
                 function.span,
-                ErrorCode::TypeMismatch,
+                &key,
                 "predicate must be a classical function",
             )
         })?;

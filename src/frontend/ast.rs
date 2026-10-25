@@ -231,6 +231,28 @@ pub struct MatchArm<A> {
     pub span: Span,
 }
 
+/// Exact source labels only; physical encoding coordinates are not labels.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum QuantumLabel {
+    Ordinal(u32),
+    Variant(VariantValue),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct QuantumMatchArm {
+    pub label: QuantumLabel,
+    pub operation: Ident,
+    pub span: Span,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct QuantumMatch {
+    pub selector: Box<Expr>,
+    pub target: Box<Expr>,
+    /// Written order, independent of canonical enum declaration order.
+    pub arms: Vec<QuantumMatchArm>,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordValue<E> {
     pub type_name: Ident,
@@ -289,6 +311,7 @@ pub enum ExprKind {
         function: Ident,
         input: Box<Expr>,
     },
+    QuantumMatch(Box<QuantumMatch>),
     QuantumIf {
         control: Box<Expr>,
         target: Box<Expr>,

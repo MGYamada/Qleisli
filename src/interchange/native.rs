@@ -9,6 +9,9 @@ mod carrier;
 mod reporting;
 mod runtime;
 
+#[cfg(test)]
+mod recheck_tests;
+
 pub use carrier::CarrierChecked;
 pub(crate) use reporting::DecisionLog;
 pub use reporting::NativeDecisionSummary;
@@ -253,8 +256,9 @@ impl Kernel {
         self.check_raw(program, None, Version::V2, None)
     }
 
-    /// Check an existing source/foreign/host result with a freshly reconstructed
-    /// artifact. All nested evidence and both branch arms reach the kernel.
+    /// Recheck the original bytes and request against the retained execution view.
+    /// All nested evidence and both branch arms reach the kernel. Modes whose
+    /// complete typed request view is not retained here reject without erasure.
     pub fn check_program(&self, program: &AcceptedProgram) -> Result<Checked> {
         if program.edition() != self.edition {
             return Err(Error::new(
@@ -262,7 +266,40 @@ impl Kernel {
                 "accepted program belongs to a different edition",
             ));
         }
-        self.verify(program.raw())
+        if program.native.mode() != "--qirf-native" {
+            return Err(Error::new(
+                "kernel",
+                "rechecking this native mode requires its complete retained typed request view",
+            ));
+        }
+        let subject = self.subject(program.artifact(), program.request())?;
+        // Compare the exact immutable graph and metadata the caller will keep
+        // using. Decoding the original artifact again would compare a different
+        // allocation and could hide a divergent retained execution view.
+        let graph = program.execution_view_description()?;
+        let native = Self::submit_subject(
+            subject,
+            "--qirf-native",
+            Some(super::native_packet::View {
+                graph: &graph,
+                caller: None,
+            }),
+        )?;
+        let retained = AcceptedProgram {
+            native: Arc::new(native.clone()),
+            ..program.clone()
+        };
+        Ok(Checked {
+            artifact: Arc::clone(&native.subject.artifact),
+            request: native.subject.request.clone(),
+            imported: Imported {
+                root_interface: retained.interface.clone(),
+                program: retained,
+                request_checked: native.request().is_some(),
+                exact_work: native.exact_work,
+            },
+            native_exact_work: native.exact_work,
+        })
     }
 
     /// Explicit QIRF version, type trees and independent request for raw callers.
@@ -561,7 +598,6 @@ impl AcceptedProgram {
             outputs: &self.output_ports,
         }
     }
-    #[cfg(test)]
     pub(super) fn execution_view_description(&self) -> Result<Vec<u8>> {
         super::execution_view::finite::graph(
             &self.decoded,

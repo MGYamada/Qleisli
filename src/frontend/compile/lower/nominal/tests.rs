@@ -3,6 +3,7 @@
 use super::*;
 
 mod records;
+mod table_preparation;
 use crate::frontend::compile::lower::call_state_tests::untrusted_compiler;
 use crate::frontend::project::{ModuleOrigin, ProjectEdition, SourceModule};
 

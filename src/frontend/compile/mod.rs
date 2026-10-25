@@ -225,6 +225,8 @@ struct Compiler<'a> {
     locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
+    // Ordinary nominal calls use bodies; physical label tables stay unavailable.
+    deferred_nominal_tables: BTreeSet<Key>,
     checked: BTreeMap<Key, AcceptedProgram>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
@@ -1049,6 +1051,7 @@ fn process_loaded_project_details(
         declarations,
         locals,
         basis: BTreeMap::new(),
+        deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
@@ -1100,18 +1103,9 @@ fn process_loaded_project_details(
             message: "expected ordinary fn main() with a closed classical result".to_owned(),
         });
     }
-    // Prepare finite descriptions for static/coherent obligations. Ordinary
-    // calls lower the original classical body; they do not execute this table.
-    for ordinal in 0..compiler.source.dependency_order.len() {
-        // Copy only this immutable identity before mutably lowering its body;
-        // the original dependency collection stays in its checked owner.
-        let key = compiler.source.dependency_order[ordinal];
-        compiler.checking = Some(key);
-        if compiler.declarations[&key].kind == FnKind::Classical {
-            let function = compiler.compile_basis(&key)?;
-            compiler.basis.insert(key, function);
-        }
-    }
+    // Retain eager built-in tables and explicit refusals at their consumers.
+    // Ordinary nominal calls instead lower their checked original bodies.
+    compiler.prepare_classical_tables()?;
     let mut main = None;
     for ordinal in 0..compiler.source.dependency_order.len() {
         let key = compiler.source.dependency_order[ordinal];
@@ -1382,6 +1376,7 @@ mod snapshot_tests {
             declarations,
             locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),
+            deferred_nominal_tables: BTreeSet::new(),
             checked: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
