@@ -1316,3 +1316,237 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
         }
     });
 }
+
+// qmatch's first executable slice uses the original native encoded equation,
+// while these coefficient oracles independently inspect the emitted full circuit.
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_four_written_order_sectors_preserve_low_axes_and_exact_phase() {
+    let definitions = "
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn phase(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}
+unitary fn route(q:Q<(Bits<2>,Bit)>)->Q<(Bits<2>,Bit)>{
+    let(s,q)=split(q);
+    let(s,q)=qmatch(s,q){3=>phase,0=>keep,2=>x,1=>t};
+    join(s,q)
+}";
+    let steps = compiled_steps(
+        definitions,
+        "let e=basis unit(()) as _ {empty_bits()}; let s=put_bit[2,0](init0(),put_bit[1,0](init0(),e)); let q=join(s,init0());",
+        "power(route,1)(q)",
+    );
+    assert_operator(3, &steps, |row, column| {
+        let selector = column & 3;
+        let target = column >> 2;
+        let output = if selector == 2 { column ^ 4 } else { column };
+        if row != output {
+            return Exact::ZERO;
+        }
+        Exact::phase(match selector {
+            1 => target,
+            3 => 1,
+            _ => 0,
+        })
+    });
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_bit_agrees_with_qif_and_preserves_an_arbitrary_reference_axis() {
+    let definitions = "
+unitary fn forward(q:Q<Bit>)->Q<Bit>{t(x(q))}
+unitary fn backward(q:Q<Bit>)->Q<Bit>{adjoint(forward)(q)}
+unitary fn selected(q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>{
+    let(s,qr)=split(q);let(q,r)=split(qr);
+    let(s,q)=qmatch(s,q){1=>backward,0=>forward};join(s,join(q,r))
+}
+unitary fn conditional(q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>{
+    let(s,qr)=split(q);let(q,r)=split(qr);
+    let(s,q)=qif(s,q){0=>forward,1=>backward};join(s,join(q,r))
+}";
+    let preparation = "let q=join(init0(),join(init0(),init0()));";
+    let selected = compiled_steps(definitions, preparation, "power(selected,1)(q)");
+    let conditional = compiled_steps(definitions, preparation, "power(conditional,1)(q)");
+    assert_eq!(operator(3, &selected), operator(3, &conditional));
+    assert_operator(3, &selected, |row, column| {
+        if row != column ^ 2 {
+            return Exact::ZERO;
+        }
+        let target = (column >> 1) & 1;
+        Exact::phase(if column & 1 == 0 {
+            1 - target
+        } else {
+            8 - target
+        })
+    });
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_singleton_selectors_keep_distinct_zero_width_owners_and_scalar_phase() {
+    for (selector, preparation) in [
+        ("Unit", "let q=join(unit(()),unit(()));"),
+        (
+            "Bits<0>",
+            "let s=basis unit(()) as _ {empty_bits()}; let q=join(s,unit(()));",
+        ),
+    ] {
+        let definitions = format!(
+            "
+unitary fn phase(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}
+unitary fn route(q:Q<({selector},Unit)>)->Q<({selector},Unit)>{{
+    let(s,q)=split(q);let(s,q)=qmatch(s,q){{0=>phase}};join(s,q)
+}}"
+        );
+        let steps = compiled_steps(&definitions, preparation, "power(route,1)(q)");
+        assert_operator(0, &steps, |_, _| Exact::phase(1));
+        let wrong = definitions.replace("qmatch(s,q){0=>phase}", "qmatch(s,s){0=>phase}");
+        assert_eq!(
+            compile_project(&SourceRoot::new(&format!("{wrong} fn main()->Unit{{()}}")).0)
+                .unwrap_err()
+                .code,
+            qleisli::frontend::compile::ErrorCode::Ownership
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_nested_controlled_provider_keeps_internal_control_and_both_polarities() {
+    let definitions = "
+unitary fn keep(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}
+unitary fn route[const U:Op<(Bit,Bit)>](q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>
+requires Controllable(U){let(s,q)=split(q);let(s,q)=qmatch(s,q){1=>keep,0=>U};join(s,q)}
+unitary fn actual(q:Q<(Bit,(Bit,Bit))>)->Q<(Bit,(Bit,Bit))>{route[controlled(t)](q)}";
+    let steps = compiled_steps(
+        definitions,
+        "let q=join(init0(),join(init0(),init0()));",
+        "power(actual,1)(q)",
+    );
+    assert_operator(3, &steps, |row, column| {
+        if row != column {
+            return Exact::ZERO;
+        }
+        Exact::phase(usize::from(
+            column & 1 == 0 && column & 2 != 0 && column & 4 != 0,
+        ))
+    });
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_conjugation_does_not_require_controlled_basis_change() {
+    let definitions = "
+unitary fn route[const U:Op<Bit>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+requires Controllable(U){
+    let(s,q)=split(q);let(s,q)=qmatch(s,q){1=>U,0=>U};join(s,q)
+}
+unitary fn conjugated[const V:Op<Bit>,const W:Op<Bit>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+requires Applicable(V),Adjointable(V),Controllable(W){route[conjugate_op(V,W)](q)}
+unitary fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{conjugated[t,had](q)}";
+    let steps = compiled_steps(
+        definitions,
+        "let q=join(init0(),init0());",
+        "power(actual,1)(q)",
+    );
+    assert_operator(2, &steps, |row, column| {
+        if row & 1 != column & 1 {
+            return Exact::ZERO;
+        }
+        let output = row >> 1;
+        let input = column >> 1;
+        let sign = if output == 1 && input == 1 {
+            -Exact::ONE
+        } else {
+            Exact::ONE
+        };
+        sign * Exact::inverse_sqrt_two() * Exact::phase((8 + output - input) % 8)
+    });
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_actual_arm_provider_must_satisfy_its_independent_meaning() {
+    let definitions = "
+classical fn identity_label(b:Bit)->Bit{b}
+meaning Identity:Bit=permutation_by(identity_label);
+unitary fn provider(q:Q<Bit>)->Q<Bit>{q}
+unitary fn route[const U:Op<Bit,Identity>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+requires Controllable(U){let(s,q)=split(q);let(s,q)=qmatch(s,q){1=>U,0=>U};join(s,q)}
+unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{route[provider](q)}";
+    let steps = compiled_steps(
+        definitions,
+        "let q=join(init0(),init0());",
+        "power(actual,1)(q)",
+    );
+    assert_operator(2, &steps, |row, column| {
+        if row == column {
+            Exact::ONE
+        } else {
+            Exact::ZERO
+        }
+    });
+    let wrong = definitions.replace(
+        "unitary fn provider(q:Q<Bit>)->Q<Bit>{q}",
+        "unitary fn provider(q:Q<Bit>)->Q<Bit>{t(q)}",
+    );
+    let root = SourceRoot::new(&format!("{IMPORTS}{wrong} fn main()->Unit{{()}}"));
+    assert_eq!(
+        compile_project(&root.0).unwrap_err().code,
+        qleisli::frontend::compile::ErrorCode::Contract
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn qmatch_keeps_full_target_tuple_tree_with_zero_width_children() {
+    let definitions = "
+unitary fn keep(q:Q<(Unit,Bit,Unit)>)->Q<(Unit,Bit,Unit)>{q}
+unitary fn phase(q:Q<(Unit,Bit,Unit)>)->Q<(Unit,Bit,Unit)>{global_phase_eighth(q)}
+unitary fn route(q:Q<(Bit,(Unit,Bit,Unit))>)->Q<(Bit,(Unit,Bit,Unit))>{
+    let(s,q)=split(q);let(s,q)=qmatch(s,q){1=>keep,0=>phase};join(s,q)
+}";
+    let steps = compiled_steps(
+        definitions,
+        "let q=basis init0() as b {((),b,())}; let q=join(init0(),q);",
+        "power(route,1)(q)",
+    );
+    assert_operator(2, &steps, |row, column| {
+        if row == column {
+            Exact::phase(usize::from(column & 1 == 0))
+        } else {
+            Exact::ZERO
+        }
+    });
+    let wrong = definitions.replace(
+        "unitary fn phase(q:Q<(Unit,Bit,Unit)>)->Q<(Unit,Bit,Unit)>",
+        "unitary fn phase(q:Q<Bit>)->Q<Bit>",
+    );
+    let root = SourceRoot::new(&format!("{wrong} fn main()->Unit{{()}}"));
+    assert_eq!(
+        compile_project(&root.0).unwrap_err().code,
+        qleisli::frontend::compile::ErrorCode::TypeMismatch
+    );
+}

@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "b76fbc6702648fd5612af0814bbd6f13034a4d61",
+  "prefix": "tests/fixtures/releases/v0.2.7/native-ci/lean-raw-completion",
+  "archive": "tests/fixtures/releases/v0.2.7/native-ci/lean-raw-completion.tar.gz",
+  "archive_sha256": "91dc51f7fd8162c1f18d5456c5f5e58b4731fc5838257b727332bbff4b91489e",
+  "entries": {
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-raw-completion/command.log.gz": {
+      "bytes": 169,
+      "sha256": "aee691d9fe468751e6921d6fa1804f837f0c69d5b3dda3c7696a8f1352ae7bb2",
+      "mode": "100644"
+    },
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-raw-completion/completion-inputs.json": {
+      "bytes": 6783591,
+      "sha256": "40a6369443a74040a34c638c53a385cb4b1fd73140933c7546e0b1a5ce216b26",
+      "mode": "100644"
+    },
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-raw-completion/record.json": {
+      "bytes": 3373,
+      "sha256": "563cffbdc7b0fa8c11aba81098e485b4fadda5e82eaa35857e2427b8eb282167",
+      "mode": "100644"
+    }
+  }
+}

@@ -12,6 +12,8 @@ use super::lexer::{LexError, Token, TokenKind, lex_documented};
 
 #[cfg(test)]
 mod aggregate_tests;
+#[cfg(test)]
+mod quantum_match_tests;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ParseError {
@@ -1448,6 +1450,10 @@ impl Parser {
             }
             maximum = maximum.max(depth);
             match &node.kind {
+                ExprKind::QuantumMatch(selection) => {
+                    pending.push((&selection.selector, depth + 1));
+                    pending.push((&selection.target, depth + 1));
+                }
                 ExprKind::Match(selection) => {
                     pending.push((&selection.scrutinee, depth + 1));
                     for arm in &selection.arms {
@@ -1643,6 +1649,9 @@ impl Parser {
         if self.at(&TokenKind::Adjoint) || self.at(&TokenKind::RepeatStatic) {
             return Err(self.retired_operation_syntax());
         }
+        if let Some(start) = self.consume(&TokenKind::Qmatch) {
+            return self.quantum_match(start);
+        }
         if let Some(start) = self.consume(&TokenKind::Qif) {
             return self.quantum_if(start);
         }
@@ -1821,6 +1830,77 @@ impl Parser {
                 initial,
                 body,
             },
+        })
+    }
+
+    #[inline(never)]
+    fn quantum_match(&mut self, start: Token) -> Result<Expr, ParseError> {
+        self.expect(&TokenKind::LParen)?;
+        let selector = Box::new(self.expr()?);
+        self.expect(&TokenKind::Comma)?;
+        let target = Box::new(self.expr()?);
+        self.expect(&TokenKind::RParen)?;
+        self.expect(&TokenKind::LBrace)?;
+        let mut arms = Vec::new();
+        while !self.at(&TokenKind::RBrace) {
+            if arms.len() >= MAX_TUPLE_FIELDS {
+                return Err(self.error("qmatch exceeds 64 exact-label arms"));
+            }
+            let label_start = self.current().span;
+            let label = match &self.current().kind {
+                TokenKind::Zero | TokenKind::One | TokenKind::Natural(_) => {
+                    let token = self.bump();
+                    let ordinal = match token.kind {
+                        TokenKind::Zero => 0,
+                        TokenKind::One => 1,
+                        TokenKind::Natural(text) => {
+                            if text.starts_with('0') {
+                                return Err(ParseError {
+                                    message: "qmatch labels require canonical decimal numerals"
+                                        .into(),
+                                    span: token.span,
+                                });
+                            }
+                            text.parse::<u32>().map_err(|_| ParseError {
+                                message: "qmatch label is outside the u32 range".into(),
+                                span: token.span,
+                            })?
+                        }
+                        _ => unreachable!("checked numeral token"),
+                    };
+                    QuantumLabel::Ordinal(ordinal)
+                }
+                _ => {
+                    let name = self.reference_name()?;
+                    if !name.text.contains("::") {
+                        return Err(ParseError {
+                            message: "qmatch requires an exact ordinal or qualified enum label; wildcard and payload patterns are unsupported".into(),
+                            span: name.span,
+                        });
+                    }
+                    QuantumLabel::Variant(self.variant_value(name, self.pos))
+                }
+            };
+            self.expect(&TokenKind::FatArrow)?;
+            let operation = self.reference_name()?;
+            let span = label_start.cover(operation.span);
+            arms.push(QuantumMatchArm {
+                label,
+                operation,
+                span,
+            });
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+        let end = self.expect(&TokenKind::RBrace)?;
+        Ok(Expr {
+            kind: ExprKind::QuantumMatch(Box::new(QuantumMatch {
+                selector,
+                target,
+                arms,
+            })),
+            span: start.span.cover(end.span),
         })
     }
 
@@ -2068,6 +2148,7 @@ impl Parser {
                     | TokenKind::Natural(_)
                     | TokenKind::If
                     | TokenKind::Qif
+                    | TokenKind::Qmatch
                     | TokenKind::Qfor
                     | TokenKind::Basis
                     | TokenKind::WithComputed

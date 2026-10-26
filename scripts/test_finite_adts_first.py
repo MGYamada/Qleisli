@@ -4339,5 +4339,389 @@ class OriginalOrdinaryBodyHistory(unittest.TestCase):
             body_history.recover_original_body_history(outer)
 
 
+# Fixed inert Rust history; archived paths are keys, never executed or opened.
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-index.json"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-validation.json"
+class QmatchRuntimeHistory(unittest.TestCase):
+    META = {
+        'archive': {'path': 'ordinary-qmatch-runtime-first.tar.xz', 'bytes': 206364,
+                    'sha256': 'f1b7329df48f7f6e72925865654e059a67a276920e4f19d4e92e62323093a524'},
+        'index': {'path': 'ordinary-qmatch-runtime-index.json', 'bytes': 72964,
+                  'sha256': '523e31d3b448954bd1a06ce80e3bfcdade6046469500aa359e9e63799ea779ed'},
+        'validation': {'path': 'ordinary-qmatch-runtime-validation.json', 'bytes': 25253,
+                       'sha256': '7bd03cd2d5b8ae9370907122272ff969faafb4d0e22586e5fedec2c205205837'},
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        for row in cls.META.values():
+            raw = (FIXTURES / row['path']).read_bytes()
+            if (len(raw), hashlib.sha256(raw).hexdigest()) != (row['bytes'], row['sha256']):
+                raise AssertionError('fixed qmatch Rust history changed')
+        cls.index = json.loads((FIXTURES / cls.META['index']['path']).read_bytes())
+        cls.validation = json.loads((FIXTURES / cls.META['validation']['path']).read_bytes())
+        cls.data = read_history(cls.META['index']['path'], cls.META['archive']['path'],
+                                cls.META['index']['sha256'], cls.META['archive']['bytes'],
+                                cls.META['archive']['sha256'], 2381753)
+        cls.originals = cls.index['original_records']
+        mapping = json.loads(cls.data['original-files.json'])
+        if mapping != {'format': 'qleisli.inert-original-records', 'version': 1,
+                       'records': cls.originals}:
+            raise AssertionError('qmatch original mapping changed')
+
+    def original(self, name):
+        row = self.originals[name]
+        raw = self.data[row['record']]
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                         (row['bytes'], row['sha256'], 0o644))
+        return raw
+
+    def record_json(self, name):
+        return json.loads(self.original(name))
+
+    def test_complete_originals_and_later_exact_source_recoveries(self):
+        self.assertEqual((self.index['format'], self.index['version']),
+                         ('qleisli.inert-content-addressed-history', 1))
+        self.assertEqual((len(self.originals), len(self.data)), (192, 148))
+        self.assertEqual(sum(row['bytes'] for row in self.originals.values()), 3194069)
+        for name in self.originals:
+            self.original(name)
+        git = json.loads(self.data['git-references.json'])
+        self.assertEqual(git['base'], 'b76fbc6702648fd5612af0814bbd6f13034a4d61')
+        self.assertEqual(len(git['records']), 25)
+        # These committed references are not physical members or live Git reads.
+        for row in git['records'].values():
+            self.assertEqual(row['git']['commit'], git['base'])
+            self.assertEqual((row['bytes'], row['sha256'], row['original_mode']),
+                             (row['git']['bytes'], row['git']['sha256'], row['git']['mode']))
+        recovered = json.loads(self.data['exact-source-recovery.json'])
+        self.assertEqual(len(recovered['records']), 3)
+        for row, run, path in zip(recovered['records'], [3, 2, 5], [
+            'src/interchange/native.rs', 'src/frontend/compile/profile.rs',
+            'src/frontend/compile/lower/nominal/tests/table_preparation.rs',
+        ]):
+            raw = self.original(row['logical'])
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), row['recovered_sha256'])
+            before = self.record_json(f'runs/{run:02d}/before.json')
+            self.assertEqual(before['files'][path], row['recovered_sha256'])
+        self.assertIn('not contemporaneous', recovered['scope'])
+
+    def test_first_five_format_errors_remain_distinct_from_eleven_test_retry(self):
+        first = self.record_json('runs/01/result.json')
+        retry = self.record_json('runs/02/result.json')
+        self.assertEqual((first['exit_code'], first['stable']), (101, True))
+        self.assertEqual((retry['exit_code'], retry['stable']), (0, True))
+        errors = self.original('runs/01/stderr').decode()
+        self.assertEqual(errors.count('error: invalid format string: unmatched `}` found'), 5)
+        self.assertIn('could not compile `qleisli` (lib test) due to 5 previous errors', errors)
+        self.assertNotIn(b'test result:', self.original('runs/01/stdout'))
+        self.assertIn(b'11 passed; 0 failed; 0 ignored', self.original('runs/02/stdout'))
+        path = 'src/frontend/check/body/quantum_matching/tests.rs'
+        before = self.record_json('runs/01/before.json')['files'][path]
+        after = self.record_json('runs/02/before.json')['files'][path]
+        self.assertEqual(before, hashlib.sha256(self.original('packets/common-first/candidate/' + path)).hexdigest())
+        self.assertEqual(after, hashlib.sha256(self.original('packets/coherent-first/base-worktree/' + path)).hexdigest())
+        self.assertNotEqual(before, after)
+        self.assertIn(b'measure_z', self.original('packets/common-first/first/runtime-tri-match.qli'))
+
+    def test_red_recheck_controls_and_fresh_retained_graph_tests_are_separate(self):
+        red = self.record_json('runs/03/result.json')
+        green = self.record_json('runs/04/report.json')
+        self.assertEqual((red['exit_code'], red['stable']), (101, True))
+        self.assertEqual((green['pass'], green['stable']), (True, True))
+        self.assertIn(b'0 passed; 3 failed; 0 ignored', self.original('runs/03/stdout'))
+        name = b'recheck_retains_original_request_interface_and_graph_allocations'
+        self.assertIn(name + b' ... FAILED', self.original('runs/03/stdout'))
+        self.assertIn(name + b' ... ok', self.original('runs/04/01/stdout'))
+        self.assertIn(b'7 passed; 0 failed; 0 ignored', self.original('runs/04/01/stdout'))
+        self.assertIn(b'recheck_refuses_private_carrier_handle_without_ordinary_fallback ... ok',
+                      self.original('runs/04/01/stdout'))
+        self.assertIn(b'self.verify(program.raw())', self.original('recovered-source/red-native.rs'))
+        fixed = self.original('packets/recheck-first/candidate/src/interchange/native.rs')
+        self.assertIn(b'self.subject(program.artifact(), program.request())?', fixed)
+        self.assertIn(b'program.execution_view_description()?', fixed)
+        self.assertIn(b'program.native.mode() != "--qirf-native"', fixed)
+        request = self.record_json('packets/recheck-first/first/desired-request.json')
+        self.assertEqual(request['meaning'], {'tag': 'phase8', 'table': [0, 1]})
+
+    def test_style_and_sandbox_failures_do_not_become_normal_or_msrv_successes(self):
+        lint = self.record_json('runs/05/report.json')
+        self.assertIs(lint['pass'], False)
+        self.assertEqual(len(lint['commands']), 1)
+        errors = self.original('runs/05/01/stderr')
+        self.assertIn(b'called `.err().expect()` on a `Result` value', errors)
+        self.assertIn(b'items after a test module', errors)
+        refused = self.record_json('runs/06/report.json')
+        normal = self.record_json('runs/07/report.json')
+        msrv = self.record_json('runs/08/report.json')
+        self.assertIs(refused['pass'], False)
+        self.assertIn(b'564 passed; 1 failed; 2 ignored', self.original('runs/06/02/stdout'))
+        self.assertIn(b'PermissionDenied', self.original('runs/06/02/stdout'))
+        self.assertIn(b'Operation not permitted', self.original('runs/06/02/stdout'))
+        self.assertEqual((normal['pass'], normal['stable'], msrv['pass'], msrv['stable']),
+                         (True, True, True, True))
+        self.assertIn(b'565 passed; 0 failed; 2 ignored', self.original('runs/07/02/stdout'))
+        # Same observed pre-coherent source window; no code repair between the
+        # sandbox refusal and separate successful ordinary/MSRV validations.
+        for other in [7, 8]:
+            self.assertEqual(self.record_json('runs/06/before.json')['files'],
+                             self.record_json(f'runs/{other:02d}/before.json')['files'])
+        self.assertTrue(msrv['commands'][0]['argv'][0].endswith('1.85.0-aarch64-apple-darwin/bin/cargo'))
+        for number, count in [(2, 26), (3, 5), (4, 11)]:
+            self.assertIn(f'{count} passed; 0 failed; 0 ignored'.encode(),
+                          self.original(f'runs/08/{number:02d}/stdout'))
+        self.assertTrue(all(row['exit_code'] == 0 for row in msrv['commands']))
+
+    def test_header_only_patch_repair_and_twenty_two_coherent_tests(self):
+        first = self.original('packets/coherent-first/integration.patch')
+        repaired = self.original('repairs/coherent-new-file-modes.patch')
+        self.assertEqual(repaired.count(b'new file mode 100644\n'), 2)
+        self.assertEqual(repaired.replace(b'new file mode 100644\n', b''), first)
+        self.assertIn(b'first/four-sectors.qli', self.original('packets/coherent-first/SOURCE-PINS.json'))
+        report = self.record_json('runs/09/report.json')
+        self.assertEqual((report['pass'], report['stable']), (True, True))
+        self.assertTrue(all(row['exit_code'] == 0 for row in report['commands']))
+        self.assertIn(b'15 passed; 0 failed; 0 ignored', self.original('runs/09/01/stdout'))
+        self.assertIn(b'7 passed; 0 failed; 0 ignored', self.original('runs/09/02/stdout'))
+        self.assertIn(b'native_full_circuit_refuses_phase_polarity_reference_axis_and_arm_faults ... ok',
+                      self.original('runs/09/01/stdout'))
+
+    def test_uncaptured_results_and_separate_lean_history_retain_their_scope(self):
+        notes = json.loads(self.data['retention-notes.json'])
+        catalogue = json.loads(self.data['run-catalogue.json'])
+        self.assertEqual(len(catalogue['runs']), 9)
+        self.assertEqual(len(catalogue['pending']), 1)
+        self.assertIn('o0whxqoq', catalogue['pending'][0]['directory'])
+        self.assertIn('not read', catalogue['pending'][0]['status'])
+        self.assertIn('No saved raw git-apply command/diagnostic file located', notes['raw_header_failure'])
+        self.assertIn('not a fabricated stdout/stderr', notes['raw_header_failure'])
+        self.assertIn('already committed 3405-file', catalogue['excluded_lean'])
+        self.assertIn('No full environment', notes['scope'])
+        self.assertIn('full12/64', notes['scope'])
+        for run in notes['source_window_gaps'].values():
+            for window in run.values():
+                self.assertTrue(set(window) <= {'lean-kernel/.lake/build/bin/qleisli-kernel'})
+        self.assertEqual(self.validation['archive'], self.META['archive'])
+        self.assertEqual(self.validation['index'], self.META['index'])
+        self.assertIn('packaging identity checked', self.validation['status'])
+        self.assertIn('no Root adoption', self.validation['pending'])
+
+    def test_altered_member_rejects_even_when_outer_hash_is_recomputed(self):
+        # Exercise the established member byte/mode guards with one tiny inert
+        # member, not an execution of the saved Rust, .qli, command or runner.
+        original = self.originals['runs/01/stderr']
+        name = original['record']
+        row = {key: original[key] for key in ['bytes', 'original_mode', 'sha256']}
+        expected = self.data[name]
+        global FIXTURES
+        saved_fixtures = FIXTURES
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                FIXTURES = Path(directory)
+                index = json.dumps({'records': {name: row}}).encode()
+                (FIXTURES / 'index.json').write_bytes(index)
+                for mode, raw, message in [
+                    (0o644, b'X' + expected[1:], 'historical bytes changed'),
+                    (0o755, expected, 'noncanonical historical record'),
+                ]:
+                    stream = io.BytesIO()
+                    with tarfile.open(fileobj=stream, mode='w:xz', format=tarfile.USTAR_FORMAT) as archive:
+                        info = tarfile.TarInfo(name)
+                        info.mode, info.size = mode, len(raw)
+                        archive.addfile(info, io.BytesIO(raw))
+                    stored = stream.getvalue()
+                    (FIXTURES / 'history.tar.xz').write_bytes(stored)
+                    with self.assertRaisesRegex(AssertionError, message):
+                        read_history('index.json', 'history.tar.xz', hashlib.sha256(index).hexdigest(),
+                                     len(stored), hashlib.sha256(stored).hexdigest(), len(raw))
+        finally:
+            FIXTURES = saved_fixtures
+
+
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-first.tar.xz"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-index.json"
+# "tests/fixtures/authoring_sessions/finite-adts-v030/qmatch-keyword-before-validation.json"
+class QmatchKeywordBeforeHistory(unittest.TestCase):
+    """Passive original bytes and actual pre-repair observations, not replay."""
+    META = {'archive': {'path': 'qmatch-keyword-before-first.tar.xz', 'bytes': 46056, 'sha256': 'f2bee0ffd32b0f9e67961184582af7562c2f57dcddc5b4bc4245ddf5500fb8a9'}, 'index': {'path': 'qmatch-keyword-before-index.json', 'bytes': 28420, 'sha256': 'a9850fcfbfdb8626efb1d9dc1fe2f7778b3664eac3544d7985c089823aae4c0a'}, 'validation': {'path': 'qmatch-keyword-before-validation.json', 'bytes': 4403, 'sha256': 'f3376d574c50f496881c8988f01205e14649a7994da1ee78e96920daf2a83d69'}, 'expanded': 387097, 'originals': 46, 'members': 44}
+
+    @classmethod
+    def setUpClass(cls):
+        if cls.META is None:
+            raise AssertionError('unfinalized source-only history proposal')
+        meta = cls.META
+        cls.data = read_history(meta['index']['path'], meta['archive']['path'],
+                                meta['index']['sha256'], meta['archive']['bytes'],
+                                meta['archive']['sha256'], meta['expanded'])
+        cls.originals = json.loads(cls.data['original-records.json'])['records']
+        cls.index_raw = (FIXTURES / meta['index']['path']).read_bytes()
+        cls.index = json.loads(cls.index_raw)
+        raw = (FIXTURES / meta['validation']['path']).read_bytes()
+        if (len(raw), hashlib.sha256(raw).hexdigest()) != (
+                meta['validation']['bytes'], meta['validation']['sha256']):
+            raise AssertionError('qmatch keyword observation summary changed')
+        cls.validation = json.loads(raw)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.data.clear()
+        cls.originals.clear()
+        cls.index.clear()
+        cls.validation.clear()
+        cls.index_raw = b''
+
+    def raw(self, name):
+        row = self.originals[name]
+        raw = self.data[row['record']]
+        self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                         (row['bytes'], row['sha256']), name)
+        return raw
+
+    def test_complete_first_originals_modes_and_immutable_base(self):
+        self.assertEqual((len(self.originals), len(self.data)),
+                         (self.META['originals'], self.META['members']))
+        self.assertEqual((len(self.originals), len(self.data)), (46, 44))
+        self.assertEqual(self.originals, self.index['original_records'])
+        used = set()
+        for name, row in self.originals.items():
+            self.assertEqual(row['original_mode'], 0o644)
+            self.assertEqual(row['record'], 'objects/' + row['sha256'])
+            self.assertFalse(PurePosixPath(name).is_absolute())
+            self.assertNotIn('..', PurePosixPath(name).parts)
+            self.raw(name)
+            used.add(row['record'])
+        self.assertEqual(set(self.data), used | {'original-records.json'})
+        base = json.loads(self.raw('prepared/BASE.json'))
+        self.assertEqual(base['head'], '9b6c12715493df9f4249b36baaae078e116f17ba')
+        self.assertEqual(base['status'], '')
+        for row in base['original_sources']:
+            relative = row['path'].split('/Qleisli/', 1)[1]
+            self.assertEqual(self.raw('prepared/before/' + relative),
+                             self.raw('git-9b/' + relative))
+        self.assertIn(b'"qmatch" => TokenKind::Qmatch', self.raw('git-9b/src/frontend/lexer.rs'))
+        self.assertNotIn(b'"qmatch"', self.raw('git-9b/lean-kernel/QleisliKernel/SourceTypes/Lexer.lean'))
+
+    def test_five_original_triples_are_complete_zero_wire_identity_requests(self):
+        first = json.loads(self.raw('prepared/first/EXPECTATIONS.json'))
+        self.assertEqual(first['status'], 'prepared predictions only; no Lean/native execution')
+        self.assertEqual(len(first['cases']), 5)
+        for case in first['cases']:
+            self.assertEqual(case['actual_observation'], 'not executed')
+            label = case['case']
+            source = self.raw('prepared/first/' + label + '.qli')
+            self.assertEqual(source.decode(), case['source'])
+            for original in case['prepared_inputs']:
+                value = self.raw('prepared/first/' + PurePosixPath(original['path']).name)
+                self.assertEqual((len(value), hashlib.sha256(value).hexdigest()),
+                                 (original['bytes'], original['sha256']))
+            ir = json.loads(self.raw('prepared/first/' + label + '.qirf.json'))
+            request = json.loads(self.raw('prepared/first/' + label + '.request.json'))
+            self.assertEqual(ir['sources'], [{'path': 'labels', 'text': source.decode()}])
+            self.assertEqual(ir['root'], 0)
+            self.assertEqual(ir['evidence'], [])
+            self.assertEqual(ir['programs'], [{'classical_inputs': [], 'classical_outputs': [],
+                'declared_effect': 'unitary', 'operations': [],
+                'quantum_inputs': [{'shape': {'bits': 0}, 'token': 0, 'wires': []}],
+                'quantum_outputs': [0]}])
+            self.assertEqual(request['required'], request['attached'])
+            self.assertEqual(request['profile'], 'finite-carrier-pure-v1')
+            self.assertEqual(request['logical'], {'cols': 1, 'domain': 'zeta8-dyadic-v1',
+                'entries': [[{'denominator_bits': 0, 'numerator': '1'}] +
+                            [{'denominator_bits': 0, 'numerator': '0'}] * 3],
+                'format': 'qleisli.finite-matrix', 'rows': 1, 'version': 1})
+            origins = []
+            def inspect(value):
+                if isinstance(value, dict):
+                    if 'origin' in value:
+                        origins.append(value['origin'])
+                    for child in value.values():
+                        inspect(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        inspect(child)
+            inspect(request)
+            self.assertTrue(origins)
+            for origin in origins:
+                self.assertEqual((origin['module'], origin['source']), ('labels', source.decode()))
+            for direction in ('inputs', 'outputs'):
+                self.assertEqual(len(request['attached'][direction]), 1)
+                self.assertEqual(request['attached'][direction][0]['port'],
+                                 {'bits': 0, 'token': 0, 'wires': []})
+
+    def test_actual_before_discrepancies_controls_and_observer_scope(self):
+        labels = ['valid-qmatch-enum', 'valid-qmatch-field', 'reserved-qmatch-declaration',
+                  'reserved-qmatch-variant', 'reserved-qmatch-field']
+        lines = self.raw('before-observer/stdout').decode().splitlines()
+        self.assertEqual(len(lines), 6)
+        for i, label in enumerate(labels):
+            cells = lines[i].split('\t')
+            self.assertEqual(cells[:3], [label, 'parser=' + ('true' if i < 2 else 'false'),
+                                        'native=true'])
+            self.assertEqual(cells[-1], 'native_error=None')
+            if i < 2:
+                self.assertEqual(cells[3], 'parse_error=None')
+            else:
+                start, end = [(9, 15), (17, 23), (19, 25)][i - 2]
+                self.assertIn(f'start: {start}, end: {end}', cells[3])
+                self.assertIn('expected an identifier', cells[3])
+        self.assertEqual(lines[-1], 'observed_before_controls=2, observed_reserved_discrepancies=3')
+        source = self.raw('public-probe/src/main.rs')
+        self.assertIn(b'kernel.check_carrier(&artifact, &request)', source)
+        self.assertIn(b'ParsedProgram::parse(Edition::E2026', source)
+        observation = self.validation['observation']
+        command = json.loads(self.raw('public-probe/command.json'))
+        plan = json.loads(self.raw('before-observer/plan.json'))
+        self.assertEqual(observation['argv'], command['argv'])
+        self.assertEqual(observation['argv'], plan['argv'])
+        self.assertEqual(observation['cwd'], '/private/tmp/qleisli-qmatch-keyword-public-probe-first-01')
+        self.assertEqual((observation['pass'], observation['exit_code'], observation['stable']),
+                         (True, 0, True))
+        self.assertIsNone(observation['stop_reason'])
+        self.assertIsNone(observation['monitor_error'])
+        self.assertIsNone(observation['rss_group_limit_kib'])
+        self.assertEqual(observation['host_memory_free_floor_percent'], 5)
+        self.assertEqual(observation['heavy_job_concurrency'], 1)
+        self.assertEqual(observation['peak_rss_kib'], 1017248)
+        self.assertTrue(observation['cleanup']['complete'])
+        self.assertEqual(observation['cleanup']['remaining_live_members'], [])
+        self.assertEqual(self.validation['before'], self.validation['after'])
+        self.assertEqual(self.validation['before']['file_count'], 20323)
+        self.assertEqual(self.validation['before']['explicit_inputs'], {})
+        self.assertIn('no independent before/after external-source freeze',
+                      self.validation['external_probe_input_window'])
+        self.assertIsNone(self.validation['after_repair_actual'])
+        self.assertIsNone(self.validation['full_proof_refresh'])
+
+    def test_container_corruption_and_rebound_wrong_member_hash_are_refused(self):
+        from unittest.mock import patch
+        meta = self.META
+        stored = (FIXTURES / meta['archive']['path']).read_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            archive_path = temporary / meta['archive']['path']
+            index_path = temporary / meta['index']['path']
+            index_path.write_bytes(self.index_raw)
+            damaged = bytearray(stored)
+            damaged[len(damaged) // 2] ^= 1
+            archive_path.write_bytes(damaged)
+            with patch(__name__ + '.FIXTURES', temporary):
+                with self.assertRaisesRegex(AssertionError, 'first archive changed'):
+                    read_history(meta['index']['path'], meta['archive']['path'],
+                                 meta['index']['sha256'], meta['archive']['bytes'],
+                                 meta['archive']['sha256'], meta['expanded'])
+                archive_path.write_bytes(stored)
+                changed = json.loads(self.index_raw)
+                record = self.originals['public-probe/src/main.rs']['record']
+                old = changed['records'][record]['sha256']
+                changed['records'][record]['sha256'] = ('0' if old[0] != '0' else '1') + old[1:]
+                raw = (json.dumps(changed, indent=2, sort_keys=True) + '\n').encode()
+                index_path.write_bytes(raw)
+                with self.assertRaisesRegex(AssertionError, 'historical bytes changed'):
+                    read_history(meta['index']['path'], meta['archive']['path'],
+                                 hashlib.sha256(raw).hexdigest(), meta['archive']['bytes'],
+                                 meta['archive']['sha256'], meta['expanded'])
+
+
 if __name__ == '__main__':
     unittest.main()

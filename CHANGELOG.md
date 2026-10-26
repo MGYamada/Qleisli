@@ -6,6 +6,30 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reserve `qmatch` consistently in the independent native type reader and Rust
+  grammar, including declaration, variant and field names. Preserve the original
+  five zero-wire requests and observed parser/native discrepancies separately
+  from the corrected-reader regression results.
+- Preserve the three historical v0.2.7 raw-completion log files in the existing
+  lossless archive format, retaining every original byte and executable mode
+  against their immutable Git inventory. Current executable fixtures and
+  historical publication records keep their existing contents.
+- Add common exact-label `qmatch` syntax and source checks, retaining original
+  enum/ordinal labels, complete linear owners and every arm's effect, type and
+  Controlled obligation. Add public AST/token variants; exhaustive Rust visitors
+  must handle them. The finite built-in slice freshly checks its whole circuit
+  against an exact block meaning through the existing six-bit/1024-step native
+  equation. Nominal/selected execution, the full twelve-bit/64-label extension
+  and original-source preservation remain unfinished.
+- Recheck ordinary accepted programs using their original artifact/request and
+  retained execution graph, interface, effect and outputs. Preserve those graph
+  allocations and require a fresh native decision; refuse other native modes
+  until their complete typed request views are retained, without erasing them
+  through ordinary Raw reserialization.
+- Defer finite tables for nominal classical interfaces while internal ordinary
+  calls lower their checked original bodies. Keep built-in tables eager and
+  nominal table consumers explicitly unsupported; the public nominal runtime
+  gate and typed native/source correspondence requirements remain in place.
 - Store the two maintained source-inventory and coverage views in bounded,
   lossless CRC64 XZ containers. Preserve decoded bytes, existing checks and historical
   evidence; retain their rooted fixture references and release synchronization.

@@ -92,9 +92,10 @@ marks quantum ownership even in ordinary syntax such as `let`, a function
 argument or an explicit call. Unmarked constructs operate according to their
 ordinary/const rules: an ordinary `if` requires `Bit`, not `Q<Bit>`, and a
 static fold cannot inspect quantum state. A prefix alone grants no operation
-access, effect or evidence. The conceptual `match`/`qmatch` distinction follows
-the same rule, but does not admit pattern forms before their own specification
-and implementation. Supported folds are specified in [static control](static-language.md).
+access, effect or evidence. Ordinary `match` and the bounded exact-label
+`qmatch` form follow the same rule under their distinct owner and checking
+contracts. Their current execution limits do not admit additional pattern forms.
+Supported folds are specified in [static control](static-language.md).
 
 ## Structural equality, coherence and physical maps
 
@@ -764,7 +765,7 @@ nominal source execution still requires its typed native route: both concrete
 adapters explicitly reject source collections containing these declarations
 before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
 actual public-name/source checks, then the remaining transport refusal. This
-does not enable ordinary nominal execution, `match`, `qmatch` or a
+does not enable ordinary nominal execution, nominal `match`/`qmatch` or a
 source-preservation theorem, and it grants no inverse/control access.
 
 The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
@@ -828,6 +829,28 @@ These source judgments retain the existing nominal execution refusal until
 typed native value transport and its actual runtime correspondence are connected.
 They provide no implicit measurement, coherent `qmatch`, general `const<T>` or
 source-preservation theorem.
+
+The coherent [exact-label `qmatch` form](source-text.md#exact-label-coherent-selection)
+checks a `Q<A>` selector and a distinct `Q<B>` target. It preserves the complete
+`(Q<A>,Q<B>)` result and checks every static arm's exact `B -> B` interface,
+Unitary effect and Controlled access. Fieldless enum labels retain canonical
+original declaration identity and logical variant order; built-in labels retain
+exact ordinals. Neither padding tags nor equal physical width identify a label
+or target. The finite executable built-in slice uses a fresh native whole-circuit
+encoded equation within the existing six-joined-bit/1024-step profile. Common
+nominal checks do not open nominal runtime or the selected projection. The full
+twelve-joined-bit/64-label extension and original-source preservation remain
+required separate work; no inverse/control grant follows merely from a label.
+
+Ordinary nominal classical calls lower their checked original bodies in the
+internal producer; they do not require enumeration of physical label tables.
+Preparation defers tables whose parameter/result types contain nominal nodes,
+while existing built-in tables remain eager. Actual coherent basis, Meaning and
+predicate table consumers retain an explicit unsupported result for those
+nominal interfaces. This preparation change keeps the public nominal execution
+gate closed and does not supply typed native value transport or source-to-Raw
+preservation. Built-in-signature bodies with nominal intermediates retain their
+existing table-preparation limitation.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

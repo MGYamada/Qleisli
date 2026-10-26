@@ -1,0 +1,108 @@
+{
+  "after": {
+    "explicit_inputs": {},
+    "file_count": 20323,
+    "files_sha256": "08010fd3cb3a3ed293f0fcb7ae6c96e210965692fa2d1d0f4defb03029ad3a70",
+    "head": "9b6c12715493df9f4249b36baaae078e116f17ba",
+    "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+  },
+  "after_repair_actual": null,
+  "before": {
+    "explicit_inputs": {},
+    "file_count": 20323,
+    "files_sha256": "08010fd3cb3a3ed293f0fcb7ae6c96e210965692fa2d1d0f4defb03029ad3a70",
+    "head": "9b6c12715493df9f4249b36baaae078e116f17ba",
+    "kernel": "5f5d27e2b39c5524d8c0a2e478077d065fc784c3011b0e36ffe338be5b1d0b12"
+  },
+  "body_scope": "zero physical wires; one retained zero-width owner; no operations; exact1x1 identity carrier request; not source-function-body or ordinary ADT execution",
+  "external_probe_input_window": "external Cargo source/lock and five triples retained by post-run byte pins; observer explicit_inputs was empty, so no independent before/after external-source freeze is asserted",
+  "first_predictions": "prepared/first/EXPECTATIONS.json remains unchanged and unexecuted as authored",
+  "format": "qleisli.inert-retention-proposal",
+  "full_proof_refresh": null,
+  "native_reply_scope": "public Kernel::check_carrier return status printed by the Rust probe; raw native reply/frame bytes were not separately captured",
+  "observation": {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "run",
+      "--locked",
+      "--offline",
+      "--manifest-path",
+      "/private/tmp/qleisli-qmatch-keyword-public-probe-first-01/Cargo.toml",
+      "--",
+      "/private/tmp/qleisli-qmatch-keyword-repair-first-nwq26km1/first"
+    ],
+    "cleanup": {
+      "complete": true,
+      "errors": [],
+      "pgid": 12596,
+      "remaining_live_members": [],
+      "remaining_members": [],
+      "signals": []
+    },
+    "cwd": "/private/tmp/qleisli-qmatch-keyword-public-probe-first-01",
+    "exit_code": 0,
+    "format": "qleisli.bounded-current-validation",
+    "heavy_job_concurrency": 1,
+    "host_memory_free_floor_percent": 5,
+    "memory_authorization": {
+      "date": "2026-10-24",
+      "quote": "3GiB\u4e0a\u9650\u306f\u305d\u308d\u305d\u308d\u53d6\u308a\u6255\u3063\u3066\u3082\u3044\u3044\u3067\u3059\u3088",
+      "scope": "No fixed process-group RSS ceiling; one heavy job at a time. Semantic, tactic, work and time limits are unchanged.",
+      "source": "direct-user-message"
+    },
+    "monitor_error": null,
+    "monitor_revision": 2,
+    "pass": true,
+    "peak_rss_kib": 1017248,
+    "received_signals": [],
+    "rss_group_limit_kib": null,
+    "samples": [
+      {
+        "host_available_percent": 62,
+        "members": [
+          {
+            "command": "/opt/homebrew/bin/cargo",
+            "pid": 12596,
+            "rss_kib": 50368,
+            "state": "Ss"
+          },
+          {
+            "command": "/opt/homebrew/bin/rustc",
+            "pid": 12658,
+            "rss_kib": 863440,
+            "state": "R"
+          }
+        ],
+        "rss_kib": 913808,
+        "seconds": 15.329135583015159
+      }
+    ],
+    "seconds": 31.78813000000082,
+    "stable": true,
+    "stop_reason": null,
+    "version": 2
+  },
+  "original_before": {
+    "bytes": 3338759,
+    "mode": 420,
+    "path": "/private/tmp/qleisli-qmatch-keyword-public-probe-observer-first-01/before.json",
+    "scope": "complete original observer Root file maps; external exact reference, not embedded or reopened by passive consumer",
+    "sha256": "850f5826bbe8d79b4436f55c356e0c921d6d4c22199c977b919564b25d029cc1"
+  },
+  "original_report": {
+    "bytes": 6760540,
+    "mode": 420,
+    "path": "/private/tmp/qleisli-qmatch-keyword-public-probe-observer-first-01/report.json",
+    "scope": "complete original observer Root file maps; external exact reference, not embedded or reopened by passive consumer",
+    "sha256": "4adba3612e47b7a915881eac99453cafa1ba6c96096b11e96eda950ea52b19f5"
+  },
+  "state": "before-repair actual observation retained; archive construction and passive tests unexecuted",
+  "summary_derivation": {
+    "external_paths_opened_by_passive_consumer": false,
+    "files_digest_encoding": "UTF-8 json.dumps(files, sort_keys=True, separators=(comma, colon))",
+    "input_keep": "all keys except files, replaced by file_count and files_sha256",
+    "report_keep": "all keys except before and after"
+  },
+  "version": 1,
+  "window": "before-public-carrier-probe"
+}

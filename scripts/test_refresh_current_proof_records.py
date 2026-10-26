@@ -83,7 +83,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
     def test_hosted_context_refuses_unrelated_or_mixed_producers(self):
         commit = "a" * 40
         refs = ("refs/heads/codex/beta-finite-adts", "refs/heads/codex/beta-ordinary-adts",
-                "refs/heads/codex/beta-typed-ordinary-runtime")
+                "refs/heads/codex/beta-typed-ordinary-runtime", "refs/heads/codex/beta-qmatch")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
@@ -100,10 +100,23 @@ class MaintenanceRefusalTests(unittest.TestCase):
                           "MGYamada/Qleisli/.github/workflows/ci.yml@" + ref, ""):
                 with self.subTest(ref=ref, workflow=wrong), self.assertRaises(ValueError):
                     maintenance.hosted_context(commit, environment | {"GITHUB_WORKFLOW_REF": wrong})
-            for forbidden in ("refs/heads/main", ref + "-copy", "refs/tags/codex/beta-ordinary-adts", "refs/pull/428/merge", ""):
+            for forbidden in ("refs/heads/main", ref + "-copy", ref + "/extra",
+                              ref.replace("refs/heads/", "refs/tags/"), ref.upper(),
+                              "refs/pull/428/merge", ""):
                 with self.subTest(ref=ref, forbidden=forbidden), self.assertRaises(ValueError):
                     maintenance.hosted_context(commit, environment | {
                         "GITHUB_REF": forbidden, "GITHUB_WORKFLOW_REF": workflow + forbidden})
+
+    def test_workflow_push_branches_match_exact_producer_refs(self):
+        workflow = (maintenance.ROOT / ".github/workflows/current-proof-records.yml").read_text()
+        branches = [line.strip() for line in workflow.splitlines()
+                    if line.startswith("    branches: ")]
+        self.assertEqual(len(branches), 1)
+        # This workflow deliberately uses one literal inline branch allowlist.
+        self.assertTrue(branches[0].startswith("branches: [") and branches[0].endswith("]"))
+        names = [name.strip() for name in branches[0][len("branches: ["):-1].split(",")]
+        self.assertEqual(len(names), len(set(names)))
+        self.assertEqual({"refs/heads/" + name for name in names}, maintenance.HOSTED_REFS)
 
     def test_only_fixed_five_derived_files_may_change(self):
         self.assertEqual(maintenance.SNAPSHOT, maintenance.continuity.XZ_PATH)

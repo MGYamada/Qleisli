@@ -1452,6 +1452,97 @@ PATHS['foreign-export']['tests'].extend([
     dict(path='scripts/test_python_host.py', test='test_source_expectation_and_raw_selection_are_distinct_arguments'),
 ])
 
+# Reviewed qmatch/recheck source bindings. Frontend preparation is untrusted;
+# the small coherent slice uses the existing whole encoded native equation.
+# These markers admit no new mode, proof scope or source-preservation claim.
+PATHS['ordinary-acceptance']['source_bindings'].extend([
+    dict(path='src/interchange/native.rs', markers=[
+        'pub fn check_program(',
+        'program.native.mode() != "--qirf-native"',
+        'self.subject(program.artifact(), program.request())?',
+        'let graph = program.execution_view_description()?',
+        'let retained = AcceptedProgram {',
+        '..program.clone()',
+    ]),
+    dict(path='src/frontend/compile/basis.rs', markers=[
+        'fn prepare_classical_tables(',
+        'self.deferred_nominal_tables.insert(key)',
+        'fn missing_basis_reason(',
+        'finite tables require closed built-in basis types',
+    ]),
+    dict(path='src/frontend/parser.rs', markers=[
+        'fn quantum_match(',
+        'QuantumLabel::Ordinal(ordinal)',
+        'QuantumLabel::Variant(self.variant_value(name, self.pos))',
+        'ExprKind::QuantumMatch',
+    ]),
+    dict(path='src/frontend/check/body/quantum_matching.rs', markers=[
+        'fn qmatch_labels(',
+        'fn qmatch(',
+        'self.target_operation(&arm.operation, target_basis, scope)?',
+        'access(&operation, Access::Controlled, arm.operation.span)?',
+        'self.obligation(span, ObligationKind::TransformedMeaning, scope)?',
+    ]),
+    dict(path='src/frontend/specialize/projection.rs', markers=[
+        'source::ExprKind::QuantumMatch(_)',
+        'qmatch requires independently checked coherent lowering and typed native transport',
+    ]),
+])
+PATHS['ordinary-acceptance']['tests'].extend([
+    dict(path='src/interchange/native/recheck_tests.rs',
+         test='recheck_retains_original_request_interface_and_graph_allocations'),
+    dict(path='src/interchange/native/recheck_tests.rs',
+         test='recheck_rejects_divergent_retained_graph_and_metadata'),
+    dict(path='src/interchange/native/recheck_tests.rs',
+         test='recheck_refuses_contract_handle_without_ordinary_fallback'),
+    dict(path='src/interchange/native/carrier/tests.rs',
+         test='recheck_refuses_private_carrier_handle_without_ordinary_fallback'),
+    dict(path='src/frontend/compile/lower/nominal/tests/table_preparation.rs',
+         test='measured_tri_survives_actual_classical_table_preparation'),
+    dict(path='src/frontend/compile/lower/nominal/tests/table_preparation.rs',
+         test='actual_basis_expression_still_refuses_a_deferred_nominal_function'),
+    dict(path='src/frontend/compile/lower/nominal/tests/table_preparation.rs',
+         test='nominal_table_deferral_does_not_open_the_public_source_gate'),
+    dict(path='src/frontend/parser/quantum_match_tests.rs',
+         test='quantum_match_preserves_written_labels_operations_and_original_spans'),
+    dict(path='src/frontend/parser/quantum_match_tests.rs',
+         test='convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared'),
+    dict(path='src/frontend/check/body/quantum_matching/tests.rs',
+         test='original_enum_identity_survives_aliases_and_rejects_alias_duplicates'),
+    dict(path='src/frontend/check/body/quantum_matching/tests.rs',
+         test='later_arms_are_checked_after_a_generic_provider_and_public_effect_annotations'),
+    dict(path='src/frontend/check/body/quantum_matching/tests.rs',
+         test='successful_common_checking_cannot_open_selected_native_transport'),
+])
+PATHS['contract-acceptance']['source_bindings'].extend([
+    dict(path='src/frontend/compile/lower/quantum_match.rs', markers=[
+        'fn lift_arm(',
+        'fn block_meaning(',
+        'fn check_native(',
+        'let checked = kernel.check_encoded(circuit, &required)',
+        'budget.charge(checked.exact_work())?',
+        'selector_bits + target_bits > MAX_CONTRACT_BITS',
+        'pub(super) fn quantum_match(',
+        'Access::Controlled,',
+    ]),
+])
+PATHS['contract-acceptance']['tests'].extend([
+    dict(path='src/frontend/compile/lower/quantum_match/tests.rs',
+         test='native_full_circuit_refuses_phase_polarity_reference_axis_and_arm_faults'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_four_written_order_sectors_preserve_low_axes_and_exact_phase'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_bit_agrees_with_qif_and_preserves_an_arbitrary_reference_axis'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_singleton_selectors_keep_distinct_zero_width_owners_and_scalar_phase'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_conjugation_does_not_require_controlled_basis_change'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_actual_arm_provider_must_satisfy_its_independent_meaning'),
+    dict(path='tests/static_semantics.rs',
+         test='qmatch_keeps_full_target_tuple_tree_with_zero_width_children'),
+])
+
 # Main routes all native modes through this common adapter. The retained older
 # IO modules above remain in the source/audit inventory; their existence is not
 # evidence that Main dispatches through them.

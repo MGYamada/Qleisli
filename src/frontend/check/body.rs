@@ -46,6 +46,7 @@ mod aggregate;
 mod matching;
 mod operations;
 mod places;
+mod quantum_matching;
 mod special;
 
 struct PatternBinding<'a, 'ast> {
@@ -1106,6 +1107,7 @@ impl Checker<'_, '_> {
             } => self.fold(
                 *quantum, index, start, end, carry, initial, body, scope, expected, span,
             )?,
+            ExprKind::QuantumMatch(selection) => self.qmatch(selection, scope, span)?,
             ExprKind::QuantumIf {
                 control,
                 target,

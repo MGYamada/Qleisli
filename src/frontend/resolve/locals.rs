@@ -1038,6 +1038,9 @@ impl<'ast> Task<'ast> {
                 ExprKind::CoherentLift { .. } => 5,
                 ExprKind::WithComputed { .. } => 6,
                 ExprKind::Controlled { args, .. } => args.len().saturating_add(1),
+                ExprKind::QuantumMatch(selection) => {
+                    selection.arms.len().saturating_mul(2).saturating_add(2)
+                }
                 ExprKind::QuantumIf { .. } => 4,
                 ExprKind::Bit(_) | ExprKind::Unit => 0,
             },
@@ -1607,6 +1610,18 @@ where
                     ExprKind::RepeatStatic {
                         function, input, ..
                     } => tasks.extend([Task::Expression(input), Task::Reference(function)]),
+                    ExprKind::QuantumMatch(selection) => {
+                        for arm in selection.arms.iter().rev() {
+                            tasks.push(Task::Reference(&arm.operation));
+                            if let QuantumLabel::Variant(label) = &arm.label {
+                                tasks.push(Task::Reference(&label.type_name));
+                            }
+                        }
+                        tasks.extend([
+                            Task::Expression(&selection.target),
+                            Task::Expression(&selection.selector),
+                        ]);
+                    }
                     ExprKind::QuantumIf {
                         control,
                         target,

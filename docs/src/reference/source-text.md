@@ -137,11 +137,61 @@ and invalid/duplicate type members do not acquire semantic validity by parsing.
 The bounded syntax profile admits at most 64 members per declaration, using
 the existing source product limit. Payload variants, discriminant assignments,
 tuple structs and generic type declarations are not parsed. Ordinary match
-uses the same 64-member bound for its arms. `enum`, `struct` and `match`
+uses the same 64-member bound for its arms. `enum`, `struct`, `match` and `qmatch`
 are reserved keywords in the unpublished beta language; rename existing
 functions, bindings or module paths that used those identifiers. These parser
-changes do not complete [finite ADTs](https://github.com/MGYamada/Qleisli/issues/64)
-or the separate coherent `qmatch` boundary.
+changes do not complete [finite ADTs](https://github.com/MGYamada/Qleisli/issues/64).
+The coherent exact-label form has the separate checking and execution limits below.
+
+## Exact-label coherent selection
+
+`qmatch(selector, target) { label => operation, ... }` selects a coherent
+operation without measuring its selector. Each arm names one resolved static
+operation; it is not an ordinary expression or block. Labels may be written in
+any order, but must cover the selector's logical basis exactly once. Wildcards,
+ranges, payloads, guards and dynamic arm calls are outside this form.
+
+Common preparation requires one `Q<A>` selector and one distinct `Q<B>` target,
+and returns `(Q<A>, Q<B>)` with both complete type trees unchanged. Zero physical
+width does not remove either linear owner. For `Unit`, `Bit` and closed
+`Bits<n>` with `0 <= n <= 6`, labels are canonical decimal ordinals from `0` to
+`cardinality(A)-1`. For a fieldless nominal enum they are qualified variant names
+of that exact original declaration, respecting imports, reexports and visibility.
+Unused physical tags are not enum labels. The common form has at most 64 arms.
+
+Every arm must have the exact target interface, a valid Unitary effect and
+Controlled access under the existing operation rules. A generic earlier arm,
+a constant selector or an unused declaration cannot skip a later arm's type,
+effect, access or dependency obligations. Unitarity alone grants neither
+control nor inverse access. All arm phases remain exact.
+
+If arm `s` denotes the exact operator `U_s`, the operation maps each basis
+vector `|s,y>` to `sum_z U_s[z,y] |s,z>` and extends linearly to every input,
+including inputs entangled with an external reference. Thus it preserves
+coherence between selector sectors and agrees exactly with `qif` for `Bit`.
+
+The finite executable slice currently accepts built-in selectors only and
+retains the existing encoded-contract limits of six joined selector/target
+bits and 1024 circuit steps. Selector axes precede target axes, so `(s,y)` has
+integer coordinate `s + 2^selector_bits * y`, independently of written arm
+order. The complete proposed circuit and independently obtained exact block
+meaning go through a fresh native encoded equation before emission; a Rust
+sector projection cannot issue acceptance. The emitted Raw root still undergoes
+ordinary native checking.
+
+```qli
+pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    qmatch(s, q) { 1 => global_phase_eighth, 0 => h }
+}
+```
+
+Nominal selector execution and the selected specialization projection remain
+explicitly unsupported. Supporting the full twelve-joined-bit/64-label boundary
+still requires its checked restriction and arm-binding extension; the small
+slice does not replace that requirement. Common enum checks, native acceptance
+of a proposed circuit and conformance tests do not prove original-source
+preservation or enable ordinary nominal runtime. `qif` keeps its existing
+fixed `0`, then `1` syntax and access contract.
 
 ## One structured quantum result boundary
 
@@ -157,8 +207,8 @@ functions are not admitted. This applies to Unitary, Isometry and Observe bodies
 an observing effect does not authorize a hidden exit. Syntax refusals explain
 the final-expression alternative and retain the original token's byte span.
 Use explicit ordinary branches, admitted coherent control and finite folds
-under their own owner/effect rules; this chapter grants no unsupported
-`qmatch`, `qreturn` or `qtry` form.
+under their own owner/effect rules; `qmatch` retains the separate limits above.
+This chapter grants no `qreturn` or `qtry` form.
 
 For example, `unitary fn keep(q:Q<Bit>)->Q<Bit>{q}` has the structured result;
 replacing its body with `{return q}` is invalid. A final `if` whose arm returns
@@ -539,8 +589,8 @@ identifier positions formerly treated contextually by the sized parser:
 `permutation_by`, `phase_by`, `checked_op`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
 `controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `classical`, `basis`, `isometry`, `iso`, `unitary`,
 `observe`, `fn`, `let`, `if`, `else`, `qfor`, `do`, `pure`, `with_computed`,
-`apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
-`xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
+`apply_contract`, `adjoint`, `repeat_static`, `qif`, `qmatch`, `enum`, `struct`,
+`match`, `true`, `false`, `not`, `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
 `basis`, `observe` and `classical` immediately after `std::` as module names.
 
 `iso` remains reserved solely for the effect-prefix migration error described

@@ -15,6 +15,7 @@ mod function_contract;
 mod nominal;
 mod operations;
 mod primitives;
+mod quantum_match;
 mod record;
 mod runtime_transforms;
 mod scope;
@@ -1366,6 +1367,9 @@ impl Lowerer<'_, '_> {
                 };
                 self.named_transform(module, expr.span, function, count, input, env)
             }
+            ExprKind::QuantumMatch(selection) => {
+                self.quantum_match(module, expr.span, selection, env)
+            }
             ExprKind::QuantumIf {
                 control,
                 target,
@@ -1796,12 +1800,10 @@ impl Lowerer<'_, '_> {
             )?);
         };
         let Some(predicate) = self.compiler.basis.get(&key) else {
-            return Err(self.computed_refusal(
-                module,
-                function.span,
-                ErrorCode::TypeMismatch,
-                "predicate must be a classical function",
-            )?);
+            let (code, message) = self
+                .compiler
+                .missing_basis_reason(&key, "predicate must be a classical function");
+            return Err(self.computed_refusal(module, function.span, code, message)?);
         };
         let size = predicate
             .signature_size()

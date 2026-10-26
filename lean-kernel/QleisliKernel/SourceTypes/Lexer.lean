@@ -47,7 +47,7 @@ def identifier (s : String) : Bool :=
       "tensor_op","controlled_op","repeat_op","conjugate_op","pub","enum","struct",
       "classical","basis","isometry","iso","unitary","observe","fn","let","if","match",
       "else","do","pure","with_computed","apply_contract","adjoint","repeat_static",
-      "qif","qfor","true","false","not","xor","and","Unit","Bit","CBit","Q"].contains s
+      "qif","qmatch","qfor","true","false","not","xor","and","Unit","Bit","CBit","Q"].contains s
 
 private def characterAt (s : Scan) (pair : Char × Option Char) : Except String Scan := do
   let (c,next) := pair

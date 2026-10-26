@@ -887,3 +887,74 @@ Complete routine observer maps remain external exact references. Their compact
 fields do not reproduce full root-window checks; omitted compiled payloads are
 represented only by observed identities. Reading this history establishes no
 new theorem, guarantee or issue completion.
+
+### Rust qmatch and original-subject runtime preparation (#64/#195)
+
+The [fixed archive](ordinary-qmatch-runtime-first.tar.xz),
+[index](ordinary-qmatch-runtime-index.json) and
+[packaging observation](ordinary-qmatch-runtime-validation.json) retain nine
+terminal Rust validation windows and their separate first-source proposals.
+The existing inert content-addressed format preserves 192 selected records,
+including untouched desired `.qli` files, separately labelled translations,
+complete command streams and before/result records. It does not replay saved
+code or commands. Twenty-five records refer to eighteen unchanged production
+source files by exact immutable Git references; this is not a complete copy of
+each external packet.
+
+The first five Rust format-string errors remain separate from the repaired
+11-test common/parser run. Three expected recheck failures remain separate from
+the later fresh-original-request and retained-graph checks. Two Clippy style
+errors and the sandbox `ps` permission failure remain intact; a separate
+same-source normal run passed 565 library tests with two intentional ignores.
+The subsequent MSRV window passed all-target checking, 26 native, five table
+and 11 common tests. Those two windows precede coherent lowering and do not
+validate the later code by inheritance.
+
+The coherent slice preserves three first desired programs, separate executable
+translations, the original patch and its exact two-header-line repair. No raw
+saved `git apply` failure log was located; the conversation-observed failure is
+labelled as such, without reconstructed stdout/stderr. Its actual later native
+validation passed 15 library and seven integration tests. Three earlier Rust
+source versions were recovered later from saved sources and independently
+matched to contemporaneous hashes; they are not contemporaneous snapshots.
+Native executable hashes remain observed identities, without copied binaries
+or compilation/runtime attestation.
+
+The packaging record retains its then-pending installation status. The newer
+full-normal window is deliberately outside these nine records. Lean component
+full-01/02/03 and successors are separate, and none is silently included in the
+older 3,405-file ordinary-body archive. These bounded observations do not enable
+nominal runtime, complete the required twelve-bit/64-label qmatch route, prove
+original-source preservation or discharge #64/#195 or constitutional obligations.
+
+### Qmatch keyword before-repair comparison (#64)
+
+The [fixed archive](qmatch-keyword-before-first.tar.xz),
+[index](qmatch-keyword-before-index.json) and
+[derived observation](qmatch-keyword-before-validation.json) retain 46 complete
+original files as 44 inert members: 387,097 expanded bytes and 78,879 stored
+fixture bytes. They include all five original `.qli` / QIRF / carrier-request
+triples, the first repair proposal, the public Rust probe, complete command
+streams, observer source and plan, and immutable `9b6c1271` Lexer/test sources.
+Every original byte and mode is retained through the whole-file map.
+
+The actual before-repair probe reproduced the mismatch: two valid controls
+passed Rust parsing and the old native reader; reserved declaration, variant
+and field names failed Rust parsing but passed that reader. Their parser spans
+were respectively `9..15`, `17..23` and `19..25`. A successful probe exit records
+those discrepancies, not corrected behavior. Original predictions remain
+unchanged. This before-only record excludes later repair validation and a
+proof-identity refresh; its null after-repair fields remain historical facts.
+
+All five requests have zero physical wires, one retained zero-width owner, no
+operations and an exact 1x1 identity carrier map. The probe used the existing
+public `Kernel::check_carrier`; the final QLV3/QDV wire and raw native replies
+were not separately captured. This is not ordinary ADT execution, source-body
+preservation or a complete qmatch route.
+
+The two large observer Root inventories remain external exact path/byte/mode/hash
+references. Retained metrics replace only those maps by counts and canonical
+hashes. The observer recorded stable Root/native inputs but had no explicit
+external-input snapshots: probe sources and triples have post-run byte pins and
+command linkage, not an independently observed before/after source freeze. The
+passive tests use only retained bytes, never external paths or archived code.
