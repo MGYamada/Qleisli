@@ -1,0 +1,23 @@
+{
+  "format": "qleisli.resolution-recovery-retention",
+  "status": "bounded-component-passed-not-issue-complete",
+  "archive": {
+    "path": "resolution-recovery-first.tar.xz",
+    "bytes": 61876,
+    "sha256": "5fcd42c30f053b001c0e0aae3c2967b583c6525e943e2da7898c1709f53d040d"
+  },
+  "index": {
+    "path": "resolution-recovery-index.json",
+    "bytes": 71584,
+    "sha256": "e1b1f7906513c1e53a36e27c857db4326f0ec040ed4c9d1211092ee132180156"
+  },
+  "originals": 139,
+  "objects": 127,
+  "expanded_bytes": 473498,
+  "recovered_exact_hashes": {
+    "SourceSyntax": "b871d4d98b7f4c4bcbdebfe842d879245026f3334ac047ae620d05afdd9b7044",
+    "ResolutionRoute": "c8128f84ca9109d96601b5f469714fb86c3c17afbeec3eaea5f5a94fddf792c4",
+    "ResolutionQuery": "123fdb25fc6c78307b0b65dea34273a3a2628b1373d545e3d74830fdab1b87b8"
+  },
+  "remaining": "Original function sites, scanner/import-envelope provenance, full source evaluation, source-to-Raw/typed-runtime/QDV/owner/history integration, full qmatch scope and release/CI gates remain open. Prior missing 52/56-claim windows are not current reusable proof products."
+}

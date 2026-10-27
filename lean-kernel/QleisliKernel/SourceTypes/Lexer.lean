@@ -1,24 +1,10 @@
-import Std
+import QleisliKernel.Semantics.SourceSyntax
 
 /-! Bounded lexical data for original finite-type declarations. Comments cannot
 provide declarations; words are ASCII and original source bytes remain separate.
 This is not a complete source-language checker or source-preservation theorem.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes
-
-/-- Half-open UTF-8 byte range in the retained, unnormalized source. -/
-structure SourceSpan where
-  startByte : Nat
-  endByte : Nat
-  deriving BEq, DecidableEq, Repr
-
-/-- The same independent token stream, retaining its original byte occurrence. -/
-structure LocatedToken where
-  text : String
-  span : SourceSpan
-  deriving BEq, DecidableEq, Repr
-
-deriving instance ReflBEq, LawfulBEq for SourceSpan, LocatedToken
 
 private structure Scan where
   byte : Nat := 0

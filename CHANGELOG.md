@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that successful original reference resolution retains the exact supplied
+  query, every import edge, visibility guard and visited original binding.
+  Preserve recovered first proof sources and fresh failed/repaired checks.
+  Source-site authentication and ordinary ADT execution remain unfinished.
 - Reserve `qmatch` consistently in the independent native type reader and Rust
   grammar, including declaration, variant and field names. Preserve the original
   five zero-wire requests and observed parser/native discrepancies separately
