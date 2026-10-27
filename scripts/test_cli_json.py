@@ -247,7 +247,8 @@ class JsonCliTests(unittest.TestCase):
         artifact = self.root / "artifact.json"
         artifact_scope = {
             "checker_path": self.checker_path(), "checker_identity": "unpinned",
-            "request_checked": False, "source_preservation_verified": False,
+            "request_checked": False, "ordinary_result_checked": False,
+            "source_preservation_verified": False,
         }
         self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"],
                          {"path": str(artifact), **artifact_scope})

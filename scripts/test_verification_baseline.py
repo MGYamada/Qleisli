@@ -188,6 +188,7 @@ def source_comparisons(binary):
     expected_scope = dict(
         checker_path=str(Path(os.environ['QLEISLI_KERNEL']).resolve()),
         checker_identity='unpinned', request_checked=False,
+        ordinary_result_checked=False,
         source_preservation_verified=False,
     )
     from observation_sources import component
