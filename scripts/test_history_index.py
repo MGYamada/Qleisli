@@ -1,4 +1,4 @@
-"""Container compatibility/refusals only; never execute archived source.
+"""Inert container compatibility and history retention; never execute saved code.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 import gzip
@@ -122,6 +122,101 @@ class HistoryIndexContainerTests(unittest.TestCase):
         (self.root / 'history.tar.xz').write_bytes(self.archive)
         with self.assertRaisesRegex(AssertionError, 'historical bytes changed'):
             self.read('index.json.gz', self.sha(stored), index_gzip=pins)
+
+
+class QforReferenceFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/reference-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/reference-first-index.json"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/reference-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/qfor-boundary-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'reference-first-index.json', 'reference-first.tar.xz',
+                'abedabfc40d871ab0690b1ce462df38c9a1bd2e1a76517652ad453e768c52ea5',
+                17852, 'e8c057b15ce7aa7939ef17e859b0924a93bc742bed0e684a0676bb30e81e66ce',
+                177485)
+        cls.index = json.loads((cls.root / 'reference-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_sources_and_frozen_reference_contexts_remain_exact(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (143, 62))
+        for row in self.index['original_records'].values():
+            blob = self.data[row['record']]
+            self.assertEqual((len(blob), hashlib.sha256(blob).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        packet = self.record('packet.json')
+        for name, row in packet['files'].items():
+            self.assertEqual(hashlib.sha256(self.raw(name)).hexdigest(), row['sha256'])
+        capture = self.record('first-capture.json')
+        self.assertEqual(capture['parent_history'], 'none')
+        self.assertEqual(capture['repairs_requested'], 0)
+        for cohort in ('current', 'historical'):
+            response = self.record(cohort + '-first-response.json')
+            report = self.record(cohort + '-isolation-report.json')
+            self.assertFalse(report['other_file_history_example_agent_or_compiler_output_consulted'])
+            self.assertFalse(report['workspace_files_changed'])
+            self.assertEqual(len(report['files_inspected']), 1)
+            for task, source in response.items():
+                name = cohort + '/' + task + '/main.qli'
+                original = self.raw('first/' + name)
+                self.assertEqual(original, source.encode())
+                self.assertEqual(hashlib.sha256(original).hexdigest(), capture['sources'][name])
+
+    def test_all_48_observations_and_independent_distributions_are_preserved(self):
+        report = self.record('observed-first/report.json')
+        self.assertEqual(report['status'], 'observed-stable')
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(report['before']['head'], '66326f2f74eddd7be988cfb5f08921271f83359b')
+        self.assertEqual(len(report['observations']), 48)
+        expected = {'ghz': {'000': .5, '111': .5},
+                    'arithmetic': {'00': .5, '11': .5}, 'qpe': {'11': 1.}}
+        successful_runs = []
+        for row in report['observations']:
+            prefix = '-'.join(row[key] for key in ('variant', 'task', 'route', 'action'))
+            for stream in ('stdout', 'stderr'):
+                raw = self.raw('observed-first/' + prefix + '.' + stream)
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), row[stream + '_sha256'])
+            document = json.loads(self.raw('observed-first/' + prefix + '.stdout'))
+            self.assertEqual(document, row['document'])
+            if row['action'] == 'run' and row['exit_code'] == 0:
+                successful_runs.append(row)
+                distribution = {}
+                for outcome in document['result']['distribution']:
+                    key = ''.join('1' if bit else '0' for bit in outcome['bits'])
+                    distribution[key] = distribution.get(key, 0.) + outcome['probability']
+                for key in distribution.keys() | expected[row['task']].keys():
+                    self.assertAlmostEqual(distribution.get(key, 0.),
+                                           expected[row['task']].get(key, 0.), places=10)
+        self.assertEqual(len(successful_runs), 12)
+
+    def test_observer_translations_are_separate_from_zero_author_repairs(self):
+        plan = self.record('observed-first/plan.json')
+        for name, identity in {**plan['originals'], **plan['derived_inputs']}.items():
+            self.assertEqual(hashlib.sha256(self.raw(name)).hexdigest(), identity)
+        self.assertEqual(plan['author_repairs'], 0)
+        self.assertEqual(len(plan['translations']), 9)
+        report = self.record('observed-first/report.json')
+        private = [row for row in report['observations'] if row['exit_code'] != 0
+                   and row['variant'] != 'historical-original']
+        retired = [row for row in report['observations'] if row['variant'] == 'historical-original']
+        self.assertEqual((len(private), len(retired)), (12, 12))
+        self.assertTrue(all(row['route'] == 'selected-raw' for row in private))
+        self.assertTrue(all(any(d['code'] == 'visibility' for d in row['document']['diagnostics'])
+                            for row in private))
+        self.assertTrue(all(row['exit_code'] != 0 for row in retired))
+        summary = self.record('SUMMARY.json')
+        self.assertEqual(summary['author_repairs'], {'current': 0, 'historical_surface': 0})
+        self.assertEqual(summary['first_successes'],
+                         {'current_project': 3, 'historical_surface_after_header_only_adapter': 3})
+        self.assertIn('No observed repair-rate advantage', summary['finding'])
+        self.assertIn('not historical compiler replay', summary['finding'])
 
 
 if __name__ == '__main__':

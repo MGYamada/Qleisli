@@ -1,0 +1,22 @@
+use std::state::init0;
+use std::gate::cnot;
+
+pub observe fn main() -> ((Bit, Bit), Bit) {
+    let a = h(init0());
+    let b = init0();
+    let c = init0();
+    let ((a, b), c) = qfor static k in 0..2 carry ((a, b), c) = ((a, b), c) {
+        let ((a, b), c) = if static k == 0 {
+            let (a, b) = cnot(a, b);
+            ((a, b), c)
+        } else {
+            let (a, c) = cnot(a, c);
+            ((a, b), c)
+        };
+        yield ((a, b), c);
+    };
+    let za = measure_z(a);
+    let zb = measure_z(b);
+    let zc = measure_z(c);
+    ((za, zb), zc)
+}

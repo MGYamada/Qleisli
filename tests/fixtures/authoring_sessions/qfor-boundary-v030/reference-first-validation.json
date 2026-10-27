@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.qfor-reference-first-retention",
+  "status": "bounded-empirical-comparison-observed-not-issue-complete",
+  "source_commit": "66326f2f74eddd7be988cfb5f08921271f83359b",
+  "archive": {
+    "path": "reference-first.tar.xz",
+    "bytes": 17852,
+    "sha256": "e8c057b15ce7aa7939ef17e859b0924a93bc742bed0e684a0676bb30e81e66ce"
+  },
+  "index": {
+    "path": "reference-first-index.json",
+    "bytes": 56285,
+    "sha256": "abedabfc40d871ab0690b1ce462df38c9a1bd2e1a76517652ad453e768c52ea5"
+  },
+  "originals": 143,
+  "objects": 62,
+  "expanded_bytes": 177485,
+  "summary": {
+    "kind": "bounded-isolated-reference-authoring-comparison",
+    "status": "observed-all-first-programs-pass-under-their-stated-grammar",
+    "configured_history": "fork_turns=none, same inherited parent model/settings; model build/seed not separately pinned",
+    "source_commit": "66326f2f74eddd7be988cfb5f08921271f83359b",
+    "first_programs": 6,
+    "author_repairs": {
+      "current": 0,
+      "historical_surface": 0
+    },
+    "first_successes": {
+      "current_project": 3,
+      "historical_surface_after_header_only_adapter": 3
+    },
+    "observations": 48,
+    "successful_checks": 12,
+    "successful_runs": 12,
+    "all_successful_distributions_match": true,
+    "retired_spelling_current_cli_refusals": 12,
+    "selected_private_entry_refusals": 12,
+    "observer_adapters": {
+      "historical_header": 3,
+      "selected_public_visibility": 6
+    },
+    "maximum_physical_qubits": 3,
+    "first_source_hashes": {
+      "current/ghz/main.qli": "ab2b411eb79a1035937bb93f2ee9ad71161a5a2c3d9ab3d2d45d0dda35b94b07",
+      "current/arithmetic/main.qli": "99c1e02154e10a461701660a345ede26b2da07d5b85406ff28327a76fd03de46",
+      "current/qpe/main.qli": "63a82c813e725911caae7239f731ece0844afe137566f9853c85d22bde68ed0f",
+      "historical/ghz/main.qli": "be722c6b4e3a31c2b231b5fcdfdd1fbecfe4da998e2f879f64db8d93ea7b8b5f",
+      "historical/arithmetic/main.qli": "c6f19f2483bc205598ee810eb737a7c794ed2b97702ac379eb7817ee91ffbfd3",
+      "historical/qpe/main.qli": "f9c01f93f2139099dee355ea1919f7684c6830ae7e8785ede697d696ba531cdb"
+    },
+    "finding": "No observed repair-rate advantage: both cohorts required zero author repairs in three tasks. This is a controlled surface-spelling comparison under current semantics, not historical compiler replay or a general model benchmark.",
+    "limits": "The selected public-root task precondition was not in the author prompt. Its separate exposure adapters are observer setup, not author mistakes/repairs. Configured fresh contexts and participant tool-use reports support isolation; exact provider model build/seed and independent tool transcripts were not recorded. Retained CLI identity is not fresh compilation attestation. No source-preservation theorem, new constitutional guarantee or Issue completion is implied by this observation alone."
+  },
+  "pending": "Current-head required CI/review and complete #194 acceptance audit remain separate. This observation is no general benchmark, historical compiler replay, source-preservation proof or new constitutional guarantee."
+}
