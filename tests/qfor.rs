@@ -1,5 +1,6 @@
 //! Independent small-system checks for explicit quantum-owner folds.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+// Fixture edition: "tests/fixtures/frontend_v030/qfor/reference-current/Qargo.toml".
 use qleisli::frontend::compile::ParsedProgram;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
