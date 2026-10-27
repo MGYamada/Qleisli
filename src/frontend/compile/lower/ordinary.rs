@@ -154,6 +154,8 @@ pub(super) fn accept(
     let request = Request {
         selection: if name.0 == "main" && name.1 == "main" {
             Selection::Project
+        } else if !decl.public {
+            Selection::Internal
         } else {
             Selection::Exported
         },

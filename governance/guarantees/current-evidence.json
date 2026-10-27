@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "890538d4e90cfaf6ba8725fac5234c4f20a4f43dff296335b91c2f69cab9e0b8",
+      "sha256": "3bae8983365ff4324e46eb565a04bedbcf7653b3f0dfd07d0c071a28feac23bc",
       "files": {
         "lean/Audit.lean": "e48603b0848cf2737e8368660af0a13a776ab3cdba2e7150ec468c268234d3f3",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -192,7 +192,7 @@
         "lean-kernel/Protocol/ExecutionView/CheckedEngineeringPureTensor.lean": "9172a660168ceeba283c0c67b976754f67b42a7014a731c45c7f2e452cff9d2d",
         "lean-kernel/Protocol/ExecutionView/CheckedFinite.lean": "0b574fd1b1e55dbf7b1664423907ffd9b3c9121b160ef9048998fb11fe2f68a1",
         "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean": "121713a329d118c160e50737ff94c93e830d8ddc8cd43cd5ebe24b60c5e98335",
-        "lean-kernel/Protocol/ExecutionView/CheckedOrdinaryRoot.lean": "09bd8ada103cc60ef1e0b63997c35046dbd9d0ddb970959f1ae002d52b5c0cfe",
+        "lean-kernel/Protocol/ExecutionView/CheckedOrdinaryRoot.lean": "8d98d0737a5642ef3f917a311a98349444216f0f5e4a8aefa1a8be14e67f5037",
         "lean-kernel/Protocol/ExecutionView/Contracts.lean": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
         "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean": "1dfa9cc648062143483ec5ef06faeab79538f59f67ccf4b2ce843ffde834201c",
         "lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean": "fabdd0a28a00405357b29530cf20cfc052f4b4ee642602f412b85ea910a58cac",
@@ -215,7 +215,7 @@
         "lean-kernel/Protocol/NativeContext.lean": "30f80ef21262ab21c5b127d58397bdc411c39efb6c0cfaaeb4da4d3d50290ef1",
         "lean-kernel/Protocol/NativeContract.lean": "4be18feace681f3d94a5c6c3dd58238d90ff910fb2086feedb953ba81274e377",
         "lean-kernel/Protocol/Observation.lean": "2b443801de48698dffd94de3223a21f5b39d93d319d2694a1ef966ddcc384605",
-        "lean-kernel/Protocol/OrdinaryRoot.lean": "051d45073a4ab8a2ceefbff971dee39aac122c464b5e6daf345a70aab3014e5a",
+        "lean-kernel/Protocol/OrdinaryRoot.lean": "d101e67c430730d2947ca1916785d92b4764fd6c98786f4825cc45b744315e47",
         "lean-kernel/Protocol/Product.lean": "9e84a1fbc1ed5b13c961bb7134092146b660b86cd30d26a5d713e981da5ec5cf",
         "lean-kernel/Protocol/Qirf.lean": "22396327be5425646fa9953602ce8edeb542d82159a7c39858062a1d65dd76f1",
         "lean-kernel/Protocol/Raw.lean": "fbfdf5daed8bfa93c102612c76d3ba216bd162beb4d2a3255303b8b1b0a08982",
@@ -356,7 +356,7 @@
         "lean-kernel/QleisliKernel/SourceTypes/NaturalPrepare.lean": "aaedc456d5724d397b380601d6ac848a88f8c7ec8092b909eef6efc54b2aad40",
         "lean-kernel/QleisliKernel/SourceTypes/NaturalSubstitute.lean": "42b2b41d6211752c8fb162c7ffffeaf3c246b13d470382d70489f6ec6f0e05ce",
         "lean-kernel/QleisliKernel/SourceTypes/NaturalSyntax.lean": "0a50b082e11cb0663244ffc9699bc6d98084193b2ea40f7da8d579aeaf7e9c7f",
-        "lean-kernel/QleisliKernel/SourceTypes/OrdinaryEntry.lean": "5b7c89f38ac9729afb65fcc7b4c49307ec39e1d74baf65dd1574d89074b70678",
+        "lean-kernel/QleisliKernel/SourceTypes/OrdinaryEntry.lean": "f759a2a2b84270dab85798ce3d3dac198503b44c101d5fb86fa2f967ce333a80",
         "lean-kernel/QleisliKernel/SourceTypes.lean": "f455e0bfe1b47ebbdd8d9ae020e1b4443e13caa779470abc6bbd33955de6ba9e",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
@@ -384,12 +384,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "4c6bf70294b439fc6670d7dc88b49c16a5cc1661b2561def02670a1edace14d0",
+      "lean/schema-registry.json": "bb7529344583bfe08dff7d1d84f0ccb7d7db7866b21efe0fb90883814448f3b3",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "47348dec212c6dc2dd0e359ee8d5c4654ede4665df1f7aec4d9924a7101352a8"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "7e3096808b4d60d5aec9f867c121e3e5289f362804bc57782a3cf32b898ac0a8"
     },
     "commands": [
       {
@@ -402,7 +402,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 19.3813307920027,
+        "seconds": 19.567801416000293,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -416,7 +416,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 64.83534137500101,
+        "seconds": 62.187299000004714,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -459,7 +459,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 3.4647517500015965,
+      "seconds": 3.5237855830055196,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -475,7 +475,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "890538d4e90cfaf6ba8725fac5234c4f20a4f43dff296335b91c2f69cab9e0b8",
+    "source_revision_sha256": "3bae8983365ff4324e46eb565a04bedbcf7653b3f0dfd07d0c071a28feac23bc",
     "command": {
       "argv": [
         "lake",

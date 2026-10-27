@@ -59,6 +59,7 @@ def decode (value : Json) : WorkM Qirf.OrdinaryRoot.Request := do
   let selection ← adapt (do match ← (← get "selection").getStr? with
     | "project" => pure SourceTypes.OrdinaryEntry.Selection.project
     | "exported" => pure .exported
+    | "internal" => pure .internal
     | _ => throw "unknown ordinary entry selection")
   let owner ← adapt ((← adapt (get "module")).getStr?)
   let name ← adapt ((← adapt (get "declaration")).getStr?)

@@ -30,3 +30,26 @@ Historical experiment commands are never current validation entry points.
 General ordinary inputs/functions, selected Raw, quantum nominal owners, full
 qmatch and original source/runtime/target preservation remain unfinished.
 This archive closes no Issue and admits no guarantee, release or publication.
+
+## Review and complete-input experiments, 2026-10-28
+
+The separate [review archive](review-first.tar.xz),
+[index](review-first-index.json) and [summary](review-first-validation.json)
+retain four original private-helper/control projects and all eight actual CLI
+observations. Called, unused and empty-record private helpers refuse; the
+public control succeeds. Originals are never publicized to repair visibility.
+Three original active Python consumers and the complete decoded hosted failure
+retain the missing result-scope-field expectation; the separate local CLI
+reproduction has no separately captured first full streams.
+
+The same passive packet retains a separate complete ordinary-input-family
+candidate, its first test-driver syntax mistakes and a formatting-only repair.
+All twelve repaired controls pass, including a bad value only at the last
+canonical input, erasure of a zero-width argument and an invalid zero-probability
+hidden result. A compiled audit covers 373 declarations, including private and
+generated helpers, with no project axiom or execution replacement. Generic
+proofs connect every canonical input to its actual reconstruction and every
+hidden history to typed storage. Retained imports, component proofs and
+experiments do not enable a general input runtime or prove source/body/runtime
+preservation. Saved commands and modules remain inert; current production
+validation and final Issue criteria are separate.

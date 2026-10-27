@@ -36,7 +36,8 @@ def description (checked : Checked) : Finite.WorkM Value := do
   let request := checked.request
   let stored ← storage 33 request.storage
   return record "finite-ordinary-root-v1" [graph,
-    .text (match request.selection with | .project => "project" | .exported => "exported"),
+    .text (match request.selection with
+      | .project => "project" | .exported => "exported" | .internal => "internal"),
     .text request.moduleName,.text request.declarationName,
     .array (request.basis.map CheckedCarrier.atom),stored,
     .natural (match request.publicEffect with | .unitary => 0 | .iso => 1 | .observe => 2)]

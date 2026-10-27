@@ -231,6 +231,62 @@ fn stale_actual_metadata_and_wrong_scope_refuse_without_fallback() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn internal_declaration_selection_keeps_original_visibility_and_entry_category() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for (name, public, allowed) in [
+        ("helper", false, Selection::Internal),
+        ("helper", true, Selection::Exported),
+        ("main", false, Selection::Project),
+    ] {
+        let source = format!(
+            "enum E {{A}} {}fn {name}()->E{{E::A}}",
+            if public { "pub " } else { "" }
+        );
+        let origin = Arc::new(Origin {
+            module: "main".into(),
+            declaration: "E".into(),
+            source: source.clone(),
+        });
+        let raw = RawProgram {
+            quantum_inputs: vec![],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let proposed = Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &[("main".into(), source)],
+        )
+        .unwrap();
+        for selection in [Selection::Project, Selection::Exported, Selection::Internal] {
+            let request = Request {
+                selection,
+                module: "main".into(),
+                declaration: name.into(),
+                basis: vec![Atom::Enum(Arc::clone(&origin), vec!["A".into()])],
+                storage: Storage::Enum(Arc::clone(&origin), vec![]),
+                public_effect: Effect::Unitary,
+            };
+            let actual =
+                kernel.check_ordinary_root(proposed.artifact(), &request.encode().unwrap());
+            assert_eq!(actual.is_ok(), selection == allowed, "{name} {selection:?}");
+            if let Ok(accepted) = actual {
+                assert_eq!(accepted.program().ordinary_result().unwrap(), &request);
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn strict_request_and_original_output_structure_cannot_be_erased() {
     use crate::interchange::json::{self, Value};
     let kernel = Kernel::selected(Edition::E2026).unwrap();

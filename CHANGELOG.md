@@ -12,6 +12,9 @@ development milestones from the scope of their evidence.
   execution graph. Preserve zero-width nodes and conservative public effects.
   Selected Raw, ordinary input domains, quantum nominal owners, full qmatch and
   source-preservation proofs remain unfinished; #64 is not complete.
+- Check private closed nominal helpers through the same typed native root gate,
+  retaining their original visibility and distinct internal selection. Keep
+  exported roots public and private project main selection separate.
 - Retain an isolated Reference-only `qfor` authoring comparison: six first
   GHZ/arithmetic/phase-kickback sources and 48 actual observations. Both current
   and historical-surface cohorts needed zero author repairs in this bounded

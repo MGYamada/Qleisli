@@ -12,6 +12,7 @@ open Semantics.FiniteCarrier Semantics.Raw Finite
 inductive Selection where
   | project
   | exported
+  | internal
   deriving BEq, DecidableEq, Repr
 
 structure Header where
@@ -97,9 +98,17 @@ structure Checked (sources : Sources) (owner name : String) where
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
+def selectionAllowed {sources : Sources} {owner name : String}
+    (selection : Selection) (original : Original sources owner name) : Bool :=
+  match selection with
+  | .project => owner == "main" && name == "main" && !original.parsedHeader.ordinaryOnly
+  | .exported => original.declaration.isPublic
+  | .internal => !original.declaration.isPublic && !(owner == "main" && name == "main")
+
 /-- Project selection is the literal main::main entry, where private main is
-allowed. Selecting another public root requires exported visibility. This
-reader currently supports closed, zero-parameter, ordinary-result entries. -/
+allowed. Exported roots require public visibility; internal checking requires
+a private non-entry declaration and does not change source lookup visibility.
+All selections use this same closed ordinary-result reader and root gate. -/
 def read (sources : Sources) (selection : Selection) (owner name : String) :
     WorkM (Checked sources owner name) := do
   guard (sources.size ≤ 128) .limit
@@ -107,9 +116,7 @@ def read (sources : Sources) (selection : Selection) (owner name : String) :
   guard (bytes ≤ 1048576) .limit
   exactWork (Exact.charge (512*(bytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
   let original ← adapt (original sources owner name)
-  match selection with
-  | .project => guard (owner == "main" && name == "main" && !original.parsedHeader.ordinaryOnly) .request
-  | .exported => guard original.declaration.isPublic .request
+  guard (selectionAllowed selection original) .request
   let basis ← typeExpression sources owner (original.parsedHeader.resultTokens.map (·.text))
   let _ ← FiniteCarrier.read basis
   return ⟨original,basis⟩
@@ -121,6 +128,21 @@ theorem Checked.bound {sources owner name} (checked : Checked sources owner name
 theorem Checked.byte_envelope {sources owner name} (checked : Checked sources owner name) :
     LocatedFacts.OrderedSlices checked.original.source.toUTF8 0 (envelope checked.original.occurrence) :=
   checked.original.bytes
+
+theorem read_selection (sources : Sources) (selection : Selection) (owner name : String)
+    (checked : Checked sources owner name) (work left : Nat)
+    (ok : (read sources selection owner name).run work = (.ok checked,left)) :
+    selectionAllowed selection checked.original = true := by
+  unfold read at ok
+  obtain ⟨_,a,_,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,b,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,c,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨original,d,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,e,allowed,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨basis,f,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,g,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ h
+  exact (guard_success _ _ _ _ allowed).1
 
 theorem read_result (sources : Sources) (selection : Selection) (owner name : String)
     (checked : Checked sources owner name) (work left : Nat)

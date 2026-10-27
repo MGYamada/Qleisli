@@ -166,6 +166,9 @@ result slice. Lean freshly reads the original selected declaration's result and
 public effect, reuses the original Raw root checks and reconstructs every exact
 hidden history. Its independent ordinary-value reader checks the complete
 nominal storage tree against those histories and the exact actual output map.
+Internal declaration checking requires an original private non-entry function;
+exported selection still requires public visibility. Both use this same root
+gate and retain their exact selection in QDV; checking does not export a source name.
 QLV3/QDV compares that same graph, selected entry, type, storage and effect with
 the retained Rust objects. No sampled or normalized history subset supplies
 acceptance. The program retains the typed result; untyped rechecking refuses.

@@ -26,6 +26,47 @@ pub observe fn main() -> Result {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn called_and_unused_private_nominal_helpers_are_checked_without_exporting_them() {
+    for (source, expected) in [
+        (
+            "enum E { A } fn helper()->E{E::A} observe fn main()->E{helper()}",
+            vec![],
+        ),
+        (
+            "enum E { A } fn helper()->E{E::A} observe fn main()->Bit{0}",
+            vec![false],
+        ),
+        (
+            "struct Empty {} fn helper()->Empty{Empty{}} observe fn main()->Empty{helper()}",
+            vec![],
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        check_project(&root.0).unwrap();
+        let program = compile_project(&root.0).unwrap();
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual, std::collections::BTreeMap::from([(expected, 1.0)]));
+        let parsed = qleisli::frontend::compile::ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            std::collections::BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap();
+        assert_eq!(
+            parsed
+                .instantiate("main::helper", Default::default(), Default::default())
+                .unwrap_err()
+                .code(),
+            "visibility",
+            "internal checking must not export the private source declaration"
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn actual_source_record_enum_and_match_keep_correlated_result_storage() {
     let root = SourceRoot::new(FIRST);
     check_project(&root.0).unwrap();

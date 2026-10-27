@@ -12,6 +12,8 @@ use crate::ir::{ClassicalId, Effect};
 pub enum Selection {
     Project,
     Exported,
+    /// Check a private non-entry declaration without exporting its source name.
+    Internal,
 }
 
 impl Selection {
@@ -19,6 +21,7 @@ impl Selection {
         match self {
             Self::Project => "project",
             Self::Exported => "exported",
+            Self::Internal => "internal",
         }
     }
 }
@@ -267,6 +270,7 @@ impl Request {
             selection: match value.field("selection")?.text()? {
                 "project" => Selection::Project,
                 "exported" => Selection::Exported,
+                "internal" => Selection::Internal,
                 _ => return Err(Error::format("unknown ordinary entry selection")),
             },
             module: value.field("module")?.text()?.into(),
