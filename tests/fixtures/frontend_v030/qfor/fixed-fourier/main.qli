@@ -1,0 +1,17 @@
+// Informed fixed-F4 authoring probe, adapted from the existing std::transform::qft2 sequence.
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::gate::s;
+unitary fn bit_identity(q: Q<Bit>) -> Q<Bit> { q }
+
+pub unitary fn fourier2(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let pair = qfor static stage in 0..2 carry state = (a,b) {
+        let (a,b) = state;
+        yield if static stage == 0 {
+            let b = h(b);
+            controlled(s)(a,b)
+        } else { (h(a),b) };
+    };
+    let (a,b) = pair;
+    join(b,a)
+}

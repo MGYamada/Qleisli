@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.qfor-fixed-fourier-first-retention",
+  "status": "informed-fixed-size-observation-not-issue-complete",
+  "archive": {
+    "path": "fixed-fourier-first.tar.xz",
+    "bytes": 4920,
+    "sha256": "faf3c30829b3d082862d14b03f063e1da241971d543e139520caa1ce55bfddad"
+  },
+  "index": {
+    "path": "fixed-fourier-first-index.json",
+    "bytes": 6893,
+    "sha256": "7e1739b3848cc3ec3d1f6ea33662ba802d8a7093ad21077384c00f576fb7afe1"
+  },
+  "originals": 15,
+  "objects": 12,
+  "expanded_bytes": 16175,
+  "first_source_sha256": "806971257dd05c9f48c043a9bce0b023436a81f7c4796df1bfc027625913417e",
+  "repaired_source_sha256": "695ae2029b9a2405e8a8310d2df5352d9b326d0b951ab513502b4d94910ebdcf",
+  "observed": {
+    "kind": "informed translation from existing fixed std::transform::qft2",
+    "qubits": 2,
+    "first_exit_code": 101,
+    "first_failure": "selected preparation rejects qif before Raw/native acceptance",
+    "separate_repairs": 1,
+    "repair": "Replace only qif operation selection with existing controlled(s).",
+    "repaired_exit_code": 0,
+    "exact_requirement": "All sixteen F4[y,x] = i^(x*y)/2 coefficients and Gram checked through fresh native pure-leaf checking; global minus phase refused."
+  },
+  "limits": "First full combined build output was returned in the conversation but was not separately saved as stdout/stderr. The original source, driver and actual diagnostic summary remain unchanged; the second observation retains full streams and before/after identities. This informed one-repair study is separate from the Reference-only zero-repair comparison, generic QFT delivery, source preservation and source-to-binary attestation. Current required CI/review and the full Issue audit remain separate."
+}

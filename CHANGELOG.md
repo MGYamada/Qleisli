@@ -16,6 +16,10 @@ development milestones from the scope of their evidence.
   GHZ/arithmetic/phase-kickback sources and 48 actual observations. Both current
   and historical-surface cohorts needed zero author repairs in this bounded
   sample; preserve observer-only grammar/visibility translations and limits.
+- Preserve a separate informed fixed two-qubit Fourier fold's first refusal
+  and one repaired source. Check all sixteen exact F4 coefficients through the
+  native pure-leaf boundary, rejecting wrong phase and output axes. This keeps
+  fixed-QFT conformance separate from the excluded generic-QFT work.
 - Prove that successful original reference resolution retains the exact supplied
   query, every import edge, visibility guard and visited original binding.
   Preserve recovered first proof sources and fresh failed/repaired checks.

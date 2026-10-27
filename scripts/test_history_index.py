@@ -219,5 +219,60 @@ class QforReferenceFirstHistory(unittest.TestCase):
         self.assertIn('not historical compiler replay', summary['finding'])
 
 
+class QforFixedFourierFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first-index.json"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/qfor-boundary-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'fixed-fourier-first-index.json', 'fixed-fourier-first.tar.xz',
+                '7e1739b3848cc3ec3d1f6ea33662ba802d8a7093ad21077384c00f576fb7afe1',
+                4920, 'faf3c30829b3d082862d14b03f063e1da241971d543e139520caa1ce55bfddad',
+                16175)
+        cls.index = json.loads((cls.root / 'fixed-fourier-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_refusal_and_separate_repair_are_preserved(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (15, 12))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        first, repaired = self.raw('first/main.qli'), self.raw('attempt02/main.qli')
+        self.assertEqual(repaired, first.replace(
+            b'qif(a,b) { 0 => bit_identity, 1 => s }', b'controlled(s)(a,b)'))
+        maintained = history.ROOT / 'tests/fixtures/frontend_v030/qfor/fixed-fourier/main.qli'
+        self.assertEqual(maintained.read_bytes(), repaired)
+        failure = self.record('first-observation-summary.json')
+        self.assertEqual((failure['exit_code'], failure['code']), (101, 'unsupported'))
+        source = first.decode()
+        self.assertEqual(source[failure['span']['start']:failure['span']['end']],
+                         failure['original_slice'])
+        self.assertEqual(hashlib.sha256(first).hexdigest(), failure['source_sha256'])
+        self.assertIn('not originally captured as separate streams', failure['scope'])
+
+    def test_repaired_observation_retains_actual_exact_check_and_limits(self):
+        report = self.record('attempt02-observation.json')
+        self.assertEqual(report['exit_code'], 0)
+        self.assertEqual(report['before'], report['after'])
+        for suffix in ('attempt02/main.qli', 'driver02/src/main.rs'):
+            identity = next(value for path, value in report['before'].items()
+                            if path.endswith('/' + suffix))
+            self.assertEqual(hashlib.sha256(self.raw(suffix)).hexdigest(), identity)
+        self.assertIn(b'all16 exact coefficients and Gram checked', self.raw('attempt02.stdout'))
+        self.assertIn(b'global phase counterexample refused', self.raw('attempt02.stdout'))
+        plan = self.record('first-plan.json')
+        self.assertEqual(plan['authored_qubits'], 2)
+        self.assertIn('not a new isolated or zero-shot comparison', plan['kind'])
+
+
 if __name__ == '__main__':
     unittest.main()
