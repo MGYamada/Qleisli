@@ -434,7 +434,7 @@ fn record_enum_descendants_refuse_wrong_kind_and_empty_nominal_domain() {
 }
 
 #[test]
-fn record_common_checks_and_all_module_native_gates_stay_closed() {
+fn record_common_checks_retain_full_preparation_and_nominal_table_refusal() {
     for text in [
         "struct P{bit:Bit} fn main()->P{P{}}",
         "struct P{bit:Bit} fn main()->P{P{bit:0,bit:1}}",
@@ -447,18 +447,22 @@ fn record_common_checks_and_all_module_native_gates_stay_closed() {
         assert!(prepare_untrusted_source_test(Path::new("main.qli"), &project(text)).is_err());
     }
     for text in [RECORD_FIRST, "struct Dormant{} fn main()->Bit{0}"] {
-        let error = prepare_original_source(Path::new("main.qli"), &project(text))
-            .err()
-            .expect("public gate");
-        assert_eq!(error.code, ErrorCode::Unsupported);
-        assert!(error.message.contains("typed native transport"));
+        let original = project(text);
+        let prepared = prepare_original_source(Path::new("main.qli"), &original).unwrap();
+        assert!(!prepared.checked.nominals.is_empty());
     }
     let mut imported = project("fn main()->Bit{0}");
     imported.modules.insert(
         "hidden".into(),
         source_module("hidden", "struct Hidden{}", ModuleOrigin::Local),
     );
-    assert!(prepare_original_source(Path::new("main.qli"), &imported).is_err());
+    assert!(
+        !prepare_original_source(Path::new("main.qli"), &imported)
+            .unwrap()
+            .checked
+            .nominals
+            .is_empty()
+    );
     let text = "struct P{bit:Bit} classical fn read(p:P)->Bit{p.bit}";
     let project = project(text);
     let mut compiler = untrusted_compiler(&project);

@@ -6,6 +6,7 @@
 
 mod binding;
 mod carrier;
+mod ordinary_root;
 mod reporting;
 mod runtime;
 
@@ -146,6 +147,7 @@ impl Prepared {
                 source_instrument_calls: Arc::from([]),
                 source_pure_equations: Arc::from([]),
                 source_computed_normalizations: Arc::from([]),
+                ordinary_result: None,
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -557,13 +559,30 @@ pub struct AcceptedProgram {
     // to protected diagonal use. Native decisions precede attachment; this is
     // neither execution input nor a whole-source preservation certificate.
     source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
+    // Actual typed objects compared with Lean's fresh decoding, retained by all
+    // clones and execution. This is not an arbitrary source-meaning contract.
+    ordinary_result: Option<Arc<super::ordinary_root::Request>>,
 }
 impl AcceptedProgram {
+    pub fn ordinary_result(&self) -> Option<&super::ordinary_root::Request> {
+        self.ordinary_result.as_deref()
+    }
     pub fn edition(&self) -> Edition {
         self.native.edition()
     }
     pub fn artifact(&self) -> &[u8] {
         self.native.artifact()
+    }
+    /// Portable artifacts cannot silently drop the internal typed-result frame.
+    /// `artifact()` remains inspection of the original untrusted subject bytes.
+    pub fn portable_artifact(&self) -> Result<&[u8]> {
+        if self.ordinary_result.is_some() {
+            return Err(Error::new(
+                "unsupported",
+                "ordinary result export requires its typed artifact/request transport",
+            ));
+        }
+        Ok(self.artifact())
     }
     pub fn request(&self) -> Option<&[u8]> {
         self.native.request()

@@ -35,7 +35,8 @@ class JsonCliTests(unittest.TestCase):
         })
         self.assertEqual(result["checker_paths"], [self.checker_path()])
         self.assertEqual(result["checker_identity"], "unpinned")
-        self.assertEqual(result["entry"], {"present": True, "request_checked": False})
+        self.assertEqual(result["entry"], {"present": True, "request_checked": False,
+                                         "ordinary_result_checked": False})
         self.assertIs(result["source_preservation_verified"], False)
         roots = result["concrete_ir_roots"]
         self.assertEqual(set(roots), {"local", "bundled"})

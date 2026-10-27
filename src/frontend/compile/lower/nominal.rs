@@ -94,6 +94,7 @@ impl Lowerer<'_, '_> {
         value: &VariantValue,
     ) -> Result<Value, CompileError> {
         let (ty, ordinal) = self.enum_label(module, value)?;
+        self.note_nominal(&ty, module, span)?;
         let width = ty
             .basis_width()
             .filter(|width| *width <= MAX_BITS as u32)

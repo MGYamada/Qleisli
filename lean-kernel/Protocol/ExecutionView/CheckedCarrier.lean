@@ -14,10 +14,10 @@ abbrev Checked := Protocol.Carrier.Checked
 
 private def record (tag : String) (fields : List Value) : Value := .array (.text tag :: fields)
 
-private def origin (value : Origin) : Value :=
+def origin (value : Origin) : Value :=
   record "origin" [.text value.moduleName,.text value.declarationName,.text value.source]
 
-private def atom : Atom → Value
+def atom : Atom → Value
   | .unit => record "unit" []
   | .bit => record "bit" []
   | .bits width => record "bits" [.natural width]

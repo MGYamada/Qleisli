@@ -61,6 +61,7 @@ fn project(text: &str) -> Project {
 
 fn lowerer<'c, 'p>(compiler: &'c mut Compiler<'p>) -> Lowerer<'c, 'p> {
     Lowerer {
+        nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
@@ -338,28 +339,25 @@ fn finite_table_refuses_nominal_domain_before_enumerating_spare_tag() {
 }
 
 #[test]
-fn production_gate_still_refuses_reachable_intermediate_and_dormant_nominals() {
+fn preparation_retains_reachable_intermediate_and_dormant_nominals_without_native_authority() {
     for text in [
         FIRST,
         "enum Tri { A, B, C } fn dormant() -> Tri { Tri::A } fn main() -> Bit { 0 }",
     ] {
         let project = project(text);
-        let error = prepare_original_source(Path::new("main.qli"), &project)
-            .err()
-            .expect("global production gate");
-        assert_eq!(error.code, ErrorCode::Unsupported);
-        assert!(error.message.contains("typed native transport"));
+        let prepared = prepare_original_source(Path::new("main.qli"), &project).unwrap();
+        assert!(!prepared.checked.nominals.is_empty());
     }
     let mut imported = project("fn main() -> Bit { 0 }");
     imported.modules.insert(
         "hidden".into(),
         source_module("hidden", "enum Hidden { A, B, C }", ModuleOrigin::Local),
     );
-    let error = prepare_original_source(Path::new("main.qli"), &imported)
-        .err()
-        .expect("all retained modules are gated");
-    assert_eq!(error.code, ErrorCode::Unsupported);
-    assert!(error.message.contains("typed native transport"));
+    let prepared = prepare_original_source(Path::new("main.qli"), &imported).unwrap();
+    assert!(
+        !prepared.checked.nominals.is_empty(),
+        "unused original type is retained"
+    );
 }
 
 #[test]

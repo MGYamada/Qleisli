@@ -32,12 +32,13 @@ pub(super) fn project_json(report: &ProjectCheckReport) -> Result<String, Diagno
         .join(",");
     let entry_request = report.entry_request_checked();
     Ok(format!(
-        "{{\"checker_paths\":[{paths}],\"checker_identity\":\"unpinned\",\"native_decisions\":{{\"count\":{},\"requests_checked\":{},\"complete\":{}}},\"entry\":{{\"present\":{},\"request_checked\":{}}},\"concrete_ir_roots\":{{\"local\":{},\"bundled\":{}}},\"source_preservation_verified\":false}}",
+        "{{\"checker_paths\":[{paths}],\"checker_identity\":\"unpinned\",\"native_decisions\":{{\"count\":{},\"requests_checked\":{},\"complete\":{}}},\"entry\":{{\"present\":{},\"request_checked\":{},\"ordinary_result_checked\":{}}},\"concrete_ir_roots\":{{\"local\":{},\"bundled\":{}}},\"source_preservation_verified\":false}}",
         native.decisions(),
         native.requests_checked(),
         native.complete(),
         entry_request.is_some(),
         entry_request.map_or_else(|| "null".into(), |checked| checked.to_string()),
+        report.entry_ordinary_result_checked(),
         report.concrete_local_roots(),
         report.concrete_bundled_roots(),
     ))
@@ -59,7 +60,7 @@ pub(super) fn project_text(root: &Path, report: &ProjectCheckReport) -> String {
     writeln!(text, "checker identity: unpinned").unwrap();
     writeln!(
         text,
-        "native decisions: {}; independent requests checked: {}",
+        "native decisions: {}; native requests checked: {}",
         native.decisions(),
         native.requests_checked(),
     )
@@ -73,6 +74,9 @@ pub(super) fn project_text(root: &Path, report: &ProjectCheckReport) -> String {
         Some(checked) => writeln!(text, "entry request checked: {checked}").unwrap(),
         None => text.push_str("entry: absent; entry request checked: not applicable\n"),
     }
+    if report.entry_ordinary_result_checked() {
+        text.push_str("entry ordinary result: original declared type, classical storage order and all hidden histories checked; no external algorithm specification\n");
+    }
     text.push_str("source preservation: not proved\n");
     text
 }
@@ -82,17 +86,21 @@ pub(super) fn project_text(root: &Path, report: &ProjectCheckReport) -> String {
 pub(super) struct ArtifactReport {
     checker: PathBuf,
     requested: bool,
+    ordinary_result: bool,
 }
 
 impl ArtifactReport {
     pub(super) fn new(program: &qleisli::AcceptedProgram) -> Self {
-        Self::from_checker(program.checker(), program.request().is_some())
+        let mut report = Self::from_checker(program.checker(), program.request().is_some());
+        report.ordinary_result = program.ordinary_result().is_some();
+        report
     }
 
     pub(super) fn from_checker(checker: &Path, requested: bool) -> Self {
         Self {
             checker: checker.to_owned(),
             requested,
+            ordinary_result: false,
         }
     }
 
@@ -107,9 +115,10 @@ impl ArtifactReport {
 
     pub(super) fn json_fields(&self) -> Result<String, Diagnostic> {
         Ok(format!(
-            "\"checker_path\":{},\"checker_identity\":\"unpinned\",\"request_checked\":{},\"source_preservation_verified\":false",
+            "\"checker_path\":{},\"checker_identity\":\"unpinned\",\"request_checked\":{},\"ordinary_result_checked\":{},\"source_preservation_verified\":false",
             quoted(utf8_path(&self.checker)?),
             self.requested,
+            self.ordinary_result,
         ))
     }
 
@@ -122,6 +131,9 @@ impl ArtifactReport {
         writeln!(text, "checker: {}", path_text(&self.checker)).unwrap();
         text.push_str("checker identity: unpinned\n");
         writeln!(text, "artifact root request checked: {}", self.requested).unwrap();
+        if self.ordinary_result {
+            text.push_str("ordinary result: original declared type, classical storage order and all hidden histories checked; no external algorithm specification\n");
+        }
         text.push_str("source preservation: not proved\n");
         text
     }
@@ -146,6 +158,7 @@ mod tests {
         let report = ArtifactReport {
             checker: PathBuf::from("/ordinary/checker"),
             requested: false,
+            ordinary_result: false,
         };
         let text = report.text(Some("artifact\nartifact root request checked: true\n.qirf"));
         assert!(text.contains("artifact\\nartifact root request checked: true\\n.qirf"));
@@ -165,6 +178,7 @@ mod tests {
         let report = ArtifactReport {
             checker: checker.clone(),
             requested: false,
+            ordinary_result: false,
         };
         assert_eq!(path_text(&checker), format!("{checker:?}"));
         assert_eq!(report.validate_json().unwrap_err().code, "project");

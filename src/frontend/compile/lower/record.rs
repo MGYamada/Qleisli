@@ -217,6 +217,7 @@ impl Lowerer<'_, '_> {
         evaluate: fn(&mut Self, &str, &E, &mut Env) -> Result<Value, CompileError>,
     ) -> Result<Value, CompileError> {
         let ty = self.record_type(module, &record.type_name)?;
+        self.note_nominal(&ty, module, span)?;
         let Kind::Nominal(nominal) = &ty.kind else {
             return Err(self.error(
                 module,

@@ -110,7 +110,7 @@ pub(super) fn execute(
             // installing an artifact whose success report cannot be rendered.
             report.validate_json()?;
         }
-        write_new(output, program.artifact())?;
+        write_new(output, program.portable_artifact()?)?;
         Ok(Success::Emitted(label.into(), report))
     } else {
         let kernel = options.kernel(options.requested_edition()?)?;

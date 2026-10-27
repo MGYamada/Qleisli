@@ -16,6 +16,8 @@ mod projection;
 mod qpe;
 mod raw;
 
+pub(in crate::frontend) use basis_binding::carrier_description_budgeted;
+
 use super::resolve::{DefId, Failure, FailureKind};
 use super::source::{self, ParsePolicy, Source, SourceCollection};
 use std::collections::BTreeMap;

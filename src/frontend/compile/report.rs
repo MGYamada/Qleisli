@@ -10,6 +10,7 @@ use crate::interchange::native::NativeDecisionSummary;
 pub struct ProjectCheckReport {
     native_decisions: NativeDecisionSummary,
     entry_request_checked: Option<bool>,
+    entry_ordinary_result_checked: bool,
     concrete_local_roots: usize,
     concrete_bundled_roots: usize,
 }
@@ -20,6 +21,10 @@ impl ProjectCheckReport {
         native_decisions: NativeDecisionSummary,
     ) -> Self {
         Self {
+            entry_ordinary_result_checked: result
+                .entry
+                .as_ref()
+                .is_some_and(|entry| entry.ordinary_result().is_some()),
             entry_request_checked: result.entry.as_ref().map(|entry| entry.request().is_some()),
             concrete_local_roots: result.concrete_local_roots,
             concrete_bundled_roots: result.concrete_bundled_roots,
@@ -38,6 +43,12 @@ impl ProjectCheckReport {
     /// denotes a library without an entry. Partial contracts do not set this.
     pub fn entry_request_checked(&self) -> Option<bool> {
         self.entry_request_checked
+    }
+
+    /// The native request checked the original declared result, storage order
+    /// and all hidden histories. This is not an external algorithm specification.
+    pub fn entry_ordinary_result_checked(&self) -> bool {
+        self.entry_ordinary_result_checked
     }
 
     pub fn concrete_local_roots(&self) -> usize {

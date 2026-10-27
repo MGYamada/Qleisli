@@ -14,6 +14,7 @@ mod dormant_access;
 mod function_contract;
 mod nominal;
 mod operations;
+mod ordinary;
 mod primitives;
 mod quantum_match;
 mod record;
@@ -96,6 +97,8 @@ fn verification_error(
             ErrorCode::Limit
         } else if matches!(failure.code, "io" | "kernel") {
             ErrorCode::Project
+        } else if failure.code == "unsupported" {
+            ErrorCode::Unsupported
         } else {
             ErrorCode::InvalidIr
         },
@@ -115,6 +118,9 @@ fn verification_error(
 // Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
+    // Producer eligibility only, never native evidence. Constructor visits in
+    // either branch/callee prevent nominal intermediates using untyped Raw.
+    nominal_modules: std::rc::Rc<std::cell::RefCell<BTreeSet<String>>>,
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
@@ -231,6 +237,22 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
 }
 
 impl Lowerer<'_, '_> {
+    fn note_nominal(&mut self, ty: &Ty, module: &str, span: Span) -> Result<(), CompileError> {
+        let Kind::Nominal(nominal) = &ty.kind else {
+            unreachable!("checked nominal constructor")
+        };
+        let modules = self.nominal_modules.borrow().len();
+        self.compiler.charge(
+            module,
+            span,
+            (nominal.origin.module.len() + 1).saturating_mul(modules + 1),
+        )?;
+        self.nominal_modules
+            .borrow_mut()
+            .insert(nominal.origin.module.clone());
+        Ok(())
+    }
+
     fn bind_env(&self, name: &Ident, value: Binding, env: &mut Env) {
         let id = self.compiler.locals().binder(name);
         if let Some(old) = self.compiler.locals().info(id).shadowed {
@@ -306,6 +328,14 @@ impl Lowerer<'_, '_> {
                 Value::Classical(id)
             }
             Kind::Q(basis) => {
+                if ordinary::has_nominal(basis) {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Unsupported,
+                        "quantum nominal inputs require their typed native execution route",
+                    ));
+                }
                 let width = basis.basis_bits().ok_or_else(|| {
                     self.error(
                         module,
@@ -1649,6 +1679,7 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
         let mut inner = Lowerer {
+            nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
@@ -1952,6 +1983,7 @@ fn lower_function_in_context(
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
+        nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
@@ -1986,6 +2018,14 @@ fn lower_function_in_context(
         })
         .collect::<Result<_, _>>()?;
     let result = lower.call_user(key, args, None)?;
+    if ordinary::has_quantum_nominal(&result.ty()) {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::Unsupported,
+            "quantum nominal results require their typed native execution route",
+        ));
+    }
     lower.compiler.charge(
         &key_name.0,
         decl.span,
@@ -2001,15 +2041,22 @@ fn lower_function_in_context(
     let raw = RawProgram {
         quantum_inputs,
         classical_inputs,
-        operations: lower.raw.operations,
+        operations: std::mem::take(&mut lower.raw.operations),
         quantum_outputs,
         classical_outputs,
         declared_effect: lower.effect,
     };
-    lower
-        .compiler
-        .kernel
-        .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
+    let needs_typed_root =
+        !lower.nominal_modules.borrow().is_empty() || ordinary::has_nominal(&result.ty());
+    let accepted = if needs_typed_root {
+        ordinary::accept(&mut lower, key, &result, &raw)
+    } else {
+        lower
+            .compiler
+            .kernel
+            .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
+    };
+    accepted
         .map(|program| program.retain_instrument_calls(lower.instrument_calls))
         .map_err(|failure| {
             let limit = failure.code == "limit";

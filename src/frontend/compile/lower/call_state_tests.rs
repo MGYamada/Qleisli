@@ -113,6 +113,7 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
         let started = MAX_WORK - remaining;
         compiler.work = started;
         let mut lower = Lowerer {
+            nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
             compiler: &mut compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),

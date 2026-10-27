@@ -1,3 +1,9 @@
+The [ordinary-result execution history](ordinary-execution-v030/README.md)
+retains first source refusals, separate repairs and bounded syntax/storage/root
+experiments alongside 21 current CLI observations. Closed project result
+execution remains distinct from pending general/selected/quantum integration
+and source preservation; saved commands are inert.
+
 The [finite ADT first studies](finite-adts-v030/README.md) retain ten desired
 projects and both bounded Lean encoding attempts, including the first failed
 elaboration. Parser refusals, concrete repaired facts and unfinished common

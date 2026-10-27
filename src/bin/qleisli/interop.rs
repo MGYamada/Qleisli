@@ -226,8 +226,13 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
             let (samples, steps) = super::samples::collect(program, shots.unwrap(), seed)?;
             return Ok(samples_json(&samples, seed, steps, ", "));
         }
-        "emit-ir" => String::from_utf8(loaded.artifact().to_vec())
-            .map_err(|_| failure("format", "export is not UTF-8"))?,
+        "emit-ir" => String::from_utf8(
+            loaded
+                .portable_artifact()
+                .map_err(Failure::Artifact)?
+                .to_vec(),
+        )
+        .map_err(|_| failure("format", "export is not UTF-8"))?,
         "emit-qasm" => interop::export_openqasm3(program).map_err(|e| adapter(e, None))?,
         "emit-qir" => interop::export_qir_base(program).map_err(|e| adapter(e, None))?,
         _ => unreachable!(),

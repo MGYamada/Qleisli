@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Execute the first closed ordinary enum/record result slice through a versioned
+  native request. Bind the original declared result, complete storage tree,
+  exact output order and every hidden instrument history to the retained QDV
+  execution graph. Preserve zero-width nodes and conservative public effects.
+  Selected Raw, ordinary input domains, quantum nominal owners, full qmatch and
+  source-preservation proofs remain unfinished; #64 is not complete.
 - Prove that successful original reference resolution retains the exact supplied
   query, every import edge, visibility guard and visited original binding.
   Preserve recovered first proof sources and fresh failed/repaired checks.

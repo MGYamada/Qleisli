@@ -350,6 +350,7 @@ fn check_action(
     }
     compiler.charge(&module, original.span, closed.len() + 1)?;
     let mut lower = Lowerer {
+        nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
