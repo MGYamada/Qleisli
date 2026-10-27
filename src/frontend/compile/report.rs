@@ -39,8 +39,10 @@ impl ProjectCheckReport {
         &self.native_decisions
     }
 
-    /// Whether the entry's complete IR had an independent request. `None`
-    /// denotes a library without an entry. Partial contracts do not set this.
+    /// Whether the entry's native decision checked a request. `None` denotes
+    /// a library without an entry. Ordinary result metadata is a request too;
+    /// this flag does not assert an independent external algorithm specification.
+    /// Partial contracts do not set this.
     pub fn entry_request_checked(&self) -> Option<bool> {
         self.entry_request_checked
     }
