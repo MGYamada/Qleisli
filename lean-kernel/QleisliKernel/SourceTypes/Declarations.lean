@@ -1,36 +1,11 @@
 import QleisliKernel.SourceTypes.Imports
 import QleisliKernel.Finite
+import QleisliKernel.Semantics.SourceResolution
 
 /-! Original declaration bodies and canonical module bindings. A category is
 checked after resolution; imports cannot change its origin or visibility.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes
-
-structure Declaration where
-  name : String
-  isPublic : Bool
-  kind : String
-  body : List String
-  deriving BEq, DecidableEq, Repr
-
-deriving instance ReflBEq, LawfulBEq for Declaration
-
-/-- A brace body found by the shared declaration scanner. The complete header
-and inner tokens retain original locations. A function envelope is syntax data,
-not proof that its header/body is well-typed or that it authorizes a caller. -/
-structure BodyOccurrence where
-  declaration : Declaration
-  nameToken : LocatedToken
-  header : List LocatedToken
-  openBrace : LocatedToken
-  body : List LocatedToken
-  closeBrace : LocatedToken
-  deriving BEq, DecidableEq, Repr
-
-structure SourceCatalogue where
-  declarations : List Declaration
-  bodies : List BodyOccurrence
-  deriving BEq, DecidableEq, Repr
 
 private structure Items where
   leading : List LocatedToken := []
@@ -311,5 +286,325 @@ theorem resolveReference_facts (sources : Sources) (caller : String) (tokens : L
   | some name =>
     simp only [last] at h
     exact resolveBinding_facts _ _ _ _ _ _ _ _ _ _ h
+
+
+/-! Resolution trace from the actual reader. OriginalLookups records exact
+subordinate originalBinding computations in addition to the independent data
+route; it is not a scanner/source-preservation theorem. Caller-site and original
+import-envelope provenance remain separate obligations. -/
+
+namespace ResolutionTrace
+
+/-- Erase only checker packaging; retain canonical owner, original bytes and
+all declaration data at each actual visited binding. -/
+def resolvedView (resolved : Resolved) : Semantics.SourceResolution.Binding :=
+  ⟨resolved.moduleName,resolved.source,resolved.declaration⟩
+
+/-- Computational provenance, deliberately outside the independent semantics.
+The route proof derives these facts from each actual original lookup. -/
+def OriginalLookups (sources : Sources)
+    (events : List Semantics.SourceResolution.Binding) : Prop :=
+  ∀ entry, entry ∈ events →
+    originalBinding sources entry.moduleName entry.declaration.name =
+      .ok (entry.source,entry.declaration)
+
+theorem originalBinding_data (sources : Sources) (moduleName name source : String)
+    (decl : Declaration) (ok : originalBinding sources moduleName name = .ok (source,decl)) :
+    Semantics.SourceResolution.LookupData sources moduleName name
+      (resolvedView ⟨moduleName,source,decl⟩) := by
+  have facts := resolverOriginalBinding_rows sources moduleName name source decl ok
+  exact ⟨rfl,facts.2,facts.1⟩
+
+/-- The actual recursive resolver derives every route edge and original lookup;
+there is no supplied resolution table or requested endpoint premise. -/
+private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
+    (caller moduleName name : String) (localImports : Bool)
+    (active : List (String × String)) (result : Resolved) (work left : Nat)
+    (ok : (resolveBinding fuel sources caller moduleName name localImports active).run work =
+      (.ok result,left)) :
+    ∃ events,
+      Semantics.SourceResolution.Route sources caller moduleName name localImports active
+        events (resolvedView result) ∧ OriginalLookups sources events := by
+  induction fuel generalizing sources caller moduleName name localImports active result work left with
+  | zero => cases ok
+  | succ fuel ih =>
+    obtain ⟨_,w₁,_,h⟩ := Finite.bind_success _ _ _ _ _ ok
+    obtain ⟨_,w₂,freshRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+    have fresh : (moduleName,name) ∉ active := by
+      simpa using (Finite.guard_success _ _ _ _ freshRead).1
+    obtain ⟨_,w₃,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+    obtain ⟨pair,w₄,original,h⟩ := Finite.bind_success _ _ _ _ _ h
+    rcases pair with ⟨source,decl⟩
+    have originalRead := resolverAdapt_value _ _ _ _ original
+    have data := originalBinding_data sources moduleName name source decl originalRead
+    have sameName : decl.name = name := data.nameExact
+    let seen := resolvedView (⟨moduleName,source,decl⟩ : Resolved)
+    have seenLookup : originalBinding sources seen.moduleName seen.declaration.name =
+        .ok (seen.source,seen.declaration) := by
+      simpa only [seen,resolvedView,sameName] using originalRead
+    simp only [pure_bind] at h
+    split at h
+    · rename_i terminal
+      obtain ⟨_,w₅,visibleRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+      have sameResult := (Finite.pure_success _ _ _ _ h).1
+      subst result
+      have permission : decl.isPublic = true ∨ moduleName = caller := by
+        simpa only [Bool.or_eq_true_iff,beq_iff_eq] using
+          (Finite.guard_success _ _ _ _ visibleRead).1
+      have notImport : decl.kind ≠ "import" := by
+        simpa only [bne_iff_ne] using terminal
+      refine ⟨[seen],?_,?_⟩
+      · exact .direct caller moduleName name localImports active seen fresh data notImport permission
+      · intro entry present
+        have same : entry = seen := by simpa only [List.mem_singleton] using present
+        subst entry
+        exact seenLookup
+    · obtain ⟨_,w₅,importRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+      have importFacts : decl.kind = "import" ∧
+          (localImports = true ∨ decl.isPublic = true) := by
+        simpa only [Bool.and_eq_true_iff,Bool.or_eq_true_iff,beq_iff_eq] using
+          (Finite.guard_success _ _ _ _ importRead).1
+      cases body : decl.body with
+      | nil =>
+        simp only [body] at h
+        cases h
+      | cons target modules =>
+        simp only [body] at h
+        obtain ⟨_,w₆,pathRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+        have spelling : target = decl.name ∧ modules ≠ [] := by
+          simpa using (Finite.guard_success _ _ _ _ pathRead).1
+        obtain ⟨_,w₇,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨resolved,w₈,recursive,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨_,w₉,exportRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+        obtain ⟨_,w₁₀,visibleRead,h⟩ := Finite.bind_success _ _ _ _ _ h
+        have sameResult := (Finite.pure_success _ _ _ _ h).1
+        subst result
+        obtain ⟨events,route,lookups⟩ := ih sources moduleName
+          (String.intercalate "::" modules.reverse) target false
+          ((moduleName,name)::active) resolved w₇ w₈ recursive
+        have publicExport : decl.isPublic = true → resolved.declaration.isPublic = true := by
+          intro exported
+          simpa only [exported,Bool.not_true,Bool.false_or] using
+            (Finite.guard_success _ _ _ _ exportRead).1
+        have callerVisible : resolved.declaration.isPublic = true ∨ resolved.moduleName = caller := by
+          simpa only [Bool.or_eq_true_iff,beq_iff_eq] using
+            (Finite.guard_success _ _ _ _ visibleRead).1
+        refine ⟨seen :: events,?_,?_⟩
+        · exact .throughImport caller moduleName name localImports active seen target modules
+            events (resolvedView resolved) fresh data importFacts.1 importFacts.2 body
+            spelling.1 spelling.2 route publicExport callerVisible
+        · intro entry present
+          rcases List.mem_cons.mp present with same | member
+          · subst entry
+            exact seenLookup
+          · exact lookups entry member
+
+/-- The wrapper retains the actual supplied query's path parse, final name and
+owner-selection expression together with the derived complete import route.
+The independent Query theorem additionally needs path_spelling. -/
+theorem resolveReference_trace (sources : Sources) (caller : String) (tokens : List String)
+    (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
+    ∃ (names : List String) (name : String) (events : List Semantics.SourceResolution.Binding),
+      path tokens = .ok names ∧ names.getLast? = some name ∧
+      Semantics.SourceResolution.Route sources caller
+        (if names.length == 1 then caller else String.intercalate "::" names.dropLast)
+        name (names.length == 1) [] events (resolvedView result) ∧
+      OriginalLookups sources events := by
+  unfold resolveReference at ok
+  obtain ⟨names,w₁,pathRead,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  have parsed := resolverAdapt_value _ _ _ _ pathRead
+  cases last : names.getLast? with
+  | none =>
+    simp only [last] at h
+    cases h
+  | some name =>
+    simp only [last] at h
+    obtain ⟨events,route,lookups⟩ := resolveBinding_route _ _ _ _ _ _ _ _ _ _ h
+    exact ⟨names,name,events,parsed,last,route,lookups⟩
+
+end ResolutionTrace
+
+/-! Exact supplied-query spelling. The formatter below is proof-only data
+reconstruction of the existing path accumulator, not another parser. All lexical
+branches remain those of the actual private path definition. The conclusion
+states token alternation and owner selection, not lexical adequacy or source-site
+authentication. -/
+
+namespace ResolutionTrace
+
+private def pathPrefix (state : List String × Bool) : List String :=
+  state.1.reverse.intersperse "::" ++
+    if state.2 || state.1.isEmpty then [] else ["::"]
+
+private def PathReady (state : List String × Bool) : Prop :=
+  state.2 = true → state.1 ≠ []
+
+private theorem intersperse_append_single (separator value : String) :
+    ∀ (items : List String), items ≠ [] →
+      (items ++ [value]).intersperse separator = items.intersperse separator ++ [separator,value] := by
+  intro items
+  induction items with
+  | nil =>
+    intro nonempty
+    exact False.elim (nonempty rfl)
+  | cons first rest ih =>
+    intro _
+    cases rest with
+    | nil => rfl
+    | cons second rest =>
+      simp only [List.cons_append,List.intersperse_cons_cons]
+      simpa only [List.cons_append] using
+        congrArg (fun tail => first :: separator :: tail) (ih (by simp))
+
+/-- A fold calculation used only after deriving advance from the actual parser
+step. The public query theorem supplies no transition-faithfulness premise. -/
+private theorem path_fold_accumulate
+    (step : (List String × Bool) → String → Except String (List String × Bool))
+    (advance : ∀ before token after, PathReady before → step before token = .ok after →
+      PathReady after ∧ pathPrefix after = pathPrefix before ++ [token])
+    (tokens : List String) (before after : List String × Bool)
+    (ready : PathReady before) (ok : tokens.foldlM step before = .ok after) :
+    PathReady after ∧ pathPrefix after = pathPrefix before ++ tokens := by
+  induction tokens generalizing before with
+  | nil =>
+    change (Except.ok before : Except String (List String × Bool)) = .ok after at ok
+    cases ok
+    exact ⟨ready,by simp⟩
+  | cons token tokens ih =>
+    simp only [List.foldlM_cons] at ok
+    cases next : step before token with
+    | error error =>
+      simp only [next,bind,Except.bind] at ok
+      cases ok
+    | ok middle =>
+      have continued : tokens.foldlM step middle = .ok after := by
+        simpa only [next,bind,Except.bind] using ok
+      obtain ⟨middleReady,first⟩ := advance before token middle ready next
+      obtain ⟨afterReady,rest⟩ := ih middle middleReady continued
+      refine ⟨afterReady,?_⟩
+      rw [rest,first]
+      simp only [List.append_assoc,List.singleton_append]
+
+private theorem path_spelling (tokens names : List String)
+    (ok : path tokens = .ok names) : tokens = names.intersperse "::" ∧ names ≠ [] := by
+  -- This is definitionally the existing path fold's lambda, retained locally
+  -- only so the proof can name its successful transitions.
+  let step : (List String × Bool) → String → Except String (List String × Bool) :=
+    fun (names,separator) token => do
+      if separator then
+        if token != "::" then throw "unsupported source type expression"
+        return (names,false)
+      if !identifier token && !(names == ["std"] && ["basis","observe","classical"].contains token) then
+        throw "unsupported source type expression"
+      return (token :: names,true)
+  have advance : ∀ before token after, PathReady before → step before token = .ok after →
+      PathReady after ∧ pathPrefix after = pathPrefix before ++ [token] := by
+    intro before token after ready accepted
+    rcases before with ⟨reverseNames,separator⟩
+    cases separator with
+    | false =>
+      change (if !identifier token &&
+          !(reverseNames == ["std"] && ["basis","observe","classical"].contains token)
+        then Except.error "unsupported source type expression"
+        else Except.ok (token :: reverseNames,true)) = .ok after at accepted
+      split at accepted
+      · cases accepted
+      · have same : (token :: reverseNames,true) = after := by
+          simpa only [Except.ok.injEq] using accepted
+        subst after
+        constructor
+        · intro _
+          exact List.cons_ne_nil _ _
+        · by_cases empty : reverseNames = []
+          · subst reverseNames
+            rfl
+          · have encoded := intersperse_append_single "::" token reverseNames.reverse
+              (by simpa using empty)
+            simpa [pathPrefix,empty,List.reverse_cons,List.append_assoc] using encoded
+    | true =>
+      change (if token != "::" then Except.error "unsupported source type expression"
+        else Except.ok (reverseNames,false)) = .ok after at accepted
+      by_cases spelling : token = "::"
+      · subst token
+        have same : (reverseNames,false) = after := by simpa using accepted
+        subst after
+        constructor
+        · intro impossible
+          cases impossible
+        · have nonempty : reverseNames ≠ [] := ready rfl
+          simp [pathPrefix,nonempty]
+      · simp [spelling] at accepted
+  change (do
+    let (reverseNames,separator) ← tokens.foldlM step ([],false)
+    if !separator then throw "incomplete source type path"
+    return reverseNames.reverse) = .ok names at ok
+  cases folded : tokens.foldlM step ([],false) with
+  | error error =>
+    simp only [folded,bind,Except.bind] at ok
+    cases ok
+  | ok finalState =>
+    rcases finalState with ⟨reverseNames,separator⟩
+    have initialReady : PathReady ([],false) := by
+      intro impossible
+      cases impossible
+    have reconstructed := path_fold_accumulate step advance tokens ([],false)
+      (reverseNames,separator) initialReady folded
+    simp only [folded,bind,Except.bind] at ok
+    cases separator with
+    | false => cases ok
+    | true =>
+      have same : reverseNames.reverse = names := by
+        change (Except.ok reverseNames.reverse : Except String (List String)) = .ok names at ok
+        exact Except.ok.inj ok
+      have encoded : reverseNames.reverse.intersperse "::" = tokens := by
+        simpa [pathPrefix] using reconstructed.2
+      constructor
+      · simpa only [same] using encoded.symm
+      · have nonempty : reverseNames ≠ [] := reconstructed.1 rfl
+        rw [← same]
+        simpa using nonempty
+
+/-- Actual reference resolution yields the independent exact token query and
+its complete import route, plus each original lookup. No desired endpoint,
+faithful source environment or independently supplied parse is a premise. -/
+theorem resolveReference_query (sources : Sources) (caller : String) (tokens : List String)
+    (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
+    ∃ events, Semantics.SourceResolution.Query sources caller tokens events (resolvedView result) ∧
+      OriginalLookups sources events := by
+  obtain ⟨names,name,events,parsed,last,route,lookups⟩ :=
+    resolveReference_trace sources caller tokens result work left ok
+  have spelling := path_spelling tokens names parsed
+  obtain ⟨modules,namesExact⟩ := List.getLast?_eq_some_iff.mp last
+  subst names
+  refine ⟨events,?_,lookups⟩
+  rw [spelling.1]
+  cases modules with
+  | nil =>
+    have localRoute : Semantics.SourceResolution.Route sources caller caller name true []
+        events (resolvedView result) := by simpa using route
+    exact .localName name events (resolvedView result) localRoute
+  | cons owner modules =>
+    have notSingle : (((owner :: modules) ++ [name]).length == 1) = false := by
+      apply beq_eq_false_iff_ne.mpr
+      simp only [List.length_append,List.length_cons]
+      omega
+    have qualifiedRoute : Semantics.SourceResolution.Route sources caller
+        (String.intercalate "::" (owner :: modules)) name false [] events (resolvedView result) := by
+      simpa only [notSingle, Bool.false_eq_true, if_false, List.dropLast_concat] using route
+    exact .qualifiedName (owner :: modules) name events (resolvedView result)
+      (List.cons_ne_nil _ _) qualifiedRoute
+
+/-- The located adapter retains the exact supplied tokens. Their spans/caller
+still require the original function-parser provenance theorem. -/
+theorem resolveLocatedReference_query (sources : Sources) (caller : String)
+    (tokens : List LocatedToken) (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller (tokens.map (·.text))).run work = (.ok result,left)) :
+    ∃ events, Semantics.SourceResolution.LocatedQuery sources caller tokens events (resolvedView result) ∧
+      OriginalLookups sources events := by
+  exact resolveReference_query sources caller (tokens.map LocatedToken.text) result work left ok
+
+end ResolutionTrace
 
 end QleisliKernel.SourceTypes

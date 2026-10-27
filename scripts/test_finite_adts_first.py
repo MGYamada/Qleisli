@@ -4343,6 +4343,74 @@ class OriginalOrdinaryBodyHistory(unittest.TestCase):
 # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-first.tar.xz"
 # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-index.json"
 # "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-qmatch-runtime-validation.json"
+class ResolutionRecoveryHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-recovery-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-recovery-index.json"
+    # "tests/fixtures/authoring_sessions/finite-adts-v030/resolution-recovery-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.data = read_history(
+            'resolution-recovery-index.json', 'resolution-recovery-first.tar.xz',
+            'e1b1f7906513c1e53a36e27c857db4326f0ec040ed4c9d1211092ee132180156',
+            61876, '5fcd42c30f053b001c0e0aae3c2967b583c6525e943e2da7898c1709f53d040d',
+            473498)
+        cls.index = json.loads((FIXTURES / 'resolution-recovery-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_every_selected_original_and_recovery_limit_is_retained(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (139, 127))
+        for row in self.index['original_records'].values():
+            blob = self.data[row['record']]
+            self.assertEqual((len(blob), hashlib.sha256(blob).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        provenance = self.record('recovery/provenance.json')
+        self.assertIn('Missing original directories', provenance['limits'])
+        self.assertEqual(provenance['source_commit'], '6be9305a8893ae0ebcb64f19f47213d5cac0ebb4')
+        self.assertEqual(provenance['fresh_case_observation']['exit_code'], 0)
+        self.assertEqual(provenance['fresh_case_observation']['stdout'], '')
+        self.assertEqual(provenance['fresh_case_observation']['stderr'], '')
+
+    def test_original_failed_proof_and_separate_repair_keep_their_results(self):
+        first = self.record('fresh/route-validation-first/report.json')
+        failed = self.record('fresh/route-validation-overlay/report.json')
+        passed = self.record('fresh/route-validation-proof-repair/report.json')
+        self.assertFalse(first['passed'])
+        self.assertFalse(failed['passed'])
+        self.assertEqual([row['exit_code'] for row in failed['commands']], [0, 0, 0, 0, 1])
+        self.assertIn(b'object file', self.raw('fresh/route-validation-first/01/stdout'))
+        self.assertIn(b'Dependent elimination failed', self.raw('fresh/route-validation-overlay/05/stdout'))
+        self.assertTrue(passed['passed'])
+        self.assertEqual([row['exit_code'] for row in passed['commands']], [0] * 5)
+        for field in ('root_stable', 'native_stable', 'reused_stable'):
+            self.assertTrue(passed[field])
+        self.assertEqual(passed['concurrency'], 1)
+        self.assertFalse(passed['historical_scripts_executed'])
+        for number, command in enumerate(passed['commands'], 1):
+            for stream in ('stdout', 'stderr'):
+                blob = self.raw(f'fresh/route-validation-proof-repair/{number:02d}/{stream}')
+                self.assertEqual(hashlib.sha256(blob).hexdigest(), command[stream + '_sha256'])
+
+    def test_compiled_private_generated_audit_and_exact_original_fragments(self):
+        audit = self.record('fresh/route-validation-proof-repair/audit.json')
+        self.assertEqual((audit['checked'], len(audit['declarations'])), (637, 637))
+        self.assertEqual(len(set(row['name'] for row in audit['declarations'])), 637)
+        self.assertEqual(len(audit['required_theorems']), 4)
+        self.assertEqual({axiom for row in audit['declarations'] for axiom in row['axioms']},
+                         {'propext', 'Quot.sound', 'Classical.choice'})
+        self.assertEqual(hashlib.sha256(self.raw('recovery/recovered-route-exact.lean.inc')).hexdigest(),
+                         'c8128f84ca9109d96601b5f469714fb86c3c17afbeec3eaea5f5a94fddf792c4')
+        first = self.raw('fresh/route-recovered/src/QleisliKernel/SourceTypes/Declarations.lean')
+        repaired = self.raw('fresh/route-proof-repair/src/QleisliKernel/SourceTypes/Declarations.lean')
+        self.assertEqual(first.split(b'namespace ResolutionTrace')[0],
+                         repaired.split(b'namespace ResolutionTrace')[0])
+        self.assertIn(b'No desired endpoint,', first)
+
+
 class QmatchRuntimeHistory(unittest.TestCase):
     META = {
         'archive': {'path': 'ordinary-qmatch-runtime-first.tar.xz', 'bytes': 206364,

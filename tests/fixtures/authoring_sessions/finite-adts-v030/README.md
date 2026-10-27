@@ -1,5 +1,23 @@
 # Finite ADT first studies
 
+The [resolution recovery archive](resolution-recovery-first.tar.xz),
+[index](resolution-recovery-index.json) and
+[observation](resolution-recovery-validation.json) preserve selected proof
+source literals recovered from this task's transcript after its external
+temporary directories disappeared. Three source fragments match their earlier
+recorded hashes. This is partial recovery: missing reports, source windows,
+compiled objects and the former 52/56-claim profiles are not reconstructed or
+requalified by those hashes. Saved commands remain inert.
+
+The separate fresh checks retain the initial import-overlay failure, actual
+proof elaboration errors, repaired five-module check and 637-declaration audit,
+including private/generated definitions. Thirteen small resolver controls and
+an exact generic query-contract probe pass. The retained audit uses only the
+existing standard axiom basis. Original caller-site authentication, scanner and
+import-envelope provenance, source/Raw/runtime/QDV correspondence, ordinary ADT
+execution and the full qmatch scope remain unfinished; #64 earns no completion
+credit. Current proof maintenance and hosted CI remain separate checks.
+
 The inert [archive](first.tar.xz) and [index](index.json) preserve all sixty
 original files from two informed pre-implementation studies at `0bd10818`.
 Complete first sources, predictions, raw observations, observers as data and
