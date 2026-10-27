@@ -17,6 +17,61 @@ fn parsed(source: &str) -> ParsedProgram {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn reference_authoring_derivatives_match_independent_closed_distributions() {
+    // Maintained current inputs, separate from the immutable first-authoring
+    // archive. The paired authors wrote identical GHZ/accumulator bodies;
+    // their phase-kickback preparations use two equivalent existing forms.
+    let cases = [
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/ghz.qli"),
+            BTreeMap::from([
+                (vec![false, false, false], 0.5),
+                (vec![true, true, true], 0.5),
+            ]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/arithmetic.qli"),
+            BTreeMap::from([(vec![false, false], 0.5), (vec![true, true], 0.5)]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/qpe-phase.qli"),
+            BTreeMap::from([(vec![true, true], 1.0)]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/qpe-z.qli"),
+            BTreeMap::from([(vec![true, true], 1.0)]),
+        ),
+    ];
+    let kernel =
+        qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+    for (source, expected) in cases {
+        let proposal = parsed(source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        let actual =
+            qleisli::sim::run_closed(&accepted, qleisli::sim::SimulationLimits::default()).unwrap();
+        for (outcome, probability) in &actual {
+            assert!(probability.is_finite());
+            let wanted = expected.get(outcome).copied().unwrap_or(0.0);
+            assert!((probability - wanted).abs() < 1e-10, "{source}: {actual:?}");
+        }
+        for (outcome, wanted) in expected {
+            let probability = actual.get(&outcome).copied().unwrap_or(0.0);
+            assert!((probability - wanted).abs() < 1e-10, "{source}: {actual:?}");
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn quantum_fold_preserves_an_external_reference_and_zero_iteration_identity() {
     let program = parsed(
         "use std::gate::x; pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..n carry a=q{yield x(a);}}",

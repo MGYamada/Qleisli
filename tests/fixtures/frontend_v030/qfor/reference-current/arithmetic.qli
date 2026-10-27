@@ -1,0 +1,14 @@
+use std::state::init0;
+use std::gate::cnot;
+
+pub observe fn main() -> (Bit, Bit) {
+    let control = h(init0());
+    let target = init0();
+    let (control, target) = qfor static k in 0..3 carry (control, target) = (control, target) {
+        let (control, target) = cnot(control, target);
+        yield (control, target);
+    };
+    let zcontrol = measure_z(control);
+    let ztarget = measure_z(target);
+    (zcontrol, ztarget)
+}

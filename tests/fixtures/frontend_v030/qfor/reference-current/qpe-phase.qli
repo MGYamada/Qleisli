@@ -1,0 +1,16 @@
+use std::state::init0;
+use std::gate::cnot;
+
+pub observe fn main() -> (Bit, Bit) {
+    let estimation = h(init0());
+    let target = phase[1,1](h(init0()));
+    let (estimation, target) = qfor static k in 0..3 carry (estimation, target) = (estimation, target) {
+        let (estimation, target) = cnot(estimation, target);
+        yield (estimation, target);
+    };
+    let estimation = h(estimation);
+    let target = h(target);
+    let zestimation = measure_z(estimation);
+    let ztarget = measure_z(target);
+    (zestimation, ztarget)
+}
