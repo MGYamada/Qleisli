@@ -1,5 +1,6 @@
 //! Independent small-system checks for explicit quantum-owner folds.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+// Fixture edition: "tests/fixtures/frontend_v030/qfor/reference-current/Qargo.toml".
 use qleisli::frontend::compile::ParsedProgram;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
@@ -10,6 +11,61 @@ fn parsed(source: &str) -> ParsedProgram {
         BTreeMap::from([("main".into(), source.into())]),
     )
     .unwrap()
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn reference_authoring_derivatives_match_independent_closed_distributions() {
+    // Maintained current inputs, separate from the immutable first-authoring
+    // archive. The paired authors wrote identical GHZ/accumulator bodies;
+    // their phase-kickback preparations use two equivalent existing forms.
+    let cases = [
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/ghz.qli"),
+            BTreeMap::from([
+                (vec![false, false, false], 0.5),
+                (vec![true, true, true], 0.5),
+            ]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/arithmetic.qli"),
+            BTreeMap::from([(vec![false, false], 0.5), (vec![true, true], 0.5)]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/qpe-phase.qli"),
+            BTreeMap::from([(vec![true, true], 1.0)]),
+        ),
+        (
+            include_str!("fixtures/frontend_v030/qfor/reference-current/qpe-z.qli"),
+            BTreeMap::from([(vec![true, true], 1.0)]),
+        ),
+    ];
+    let kernel =
+        qleisli::interchange::native::Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+    for (source, expected) in cases {
+        let proposal = parsed(source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        let actual =
+            qleisli::sim::run_closed(&accepted, qleisli::sim::SimulationLimits::default()).unwrap();
+        for (outcome, probability) in &actual {
+            assert!(probability.is_finite());
+            let wanted = expected.get(outcome).copied().unwrap_or(0.0);
+            assert!((probability - wanted).abs() < 1e-10, "{source}: {actual:?}");
+        }
+        for (outcome, wanted) in expected {
+            let probability = actual.get(&outcome).copied().unwrap_or(0.0);
+            assert!((probability - wanted).abs() < 1e-10, "{source}: {actual:?}");
+        }
+    }
 }
 
 #[cfg_attr(

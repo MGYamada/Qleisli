@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain an isolated Reference-only `qfor` authoring comparison: six first
+  GHZ/arithmetic/phase-kickback sources and 48 actual observations. Both current
+  and historical-surface cohorts needed zero author repairs in this bounded
+  sample; preserve observer-only grammar/visibility translations and limits.
 - Prove that successful original reference resolution retains the exact supplied
   query, every import edge, visibility guard and visited original binding.
   Preserve recovered first proof sources and fresh failed/repaired checks.
