@@ -81,6 +81,7 @@ class PublicNative(unittest.TestCase):
                     "checker_path": str(actual_checker),
                     "checker_identity": "unpinned",
                     "request_checked": False,
+                    "ordinary_result_checked": False,
                     "source_preservation_verified": False,
                 })
         return document
