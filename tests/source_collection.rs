@@ -6,35 +6,40 @@ use qleisli::frontend::project::{Project, SourcePolicy};
 use std::collections::BTreeMap;
 
 #[test]
-fn ordinary_match_checks_all_arms_before_both_native_transport_gates() {
+fn ordinary_match_checks_all_arms_before_selected_refusal_and_project_native_check() {
     use qleisli::frontend::compile::check_project_with_kernel;
     use qleisli::interchange::native::Kernel;
     let edition = qleisli::edition::Edition::E2026;
-    for (body, code, message) in [
+    for (body, code, message, project_native) in [
         (
             "pub fn main()->Bit{match E::A{E::A=>0,E::B=>1}}",
             "unsupported",
             "typed native transport",
+            true,
         ),
         (
             "classical fn selected()->Bit{match E::A{E::A=>0,E::B=>1}} pub fn main()->Bit{selected()}",
             "unsupported",
             "typed native transport",
+            false,
         ),
         (
             "pub fn main()->Bit{match E::A{E::A=>0}}",
             "type",
             "missing variant B",
+            false,
         ),
         (
             "classical fn selected()->Bit{match E::A{E::A=>0,E::B=>1,E::B=>0}} pub fn main()->Bit{selected()}",
             "type",
             "duplicate match arm B",
+            false,
         ),
         (
             "fn unused(q:Q<E>)->Unit{match q{E::A=>(),E::B=>()}} pub fn main()->Unit{()}",
             "type",
             "ordinary match requires",
+            false,
         ),
     ] {
         let source = format!("enum E{{A,B}} {body}");
@@ -51,24 +56,27 @@ fn ordinary_match_checks_all_arms_before_both_native_transport_gates() {
         let finite = check_project_with_kernel(
             &root.0,
             SourcePolicy::default(),
-            &Kernel::new(root.0.join("must-not-run-native"), edition),
+            &Kernel::new(root.0.join("unavailable-native"), edition),
         )
         .unwrap_err();
-        assert_eq!(
-            finite.code,
-            if code == "type" {
-                "type_mismatch"
-            } else {
-                code
-            },
-            "{finite:?}"
-        );
-        assert!(finite.message.contains(message), "{finite:?}");
+        let (finite_code, finite_message) = if project_native {
+            // Valid project nominal bodies reach fresh native checking. The
+            // selected Raw route still keeps its typed-transport refusal.
+            ("project", "cannot resolve Lean checker")
+        } else if code == "type" {
+            ("type_mismatch", message)
+        } else {
+            // This closed classical helper still reaches the finite-table
+            // consumer's nominal-body refusal, not the new ordinary root.
+            (code, message)
+        };
+        assert_eq!(finite.code, finite_code, "{finite:?}");
+        assert!(finite.message.contains(finite_message), "{finite:?}");
     }
 }
 
 #[test]
-fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route() {
+fn nominal_declarations_keep_selected_refusal_and_project_native_requirement() {
     use qleisli::frontend::compile::check_project_with_kernel;
     use qleisli::interchange::native::Kernel;
     for declaration in [
@@ -89,18 +97,15 @@ fn parsed_nominal_declarations_cannot_be_silently_ignored_by_either_source_route
         assert_eq!(error.code(), "unsupported");
         assert_eq!(&source[error.span().start..error.span().end], declaration);
         let root = common::SourceRoot::new(&source);
-        let absent = root.0.join("must-not-run-native");
+        let absent = root.0.join("unavailable-native");
         let error = check_project_with_kernel(
             &root.0,
             SourcePolicy::default(),
             &Kernel::new(absent, qleisli::edition::Edition::E2026),
         )
         .unwrap_err();
-        assert_eq!(error.code, "unsupported");
-        assert_eq!(
-            error.message,
-            "finite type declarations require typed native transport before source execution"
-        );
+        assert_eq!(error.code, "project");
+        assert!(error.message.contains("cannot resolve Lean checker"));
     }
     let error = ParsedProgram::parse(
         qleisli::edition::Edition::E2026,

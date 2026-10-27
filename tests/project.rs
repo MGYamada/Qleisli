@@ -7,6 +7,10 @@ use qleisli::frontend::compile::{ErrorCode, check_project};
 use qleisli::frontend::project::{ImportOrigin, ModuleOrigin, Project, ProjectError};
 
 #[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn nominal_imports_keep_original_type_metadata_through_public_reexports() {
     use qleisli::frontend::ast::FnKind;
     use qleisli::frontend::project::ImportKind;
@@ -34,12 +38,7 @@ fn nominal_imports_keep_original_type_metadata_through_public_reexports() {
         &leaf[function.declaration_span.start..function.declaration_span.end],
         "pub fn f()->Unit{()}"
     );
-    assert!(
-        check_project(root.path())
-            .unwrap_err()
-            .message
-            .contains("typed native transport")
-    );
+    check_project(root.path()).unwrap();
 }
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
