@@ -140,6 +140,9 @@ separately retains Unit, Bit, Bits, pair, tuple, enum origin/SSA coordinates and
 record origin/ordered named children. Zero-width nodes cannot be discarded.
 The original ordered parameter forest and declared result are freshly read and
 compared with the request. Argument count and zero-width arguments stay explicit.
+Closed simulation and sampling additionally inspect that retained parameter
+forest: Unit, Bits<0> and empty records still require an actual invocation even
+when the Raw input lists are empty. A nullary typed result remains closed.
 The same original Raw root/dependency/ownership/effect/scope checks run before
 complete exact instrument reconstruction. Lean independently enumerates the
 entire canonical parameter domain, first argument on low coordinates, and

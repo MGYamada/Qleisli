@@ -540,5 +540,59 @@ class OrdinaryImportFirstHistory(unittest.TestCase):
             self.assertTrue(report['stable_source'])
 
 
+class OrdinaryClosedRuntimeHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'closed-runtime-first-index.json.gz', 'closed-runtime-first.tar.xz',
+                'd71dab43f37ce19071a6373906c67aa3b9a78e9f3288f1cf532af2e810fd112a',
+                268496, 'f456d42103693e2f9af92414b2e27b4863d851eff6d62201e1583d082d301d68',
+                949767, index_gzip=dict(bytes=3849, decoded_bytes=28340,
+                    decoded_sha256='cf7d415f5dfe246875ebc3d91fc41af6333ee635444f0c518fda90cf1c8a1b60'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'closed-runtime-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_sources_bytes_modes_and_separate_parent_reproducer_are_retained(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (53, 49))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        self.assertIn(b'Unit still needs its one logical argument',
+            self.raw('ordinary-closed-fix-checks/before-normal/stdout'))
+        before = self.record('ordinary-closed-fix-checks/before-normal/report.json')
+        self.assertEqual(before['head'], 'eaf477df71eef8af4d7daecf1fc12bb936b7c50f')
+        self.assertEqual(before['exit_code'], 101)
+        self.assertTrue(before['stable_source'])
+        self.assertIn('separately observed compatible8ab', before['scope'])
+
+    def test_first_prototype_failure_is_not_reclassified_as_success(self):
+        report = self.record('selected-ordinary-checks/normal-selected-dormant-scope/report.json')
+        self.assertEqual(report['exit_code'], 101)
+        self.assertTrue(report['stable_source'])
+        self.assertIn(b'run_closed(empty.program()',
+            self.raw('selected-ordinary-checks/normal-selected-dormant-scope/stdout'))
+
+    def test_normal_msrv_repairs_and_actual_nullary_control_stay_distinct(self):
+        for name in ['after-normal', 'after-msrv']:
+            report = self.record('ordinary-closed-fix-checks/' + name + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertIn(b'9 passed; 0 failed; 0 ignored',
+                self.raw('ordinary-closed-fix-checks/' + name + '/stdout'))
+        self.assertIn(b'typed_unit_result_without_parameters_remains_a_closed_runtime_program',
+            self.raw('ordinary-closed-fix-checks/after-normal/stdout'))
+
+
 if __name__ == '__main__':
     unittest.main()

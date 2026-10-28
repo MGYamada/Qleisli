@@ -815,3 +815,141 @@ fn zero_width_reexported_parameter_and_result_cannot_erase_the_record() {
         reject_imports_with_native_view(&kernel, proposed.artifact(), &wrong);
     }
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn zero_width_typed_parameters_require_an_invocation_in_closed_runtime_apis() {
+    use crate::sim::{SampleLimits, SimulationLimits, SplitMix64, run_closed, sample_closed};
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for ty in ["Unit", "Bits<0>", "Empty", "(Unit,Empty)"] {
+        let source = format!("pub struct Empty {{}} pub fn choose(value:{ty})->{ty} {{value}}");
+        let origin = Arc::new(Origin {
+            module: "main".into(),
+            declaration: "Empty".into(),
+            source: source.clone(),
+        });
+        let (basis, storage) = match ty {
+            "Unit" => (vec![Atom::Unit], Storage::Unit),
+            "Bits<0>" => (vec![Atom::Bits(0)], Storage::Bits(vec![])),
+            "Empty" => (
+                vec![Atom::Record(Arc::clone(&origin), vec![])],
+                Storage::Record(Arc::clone(&origin), vec![]),
+            ),
+            _ => (
+                vec![
+                    Atom::Pair,
+                    Atom::Unit,
+                    Atom::Record(Arc::clone(&origin), vec![]),
+                ],
+                Storage::Pair(
+                    Box::new(Storage::Unit),
+                    Box::new(Storage::Record(Arc::clone(&origin), vec![])),
+                ),
+            ),
+        };
+        let raw = RawProgram {
+            quantum_inputs: vec![],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let request = Request {
+            selection: Selection::Exported,
+            module: "main".into(),
+            declaration: "choose".into(),
+            parameters: vec![basis.clone()],
+            input_storage: vec![storage.clone()],
+            input_rows: vec![vec![]],
+            basis,
+            storage,
+            public_effect: Effect::Unitary,
+        };
+        let proposal = crate::interchange::native::Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &[("main".into(), source)],
+        )
+        .unwrap();
+        let checked = kernel
+            .check_ordinary_root(proposal.artifact(), &request.encode().unwrap())
+            .unwrap();
+        let program = checked.into_program();
+        assert_eq!(program.ordinary_result().unwrap().parameters.len(), 1);
+        assert!(program.raw().classical_inputs.is_empty());
+        assert!(
+            run_closed(&program, SimulationLimits::default()).is_err(),
+            "{ty} still needs its one logical argument"
+        );
+        assert!(
+            sample_closed(
+                &program.clone(),
+                &mut SplitMix64::new(0),
+                SampleLimits::default()
+            )
+            .is_err(),
+            "{ty} sampling erased the logical argument"
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn typed_unit_result_without_parameters_remains_a_closed_runtime_program() {
+    let source = "pub fn choose()->Unit {()}";
+    let raw = RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let request = Request {
+        selection: Selection::Exported,
+        module: "main".into(),
+        declaration: "choose".into(),
+        parameters: vec![],
+        input_storage: vec![],
+        input_rows: vec![vec![]],
+        basis: vec![Atom::Unit],
+        storage: Storage::Unit,
+        public_effect: Effect::Unitary,
+    };
+    let proposal = crate::interchange::native::Proposal::from_raw_with_sources(
+        &raw,
+        None,
+        crate::interchange::Version::V2,
+        None,
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    let program = Kernel::selected(Edition::E2026)
+        .unwrap()
+        .check_ordinary_root(proposal.artifact(), &request.encode().unwrap())
+        .unwrap()
+        .into_program();
+    assert_eq!(
+        crate::sim::run_closed(&program, crate::sim::SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![], 1.0)])
+    );
+    assert!(
+        crate::sim::sample_closed(
+            &program,
+            &mut crate::sim::SplitMix64::new(0),
+            crate::sim::SampleLimits::default()
+        )
+        .unwrap()
+        .bits
+        .is_empty()
+    );
+}
