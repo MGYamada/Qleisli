@@ -4791,5 +4791,61 @@ class QmatchKeywordBeforeHistory(unittest.TestCase):
                                  meta['archive']['sha256'], meta['expanded'])
 
 
+class OrdinaryExecutionHistoryTests(unittest.TestCase):
+    """Inert originals only; maintained Rust tests execute separately."""
+    # Retention roots: "tests/fixtures/authoring_sessions/ordinary-execution-v030/README.md"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/first-index.json"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/first.tar.xz"
+    @classmethod
+    def setUpClass(cls):
+        from unittest.mock import patch
+        base = ROOT / 'tests/fixtures/authoring_sessions'
+        cls.index = json.loads((base / 'ordinary-execution-v030/first-index.json').read_bytes())
+        with patch(__name__ + '.FIXTURES', base):
+            cls.data = read_history(
+                'ordinary-execution-v030/first-index.json',
+                'ordinary-execution-v030/first.tar.xz',
+                '39b9f45ef4102f9ec7b38d51778ab53328c41a0aced92d54064c3055e1c83955',
+                65456, '619c4b7a8967533dec33b87fb1b8c0bc4b72049b6f37c466d8cbc34876fd33bd',
+                843329)
+
+    def original(self, name):
+        return self.data[self.index['originals'][name]['record']]
+
+    def test_complete_originals_keep_bytes_modes_and_object_links(self):
+        self.assertEqual(len(self.index['originals']), 316)
+        self.assertEqual(len(self.data), 157)
+        for name, row in self.index['originals'].items():
+            with self.subTest(name=name):
+                raw = self.data[row['record']]
+                self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                                 (row['bytes'], row['sha256'], 0o644))
+                self.assertFalse(PurePosixPath(name).is_absolute())
+                self.assertNotIn('..', PurePosixPath(name).parts)
+
+    def test_actual_cli_scope_distributions_and_remaining_refusals_stay_distinct(self):
+        report = json.loads(self.original('ordinary-live-first/report.json'))
+        self.assertEqual(report['status'], 'observed-matching')
+        self.assertTrue(report['binaries_stable'])
+        self.assertEqual(len(report['observations']), 21)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in report['observations']), 12)
+        selected = report['observations'][-1]
+        self.assertEqual((selected['label'], selected['exit_code']), ('selected-raw-still-pending', 1))
+        for number, expected in [(3, {(False,False,False):0.5,(True,False,True):0.5}),
+                                 (7, {():1.0}), (11, {():1.0})]:
+            response = json.loads(self.original(f'ordinary-live-first/{number:02}.stdout'))
+            actual = {tuple(row['bits']): row['probability'] for row in response['result']['distribution']}
+            self.assertEqual(set(actual), set(expected))
+            self.assertAlmostEqual(sum(actual.values()), 1.0, places=12)
+            for key in expected:
+                self.assertAlmostEqual(actual[key], expected[key], places=12)
+        for number in [1,5,9]:
+            result = json.loads(self.original(f'ordinary-live-first/{number:02}.stdout'))['result']
+            self.assertTrue(result['entry']['ordinary_result_checked'])
+            self.assertFalse(result['source_preservation_verified'])
+        self.assertIn(b'#eval', self.original('ordinary-native-policy-refusal/OrdinaryRoot.lean'))
+        self.assertEqual(json.loads(self.original('ordinary-native-policy-refusal-two/schema-report.json'))['status'], 'error')
+
+
 if __name__ == '__main__':
     unittest.main()

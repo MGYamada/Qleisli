@@ -271,6 +271,9 @@ pub(super) fn recognize(
 }
 
 pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
+    program
+        .portable_artifact()
+        .map_err(|error| InteropError::unsupported(error.to_string()))?;
     let raw = program.raw();
     if !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()

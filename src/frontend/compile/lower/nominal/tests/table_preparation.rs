@@ -88,11 +88,12 @@ fn existing_builtin_classical_tables_remain_eager() {
 }
 
 #[test]
-fn nominal_table_deferral_does_not_open_the_public_source_gate() {
+fn original_nominal_preparation_and_table_deferral_grant_no_native_handles() {
     let project = project(FIRST);
-    let error = prepare_original_source(Path::new("main.qli"), &project)
-        .err()
-        .expect("public nominal gate remains closed");
-    assert_eq!(error.code, ErrorCode::Unsupported);
-    assert!(error.message.contains("typed native transport"));
+    let prepared = prepare_original_source(Path::new("main.qli"), &project).unwrap();
+    assert!(!prepared.checked.nominals.is_empty());
+    let mut compiler = untrusted_compiler(&project);
+    compiler.prepare_classical_tables().unwrap();
+    assert!(!compiler.deferred_nominal_tables.is_empty());
+    assert!(compiler.checked.is_empty());
 }

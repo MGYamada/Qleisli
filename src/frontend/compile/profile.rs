@@ -46,6 +46,14 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
 }
 
 fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
+    fn nominal(ty: &check::Ty) -> bool {
+        match &ty.kind {
+            Kind::Nominal(_) => true,
+            Kind::Q(inner) => nominal(inner),
+            Kind::Tuple(fields) => fields.iter().any(nominal),
+            _ => false,
+        }
+    }
     match &ty.kind {
         // Full instance closure validates every actual (including unused
         // Basis values), original Nat roots and the existing finite limits.
@@ -69,6 +77,12 @@ fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
             let Kind::Q(checked) = &checked.kind else {
                 unreachable!("checked quantum constructor differs")
             };
+            if nominal(checked) {
+                return Err((
+                    ty.span,
+                    "quantum nominal owners require their typed native execution route",
+                ));
+            }
             self::ty(inner, checked)?;
         }
         _ => {}
@@ -125,14 +139,18 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             self::expr(&selection.selector)?;
             self::expr(&selection.target)?;
         }
-        ExprKind::Variant(_)
-        | ExprKind::Record(_)
-        | ExprKind::Field { .. }
-        | ExprKind::Match(_) => {
-            return Err((
-                expr.span,
-                "ordinary nominal values require their typed native transport",
-            ));
+        ExprKind::Variant(_) => {}
+        ExprKind::Record(record) => {
+            for field in &record.fields {
+                self::expr(&field.value)?;
+            }
+        }
+        ExprKind::Field { receiver, .. } => self::expr(receiver)?,
+        ExprKind::Match(selection) => {
+            self::expr(&selection.scrutinee)?;
+            for arm in &selection.arms {
+                block(&arm.body)?;
+            }
         }
         ExprKind::UnsupportedClosure(_) => {
             return Err((expr.span, "runtime closure values are unsupported"));

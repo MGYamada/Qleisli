@@ -28,7 +28,7 @@ impl BasisBinding {
 /// Preflight every retained copy before allocating the output description.
 /// Physical widths only bound storage; they never substitute for cardinality,
 /// nominal identity, logical coordinates or a native code-space equation.
-pub(in crate::frontend::specialize) fn describe(
+pub(in crate::frontend) fn describe(
     ty: &SourceType,
     charge: &mut impl FnMut(Span, usize) -> Result<()>,
 ) -> Result<Vec<Atom>> {

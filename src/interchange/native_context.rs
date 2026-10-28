@@ -9,6 +9,7 @@ pub(super) enum Mode {
     Ordinary,
     Contract,
     CarrierPure,
+    OrdinaryRoot,
     Hierarchy,
     HierarchyRequest,
     HierarchyFourier,
@@ -28,6 +29,7 @@ impl Mode {
             Self::Ordinary => "--qirf-native",
             Self::Contract => "--qirf-contract",
             Self::CarrierPure => "--carrier-pure-check",
+            Self::OrdinaryRoot => "--ordinary-root-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
             Self::HierarchyFourier => "--hierarchy-fourier-pending",
@@ -47,6 +49,7 @@ impl Mode {
             "--qirf-native" => Ok(Self::Ordinary),
             "--qirf-contract" => Ok(Self::Contract),
             "--carrier-pure-check" => Ok(Self::CarrierPure),
+            "--ordinary-root-check" => Ok(Self::OrdinaryRoot),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
             "--hierarchy-fourier-pending" => Ok(Self::HierarchyFourier),
@@ -64,7 +67,7 @@ impl Mode {
 
     fn status(self) -> &'static str {
         match self {
-            Self::Ordinary | Self::Contract | Self::CarrierPure => "accepted",
+            Self::Ordinary | Self::Contract | Self::CarrierPure | Self::OrdinaryRoot => "accepted",
             Self::Hierarchy
             | Self::HierarchyRequest
             | Self::HierarchyFourier
@@ -87,6 +90,7 @@ impl Mode {
             | Self::Instrument
             | Self::QpeInstrument => scope != Scope::Caller,
             Self::CarrierPure
+            | Self::OrdinaryRoot
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
@@ -240,6 +244,7 @@ mod tests {
             Mode::Ordinary,
             Mode::Contract,
             Mode::CarrierPure,
+            Mode::OrdinaryRoot,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
             Mode::HierarchyFourier,
@@ -256,6 +261,7 @@ mod tests {
             let scope = if matches!(
                 mode,
                 Mode::CarrierPure
+                    | Mode::OrdinaryRoot
                     | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument

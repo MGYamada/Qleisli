@@ -82,7 +82,7 @@ def check_documentation(root, package):
 
 def native_decision_counts(text):
     matches = re.findall(
-        r"^native decisions: ([0-9]+); independent requests checked: ([0-9]+)$",
+        r"^native decisions: ([0-9]+); native requests checked: ([0-9]+)$",
         text, re.MULTILINE,
     )
     require(len(matches) == 1, "Bell text check requires exactly one native count line")
@@ -164,7 +164,8 @@ def check(root, binary):
         checked = invoke("check", "bell")["result"]
         require(checked["checker_paths"] == [env["QLEISLI_KERNEL"]]
                 and checked["checker_identity"] == "unpinned"
-                and checked["entry"] == {"present": True, "request_checked": False}
+                and checked["entry"] == {"present": True, "request_checked": False,
+                                         "ordinary_result_checked": False}
                 and checked["source_preservation_verified"] is False
                 and "verified" not in checked,
                 "Bell JSON check did not report the actual checker and request-free scope")

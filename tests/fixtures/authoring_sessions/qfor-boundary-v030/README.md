@@ -42,3 +42,30 @@ GHZ/accumulator bodies are shared. `tests/qfor.rs` freshly compiles these inputs
 through the current selected Raw frontend, obtains native acceptance and checks
 the independent distributions. These active regressions never execute the
 historical archive or change its first sources and observations.
+
+## Informed fixed-Fourier first authoring, 2026-10-28
+
+The separate [archive](fixed-fourier-first.tar.xz),
+[index](fixed-fourier-first-index.json) and
+[observation summary](fixed-fourier-first-validation.json) preserve a two-qubit
+translation of the existing fixed `std::transform::qft2` sequence into a
+two-stage `qfor`. Its first source reaches an unsupported `qif` preparation
+expression before Raw/native checking. One separate repair replaces only that
+expression with the existing `controlled(s)` operation. The repaired source
+passes fresh structural acceptance and a separate exact native whole-matrix
+requirement `F4[y,x] = i^(x*y)/2`; a global minus phase is refused.
+
+The first diagnostic is an actual observation summary; its full combined build
+output was returned in the conversation, but separate first streams were not
+saved. The second observation retains complete streams and source/native
+identity windows. Original drivers, sources and locks are inert history.
+This is an informed one-repair study, separate from the Reference-only
+zero-repair comparison and any generic-QFT implementation or equivalence.
+
+The [maintained fixed source](../../frontend_v030/qfor/fixed-fourier/main.qli)
+has its own [edition manifest](../../frontend_v030/qfor/fixed-fourier/Qargo.toml)
+and preserves the repaired bytes. `tests/qfor.rs` checks all sixteen exact
+coefficients, full phase and output axes through fresh native acceptance.
+Its changed-axis graph first passes structural checking, then fails the
+independent F4 equation. No maximum-size case, floating-point identity claim,
+source-preservation theorem or new constitutional guarantee is introduced.

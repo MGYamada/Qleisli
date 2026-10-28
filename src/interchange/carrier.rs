@@ -67,7 +67,7 @@ fn number(value: &Value) -> Result<u32> {
 }
 
 impl Origin {
-    fn encode(&self) -> Value {
+    pub(super) fn encode(&self) -> Value {
         Value::object([
             ("module", text(&self.module)),
             ("declaration", text(&self.declaration)),
@@ -75,7 +75,7 @@ impl Origin {
         ])
     }
 
-    fn decode(value: &Value) -> Result<Self> {
+    pub(super) fn decode(value: &Value) -> Result<Self> {
         value.fields(&["module", "declaration", "source"])?;
         Ok(Self {
             module: value.field("module")?.text()?.into(),
@@ -86,7 +86,7 @@ impl Origin {
 }
 
 impl Atom {
-    fn encode(&self) -> Value {
+    pub(super) fn encode(&self) -> Value {
         let (tag, fields) = match self {
             Self::Unit => ("unit", vec![]),
             Self::Bit => ("bit", vec![]),
@@ -108,7 +108,7 @@ impl Atom {
         Value::object(std::iter::once(("tag", text(tag))).chain(fields))
     }
 
-    fn decode(value: &Value) -> Result<Self> {
+    pub(super) fn decode(value: &Value) -> Result<Self> {
         Ok(match value.field("tag")?.text()? {
             "unit" => {
                 value.fields(&["tag"])?;

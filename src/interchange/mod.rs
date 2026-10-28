@@ -14,6 +14,7 @@ pub(crate) mod json;
 pub mod native;
 mod native_context;
 mod native_packet;
+pub mod ordinary_root;
 pub mod pure_leaf;
 
 use codec::Codec;
@@ -354,6 +355,7 @@ fn export_inner(
     interface: Option<&RootInterface>,
     encoder: Encoder,
 ) -> Result<Vec<u8>> {
+    program.portable_artifact()?;
     if let Some(interface) = interface {
         check_interface(program, interface)?;
     }
@@ -892,6 +894,15 @@ fn decode_subject_with_carrier(
     budget: &mut Budget,
     carrier: Option<&carrier::Request>,
 ) -> Result<DecodedGraph> {
+    decode_subject_with_types(subject, budget, carrier, None)
+}
+
+fn decode_subject_with_types(
+    subject: &Arc<native::Subject>,
+    budget: &mut Budget,
+    carrier: Option<&carrier::Request>,
+    ordinary: Option<&ordinary_root::Request>,
+) -> Result<DecodedGraph> {
     let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
@@ -931,6 +942,30 @@ fn decode_subject_with_carrier(
             .map_err(|e| Error::limit(e.to_string()))?;
         for (index, (path, source)) in snapshot.iter().enumerate() {
             if carrier_source(request, path, source) {
+                identity_bytes = identity_bytes
+                    .checked_sub(path.len() + source.len())
+                    .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+                used.insert(index);
+            }
+        }
+    }
+    if let Some(request) = ordinary {
+        let bytes = snapshot
+            .iter()
+            .map(|(p, s)| p.len() + s.len())
+            .sum::<usize>();
+        budget
+            .charge((bytes + snapshot.len() + 1).saturating_mul(request.basis.len() + 2))
+            .map_err(|e| Error::limit(e.to_string()))?;
+        for (index, (path, source)) in snapshot.iter().enumerate() {
+            let referenced = path == &request.module
+                || request.basis.iter().any(|atom| match atom {
+                    carrier::Atom::Enum(origin, _) | carrier::Atom::Record(origin, _) => {
+                        &origin.module == path && &origin.source == source
+                    }
+                    _ => false,
+                });
+            if referenced {
                 identity_bytes = identity_bytes
                     .checked_sub(path.len() + source.len())
                     .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;

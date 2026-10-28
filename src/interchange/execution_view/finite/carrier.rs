@@ -3,7 +3,7 @@
 use super::*;
 use crate::interchange::carrier::{Atom, Interface, Origin, Owner, Request};
 
-fn origin(view: &mut View<'_>, value: &Origin) -> Result<()> {
+pub(super) fn origin(view: &mut View<'_>, value: &Origin) -> Result<()> {
     view.record("origin", 3, |w| {
         w.writer.text(&value.module)?;
         w.writer.text(&value.declaration)?;
@@ -11,7 +11,7 @@ fn origin(view: &mut View<'_>, value: &Origin) -> Result<()> {
     })
 }
 
-fn atom(view: &mut View<'_>, value: &Atom) -> Result<()> {
+pub(super) fn atom(view: &mut View<'_>, value: &Atom) -> Result<()> {
     match value {
         Atom::Unit => view.record("unit", 0, |_| Ok(())),
         Atom::Bit => view.record("bit", 0, |_| Ok(())),

@@ -1,6 +1,7 @@
 //! Independent small-system checks for explicit quantum-owner folds.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 // Fixture edition: "tests/fixtures/frontend_v030/qfor/reference-current/Qargo.toml".
+// Fixed Fourier edition: "tests/fixtures/frontend_v030/qfor/fixed-fourier/Qargo.toml".
 use qleisli::frontend::compile::ParsedProgram;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
@@ -11,6 +12,94 @@ fn parsed(source: &str) -> ParsedProgram {
         BTreeMap::from([("main".into(), source.into())]),
     )
     .unwrap()
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn informed_fixed_fourier_fold_keeps_full_matrix_phase_and_axes() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::edition::Edition;
+    use qleisli::interchange::pure_leaf::{PureBoundary, check_pure};
+
+    // Independently specify every F4[y,x] = i^(x*y)/2 coefficient. This is
+    // fixed two-qubit conformance, separate from the Reference-only study.
+    let entries = (0..4)
+        .flat_map(|y| {
+            (0..4).map(move |x| {
+                Exact::new(
+                    match (x * y) % 4 {
+                        0 => [1, 0, 0, 0],
+                        1 => [0, 0, 1, 0],
+                        2 => [-1, 0, 0, 0],
+                        _ => [0, 0, -1, 0],
+                    },
+                    1,
+                )
+                .unwrap()
+            })
+        })
+        .collect::<Vec<_>>();
+    let expected = Matrix::new(4, 4, entries.clone()).unwrap();
+    let wrong_phase = Matrix::new(
+        4,
+        4,
+        entries.iter().map(|value| value.neg().unwrap()).collect(),
+    )
+    .unwrap();
+    let source = include_str!("fixtures/frontend_v030/qfor/fixed-fourier/main.qli");
+    let wrong_axes = source.replace("join(b,a)", "join(a,b)");
+    assert_ne!(source, wrong_axes);
+    let kernel = qleisli::interchange::native::Kernel::selected(Edition::E2026).unwrap();
+    for (input, matches) in [(source, true), (wrong_axes.as_str(), false)] {
+        let proposal = parsed(input)
+            .instantiate("main::fourier2", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        // The altered-axis graph must itself pass structural acceptance;
+        // only the independent whole-matrix requirement distinguishes it.
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        let basis = BasisType::Pair(Box::new(BasisType::Bit), Box::new(BasisType::Bit));
+        let boundary = PureBoundary::new(
+            basis.clone(),
+            basis,
+            accepted.raw().quantum_inputs[0].clone(),
+            accepted.output_ports()[0].clone(),
+        )
+        .unwrap();
+        let payload = proposal.proposal().artifact();
+        let actual = check_pure(
+            Edition::E2026,
+            payload,
+            &boundary,
+            &expected,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        );
+        if matches {
+            assert!(actual.unwrap().matches(payload, &boundary, &expected));
+            assert!(
+                check_pure(
+                    Edition::E2026,
+                    payload,
+                    &boundary,
+                    &wrong_phase,
+                    &mut Budget::new(DEFAULT_EXACT_WORK),
+                )
+                .is_err()
+            );
+        } else {
+            assert!(
+                actual.is_err(),
+                "wrong output axes must fail the F4 equation"
+            );
+        }
+    }
 }
 
 #[cfg_attr(

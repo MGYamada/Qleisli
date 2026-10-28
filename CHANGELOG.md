@@ -6,10 +6,23 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Execute the first closed ordinary enum/record result slice through a versioned
+  native request. Bind the original declared result, complete storage tree,
+  exact output order and every hidden instrument history to the retained QDV
+  execution graph. Preserve zero-width nodes and conservative public effects.
+  Selected Raw, ordinary input domains, quantum nominal owners, full qmatch and
+  source-preservation proofs remain unfinished; #64 is not complete.
+- Check private closed nominal helpers through the same typed native root gate,
+  retaining their original visibility and distinct internal selection. Keep
+  exported roots public and private project main selection separate.
 - Retain an isolated Reference-only `qfor` authoring comparison: six first
   GHZ/arithmetic/phase-kickback sources and 48 actual observations. Both current
   and historical-surface cohorts needed zero author repairs in this bounded
   sample; preserve observer-only grammar/visibility translations and limits.
+- Preserve a separate informed fixed two-qubit Fourier fold's first refusal
+  and one repaired source. Check all sixteen exact F4 coefficients through the
+  native pure-leaf boundary, rejecting wrong phase and output axes. This keeps
+  fixed-QFT conformance separate from the excluded generic-QFT work.
 - Prove that successful original reference resolution retains the exact supplied
   query, every import edge, visibility guard and visited original binding.
   Preserve recovered first proof sources and fresh failed/repaired checks.

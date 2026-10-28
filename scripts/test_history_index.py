@@ -219,5 +219,127 @@ class QforReferenceFirstHistory(unittest.TestCase):
         self.assertIn('not historical compiler replay', summary['finding'])
 
 
+class QforFixedFourierFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first-index.json"
+    # "tests/fixtures/authoring_sessions/qfor-boundary-v030/fixed-fourier-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/qfor-boundary-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'fixed-fourier-first-index.json', 'fixed-fourier-first.tar.xz',
+                '7e1739b3848cc3ec3d1f6ea33662ba802d8a7093ad21077384c00f576fb7afe1',
+                4920, 'faf3c30829b3d082862d14b03f063e1da241971d543e139520caa1ce55bfddad',
+                16175)
+        cls.index = json.loads((cls.root / 'fixed-fourier-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_refusal_and_separate_repair_are_preserved(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (15, 12))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        first, repaired = self.raw('first/main.qli'), self.raw('attempt02/main.qli')
+        self.assertEqual(repaired, first.replace(
+            b'qif(a,b) { 0 => bit_identity, 1 => s }', b'controlled(s)(a,b)'))
+        maintained = history.ROOT / 'tests/fixtures/frontend_v030/qfor/fixed-fourier/main.qli'
+        self.assertEqual(maintained.read_bytes(), repaired)
+        failure = self.record('first-observation-summary.json')
+        self.assertEqual((failure['exit_code'], failure['code']), (101, 'unsupported'))
+        source = first.decode()
+        self.assertEqual(source[failure['span']['start']:failure['span']['end']],
+                         failure['original_slice'])
+        self.assertEqual(hashlib.sha256(first).hexdigest(), failure['source_sha256'])
+        self.assertIn('not originally captured as separate streams', failure['scope'])
+
+    def test_repaired_observation_retains_actual_exact_check_and_limits(self):
+        report = self.record('attempt02-observation.json')
+        self.assertEqual(report['exit_code'], 0)
+        self.assertEqual(report['before'], report['after'])
+        for suffix in ('attempt02/main.qli', 'driver02/src/main.rs'):
+            identity = next(value for path, value in report['before'].items()
+                            if path.endswith('/' + suffix))
+            self.assertEqual(hashlib.sha256(self.raw(suffix)).hexdigest(), identity)
+        self.assertIn(b'all16 exact coefficients and Gram checked', self.raw('attempt02.stdout'))
+        self.assertIn(b'global phase counterexample refused', self.raw('attempt02.stdout'))
+        plan = self.record('first-plan.json')
+        self.assertEqual(plan['authored_qubits'], 2)
+        self.assertIn('not a new isolated or zero-shot comparison', plan['kind'])
+
+
+class OrdinaryReviewFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/review-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/review-first-index.json"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/review-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'review-first-index.json', 'review-first.tar.xz',
+                'ec958e42892c79ea70cec046b136a3b72241aa066798b1fc92d888555f4d4924',
+                48124, 'b935e2df9ad637630d4d2da4bc422bd1423fdf00aafcef1a0549ff928f9a8859',
+                285552)
+        cls.index = json.loads((cls.root / 'review-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_private_helper_failures_and_public_controls_remain_exact(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (63, 35))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        report = self.record('ordinary-private-helpers-first/report.json')
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(len(report['observations']), 8)
+        for row in report['observations']:
+            expected = 0 if row['case'] == 'public-control' else 1
+            self.assertEqual(row['exit_code'], expected)
+            prefix = 'ordinary-private-helpers-first/' + row['case']
+            document = json.loads(self.raw(prefix + '-' + row['action'] + '.stdout'))
+            self.assertEqual(document, row['document'])
+            source = self.raw(prefix + '/main.qli')
+            path = next(path for path in report['before']
+                        if path.endswith('/' + row['case'] + '/main.qli'))
+            self.assertEqual(hashlib.sha256(source).hexdigest(), report['before'][path])
+            self.assertEqual(b'pub fn helper' in source, row['case'] == 'public-control')
+        self.assertIn(b'ordinary_result_checked', self.raw(
+            'ordinary-python-consumers-first/hosted-check-interop.log'))
+
+    def test_first_family_test_errors_and_separate_repair_are_not_production_claims(self):
+        first = self.record('ordinary-family-cases-first-validation/report.json')
+        self.assertEqual(first['status'], 'failed')
+        self.assertIn(b'unexpected identifier', self.raw(
+            'ordinary-family-cases-first-validation/FamilyCases.stdout'))
+        repaired = self.record('ordinary-family-cases-repair-validation/report.json')
+        self.assertEqual(repaired['status'], 'passed')
+        self.assertEqual(repaired['before'], repaired['after'])
+        self.assertEqual(len(repaired['commands']), 2)
+        self.assertTrue(all(row['exit_code'] == 0 for row in repaired['commands']))
+        self.assertIn(b'passed 12 complete input/all-history controls; at most one qubit', self.raw(
+            'ordinary-family-cases-repair-validation/FamilyCases.stdout'))
+        audit = json.loads(self.raw('ordinary-family-cases-repair-validation/FamilyAudit.stdout'))
+        self.assertEqual(audit['checked'], 373)
+        self.assertEqual(len(audit['required_theorems']), 9)
+        self.assertTrue(all(set(row['axioms']) <= {'propext', 'Classical.choice', 'Quot.sound'}
+                            for row in audit['declarations']))
+        for module in ('OrdinaryFamily', 'OrdinarySignature', 'OrdinaryDomain', 'OrdinaryInputSemantics'):
+            name = module + '.lean'
+            self.assertEqual(self.raw('ordinary-family-first/' + name),
+                             self.raw('ordinary-family-cases-syntax-repair/' + name))
+
+
 if __name__ == '__main__':
     unittest.main()

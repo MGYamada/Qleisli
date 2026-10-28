@@ -73,7 +73,7 @@ class InstallationNativeSummaryTests(unittest.TestCase):
     def test_positive_contract_counts_are_not_pinned_to_one_std_census(self):
         roots = {"local": 1, "bundled": 24}
         for count, requests in [(78, 2), (100, 4)]:
-            text = f"native decisions: {count}; independent requests checked: {requests}\n"
+            text = f"native decisions: {count}; native requests checked: {requests}\n"
             parsed = native_decision_counts(text)
             self.assertEqual(parsed, (count, requests))
             check_native_decision_summary(parsed, roots, {
@@ -81,7 +81,7 @@ class InstallationNativeSummaryTests(unittest.TestCase):
             })
 
     def test_missing_duplicate_malformed_zero_or_incomplete_text_counts_reject(self):
-        good = "native decisions: 78; independent requests checked: 2\n"
+        good = "native decisions: 78; native requests checked: 2\n"
         for text in [
             "", good + good, "prefix " + good,
             good.replace("78", "not-a-count"), good.replace("2\n", "0\n"),

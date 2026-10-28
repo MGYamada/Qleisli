@@ -295,6 +295,25 @@ FINITE_CARRIER_BOUNDARY = {
 }
 
 
+ORDINARY_RESULT_BOUNDARY = {
+    'id': 'ordinary-result', 'group': 'ordinary-result',
+    'entry_points': [
+        'interchange::ordinary_root::{Selection,Storage,Request}; Request::{encode,decode}',
+        'interchange::native::Kernel::check_ordinary_root',
+        'AcceptedProgram::{ordinary_result,portable_artifact}',
+        'ordinary project check/run with a closed ordinary result',
+    ],
+    'status': 'First closed ordinary-result native execution; general source preservation remains open',
+    'request': 'Strict qleisli.ordinary-root-request version 1 / finite-ordinary-root-v1: original project/exported selection, module/function, full nominal result basis, complete SSA storage tree and public effect. This is declared-result checking, not an independent algorithm specification.',
+    'binding': 'Fresh original entry/header/type read, original Raw root/dependencies/ownership/effect/scope gate, exact complete instrument reconstruction and independent ordinary-value interpretation over every actual hidden history. Storage must flatten to the exact original ordered classical outputs. QDV compares the same retained graph, selection, basis, storage and public effect; AcceptedProgram clones retain those exact typed objects.',
+    'encoding': 'Execution-only explicit-edition QLV3 with original QLV1 body/request, finite-ordinary-root-v1 QDV1 description and paired --ordinary-root-check / qleisli.native-result 3 context. Inspection/caller and old-mode fallback refuse. Portable exports refuse until complete typed transport exists.',
+    'domain': 'First zero-input closed ordinary-result slice, including finite enum/record construction, projection and exhaustive ordinary match. No quantum result carriers or ordinary input domains; general functions, selected Raw, quantum nominal owners and full qmatch remain pending. No source-body, decoder/native compiler/runtime/target preservation, inverse/control grant or new guarantee admission.',
+    'limits': 'Existing six-bit instrument/carrier, 128-node and depth-32 result type/storage profile; existing original source, exact arithmetic, 10M native work, 60s process, body/request and envelope capacities are unchanged. No maximum-size quantum case is introduced.',
+    'failure': 'Reject stale original identity/type/member order, invalid enum codes on any hidden history, altered field/axis/output order, zero-width node loss, hidden observation under pure labels, missing public effects, wrong scope/mode/edition/version and exceeded limits. Missing/failed native checker never falls back.',
+    'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
+}
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -481,6 +500,8 @@ def check(root=ROOT, data=None):
                 raise ValueError('unreviewed engineering-pure-tensor boundary contract')
             if boundary['id'] == 'finite-carrier' and boundary != FINITE_CARRIER_BOUNDARY:
                 raise ValueError('unreviewed finite-carrier boundary contract')
+            if boundary['id'] == 'ordinary-result' and boundary != ORDINARY_RESULT_BOUNDARY:
+                raise ValueError('unreviewed ordinary-result boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
             raise ValueError('duplicate boundary')
         if ('src/interchange/engineering_instrument.rs' in paths and
@@ -495,6 +516,9 @@ def check(root=ROOT, data=None):
         if ('src/interchange/carrier.rs' in paths and
                 'finite-carrier' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing finite-carrier public boundary')
+        if ('src/interchange/ordinary_root.rs' in paths and
+                'ordinary-result' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing ordinary-result public boundary')
         for capacity in data['capacities']:
             if set(capacity) != {'id','scope','value','source','test','replacement'} or capacity['source'] not in paths:
                 raise ValueError('incomplete capacity scope')

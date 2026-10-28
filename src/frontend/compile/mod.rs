@@ -963,13 +963,6 @@ fn prepare_original_source<'ast>(
             .collect(),
         SourceLimits::finite(),
         |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
-            check::require_nominal_transport(
-                project
-                    .modules
-                    .iter()
-                    .map(|(name, module)| (name.as_str(), &module.ast)),
-                |span, cells| budget.charge(span, cells),
-            )?;
             capture_original_plans(
                 project, resolution, interfaces, helpers, indices, budget, nominals,
             )

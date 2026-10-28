@@ -39,9 +39,7 @@ fn native_counts(text: &str) -> (usize, usize) {
         .filter_map(|line| line.strip_prefix("native decisions: "))
         .collect();
     assert_eq!(lines.len(), 1, "{text}");
-    let (decisions, requests) = lines[0]
-        .split_once("; independent requests checked: ")
-        .unwrap();
+    let (decisions, requests) = lines[0].split_once("; native requests checked: ").unwrap();
     for count in [decisions, requests] {
         assert!(
             !count.is_empty() && count.bytes().all(|byte| byte.is_ascii_digit()),
@@ -106,9 +104,9 @@ fn requestless_entry_and_mainless_library_have_explicit_success_scopes() {
         assert_json_native_counts(&json, counts);
         assert!(
             json.contains(if entry {
-                "\"entry\":{\"present\":true,\"request_checked\":false}"
+                "\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false}"
             } else {
-                "\"entry\":{\"present\":false,\"request_checked\":null}"
+                "\"entry\":{\"present\":false,\"request_checked\":null,\"ordinary_result_checked\":false}"
             }),
             "{json}"
         );
@@ -157,7 +155,7 @@ fn partial_meaning_requests_do_not_become_an_entry_request() {
     );
     let json = success(cli("check", &root.0, true));
     assert!(
-        json.contains("\"entry\":{\"present\":true,\"request_checked\":false}"),
+        json.contains("\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false}"),
         "{json}"
     );
     assert_json_native_counts(&json, counts);

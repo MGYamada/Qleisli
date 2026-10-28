@@ -410,6 +410,7 @@ mod tests {
         for remaining in [0, MAX_WORK] {
             compiler.work = MAX_WORK - remaining;
             let mut lower = Lowerer {
+                nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
                 compiler: &mut compiler,
                 raw: RawState::new(),
                 operation_sources: BTreeMap::new(),

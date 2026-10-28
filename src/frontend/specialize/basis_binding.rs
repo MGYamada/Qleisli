@@ -11,7 +11,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 mod carrier;
-pub(super) use carrier::describe as carrier_description_budgeted;
+pub(in crate::frontend) use carrier::describe as carrier_description_budgeted;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Selection {

@@ -425,6 +425,7 @@ mod tests {
 
     fn lowerer<'c, 'p>(compiler: &'c mut Compiler<'p>) -> Lowerer<'c, 'p> {
         Lowerer {
+            nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
             compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),

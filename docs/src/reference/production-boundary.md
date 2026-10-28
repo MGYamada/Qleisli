@@ -118,9 +118,44 @@ steps against the checked body. Its sealed `CheckedSourceCarrier` retains that
 source graph and always reports `source_meaning_verified() == false`.
 Descriptors and source preparation grant no acceptance. Neither this result nor
 the private native carrier holder converts to an ordinary execution handle or
-grants inverse/control access. Ordinary nominal runtime, match/qmatch and
+grants inverse/control access. The first closed ordinary-result runtime route
+is separate below; general nominal functions, quantum owners, full qmatch and
 original AST-to-step preservation remain unfinished. These component results
 admit no new guarantee and do not widen the two existing ledger scopes.
+
+### Closed ordinary-result requests
+
+The internal `--ordinary-root-check` mode accepts `qleisli.ordinary-root-request`
+version 1, profile `finite-ordinary-root-v1`. Its strict fields are `format`,
+`version`, `profile`, `selection`, `module`, `declaration`, `basis`, `storage`
+and `public_effect`. Project selection denotes exactly `main::main`, including
+a private ordinary main; exported selection requires an original public
+declaration. This first header reader requires zero parameters and a closed
+ordinary result. Ordinary inputs and quantum output carriers remain unsupported.
+
+The basis retains the existing complete nominal prefix representation. Storage
+separately retains Unit, Bit, Bits, pair, tuple, enum origin/SSA coordinates and
+record origin/ordered named children. Zero-width nodes cannot be discarded.
+The original declared result is freshly read and compared with the request.
+The same original Raw root/dependency/ownership/effect/scope checks run before
+complete exact instrument reconstruction. The storage reader interprets every
+actual hidden history using the independent ordinary-value relation; the exact
+flattened SSA map must equal the original Raw classical output list. An invalid
+enum code, changed nominal identity, reordered field/axis or hidden Observe under
+a pure label refuses. A declared public Observe bound is retained even for a
+pure implementation. Source rows require the actual selected original and
+exact checked nominal origins; unrelated rows retain the strict coverage rule.
+
+`Protocol.OrdinaryRoot.check_binding` retains the original packet, fresh
+artifact/request reads and actual root check. The execution-only QDV comparison
+and native dispatcher retain this binding through `CheckedOrdinaryRoot` and
+`run_typed_ordinary_binding`. The private accepted program retains the same
+typed request and graph. Untyped rechecking and portable export refuse until
+the complete typed artifact transport exists. Existing six-bit instrument and
+carrier/work limits remain. Text/JSON reports distinguish this declared
+result/history check from an independent external algorithm specification.
+No source-body, decoder/native compiler, simulator or target preservation
+theorem, external schema, inverse/control capability or new guarantee follows.
 
 ### Rectangular pure-leaf requests
 

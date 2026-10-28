@@ -1,0 +1,26 @@
+{
+  "format": "qleisli.ordinary-review-first-retention",
+  "status": "observed-history-not-issue-complete",
+  "index": {
+    "path": "review-first-index.json",
+    "bytes": 26656,
+    "sha256": "ec958e42892c79ea70cec046b136a3b72241aa066798b1fc92d888555f4d4924"
+  },
+  "archive": {
+    "path": "review-first.tar.xz",
+    "bytes": 48124,
+    "sha256": "b935e2df9ad637630d4d2da4bc422bd1423fdf00aafcef1a0549ff928f9a8859"
+  },
+  "originals": 63,
+  "objects": 35,
+  "expanded_bytes": 285552,
+  "observed": {
+    "review_comment": 4390964254,
+    "private_helper_refusals": 6,
+    "public_helper_successes": 2,
+    "candidate_family_controls": 12,
+    "candidate_compiled_declarations_audited": 373,
+    "candidate_control_maximum_qubits": 1
+  },
+  "limits": "Original private-helper projects and all eight actual CLI streams are preserved without publicizing private helpers. The decoded hosted Python-consumer failure and three original active consumers are retained; the separate local CLI reproduction was returned in the tool conversation but not captured as original separate streams. The complete-input family is a candidate component over retained imports: its first test-driver syntax errors and separate formatting repair are preserved. All original component sources and repaired control/audit streams are inert history. No general input runtime, source/body preservation, binary attestation, new guarantee, Issue completion or release approval follows from these records."
+}

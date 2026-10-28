@@ -43,7 +43,7 @@ hierarchy payload retains its original bridge encoding. These inner payloads
 are checked by the existing definitions. Neither is accepted as an unwrapped
 external request after cutover. No compatibility retry is permitted.
 
-All fourteen native modes use `qleisli.native-result 3`. Successful replies
+All fifteen native modes use `qleisli.native-result 3`. Successful replies
 contain, one per line: claim (`accepted`, `pending`, `engineering-checked` or
 `checked`), checked edition, compiled complete product version, canonical mode
 argument, checked scope, and the mode's unchanged payload fields. A final
@@ -58,6 +58,17 @@ required ordered owner forests, public effects and exact logical matrix.
 Its private component result grants no ordinary source execution or
 source-preservation claim; the [carrier boundary](production-boundary.md#finite-nominal-carrier-requests)
 states the checked equations and remaining obligations.
+
+The internal `--ordinary-root-check` mode also requires execution scope. Its
+`finite-ordinary-root-v1` record contains the actual graph, project/exported
+selection, original module/function, full result basis, typed SSA storage tree
+and public effect. Lean freshly reads and checks the original declared result
+and every complete exact instrument history before comparing this description.
+The retained Rust program keeps the same graph and typed request objects.
+An inspection/caller packet or an old-mode retry cannot authorize it. This
+first closed ordinary-result slice supplies no original-body or numerical
+runtime preservation theorem; see the
+[ordinary-result boundary](production-boundary.md#closed-ordinary-result-requests).
 
 Errors contain only the header, `error`, the rejection code and final newline;
 they assert no successfully checked context. Hierarchy finite-decoder errors retain

@@ -761,12 +761,40 @@ These preparation limits are not a discharged quantitative RS theorem.
 Complete original type/body/effect preparation now retains nominal declarations;
 it does not silently omit their unused functions or quantum effects. A host Basis
 description and an `Instantiation` remain untrusted preparation data. Ordinary
-nominal source execution still requires its typed native route: both concrete
-adapters explicitly reject source collections containing these declarations
-before execution proposal generation. Thus `--type=A=labels::Tri` can reach its
-actual public-name/source checks, then the remaining transport refusal. This
-does not enable ordinary nominal execution, nominal `match`/`qmatch` or a
-source-preservation theorem, and it grants no inverse/control access.
+nominal source execution requires a typed native route. The ordinary project
+adapter now supports the first closed ordinary-result slice described below.
+The selected Raw adapter retains its declaration transport refusal, so
+`--type=A=labels::Tri` still reaches its actual name/source checks before that
+refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
+proofs remain pending; no inverse/control access follows from preparation.
+
+For a closed ordinary project root, the internal `finite-ordinary-root-v1`
+request retains the original selected function, complete nominal result tree,
+classical SSA storage and public effect. Lean independently reads the original
+header/type, checks original nominal declarations and the actual Raw root,
+reconstructs every hidden instrument history and interprets the complete output
+storage over each history. The flattened storage must equal the actual ordered
+classical outputs exactly. Changing enum axes, record field order, nominal
+identity or zero-width nodes refuses. This retains the existing six-bit,
+128-node and depth-32 type profile; it does not replace the broader finite
+language's twelve-bit contract. Ordinary input domains and quantum input/output
+carriers are not enabled by this first closed-result component.
+
+The ordinary project frontend may therefore construct enum/record values,
+project fields and execute exhaustive ordinary `match` inside an eligible closed
+root. QLV3 compares the actual retained graph, selected entry, result type,
+storage and effect with Lean's fresh description before issuing its private
+accepted program. Clones retain those typed objects; untyped rechecking rejects
+this mode. Text/JSON check reports identify ordinary-result checking separately
+from an external algorithm specification. Runtime output distributions retain
+the declared low-axis-first classical output order. Original AST lowering,
+decoder/native compiler and numerical runtime preservation are not proved by
+this gate. General nominal functions and the selected Raw route remain pending.
+Nominal constructor visits in nested calls and branches also select this typed
+route when the final result is a built-in type. Body-only nominal modules must
+already be retained by the selected original or result origins; other intermediate
+nominal dependencies refuse explicitly until their full typed transport exists.
+They cannot fall back to ordinary untyped Raw acceptance.
 
 The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
 has a separate bounded, check-only route. It uses the same common judgment,
@@ -806,9 +834,8 @@ with no implicit decomposition or observation. Initializer calls retain their
 normal effects, dependencies and ownership transitions, so observation cannot
 be hidden behind a Unitary/Isometry annotation. Empty records and singleton
 enums are distinct from Unit and Bits<0>. Shorthand, record updates, methods
-and general const<T> remain outside these forms. Concrete nominal lowering,
-typed native value transport and source correspondence remain required before
-execution; successful common preparation supplies no accepted handle.
+and general const<T> remain outside these forms. Execution requires the actual
+typed route above; successful common preparation supplies no accepted handle.
 
 Common preparation checks `match value { Type::A => expression, ... }` in
 both ordinary expression grammars. The scrutinee must have an ordinary enum
@@ -825,9 +852,10 @@ type tree, and each arm preserves the same outer owner frame, including
 zero-width owners. Calls and observation in any arm contribute their normal
 dependencies and effects; constant selection cannot hide an observing body
 behind a pure public label. A live `Q<T>` cannot be inspected by ordinary match.
-These source judgments retain the existing nominal execution refusal until
-typed native value transport and its actual runtime correspondence are connected.
-They provide no implicit measurement, coherent `qmatch`, general `const<T>` or
+These source judgments provide no accepted handle independently of the concrete
+route. The selected adapter retains its transport refusal; the eligible ordinary
+project route uses the complete native result/history gate above. Neither
+provides implicit measurement, coherent `qmatch`, general `const<T>` or a
 source-preservation theorem.
 
 The coherent [exact-label `qmatch` form](source-text.md#exact-label-coherent-selection)
@@ -847,9 +875,10 @@ internal producer; they do not require enumeration of physical label tables.
 Preparation defers tables whose parameter/result types contain nominal nodes,
 while existing built-in tables remain eager. Actual coherent basis, Meaning and
 predicate table consumers retain an explicit unsupported result for those
-nominal interfaces. This preparation change keeps the public nominal execution
-gate closed and does not supply typed native value transport or source-to-Raw
-preservation. Built-in-signature bodies with nominal intermediates retain their
+nominal interfaces. This preparation change alone supplies no accepted value
+transport or source-to-Raw preservation. Eligible closed ordinary roots
+additionally use the native result/history gate above. Built-in-signature bodies
+with nominal intermediates retain their
 existing table-preparation limitation.
 
 Before specialization, both paths enforce the common 1,000,000-work budget

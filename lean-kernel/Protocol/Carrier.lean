@@ -12,7 +12,7 @@ open Lean Finite Semantics.FiniteCarrier Semantics.CarrierInterface Semantics.Ex
 private def adapt {α : Type} (result : Except String α) : WorkM α :=
   lift (result.mapError fun _ => .invalid)
 
-private def fields (value : Json) (names : List String) : Except String Unit := do
+def fields (value : Json) (names : List String) : Except String Unit := do
   let actual := (← value.getObj?).toList.map (·.1)
   if actual.length != names.length || !actual.all names.contains then throw "unexpected carrier fields"
 
@@ -23,12 +23,12 @@ private def number (value : Json) : Except String Nat := do
   if n > 4294967295 then throw "carrier index exceeds u32"
   return n
 
-private def origin (value : Json) : Except String Origin := do
+def origin (value : Json) : Except String Origin := do
   fields value ["module","declaration","source"]
   return ⟨← text (← field value "module"),← text (← field value "declaration"),
     ← text (← field value "source")⟩
 
-private def atom (value : Json) : Except String Atom := do
+def atom (value : Json) : Except String Atom := do
   match ← text (← field value "tag") with
   | "unit" => fields value ["tag"]; return .unit
   | "bit" => fields value ["tag"]; return .bit
