@@ -991,10 +991,10 @@ fn prepare_original_source<'ast>(
     })
 }
 
-fn prepare_borrowed_originals<'ast>(
-    originals: Originals<'ast>,
+fn prepare_borrowed_originals(
+    originals: Originals<'_>,
     limits: SourceLimits,
-) -> Result<PreparedSource<'ast>, CompileError> {
+) -> Result<PreparedSource<'_>, CompileError> {
     let (source, (occurrences, interface_naturals)) = check::program_with_sources(
         originals
             .modules()
