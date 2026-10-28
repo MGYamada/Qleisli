@@ -190,3 +190,24 @@ Exact source objects bind those repaired windows. The native checker closure is
 unchanged; these tests are not a fresh proof replay or binary attestation.
 Passive history tests read saved bytes only. #64/#195 and the remaining generic,
 quantum, qmatch and preservation obligations remain open.
+
+## Dormant operation table demand
+
+The separate [table-demand index](dormant-tables-first-index.json.gz),
+[inert archive](dormant-tables-first.tar.xz) and
+[validation](dormant-tables-first-validation.json) retain140 original records as87
+objects. Twelve first calls distinguish three valid selected-operation refusals,
+an already working controlled example, an unsupported nominal table and an
+unrelated large ordinary-table control. Their original diagnostics remain exact.
+The twelve unchanged-source after calls have nine successes and three required
+refusals, with no source repairs or quantum runtime execution.
+
+Actual table consumers prepare only their original classical callee closure,
+through the existing builder and limits, restoring the prior source owner.
+The packet also preserves the earlier hosted CI target-inventory refusal,
+its local reproduction, separate scheduling repair and the first stale expected
+target-count test failure. None is reclassified as a successful test.
+Normal and MSRV each pass139 focused/native tests, with133 compiler tests and
+strict all-target Clippy checked separately. Exact source objects bind each
+window; passive history checks never execute saved code. Native/proof coverage,
+admissions and unfinished #64/#195 obligations retain their separate status.

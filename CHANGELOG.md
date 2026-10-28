@@ -21,6 +21,8 @@ development milestones from the scope of their evidence.
   prepare original Meaning/body dependencies before visiting unused obligations.
   Explicit public `main` selections retain exported-function eligibility.
   Include selected ordinary integration tests in both complete CI partitions.
+  Prepare predicate tables and their classical callees when dormant operation
+  bodies actually consume them, retaining unrelated-table and nominal refusals.
   Align the source Reference with those executable paths and repair the
   ordinary input/result boundary link.
 - Execute the first closed ordinary enum/record result slice through a versioned

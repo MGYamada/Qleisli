@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.selected-dormant-tables-first",
+  "version": 1,
+  "scope": "Inert second PR443 review history: actual missing dormant predicate-table refusals, working controlled control, separate unchanged-source repair, nominal-table unsupported refusal and unrelated-table compatibility. Also retain the actual prior CI target-selection failures and separate repair. No saved source/command executes, no new native/proof/admission scope or Issue completion.",
+  "original_files": 140,
+  "objects": 87,
+  "expanded_bytes": 1592308,
+  "index": {
+    "bytes": 7910,
+    "sha256": "ca99dc3ccd971ffc22be2f1961303ae8fd619d6b552d285d658a2a47ff906a05",
+    "decoded_bytes": 62314,
+    "decoded_sha256": "3297c4fecc762ae00b4cf89e0c90b9045b1c21d3301d012ada486c8bd0756352"
+  },
+  "archive": {
+    "bytes": 288284,
+    "sha256": "ecb7e0ea4ec700509ff2d2bcb59fc884af0f5544b18f8dc3a1f85581dfe8f1cb"
+  }
+}

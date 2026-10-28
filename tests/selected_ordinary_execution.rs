@@ -331,6 +331,83 @@ fn selected_main_uses_exported_eligibility_while_project_main_keeps_its_contract
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_ordinary_prepares_only_tables_demanded_by_dormant_operations() {
+    let kernel = Kernel::new(kernel(), Edition::E2026);
+    for predicate in [
+        "classical fn predicate(b:Bit)->Bit{b}",
+        "classical fn helper(b:Bit)->Bit{not b}classical fn predicate(b:Bit)->Bit{helper(b)}",
+    ] {
+        for controlled in [false, true] {
+            let dormant = if controlled {
+                "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+                 unitary fn unused(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(s,q){0=>keep,1=>oracle}}"
+            } else {
+                "unitary fn run[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+                 unitary fn unused(q:Q<Bit>)->Q<Bit>{run[oracle](q)}"
+            };
+            let source = format!(
+                "use std::gate::z;pub struct Empty{{}}pub fn choose()->Bit{{0}}
+                 {predicate}
+                 unitary fn oracle(q:Q<Bit>)->Q<Bit>{{with_computed(q,predicate){{|a|z(a)}}}}
+                 {dormant}"
+            );
+            let checked = instance(&[("main", &source)])
+                .compile_ordinary_with_kernel(&kernel)
+                .unwrap();
+            assert_eq!(
+                run_closed(checked.program(), SimulationLimits::default()).unwrap(),
+                BTreeMap::from([(vec![false], 1.0)])
+            );
+        }
+    }
+    let imported = instance(&[
+        (
+            "main",
+            "use oracle::oracle;pub struct Empty{}pub fn choose()->Bit{0}
+             unitary fn run[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+             unitary fn unused(q:Q<Bit>)->Q<Bit>{run[oracle](q)}",
+        ),
+        (
+            "oracle",
+            "use std::gate::z;use predicate::predicate;
+             pub unitary fn oracle(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|z(a)}}",
+        ),
+        (
+            "predicate",
+            "classical fn helper(b:Bit)->Bit{not b}
+             pub classical fn predicate(b:Bit)->Bit{helper(b)}",
+        ),
+    ]);
+    assert!(imported.compile_ordinary_with_kernel(&kernel).is_ok());
+    let nominal = instance(&[(
+        "main",
+        "use std::gate::z;pub struct Empty{}enum E{A}pub fn choose()->Bit{0}
+         classical fn predicate(b:Bit)->Bit{match E::A{E::A=>b}}
+         unitary fn oracle(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|z(a)}}
+         unitary fn run[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+         unitary fn unused(q:Q<Bit>)->Q<Bit>{run[oracle](q)}",
+    )]);
+    let refused = nominal.compile_ordinary_with_kernel(&kernel).unwrap_err();
+    assert_eq!(refused.code, "unsupported");
+    assert!(
+        refused
+            .message
+            .contains("finite tables require closed built-in")
+    );
+    let unrelated = instance(&[(
+        "main",
+        "pub struct Empty{}pub fn choose()->Bit{0}
+         classical fn passthrough(value:Bits<13>)->Bits<13>{value}
+         fn unused(head:Bit,tail:Bits<12>)->Bits<13>{passthrough(prepend_bit[12](head,tail))}",
+    )]);
+    assert!(unrelated.compile_ordinary_with_kernel(&kernel).is_ok());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_ordinary_refuses_quantum_and_generic_routes_without_fallback() {
     let program = ParsedProgram::parse(
         Edition::E2026,

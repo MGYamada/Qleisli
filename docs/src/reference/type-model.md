@@ -929,7 +929,10 @@ Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.
 Preparation defers tables whose parameter/result types contain nominal nodes
 or whose original resolved bodies use nominal values, including through
-classical callees. Supported built-in-only tables remain eager. Actual coherent
+classical callees. Project preparation keeps supported built-in-only tables
+eager. When a selected dormant operation reaches a concrete table consumer,
+preparation follows only that original classical function and its classical
+callees; unrelated declarations do not become table roots. Actual coherent
 basis, Meaning and predicate table consumers retain an explicit unsupported
 result for these deferred tables. This preparation change alone supplies no
 accepted value transport or source-to-Raw preservation. Eligible closed ordinary

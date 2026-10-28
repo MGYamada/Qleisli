@@ -58,6 +58,8 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             ));
         };
+        self.compiler
+            .prepare_required_classical_table(key, module, function.span)?;
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
             self.compiler.missing_basis_error(
                 module,

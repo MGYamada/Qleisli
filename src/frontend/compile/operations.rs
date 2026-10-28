@@ -298,6 +298,7 @@ impl Compiler<'_> {
                 "meaning requires an ordinary total classical function",
             ));
         };
+        self.prepare_required_classical_table(fkey, &key_name.0, function.span)?;
         let f = self.basis.get(&fkey).ok_or_else(|| {
             self.missing_basis_error(
                 &key_name.0,

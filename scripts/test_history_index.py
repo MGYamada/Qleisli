@@ -741,5 +741,71 @@ class SelectedOrdinaryReviewHistory(unittest.TestCase):
                               self.raw(prefix + row['label'] + '/stdout'))
 
 
+class SelectedDormantTableHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'dormant-tables-first-index.json.gz', 'dormant-tables-first.tar.xz',
+                'ca99dc3ccd971ffc22be2f1961303ae8fd619d6b552d285d658a2a47ff906a05',
+                288284, 'ecb7e0ea4ec700509ff2d2bcb59fc884af0f5544b18f8dc3a1f85581dfe8f1cb',
+                1592308, index_gzip=dict(bytes=7910, decoded_bytes=62314,
+                    decoded_sha256='3297c4fecc762ae00b4cf89e0c90b9045b1c21d3301d012ada486c8bd0756352'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'dormant-tables-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_missing_tables_controls_and_unchanged_after_sources_remain_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (140, 87))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, successes in [('selected-dormant-tables-first', 6), ('selected-dormant-tables-after', 9)]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual((report['source_repairs'], report['new_quantum_bits_executed']), (0, 0))
+            self.assertEqual((len(report['results']), sum(row['exit_code'] == 0 for row in report['results'])),
+                             (12, successes))
+            for row in report['results']:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+                self.assertEqual(json.loads(self.raw(folder + '/' + row['stdout']['path'])), row['document'])
+                original = row.get('first', row)
+                if original['case'] == 'controlled-computed':
+                    self.assertEqual(row['exit_code'], 0)  # Already worked before the repair.
+                if folder.endswith('-after') and original['case'] == 'nominal-table-refusal':
+                    self.assertEqual(row['document']['diagnostics'][0]['code'], 'unsupported')
+
+    def test_repaired_windows_bind_the_actual_source_and_current_ci_failure_remains_a_failure(self):
+        prefix = 'selected-ordinary-port-checks/'
+        reviewed = self.record('selected-dormant-table-metadata-review.json')['changed']
+        self.assertEqual(len(reviewed), 4)
+        for row in self.record('selected-dormant-table-validation-batch.json'):
+            report = self.record(prefix + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            for source in reviewed:
+                self.assertEqual(report['before'][source['path']], source['after'])
+                self.assertFalse(source['public_surface_changed'])
+            if not row['label'].endswith('-lint'):
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw(prefix + row['label'] + '/stdout'))
+        self.assertEqual(self.record(prefix + 'review-ci-partition-before-normal/report.json')['exit_code'], 1)
+        for label in ['review-ci-partition-after-normal', 'review-ci-partition-after-msrv']:
+            self.assertEqual(self.record(prefix + label + '/report.json')['exit_code'], 0)
+        self.assertIn(b'integration partition differs from complete Cargo target inventory',
+                      self.raw('pr443-cafed1-rust-remaining-failure.log'))
+        self.assertEqual(self.record('selected-ci-partition-repair-first.json')['first_updated_manifest_test']['exit_code'], 1)
+
+
 if __name__ == '__main__':
     unittest.main()

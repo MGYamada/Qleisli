@@ -1869,6 +1869,8 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             )?);
         };
+        self.compiler
+            .prepare_required_classical_table(key, module, function.span)?;
         let Some(predicate) = self.compiler.basis.get(&key) else {
             let (code, message) = self
                 .compiler
