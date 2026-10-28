@@ -26,6 +26,15 @@ facts with a different check's indices or fabricates a nongeneric source header.
 `SelectedOrdinaryProgram` retains that immutable instantiation and the actual
 accepted artifact/request. Its source check covers every supplied declaration;
 concrete eligibility and root acceptance concern the selected dependency closure.
+Closed function-equality and Meaning obligations in unused declarations and
+zero-count regions use the existing shared finite evidence gates before a
+selected result is returned. Their original Meaning, table and native body
+dependencies are prepared in dependency order, including references outside
+the selected closure. Each dependency retains its actual original declaration;
+source checking alone does not discharge those semantic obligations.
+An explicit public `main::main` selection uses exported-function eligibility.
+Project invocation retains its separate nullary ordinary-main contract, and
+private project mains do not become exported selections.
 The first selected profile permits classical Raw instructions only, with
 eight-bit words, 1024 function expansions, depth 16, 10000 Raw instructions and
 a conservative 100000-unit producer-work ceiling. Existing source, metadata and

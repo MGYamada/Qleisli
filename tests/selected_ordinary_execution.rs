@@ -4,7 +4,7 @@
 mod common;
 use common::SourceRoot;
 use qleisli::edition::Edition;
-use qleisli::frontend::compile::{Instantiation, ParsedProgram};
+use qleisli::frontend::compile::{self, Instantiation, ParsedProgram};
 use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
@@ -130,6 +130,200 @@ fn selected_ordinary_keeps_import_paths_and_every_nominal_input_row() {
             .is_err()
         );
     }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_ordinary_discharges_unused_function_equalities_in_both_effect_profiles() {
+    let kernel = Kernel::new(kernel(), Edition::E2026);
+    for observing in [false, true] {
+        for honest in [false, true] {
+            for dead_branch in [false, true] {
+                let (kind, result, implementation, reference) = if observing {
+                    (
+                        "observe",
+                        "Bit",
+                        "measure_z(q)",
+                        if honest {
+                            "measure_z(q)"
+                        } else {
+                            "measure_z(h(q))"
+                        },
+                    )
+                } else {
+                    ("unitary", "Q<Bit>", "q", if honest { "q" } else { "h(q)" })
+                };
+                let contract = "apply_contract(implementation,reference,q)";
+                let body = if dead_branch {
+                    format!("if 0 {{{contract}}}else{{{implementation}}}")
+                } else {
+                    contract.into()
+                };
+                let source = format!(
+                    "pub struct Empty{{}} pub fn choose()->Bit{{0}}
+                    {kind} fn implementation(q:Q<Bit>)->{result}{{{implementation}}}
+                    {kind} fn reference(q:Q<Bit>)->{result}{{{reference}}}
+                    {kind} fn unused[const U:Op<Bit>](q:Q<Bit>)->{result}{{{body}}}"
+                );
+                let original = instance(&[("main", &source)]);
+                let checked = original.compile_ordinary_with_kernel(&kernel);
+                if honest {
+                    assert_eq!(
+                        run_closed(checked.unwrap().program(), SimulationLimits::default())
+                            .unwrap(),
+                        BTreeMap::from([(vec![false], 1.0)])
+                    );
+                } else {
+                    assert_eq!(checked.unwrap_err().code, "contract");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_ordinary_prepares_meanings_for_unused_refined_and_zero_repeat_operations() {
+    let kernel = Kernel::new(kernel(), Edition::E2026);
+    for mode in 0..4 {
+        for honest in [false, true] {
+            let parameter = if mode == 1 { "Op<Bit,Flip>" } else { "Op<Bit>" };
+            let actual = match mode {
+                0 | 3 => "checked_op(implementation,Flip)",
+                1 => "implementation",
+                _ => "power(checked_op(implementation,Flip),0)",
+            };
+            let meaning = if mode == 3 {
+                "unitary fn reference(q:Q<Bit>)->Q<Bit>{x(q)} meaning Flip:Bit=reference(reference);"
+            } else {
+                "classical fn flip(b:Bit)->Bit{not b} meaning Flip:Bit=permutation_by(flip);"
+            };
+            let source = format!(
+                "use std::gate::x; pub struct Empty{{}}
+                {meaning}
+                unitary fn implementation(q:Q<Bit>)->Q<Bit>{{{}}}
+                unitary fn run[const U:{parameter}](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
+                unitary fn unused(q:Q<Bit>)->Q<Bit>{{run[{actual}](q)}}
+                pub fn choose()->Bit{{0}}",
+                if honest { "x(q)" } else { "q" }
+            );
+            let original = instance(&[("main", &source)]);
+            let checked = original.compile_ordinary_with_kernel(&kernel);
+            if honest {
+                assert!(checked.is_ok(), "{checked:?}");
+            } else {
+                assert_eq!(checked.unwrap_err().code, "contract");
+            }
+        }
+    }
+    // Meaning preparation follows original import/declaration dependencies;
+    // an alias spelling cannot replace the canonical Meaning definition.
+    let original = instance(&[
+        (
+            "main",
+            "use facade::Flip;use implementation::gate;pub struct Empty{} pub fn choose()->Bit{0}
+         unitary fn run[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+         unitary fn unused(q:Q<Bit>)->Q<Bit>{run[gate](q)}",
+        ),
+        ("facade", "pub use oracle::Flip;"),
+        (
+            "oracle",
+            "classical fn flip(b:Bit)->Bit{not b}pub meaning Flip:Bit=permutation_by(flip);",
+        ),
+        (
+            "implementation",
+            "use std::gate::x;pub unitary fn gate(q:Q<Bit>)->Q<Bit>{x(q)}",
+        ),
+    ]);
+    assert!(original.compile_ordinary_with_kernel(&kernel).is_ok());
+    // The global dormant pass skips primitive-call plans. Such a site must
+    // not make its unused owner's unrelated table a concrete selected root.
+    let source = "pub struct Empty{} pub fn choose()->Bit{0}
+        classical fn passthrough(value:Bits<13>)->Bits<13>{value}
+        fn unused(head:Bit,tail:Bits<12>)->Bits<13>{passthrough(prepend_bit[12](head,tail))}";
+    assert!(
+        instance(&[("main", source)])
+            .compile_ordinary_with_kernel(&kernel)
+            .is_ok()
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_main_uses_exported_eligibility_while_project_main_keeps_its_contract() {
+    let kernel = Kernel::new(kernel(), Edition::E2026);
+    for text in [
+        "pub enum Tri{A,B,C}pub fn main(value:Tri)->Tri{value}",
+        "pub enum Tri{A,B,C}pub classical fn main()->Bit{0}",
+    ] {
+        let parsed = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+        .unwrap();
+        let source = parsed
+            .instantiate_ordinary_with_types(
+                "main::main",
+                Default::default(),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap();
+        let checked = source.compile_ordinary_with_kernel(&kernel).unwrap();
+        assert_eq!(
+            checked.program().ordinary_result().unwrap().selection,
+            qleisli::interchange::ordinary_root::Selection::Exported
+        );
+        if checked.runtime_parameters() == 0 {
+            assert_eq!(
+                run_closed(checked.program(), SimulationLimits::default()).unwrap(),
+                BTreeMap::from([(vec![false], 1.0)])
+            );
+        } else {
+            assert_eq!(
+                checked
+                    .program()
+                    .ordinary_result()
+                    .unwrap()
+                    .input_rows
+                    .len(),
+                3
+            );
+            assert!(run_closed(checked.program(), SimulationLimits::default()).is_err());
+        }
+        assert_eq!(
+            compile::compile_project(&SourceRoot::new(text).0)
+                .unwrap_err()
+                .code,
+            compile::ErrorCode::InvalidEntry
+        );
+    }
+    let private = "pub struct Empty{}fn main()->Bit{0}";
+    assert!(compile::compile_project(&SourceRoot::new(private).0).is_ok());
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), private.into())]),
+    )
+    .unwrap();
+    assert!(
+        parsed
+            .instantiate_ordinary_with_types(
+                "main::main",
+                Default::default(),
+                Default::default(),
+                Default::default()
+            )
+            .is_err()
+    );
 }
 
 #[test]

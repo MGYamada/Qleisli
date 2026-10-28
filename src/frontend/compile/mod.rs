@@ -229,6 +229,7 @@ struct Compiler<'a> {
     locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
     force_ordinary_root: bool,
+    selected_entry: Option<Key>,
     selected_calls: usize,
     basis: BTreeMap<Key, BasisFunction>,
     // Ordinary nominal calls use bodies; physical label tables stay unavailable.
@@ -1085,6 +1086,7 @@ fn process_loaded_project_details(
         interface_naturals,
         declarations,
         force_ordinary_root: false,
+        selected_entry: None,
         selected_calls: 0,
         locals,
         basis: BTreeMap::new(),
@@ -1166,49 +1168,7 @@ fn process_loaded_project_details(
     }
     compiler.check_dormant_operations()?;
     compiler.check_dormant_controls()?;
-    // FunctionEquality names closed pairs even inside an unused generic body
-    // or a zero-count branch. Source checking is not their semantic discharge.
-    for ordinal in 0..compiler.source.obligations.len() {
-        let obligation = &compiler.source.obligations[ordinal];
-        if let check::ObligationKind::FunctionEquality {
-            implementation,
-            specification,
-        } = &obligation.kind
-        {
-            // Read the existing record; do not clone or remove its obligation.
-            let (definition, span, implementation, specification) = (
-                obligation.definition,
-                obligation.span,
-                *implementation,
-                *specification,
-            );
-            compiler.checking = Some(definition);
-            let module = compiler
-                .source
-                .resolution
-                .declaration(definition)
-                .name
-                .0
-                .clone();
-            if compiler.effect_in_module(&module, implementation)
-                == Some(crate::ir::Effect::Observe)
-            {
-                compiler.instrument_contract_evidence(
-                    &module,
-                    span,
-                    implementation,
-                    specification,
-                )?;
-            } else {
-                compiler.function_contract_evidence(
-                    &module,
-                    span,
-                    implementation,
-                    specification,
-                )?;
-            }
-        }
-    }
+    compiler.check_dormant_function_contracts()?;
     let effects = compiler
         .source
         .effects
@@ -1423,6 +1383,7 @@ mod snapshot_tests {
             interface_naturals,
             declarations,
             force_ordinary_root: false,
+            selected_entry: None,
             selected_calls: 0,
             locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),

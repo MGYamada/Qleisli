@@ -112,6 +112,7 @@ fn process(
         locals: Forest::from_occurrences(occurrences),
         declarations,
         force_ordinary_root: true,
+        selected_entry: Some(entry),
         selected_calls: 0,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
@@ -171,19 +172,20 @@ fn process(
         }
     }
     compiler.prepare_selected_classical_tables(Some(&closure))?;
-    for ordinal in 0..compiler.source.dependency_order.len() {
-        let key = compiler.source.dependency_order[ordinal];
-        if closure.contains(&key) && compiler.declarations[&key].kind == FnKind::Meaning {
-            compiler.compile_meaning(&key)?;
-        }
-    }
+    prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let program = lower::lower_function(&mut compiler, &entry)?;
+    compiler.checked.insert(entry, program.clone());
     // The selected producer's classical-only limits do not reclassify dormant
     // quantum/control obligations from the complete common source judgment.
     // They use the existing finite evidence gates and never replace this root.
     compiler.force_ordinary_root = false;
+    // Global dormant passes visit original obligations outside this root's
+    // closure. Prepare their actual Meaning/table dependencies under the
+    // existing finite evidence profile, without widening the selected root.
+    prepare_dormant_dependencies(&mut compiler, &closure, &module, span)?;
     compiler.check_dormant_operations()?;
     compiler.check_dormant_controls()?;
+    compiler.check_dormant_function_contracts()?;
     let program = program
         .retain_instruments(compiler.instrument_evidence.into_values().collect())
         .retain_pure_equations(compiler.pure_equations)
@@ -193,6 +195,186 @@ fn process(
         program,
         parameters,
     })
+}
+
+fn prepare_dormant_dependencies(
+    compiler: &mut Compiler<'_>,
+    root_closure: &BTreeSet<Key>,
+    module: &str,
+    span: Span,
+) -> Result<(), CompileError> {
+    compiler.charge(
+        module,
+        span,
+        compiler
+            .source
+            .obligations
+            .len()
+            .saturating_mul(4)
+            .saturating_add(compiler.source.body_statics.len())
+            .saturating_add(1),
+    )?;
+    let mut pending = Vec::new();
+    for obligation in &compiler.source.obligations {
+        use check::ObligationKind;
+        // Match the three global dormant passes. Ordinary provider/call
+        // metadata alone does not request concrete execution of its owner.
+        match obligation.kind {
+            ObligationKind::MeaningEquality { required, supplied } => {
+                pending.push(obligation.definition);
+                pending.push(required);
+                pending.extend(supplied);
+            }
+            ObligationKind::FunctionEquality {
+                implementation,
+                specification,
+            } => {
+                pending.push(obligation.definition);
+                pending.extend([implementation, specification]);
+            }
+            ObligationKind::ControlSectors => pending.push(obligation.definition),
+            _ => {}
+        }
+    }
+    pending.extend(
+        compiler
+            .source
+            .body_statics
+            .values()
+            .filter(|plan| {
+                !matches!(
+                    plan.kind,
+                    check::plans::BodyStaticKind::PrimitiveCall { .. }
+                )
+            })
+            .map(|plan| plan.owner),
+    );
+    let mut needed = BTreeSet::new();
+    while let Some(key) = pending.pop() {
+        compiler.charge(module, span, compiler.declarations.len() + 2)?;
+        if !needed.insert(key) {
+            continue;
+        }
+        let uses = compiler.source.lexical[&key].resolved_uses();
+        compiler.charge(module, span, uses.len().saturating_mul(3) + 1)?;
+        for usage in compiler.source.lexical[&key].resolved_uses() {
+            if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
+                pending.push(callee);
+            }
+        }
+    }
+    // Root tables already passed their stricter selected limits. Do not
+    // replace them with a second preparation under the dormant profile.
+    needed.retain(|key| !root_closure.contains(key));
+    prepare_evidence_dependencies(compiler, &needed, module, span)
+}
+
+/// Prepare actual closed bodies demanded by Meaning references and fixed
+/// function pairs. Merely owning a dormant obligation does not make its whole
+/// declaration an execution root. Reuse the normal dependency order and native
+/// lowerer; no surrogate body can populate the checked cache.
+fn prepare_evidence_dependencies(
+    compiler: &mut Compiler<'_>,
+    needed: &BTreeSet<Key>,
+    module: &str,
+    span: Span,
+) -> Result<(), CompileError> {
+    compiler.charge(
+        module,
+        span,
+        compiler
+            .source
+            .obligations
+            .len()
+            .saturating_mul(3)
+            .saturating_add(needed.len())
+            .saturating_add(1),
+    )?;
+    let mut pending = Vec::new();
+    for obligation in &compiler.source.obligations {
+        if needed.contains(&obligation.definition) {
+            if let check::ObligationKind::FunctionEquality {
+                implementation,
+                specification,
+            } = obligation.kind
+            {
+                pending.extend([implementation, specification]);
+            }
+        }
+    }
+    for key in needed {
+        if compiler.declarations[key].kind == FnKind::Meaning {
+            pending.push(*key);
+        }
+        if let FnBody::MeaningReference { function } = &compiler.declarations[key].body {
+            let owner = &compiler.source.resolution.declaration(*key).name.0;
+            let Callee::User(reference) = compiler.resolve(owner, function)? else {
+                return Err(compiler.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "Meaning reference requires its original ordinary definition",
+                ));
+            };
+            pending.push(reference);
+        }
+    }
+    let mut evidence = BTreeSet::new();
+    while let Some(key) = pending.pop() {
+        compiler.charge(module, span, compiler.declarations.len() + 2)?;
+        if !evidence.insert(key) {
+            continue;
+        }
+        let uses = compiler.source.lexical[&key].resolved_uses();
+        compiler.charge(module, span, uses.len().saturating_mul(3) + 1)?;
+        for usage in compiler.source.lexical[&key].resolved_uses() {
+            if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
+                pending.push(callee);
+            }
+        }
+    }
+    // Evidence bodies have the existing finite quantum profile. They do not
+    // inherit the selected ordinary producer's classical-only Raw restriction.
+    let selected = compiler.force_ordinary_root;
+    let checking = compiler.checking;
+    compiler.force_ordinary_root = false;
+    let result = (|| {
+        // Only actual Meaning/function evidence roots demand tables. A Nat
+        // obligation in an unused owner does not require every classical
+        // callee elsewhere in that owner's body to become a concrete table.
+        compiler.charge(module, span, evidence.len() + 1)?;
+        let tables: BTreeSet<_> = evidence
+            .iter()
+            .copied()
+            .filter(|key| {
+                compiler.declarations[key].kind == FnKind::Classical
+                    && !compiler.basis.contains_key(key)
+                    && !compiler.deferred_nominal_tables.contains(key)
+            })
+            .collect();
+        compiler.prepare_selected_classical_tables(Some(&tables))?;
+        for ordinal in 0..compiler.source.dependency_order.len() {
+            let key = compiler.source.dependency_order[ordinal];
+            compiler.checking = Some(key);
+            let declaration = compiler.declarations[&key];
+            if declaration.kind == FnKind::Meaning {
+                if evidence.contains(&key) && !compiler.meanings.contains_key(&key) {
+                    compiler.compile_meaning(&key)?;
+                }
+            } else if evidence.contains(&key)
+                && declaration.static_params.is_empty()
+                && !matches!(declaration.kind, FnKind::Static | FnKind::Classical)
+                && !compiler.checked.contains_key(&key)
+            {
+                let actual = lower::lower_function(compiler, &key)?;
+                compiler.checked.insert(key, actual);
+            }
+        }
+        Ok(())
+    })();
+    compiler.force_ordinary_root = selected;
+    compiler.checking = checking;
+    result
 }
 
 pub(super) fn check_raw_capacity(

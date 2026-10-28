@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.selected-review-first",
+  "version": 1,
+  "scope": "Inert PR443 review repair history. Preserve original P1 acceptance, honest Meaning refusal and refined-op panics, selected-main refusals, incomplete checked-body repair, parser failure/separate primitive translation, actual6ad compatibility control, failed and interrupted tests, and separately bound repaired normal/MSRV windows. No saved command/source executes; no new admission, generic/source/runtime proof or Issue completion.",
+  "original_files": 335,
+  "objects": 196,
+  "expanded_bytes": 3175652,
+  "index": {
+    "bytes": 21221,
+    "sha256": "b3f0656e1d174aa864834bdfc988aa68986310df3621d44413a13a9504dff395",
+    "decoded_bytes": 145141,
+    "decoded_sha256": "e510b46cf76ad0e847dc80fed8abec34babd2fca76225c99c13132bcfd3658c7"
+  },
+  "archive": {
+    "bytes": 734192,
+    "sha256": "ff29e40ac584c62fc4ba4e27d25dfed826de524bf17f929a859fc717ceb66687"
+  }
+}

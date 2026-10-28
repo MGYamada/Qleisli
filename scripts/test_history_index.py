@@ -659,5 +659,87 @@ class SelectedOrdinaryFirstHistory(unittest.TestCase):
                               self.raw('selected-ordinary-port-checks/' + row['label'] + '/stdout'))
 
 
+class SelectedOrdinaryReviewHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'selected-review-first-index.json.gz', 'selected-review-first.tar.xz',
+                'b3f0656e1d174aa864834bdfc988aa68986310df3621d44413a13a9504dff395',
+                734192, 'ff29e40ac584c62fc4ba4e27d25dfed826de524bf17f929a859fc717ceb66687',
+                3175652, index_gzip=dict(bytes=21221, decoded_bytes=145141,
+                    decoded_sha256='e510b46cf76ad0e847dc80fed8abec34babd2fca76225c99c13132bcfd3658c7'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'selected-review-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_bytes_and_real_failures_are_not_repaired_in_place(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (335, 196))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, count, successes in [('selected-review-first', 16, 7),
+                ('selected-review-refined-first', 4, 1),
+                ('selected-review-after-first-prototype', 20, 10),
+                ('selected-review-unused-primitive-first', 2, 0),
+                ('selected-review-unused-primitive-repair', 2, 0),
+                ('selected-review-unused-primitive-baseline', 2, 1),
+                ('selected-review-after-final', 22, 12)]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual((len(report['results']), sum(row['exit_code'] == 0 for row in report['results'])),
+                             (count, successes))
+            for row in report['results']:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+        refined = self.record('selected-review-refined-first/report.json')['results']
+        self.assertEqual([row['exit_code'] for row in refined], [0, 101, 1, 101])
+        self.assertTrue(all(row['json_parse_error'] for row in refined if row['exit_code'] == 101))
+
+    def test_unchanged_final_sources_keep_semantic_and_entry_refusals(self):
+        final = self.record('selected-review-after-final/report.json')
+        self.assertEqual((final['source_repairs'], final['new_quantum_bits_executed']), (0, 0))
+        for row in final['results']:
+            case, mode = row['first']['case'], row['first']['mode']
+            self.assertIsNone(row['json_parse_error'])
+            self.assertEqual(json.loads(self.raw('selected-review-after-final/' + row['stdout']['path'])),
+                             row['document'])
+            if row['exit_code']:
+                expected = ('invalid_entry' if case in ['selected-main-parameter', 'selected-classical-main']
+                            else 'visibility' if case == 'private-project-main'
+                            else 'limit' if case == 'unused-primitive-only-owner' else 'contract')
+                self.assertEqual(row['document']['diagnostics'][0]['code'], expected)
+            if case == 'unused-function-inequality':
+                self.assertEqual(row['exit_code'], 1)
+            if case == 'unused-primitive-only-owner':
+                self.assertEqual(row['exit_code'], 0 if mode == 'selected' else 1)
+
+    def test_failed_interrupted_and_repaired_windows_retain_actual_source_identity(self):
+        prefix = 'selected-ordinary-port-checks/'
+        for label in ['review-first-normal', 'review-primitive-boundary', 'review-visited-boundary']:
+            self.assertEqual(self.record(prefix + label + '/report.json')['exit_code'], 101)
+        interrupted = self.record('selected-review-interrupted-batch.json')
+        self.assertEqual(interrupted['exit_code'], 130)
+        self.assertNotIn(interrupted['partial'] + '/report.json', self.index['original_records'])
+        for row in self.record('selected-review-repaired-validation-batch.json'):
+            report = self.record(prefix + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before']['src/frontend/compile/selected.rs'],
+                '937fc2f7313d289046dd47fa4b8475e1699c33bc4d55ff9f0b91429e518bf3c8')
+            if not row['label'].endswith('-lint'):
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw(prefix + row['label'] + '/stdout'))
+
+
 if __name__ == '__main__':
     unittest.main()

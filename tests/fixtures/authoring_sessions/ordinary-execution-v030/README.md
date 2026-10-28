@@ -165,3 +165,28 @@ they are not a fresh checker build for the parent, binary attestation, proof
 replay or source/runtime-preservation theorem. Exact candidate CI must build
 and test its own checker before merge. Passive history checks never execute
 saved sources or commands. No Issue or broader guarantee is completed.
+
+## Selected ordinary review repairs
+
+The separate [review index](selected-review-first-index.json.gz),
+[inert archive](selected-review-first.tar.xz) and
+[validation](selected-review-first-validation.json) preserve335 original records
+as196 objects. They retain the original unchecked unused function inequality,
+valid Meaning refusal, refined-operation panics and incorrect public-main
+selection. The first incomplete dependency repair still refuses an honest
+function pair; failed tests and an intentionally interrupted batch remain failures.
+
+A separately retained primitive translation and actual pre-repair source control
+show why unrelated dormant owners must not become concrete table roots. Only
+actual Meaning/function evidence demands table preparation. The final22-call
+window uses unchanged sources and records12 successes/10 required refusals:
+false equalities reject semantically, honest Meanings pass, exported main follows
+its selected contract, and the unused primitive control retains compatibility.
+No source repair or quantum runtime execution occurs in that window.
+
+Current normal and MSRV each pass119 focused/native tests without conditional
+native skips;133 compiler tests and strict all-target Clippy pass separately.
+Exact source objects bind those repaired windows. The native checker closure is
+unchanged; these tests are not a fresh proof replay or binary attestation.
+Passive history tests read saved bytes only. #64/#195 and the remaining generic,
+quantum, qmatch and preservation obligations remain open.

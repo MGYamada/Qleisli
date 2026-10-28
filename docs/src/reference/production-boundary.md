@@ -140,6 +140,10 @@ original-source compiler, initially for classical Raw instructions only.
 Selection retains the exact original instantiation, complete checked host
 bindings and accepted request. Both closed simulation and sampling reject
 nonempty retained parameter forests even when every parameter has zero width.
+The source wrapper also discharges dormant function pairs through the same
+contract gate as project checking, preparing the original Meaning/body
+dependencies visited by global obligations. Explicit public `main` selections
+use the exported rule; project-main restrictions remain separate.
 General generic/quantum selected integration remains unfinished. Untrusted
 portable nominal emission refuses until its complete typed request is transported.
 
