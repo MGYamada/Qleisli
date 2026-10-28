@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reject typed ordinary source parameters in closed simulation and sampling,
+  including Unit, Bits<0>, empty records and nested zero-width products. Empty
+  Raw input lists do not erase the retained logical arguments; nullary typed
+  Unit results remain executable. Preserve the native input/result request.
 - Execute the first closed ordinary enum/record result slice through a versioned
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV

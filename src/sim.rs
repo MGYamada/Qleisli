@@ -26,15 +26,23 @@ mod accepted {
 /// struct Unchecked(RawProgram);
 /// impl ExecutableProgram for Unchecked {
 ///     fn execution_view(&self) -> &RawProgram { &self.0 }
+///     fn has_source_parameters(&self) -> bool { false }
 /// }
 /// ```
 pub trait ExecutableProgram: accepted::Sealed {
     fn execution_view(&self) -> &crate::ir::RawProgram;
+    /// Retained typed source arguments, including arguments with zero bits.
+    /// Raw port lists alone cannot determine whether such a call is closed.
+    fn has_source_parameters(&self) -> bool;
 }
 
 impl ExecutableProgram for AcceptedProgram {
     fn execution_view(&self) -> &crate::ir::RawProgram {
         self.raw()
+    }
+    fn has_source_parameters(&self) -> bool {
+        self.ordinary_result()
+            .is_some_and(|request| !request.parameters.is_empty())
     }
 }
 
@@ -618,6 +626,11 @@ pub fn run_closed(
     program: &(impl ExecutableProgram + ?Sized),
     limits: SimulationLimits,
 ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError> {
+    if program.has_source_parameters() {
+        return Err(SimulationError::NotClosed(
+            "typed source parameters are present",
+        ));
+    }
     let raw = program.execution_view();
     if !raw.quantum_inputs.is_empty() {
         return Err(SimulationError::NotClosed("quantum inputs are present"));

@@ -97,3 +97,24 @@ consumer, first patch, old-expectation test failure and separate repair. Normal
 and MSRV windows remain distinct. Saved commands are never executed; binary
 identity, bounded tests and successful checking do not establish source/runtime
 preservation, a new guarantee or completed ADT support.
+
+## Zero-width ordinary parameters in closed runtime APIs
+
+The separate [closed-runtime index](closed-runtime-first-index.json.gz),
+[inert archive](closed-runtime-first.tar.xz) and
+[validation](closed-runtime-first-validation.json) preserve the first selected
+prototype's empty-record failure and a separate PR #440-base Rust reproduction.
+The latter obtains a real typed native handle for a Unit parameter, then fails
+because closed simulation accepts it despite the retained logical argument.
+The earlier bounded closedness observations did not cover this case; their
+original sources and reports remain unchanged.
+
+The 53 originals / 49 content objects include exact source versions, full
+diagnostics and separate repairs. Normal and MSRV each pass nine native
+regressions after the repair: Unit, Bits<0>, empty record and nested zero-width
+parameters refuse closed simulation/sampling, while a nullary Unit result runs.
+The parent Rust checks use the separately observed compatible `8abdf9d` checker;
+they are not a fresh checker build for the parent, binary attestation, proof
+replay or source/runtime-preservation theorem. Exact candidate CI must build
+and test its own checker before merge. Passive history checks never execute
+saved sources or commands. No Issue or broader guarantee is completed.
