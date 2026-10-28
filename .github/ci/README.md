@@ -492,8 +492,8 @@ This is CI execution evidence, not source/runtime preservation, authentication
 from offline JSON, a constitutional discharge or release approval. Full hosted
 speedup remains a measurement to perform on the completed final candidate.
 The latest and MSRV Rust groups retain two literal native-gated selections:
-ownership/source-IR correspondence, then every other integration target plus
-libraries, binaries, examples and benches. Before either selection,
+ownership/source-IR correspondence and corpus execution/round trips, then every
+other integration target plus libraries, binaries, examples and benches. Before either selection,
 `check_rust_test_partition.py` compares their
 positive selections with the same pinned Cargo's complete root-package
 metadata. Missing, extra, duplicate, overlapping or unreviewed target conventions
@@ -519,6 +519,21 @@ Local single-query timings do not establish the Linux failure's cause or repair;
 the new candidate must pass hosted extracted-source validation.
 The separate ignored-dialect,
 catalog, documentation and doctest commands retain their existing coverage.
+
+The execution and round-trip tests share one compilation of each of the 87
+current corpus projects per toolchain. Their execution tests also perform exact
+native decode/re-encode and every reachable
+receipt's implementation/cache comparison through a shared test helper. Each
+round trip still obtains its own fresh native decision. The native round-trip
+harness separately compiles all 14 examples and retains its explicit evidence,
+Meaning and discovery regressions. This removes repeated corpus compilation
+while preserving the complete project inventory and each existing assertion.
+The complete corpus harness runs in the differential partition to balance the
+two runners. At the pre-change PR #443 MSRV checkpoint, that partition's two
+harnesses took about 2,389 and 1,932 seconds, while the remaining partition took
+3,566 seconds against its 3,600-second deadline. Corpus scheduling retains both
+test cases, the complete independent checks and the existing two-worker bound;
+the revised candidate's hosted time remains to be measured.
 
 Each command retains its 3,600-second timeout. Two commands provide more
 aggregate available test time than the former single invocation; this is not a

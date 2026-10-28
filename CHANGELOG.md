@@ -12,6 +12,11 @@ development milestones from the scope of their evidence.
   conjugation scaffolding. Check every ordered local sector within unchanged
   port, step and work limits. This enables no new source/native route; actual
   Raw-root/arm binding, nominal integration and #64/#195 remain unfinished.
+- Combine corpus execution and exact accepted-view checks after one compilation
+  per project. Preserve all 87 corpus projects, 14 examples, fresh native round
+  trips and reachable evidence-cache comparisons without a passed-result cache.
+  Balance the complete corpus harness into the differential CI partition while
+  retaining exact coverage guards, worker counts and command deadlines.
 - Reject typed ordinary source parameters in closed simulation and sampling,
   including Unit, Bits<0>, empty records and nested zero-width products. Empty
   Raw input lists do not erase the retained logical arguments; nullary typed

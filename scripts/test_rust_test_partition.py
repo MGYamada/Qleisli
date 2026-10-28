@@ -29,14 +29,15 @@ def commands(group='rust-latest', rest=('alpha',)):
              native + cargo + ['test', '--doc']] if group == 'rust-latest' else []
     return before + [
         ['python3', 'scripts/check_rust_test_partition.py', '--group', group],
-        native + scheduler + cargo + ['test', '--test', 'frontend_ownership_differential', '--test', 'source_ir_correspondence'],
+        native + scheduler + cargo + ['test', '--test', 'frontend_ownership_differential',
+                                     '--test', 'input_corpus', '--test', 'source_ir_correspondence'],
         ['python3', 'scripts/check_rust_test_partition.py', '--group', group],
         native + scheduler + cargo + ['test', '--lib', '--bins', '--examples', '--benches'] +
         [part for name in rest for part in ['--test', name]],
     ] + after
 
 
-def metadata(root=ROOT, tests=('alpha', 'frontend_ownership_differential', 'source_ir_correspondence')):
+def metadata(root=ROOT, tests=('alpha', 'frontend_ownership_differential', 'input_corpus', 'source_ir_correspondence')):
     """Synthetic Cargo conventions, not a claimed observation from a toolchain."""
     targets = []
     for kind, name, source, test, doctest, doc in [
@@ -63,8 +64,9 @@ class PartitionTests(unittest.TestCase):
             self.assertEqual(heavy, first)
             self.assertEqual(sorted(heavy + rest), list(range(len(original))))
             self.assertFalse(set(heavy) & set(rest))
-            self.assertEqual(original[heavy[-1]][-4:],
-                             ['--test', 'frontend_ownership_differential', '--test', 'source_ir_correspondence'])
+            self.assertEqual(original[heavy[-1]][-6:],
+                             ['--test', 'frontend_ownership_differential', '--test', 'input_corpus',
+                              '--test', 'source_ir_correspondence'])
             self.assertIn(['python3', 'scripts/check_rust_test_partition.py', '--group', group],
                           [original[index] for index in rest])
 
@@ -81,8 +83,9 @@ class PartitionTests(unittest.TestCase):
         for group in ('rust-latest', 'rust-msrv'):
             actual = guard.validate(group, commands(group), metadata(), ROOT)
             self.assertEqual(actual['remaining'], ['alpha'])
-            self.assertEqual(len(actual['inventory']), 11)
-            self.assertEqual(actual['heavy'], ['frontend_ownership_differential', 'source_ir_correspondence'])
+            self.assertEqual(len(actual['inventory']), 12)
+            self.assertEqual(actual['heavy'],
+                             ['frontend_ownership_differential', 'input_corpus', 'source_ir_correspondence'])
 
     def test_added_omitted_renamed_or_duplicate_metadata_target_refuses(self):
         for mutation in ('add', 'remove', 'rename', 'duplicate'):
