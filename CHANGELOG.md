@@ -17,6 +17,8 @@ development milestones from the scope of their evidence.
   Closed execution and sampling reject every retained source parameter, even an
   empty record, Unit or Bits<0>. The initial selected slice emits classical Raw
   instructions only; generic/quantum integration and full #64/#195 remain open.
+  Align the source Reference with those executable paths and repair the
+  ordinary input/result boundary link.
 - Execute the first closed ordinary enum/record result slice through a versioned
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV
