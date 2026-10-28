@@ -341,5 +341,189 @@ class OrdinaryReviewFirstHistory(unittest.TestCase):
                              self.raw('ordinary-family-cases-syntax-repair/' + name))
 
 
+class OrdinaryInputsFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/inputs-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/inputs-first-index.json"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/inputs-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'inputs-first-index.json', 'inputs-first.tar.xz',
+                '6be586116f429789e2e184fb39701b0eb69c15e9fc1eaae897110b840d7dbce4',
+                142588, '2b0fb50363a50bb680eac51c79b0300f60011c5a8d4dec6b95dd634a6066faba',
+                1887279)
+        cls.index = json.loads((cls.root / 'inputs-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_nine_original_input_programs_and_eighteen_actual_first_observations(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (179, 111))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        report = self.record('ordinary-input-v2-first/report.json')
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(len(report['observations']), 18)
+        for row in report['observations']:
+            self.assertEqual(row['exit_code'], 0 if row['case'] == 'classical-inline-control' else 1)
+            prefix = 'ordinary-input-v2-first/' + row['case']
+            self.assertEqual(json.loads(self.raw(prefix + '-' + row['action'] + '.stdout')),
+                             row['document'])
+            source = self.raw(prefix + '/main.qli')
+            path = next(path for path in report['before'] if path.endswith('/' + row['case'] + '/main.qli'))
+            self.assertEqual(hashlib.sha256(source).hexdigest(), report['before'][path])
+
+    def test_failed_proof_execution_and_policy_attempts_stay_separate_from_repairs(self):
+        self.assertEqual(self.record('ordinary-v2-integration/native-first/report.json')['exit_code'], 101)
+        self.assertIn(b'no method named', self.raw('ordinary-v2-integration/native-first/stdout'))
+        self.assertIn(b'Lean exited with code 137', self.raw(
+            'ordinary-v2-schema-repair-02-commands/01/stdout'))
+        self.assertIn(b'summaries._unsafe_rec: partial project declaration', self.raw(
+            'ordinary-v2-schema-repair-03-commands/02/stdout'))
+        for name in ['native-repair-01', 'source-first', 'native-controls20']:
+            report = self.record('ordinary-v2-integration/' + name + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+        self.assertIn(b'passed 20 complete input/all-history controls', self.raw(
+            'ordinary-v2-integration/native-controls20/stdout'))
+        report = self.record('ordinary-v2-schema-repair-04-report.json')
+        self.assertEqual(report['status'], 'passed')
+        self.assertEqual(len(report['commands']), 7)
+        self.assertTrue(all(row['exit_code'] == 0 for row in report['commands']))
+
+
+class OrdinaryTableIntermediatesHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/tables-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/tables-first-index.json"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/tables-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'tables-first-index.json', 'tables-first.tar.xz',
+                'b1ae42f0a7007148c5800e619b52dcda6fe73c47442fc68e6898338788ded55d',
+                22144, '241fafd33dc890fe63fe6ede94261df1843b3c97f595bb6a4cf8e36b8be03877',
+                232157)
+        cls.index = json.loads((cls.root / 'tables-first-index.json').read_bytes())
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_sources_and_all_before_after_streams_remain_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (115, 58))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        first = self.record('ordinary-table-intermediates-first/report.json')
+        after = self.record('ordinary-table-intermediates-after/report.json')
+        for folder, report, successes in [('first', first, 2), ('after', after, 10)]:
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(report['source_repairs'], 0)
+            self.assertEqual(len(report['observations']), 16)
+            self.assertEqual(sum(row['exit_code'] == 0 for row in report['observations']), successes)
+            for row in report['observations']:
+                prefix = 'ordinary-table-intermediates-' + folder + '/'
+                stdout = self.raw(prefix + row['stdout']['path'])
+                self.assertEqual(json.loads(stdout), row['document'])
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(prefix + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+                source = 'ordinary-table-intermediates-first/' + row['case'] + '/main.qli'
+                source_path = next(path for path in report['before']
+                                   if path.endswith('/' + row['case'] + '/main.qli'))
+                self.assertEqual(hashlib.sha256(self.raw(source)).hexdigest(), report['before'][source_path])
+        outcomes = {row['case']: row['document']['result']['distribution']
+                    for row in after['observations'] if row['action'] == 'run' and row['exit_code'] == 0}
+        expected = {'direct-enum': {(True,): 1}, 'transitive-enum': {(False,): 1},
+                    'zero-width-record': {(True,): 1}, 'builtin-control': {(True,): 1},
+                    'measured-argument': {(False,): .5, (True,): .5}}
+        self.assertEqual(set(outcomes), set(expected))
+        for case, rows in outcomes.items():
+            actual = {tuple(row['bits']): row['probability'] for row in rows}
+            self.assertEqual(set(actual), set(expected[case]))
+            for bits, value in expected[case].items():
+                self.assertAlmostEqual(actual[bits], value, delta=1e-12)
+
+    def test_old_refusal_expectation_failure_is_preserved_beside_the_repair(self):
+        failed = self.record('ordinary-v2-integration/table-normal-source/report.json')
+        self.assertEqual(failed['exit_code'], 101)
+        self.assertTrue(failed['stable_source'])
+        self.assertIn(b'cannot resolve Lean checker', self.raw(
+            'ordinary-v2-integration/table-normal-source/stdout'))
+        self.assertIn(b'ordinary_match_checks_all_arms_before_selected_refusal_and_project_native_check ... FAILED', self.raw(
+            'ordinary-v2-integration/table-normal-source/stdout'))
+        for name in ['table-normal-producer', 'table-normal-collection-repair',
+                     'table-msrv-producer', 'table-msrv-source']:
+            report = self.record('ordinary-v2-integration/' + name + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+
+
+class OrdinaryClosedRuntimeHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'closed-runtime-first-index.json.gz', 'closed-runtime-first.tar.xz',
+                'd71dab43f37ce19071a6373906c67aa3b9a78e9f3288f1cf532af2e810fd112a',
+                268496, 'f456d42103693e2f9af92414b2e27b4863d851eff6d62201e1583d082d301d68',
+                949767, index_gzip=dict(bytes=3849, decoded_bytes=28340,
+                    decoded_sha256='cf7d415f5dfe246875ebc3d91fc41af6333ee635444f0c518fda90cf1c8a1b60'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'closed-runtime-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_sources_bytes_modes_and_separate_parent_reproducer_are_retained(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (53, 49))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest(), row['original_mode']),
+                             (row['bytes'], row['sha256'], 0o644))
+        self.assertIn(b'Unit still needs its one logical argument',
+            self.raw('ordinary-closed-fix-checks/before-normal/stdout'))
+        before = self.record('ordinary-closed-fix-checks/before-normal/report.json')
+        self.assertEqual(before['head'], 'eaf477df71eef8af4d7daecf1fc12bb936b7c50f')
+        self.assertEqual(before['exit_code'], 101)
+        self.assertTrue(before['stable_source'])
+        self.assertIn('separately observed compatible8ab', before['scope'])
+
+    def test_first_prototype_failure_is_not_reclassified_as_success(self):
+        report = self.record('selected-ordinary-checks/normal-selected-dormant-scope/report.json')
+        self.assertEqual(report['exit_code'], 101)
+        self.assertTrue(report['stable_source'])
+        self.assertIn(b'run_closed(empty.program()',
+            self.raw('selected-ordinary-checks/normal-selected-dormant-scope/stdout'))
+
+    def test_normal_msrv_repairs_and_actual_nullary_control_stay_distinct(self):
+        for name in ['after-normal', 'after-msrv']:
+            report = self.record('ordinary-closed-fix-checks/' + name + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertIn(b'9 passed; 0 failed; 0 ignored',
+                self.raw('ordinary-closed-fix-checks/' + name + '/stdout'))
+        self.assertIn(b'typed_unit_result_without_parameters_remains_a_closed_runtime_program',
+            self.raw('ordinary-closed-fix-checks/after-normal/stdout'))
+
+
 if __name__ == '__main__':
     unittest.main()

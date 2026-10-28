@@ -1,5 +1,5 @@
-//! Internal closed ordinary-result metadata. Construction grants no acceptance.
-//! Lean reads the original declaration, actual output map and every history.
+//! Internal ordinary input/result metadata. Construction grants no acceptance.
+//! Lean checks the complete canonical domain and every reconstructed history.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use std::sync::Arc;
 
@@ -26,7 +26,7 @@ impl Selection {
     }
 }
 
-/// Complete typed output tree over actual classical SSA identities. Zero-width
+/// Complete typed storage tree over actual classical SSA identities. Zero-width
 /// nodes and nominal/field order remain explicit rather than erased to bits.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Storage {
@@ -44,6 +44,10 @@ pub struct Request {
     pub selection: Selection,
     pub module: String,
     pub declaration: String,
+    pub parameters: Vec<Vec<Atom>>,
+    pub input_storage: Vec<Storage>,
+    /// Untrusted proposed rows. Native checking compares its independent full domain.
+    pub input_rows: Vec<Vec<bool>>,
     pub basis: Vec<Atom>,
     pub storage: Storage,
     pub public_effect: Effect,
@@ -188,11 +192,33 @@ impl Request {
         self.preflight()?;
         json::encode(&Value::object([
             ("format", text("qleisli.ordinary-root-request")),
-            ("version", Value::Number(1)),
-            ("profile", text("finite-ordinary-root-v1")),
+            ("version", Value::Number(2)),
+            ("profile", text("finite-ordinary-root-v2")),
             ("selection", text(self.selection.name())),
             ("module", text(&self.module)),
             ("declaration", text(&self.declaration)),
+            (
+                "parameters",
+                Value::Array(
+                    self.parameters
+                        .iter()
+                        .map(|basis| Value::Array(basis.iter().map(Atom::encode).collect()))
+                        .collect(),
+                ),
+            ),
+            (
+                "input_storage",
+                Value::Array(self.input_storage.iter().map(Storage::encode).collect()),
+            ),
+            (
+                "input_rows",
+                Value::Array(
+                    self.input_rows
+                        .iter()
+                        .map(|row| Value::Array(row.iter().copied().map(Value::Bool).collect()))
+                        .collect(),
+                ),
+            ),
             (
                 "basis",
                 Value::Array(self.basis.iter().map(Atom::encode).collect()),
@@ -210,10 +236,24 @@ impl Request {
     }
 
     fn preflight(&self) -> Result<()> {
-        if self.basis.len() > 128 {
+        if self.basis.len() > 128
+            || self.parameters.len() > 64
+            || self.parameters.iter().map(Vec::len).sum::<usize>() > 128
+        {
             return Err(Error::limit("ordinary basis node capacity"));
         }
-        let mut pending = vec![(&self.storage, 0usize)];
+        if self.input_storage.len() > 64
+            || self.input_rows.len() > 64
+            || self.input_rows.iter().any(|row| row.len() > 6)
+        {
+            return Err(Error::limit("ordinary input forest or row capacity"));
+        }
+        Self::storage_preflight(self.input_storage.iter())?;
+        Self::storage_preflight(std::iter::once(&self.storage))
+    }
+
+    fn storage_preflight<'a>(values: impl Iterator<Item = &'a Storage>) -> Result<()> {
+        let mut pending = values.map(|value| (value, 0usize)).collect::<Vec<_>>();
         let (mut nodes, mut bits) = (0usize, 0usize);
         while let Some((value, depth)) = pending.pop() {
             nodes += 1;
@@ -230,9 +270,15 @@ impl Request {
                     pending.extend([(b.as_ref(), depth + 1), (a.as_ref(), depth + 1)])
                 }
                 Storage::Tuple(fields) => {
+                    if fields.len() > 128 {
+                        return Err(Error::limit("ordinary storage arity"));
+                    }
                     pending.extend(fields.iter().rev().map(|v| (v, depth + 1)))
                 }
                 Storage::Record(_, fields) => {
+                    if fields.len() > 128 {
+                        return Err(Error::limit("ordinary storage arity"));
+                    }
                     pending.extend(fields.iter().rev().map(|(_, v)| (v, depth + 1)))
                 }
             }
@@ -252,13 +298,16 @@ impl Request {
             "selection",
             "module",
             "declaration",
+            "parameters",
+            "input_storage",
+            "input_rows",
             "basis",
             "storage",
             "public_effect",
         ])?;
         if value.field("format")?.text()? != "qleisli.ordinary-root-request"
-            || value.field("version")?.number()? != 1
-            || value.field("profile")?.text()? != "finite-ordinary-root-v1"
+            || value.field("version")?.number()? != 2
+            || value.field("profile")?.text()? != "finite-ordinary-root-v2"
         {
             return Err(Error::format("unsupported ordinary root request"));
         }
@@ -266,6 +315,41 @@ impl Request {
         if atoms.len() > 128 {
             return Err(Error::limit("ordinary basis node capacity"));
         }
+        let parameters = value.field("parameters")?.array()?;
+        let stores = value.field("input_storage")?.array()?;
+        let rows = value.field("input_rows")?.array()?;
+        if parameters.len() > 64 || stores.len() > 64 || rows.len() > 64 {
+            return Err(Error::limit("ordinary input forest or row capacity"));
+        }
+        let mut atoms_left = 128usize;
+        let parameters = parameters
+            .iter()
+            .map(|basis| {
+                let atoms = basis.array()?;
+                atoms_left = atoms_left
+                    .checked_sub(atoms.len())
+                    .ok_or_else(|| Error::limit("ordinary parameter basis capacity"))?;
+                atoms.iter().map(Atom::decode).collect::<Result<Vec<_>>>()
+            })
+            .collect::<Result<Vec<_>>>()?;
+        let mut storage_left = 128;
+        let input_storage = stores
+            .iter()
+            .map(|store| Storage::decode(store, 0, &mut storage_left))
+            .collect::<Result<Vec<_>>>()?;
+        let input_rows = rows
+            .iter()
+            .map(|row| {
+                let values = row.array()?;
+                if values.len() > 6 {
+                    return Err(Error::limit("ordinary input row width"));
+                }
+                values
+                    .iter()
+                    .map(Value::boolean)
+                    .collect::<Result<Vec<_>>>()
+            })
+            .collect::<Result<Vec<_>>>()?;
         let result = Self {
             selection: match value.field("selection")?.text()? {
                 "project" => Selection::Project,
@@ -275,6 +359,9 @@ impl Request {
             },
             module: value.field("module")?.text()?.into(),
             declaration: value.field("declaration")?.text()?.into(),
+            parameters,
+            input_storage,
+            input_rows,
             basis: atoms.iter().map(Atom::decode).collect::<Result<_>>()?,
             storage: Storage::decode(value.field("storage")?, 0, &mut 128)?,
             public_effect: match value.field("public_effect")?.text()? {

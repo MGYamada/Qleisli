@@ -955,16 +955,23 @@ fn decode_subject_with_types(
             .map(|(p, s)| p.len() + s.len())
             .sum::<usize>();
         budget
-            .charge((bytes + snapshot.len() + 1).saturating_mul(request.basis.len() + 2))
+            .charge((bytes + snapshot.len() + 1).saturating_mul(
+                request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len() + 2,
+            ))
             .map_err(|e| Error::limit(e.to_string()))?;
         for (index, (path, source)) in snapshot.iter().enumerate() {
             let referenced = path == &request.module
-                || request.basis.iter().any(|atom| match atom {
-                    carrier::Atom::Enum(origin, _) | carrier::Atom::Record(origin, _) => {
-                        &origin.module == path && &origin.source == source
-                    }
-                    _ => false,
-                });
+                || request
+                    .parameters
+                    .iter()
+                    .flatten()
+                    .chain(&request.basis)
+                    .any(|atom| match atom {
+                        carrier::Atom::Enum(origin, _) | carrier::Atom::Record(origin, _) => {
+                            &origin.module == path && &origin.source == source
+                        }
+                        _ => false,
+                    });
             if referenced {
                 identity_bytes = identity_bytes
                     .checked_sub(path.len() + source.len())

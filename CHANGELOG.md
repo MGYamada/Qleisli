@@ -6,12 +6,27 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reject typed ordinary source parameters in closed simulation and sampling,
+  including Unit, Bits<0>, empty records and nested zero-width products. Empty
+  Raw input lists do not erase the retained logical arguments; nullary typed
+  Unit results remain executable. Preserve the native input/result request.
 - Execute the first closed ordinary enum/record result slice through a versioned
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV
   execution graph. Preserve zero-width nodes and conservative public effects.
-  Selected Raw, ordinary input domains, quantum nominal owners, full qmatch and
+  Selected Raw, quantum nominal owners, full qmatch and
   source-preservation proofs remain unfinished; #64 is not complete.
+- Extend that same native route to ordinary enum/record parameters. Independently
+  enumerate all canonical inputs, bind complete input/result forests and SSA maps,
+  and check every hidden history, including zero-probability histories. Version2
+  rejects old requests, omitted/reordered rows and erased zero-width arguments.
+  Ordinary closed callers execute through common source lowering; closed-only
+  simulation still rejects nonclosed roots. Selected/dependency integration,
+  quantum ADTs, full qmatch and nominal finite-table consumers remain unfinished.
+- Execute ordinary classical calls whose built-in signatures hide enum/record
+  intermediate values, including transitive calls. Defer their unused physical
+  tables while preserving native typed-root checks, original unused-body checks
+  and explicit refusals at actual finite-table consumers.
 - Check private closed nominal helpers through the same typed native root gate,
   retaining their original visibility and distinct internal selection. Keep
   exported roots public and private project main selection separate.

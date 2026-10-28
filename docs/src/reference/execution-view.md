@@ -60,13 +60,16 @@ source-preservation claim; the [carrier boundary](production-boundary.md#finite-
 states the checked equations and remaining obligations.
 
 The internal `--ordinary-root-check` mode also requires execution scope. Its
-`finite-ordinary-root-v1` record contains the actual graph, project/exported
-selection, original module/function, full result basis, typed SSA storage tree
-and public effect. Lean freshly reads and checks the original declared result
-and every complete exact instrument history before comparing this description.
+`finite-ordinary-root-v2` record contains, in order, the actual graph,
+project/exported/internal selection, original module/function, ordered parameter
+basis forest, input storage forest, complete input rows, full result basis,
+result storage tree and public effect. Lean freshly reads the original signature,
+independently enumerates its complete canonical input domain, requires exact row
+equality and checks each typed input and every complete exact instrument history
+before comparing this description.
 The retained Rust program keeps the same graph and typed request objects.
 An inspection/caller packet or an old-mode retry cannot authorize it. This
-first closed ordinary-result slice supplies no original-body or numerical
+ordinary input/result checking supplies no original-body or numerical
 runtime preservation theorem; see the
 [ordinary-result boundary](production-boundary.md#closed-ordinary-result-requests).
 

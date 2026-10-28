@@ -313,13 +313,36 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         self.compiler.tick(module, span)?;
         Ok(match &ty.kind {
-            Kind::Nominal(_) => {
-                return Err(self.error(
-                    module,
-                    span,
-                    ErrorCode::Unsupported,
-                    "nominal input requires typed native transport",
-                ));
+            Kind::Nominal(nominal) => {
+                use crate::frontend::types::nominal::Body;
+                self.note_nominal(ty, module, span)?;
+                let width = ty
+                    .basis_width()
+                    .filter(|width| *width <= 6)
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            span,
+                            ErrorCode::Limit,
+                            "ordinary nominal input exceeds the six-bit finite carrier profile",
+                        )
+                    })? as usize;
+                self.compiler
+                    .charge(module, span, Value::nominal_type_work(ty) + width + 1)?;
+                match &nominal.body {
+                    Body::Enum(_) => {
+                        let ids = (0..width).map(|_| self.classical()).collect::<Vec<_>>();
+                        classical.extend_from_slice(&ids);
+                        Value::Enumeration(ty.clone(), ids)
+                    }
+                    Body::Record(fields) => {
+                        let values = fields
+                            .iter()
+                            .map(|field| self.input(&field.ty, module, span, quantum, classical))
+                            .collect::<Result<_, _>>()?;
+                        Value::Record(ty.clone(), values)
+                    }
+                }
             }
             Kind::Unit => Value::Unit,
             Kind::Bit => {
@@ -2016,7 +2039,35 @@ fn lower_function_in_context(
                 &mut classical_inputs,
             )
         })
-        .collect::<Result<_, _>>()?;
+        .collect::<Result<Vec<_>, _>>()?;
+    // Retain the original argument forest before call expansion consumes it.
+    // Ordinary zero-width arguments still contribute their complete storage node.
+    let input_storage = if quantum_inputs.is_empty() {
+        lower.compiler.charge(
+            &key_name.0,
+            decl.span,
+            total_size(args.iter().map(|arg| {
+                arg.tree_size()
+                    .nodes
+                    .saturating_add(arg.nominal_equality_work())
+            })),
+        )?;
+        args.iter()
+            .map(ordinary::storage)
+            .collect::<std::result::Result<Vec<_>, _>>()
+            .map_err(|failure| {
+                verification_error(
+                    lower.compiler,
+                    &lower.operation_sources,
+                    &key_name.0,
+                    decl.span,
+                    failure,
+                    false,
+                )
+            })?
+    } else {
+        vec![]
+    };
     let result = lower.call_user(key, args, None)?;
     if ordinary::has_quantum_nominal(&result.ty()) {
         return Err(lower.error(
@@ -2046,10 +2097,11 @@ fn lower_function_in_context(
         classical_outputs,
         declared_effect: lower.effect,
     };
-    let needs_typed_root =
-        !lower.nominal_modules.borrow().is_empty() || ordinary::has_nominal(&result.ty());
+    let needs_typed_root = !lower.nominal_modules.borrow().is_empty()
+        || ordinary::has_nominal(&result.ty())
+        || params.iter().any(ordinary::has_nominal);
     let accepted = if needs_typed_root {
-        ordinary::accept(&mut lower, key, &result, &raw)
+        ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)
     } else {
         lower
             .compiler

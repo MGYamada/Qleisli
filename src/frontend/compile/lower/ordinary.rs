@@ -15,6 +15,68 @@ fn limit(message: impl Into<String>) -> crate::interchange::Error {
     crate::interchange::Error::new("limit", message)
 }
 
+// Untrusted preparation only: native Lean independently enumerates the original
+// finite code and rejects any different/subset/permuted proposed rows.
+fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bool>>> {
+    type Layout = (usize, Vec<usize>);
+    fn tensor((low_bits, low): Layout, (high_bits, high): Layout) -> NativeResult<Layout> {
+        if low_bits + high_bits > 6 || low.len() * high.len() > 64 {
+            return Err(limit("ordinary input domain exceeds six bits or 64 rows"));
+        }
+        let rows = high
+            .into_iter()
+            .flat_map(|high| low.iter().map(move |low| low + (high << low_bits)))
+            .collect();
+        Ok((low_bits + high_bits, rows))
+    }
+    if parameters.len() > 64 || parameters.iter().map(Vec::len).sum::<usize>() > 128 {
+        return Err(limit("ordinary parameter forest exceeds capacity"));
+    }
+    let mut domain = (0, vec![0]);
+    for basis in parameters {
+        let mut stack: Vec<Layout> = Vec::new();
+        for atom in basis.iter().rev() {
+            let arity = match atom {
+                Atom::Pair => Some(2),
+                Atom::Tuple(arity) => Some(*arity as usize),
+                Atom::Record(_, fields) => Some(fields.len()),
+                _ => None,
+            };
+            if let Some(arity) = arity {
+                if arity > stack.len() {
+                    return Err(invalid("incomplete parameter type tree"));
+                }
+                let mut combined = (0, vec![0]);
+                for _ in 0..arity {
+                    combined = tensor(combined, stack.pop().unwrap())?;
+                }
+                stack.push(combined);
+            } else {
+                let (bits, count) = match atom {
+                    Atom::Unit => (0, 1),
+                    Atom::Bit => (1, 2),
+                    Atom::Bits(width) if *width <= 6 => (*width as usize, 1usize << width),
+                    Atom::Enum(_, labels) if !labels.is_empty() && labels.len() <= 64 => (
+                        usize::BITS as usize - (labels.len() - 1).leading_zeros() as usize,
+                        labels.len(),
+                    ),
+                    _ => return Err(limit("unsupported ordinary parameter code")),
+                };
+                stack.push((bits, (0..count).collect()));
+            }
+        }
+        if stack.len() != 1 {
+            return Err(invalid("incomplete parameter type forest"));
+        }
+        domain = tensor(domain, stack.pop().unwrap())?;
+    }
+    let (width, labels) = domain;
+    Ok(labels
+        .into_iter()
+        .map(|label| (0..width).map(|axis| ((label >> axis) & 1) != 0).collect())
+        .collect())
+}
+
 pub(super) fn has_nominal(ty: &Ty) -> bool {
     match &ty.kind {
         Kind::Nominal(_) => true,
@@ -43,7 +105,7 @@ fn nominal_origin(ty: &Ty) -> NativeResult<Arc<Origin>> {
     }))
 }
 
-fn storage(value: &Value) -> NativeResult<Storage> {
+pub(super) fn storage(value: &Value) -> NativeResult<Storage> {
     Ok(match value {
         Value::Unit => Storage::Unit,
         Value::EmptyBits => Storage::Bits(vec![]),
@@ -85,6 +147,8 @@ fn storage(value: &Value) -> NativeResult<Storage> {
 pub(super) fn accept(
     lower: &mut Lowerer<'_, '_>,
     key: &Key,
+    parameters: &[Ty],
+    input_storage: Vec<Storage>,
     result: &Value,
     raw: &RawProgram,
 ) -> NativeResult<AcceptedProgram> {
@@ -98,17 +162,16 @@ pub(super) fn accept(
         .name
         .clone();
     if !raw.quantum_inputs.is_empty()
-        || !raw.classical_inputs.is_empty()
         || !raw.quantum_outputs.is_empty()
         || !decl.static_params.is_empty()
     {
         return Err(Error::new(
             "unsupported",
-            "typed ordinary native root currently requires a closed ordinary result",
+            "typed ordinary native root requires ordinary ports and closed static parameters",
         ));
     }
-    let basis =
-        crate::frontend::specialize::carrier_description_budgeted(&result.ty(), &mut |_, cells| {
+    let mut describe = |ty: &Ty| {
+        crate::frontend::specialize::carrier_description_budgeted(ty, &mut |_, cells| {
             lower
                 .compiler
                 .charge(&name.0, decl.span, cells)
@@ -116,7 +179,28 @@ pub(super) fn accept(
                     crate::frontend::compile::Error::new("limit", decl.span, e.to_string())
                 })
         })
-        .map_err(|e| Error::new(e.code, e.to_string()))?;
+        .map_err(|e| Error::new(e.code, e.to_string()))
+    };
+    let parameters = parameters
+        .iter()
+        .map(&mut describe)
+        .collect::<NativeResult<Vec<_>>>()?;
+    let basis = describe(&result.ty())?;
+    lower
+        .compiler
+        .charge(
+            &name.0,
+            decl.span,
+            parameters
+                .iter()
+                .map(Vec::len)
+                .sum::<usize>()
+                .saturating_add(parameters.len() + 1)
+                .saturating_mul(65)
+                .saturating_add(64 * 6),
+        )
+        .map_err(|e| limit(e.to_string()))?;
+    let input_rows = proposed_rows(&parameters)?;
     let storage_work = result
         .tree_size()
         .nodes
@@ -127,7 +211,7 @@ pub(super) fn accept(
         .map_err(|e| limit(e.to_string()))?;
     let stored = storage(result)?;
     let mut names = BTreeSet::from([name.0.clone()]);
-    for atom in &basis {
+    for atom in parameters.iter().flatten().chain(&basis) {
         if let Atom::Enum(origin, _) | Atom::Record(origin, _) = atom {
             names.insert(origin.module.clone());
         }
@@ -161,6 +245,9 @@ pub(super) fn accept(
         },
         module: name.0,
         declaration: name.1,
+        parameters,
+        input_storage,
+        input_rows,
         basis,
         storage: stored,
         public_effect: {

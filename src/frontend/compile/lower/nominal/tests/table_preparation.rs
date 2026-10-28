@@ -75,7 +75,7 @@ fn actual_basis_expression_still_refuses_a_deferred_nominal_function() {
 
 #[test]
 fn existing_builtin_classical_tables_remain_eager() {
-    let text = "classical fn first(b: Bit) -> Bit { b } classical fn second(b: Bit) -> Bit { first(b) } fn main() -> Bit { 0 }";
+    let text = "enum Unused { A, B } classical fn first(Unused: Bit) -> Bit { Unused } classical fn second(b: Bit) -> Bit { first(b) } fn main() -> Bit { 0 }";
     let project = project(text);
     let mut compiler = untrusted_compiler(&project);
     compiler.prepare_classical_tables().unwrap();
@@ -85,6 +85,28 @@ fn existing_builtin_classical_tables_remain_eager() {
     }
     assert!(compiler.deferred_nominal_tables.is_empty());
     assert!(compiler.checked.is_empty());
+}
+
+#[test]
+fn nominal_intermediates_defer_transitive_tables_but_keep_original_body_execution() {
+    let text = "enum Tri { A, B, C } classical fn outer() -> Bit { not middle() } classical fn middle() -> Bit { leaf() } classical fn leaf() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } fn main() -> Bit { outer() }";
+    let project = project(text);
+    let mut compiler = untrusted_compiler(&project);
+    compiler.prepare_classical_tables().unwrap();
+    for name in ["main::leaf", "main::middle", "main::outer"] {
+        let key = compiler.source.resolution.qualified(name).unwrap();
+        assert!(compiler.deferred_nominal_tables.contains(&key));
+        assert!(!compiler.basis.contains_key(&key));
+    }
+    let main = compiler.source.resolution.qualified("main::main").unwrap();
+    let mut lower = lowerer(&mut compiler);
+    let Value::Classical(output) = lower.call_user(&main, Vec::new(), None).unwrap() else {
+        panic!("Bit result");
+    };
+    let mut values = BTreeMap::new();
+    classical_history(&lower.raw.operations, false, &mut values);
+    assert!(!values[&output]);
+    assert!(lower.compiler.checked.is_empty());
 }
 
 #[test]

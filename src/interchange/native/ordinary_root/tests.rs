@@ -21,6 +21,9 @@ fn request() -> Request {
         selection: Selection::Project,
         module: "main".into(),
         declaration: "main".into(),
+        parameters: vec![],
+        input_storage: vec![],
+        input_rows: vec![vec![]],
         basis: vec![
             Atom::Record(origin("Result"), vec!["choice".into(), "flag".into()]),
             Atom::Enum(
@@ -201,14 +204,17 @@ fn stale_actual_metadata_and_wrong_scope_refuse_without_fallback() {
         derived_effect,
         output_ports,
     };
-    for mutation in 0..5 {
+    for mutation in 0..8 {
         let mut stale = request.clone();
         match mutation {
             0 => stale.public_effect = Effect::Isometry,
             1 => stale.declaration = "other".into(),
             2 => stale.selection = Selection::Exported,
             3 => stale.basis[0] = Atom::Unit,
-            _ => stale.storage = Storage::Tuple(vec![]),
+            4 => stale.storage = Storage::Tuple(vec![]),
+            5 => stale.parameters = vec![vec![Atom::Unit]],
+            6 => stale.input_storage = vec![Storage::Unit],
+            _ => stale.input_rows = vec![],
         }
         let graph = ordinary_root::complete(prepared.graph(), &stale).unwrap();
         assert!(
@@ -268,6 +274,9 @@ fn internal_declaration_selection_keeps_original_visibility_and_entry_category()
                 selection,
                 module: "main".into(),
                 declaration: name.into(),
+                parameters: vec![],
+                input_storage: vec![],
+                input_rows: vec![vec![]],
                 basis: vec![Atom::Enum(Arc::clone(&origin), vec!["A".into()])],
                 storage: Storage::Enum(Arc::clone(&origin), vec![]),
                 public_effect: Effect::Unitary,
@@ -295,6 +304,8 @@ fn strict_request_and_original_output_structure_cannot_be_erased() {
     let proposed = proposal(&measured(false));
     for (key, replacement) in [
         ("version", Value::Number(0)),
+        ("version", Value::Number(1)),
+        ("profile", Value::String("finite-ordinary-root-v1".into())),
         ("profile", Value::String("finite-carrier-pure-v1".into())),
         ("selection", Value::String("inspection".into())),
     ] {
@@ -340,6 +351,157 @@ fn strict_request_and_original_output_structure_cannot_be_erased() {
     );
 }
 
+fn ordinary_input() -> (Request, RawProgram, Proposal) {
+    let source = "enum Tri { A,B,C } pub fn identity(value:Tri)->Tri{value}";
+    let origin = Arc::new(Origin {
+        module: "main".into(),
+        declaration: "Tri".into(),
+        source: source.into(),
+    });
+    let basis = vec![Atom::Enum(
+        Arc::clone(&origin),
+        vec!["A".into(), "B".into(), "C".into()],
+    )];
+    let storage = Storage::Enum(origin, vec![ClassicalId(0), ClassicalId(1)]);
+    let request = Request {
+        selection: Selection::Exported,
+        module: "main".into(),
+        declaration: "identity".into(),
+        parameters: vec![basis.clone()],
+        input_storage: vec![storage.clone()],
+        input_rows: vec![vec![false, false], vec![true, false], vec![false, true]],
+        basis,
+        storage,
+        public_effect: Effect::Unitary,
+    };
+    let raw = RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![ClassicalId(0), ClassicalId(1)],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![ClassicalId(0), ClassicalId(1)],
+        declared_effect: Effect::Unitary,
+    };
+    let proposed = Proposal::from_raw_with_sources(
+        &raw,
+        None,
+        Version::V2,
+        None,
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    (request, raw, proposed)
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn complete_ordinary_inputs_are_retained_and_last_input_is_actually_checked() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let (request, mut raw, proposed) = ordinary_input();
+    let checked = kernel
+        .check_ordinary_root(proposed.artifact(), &request.encode().unwrap())
+        .unwrap();
+    assert_eq!(checked.program().ordinary_result(), Some(&request));
+    assert!(matches!(
+        crate::sim::run_closed(checked.program(), Default::default()),
+        Err(crate::sim::SimulationError::NotClosed(_))
+    ));
+    // A and B remain valid; only the final canonical input C yields padding 3.
+    raw.operations.push(RawOp::ClassicalXor {
+        left: ClassicalId(0),
+        right: ClassicalId(1),
+        output: ClassicalId(2),
+    });
+    raw.classical_outputs[0] = ClassicalId(2);
+    let mut wrong = request.clone();
+    let Storage::Enum(_, ids) = &mut wrong.storage else {
+        unreachable!()
+    };
+    ids[0] = ClassicalId(2);
+    let proposed = Proposal::from_raw_with_sources(
+        &raw,
+        None,
+        Version::V2,
+        None,
+        &[(
+            "main".into(),
+            request.parameters[0]
+                .iter()
+                .find_map(|atom| match atom {
+                    Atom::Enum(origin, _) => Some(origin.source.clone()),
+                    _ => None,
+                })
+                .unwrap(),
+        )],
+    )
+    .unwrap();
+    assert!(
+        kernel
+            .check_ordinary_root(proposed.artifact(), &wrong.encode().unwrap())
+            .is_err()
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn ordinary_input_subsets_permutations_padding_and_same_width_erasure_refuse() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let (original, _, proposed) = ordinary_input();
+    for mutation in 0..10 {
+        let mut wrong = original.clone();
+        match mutation {
+            0 => {
+                wrong.input_rows.pop();
+            }
+            1 => wrong.input_rows.swap(0, 2),
+            2 => wrong.input_rows[2] = wrong.input_rows[0].clone(),
+            3 => wrong.input_rows.push(vec![true, true]),
+            4 => wrong.input_rows[0].pop().map(|_| ()).unwrap(),
+            5 => wrong.parameters[0] = vec![Atom::Bits(2)],
+            6 => wrong.input_storage[0] = Storage::Bits(vec![ClassicalId(0), ClassicalId(1)]),
+            7 => {
+                let Storage::Enum(_, ids) = &mut wrong.input_storage[0] else {
+                    unreachable!()
+                };
+                ids.swap(0, 1);
+            }
+            8 => wrong.input_storage.push(Storage::Unit),
+            _ => wrong.parameters.push(vec![Atom::Unit]),
+        }
+        assert!(
+            kernel
+                .check_ordinary_root(proposed.artifact(), &wrong.encode().unwrap())
+                .is_err(),
+            "mutation {mutation} was accepted"
+        );
+    }
+    // A complete v1-shaped packet cannot bypass either actual decoder.
+    use crate::interchange::json::{self, Value};
+    let Value::Object(mut fields) = json::parse(&original.encode().unwrap()).unwrap() else {
+        unreachable!()
+    };
+    for field in ["parameters", "input_storage", "input_rows"] {
+        fields.remove(field);
+    }
+    fields.insert("version".into(), Value::Number(1));
+    fields.insert(
+        "profile".into(),
+        Value::String("finite-ordinary-root-v1".into()),
+    );
+    reject_request_both_readers(
+        &kernel,
+        proposed.artifact(),
+        &original,
+        &json::encode(&Value::Object(fields)).unwrap(),
+    );
+}
+
 #[test]
 #[cfg_attr(
     not(qleisli_native_tests),
@@ -356,6 +518,9 @@ fn empty_record_cannot_be_replaced_by_an_equal_width_unit_or_tuple() {
         selection: Selection::Project,
         module: "main".into(),
         declaration: "main".into(),
+        parameters: vec![],
+        input_storage: vec![],
+        input_rows: vec![vec![]],
         basis: vec![Atom::Record(Arc::clone(&original), vec![])],
         storage: Storage::Record(original, vec![]),
         public_effect: Effect::Observe,
@@ -390,4 +555,142 @@ fn empty_record_cannot_be_replaced_by_an_equal_width_unit_or_tuple() {
                 .is_err()
         );
     }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn zero_width_typed_parameters_require_an_invocation_in_closed_runtime_apis() {
+    use crate::sim::{SampleLimits, SimulationLimits, SplitMix64, run_closed, sample_closed};
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for ty in ["Unit", "Bits<0>", "Empty", "(Unit,Empty)"] {
+        let source = format!("pub struct Empty {{}} pub fn choose(value:{ty})->{ty} {{value}}");
+        let origin = Arc::new(Origin {
+            module: "main".into(),
+            declaration: "Empty".into(),
+            source: source.clone(),
+        });
+        let (basis, storage) = match ty {
+            "Unit" => (vec![Atom::Unit], Storage::Unit),
+            "Bits<0>" => (vec![Atom::Bits(0)], Storage::Bits(vec![])),
+            "Empty" => (
+                vec![Atom::Record(Arc::clone(&origin), vec![])],
+                Storage::Record(Arc::clone(&origin), vec![]),
+            ),
+            _ => (
+                vec![
+                    Atom::Pair,
+                    Atom::Unit,
+                    Atom::Record(Arc::clone(&origin), vec![]),
+                ],
+                Storage::Pair(
+                    Box::new(Storage::Unit),
+                    Box::new(Storage::Record(Arc::clone(&origin), vec![])),
+                ),
+            ),
+        };
+        let raw = RawProgram {
+            quantum_inputs: vec![],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let request = Request {
+            selection: Selection::Exported,
+            module: "main".into(),
+            declaration: "choose".into(),
+            parameters: vec![basis.clone()],
+            input_storage: vec![storage.clone()],
+            input_rows: vec![vec![]],
+            basis,
+            storage,
+            public_effect: Effect::Unitary,
+        };
+        let proposal = crate::interchange::native::Proposal::from_raw_with_sources(
+            &raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &[("main".into(), source)],
+        )
+        .unwrap();
+        let checked = kernel
+            .check_ordinary_root(proposal.artifact(), &request.encode().unwrap())
+            .unwrap();
+        let program = checked.into_program();
+        assert_eq!(program.ordinary_result().unwrap().parameters.len(), 1);
+        assert!(program.raw().classical_inputs.is_empty());
+        assert!(
+            run_closed(&program, SimulationLimits::default()).is_err(),
+            "{ty} still needs its one logical argument"
+        );
+        assert!(
+            sample_closed(
+                &program.clone(),
+                &mut SplitMix64::new(0),
+                SampleLimits::default()
+            )
+            .is_err(),
+            "{ty} sampling erased the logical argument"
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn typed_unit_result_without_parameters_remains_a_closed_runtime_program() {
+    let source = "pub fn choose()->Unit {()}";
+    let raw = RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let request = Request {
+        selection: Selection::Exported,
+        module: "main".into(),
+        declaration: "choose".into(),
+        parameters: vec![],
+        input_storage: vec![],
+        input_rows: vec![vec![]],
+        basis: vec![Atom::Unit],
+        storage: Storage::Unit,
+        public_effect: Effect::Unitary,
+    };
+    let proposal = crate::interchange::native::Proposal::from_raw_with_sources(
+        &raw,
+        None,
+        crate::interchange::Version::V2,
+        None,
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    let program = Kernel::selected(Edition::E2026)
+        .unwrap()
+        .check_ordinary_root(proposal.artifact(), &request.encode().unwrap())
+        .unwrap()
+        .into_program();
+    assert_eq!(
+        crate::sim::run_closed(&program, crate::sim::SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![], 1.0)])
+    );
+    assert!(
+        crate::sim::sample_closed(
+            &program,
+            &mut crate::sim::SplitMix64::new(0),
+            crate::sim::SampleLimits::default()
+        )
+        .unwrap()
+        .bits
+        .is_empty()
+    );
 }

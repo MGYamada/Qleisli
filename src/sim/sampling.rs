@@ -251,6 +251,9 @@ pub fn sample_closed<R: RandomSource>(
     random: &mut R,
     limits: SampleLimits,
 ) -> Result<Sample, SampleError<R::Error>> {
+    if program.has_source_parameters() {
+        return Err(SampleError::NotClosed("no typed source parameters"));
+    }
     let raw = program.execution_view();
     if !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()

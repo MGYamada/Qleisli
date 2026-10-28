@@ -35,9 +35,9 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
         limit: MAX_BYTES,
         depth: 0,
     };
-    writer.sized(5, 8)?;
+    writer.sized(5, 11)?;
     writer.depth += 1;
-    writer.text("finite-ordinary-root-v1")?;
+    writer.text("finite-ordinary-root-v2")?;
     graph.write(&mut writer)?;
     let mut view = View {
         writer: &mut writer,
@@ -46,6 +46,11 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     view.writer.text(request.selection.name())?;
     view.writer.text(&request.module)?;
     view.writer.text(&request.declaration)?;
+    view.list(&request.parameters, |w, basis| w.list(basis, carrier::atom))?;
+    view.list(&request.input_storage, storage)?;
+    view.list(&request.input_rows, |w, row| {
+        w.list(row, |w, bit| w.boolean(*bit))
+    })?;
     view.list(&request.basis, carrier::atom)?;
     storage(&mut view, &request.storage)?;
     view.effect(request.public_effect)?;

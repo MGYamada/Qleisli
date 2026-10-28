@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.ordinary-closed-runtime-first",
+  "version": 1,
+  "scope": "Inert zero-width typed-argument runtime history. Preserve the first selected-prototype Empty-record closed-run failure, exact original source objects, separate PR440-base eaf runtime reproduction failing for Unit, and repaired normal/MSRV native controls. Parent Rust tests use the separately observed compatible8ab checker; its identity is not a source-to-binary attestation, exact candidate checker build, source/runtime proof or new guarantee. No archived source or command executes.",
+  "original_files": 53,
+  "objects": 49,
+  "expanded_bytes": 949767,
+  "index": {
+    "bytes": 3849,
+    "sha256": "d71dab43f37ce19071a6373906c67aa3b9a78e9f3288f1cf532af2e810fd112a",
+    "decoded_bytes": 28340,
+    "decoded_sha256": "cf7d415f5dfe246875ebc3d91fc41af6333ee635444f0c518fda90cf1c8a1b60"
+  },
+  "archive": {
+    "bytes": 268496,
+    "sha256": "f456d42103693e2f9af92414b2e27b4863d851eff6d62201e1583d082d301d68"
+  }
+}

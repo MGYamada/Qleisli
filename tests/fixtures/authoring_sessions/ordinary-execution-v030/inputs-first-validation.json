@@ -1,0 +1,74 @@
+{
+  "format": "qleisli.ordinary-input-first-validation",
+  "version": 1,
+  "archive": {
+    "index": {
+      "bytes": 77319,
+      "sha256": "6be586116f429789e2e184fb39701b0eb69c15e9fc1eaae897110b840d7dbce4"
+    },
+    "archive": {
+      "bytes": 142588,
+      "sha256": "2b0fb50363a50bb680eac51c79b0300f60011c5a8d4dec6b95dd634a6066faba"
+    },
+    "originals": 179,
+    "objects": 111,
+    "expanded": 1887279
+  },
+  "first_observations": {
+    "projects": 9,
+    "calls": 18,
+    "successes": 2,
+    "refusals": 16,
+    "source_repairs": 0,
+    "maximum_new_quantum_bits": 1
+  },
+  "first_repaired_window": {
+    "native_tests": 7,
+    "source_tests": 7,
+    "compiled_controls": 20,
+    "all_passed": true,
+    "scope": "Actual computations/tests, not full source/runtime preservation or final current validation."
+  },
+  "proof_window": {
+    "source_revision": "1b6f691f817b6e53fb4f9256308fd2dbe311d389f9f44e5918f3cdb49a513f40",
+    "canonical_stages": 7,
+    "fixed_regression_stages": 8,
+    "independent_meanings": 292,
+    "protected_bindings": 27,
+    "unchanged": true
+  },
+  "final_current_validation": "Local focused Rust/proof/conformance validation and all 37 shared source checks passed on the recorded working-tree window. Exact committed-tree gates and required candidate-head hosted CI/review remain separate and pending in this record.",
+  "scope": "All archived sources, commands, failed attempts and reports are inert. Source/binary identity observations are not attestations. All8 issue64 criteria remain open; no new guarantee, maximum-size quantum case, version/dependency change or publication.",
+  "current_local": {
+    "normal_rust": "1.99.1",
+    "msrv": "1.85.0",
+    "tests_each": {
+      "native": 7,
+      "ordinary_source": 7,
+      "project": 15,
+      "source_collection": 6,
+      "qfor": 6
+    },
+    "conditional_native_skips": 0,
+    "ignored_in_these_targets": 0,
+    "normal_all_target_clippy": "passed -D warnings",
+    "compiled_controls": 20,
+    "actual_cli": {
+      "calls": 18,
+      "successes": 14,
+      "refusals": 4,
+      "unchanged_sources": 9,
+      "source_repairs": 0
+    },
+    "kernel_sha256": "6f1b41e2a90da0c2ea242d3ea691ade9e49820cd6ca55728c2d5b39a04ed3b9e",
+    "records": {
+      "normal-native-final": "c85128bf829601ad2b8b2783161d05253dae4a9e2fdf6b38959811283d2fd100",
+      "normal-source-regressions-final": "f9730ca5c5faf6270ee38dcf898f2365c60e7f264adce05ba14814a37d9dd9d9",
+      "msrv-native-final": "6a2fb1e6c1a014ecfe72c4e8043940ed55e03edc7399153facb9451e8bdbcc8d",
+      "msrv-source-regressions-final": "ce8aab874bcc4954bfb76f976fc0ceb242a2f66104b95f805aa96c578f066888",
+      "lint-repair": "d05326f691f15f8bf4f19e401c5de4b6fe1aacd9fc3dad2146786af173bcf80e",
+      "native-controls20": "2dfad5b889ba86f64a5766a94a2aed97667af3d69aa7e800b537cf901802572d"
+    },
+    "limits": "Full Rust1.98.1 hosted suites/process-cleanup, package/install and final CI/review remain required. No local full library or release readiness claim."
+  }
+}

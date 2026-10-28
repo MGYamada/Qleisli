@@ -198,8 +198,8 @@ FINITE_CARRIER_PROOF = {
 
 
 ORDINARY_RESULT_PROOF = {
-    'proof_scope': 'NativeContext.run_typed_ordinary_binding connects the execution-only dispatcher to CheckedOrdinaryRoot.run_binding and exact QDV comparison. Protocol.OrdinaryRoot.check_binding retains original packet bytes, fresh artifact/request reads and the actual core check. OrdinaryRoot.Checked retains fresh original entry/root/reconstruction/output-map computations, declared-result equality and the independent RepresentsAll relation over every complete actual history. Checked.original_safe derives the original Raw ownership and classical-scope properties without enlarging the admitted ledger scope.',
-    'gaps': 'First closed ordinary-result slice only. No source-body/AST preservation, ordinary input domains, quantum nominal interfaces, full qmatch, selected Raw integration, external schema, decoder/walker/native compiler/deployed binary/runtime/target preservation, inverse/control access, cleanup/resource certification, new guarantee or broader QS/PR/RS/EXACT/S05 discharge. Untyped recheck and portable export refuse; no independent algorithm specification is inferred.',
+    'proof_scope': 'NativeContext.run_typed_ordinary_binding connects the execution-only dispatcher to CheckedOrdinaryRoot.run_binding and exact QDV comparison. Protocol.OrdinaryRoot.check_binding retains original packet bytes, fresh artifact/request reads and the actual OrdinaryFamily check. Original signature reads bind every ordered parameter/result type and the complete source byte envelope. OrdinaryDomain.complete and Checked.every_canonical_input cover the independent canonical code; supplied rows must equal that entire domain. Each Row retains actual input storage, complete original reconstruction and independent RepresentsAll for every hidden output history. Checked.original_safe derives original Raw ownership/classical scope without enlarging either admitted guarantee.',
+    'gaps': 'No source-pattern/body/AST preservation, general selected/dependency integration, quantum nominal interfaces, full qmatch, nominal finite-table consumers, external schema, decoder/walker/native compiler/deployed binary/runtime/target preservation, inverse/control access, cleanup/resource certification, new guarantee or broader QS/PR/RS/EXACT/S05 discharge. Existing closed-only simulation rejects nonclosed roots. Untyped recheck and portable export refuse; no independent algorithm specification is inferred.',
 }
 
 
@@ -215,30 +215,45 @@ def path_rule(classification, boundaries, modes, sources, tests):
 PATHS = {
     'ordinary-result-proposal': path_rule('untrusted-proposal', 'ordinary-result', '', [
         ('src/interchange/ordinary_root.rs', ['pub enum Selection', 'pub enum Storage', 'pub struct Request',
-            'pub fn encode(', 'pub fn decode(', '"finite-ordinary-root-v1"']),
+            'pub fn encode(', 'pub fn decode(', '"finite-ordinary-root-v2"']),
     ], [('src/interchange/native/ordinary_root/tests.rs', 'strict_request_and_original_output_structure_cannot_be_erased')]),
     'ordinary-result-check': path_rule('native-acceptance', 'ordinary-result', '--ordinary-root-check', [
         ('src/interchange/native/ordinary_root.rs', ['pub fn check_ordinary_root(', 'decode_subject_with_types(',
             'ordinary_root::complete(prepared.graph(), &request)?', '"--ordinary-root-check"',
             'prepared.bind(native)?', 'ordinary_result = Some(request)']),
         ('src/interchange/execution_view/finite/ordinary_root.rs', ['graph.write(&mut writer)?',
+            'view.list(&request.parameters,', 'view.list(&request.input_storage, storage)?',
+            'view.list(&request.input_rows,',
             'view.list(&request.basis, carrier::atom)?', 'storage(&mut view, &request.storage)?',
             'view.effect(request.public_effect)?']),
         ('src/frontend/compile/lower/ordinary.rs', ['carrier_description_budgeted(', 'storage(result)?',
             'Request {', 'check_ordinary_root(proposed.artifact(), &bytes)?', '.is_subset(&names)']),
         ('src/frontend/compile/lower/mod.rs', ['fn note_nominal(', 'nominal_modules: std::rc::Rc',
-            'ordinary::has_nominal(&result.ty())', 'ordinary::accept(&mut lower, key, &result, &raw)']),
-        ('lean-kernel/Protocol/OrdinaryRoot.lean', ['def check ', 'Qirf.OrdinaryRoot.check artifact order request',
+            'ordinary::has_nominal(&result.ty())', 'ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)']),
+        ('lean-kernel/Protocol/OrdinaryRoot.lean', ['def check ', 'Qirf.OrdinaryFamily.check artifact order request',
             'theorem check_binding ']),
-        ('lean-kernel/QleisliKernel/Qirf/OrdinaryRoot.lean', ['Validity.checkRootWithSources artifact order',
-            'Raw.Instrument.reconstruct root.result.dependencies root.result.program []',
-            'root.result.program.classicalOutputs = ids.result', 'theorem Checked.all_histories ',
-            'theorem Checked.original_safe ', 'theorem Checked.declared_result_read ']),
+        ('lean-kernel/QleisliKernel/Qirf/OrdinaryFamily.lean', ['Validity.checkRootWithSources artifact order',
+            'Raw.Instrument.reconstruct root.dependencies root.program assignment',
+            'ids.result = root.result.program.classicalInputs',
+            'outputs.result = root.result.program.classicalOutputs',
+            'request.inputRows = OrdinaryDomain.assignments domain',
+            'theorem Checked.every_canonical_input ', 'theorem Row.all_hidden_histories ',
+            'theorem Checked.original_safe ']),
+        ('lean-kernel/QleisliKernel/OrdinaryDomain.lean', ['def assignments ', 'theorem complete ',
+            'theorem assignment_codes ', 'theorem row_count ']),
+        ('lean-kernel/QleisliKernel/SourceTypes/OrdinarySignature.lean', ['def selectionAllowed ',
+            'theorem read_selection ', 'theorem Checked.byte_envelope ', 'theorem Checked.parameter_types ',
+            'theorem Checked.result_type ']),
+        ('tests/ordinary_inputs.lean', ['def main ', 'controls.length == 20 && failures.isEmpty']),
+        ('.github/ci/native-comparisons.json', ['"tests/ordinary_inputs.lean"']),
         ('lean-kernel/Protocol/ExecutionView/CheckedOrdinaryRoot.lean', ['supplied.data == expected.data',
             '.inspection | .caller => throw .packet', 'theorem run_binding ']),
     ], [('src/interchange/native/ordinary_root/tests.rs', 'actual_typed_result_graph_and_all_histories_reach_native_acceptance'),
         ('src/interchange/native/ordinary_root/tests.rs', 'stale_actual_metadata_and_wrong_scope_refuse_without_fallback'),
         ('tests/ordinary_nominal_execution.rs', 'actual_source_record_enum_and_match_keep_correlated_result_storage'),
+        ('src/interchange/native/ordinary_root/tests.rs', 'complete_ordinary_inputs_are_retained_and_last_input_is_actually_checked'),
+        ('src/interchange/native/ordinary_root/tests.rs', 'ordinary_input_subsets_permutations_padding_and_same_width_erasure_refuse'),
+        ('tests/ordinary_nominal_execution.rs', 'general_ordinary_parameters_use_all_input_native_checks_and_actual_closed_callers'),
         ('tests/ordinary_nominal_execution.rs', 'foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back_to_raw'),
         ('tests/ordinary_nominal_execution.rs', 'hidden_observation_and_unconnected_quantum_nominal_interfaces_refuse')]),
     'ordinary-result-views': path_rule('checked-view', 'ordinary-result', '', [

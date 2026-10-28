@@ -1,8 +1,8 @@
 import Protocol.Carrier
-import QleisliKernel.Qirf.OrdinaryRoot
+import QleisliKernel.Qirf.OrdinaryFamily
 
-/-! Internal closed ordinary-result request. Decode original types and complete
-storage trees afresh, then reuse the original Raw/root and all-history checks.
+/-! Internal ordinary-input/result request. Decode original types and complete
+storage forests afresh, then reuse the original Raw/root and every-input/history checks.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.OrdinaryRoot
 open Lean Finite Semantics.FiniteCarrier Semantics.OrdinaryValue
@@ -49,32 +49,68 @@ private def storage : Nat → Json → Except String Storage :=
       return .record source fields
     | _ => throw "unknown ordinary storage tag")
 
-def decode (value : Json) : WorkM Qirf.OrdinaryRoot.Request := do
+private def storageBudget : Nat → List (Storage × Nat) → Nat → Nat → WorkM Unit :=
+  Nat.rec (fun _ _ _ => throw .limit) (fun _ next pending nodes bits => do
+    match pending with
+    | [] => pure ()
+    | (stored,depth) :: rest =>
+      exactWork (Exact.charge 1)
+      guard (nodes < 128 && depth ≤ 32 && pending.length ≤ 128 && bits ≤ 6) .limit
+      let (children,width) : List Storage × Nat := match stored with
+        | .unit => ([],0)
+        | .bit _ => ([],1)
+        | .bits ids | .enumeration _ ids => ([],ids.length)
+        | .pair a b => ([a,b],0)
+        | .tuple fields => (fields,0)
+        | .record _ fields => (fields.map (·.2),0)
+      guard (bits+width ≤ 6 && children.length+rest.length ≤ 128) .limit
+      next ((children.map (fun child => (child,depth+1))) ++ rest) (nodes+1) (bits+width))
+
+def decode (value : Json) : WorkM Qirf.OrdinaryFamily.Request := do
   adapt (Carrier.fields value
-    ["format","version","profile","selection","module","declaration","basis","storage","public_effect"])
+    ["format","version","profile","selection","module","declaration","parameters","input_storage",
+      "input_rows","basis","storage","public_effect"])
   let get := value.getObjVal?
   guard (← adapt (do return (← (← get "format").getStr?) == "qleisli.ordinary-root-request" &&
-    (← number (← get "version")) == 1 &&
-    (← (← get "profile").getStr?) == "finite-ordinary-root-v1") ) .request
+    (← number (← get "version")) == 2 &&
+    (← (← get "profile").getStr?) == "finite-ordinary-root-v2") ) .request
   let selection ← adapt (do match ← (← get "selection").getStr? with
-    | "project" => pure SourceTypes.OrdinaryEntry.Selection.project
+    | "project" => pure SourceTypes.OrdinarySignature.Selection.project
     | "exported" => pure .exported
     | "internal" => pure .internal
     | _ => throw "unknown ordinary entry selection")
   let owner ← adapt ((← adapt (get "module")).getStr?)
   let name ← adapt ((← adapt (get "declaration")).getStr?)
+  let parameters ← adapt ((← adapt (get "parameters")).getArr?)
+  guard (parameters.size ≤ 64) .limit
+  let parameters ← adapt (parameters.toList.mapM fun parameter => do
+    let atoms ← parameter.getArr?
+    if atoms.size > 128 then throw "ordinary parameter basis capacity"
+    atoms.toList.mapM Carrier.atom)
+  guard ((parameters.map List.length).sum ≤ 128) .limit
+  let inputs ← adapt ((← adapt (get "input_storage")).getArr?)
+  guard (inputs.size ≤ 64) .limit
+  let inputs ← adapt (inputs.toList.mapM (storage 33))
+  storageBudget 129 (inputs.map (fun value => (value,0))) 0 0
+  let rows ← adapt ((← adapt (get "input_rows")).getArr?)
+  guard (rows.size ≤ 64) .limit
+  let rows ← adapt (rows.toList.mapM fun row => do
+    let values ← row.getArr?
+    if values.size > 6 then throw "ordinary input row width"
+    values.toList.mapM Json.getBool?)
   let atoms ← adapt ((← adapt (get "basis")).getArr?)
   guard (atoms.size ≤ 128) .limit
   let basis ← adapt (atoms.toList.mapM Carrier.atom)
   let stored ← adapt (storage 33 (← adapt (get "storage")))
+  storageBudget 129 [(stored,0)] 0 0
   let effect ← adapt (do match ← (← get "public_effect").getStr? with
     | "unitary" => pure Semantics.Raw.Effect.unitary
     | "isometry" => pure .iso
     | "observe" => pure .observe
     | _ => throw "unknown ordinary public effect")
-  return ⟨selection,owner,name,basis,stored,effect⟩
+  return ⟨selection,owner,name,parameters,inputs,rows,basis,stored,effect⟩
 
-def readRequest (bytes : ByteArray) : WorkM Qirf.OrdinaryRoot.Request := do
+def readRequest (bytes : ByteArray) : WorkM Qirf.OrdinaryFamily.Request := do
   let value ← adapt (do
     let some text := String.fromUTF8? bytes | throw "invalid ordinary request UTF-8"
     FiniteCodec.parseWithDepth text 128)
@@ -85,22 +121,22 @@ structure Checked where
   requestBytes : ByteArray
   artifact : Qirf.Artifact
   order : Array Nat
-  request : Qirf.OrdinaryRoot.Request
-  result : Qirf.OrdinaryRoot.Checked artifact order request
+  request : Qirf.OrdinaryFamily.Request
+  result : Qirf.OrdinaryFamily.Checked artifact order request
 
 def check (bytes : ByteArray) : WorkM Checked := do
   let (body,requestBytes) ← adapt (Validity.packet bytes)
   let some requestBytes := requestBytes | throw .request
   let (artifact,order) ← Protocol.Qirf.read body
   let request ← readRequest requestBytes
-  let result ← Qirf.OrdinaryRoot.check artifact order request
+  let result ← Qirf.OrdinaryFamily.check artifact order request
   return ⟨body,requestBytes,artifact,order,request,result⟩
 
 structure Binding (bytes : ByteArray) (checked : Checked) : Prop where
   packet : Validity.packet bytes = .ok (checked.body,some checked.requestBytes)
   artifact : ∃ a b, (Protocol.Qirf.read checked.body).run a = (.ok (checked.artifact,checked.order),b)
   request : ∃ a b, (readRequest checked.requestBytes).run a = (.ok checked.request,b)
-  core : ∃ a b, (Qirf.OrdinaryRoot.check checked.artifact checked.order checked.request).run a =
+  core : ∃ a b, (Qirf.OrdinaryFamily.check checked.artifact checked.order checked.request).run a =
     (.ok checked.result,b)
 
 theorem check_binding (bytes : ByteArray) (checked : Checked) (work left : Nat)

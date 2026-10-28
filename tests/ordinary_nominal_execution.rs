@@ -26,6 +26,73 @@ pub observe fn main() -> Result {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn classical_nominal_intermediates_execute_without_an_untyped_finite_table() {
+    let cases: [(&str, &[(bool, f64)]); 4] = [
+        (
+            "enum Tri { A, B, C }\nclassical fn flag() -> Bit {\n    match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 }\n}\nfn main() -> Bit { flag() }\n",
+            &[(true, 1.0)],
+        ),
+        (
+            "enum Tri { A, B, C }\nclassical fn leaf() -> Bit {\n    match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 }\n}\nclassical fn middle() -> Bit { leaf() }\nclassical fn outer() -> Bit { not middle() }\nfn main() -> Bit { outer() }\n",
+            &[(false, 1.0)],
+        ),
+        (
+            "struct Empty {}\nstruct Packet { bit: Bit, empty: Empty }\nclassical fn bit() -> Bit { Packet { empty: Empty {}, bit: 1 }.bit }\nfn main() -> Bit { bit() }\n",
+            &[(true, 1.0)],
+        ),
+        (
+            "enum Tri { A, B, C }\nclassical fn choose(bit: Bit) -> Bit {\n    match Tri::C { Tri::A => bit, Tri::B => not bit, Tri::C => bit }\n}\nobserve fn main() -> Bit { choose(measure_z(h(init0()))) }\n",
+            &[(false, 0.5), (true, 0.5)],
+        ),
+    ];
+    for (source, expected) in cases {
+        let root = SourceRoot::new(source);
+        check_project(&root.0).unwrap();
+        let program = compile_project(&root.0).unwrap();
+        assert!(program.ordinary_result().is_some());
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len());
+        for (bit, probability) in expected {
+            assert!((actual[&vec![*bit]] - probability).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_table_deferral_preserves_actual_consumers_and_unused_body_checks() {
+    use qleisli::frontend::compile::ErrorCode;
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } fn main() -> Bit { 0 }",
+    );
+    let program = compile_project(&root.0).unwrap();
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![false], 1.0)])
+    );
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn flag() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } isometry fn prepare() -> Q<Bit> { basis unit(()) as _ { flag() } } observe fn main() -> Bit { measure_z(prepare()) }",
+    );
+    let error = compile_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Unsupported);
+    assert!(error.message.contains("no nominal intermediate values"));
+
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::A { Tri::A => 0 } } fn main() -> Bit { 0 }",
+    );
+    let error = compile_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::TypeMismatch);
+    assert!(error.message.contains("non-exhaustive match"));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn called_and_unused_private_nominal_helpers_are_checked_without_exporting_them() {
     for (source, expected) in [
         (
@@ -217,4 +284,99 @@ fn foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back
         program.ordinary_result().is_some(),
         "same-source intermediates use the typed gate"
     );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn general_ordinary_parameters_use_all_input_native_checks_and_actual_closed_callers() {
+    type Expected = &'static [(&'static [bool], f64)];
+    type Case = (&'static str, &'static str, Expected);
+    let cases: &[Case] = &[
+        (
+            "enum-function",
+            r###"enum Tri { A, B, C }
+pub observe fn cycle(value: Tri) -> Tri {
+    match value { Tri::A => Tri::B, Tri::B => Tri::C, Tri::C => Tri::A }
+}
+pub observe fn main() -> Tri { cycle(Tri::C) }
+"###,
+            &[(&[false, false], 1.0)],
+        ),
+        (
+            "measured-enum-call",
+            r###"enum Tri { A, B, C }
+pub observe fn cycle(value: Tri) -> Tri {
+    match value { Tri::A => Tri::B, Tri::B => Tri::C, Tri::C => Tri::A }
+}
+pub observe fn main() -> Tri {
+    let q = basis unit(()) as _ { 0 };
+    let bit = measure_z(h(q));
+    let value = if bit { Tri::B } else { Tri::A };
+    cycle(value)
+}
+"###,
+            &[(&[true, false], 0.5), (&[false, true], 0.5)],
+        ),
+        (
+            "record-function",
+            r###"enum Tri { A, B, C }
+struct Empty {}
+struct Row { tag: Tri, flag: Bit, empty: Empty }
+pub observe fn flip(row: Row) -> Row {
+    Row { empty: row.empty, flag: not row.flag, tag: row.tag }
+}
+pub observe fn main() -> Row {
+    flip(Row { empty: Empty {}, flag: 0, tag: Tri::C })
+}
+"###,
+            &[(&[false, true, true], 1.0)],
+        ),
+        (
+            "zero-width-arguments",
+            r###"enum Tri { A, B, C }
+struct Empty {}
+pub fn select(empty: Empty, tag: Tri, unit_value: Unit, word: Bits<0>) -> Tri { tag }
+pub observe fn main() -> Tri { select(Empty {}, Tri::C, (), empty_bits()) }
+"###,
+            &[(&[false, true], 1.0)],
+        ),
+        (
+            "tuple-parameter",
+            r###"enum Tri { A, B, C }
+pub fn flag((tag, bit): (Tri, Bit)) -> Bit {
+    match tag { Tri::A => bit, Tri::B => not bit, Tri::C => bit }
+}
+pub observe fn main() -> Bit { flag((Tri::B, 0)) }
+"###,
+            &[(&[true], 1.0)],
+        ),
+        (
+            "private-parameter-helper",
+            r###"enum Tri { A, B, C }
+fn helper(value: Tri) -> Tri { value }
+pub observe fn main() -> Tri { helper(Tri::C) }
+"###,
+            &[(&[false, true], 1.0)],
+        ),
+    ];
+    for (name, source, expected) in cases {
+        let root = SourceRoot::new(source);
+        check_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let program = compile_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len(), "{name}: {actual:?}");
+        for (bits, weight) in *expected {
+            assert!(
+                (actual.get(*bits).unwrap_or(&-1.0) - weight).abs() < 1e-12,
+                "{name}: {bits:?} {actual:?}"
+            );
+        }
+        assert!(
+            program.ordinary_result().is_some(),
+            "{name}: typed caller disappeared"
+        );
+    }
 }

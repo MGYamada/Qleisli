@@ -21,7 +21,7 @@ fn ordinary_match_checks_all_arms_before_selected_refusal_and_project_native_che
             "classical fn selected()->Bit{match E::A{E::A=>0,E::B=>1}} pub fn main()->Bit{selected()}",
             "unsupported",
             "typed native transport",
-            false,
+            true,
         ),
         (
             "pub fn main()->Bit{match E::A{E::A=>0}}",
@@ -66,8 +66,6 @@ fn ordinary_match_checks_all_arms_before_selected_refusal_and_project_native_che
         } else if code == "type" {
             ("type_mismatch", message)
         } else {
-            // This closed classical helper still reaches the finite-table
-            // consumer's nominal-body refusal, not the new ordinary root.
             (code, message)
         };
         assert_eq!(finite.code, finite_code, "{finite:?}");
