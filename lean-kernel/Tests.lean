@@ -1,6 +1,7 @@
 import QleisliKernel
 import QleisliKernel.Tests.FiniteRestriction
 import QleisliKernel.Tests.RawSector
+import QleisliKernel.Tests.QirfSector
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import QleisliKernel.Qirf.ControlAccess

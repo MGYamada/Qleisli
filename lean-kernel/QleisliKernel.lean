@@ -54,6 +54,7 @@ import QleisliKernel.Hierarchical.Finite
 import QleisliKernel.Hierarchical.FiniteBinding
 import QleisliKernel.Qirf
 import QleisliKernel.Qirf.Validity
+import QleisliKernel.Qirf.Sector
 import QleisliKernel.Qirf.Carrier
 import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.Ownership

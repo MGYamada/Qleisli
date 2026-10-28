@@ -206,8 +206,11 @@ reconstructed trace, retaining every circuit event and proving that omitted
 identity reorders are literal identities. Returned physical port wires and
 order must match the original two input owners, including zero-width ports.
 Physical widths do not establish original nominal or source type identity.
-It enables no new source or native route: freshly checked QIRF dependencies,
-original source/arm binding and nominal integration remain required. Common enum checks, native acceptance
+The enclosing QIRF component reuses fresh graph/root checks and proves exact
+original-program embedding into that pure Raw subject. It rejects observing,
+classical and branch instructions in this straight-line component.
+These components enable no new source or native route: original source/arm,
+nominal and native/QDV integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

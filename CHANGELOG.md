@@ -16,8 +16,13 @@ development milestones from the scope of their evidence.
   ordered physical owner frame to the shared sector check. Retain every circuit
   event and prove that omitted identity reorders are literal identities. Test
   token/wire identities, phase, selector actions and zero-width owners with
-  retained kernel-checked theorems. Fresh QIRF dependencies, original source/arm
-  and nominal binding, and native execution integration remain unfinished.
+  retained kernel-checked theorems. Original source/arm and nominal binding,
+  and native execution integration remain unfinished.
+- Reuse fresh QIRF graph/root checking before sector validation and prove exact
+  original-program embedding into the pure Raw subject. Refuse observing,
+  classical and branch instructions in this straight-line component. Retain
+  small dependency/body/phase/adjoint and hidden-observation regressions as
+  checked theorems. Source-arm/nominal and native/QDV integration remain open.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.
