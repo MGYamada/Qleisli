@@ -1,5 +1,6 @@
 import QleisliKernel
 import QleisliKernel.Tests.FiniteRestriction
+import QleisliKernel.Tests.RawSector
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import Main

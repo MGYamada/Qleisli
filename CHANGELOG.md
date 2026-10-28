@@ -12,6 +12,12 @@ development milestones from the scope of their evidence.
   conjugation scaffolding. Check every ordered local sector within unchanged
   port, step and work limits. This enables no new source/native route; actual
   Raw-root/arm binding, nominal integration and #64/#195 remain unfinished.
+- Bind the original pure Raw program, independently reconstructed trace and
+  ordered physical owner frame to the shared sector check. Retain every circuit
+  event and prove that omitted identity reorders are literal identities. Test
+  token/wire identities, phase, selector actions and zero-width owners with
+  retained kernel-checked theorems. Fresh QIRF dependencies, original source/arm
+  and nominal binding, and native execution integration remain unfinished.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

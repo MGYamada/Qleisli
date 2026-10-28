@@ -13,6 +13,7 @@ import QleisliKernel.Semantics.OrdinaryValueTransport
 import QleisliKernel.SourceTypes
 import QleisliKernel.SourceTypes.Members
 import QleisliKernel.Raw.Finite
+import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation
 import QleisliKernel.Raw.Protected

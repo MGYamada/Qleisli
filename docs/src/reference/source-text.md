@@ -201,8 +201,13 @@ still requires its checked restriction and arm-binding extension; the small
 slice does not replace that requirement. The internal finite restriction
 component now proves correspondence through actual contributions, accumulation,
 steps and complete circuit execution, and checks every ordered local sector.
-It enables no new source or native route: original Raw-root/arm binding and
-nominal integration remain required. Common enum checks, native acceptance
+Its internal Raw component checks the original pure program and independently
+reconstructed trace, retaining every circuit event and proving that omitted
+identity reorders are literal identities. Returned physical port wires and
+order must match the original two input owners, including zero-width ports.
+Physical widths do not establish original nominal or source type identity.
+It enables no new source or native route: freshly checked QIRF dependencies,
+original source/arm binding and nominal integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing
