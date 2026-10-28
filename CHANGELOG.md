@@ -19,6 +19,10 @@ development milestones from the scope of their evidence.
   Ordinary closed callers execute through common source lowering; closed-only
   simulation still rejects nonclosed roots. Selected/dependency integration,
   quantum ADTs, full qmatch and nominal finite-table consumers remain unfinished.
+- Execute ordinary classical calls whose built-in signatures hide enum/record
+  intermediate values, including transitive calls. Defer their unused physical
+  tables while preserving native typed-root checks, original unused-body checks
+  and explicit refusals at actual finite-table consumers.
 - Check private closed nominal helpers through the same typed native root gate,
   retaining their original visibility and distinct internal selection. Keep
   exported roots public and private project main selection separate.

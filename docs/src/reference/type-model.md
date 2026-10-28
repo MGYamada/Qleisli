@@ -788,6 +788,12 @@ Internalv1 requests refuse without fallback.
 The ordinary project frontend may therefore construct enum/record values,
 project fields and execute exhaustive ordinary `match` inside an eligible closed
 root, including ordinary parameter functions inlined through the same body path.
+Classical functions with built-in signatures may also use nominal intermediate
+values through this path. Table preparation follows original resolved type and
+callee uses, deferring those bodies and their callers instead of interpreting
+their nominal values as untyped physical labels. Unused original bodies remain
+checked. Built-in-only tables stay eager; an actual basis/Meaning consumer still
+refuses a function whose nominal table semantics are not implemented.
 QLV3 compares the actual retained graph, selected entry, parameter/result types,
 complete input rows, storage and effect with Lean's fresh description before issuing its private
 accepted program. Clones retain those typed objects; untyped rechecking rejects
@@ -880,14 +886,13 @@ required separate work; no inverse/control grant follows merely from a label.
 
 Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.
-Preparation defers tables whose parameter/result types contain nominal nodes,
-while existing built-in tables remain eager. Actual coherent basis, Meaning and
-predicate table consumers retain an explicit unsupported result for those
-nominal interfaces. This preparation change alone supplies no accepted value
-transport or source-to-Raw preservation. Eligible closed ordinary roots
-additionally use the native result/history gate above. Built-in-signature bodies
-with nominal intermediates retain their
-existing table-preparation limitation.
+Preparation defers tables whose parameter/result types contain nominal nodes
+or whose original resolved bodies use nominal values, including through
+classical callees. Supported built-in-only tables remain eager. Actual coherent
+basis, Meaning and predicate table consumers retain an explicit unsupported
+result for these deferred tables. This preparation change alone supplies no
+accepted value transport or source-to-Raw preservation. Eligible closed ordinary
+roots additionally use the native input/result/history gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

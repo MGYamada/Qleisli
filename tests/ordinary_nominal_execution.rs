@@ -26,6 +26,73 @@ pub observe fn main() -> Result {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn classical_nominal_intermediates_execute_without_an_untyped_finite_table() {
+    let cases: [(&str, &[(bool, f64)]); 4] = [
+        (
+            "enum Tri { A, B, C }\nclassical fn flag() -> Bit {\n    match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 }\n}\nfn main() -> Bit { flag() }\n",
+            &[(true, 1.0)],
+        ),
+        (
+            "enum Tri { A, B, C }\nclassical fn leaf() -> Bit {\n    match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 }\n}\nclassical fn middle() -> Bit { leaf() }\nclassical fn outer() -> Bit { not middle() }\nfn main() -> Bit { outer() }\n",
+            &[(false, 1.0)],
+        ),
+        (
+            "struct Empty {}\nstruct Packet { bit: Bit, empty: Empty }\nclassical fn bit() -> Bit { Packet { empty: Empty {}, bit: 1 }.bit }\nfn main() -> Bit { bit() }\n",
+            &[(true, 1.0)],
+        ),
+        (
+            "enum Tri { A, B, C }\nclassical fn choose(bit: Bit) -> Bit {\n    match Tri::C { Tri::A => bit, Tri::B => not bit, Tri::C => bit }\n}\nobserve fn main() -> Bit { choose(measure_z(h(init0()))) }\n",
+            &[(false, 0.5), (true, 0.5)],
+        ),
+    ];
+    for (source, expected) in cases {
+        let root = SourceRoot::new(source);
+        check_project(&root.0).unwrap();
+        let program = compile_project(&root.0).unwrap();
+        assert!(program.ordinary_result().is_some());
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len());
+        for (bit, probability) in expected {
+            assert!((actual[&vec![*bit]] - probability).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_table_deferral_preserves_actual_consumers_and_unused_body_checks() {
+    use qleisli::frontend::compile::ErrorCode;
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } fn main() -> Bit { 0 }",
+    );
+    let program = compile_project(&root.0).unwrap();
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![false], 1.0)])
+    );
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn flag() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } isometry fn prepare() -> Q<Bit> { basis unit(()) as _ { flag() } } observe fn main() -> Bit { measure_z(prepare()) }",
+    );
+    let error = compile_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Unsupported);
+    assert!(error.message.contains("no nominal intermediate values"));
+
+    let root = SourceRoot::new(
+        "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::A { Tri::A => 0 } } fn main() -> Bit { 0 }",
+    );
+    let error = compile_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::TypeMismatch);
+    assert!(error.message.contains("non-exhaustive match"));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn called_and_unused_private_nominal_helpers_are_checked_without_exporting_them() {
     for (source, expected) in [
         (

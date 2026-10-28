@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.ordinary-table-intermediates-validation",
+  "version": 1,
+  "base_commit": "48c54ec43b0250842b400c0d7059a88e57a87e2d",
+  "context": "Informed authoring; no isolated first-author or model-superiority claim.",
+  "history": {
+    "originals": 115,
+    "objects": 58,
+    "expanded_bytes": 232157,
+    "index_sha256": "b1ae42f0a7007148c5800e619b52dcda6fe73c47442fc68e6898338788ded55d",
+    "archive_bytes": 22144,
+    "archive_sha256": "241fafd33dc890fe63fe6ede94261df1843b3c97f595bb6a4cf8e36b8be03877"
+  },
+  "actual_cli": {
+    "unchanged_projects": 8,
+    "before_calls": 16,
+    "before_successes": 2,
+    "before_refusals": 14,
+    "after_calls": 16,
+    "after_successes": 10,
+    "after_refusals": 6,
+    "source_repairs": 0,
+    "maximum_new_quantum_bits": 1
+  },
+  "rust": {
+    "normal": "1.99.1",
+    "msrv": "1.85.0",
+    "passed_targets_each": {
+      "untrusted_table_preparation": 6,
+      "ordinary_nominal_execution": 9,
+      "project": 15,
+      "source_collection": 6,
+      "qfor": 6
+    },
+    "normal_window": "The first source command passed ordinary9/project15/qfor6 but failed one stale source-collection expectation. After the expectation-only repair, all6 source-collection tests pass. The failed command is not counted as successful.",
+    "msrv_window": "All6 producer and36 source tests pass after the expectation repair.",
+    "conditional_native_skips": 0
+  },
+  "proof_scope": "The native Lean implementation, source closure and admitted guarantee bindings are unchanged from the base. This producer routing change uses the existing v2 gate; tests do not prove original AST or numerical runtime preservation.",
+  "remaining_validation": "Final lint, shared source checks, exact-commit gates and current-head hosted CI/review remain separate from this captured window.",
+  "remaining_feature_scope": "Actual nominal finite tables, selected/dependency routes, quantum ADTs and full qmatch remain unfinished. #64/#195 remain open; no new guarantee or release claim."
+}

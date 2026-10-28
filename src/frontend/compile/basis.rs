@@ -110,9 +110,9 @@ impl Compiler<'_> {
         Ok(env)
     }
 
-    /// Keep eager built-in tables. A nominal interface is an ordinary source
-    /// type, not permission to enumerate every physical tag. Actual table
-    /// consumers retain an explicit unsupported result for those interfaces.
+    /// Keep supported built-in tables eager. Nominal interfaces or intermediate
+    /// values use ordinary source bodies, including through classical callers.
+    /// Actual finite-table consumers still require a supported table.
     pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
         fn has_nominal(ty: &Ty) -> bool {
             match &ty.kind {
@@ -137,7 +137,29 @@ impl Compiler<'_> {
                     .saturating_add(result.tree_size().nodes)
                     .saturating_add(1),
             )?;
-            if params.iter().any(has_nominal) || has_nominal(&result) {
+            // Use the original resolved occurrences, including dormant branches.
+            // Dependencies precede their callers, so indirect nominal values
+            // cannot re-enter the untyped physical-label evaluator.
+            self.charge(
+                &module,
+                span,
+                self.source.lexical[&key]
+                    .resolved_uses()
+                    .len()
+                    .saturating_mul(2)
+                    .saturating_add(1),
+            )?;
+            let nominal_body = self.source.lexical[&key]
+                .resolved_uses()
+                .iter()
+                .any(|usage| match usage.target {
+                    ResolvedUse::Global(Target::Type(_)) => true,
+                    ResolvedUse::Global(Target::Declaration(callee)) => {
+                        self.deferred_nominal_tables.contains(&callee)
+                    }
+                    _ => false,
+                });
+            if params.iter().any(has_nominal) || has_nominal(&result) || nominal_body {
                 self.deferred_nominal_tables.insert(key);
                 continue;
             }
@@ -155,7 +177,7 @@ impl Compiler<'_> {
         if self.deferred_nominal_tables.contains(key) {
             (
                 ErrorCode::Unsupported,
-                "finite tables require closed built-in basis types",
+                "finite tables require closed built-in basis types and no nominal intermediate values",
             )
         } else {
             (ErrorCode::TypeMismatch, otherwise)

@@ -81,3 +81,19 @@ rejects nonclosed roots. General selected/dependency, quantum-ADT, full-qmatch,
 finite-table and preservation work remain unfinished. The same inert packet also
 retains the prior macOS consumer failures and separate public interop repair.
 Passive retention tests never execute archived code or commands.
+# Ordinary nominal intermediate values in classical bodies
+
+The separate [table-intermediate index](tables-first-index.json),
+[inert archive](tables-first.tar.xz) and [validation](tables-first-validation.json)
+retain eight informed first projects and sixteen actual pre-change CLI calls.
+Four ordinary programs stop at eager finite-table preparation; the built-in
+control succeeds, while an actual table consumer, an incomplete unused match
+and a false pure effect retain their real refusals. A separate sixteen-call
+after capture uses exactly the same source bytes: ten successes and six expected
+refusals, with independent result distributions and no source repairs.
+
+The 115 originals / 58 content objects also retain the original committed
+consumer, first patch, old-expectation test failure and separate repair. Normal
+and MSRV windows remain distinct. Saved commands are never executed; binary
+identity, bounded tests and successful checking do not establish source/runtime
+preservation, a new guarantee or completed ADT support.
