@@ -10,8 +10,15 @@ development milestones from the scope of their evidence.
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV
   execution graph. Preserve zero-width nodes and conservative public effects.
-  Selected Raw, ordinary input domains, quantum nominal owners, full qmatch and
+  Selected Raw, quantum nominal owners, full qmatch and
   source-preservation proofs remain unfinished; #64 is not complete.
+- Extend that same native route to ordinary enum/record parameters. Independently
+  enumerate all canonical inputs, bind complete input/result forests and SSA maps,
+  and check every hidden history, including zero-probability histories. Version2
+  rejects old requests, omitted/reordered rows and erased zero-width arguments.
+  Ordinary closed callers execute through common source lowering; closed-only
+  simulation still rejects nonclosed roots. Selected/dependency integration,
+  quantum ADTs, full qmatch and nominal finite-table consumers remain unfinished.
 - Check private closed nominal helpers through the same typed native root gate,
   retaining their original visibility and distinct internal selection. Keep
   exported roots public and private project main selection separate.

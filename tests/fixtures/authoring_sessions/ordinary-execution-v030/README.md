@@ -53,3 +53,31 @@ hidden history to typed storage. Retained imports, component proofs and
 experiments do not enable a general input runtime or prove source/body/runtime
 preservation. Saved commands and modules remain inert; current production
 validation and final Issue criteria are separate.
+
+## Ordinary-input first study and integration, 2026-10-28
+
+The separate [input archive](inputs-first.tar.xz), [index](inputs-first-index.json)
+and [validation](inputs-first-validation.json) retain179 original files as111
+objects, with1,887,279 expanded bytes. Nine frozen projects have18 actual first
+CLI observations: six desired parameter examples reach the missing typed-input
+route, the existing classical-inline control succeeds, and quantum-interface and
+false-pure controls refuse. Original sources and full available streams stay exact.
+
+Candidate and actual component sources, staged identities and separate repairs
+remain distinct. The packet preserves the first protocol/Rust elaboration errors,
+policy refusals, the monolithic kernel-reduction attempt's exit137 and the
+compiled audit's rejection of a generated partial test helper. No failure is
+reclassified as proof success. A total fuel-indexed observer replaces that helper.
+Generic signature/domain/history proofs stay in production modules; concrete
+controls run through `tests/ordinary_inputs.lean` and the shared native comparison
+manifest. No executable-source evaluation or native-proof exception is introduced.
+
+The retained first repaired window passes7 native tests,7 source tests and20
+compiled input/history controls. The schema window includes both builds/audits
+and fresh kernel checking; fixed guarantee continuity is separately recorded.
+Later current validation uses the strict internalv2 request, independent complete
+input enumeration and the common source body path. Closed-only simulation still
+rejects nonclosed roots. General selected/dependency, quantum-ADT, full-qmatch,
+finite-table and preservation work remain unfinished. The same inert packet also
+retains the prior macOS consumer failures and separate public interop repair.
+Passive retention tests never execute archived code or commands.

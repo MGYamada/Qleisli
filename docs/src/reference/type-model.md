@@ -762,37 +762,45 @@ Complete original type/body/effect preparation now retains nominal declarations;
 it does not silently omit their unused functions or quantum effects. A host Basis
 description and an `Instantiation` remain untrusted preparation data. Ordinary
 nominal source execution requires a typed native route. The ordinary project
-adapter now supports the first closed ordinary-result slice described below.
+adapter now checks finite ordinary parameters/results and executes eligible
+closed callers through the route described below.
 The selected Raw adapter retains its declaration transport refusal, so
 `--type=A=labels::Tri` still reaches its actual name/source checks before that
 refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
 proofs remain pending; no inverse/control access follows from preparation.
 
-For a closed ordinary project root, the internal `finite-ordinary-root-v1`
-request retains the original selected function, complete nominal result tree,
-classical SSA storage and public effect. Lean independently reads the original
-header/type, checks original nominal declarations and the actual Raw root,
-reconstructs every hidden instrument history and interprets the complete output
-storage over each history. The flattened storage must equal the actual ordered
-classical outputs exactly. Changing enum axes, record field order, nominal
+The internal `finite-ordinary-root-v2` request retains the original selected
+function, ordered ordinary parameter/result forests, complete input/output SSA
+storage, proposed input rows and public effect. Lean independently reads the
+original signature, checks nominal declarations and the actual Raw root, and
+enumerates every canonical input from those types. Proposed rows must equal
+that entire ordered domain. For every input it checks complete input storage,
+reconstructs every hidden instrument history, including zero-probability
+histories, and interprets complete result storage. Flattened storage must equal
+the actual ordered classical input/output lists exactly. Changing enum axes, record field order, nominal
 identity or zero-width nodes refuses. This retains the existing six-bit,
 128-node and depth-32 type profile; it does not replace the broader finite
-language's twelve-bit contract. Ordinary input domains and quantum input/output
-carriers are not enabled by this first closed-result component.
+language's twelve-bit contract. The domain retains at most64 input rows and
+64 parameters, with128 total parameter nodes and128 input storage nodes.
+Quantum input/output carriers are not enabled by this ordinary-only component.
+Internalv1 requests refuse without fallback.
 
 The ordinary project frontend may therefore construct enum/record values,
 project fields and execute exhaustive ordinary `match` inside an eligible closed
-root. QLV3 compares the actual retained graph, selected entry, result type,
-storage and effect with Lean's fresh description before issuing its private
+root, including ordinary parameter functions inlined through the same body path.
+QLV3 compares the actual retained graph, selected entry, parameter/result types,
+complete input rows, storage and effect with Lean's fresh description before issuing its private
 accepted program. Clones retain those typed objects; untyped rechecking rejects
 this mode. Text/JSON check reports identify ordinary-result checking separately
 from an external algorithm specification. Runtime output distributions retain
 the declared low-axis-first classical output order. Original AST lowering,
 decoder/native compiler and numerical runtime preservation are not proved by
-this gate. General nominal functions and the selected Raw route remain pending.
+this gate. Existing simulation APIs still require closed roots; parameter
+checking grants no unchecked arbitrary-input runtime. General selected/dependency
+integration, quantum ADTs, full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select this typed
 route when the final result is a built-in type. Body-only nominal modules must
-already be retained by the selected original or result origins; other intermediate
+already be retained by the selected original or parameter/result origins; other intermediate
 nominal dependencies refuse explicitly until their full typed transport exists.
 They cannot fall back to ordinary untyped Raw acceptance.
 

@@ -120,10 +120,11 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 73)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 113)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 114)
         carrier = next(task for task in tasks if task['id'] == 'finite-carrier-pure')
         self.assertEqual(carrier['commands'], [
             ['cargo', '+1.98.1', 'test', '--lib', 'native::carrier', '--', '--include-ignored'],
+            ['python3', 'scripts/run_native_lean_test.py', 'tests/ordinary_inputs.lean'],
         ])
         self.assertEqual(carrier['env'], {'QLEISLI_KERNEL': 'lean-kernel/.lake/build/bin/qleisli-kernel'})
         paths = next(task for task in tasks if task['id'] == 'native-paths')

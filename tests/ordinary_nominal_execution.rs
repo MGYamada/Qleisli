@@ -218,3 +218,98 @@ fn foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back
         "same-source intermediates use the typed gate"
     );
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn general_ordinary_parameters_use_all_input_native_checks_and_actual_closed_callers() {
+    type Expected = &'static [(&'static [bool], f64)];
+    type Case = (&'static str, &'static str, Expected);
+    let cases: &[Case] = &[
+        (
+            "enum-function",
+            r###"enum Tri { A, B, C }
+pub observe fn cycle(value: Tri) -> Tri {
+    match value { Tri::A => Tri::B, Tri::B => Tri::C, Tri::C => Tri::A }
+}
+pub observe fn main() -> Tri { cycle(Tri::C) }
+"###,
+            &[(&[false, false], 1.0)],
+        ),
+        (
+            "measured-enum-call",
+            r###"enum Tri { A, B, C }
+pub observe fn cycle(value: Tri) -> Tri {
+    match value { Tri::A => Tri::B, Tri::B => Tri::C, Tri::C => Tri::A }
+}
+pub observe fn main() -> Tri {
+    let q = basis unit(()) as _ { 0 };
+    let bit = measure_z(h(q));
+    let value = if bit { Tri::B } else { Tri::A };
+    cycle(value)
+}
+"###,
+            &[(&[true, false], 0.5), (&[false, true], 0.5)],
+        ),
+        (
+            "record-function",
+            r###"enum Tri { A, B, C }
+struct Empty {}
+struct Row { tag: Tri, flag: Bit, empty: Empty }
+pub observe fn flip(row: Row) -> Row {
+    Row { empty: row.empty, flag: not row.flag, tag: row.tag }
+}
+pub observe fn main() -> Row {
+    flip(Row { empty: Empty {}, flag: 0, tag: Tri::C })
+}
+"###,
+            &[(&[false, true, true], 1.0)],
+        ),
+        (
+            "zero-width-arguments",
+            r###"enum Tri { A, B, C }
+struct Empty {}
+pub fn select(empty: Empty, tag: Tri, unit_value: Unit, word: Bits<0>) -> Tri { tag }
+pub observe fn main() -> Tri { select(Empty {}, Tri::C, (), empty_bits()) }
+"###,
+            &[(&[false, true], 1.0)],
+        ),
+        (
+            "tuple-parameter",
+            r###"enum Tri { A, B, C }
+pub fn flag((tag, bit): (Tri, Bit)) -> Bit {
+    match tag { Tri::A => bit, Tri::B => not bit, Tri::C => bit }
+}
+pub observe fn main() -> Bit { flag((Tri::B, 0)) }
+"###,
+            &[(&[true], 1.0)],
+        ),
+        (
+            "private-parameter-helper",
+            r###"enum Tri { A, B, C }
+fn helper(value: Tri) -> Tri { value }
+pub observe fn main() -> Tri { helper(Tri::C) }
+"###,
+            &[(&[false, true], 1.0)],
+        ),
+    ];
+    for (name, source, expected) in cases {
+        let root = SourceRoot::new(source);
+        check_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let program = compile_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len(), "{name}: {actual:?}");
+        for (bits, weight) in *expected {
+            assert!(
+                (actual.get(*bits).unwrap_or(&-1.0) - weight).abs() < 1e-12,
+                "{name}: {bits:?} {actual:?}"
+            );
+        }
+        assert!(
+            program.ordinary_result().is_some(),
+            "{name}: typed caller disappeared"
+        );
+    }
+}

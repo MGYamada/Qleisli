@@ -161,21 +161,26 @@ Neither declaration lookup nor these scalar checks supply a source-function
 preservation theorem, inverse/control access or a new human-admitted guarantee.
 All existing source/runtime/target assumptions remain.
 
-The internal `finite-ordinary-root-v1` mode covers the first closed ordinary
-result slice. Lean freshly reads the original selected declaration's result and
-public effect, reuses the original Raw root checks and reconstructs every exact
-hidden history. Its independent ordinary-value reader checks the complete
-nominal storage tree against those histories and the exact actual output map.
+The internal `finite-ordinary-root-v2` mode checks ordinary input/result forests.
+Lean freshly reads the original selected declaration's parameters, result and
+public effect, independently enumerates the entire canonical input domain,
+requires exact equality with proposed input rows, and reuses the original Raw
+root checks. For every canonical input, its independent ordinary-value reader
+checks the complete input storage and every exact reconstructed hidden result
+history, including zero-probability histories, against the exact actual SSA maps.
 Internal declaration checking requires an original private non-entry function;
 exported selection still requires public visibility. Both use this same root
 gate and retain their exact selection in QDV; checking does not export a source name.
-QLV3/QDV compares that same graph, selected entry, type, storage and effect with
+QLV3/QDV compares that same graph, selected entry, parameter/result forests,
+input rows, storage and effect with
 the retained Rust objects. No sampled or normalized history subset supplies
 acceptance. The program retains the typed result; untyped rechecking refuses.
 This does not prove source-body lowering or numerical runtime correspondence,
 admit an external schema or new guarantee, or grant inverse/control access.
-Ordinary inputs, quantum nominal interfaces and selected Raw source execution
-remain separate pending integration.
+Existing closed-only simulation APIs still reject nonclosed roots. General
+selected/dependency routes, quantum nominal interfaces, full qmatch and nominal
+finite-table consumers remain separate pending integration. Internal v1 refuses
+without fallback.
 
 ### Non-verifier backend implementation scope (2026-10-11)
 

@@ -7,7 +7,8 @@ use crate::interchange::{execution_view::finite::ordinary_root, native_packet::V
 mod tests;
 
 impl Kernel {
-    /// Independently check a closed ordinary-result root. No old-mode fallback,
+    /// Check every original ordinary input and complete result history. Closed
+    /// simulation still requires no runtime inputs. No old-mode fallback,
     /// public success receipt or same-width type erasure authorizes execution.
     pub fn check_ordinary_root(&self, artifact: &[u8], request: &[u8]) -> Result<Checked> {
         let subject = self.subject(artifact, Some(request))?;

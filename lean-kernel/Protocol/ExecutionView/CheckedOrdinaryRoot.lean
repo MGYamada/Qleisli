@@ -35,10 +35,13 @@ def description (checked : Checked) : Finite.WorkM Value := do
   let graph ← FiniteView.graph checked.artifact checked.result.root
   let request := checked.request
   let stored ← storage 33 request.storage
-  return record "finite-ordinary-root-v1" [graph,
+  let inputs ← request.inputStorage.mapM (storage 33)
+  return record "finite-ordinary-root-v2" [graph,
     .text (match request.selection with
       | .project => "project" | .exported => "exported" | .internal => "internal"),
     .text request.moduleName,.text request.declarationName,
+    .array (request.inputs.map (fun basis => .array (basis.map CheckedCarrier.atom))),
+    .array inputs,.array (request.inputRows.map (fun row => .array (row.map .boolean))),
     .array (request.basis.map CheckedCarrier.atom),stored,
     .natural (match request.publicEffect with | .unitary => 0 | .iso => 1 | .observe => 2)]
 
