@@ -471,6 +471,75 @@ class OrdinaryTableIntermediatesHistory(unittest.TestCase):
             self.assertTrue(report['stable_source'])
 
 
+class OrdinaryImportFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/imports-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/imports-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/imports-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'imports-first-index.json.gz', 'imports-first.tar.xz',
+                '3eb208070d815ed9d40ed003b3bbcf79aa5195f5c5050f07723d0bdf6a1a9ac0',
+                106484, '0884b386c4db8ed9d397bee71ae66659324c456603fbb67fb3b71fed3749c92a',
+                3635688, index_gzip=dict(bytes=15364, decoded_bytes=119155,
+                    decoded_sha256='1e61f1c05eec15b51cad79cbd30b9dece50264cb2938b252f3d5ee7d8297f4df'))
+            decoded = history.read_history_index('imports-first-index.json.gz',
+                '3eb208070d815ed9d40ed003b3bbcf79aa5195f5c5050f07723d0bdf6a1a9ac0',
+                index_gzip=dict(bytes=15364, decoded_bytes=119155,
+                    decoded_sha256='1e61f1c05eec15b51cad79cbd30b9dece50264cb2938b252f3d5ee7d8297f4df'))
+        cls.index = json.loads(decoded)
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_originals_repairs_and_all_real_streams_remain_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (286, 142))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, count, successes in [('ordinary-import-closure-first', 18, 2),
+                ('ordinary-import-closure-record-repair', 2, 0),
+                ('ordinary-import-closure-after', 20, 10)]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual(len(report['observations']), count)
+            self.assertEqual(sum(row['exit_code'] == 0 for row in report['observations']), successes)
+            for row in report['observations']:
+                for stream in ['stdout', 'stderr']:
+                    raw = self.raw(folder + '/' + row[stream]['path'])
+                    self.assertEqual(hashlib.sha256(raw).hexdigest(), row[stream]['sha256'])
+                self.assertEqual(json.loads(self.raw(folder + '/' + row['stdout']['path'])), row['document'])
+        self.assertIn(b'{ tag: Tri, flag: Bit }', self.raw(
+            'ordinary-import-closure-first/record-field-reexport/packet.qli'))
+        self.assertIn(b'{ pub tag: Tri, pub flag: Bit }', self.raw(
+            'ordinary-import-closure-record-repair/project/packet.qli'))
+        after = self.record('ordinary-import-closure-after/report.json')
+        expected = self.record('ordinary-import-closure-after/plan.json')['expected']
+        for row in after['observations']:
+            self.assertTrue(row['matches_expectation'])
+            if row['action'] == 'run' and row['exit_code'] == 0:
+                self.assertEqual(row['document']['result']['distribution'],
+                    [dict(bits=expected[row['case']], probability=1)])
+
+    def test_failed_and_interrupted_checks_are_not_reclassified_as_success(self):
+        for name in ['signature-family-first', 'import-controls-first']:
+            self.assertEqual(self.record('ordinary-import-lean-checks/' + name + '/report.json')['exit_code'], 1)
+        self.assertEqual(self.record('ordinary-import-checks/schema-first/report.json')['exit_code'], 1)
+        self.assertIn('exit 130', self.record('STOP-ordinary-imports-20261028.json')['local_checks'])
+        self.assertNotIn('ordinary-import-checks/schema-work-accounting-repair/report.json',
+                         self.index['original_records'])
+        for name in ['normal-native', 'normal-collection', 'normal-source',
+                     'msrv-native', 'msrv-collection', 'msrv-source']:
+            report = self.record('ordinary-import-checks/' + name + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+
+
 class OrdinaryClosedRuntimeHistory(unittest.TestCase):
     # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first-index.json.gz"
     # "tests/fixtures/authoring_sessions/ordinary-execution-v030/closed-runtime-first.tar.xz"

@@ -137,11 +137,45 @@ private def hasQuantum : Nat → List Op → Bool :=
 private def rank : Semantics.Raw.Effect → Nat
   | .unitary => 0 | .iso => 1 | .observe => 2
 
-def sourceRows (request : Request) (source : String) : List (String × String) :=
-  (request.moduleName,source) :: (request.inputs.flatten ++ request.basis).filterMap (fun atom =>
+def sourceRows (request : Request) {sources : SourceTypes.Sources}
+    (entry : SourceTypes.OrdinarySignature.Checked sources request.moduleName request.declarationName) :
+    List (String × String) :=
+  (request.moduleName,entry.original.source) :: entry.sourceRows ++
+    (request.inputs.flatten ++ request.basis).filterMap (fun atom =>
     match atom with
     | .enumeration origin _ | .record origin _ => some (origin.moduleName,origin.source)
     | _ => none)
+
+/-- Count borrowed signature/type-query paths before projecting their rows.
+The source type reads have already bounded these lists and retained paths. -/
+def sourceNodes (request : Request) {sources : SourceTypes.Sources}
+    (entry : SourceTypes.OrdinarySignature.Checked sources request.moduleName request.declarationName) : Nat :=
+  let readNodes := fun (read : SourceTypes.TypeRead sources) =>
+    read.resolutions.foldl (fun count resolution => count + 1 + resolution.result.visited.length) 1
+  request.inputs.foldl (fun count basis => count + 1 + basis.length) (1 + request.basis.length) +
+    entry.parameterReads.foldl (fun count read => count + readNodes read) (readNodes entry.result)
+
+/-- Charge projection/concatenation before allocation and both graph/root
+source-coverage scans before their exact original-row comparisons. -/
+def sourceRoot (artifact : Artifact) (order : Array Nat) (request : Request)
+    (entry : SourceTypes.OrdinarySignature.Checked artifact.sources request.moduleName request.declarationName) :
+    WorkM Validity.Root := do
+  exactWork (Exact.charge (8 * sourceNodes request entry + 5))
+  let extra := sourceRows request entry
+  let bytes := (artifact.sources.toList.map fun row =>
+    row.1.utf8ByteSize + row.2.utf8ByteSize).sum
+  exactWork (Exact.charge (2 * (bytes + artifact.sources.size + 1) * (extra.length + 1)))
+  Validity.checkRootWithSources artifact order extra
+
+theorem sourceRoot_result (artifact : Artifact) (order : Array Nat) (request : Request)
+    (entry : SourceTypes.OrdinarySignature.Checked artifact.sources request.moduleName request.declarationName)
+    (root : Validity.Root) (work left : Nat)
+    (ok : (sourceRoot artifact order request entry).run work = (.ok root,left)) :
+    ∃ after, (Validity.checkRootWithSources artifact order (sourceRows request entry)).run after =
+      (.ok root,left) := by
+  obtain ⟨_,charged,_,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,after,_,checked⟩ := bind_success _ _ _ _ _ rest
+  exact ⟨after,checked⟩
 
 structure Checked (artifact : Artifact) (order : Array Nat) (request : Request) where
   entry : SourceTypes.OrdinarySignature.Checked artifact.sources request.moduleName request.declarationName
@@ -152,7 +186,7 @@ structure Checked (artifact : Artifact) (order : Array Nat) (request : Request) 
   declaredResult : entry.basis = request.basis
   root : Validity.Root
   originalRoot : ∃ before after,
-    (Validity.checkRootWithSources artifact order (sourceRows request entry.original.source)).run before =
+    (Validity.checkRootWithSources artifact order (sourceRows request entry)).run before =
       (.ok root,after)
   actualInputs : ∃ before after,
     (inputIds request.inputStorage).run before = (.ok root.program.classicalInputs,after)
@@ -173,7 +207,7 @@ def check (artifact : Artifact) (order : Array Nat) (request : Request) :
   if inputs : entry.inputs = request.inputs then
     if result : entry.basis = request.basis then
       SourceTypes.checkMany artifact.sources (request.inputs ++ [request.basis])
-      let root ← perform (Validity.checkRootWithSources artifact order (sourceRows request entry.original.source))
+      let root ← perform (sourceRoot artifact order request entry)
       guard (root.result.program.inputs.isEmpty && root.result.program.outputs.isEmpty) .request
       guard (!entry.original.parsedHeader.ordinaryOnly || !hasQuantum 65 root.result.program.operations) .request
       match entry.original.parsedHeader.effect with
@@ -191,7 +225,10 @@ def check (artifact : Artifact) (order : Array Nat) (request : Request) :
             let rows ← rowReaders root.result request (domain.code.labels.length+1)
               (OrdinaryDomain.assignments domain)
             return ⟨entry,⟨selected.before,selected.after,selected.ran⟩,inputs,result,
-              root.result,⟨root.before,root.after,root.ran⟩,
+              root.result,(by
+                obtain ⟨before,ran⟩ := sourceRoot_result artifact order request entry
+                  root.result root.before root.after root.ran
+                exact ⟨before,root.after,ran⟩),
               ⟨ids.before,ids.after,actualInputs ▸ ids.ran⟩,
               ⟨outputs.before,outputs.after,actualOutputs ▸ outputs.ran⟩,domain,supplied,rows⟩
           else throw .request
@@ -206,7 +243,7 @@ theorem Checked.original_safe {artifact order request} (checked : Checked artifa
       Semantics.ClassicalScope.ScopeSafe checked.root.program := by
   obtain ⟨before,after,ran⟩ := checked.originalRoot
   have facts := Validity.checkRootWithSources_postcondition artifact order
-    (sourceRows request checked.entry.original.source) checked.root before after ran
+    (sourceRows request checked.entry) checked.root before after ran
   obtain ⟨a,b,verified⟩ := facts.verification
   exact ⟨facts.original,Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     Raw.Observation.verify_scopeSafe _ _ _ _ _ verified⟩

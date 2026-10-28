@@ -785,6 +785,14 @@ language's twelve-bit contract. The domain retains at most64 input rows and
 Quantum input/output carriers are not enabled by this ordinary-only component.
 Internalv1 requests refuse without fallback.
 
+Original parameter/result type reads retain every actual import and public
+reexport lookup, including type references inside record fields. The same
+independent reader reconstructs the nominal tree and these original source rows;
+aliases keep the terminal declaration's identity. Row projection and both
+source-coverage scans are charged before allocation/comparison. Checking every
+unused Nat helper does not justify its source row. Unrelated modules and
+body-only foreign nominal dependencies retain their explicit refusal.
+
 The ordinary project frontend may therefore construct enum/record values,
 project fields and execute exhaustive ordinary `match` inside an eligible closed
 root, including ordinary parameter functions inlined through the same body path.

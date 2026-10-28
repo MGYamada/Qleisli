@@ -1,0 +1,93 @@
+{
+  "format": "qleisli.ordinary-import-integration-validation",
+  "version": 1,
+  "base_commit": "eaf477df71eef8af4d7daecf1fc12bb936b7c50f",
+  "history": {
+    "format": "qleisli.ordinary-import-first-validation",
+    "version": 1,
+    "original_files": 286,
+    "objects": 142,
+    "expanded_bytes": 3635688,
+    "original_bytes": 4117548,
+    "index": {
+      "bytes": 15364,
+      "sha256": "3eb208070d815ed9d40ed003b3bbcf79aa5195f5c5050f07723d0bdf6a1a9ac0",
+      "decoded_bytes": 119155,
+      "decoded_sha256": "1e61f1c05eec15b51cad79cbd30b9dece50264cb2938b252f3d5ee7d8297f4df"
+    },
+    "archive": {
+      "bytes": 106484,
+      "sha256": "0884b386c4db8ed9d397bee71ae66659324c456603fbb67fb3b71fed3749c92a"
+    },
+    "scope": "Inert first import/reexport sources and real diagnostics, separate public-field repair and unchanged-source after comparison. Preserve failed Lean syntax/path/work-expectation attempts, interrupted canonical audit streams and exact captured source versions. Current successful local checks are bounded observations, not full hosted CI, source/runtime or binary attestation, new guarantee or Issue completion. Never execute archived commands or sources."
+  },
+  "actual_cli": {
+    "first_projects": 9,
+    "first_calls": 18,
+    "first_successes": 2,
+    "first_refusals": 16,
+    "separate_repair_calls": 2,
+    "separate_repair_successes": 0,
+    "after_calls": 20,
+    "after_successes": 10,
+    "after_required_refusals": 10,
+    "original_field_visibility_repairs": 1,
+    "additional_source_repairs": 0,
+    "new_quantum_bits": 0
+  },
+  "rust": {
+    "normal": "1.99.1",
+    "msrv": "1.85.0",
+    "passed_each": {
+      "native": 11,
+      "collector": 6,
+      "ordinary_source": 12,
+      "project": 15,
+      "source_collection": 6,
+      "qfor": 6
+    },
+    "conditional_native_skips": 0,
+    "windows": {
+      "normal-native": {
+        "report_sha256": "5ce23ad9826a5aca88eb499426c676f3a69f28912f1ace991e115ec5f1252cee",
+        "seconds": 19.467
+      },
+      "normal-collection": {
+        "report_sha256": "be7c41ade94d5bbc453bee4279d646ae125b960d7db5f941e0fdba8df339513b",
+        "seconds": 0.339
+      },
+      "normal-source": {
+        "report_sha256": "76198743c94495f5b37f5fb43fc89c94ef02d960555905778f3a8ec7e8e4e98b",
+        "seconds": 92.089
+      },
+      "msrv-native": {
+        "report_sha256": "1ad336befbcaa77d7c9b96e2ed669bbcd6f976447b16fd1cd5bbf37b3eae0ee8",
+        "seconds": 21.0
+      },
+      "msrv-collection": {
+        "report_sha256": "345049389cf502b76d270551360aad7af5b8207899814c62c458b1348cf93701",
+        "seconds": 0.317
+      },
+      "msrv-source": {
+        "report_sha256": "7d390f641e2038a554f4578eeb4e86620b6092649423c00e2971574b5ce8d1d4",
+        "seconds": 91.964
+      },
+      "normal-lint": {
+        "report_sha256": "3c65529c7bdfc45b93771ab43b12321cae067ac26282c7a53f56c9d7fb414ca4",
+        "seconds": 18.09
+      }
+    }
+  },
+  "lean": {
+    "source_revision": "4d896ec29b58a8a24ab6a231e781d60339ec481e031ffe54616816ad948010ea",
+    "schema_sha256": "3e1d84e6521bc66e1446e2ee438b184f8c541848ad2bb270f49df03bf47fbc39",
+    "canonical_stages": 7,
+    "continuity_stages": 8,
+    "conformance_controls": 31,
+    "independent_meanings": 292,
+    "protected_bindings": 27,
+    "note": "All canonical builds/audits/fresh checking and eight fixed continuity stages succeeded. Derived current evidence reviewed/applied; exact current extraction and admitted meanings unchanged. First failed syntax/path/work-expectation and interrupted audit streams remain failed/incomplete history."
+  },
+  "review": "Original query-only row coverage and work accounting reviewed. An actual review found uncharged row projection/coverage scans, now repaired before final canonical validation. Native original-byte/QDV, complete domain, storage/effects and no-fallback gates remain.",
+  "pending": "Exact-commit shared checks and budgets, latest-head hosted CI/review and full #64/#195 acceptance audit remain required. PR440 remains a separate unmerged parent at capture. General selected/dependency routes, quantum ADTs, full qmatch, nominal tables and broader source/runtime/target preservation remain unfinished. No new guarantee or release."
+}

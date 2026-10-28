@@ -175,6 +175,12 @@ QLV3/QDV compares that same graph, selected entry, parameter/result forests,
 input rows, storage and effect with
 the retained Rust objects. No sampled or normalized history subset supplies
 acceptance. The program retains the typed result; untyped rechecking refuses.
+Actual original parameter/result type queries and recursive record field types
+also retain their exact import/reexport paths. These independently checked
+paths justify their source rows; global unused-helper checking and arbitrary
+module names do not. The private Rust proposal accounts for complete source
+path/text bytes and obtains no handle until native relevance and full QDV
+comparison succeed. Existing source/work limits remain in force.
 This does not prove source-body lowering or numerical runtime correspondence,
 admit an external schema or new guarantee, or grant inverse/control access.
 Existing closed-only simulation APIs still reject nonclosed roots. General

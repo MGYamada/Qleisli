@@ -27,6 +27,10 @@ development milestones from the scope of their evidence.
   intermediate values, including transitive calls. Defer their unused physical
   tables while preserving native typed-root checks, original unused-body checks
   and explicit refusals at actual finite-table consumers.
+- Retain exact original type import/reexport paths for ordinary parameters,
+  results and recursive record fields. Independently check source-row coverage,
+  charge projection/comparisons and bind every retained source byte through QDV;
+  unrelated and helper-only rows still refuse.
 - Check private closed nominal helpers through the same typed native root gate,
   retaining their original visibility and distinct internal selection. Keep
   exported roots public and private project main selection separate.

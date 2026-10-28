@@ -959,25 +959,16 @@ fn decode_subject_with_types(
                 request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len() + 2,
             ))
             .map_err(|e| Error::limit(e.to_string()))?;
+        // This private typed proposal reaches exactly one fresh native root
+        // gate before any handle can escape. Account for every proposed row,
+        // including path bytes, without declaring it justified by a type name.
+        // Lean derives actual import/field paths from the original signature
+        // and rejects unrelated rows before binding the compared graph.
         for (index, (path, source)) in snapshot.iter().enumerate() {
-            let referenced = path == &request.module
-                || request
-                    .parameters
-                    .iter()
-                    .flatten()
-                    .chain(&request.basis)
-                    .any(|atom| match atom {
-                        carrier::Atom::Enum(origin, _) | carrier::Atom::Record(origin, _) => {
-                            &origin.module == path && &origin.source == source
-                        }
-                        _ => false,
-                    });
-            if referenced {
-                identity_bytes = identity_bytes
-                    .checked_sub(path.len() + source.len())
-                    .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
-                used.insert(index);
-            }
+            identity_bytes = identity_bytes
+                .checked_sub(path.len() + source.len())
+                .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+            used.insert(index);
         }
     }
     let mut snapshots = Snapshots::new();
@@ -1042,7 +1033,10 @@ fn decode_subject_with_types(
             receipts[i] = Some(make_receipt().map_err(|e| e.at(pointer))?);
         }
     }
-    if used.len() != snapshot.len() {
+    // Ordinary proposals defer source relevance to the independent original
+    // type-path check. This decoder returns no accepted handle; all other
+    // routes retain their existing local unused-row refusal as well.
+    if ordinary.is_none() && used.len() != snapshot.len() {
         return Err(Error::format("unused source entry").at("/sources"));
     }
     let interface = match value.field("root_interface")? {

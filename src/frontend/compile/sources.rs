@@ -6,6 +6,8 @@ use crate::frontend::resolve::TypeId;
 use crate::frontend::resolve::locals::Table;
 use crate::ir::{CircuitAction, CircuitStep, RawOp, RawProgram};
 
+mod ordinary;
+
 impl Compiler<'_> {
     pub(super) fn retained_sources(
         &mut self,
@@ -174,7 +176,7 @@ impl<'a> Collector<'a, '_> {
         while let Some(dependency) = self.pending.pop() {
             match dependency {
                 Dependency::Function(key) => self.definition(key)?,
-                Dependency::Type(key) => self.nominal(key)?,
+                Dependency::Type(key) => self.nominal(key, true)?,
             }
         }
         Ok(())
@@ -333,7 +335,7 @@ impl<'a> Collector<'a, '_> {
         Ok(())
     }
 
-    fn nominal(&mut self, key: TypeId) -> Result<(), CompileError> {
+    fn nominal(&mut self, key: TypeId, include_helpers: bool) -> Result<(), CompileError> {
         self.charge(
             self.compiler.source.nominals.len() + self.compiler.source.nominal_uses.len() + 3,
         )?;
@@ -378,6 +380,16 @@ impl<'a> Collector<'a, '_> {
                 return self.refusal(
                     "source closure type dependency differs from its original occurrence",
                 );
+            }
+            if let Target::Declaration(next) = usage.target {
+                if resolution.declaration(next).kind != FnKind::Static {
+                    return self.refusal("source closure field dependency has the wrong category");
+                }
+                if !include_helpers {
+                    // An ordinary type path does not justify a helper's whole
+                    // body/import closure. Native helper coverage stays separate.
+                    continue;
+                }
             }
             resolution.visit_name_sources(record.module, &usage.name, |owner| {
                 self.source(resolution.module_name(owner), None)
@@ -721,5 +733,91 @@ mod tests {
                 assert_eq!(result.unwrap_err().code, ErrorCode::InvalidIr);
             }
         }
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn ordinary_type_rows_retain_signature_and_record_paths_but_not_body_only_imports() {
+        let source = project(&[
+            (
+                "main",
+                "use bridge::Tri; use packets::Packet; use hidden::Hidden; pub fn original(value:Packet)->Tri{let ignored=Hidden::Only;value.tag}",
+            ),
+            ("bridge", "pub use api::Tri;"),
+            ("api", "pub use labels::Tri;"),
+            ("labels", "pub enum Tri { A,B,C }"),
+            (
+                "packets",
+                "use api::Tri; pub struct Packet { pub tag:Tri, pub empty:empty::Empty }",
+            ),
+            ("empty", "pub struct Empty {}"),
+            ("hidden", "pub enum Hidden { Only }"),
+            ("unrelated", "pub fn ignored()->Bit{0}"),
+        ]);
+        let mut compiler = super::super::snapshot_tests::compiler(&source);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::original")
+            .unwrap();
+        let rows = compiler
+            .retained_ordinary_type_sources(key, "main", Span::default())
+            .unwrap();
+        assert_eq!(
+            rows.iter().map(|row| row.0.as_str()).collect::<Vec<_>>(),
+            ["api", "bridge", "empty", "labels", "main", "packets"]
+        );
+        for row in rows.iter() {
+            assert_eq!(row.1, source.modules[&row.0].source);
+        }
+        assert!(compiler.checked.is_empty());
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn ordinary_type_rows_leave_helper_coverage_and_foreign_occurrences_unjustified() {
+        let source = project(&[
+            (
+                "main",
+                "use packet::Packet; pub fn original(value:Packet)->Packet{value}",
+            ),
+            (
+                "packet",
+                "use numbers::width; pub struct Packet { pub bits:Bits<width()> }",
+            ),
+            ("numbers", "pub static fn width()->Nat{1}"),
+        ]);
+        let foreign_source = source.clone();
+        let mut compiler = super::super::snapshot_tests::compiler(&source);
+        let foreign = super::super::snapshot_tests::compiler(&foreign_source);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::original")
+            .unwrap();
+        let rows = compiler
+            .retained_ordinary_type_sources(key, "main", Span::default())
+            .unwrap();
+        assert_eq!(
+            rows.iter().map(|row| row.0.as_str()).collect::<Vec<_>>(),
+            ["main", "packet"]
+        );
+        // Equal source text does not rebind the original occurrence association.
+        compiler
+            .source
+            .lexical
+            .insert(key, Arc::clone(&foreign.source.lexical[&key]));
+        let error = compiler
+            .retained_ordinary_type_sources(key, "main", Span::default())
+            .unwrap_err();
+        assert_eq!(error.code, ErrorCode::InvalidIr);
+        assert!(error.message.contains("another original collection"));
+        assert!(compiler.checked.is_empty());
     }
 }

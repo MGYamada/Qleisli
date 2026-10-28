@@ -152,8 +152,19 @@ zero-probability histories, using the independent ordinary-value relation.
 Flattened input/output SSA maps must equal the original Raw lists. An invalid
 enum code, changed nominal identity, reordered field/axis or hidden Observe under
 a pure label refuses. A declared public Observe bound is retained even for a
-pure implementation. Source rows require the actual selected original and
-exact checked nominal origins; unrelated rows retain the strict coverage rule.
+pure implementation. Source rows require the actual selected original, exact
+checked nominal origins or actual original type-resolution paths from the
+selected parameter/result types and recursive record fields. The shared
+independent resolver retains its exact query, original lookup bytes, visibility
+and import/reexport edges. An arbitrary row or a validated unused Nat helper
+cannot supply type-path coverage. Projection and both coverage scans are
+precharged within the existing work limit.
+
+Rust's private ordinary proposal decoder accounts for every proposed source's
+path and text under the existing aggregate identity limit, then defers relevance
+to this native gate. It returns no accepted handle. Other decoding routes retain
+their original unused-row refusal; the ordinary execution view compares every
+retained original source byte before a fresh accepted handle is bound.
 
 `Protocol.OrdinaryRoot.check_binding` retains the original packet, fresh
 artifact/request reads and actual root check. The execution-only QDV comparison

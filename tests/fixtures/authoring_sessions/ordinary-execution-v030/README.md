@@ -98,6 +98,26 @@ and MSRV windows remain distinct. Saved commands are never executed; binary
 identity, bounded tests and successful checking do not establish source/runtime
 preservation, a new guarantee or completed ADT support.
 
+## Ordinary type import/reexport history
+
+The [compressed index](imports-first-index.json.gz), [inert archive](imports-first.tar.xz)
+and [validation](imports-first-validation.json) preserve286 original records as142
+objects. Nine unchanged first projects produced18 actual CLI observations:
+the direct import succeeded, while public reexports and parameter paths reached
+the missing native coverage gate. The record first failed private-field access;
+one separately saved public-field repair reached that native barrier too.
+
+Twenty after-change calls preserve the original sources and the separate repair:
+ten succeed with independently specified distributions and ten retain their
+privacy/category/unused-body/uncovered-intermediate refusals. No further source
+repair is made. The packet also retains the failed Lean signature syntax,
+incorrect test-driver path, stale exact work expectation, interrupted audit
+streams and all captured source versions. Current tests invoke fresh native
+checking; passive history tests never execute these saved sources or commands.
+All new import study programs use zero qubits. General selected/quantum/qmatch,
+nominal-table and preservation obligations remain unfinished.
+
+
 ## Zero-width ordinary parameters in closed runtime APIs
 
 The separate [closed-runtime index](closed-runtime-first-index.json.gz),
