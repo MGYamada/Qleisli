@@ -594,5 +594,70 @@ class OrdinaryClosedRuntimeHistory(unittest.TestCase):
             self.raw('ordinary-closed-fix-checks/after-normal/stdout'))
 
 
+class SelectedOrdinaryFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'selected-first-index.json.gz', 'selected-first.tar.xz',
+                '2b5fbe16f035637f328d7759e19afd623d05d7f4f30d895bfef4dda6baec5f27',
+                360852, '61bb4d27a016d726a0a00c6a0fa50b89f0b017962857903237dca376c6556734',
+                3277196, index_gzip=dict(bytes=24736, decoded_bytes=165710,
+                    decoded_sha256='0960bc1ef1a8b082b6e3ff22d4582464cdf38dde0a7f17b217dc00ad20fc6c67'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'selected-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_sources_streams_repairs_and_incomplete_window_stay_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (392, 216))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, count, successes, key in [
+                ('selected-ordinary-first', 24, 2, 'observations'),
+                ('selected-ordinary-host-repair', 2, 0, 'observations'),
+                ('selected-ordinary-after', 26, 13, 'results'),
+                ('selected-ordinary-classical-after', 26, 15, 'results')]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            rows = report[key]
+            self.assertEqual((len(rows), sum(row['exit_code'] == 0 for row in rows)), (count, successes))
+            for row in rows:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+                self.assertEqual(json.loads(self.raw(folder + '/' + row['stdout']['path'])), row['document'])
+        self.assertIn(b'pub classical fn', self.raw('selected-ordinary-first/classical-intermediate/main.qli'))
+        final = self.record('selected-ordinary-classical-after/report.json')
+        self.assertEqual((final['source_repairs'], final['new_quantum_bits_executed']), (0, 0))
+        for row in final['results']:
+            if row['first'].get('case') == 'classical-intermediate':
+                self.assertEqual(row['exit_code'], 0)
+                if row['first']['action'] == 'run':
+                    self.assertEqual(row['document']['result']['distribution'],
+                                     [dict(bits=[True], probability=1)])
+
+    def test_failed_prototypes_and_later_current_windows_remain_separate(self):
+        for label in ['compile-normal', 'normal-selected', 'normal-selected-repaired',
+                      'normal-selected-dormant-scope', 'normal-selected-source-routing', 'normal-lint']:
+            self.assertEqual(self.record('selected-ordinary-checks/' + label + '/report.json')['exit_code'], 101)
+        for row in self.record('selected-port-validation-batch.json'):
+            report = self.record('selected-ordinary-port-checks/' + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['head'], 'b9ad43a0802a98d5f463884c419fbf4eb608475d')
+            if row['label'] != 'normal-lint':
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw('selected-ordinary-port-checks/' + row['label'] + '/stdout'))
+
+
 if __name__ == '__main__':
     unittest.main()

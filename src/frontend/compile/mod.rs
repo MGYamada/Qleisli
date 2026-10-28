@@ -19,14 +19,17 @@ mod interfaces;
 mod lower;
 mod naturals;
 mod operations;
+mod originals;
 mod profile;
 mod report;
+pub(super) mod selected;
 mod sources;
 mod types;
 
 use types::finite_type;
 
 pub use report::ProjectCheckReport;
+pub use selected::SelectedOrdinaryProgram;
 
 pub use super::specialize::{
     BasisBinding, CheckedSourceCarrier, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort,
@@ -211,10 +214,11 @@ impl BasisFunction {
 }
 
 use super::resolve::locals::{BinderKey, Forest, Lookup, OccurrencesForest, ResolvedUse};
+use originals::Originals;
 
 struct Compiler<'a> {
     kernel: crate::interchange::native::Kernel,
-    project: &'a Project,
+    originals: Originals<'a>,
     // Retain the single complete judgment over the original loaded source.
     // Adapters borrow its facts; they neither reconstruct nor replace them.
     source: check::CheckedProgram,
@@ -224,6 +228,8 @@ struct Compiler<'a> {
     interface_naturals: BTreeMap<Key, check::plans::InterfaceNaturals>,
     locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
+    force_ordinary_root: bool,
+    selected_calls: usize,
     basis: BTreeMap<Key, BasisFunction>,
     // Ordinary nominal calls use bodies; physical label tables stay unavailable.
     deferred_nominal_tables: BTreeSet<Key>,
@@ -278,11 +284,13 @@ impl<'a> Compiler<'a> {
         code: ErrorCode,
         message: impl Into<String>,
     ) -> CompileError {
-        let source = &self.project.modules[module];
-        let (line, column) = coordinates(&source.source, span);
+        let source = self.originals.module(module).expect("original module");
+        let (line, column) = coordinates(source.source, span);
         CompileError {
             code,
-            path: source.path.clone(),
+            path: source
+                .path
+                .map_or_else(|| PathBuf::from(module), Path::to_path_buf),
             span,
             line,
             column,
@@ -308,8 +316,19 @@ impl<'a> Compiler<'a> {
         span: Span,
         amount: usize,
     ) -> Result<(), CompileError> {
-        if amount > MAX_WORK.saturating_sub(*work) {
-            let (line, column) = coordinates(&self.project.modules[module].source, span);
+        let ceiling = if self.force_ordinary_root {
+            100_000
+        } else {
+            MAX_WORK
+        };
+        if amount > ceiling.saturating_sub(*work) {
+            let (line, column) = coordinates(
+                self.originals
+                    .module(module)
+                    .expect("original module")
+                    .source,
+                span,
+            );
             let (owner, location, context) = match &self.checking {
                 Some(key) => (
                     self.source.resolution.declaration(*key).name.0.as_str(),
@@ -323,7 +342,7 @@ impl<'a> Compiler<'a> {
                 location,
                 ErrorCode::Limit,
                 format!(
-                    "source expansion exceeds the project-wide work limit of {MAX_WORK}{context}; \
+                    "source expansion exceeds the project-wide work limit of {ceiling}{context}; \
                     {} units used, {amount} requested at {module}:{line}:{column}; \
                     each declaration is checked and each call is expanded separately",
                     *work
@@ -550,9 +569,7 @@ impl<'a> Compiler<'a> {
         if let Some(error) = charge_error.into_inner() {
             return Err(error);
         }
-        let closed = result.map_err(|error| {
-            source_error(self.project, &self.project.root, error.in_module(&module))
-        })?;
+        let closed = result.map_err(|error| self.originals.error(error.in_module(&module)))?;
         self.validate_interface_naturals(definition, &closed, span)?;
         Ok(closed)
     }
@@ -859,7 +876,7 @@ fn validate_original_edition(project: &Project) -> Result<(), CompileError> {
 }
 
 fn capture_original_plans<'ast>(
-    project: &'ast Project,
+    originals: Originals<'ast>,
     resolution: &super::resolve::Resolution,
     interfaces: &BTreeMap<Key, Interface>,
     helpers: &check::StaticHelpers,
@@ -876,7 +893,11 @@ fn capture_original_plans<'ast>(
     budget.charge(Span::default(), interfaces.len())?;
     for id in interfaces.keys() {
         let record = resolution.declaration(*id);
-        let declaration = &project.modules[&record.name.0].ast.decls[record.ast_index];
+        let declaration = &originals
+            .module(&record.name.0)
+            .expect("original module")
+            .ast
+            .decls[record.ast_index];
         let original = check::plans::capture_interface_naturals_budgeted(
             check::plans::InterfaceNaturalContext {
                 owner: *id,
@@ -898,7 +919,12 @@ fn capture_original_plans<'ast>(
     let mut occurrences = OccurrencesForest::default();
     for (id, index) in indices {
         let declaration = resolution.declaration(*id);
-        let span = project.modules[&declaration.name.0].ast.decls[declaration.ast_index].span;
+        let span = originals
+            .module(&declaration.name.0)
+            .expect("original module")
+            .ast
+            .decls[declaration.ast_index]
+            .span;
         occurrences
             .insert_budgeted(index.take_occurrences(), span, &mut |span, cells| {
                 budget.charge(span, cells)
@@ -931,7 +957,13 @@ fn prepare_untrusted_source_test<'ast>(
         SourceLimits::finite(),
         |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
             capture_original_plans(
-                project, resolution, interfaces, helpers, indices, budget, nominals,
+                project.into(),
+                resolution,
+                interfaces,
+                helpers,
+                indices,
+                budget,
+                nominals,
             )
         },
     )
@@ -950,25 +982,35 @@ fn prepare_original_source<'ast>(
     validate_original_edition(project)?;
     // Public Project fields can be mutated by a caller. Reconstruct the entire
     // original judgment and occurrence association on every operation.
+    prepare_borrowed_originals(project.into(), SourceLimits::finite()).map_err(|mut error| {
+        if error.path == project.root {
+            error.path = root.to_owned();
+        }
+        error
+    })
+}
+
+fn prepare_borrowed_originals<'ast>(
+    originals: Originals<'ast>,
+    limits: SourceLimits,
+) -> Result<PreparedSource<'ast>, CompileError> {
     let (source, (occurrences, interface_naturals)) = check::program_with_sources(
-        project
-            .modules
-            .iter()
-            .map(|(name, module)| (name.as_str(), &module.ast))
+        originals
+            .modules()
+            .map(|(name, module)| (name, module.ast))
             .collect(),
-        project
-            .modules
-            .iter()
-            .map(|(name, module)| (name.as_str(), module.source.as_str()))
+        originals
+            .modules()
+            .map(|(name, module)| (name, module.source))
             .collect(),
-        SourceLimits::finite(),
+        limits,
         |resolution, interfaces, helpers, _, _, indices, budget, nominals| {
             capture_original_plans(
-                project, resolution, interfaces, helpers, indices, budget, nominals,
+                originals, resolution, interfaces, helpers, indices, budget, nominals,
             )
         },
     )
-    .map_err(|error| source_error(project, root, error))?;
+    .map_err(|error| originals.error(error))?;
     Ok(PreparedSource {
         checked: source,
         occurrences,
@@ -1038,10 +1080,12 @@ fn process_loaded_project_details(
     }
     let mut compiler = Compiler {
         kernel,
-        project,
+        originals: project.into(),
         source,
         interface_naturals,
         declarations,
+        force_ordinary_root: false,
+        selected_calls: 0,
         locals,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
@@ -1196,7 +1240,12 @@ fn process_loaded_project_details(
     })
 }
 
-fn source_error(project: &Project, root: &Path, error: SourceError) -> CompileError {
+fn source_error<'a>(
+    originals: impl Into<Originals<'a>>,
+    root: &Path,
+    error: SourceError,
+) -> CompileError {
+    let originals = originals.into();
     let code = match error.code {
         "name" => ErrorCode::UnknownName,
         "cycle" => ErrorCode::RecursiveCall,
@@ -1213,12 +1262,18 @@ fn source_error(project: &Project, root: &Path, error: SourceError) -> CompileEr
     let (path, line, column) = error
         .module
         .as_ref()
-        .and_then(|module| project.modules.get(module))
+        .and_then(|name| originals.module(name).map(|module| (name, module)))
         .map_or_else(
             || (root.to_path_buf(), 1, 1),
-            |module| {
-                let (line, column) = coordinates(&module.source, error.span);
-                (module.path.clone(), line, column)
+            |(name, module)| {
+                let (line, column) = coordinates(module.source, error.span);
+                (
+                    module
+                        .path
+                        .map_or_else(|| PathBuf::from(name), Path::to_path_buf),
+                    line,
+                    column,
+                )
             },
         );
     CompileError {
@@ -1363,10 +1418,12 @@ mod snapshot_tests {
         Compiler {
             kernel: crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026)
                 .expect("explicit test kernel"),
-            project,
+            originals: project.into(),
             source,
             interface_naturals,
             declarations,
+            force_ordinary_root: false,
+            selected_calls: 0,
             locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),
             deferred_nominal_tables: BTreeSet::new(),

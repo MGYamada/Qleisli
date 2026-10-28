@@ -123,7 +123,7 @@ is separate below; general nominal functions, quantum owners, full qmatch and
 original AST-to-step preservation remain unfinished. These component results
 admit no new guarantee and do not widen the two existing ledger scopes.
 
-### Closed ordinary-result requests
+### Ordinary input/result requests
 
 The internal `--ordinary-root-check` mode accepts `qleisli.ordinary-root-request`
 version 2, profile `finite-ordinary-root-v2`. Its strict fields are `format`,
@@ -134,6 +134,14 @@ exactly closed `main::main`, including a private ordinary main; exported selecti
 requires an original public declaration. Internal selection checks an original
 private non-entry declaration without exporting its name. Original parameter and
 result types must be ordinary finite types; quantum ports remain unsupported here.
+
+Nongeneric public selected functions use this same gate through the common
+original-source compiler, initially for classical Raw instructions only.
+Selection retains the exact original instantiation, complete checked host
+bindings and accepted request. Both closed simulation and sampling reject
+nonempty retained parameter forests even when every parameter has zero width.
+General generic/quantum selected integration remains unfinished. Untrusted
+portable nominal emission refuses until its complete typed request is transported.
 
 The basis retains the existing complete nominal prefix representation. Storage
 separately retains Unit, Bit, Bits, pair, tuple, enum origin/SSA coordinates and

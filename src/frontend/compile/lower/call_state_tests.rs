@@ -52,11 +52,13 @@ fn compiler_from_prepared<'p>(
         .collect();
     Compiler {
         kernel,
-        project,
+        originals: project.into(),
         source,
         interface_naturals,
         locals: Forest::from_occurrences(occurrences),
         declarations,
+        force_ordinary_root: false,
+        selected_calls: 0,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),

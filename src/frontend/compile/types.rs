@@ -392,14 +392,16 @@ pub(super) fn finite_type<N: FiniteRegisterSize>(
     checked: &crate::frontend::types::Type<N>,
     stage: Stage,
 ) -> Result<Ty, CompileError> {
-    reserve_and_copy(
+    let result = reserve_and_copy(
         original,
         checked,
         stage,
         |failure| failure.compile(compiler, module),
         |span, amount| compiler.charge_at(work, module, span, amount),
         |checked| copy_reserved(original, checked, stage),
-    )
+    )?;
+    super::selected::check_type_capacity(compiler, work, module, original.span, &result)?;
+    Ok(result)
 }
 
 /// Inferred checked types have a real expression location but no source type
@@ -411,14 +413,16 @@ pub(super) fn finite_body_type(
     span: Span,
     checked: &crate::frontend::types::Type<u32>,
 ) -> Result<Ty, CompileError> {
-    reserve_and_copy(
+    let result = reserve_and_copy(
         Location::Span(span),
         checked,
         Stage::Runtime,
         |failure| failure.compile(compiler, module),
         |span, cells| compiler.charge_at(work, module, span, cells),
         |checked| copy_reserved(Location::Span(span), checked, Stage::Runtime),
-    )
+    )?;
+    super::selected::check_type_capacity(compiler, work, module, span, &result)?;
+    Ok(result)
 }
 
 pub(super) fn closed_capacity(

@@ -183,7 +183,14 @@ path/text bytes and obtains no handle until native relevance and full QDV
 comparison succeed. Existing source/work limits remain in force.
 This does not prove source-body lowering or numerical runtime correspondence,
 admit an external schema or new guarantee, or grant inverse/control access.
-Existing closed-only simulation APIs still reject nonclosed roots. General
+Closed-only simulation and sampling inspect retained source parameters as well
+as Raw ports, so zero-width ordinary parameters cannot masquerade as closure.
+Nongeneric public selected ordinary functions now use the same original-source
+emitter and native v2 gate. Their AST/text are borrowed intact for a fresh
+complete common judgment and associated indices; cached facts and newly built
+indices are never mixed. The returned selected wrapper retains its immutable
+instantiation and actual accepted request. This first selected slice emits only
+classical Raw instructions under bounded producer limits. Generic
 selected/dependency routes, quantum nominal interfaces, full qmatch and nominal
 finite-table consumers remain separate pending integration. Internal v1 refuses
 without fallback.

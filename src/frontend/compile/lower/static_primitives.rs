@@ -355,12 +355,21 @@ impl Lowerer<'_, '_> {
                 let [n] = naturals else {
                     unreachable!("checked arity")
                 };
-                if *n >= MAX_BITS as u32 {
+                let limit = if self.compiler.force_ordinary_root {
+                    8
+                } else {
+                    MAX_BITS as u32
+                };
+                if *n >= limit {
                     return Err(self.primitive_refusal(
                         module,
                         span,
                         ErrorCode::Limit,
-                        "ordinary word exceeds 12 bits",
+                        if self.compiler.force_ordinary_root {
+                            "ordinary word exceeds eight bits"
+                        } else {
+                            "ordinary word exceeds 12 bits"
+                        },
                     )?);
                 }
                 if args[0].ty() != Ty::bit() || args[1].ty() != Ty::bits(*n) {

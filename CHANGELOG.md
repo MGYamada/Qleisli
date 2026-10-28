@@ -10,6 +10,13 @@ development milestones from the scope of their evidence.
   including Unit, Bits<0>, empty records and nested zero-width products. Empty
   Raw input lists do not erase the retained logical arguments; nullary typed
   Unit results remain executable. Preserve the native input/result request.
+- Execute nongeneric public selected enum/record functions through the common
+  original-source emitter and existing native ordinary-v2 gate. Retain complete
+  host bindings and source identity, check all unused bodies, and preserve exact
+  nominal input/result forests, zero-width parameters and full canonical rows.
+  Closed execution and sampling reject every retained source parameter, even an
+  empty record, Unit or Bits<0>. The initial selected slice emits classical Raw
+  instructions only; generic/quantum integration and full #64/#195 remain open.
 - Execute the first closed ordinary enum/record result slice through a versioned
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV

@@ -65,9 +65,8 @@ impl Collector<'_, '_> {
         };
         let original = self
             .compiler
-            .project
-            .modules
-            .get(&record.name.0)
+            .originals
+            .module(&record.name.0)
             .and_then(|source| source.ast.decls.get(record.ast_index));
         if !original
             .zip(self.compiler.declarations.get(&key))

@@ -114,6 +114,13 @@ impl Compiler<'_> {
     /// values use ordinary source bodies, including through classical callers.
     /// Actual finite-table consumers still require a supported table.
     pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
+        self.prepare_selected_classical_tables(None)
+    }
+
+    pub(super) fn prepare_selected_classical_tables(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+    ) -> Result<(), CompileError> {
         fn has_nominal(ty: &Ty) -> bool {
             match &ty.kind {
                 Kind::Nominal(_) => true,
@@ -123,6 +130,9 @@ impl Compiler<'_> {
         }
         for ordinal in 0..self.source.dependency_order.len() {
             let key = self.source.dependency_order[ordinal];
+            if selected.is_some_and(|selected| !selected.contains(&key)) {
+                continue;
+            }
             self.checking = Some(key);
             if self.declarations[&key].kind != FnKind::Classical {
                 continue;

@@ -31,6 +31,33 @@ General ordinary inputs/functions, selected Raw, quantum nominal owners, full
 qmatch and original source/runtime/target preservation remain unfinished.
 This archive closes no Issue and admits no guarantee, release or publication.
 
+## Selected ordinary execution history, 2026-10-28
+
+The separate [selected archive](selected-first.tar.xz),
+[index](selected-first-index.json.gz) and [validation](selected-first-validation.json)
+retain392 original files as216 objects, with3,277,196 expanded bytes. Twelve
+unchanged first projects retain24 actual calls: the built-in control succeeds,
+while desired nominal programs, invalid source/effect/visibility controls and
+the original missing-`const` spelling retain their real refusals. The one-token
+generic repair is a separate two-call study and still refuses native transport.
+
+An incomplete after-window retains13 successes/13 refusals, including an
+unnecessary Rust rejection of the original public `classical fn` header.
+The corrected26-call window has15 successes/11 required refusals with no
+source repairs or new quantum execution. Public classical roots now use the
+already existing native header rule; no source translation or new Lean rule
+repairs them. Nonclosed nominal arguments, including zero-width values, still
+require an actual invocation before closed-only run/sample.
+
+Prototype compilation, test and lint failures remain beside separate repairs
+and exact source objects. Current normal/MSRV windows each pass62 source/CLI
+and13 native boundary tests with zero conditional skips;133 normal compiler
+tests and strict all-target Clippy pass separately. The local checker has the
+separately observed unchanged Lean closure; binary identity is not a candidate
+build attestation or fresh proof replay. Saved commands remain inert.
+Generic selected/dependency transport, quantum nominal interfaces, full qmatch,
+finite-table consumers and source/runtime/target preservation remain unfinished.
+
 ## Review and complete-input experiments, 2026-10-28
 
 The separate [review archive](review-first.tar.xz),

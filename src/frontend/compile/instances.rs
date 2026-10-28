@@ -632,9 +632,7 @@ impl Compiler<'_> {
         if let Some(error) = charge_error {
             return Err(error);
         }
-        let closed = closed.map_err(|error| {
-            source_error(self.project, &self.project.root, error.in_module(&module))
-        })?;
+        let closed = closed.map_err(|error| self.originals.error(error.in_module(&module)))?;
         let mut work = self.work;
         let result = types::finite_body_type(self, &mut work, &module, span, &closed);
         self.work = work;
