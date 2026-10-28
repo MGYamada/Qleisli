@@ -460,6 +460,8 @@
           "--test",
           "frontend_ownership_differential",
           "--test",
+          "input_corpus",
+          "--test",
           "source_ir_correspondence"
         ],
         [
@@ -582,8 +584,6 @@
           "hierarchical_qpe_host",
           "--test",
           "inference_law",
-          "--test",
-          "input_corpus",
           "--test",
           "interchange",
           "--test",
@@ -876,6 +876,8 @@
           "--test",
           "frontend_ownership_differential",
           "--test",
+          "input_corpus",
+          "--test",
           "source_ir_correspondence"
         ],
         [
@@ -998,8 +1000,6 @@
           "hierarchical_qpe_host",
           "--test",
           "inference_law",
-          "--test",
-          "input_corpus",
           "--test",
           "interchange",
           "--test",

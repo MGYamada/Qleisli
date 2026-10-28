@@ -99,7 +99,13 @@ class RustSchedulerTests(unittest.TestCase):
         self.assertEqual(len(selected), 8)
         self.assertNotIn(('custom-build', 'build-script-build'), selected)
         _, selected = runner.selection(self.command(['--all-targets']), value)
-        self.assertEqual(len(selected), 10)
+        self.assertEqual(selected, {
+            ('lib', 'qleisli'), ('bin', 'qleisli'),
+            ('example', 'interop'), ('example', 'lean_kernel'),
+            ('example', 'native_acceptance'), ('example', 'sampled_shor15'), ('example', 'shor15'),
+            ('test', 'alpha'), ('test', 'frontend_ownership_differential'),
+            ('test', 'input_corpus'), ('test', 'source_ir_correspondence'),
+        })
 
     def test_test_filters_features_unknown_targets_and_overrides_refuse(self):
         for tail in ([], ['--tests'], ['--all-targets', '--', '--skip', 'case'], ['--test', 'unknown'],
