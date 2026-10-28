@@ -116,25 +116,50 @@ private def adapt {α : Type} (value : Except String α) : WorkM α :=
 
 /-- Read each original parameter's complete ordinary finite type. This does
 not check parameter-pattern meaning or source-body preservation. -/
-def inputTypes (sources : Sources) (owner : String) (tokens : List (List String)) :
-    WorkM (List Basis) := do
+def inputTypesWithSources (sources : Sources) (owner : String) (tokens : List (List String)) :
+    WorkM (List (TypeRead sources)) := do
   guard (tokens.length ≤ 64) .limit
   let inputs ← tokens.mapM fun ty => do
-    let basis ← typeExpression sources owner ty
-    let _ ← FiniteCarrier.read basis
-    pure basis
-  guard ((inputs.map List.length).sum ≤ 128) .limit
+    let result ← typeExpressionWithSources sources owner ty
+    let _ ← FiniteCarrier.read result.basis
+    pure result
+  guard ((inputs.map fun result => result.basis.length).sum ≤ 128) .limit
   return inputs
+
+def inputTypes (sources : Sources) (owner : String) (tokens : List (List String)) :
+    WorkM (List Basis) := do
+  return (← inputTypesWithSources sources owner tokens).map (·.basis)
+
+theorem inputTypesWithSources_value (sources : Sources) (owner : String)
+    (tokens : List (List String)) (result : List (TypeRead sources)) (work left : Nat)
+    (ok : (inputTypesWithSources sources owner tokens).run work = (.ok result,left)) :
+    (inputTypes sources owner tokens).run work = (.ok (result.map (·.basis)),left) := by
+  unfold inputTypes
+  rw [Finite.bind_run,ok]
+  rfl
 
 structure Checked (sources : Sources) (owner name : String) where
   original : Original sources owner name
-  inputs : List Basis
-  basis : Basis
+  parameterReads : List (TypeRead sources)
+  result : TypeRead sources
   inputsRead : ∃ before after,
-    (inputTypes sources owner original.parsedHeader.parameterTypes).run before = (.ok inputs,after)
+    (inputTypesWithSources sources owner original.parsedHeader.parameterTypes).run before =
+      (.ok parameterReads,after)
   resultRead : ∃ before after,
-    (typeExpression sources owner (original.parsedHeader.resultTokens.map (·.text))).run before =
-      (.ok basis,after)
+    (typeExpressionWithSources sources owner (original.parsedHeader.resultTokens.map (·.text))).run before =
+      (.ok result,after)
+
+def Checked.inputs {sources owner name} (checked : Checked sources owner name) : List Basis :=
+  checked.parameterReads.map (·.basis)
+
+def Checked.basis {sources owner name} (checked : Checked sources owner name) : Basis :=
+  checked.result.basis
+
+/-- Only queries actually made by the selected original signature and recursive
+record fields contribute rows. Global unused-helper validation contributes none. -/
+def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) :
+    List (String × String) :=
+  checked.parameterReads.flatMap TypeRead.sourceRows ++ checked.result.sourceRows
 
 def selectionAllowed {sources : Sources} {owner name : String}
     (selection : Selection) (original : Original sources owner name) : Bool :=
@@ -154,10 +179,10 @@ def read (sources : Sources) (selection : Selection) (owner name : String) :
   exactWork (Exact.charge (512*(bytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
   let original ← adapt (original sources owner name)
   guard (selectionAllowed selection original) .request
-  let inputs ← NaturalAffine.witness (inputTypes sources owner original.parsedHeader.parameterTypes)
+  let inputs ← NaturalAffine.witness (inputTypesWithSources sources owner original.parsedHeader.parameterTypes)
   let basis ← NaturalAffine.witness
-    (typeExpression sources owner (original.parsedHeader.resultTokens.map (·.text)))
-  let _ ← FiniteCarrier.read basis.val
+    (typeExpressionWithSources sources owner (original.parsedHeader.resultTokens.map (·.text)))
+  let _ ← FiniteCarrier.read basis.val.basis
   return ⟨original,inputs.val,basis.val,by with_reducible exact inputs.property,
     by with_reducible exact basis.property⟩
 
@@ -188,11 +213,15 @@ theorem Checked.byte_envelope {sources owner name} (checked : Checked sources ow
 theorem Checked.parameter_types {sources owner name} (checked : Checked sources owner name) :
     ∃ before after,
       (inputTypes sources owner checked.original.parsedHeader.parameterTypes).run before =
-        (.ok checked.inputs,after) := checked.inputsRead
+        (.ok checked.inputs,after) := by
+  obtain ⟨before,after,ran⟩ := checked.inputsRead
+  exact ⟨before,after,inputTypesWithSources_value _ _ _ _ before after ran⟩
 
 theorem Checked.result_type {sources owner name} (checked : Checked sources owner name) :
     ∃ before after,
       (typeExpression sources owner (checked.original.parsedHeader.resultTokens.map (·.text))).run before =
-        (.ok checked.basis,after) := checked.resultRead
+        (.ok checked.basis,after) := by
+  obtain ⟨before,after,ran⟩ := checked.resultRead
+  exact ⟨before,after,typeExpressionWithSources_value _ _ _ _ before after ran⟩
 
 end QleisliKernel.SourceTypes.OrdinarySignature

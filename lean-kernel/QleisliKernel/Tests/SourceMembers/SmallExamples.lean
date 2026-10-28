@@ -31,8 +31,8 @@ example : summary = .ok [
     ("hidden",false,some ["(","Unit",",","Bits","<","0",">",")"]),
     ("bits",true,some ["Bits","<","2",">"])] := by decide +kernel
 example : (action.run 0).1.isOk = false := by decide +kernel
--- Preserve the measured work consumption as a kernel-checked regression.
-example : (action.run 2000000).2 = 1979563 := by decide +kernel
+-- Preserve measured work, including retained type-query path accounting.
+example : (action.run 2000000).2 = 1979536 := by decide +kernel
 
 example : ((readOriginal #[("owner",original),("owner",original)] "owner" "Record").run
     2000000).1.isOk = false := by decide +kernel

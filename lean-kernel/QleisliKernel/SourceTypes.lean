@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.Declarations
+import QleisliKernel.SourceTypes.ResolutionProvenance
 import QleisliKernel.SourceTypes.NaturalSyntax
 import QleisliKernel.SourceTypes.NaturalAffine
 import QleisliKernel.SourceTypes.NaturalConstraints
@@ -61,9 +62,51 @@ private def load (sources : Sources) (moduleName name : String) : Finite.WorkM (
     row.1.utf8ByteSize + row.2.utf8ByteSize).sum + name.utf8ByteSize + moduleName.utf8ByteSize + 1))
   adapt (lookup sources moduleName name)
 
-private def combine (first second : Basis) : Finite.WorkM Basis := do
-  Finite.guard (first.length + second.length ≤ 128) .limit
-  pure (first ++ second)
+/-- One query made while reading an original type, with the actual resolver run.
+The enclosing type-read witness supplies its source-occurrence context. -/
+structure TypeResolution (sources : Sources) where
+  owner : String
+  tokens : List String
+  result : Resolved
+  read : ∃ before after,
+    (ResolutionProvenance.read sources owner tokens).run before = (.ok result,after)
+
+theorem TypeResolution.query {sources : Sources} (resolution : TypeResolution sources) :
+    Semantics.SourceResolution.Query sources resolution.owner resolution.tokens
+      resolution.result.visited (ResolutionTrace.resolvedView resolution.result) ∧
+      ResolutionTrace.OriginalLookups sources resolution.result.visited := by
+  obtain ⟨before,after,ran⟩ := resolution.read
+  exact ResolutionProvenance.read_query sources _ _ _ before after ran
+
+/-- Basis and provenance from the same shared executable type reader. Reading
+all unused Nat helpers validates them but contributes no dependency coverage. -/
+structure TypeRead (sources : Sources) where
+  basis : Basis
+  resolutions : List (TypeResolution sources) := []
+
+def TypeRead.sourceRows {sources : Sources} (result : TypeRead sources) : List (String × String) :=
+  result.resolutions.flatMap fun resolution => ResolutionProvenance.sourceRows resolution.result
+
+/-- Each retained row comes from an original lookup on one of the actual type
+queries. The enclosing read witness ties those queries to the source type. -/
+theorem TypeRead.original_rows {sources : Sources} (result : TypeRead sources)
+    (row : String × String) (member : row ∈ result.sourceRows) :
+    ∃ resolution ∈ result.resolutions, ∃ entry ∈ resolution.result.visited,
+      row = (entry.moduleName,entry.source) ∧
+      originalBinding sources entry.moduleName entry.declaration.name =
+        .ok (entry.source,entry.declaration) := by
+  obtain ⟨resolution,present,found⟩ := List.mem_flatMap.mp member
+  obtain ⟨before,after,ran⟩ := resolution.read
+  obtain ⟨entry,visited,same,bound⟩ :=
+    ResolutionProvenance.read_original_rows sources _ _ _ before after ran row found
+  exact ⟨resolution,present,entry,visited,same,bound⟩
+
+private def combine {sources : Sources} (first second : TypeRead sources) :
+    Finite.WorkM (TypeRead sources) := do
+  Finite.guard (first.basis.length + second.basis.length ≤ 128 &&
+    first.resolutions.length + second.resolutions.length ≤ 128) .limit
+  Finite.exactWork (Exact.charge (first.basis.length+first.resolutions.length+1))
+  pure ⟨first.basis ++ second.basis,first.resolutions ++ second.resolutions⟩
 
 /-- Canonical decimal reading for the existing zero-to-six width profile.
 The common grammar permits a leading zero only for the literal `0`. Bound every
@@ -80,8 +123,8 @@ def literalWidth (literal : String) : Finite.WorkM Nat := do
     pure width) 0
 
 private structure Readers where
-  ty : Sources → String → List String → Finite.WorkM Basis
-  decl : Sources → String → String → Finite.WorkM Basis
+  ty : (sources : Sources) → String → List String → Finite.WorkM (TypeRead sources)
+  decl : (sources : Sources) → String → String → Finite.WorkM (TypeRead sources)
 
 private structure WidthExpression (sources : Sources) (helpers : List NaturalHelpers.Entry)
     (moduleName : String) (tokens : List String) where
@@ -138,21 +181,26 @@ private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
   Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
     (fun _ recurse => ⟨fun sources current tokens => do
       match tokens with
-      | ["Unit"] => return [.unit]
-      | ["Bit"] => return [.bit]
+      | ["Unit"] => return ⟨[.unit],[]⟩
+      | ["Bit"] => return ⟨[.bit],[]⟩
       | "Bits" :: "<" :: rest =>
         Finite.guard (rest.getLast? == some ">") .request
-        return [.bits (← naturalWidth sources helpers current rest.dropLast).value]
+        return ⟨[.bits (← naturalWidth sources helpers current rest.dropLast).value],[]⟩
       | "(" :: rest =>
         if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then
           throw .request
         let parts ← adapt (splitMembers rest.dropLast)
         Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
-        let children ← parts.foldlM (fun acc part => do combine acc (← recurse.ty sources current part)) []
-        combine [if parts.length == 2 then Atom.pair else .tuple parts.length] children
+        let children ← parts.foldlM (fun acc part => do combine acc (← recurse.ty sources current part)) ⟨[],[]⟩
+        combine ⟨[if parts.length == 2 then Atom.pair else .tuple parts.length],[]⟩ children
       | _ =>
-        let original ← resolveReference sources current tokens
-        recurse.decl sources original.moduleName original.declaration.name,
+        let original ← NaturalAffine.witness (ResolutionProvenance.read sources current tokens)
+        let result ← recurse.decl sources original.val.moduleName original.val.declaration.name
+        Finite.guard (result.resolutions.length < 128) .limit
+        Finite.exactWork (Exact.charge (tokens.length+current.utf8ByteSize+2))
+        let resolution : TypeResolution sources :=
+          ⟨current,tokens,original.val,by with_reducible exact original.property⟩
+        return {result with resolutions := resolution :: result.resolutions},
       fun sources moduleName name => do
         let (source,decl) ← load sources moduleName name
         let origin : Origin := ⟨moduleName,name,source⟩
@@ -164,14 +212,14 @@ private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
             Finite.guard (identifier name) .request
             return name
           Finite.guard (!names.isEmpty && FiniteCarrier.namesValid names) .request
-          return [.enumeration origin names]
+          return ⟨[.enumeration origin names],[]⟩
         let (names,children) ← members.foldlM (fun (names,children) tokens => do
           let tokens := if tokens.head? == some "pub" then tokens.drop 1 else tokens
           let field :: ":" :: ty := tokens | throw .request
           Finite.guard (identifier field) .request
-          return (names ++ [field],← combine children (← recurse.ty sources moduleName ty))) ([],[])
+          return (names ++ [field],← combine children (← recurse.ty sources moduleName ty))) ([],⟨[],[]⟩)
         Finite.guard (FiniteCarrier.namesValid names) .request
-        combine [.record origin names] children⟩)
+        combine ⟨[.record origin names],[]⟩ children⟩)
 
 /-- Reconstruct from actual source, never by finding a matching producer row.
 The existing carrier reader separately bounds the complete tree/code. -/
@@ -182,7 +230,8 @@ private def readNominal (helpers : List NaturalHelpers.Entry) (sources : Sources
   Finite.guard (source == origin.source) .request
   -- A matching subtree cannot contain more nodes than the supplied complete
   -- tree. Two reader steps per node suffice; the existing depth ceiling remains.
-  (readers helpers (min 65 (2*nodes+1))).decl sources origin.moduleName origin.declarationName
+  return (← (readers helpers (min 65 (2*nodes+1))).decl
+    sources origin.moduleName origin.declarationName).basis
 
 def nominal (sources : Sources) (origin : Origin) (nodes : Nat := 128) : Finite.WorkM Basis := do
   readNominal (← NaturalHelpers.prepare sources) sources origin nodes
@@ -292,10 +341,24 @@ theorem check_original_declarations (sources : Sources) (basis : Basis) (work le
 /-- Read a complete original member type with the existing type grammar and
 original helper environment. The caller must separately establish the origin
 of these tokens; this function grants neither member access nor acceptance. -/
-def typeExpression (sources : Sources) (moduleName : String) (tokens : List String) :
-    Finite.WorkM Basis := do
+def typeExpressionWithSources (sources : Sources) (moduleName : String) (tokens : List String) :
+    Finite.WorkM (TypeRead sources) := do
   let helpers ← sourceHelpers sources
   (readers helpers 65).ty sources moduleName tokens
+
+/-- Endpoint compatibility for existing carrier/member consumers. Both views
+use exactly the same reader; no second type resolver supplies coverage. -/
+def typeExpression (sources : Sources) (moduleName : String) (tokens : List String) :
+    Finite.WorkM Basis := do
+  return (← typeExpressionWithSources sources moduleName tokens).basis
+
+theorem typeExpressionWithSources_value (sources : Sources) (moduleName : String)
+    (tokens : List String) (result : TypeRead sources) (work left : Nat)
+    (ok : (typeExpressionWithSources sources moduleName tokens).run work = (.ok result,left)) :
+    (typeExpression sources moduleName tokens).run work = (.ok result.basis,left) := by
+  unfold typeExpression
+  rw [Finite.bind_run,ok]
+  rfl
 
 /-- A checked field width denotes the actual original Nat expression, under
 bindings read from its declaring module and an actually prepared original
@@ -322,17 +385,23 @@ theorem typeExpression_unit (sources : Sources) (moduleName : String)
     (result : Basis) (work left : Nat)
     (ok : (typeExpression sources moduleName ["Unit"]).run work = (.ok result,left)) :
     result = [.unit] := by
-  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ok
-  change (pure [.unit] : Finite.WorkM Basis).run middle = (.ok result,left) at body
-  exact (Finite.pure_success _ _ _ _ body).1
+  obtain ⟨read,a,ran,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  have projected := (Finite.pure_success _ _ _ _ h).1
+  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ran
+  change (pure ⟨[.unit],[]⟩ : Finite.WorkM (TypeRead sources)).run middle = (.ok read,a) at body
+  have same := (Finite.pure_success _ _ _ _ body).1
+  simpa only [same] using projected
 
 theorem typeExpression_bit (sources : Sources) (moduleName : String)
     (result : Basis) (work left : Nat)
     (ok : (typeExpression sources moduleName ["Bit"]).run work = (.ok result,left)) :
     result = [.bit] := by
-  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ok
-  change (pure [.bit] : Finite.WorkM Basis).run middle = (.ok result,left) at body
-  exact (Finite.pure_success _ _ _ _ body).1
+  obtain ⟨read,a,ran,h⟩ := Finite.bind_success _ _ _ _ _ ok
+  have projected := (Finite.pure_success _ _ _ _ h).1
+  obtain ⟨helpers,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ran
+  change (pure ⟨[.bit],[]⟩ : Finite.WorkM (TypeRead sources)).run middle = (.ok read,a) at body
+  have same := (Finite.pure_success _ _ _ _ body).1
+  simpa only [same] using projected
 
 /-- The Bits leaf is not inferred from a machine width or producer tree.
 Its exact source Nat expression has the existing independent value semantics. -/
@@ -342,15 +411,18 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
       (.ok result,left)) :
     ∃ width, result = [.bits width] ∧ rest.getLast? = some ">" ∧
       NaturalWidthMeaning sources moduleName rest.dropLast width := by
-  obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨read,endRead,ran,projected⟩ := Finite.bind_success _ _ _ _ _ ok
+  have projected := (Finite.pure_success _ _ _ _ projected).1
+  obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ran
   change ((do
     Finite.guard (rest.getLast? == some ">") .request
     let checked ← naturalWidth sources helpers moduleName rest.dropLast
-    pure [.bits checked.value]) : Finite.WorkM Basis).run middle = (.ok result,left) at body
+    pure ⟨[.bits checked.value],[]⟩) : Finite.WorkM (TypeRead sources)).run middle = (.ok read,endRead) at body
   obtain ⟨_,a,closed,h⟩ := Finite.bind_success _ _ _ _ _ body
   obtain ⟨checked,b,_,h⟩ := Finite.bind_success _ _ _ _ _ h
   obtain ⟨before,helperRun⟩ := sourceHelpers_prepared sources helpers work middle prepared
-  refine ⟨checked.value,(Finite.pure_success _ _ _ _ h).1,
+  have same := (Finite.pure_success _ _ _ _ h).1
+  refine ⟨checked.value,by simpa only [same] using projected,
     beq_iff_eq.mp (Finite.guard_success _ _ _ _ closed).1,?_⟩
   exact ⟨helpers,checked.original.expression,checked.original.bindings,
     ⟨before,middle,helperRun⟩,checked.original.parsed,checked.original.resolved,checked.meaning⟩

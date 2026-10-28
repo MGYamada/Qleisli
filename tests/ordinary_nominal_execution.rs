@@ -380,3 +380,158 @@ pub observe fn main() -> Tri { helper(Tri::C) }
         );
     }
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_type_imports_and_reexports_reach_closed_ordinary_execution() {
+    use qleisli::interchange::carrier::Atom;
+    type Dependency = (&'static str, &'static str);
+    type Case = (
+        &'static str,
+        &'static str,
+        &'static [Dependency],
+        &'static [bool],
+    );
+    let labels = "pub enum Tri { A, B, C }\n";
+    let cases: &[Case] = &[
+        (
+            "direct-control",
+            "use labels::Tri; pub observe fn main() -> Tri { Tri::C }\n",
+            &[],
+            &[false, true],
+        ),
+        (
+            "public-reexport",
+            "use facade::Tri; pub observe fn main() -> Tri { Tri::C }\n",
+            &[("facade.qli", "pub use labels::Tri;\n")],
+            &[false, true],
+        ),
+        (
+            "two-reexports",
+            "use facade::Tri; pub observe fn main() -> Tri { Tri::C }\n",
+            &[
+                ("facade.qli", "pub use bridge::Tri;\n"),
+                ("bridge.qli", "pub use labels::Tri;\n"),
+            ],
+            &[false, true],
+        ),
+        (
+            "parameter-reexport",
+            "use facade::Tri; pub observe fn cycle(value: Tri) -> Tri { match value { Tri::A => Tri::B, Tri::B => Tri::C, Tri::C => Tri::A } } pub observe fn main() -> Tri { cycle(Tri::C) }\n",
+            &[("facade.qli", "pub use labels::Tri;\n")],
+            &[false, false],
+        ),
+    ];
+    for (name, source, dependencies, expected) in cases {
+        let root = SourceRoot::new(source);
+        root.write("labels.qli", labels);
+        for (path, text) in *dependencies {
+            root.write(path, text);
+        }
+        check_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let program = compile_project(&root.0).unwrap_or_else(|error| panic!("{name}: {error}"));
+        let request = program.ordinary_result().expect("typed root retained");
+        assert!(request.parameters.is_empty());
+        assert_eq!(request.input_rows, vec![Vec::<bool>::new()]);
+        assert_eq!(request.public_effect, qleisli::ir::Effect::Observe);
+        let [Atom::Enum(origin, variants)] = request.basis.as_slice() else {
+            panic!("{name}: original enum basis lost")
+        };
+        assert_eq!(origin.module, "labels");
+        assert_eq!(origin.source, labels);
+        assert_eq!(variants, &["A", "B", "C"]);
+        assert!(matches!(&request.storage, Storage::Enum(stored, ids)
+            if stored == origin && ids == &program.raw().classical_outputs && ids.len() == 2));
+        assert_eq!(
+            program.request(),
+            Some(request.encode().unwrap().as_slice())
+        );
+        assert_eq!(
+            run_closed(&program, SimulationLimits::default()).unwrap(),
+            std::collections::BTreeMap::from([(expected.to_vec(), 1.0)]),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn recursive_public_field_imports_and_zero_width_reexports_keep_nominal_storage() {
+    let labels = "pub enum Tri { A, B, C }\n";
+    let packet = "use facade::Tri; pub struct Packet { pub tag: Tri, pub flag: Bit }\n";
+    let root = SourceRoot::new(
+        "use packet::Packet; use facade::Tri; pub observe fn main() -> Packet { Packet { tag: Tri::C, flag: 1 } }\n",
+    );
+    root.write("labels.qli", labels);
+    root.write("facade.qli", "pub use labels::Tri;\n");
+    root.write("packet.qli", packet);
+    check_project(&root.0).unwrap();
+    let program = compile_project(&root.0).unwrap();
+    let Storage::Record(origin, fields) = &program.ordinary_result().unwrap().storage else {
+        panic!("record storage lost")
+    };
+    assert_eq!(origin.module, "packet");
+    assert_eq!(origin.source, packet);
+    assert_eq!(
+        fields
+            .iter()
+            .map(|field| field.0.as_str())
+            .collect::<Vec<_>>(),
+        ["tag", "flag"]
+    );
+    assert!(matches!(&fields[0].1, Storage::Enum(origin, ids)
+        if origin.module == "labels" && origin.source == labels && ids.len() == 2));
+    assert!(matches!(&fields[1].1, Storage::Bit(_)));
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![false, true, true], 1.0)])
+    );
+
+    let labels = "pub struct Empty {}\n";
+    let root = SourceRoot::new("use facade::Empty; pub observe fn main() -> Empty { Empty {} }\n");
+    root.write("labels.qli", labels);
+    root.write("facade.qli", "pub use labels::Empty;\n");
+    check_project(&root.0).unwrap();
+    let program = compile_project(&root.0).unwrap();
+    assert!(matches!(&program.ordinary_result().unwrap().storage,
+        Storage::Record(origin, fields)
+        if origin.module == "labels" && origin.source == labels && fields.is_empty()));
+    assert!(program.raw().classical_outputs.is_empty());
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn import_closure_does_not_bypass_privacy_category_or_unused_body_checks() {
+    for (name, labels, facade) in [
+        ("private", "pub enum Tri { A, B, C }", "use labels::Tri;"),
+        (
+            "category",
+            "pub fn Tri() -> Bit { 0 }",
+            "pub use labels::Tri;",
+        ),
+        (
+            "unused-body",
+            "pub enum Tri { A, B, C }",
+            "pub use labels::Tri; fn broken() -> Bit { () }",
+        ),
+    ] {
+        let root = SourceRoot::new("use facade::Tri; pub observe fn main() -> Tri { Tri::C }");
+        root.write("labels.qli", labels);
+        root.write("facade.qli", facade);
+        assert!(check_project(&root.0).is_err(), "{name}");
+        assert!(compile_project(&root.0).is_err(), "{name}");
+    }
+}

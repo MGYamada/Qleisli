@@ -136,18 +136,23 @@ structure Resolved where
   moduleName : String
   source : String
   declaration : Declaration
+  /-- Actual original lookups, in query-to-terminal order. Endpoint consumers
+  retain their existing fields; a trace is not supplied by the caller. -/
+  visited : List Semantics.SourceResolution.Binding
 
 private def resolveBinding : Nat → Sources → String → String → String → Bool →
     List (String × String) → Finite.WorkM Resolved :=
   Nat.rec (fun _ _ _ _ _ _ => throw .limit) (fun _ recurse sources caller moduleName name localImports active => do
     Finite.exactWork (Exact.charge ((moduleName.utf8ByteSize+name.utf8ByteSize+1)*(active.length+1)))
     Finite.guard (!active.contains (moduleName,name)) .request
+    -- Charge the lookup and retained binding/list cell before constructing
+    -- either. Source strings and declarations are shared with that lookup.
     Finite.exactWork (Exact.charge ((sources.toList.map fun row =>
-      row.1.utf8ByteSize+row.2.utf8ByteSize).sum+name.utf8ByteSize+moduleName.utf8ByteSize+1))
+      row.1.utf8ByteSize+row.2.utf8ByteSize).sum+name.utf8ByteSize+moduleName.utf8ByteSize+3))
     let (source,decl) ← adapt (originalBinding sources moduleName name)
     if decl.kind != "import" then
       Finite.guard (decl.isPublic || moduleName == caller) .request
-      return ⟨moduleName,source,decl⟩
+      return ⟨moduleName,source,decl,[⟨moduleName,source,decl⟩]⟩
     Finite.guard (decl.kind == "import" && (localImports || decl.isPublic)) .request
     -- Import bodies retain reversed original paths, not foreign target IDs.
     let target :: modules := decl.body | throw .request
@@ -159,7 +164,7 @@ private def resolveBinding : Nat → Sources → String → String → String �
     -- importing module could otherwise see its own private declaration.
     Finite.guard (!decl.isPublic || original.declaration.isPublic) .request
     Finite.guard (original.declaration.isPublic || original.moduleName == caller) .request
-    return original)
+    return {original with visited := ⟨moduleName,source,decl⟩ :: original.visited})
 
 def resolveReference (sources : Sources) (caller : String) (tokens : List String) :
     Finite.WorkM Resolved := do
@@ -311,7 +316,7 @@ def OriginalLookups (sources : Sources)
 theorem originalBinding_data (sources : Sources) (moduleName name source : String)
     (decl : Declaration) (ok : originalBinding sources moduleName name = .ok (source,decl)) :
     Semantics.SourceResolution.LookupData sources moduleName name
-      (resolvedView ⟨moduleName,source,decl⟩) := by
+      (resolvedView ⟨moduleName,source,decl,[]⟩) := by
   have facts := resolverOriginalBinding_rows sources moduleName name source decl ok
   exact ⟨rfl,facts.2,facts.1⟩
 
@@ -322,9 +327,8 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
     (active : List (String × String)) (result : Resolved) (work left : Nat)
     (ok : (resolveBinding fuel sources caller moduleName name localImports active).run work =
       (.ok result,left)) :
-    ∃ events,
-      Semantics.SourceResolution.Route sources caller moduleName name localImports active
-        events (resolvedView result) ∧ OriginalLookups sources events := by
+    Semantics.SourceResolution.Route sources caller moduleName name localImports active
+      result.visited (resolvedView result) ∧ OriginalLookups sources result.visited := by
   induction fuel generalizing sources caller moduleName name localImports active result work left with
   | zero => cases ok
   | succ fuel ih =>
@@ -338,7 +342,7 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
     have originalRead := resolverAdapt_value _ _ _ _ original
     have data := originalBinding_data sources moduleName name source decl originalRead
     have sameName : decl.name = name := data.nameExact
-    let seen := resolvedView (⟨moduleName,source,decl⟩ : Resolved)
+    let seen := resolvedView (⟨moduleName,source,decl,[]⟩ : Resolved)
     have seenLookup : originalBinding sources seen.moduleName seen.declaration.name =
         .ok (seen.source,seen.declaration) := by
       simpa only [seen,resolvedView,sameName] using originalRead
@@ -353,7 +357,7 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
           (Finite.guard_success _ _ _ _ visibleRead).1
       have notImport : decl.kind ≠ "import" := by
         simpa only [bne_iff_ne] using terminal
-      refine ⟨[seen],?_,?_⟩
+      refine ⟨?_,?_⟩
       · exact .direct caller moduleName name localImports active seen fresh data notImport permission
       · intro entry present
         have same : entry = seen := by simpa only [List.mem_singleton] using present
@@ -379,7 +383,7 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
         obtain ⟨_,w₁₀,visibleRead,h⟩ := Finite.bind_success _ _ _ _ _ h
         have sameResult := (Finite.pure_success _ _ _ _ h).1
         subst result
-        obtain ⟨events,route,lookups⟩ := ih sources moduleName
+        obtain ⟨route,lookups⟩ := ih sources moduleName
           (String.intercalate "::" modules.reverse) target false
           ((moduleName,name)::active) resolved w₇ w₈ recursive
         have publicExport : decl.isPublic = true → resolved.declaration.isPublic = true := by
@@ -389,9 +393,9 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
         have callerVisible : resolved.declaration.isPublic = true ∨ resolved.moduleName = caller := by
           simpa only [Bool.or_eq_true_iff,beq_iff_eq] using
             (Finite.guard_success _ _ _ _ visibleRead).1
-        refine ⟨seen :: events,?_,?_⟩
+        refine ⟨?_,?_⟩
         · exact .throughImport caller moduleName name localImports active seen target modules
-            events (resolvedView resolved) fresh data importFacts.1 importFacts.2 body
+            resolved.visited (resolvedView resolved) fresh data importFacts.1 importFacts.2 body
             spelling.1 spelling.2 route publicExport callerVisible
         · intro entry present
           rcases List.mem_cons.mp present with same | member
@@ -402,15 +406,15 @@ private theorem resolveBinding_route (fuel : Nat) (sources : Sources)
 /-- The wrapper retains the actual supplied query's path parse, final name and
 owner-selection expression together with the derived complete import route.
 The independent Query theorem additionally needs path_spelling. -/
-theorem resolveReference_trace (sources : Sources) (caller : String) (tokens : List String)
+theorem resolveReference_retained_trace (sources : Sources) (caller : String) (tokens : List String)
     (result : Resolved) (work left : Nat)
     (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
-    ∃ (names : List String) (name : String) (events : List Semantics.SourceResolution.Binding),
+    ∃ (names : List String) (name : String),
       path tokens = .ok names ∧ names.getLast? = some name ∧
       Semantics.SourceResolution.Route sources caller
         (if names.length == 1 then caller else String.intercalate "::" names.dropLast)
-        name (names.length == 1) [] events (resolvedView result) ∧
-      OriginalLookups sources events := by
+        name (names.length == 1) [] result.visited (resolvedView result) ∧
+      OriginalLookups sources result.visited := by
   unfold resolveReference at ok
   obtain ⟨names,w₁,pathRead,h⟩ := Finite.bind_success _ _ _ _ _ ok
   have parsed := resolverAdapt_value _ _ _ _ pathRead
@@ -420,8 +424,23 @@ theorem resolveReference_trace (sources : Sources) (caller : String) (tokens : L
     cases h
   | some name =>
     simp only [last] at h
-    obtain ⟨events,route,lookups⟩ := resolveBinding_route _ _ _ _ _ _ _ _ _ _ h
-    exact ⟨names,name,events,parsed,last,route,lookups⟩
+    obtain ⟨route,lookups⟩ := resolveBinding_route _ _ _ _ _ _ _ _ _ _ h
+    exact ⟨names,name,parsed,last,route,lookups⟩
+
+/-- Compatibility form of the route theorem. The existential witness is the
+actual returned trace, rather than a separately reconstructed path. -/
+theorem resolveReference_trace (sources : Sources) (caller : String) (tokens : List String)
+    (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
+    ∃ (names : List String) (name : String) (events : List Semantics.SourceResolution.Binding),
+      path tokens = .ok names ∧ names.getLast? = some name ∧
+      Semantics.SourceResolution.Route sources caller
+        (if names.length == 1 then caller else String.intercalate "::" names.dropLast)
+        name (names.length == 1) [] events (resolvedView result) ∧
+      OriginalLookups sources events := by
+  obtain ⟨names,name,parsed,last,route,lookups⟩ :=
+    resolveReference_retained_trace sources caller tokens result work left ok
+  exact ⟨names,name,result.visited,parsed,last,route,lookups⟩
 
 end ResolutionTrace
 
@@ -565,36 +584,44 @@ private theorem path_spelling (tokens names : List String)
         rw [← same]
         simpa using nonempty
 
-/-- Actual reference resolution yields the independent exact token query and
-its complete import route, plus each original lookup. No desired endpoint,
-faithful source environment or independently supplied parse is a premise. -/
-theorem resolveReference_query (sources : Sources) (caller : String) (tokens : List String)
+/-- Actual reference resolution retains the independent exact token query and
+its complete returned import route, plus each original lookup. No desired
+endpoint, faithful source environment or supplied parse is a premise. -/
+theorem resolveReference_retained_query (sources : Sources) (caller : String) (tokens : List String)
     (result : Resolved) (work left : Nat)
     (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
-    ∃ events, Semantics.SourceResolution.Query sources caller tokens events (resolvedView result) ∧
-      OriginalLookups sources events := by
-  obtain ⟨names,name,events,parsed,last,route,lookups⟩ :=
-    resolveReference_trace sources caller tokens result work left ok
+    Semantics.SourceResolution.Query sources caller tokens result.visited (resolvedView result) ∧
+      OriginalLookups sources result.visited := by
+  obtain ⟨names,name,parsed,last,route,lookups⟩ :=
+    resolveReference_retained_trace sources caller tokens result work left ok
   have spelling := path_spelling tokens names parsed
   obtain ⟨modules,namesExact⟩ := List.getLast?_eq_some_iff.mp last
   subst names
-  refine ⟨events,?_,lookups⟩
+  refine ⟨?_,lookups⟩
   rw [spelling.1]
   cases modules with
   | nil =>
     have localRoute : Semantics.SourceResolution.Route sources caller caller name true []
-        events (resolvedView result) := by simpa using route
-    exact .localName name events (resolvedView result) localRoute
+        result.visited (resolvedView result) := by simpa using route
+    exact .localName name result.visited (resolvedView result) localRoute
   | cons owner modules =>
     have notSingle : (((owner :: modules) ++ [name]).length == 1) = false := by
       apply beq_eq_false_iff_ne.mpr
       simp only [List.length_append,List.length_cons]
       omega
     have qualifiedRoute : Semantics.SourceResolution.Route sources caller
-        (String.intercalate "::" (owner :: modules)) name false [] events (resolvedView result) := by
+        (String.intercalate "::" (owner :: modules)) name false [] result.visited (resolvedView result) := by
       simpa only [notSingle, Bool.false_eq_true, if_false, List.dropLast_concat] using route
-    exact .qualifiedName (owner :: modules) name events (resolvedView result)
+    exact .qualifiedName (owner :: modules) name result.visited (resolvedView result)
       (List.cons_ne_nil _ _) qualifiedRoute
+
+/-- Existing endpoint theorem, witnessed by the actual returned trace. -/
+theorem resolveReference_query (sources : Sources) (caller : String) (tokens : List String)
+    (result : Resolved) (work left : Nat)
+    (ok : (resolveReference sources caller tokens).run work = (.ok result,left)) :
+    ∃ events, Semantics.SourceResolution.Query sources caller tokens events (resolvedView result) ∧
+      OriginalLookups sources events :=
+  ⟨result.visited,resolveReference_retained_query sources caller tokens result work left ok⟩
 
 /-- The located adapter retains the exact supplied tokens. Their spans/caller
 still require the original function-parser provenance theorem. -/

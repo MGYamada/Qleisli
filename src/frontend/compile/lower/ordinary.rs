@@ -224,7 +224,7 @@ pub(super) fn accept(
     }
     let rows = lower
         .compiler
-        .retain_source_modules(&name.0, decl.span, names.into_iter().collect())
+        .retained_ordinary_type_sources(*key, &name.0, decl.span)
         .map_err(|e| Error::new("limit", e.to_string()))?;
     let bytes = rows.iter().map(|r| r.0.len() + r.1.len()).sum::<usize>();
     lower

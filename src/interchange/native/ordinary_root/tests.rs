@@ -556,3 +556,262 @@ fn empty_record_cannot_be_replaced_by_an_equal_width_unit_or_tuple() {
         );
     }
 }
+
+fn imported_input() -> (Request, RawProgram, Vec<(String, String)>) {
+    let (mut request, raw, _) = ordinary_input();
+    let source = "pub enum Tri { A,B,C } pub enum Other { A,B,C }";
+    let origin = Arc::new(Origin {
+        module: "labels".into(),
+        declaration: "Tri".into(),
+        source: source.into(),
+    });
+    request.basis = vec![Atom::Enum(
+        Arc::clone(&origin),
+        vec!["A".into(), "B".into(), "C".into()],
+    )];
+    request.parameters = vec![request.basis.clone()];
+    request.storage = Storage::Enum(origin, vec![ClassicalId(0), ClassicalId(1)]);
+    request.input_storage = vec![request.storage.clone()];
+    (
+        request,
+        raw,
+        vec![
+            (
+                "main".into(),
+                "use facade::Tri; pub fn identity(value:Tri)->Tri{value}".into(),
+            ),
+            ("facade".into(), "pub use labels::Tri;".into()),
+            ("labels".into(), source.into()),
+        ],
+    )
+}
+
+fn proposed_imports(raw: &RawProgram, sources: &[(String, String)]) -> Proposal {
+    Proposal::from_raw_with_sources(raw, None, Version::V2, None, sources).unwrap()
+}
+
+fn prepared_imports(kernel: &Kernel, artifact: &[u8], request: &Request) -> Prepared {
+    let subject = kernel
+        .subject(artifact, Some(&request.encode().unwrap()))
+        .unwrap();
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+    let decoded = Arc::new(
+        crate::interchange::decode_subject_with_types(&subject, &mut budget, None, Some(request))
+            .expect("bounded proposed rows must reach the native coverage gate"),
+    );
+    let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root]).unwrap();
+    Prepared {
+        subject,
+        decoded,
+        derived_effect,
+        output_ports,
+    }
+}
+
+fn reject_imports_with_native_view(kernel: &Kernel, artifact: &[u8], request: &Request) {
+    let prepared = prepared_imports(kernel, artifact, request);
+    let graph = ordinary_root::complete(prepared.graph(), request).unwrap();
+    let error = Kernel::submit_subject(
+        prepared.subject,
+        "--ordinary-root-check",
+        Some(View {
+            graph: &graph,
+            caller: None,
+        }),
+    )
+    .unwrap_err();
+    assert_eq!(error.message, runtime::REJECTION_MESSAGE);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn imported_parameter_domain_and_exact_original_rows_are_retained() {
+    let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
+    let (request, raw, sources) = imported_input();
+    let proposed = proposed_imports(&raw, &sources);
+    let bytes = request.encode().unwrap();
+    let checked = kernel
+        .check_ordinary_root(proposed.artifact(), &bytes)
+        .unwrap();
+    let program = checked.program();
+    assert_eq!(checked.artifact(), proposed.artifact());
+    assert_eq!(checked.request(), Some(bytes.as_slice()));
+    assert_eq!(program.ordinary_result(), Some(&request));
+    assert_eq!(program.decoded.sources, sources);
+    assert_eq!(
+        program.raw().classical_inputs,
+        vec![ClassicalId(0), ClassicalId(1)]
+    );
+    assert_eq!(
+        program.raw().classical_outputs,
+        program.raw().classical_inputs
+    );
+    assert_eq!(
+        request.input_rows,
+        vec![vec![false, false], vec![true, false], vec![false, true]]
+    );
+    assert!(
+        matches!(&request.input_storage[0], Storage::Enum(origin, ids)
+        if origin.module == "labels" && origin.declaration == "Tri"
+            && ids == &program.raw().classical_inputs)
+    );
+    assert_eq!(request.storage, request.input_storage[0]);
+    assert_eq!(program.native.mode(), "--ordinary-root-check");
+    assert!(matches!(
+        crate::sim::run_closed(program, Default::default()),
+        Err(crate::sim::SimulationError::NotClosed(_))
+    ));
+    assert_eq!(log.summary().decisions(), 1);
+    assert!(log.summary().complete());
+    assert!(kernel.check(proposed.artifact(), None).is_err());
+    assert_eq!(
+        Kernel::new("/missing-explicit-ordinary-import-kernel", Edition::E2026)
+            .check_ordinary_root(proposed.artifact(), &bytes)
+            .unwrap_err()
+            .code,
+        "io"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn native_import_coverage_rejects_missing_private_changed_and_unrelated_rows() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let (request, raw, sources) = imported_input();
+    for mutation in 0..7 {
+        let mut wrong = sources.clone();
+        match mutation {
+            0 => {
+                wrong.remove(1);
+            }
+            1 => wrong[1].1 = "pub use missing::Tri;".into(),
+            2 => wrong[1].1 = "use labels::Tri;".into(),
+            3 => wrong.push(("unrelated".into(), "pub enum Spare { A }".into())),
+            // Preparing every valid Nat helper does not justify its source row.
+            4 => wrong.push(("unrelated".into(), "static fn unused()->Nat{2}".into())),
+            5 => {
+                wrong[1].1 = "pub use bridge::Tri;".into();
+                wrong.push(("bridge".into(), "pub use facade::Tri;".into()));
+            }
+            _ => wrong[1].1 = "pub struct Tri {}".into(),
+        }
+        let proposed = proposed_imports(&raw, &wrong);
+        reject_imports_with_native_view(&kernel, proposed.artifact(), &request);
+    }
+
+    // Same code width, labels and SSA map cannot replace the canonical type.
+    let mut wrong = request.clone();
+    let Atom::Enum(original, labels) = &request.basis[0] else {
+        unreachable!()
+    };
+    let other = Arc::new(Origin {
+        declaration: "Other".into(),
+        ..original.as_ref().clone()
+    });
+    wrong.basis = vec![Atom::Enum(Arc::clone(&other), labels.clone())];
+    wrong.parameters = vec![wrong.basis.clone()];
+    wrong.storage = Storage::Enum(other, vec![ClassicalId(0), ClassicalId(1)]);
+    wrong.input_storage = vec![wrong.storage.clone()];
+    let proposed = proposed_imports(&raw, &sources);
+    reject_imports_with_native_view(&kernel, proposed.artifact(), &wrong);
+    let mut subset = request.clone();
+    subset.input_rows.pop();
+    reject_imports_with_native_view(&kernel, proposed.artifact(), &subset);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn imported_intermediate_source_bytes_are_bound_to_the_actual_qdv_view() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let (request, raw, sources) = imported_input();
+    let proposed = proposed_imports(&raw, &sources);
+    kernel
+        .check_ordinary_root(proposed.artifact(), &request.encode().unwrap())
+        .unwrap();
+    let mut prepared = prepared_imports(&kernel, proposed.artifact(), &request);
+    let retained = Arc::get_mut(&mut prepared.decoded).unwrap();
+    assert_eq!(retained.sources[1].0, "facade");
+    retained.sources[1]
+        .1
+        .push_str("\n// different retained original bytes\n");
+    let graph = ordinary_root::complete(prepared.graph(), &request).unwrap();
+    // The unchanged artifact is valid; only the retained source bytes differ.
+    let error = Kernel::submit_subject(
+        prepared.subject,
+        "--ordinary-root-check",
+        Some(View {
+            graph: &graph,
+            caller: None,
+        }),
+    )
+    .unwrap_err();
+    assert_eq!(error.code, "decoded_view");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn zero_width_reexported_parameter_and_result_cannot_erase_the_record() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let source = "pub struct Empty {}";
+    let origin = Arc::new(Origin {
+        module: "labels".into(),
+        declaration: "Empty".into(),
+        source: source.into(),
+    });
+    let basis = vec![Atom::Record(Arc::clone(&origin), vec![])];
+    let storage = Storage::Record(origin, vec![]);
+    let request = Request {
+        selection: Selection::Exported,
+        module: "main".into(),
+        declaration: "identity".into(),
+        parameters: vec![basis.clone()],
+        input_storage: vec![storage.clone()],
+        input_rows: vec![vec![]],
+        basis,
+        storage,
+        public_effect: Effect::Unitary,
+    };
+    let raw = RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let sources = vec![
+        (
+            "main".into(),
+            "use facade::Empty; pub fn identity(value:Empty)->Empty{value}".into(),
+        ),
+        ("facade".into(), "pub use labels::Empty;".into()),
+        ("labels".into(), source.into()),
+    ];
+    let proposed = proposed_imports(&raw, &sources);
+    let checked = kernel
+        .check_ordinary_root(proposed.artifact(), &request.encode().unwrap())
+        .unwrap();
+    assert_eq!(checked.program().ordinary_result(), Some(&request));
+    assert_eq!(checked.program().decoded.sources, sources);
+    for input in [true, false] {
+        let mut wrong = request.clone();
+        if input {
+            wrong.input_storage[0] = Storage::Unit;
+        } else {
+            wrong.storage = Storage::Unit;
+        }
+        reject_imports_with_native_view(&kernel, proposed.artifact(), &wrong);
+    }
+}
