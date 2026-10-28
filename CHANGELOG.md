@@ -20,6 +20,7 @@ development milestones from the scope of their evidence.
   Discharge dormant function equalities through the shared contract gate and
   prepare original Meaning/body dependencies before visiting unused obligations.
   Explicit public `main` selections retain exported-function eligibility.
+  Include selected ordinary integration tests in both complete CI partitions.
   Align the source Reference with those executable paths and repair the
   ordinary input/result boundary link.
 - Execute the first closed ordinary enum/record result slice through a versioned
