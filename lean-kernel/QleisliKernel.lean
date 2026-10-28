@@ -6,6 +6,7 @@ import QleisliKernel.Exact
 import QleisliKernel.ExactCapacity
 import QleisliKernel.ExactMatrix
 import QleisliKernel.Finite
+import QleisliKernel.FiniteRestriction.Check
 import QleisliKernel.FiniteCarrier
 import QleisliKernel.Semantics.OrdinaryValue
 import QleisliKernel.Semantics.OrdinaryValueTransport

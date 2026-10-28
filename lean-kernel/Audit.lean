@@ -1,4 +1,5 @@
 import QleisliKernel
+import QleisliKernel.Tests.FiniteRestriction
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import Main

@@ -198,7 +198,11 @@ pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
 Nominal selector execution and the selected specialization projection remain
 explicitly unsupported. Supporting the full twelve-joined-bit/64-label boundary
 still requires its checked restriction and arm-binding extension; the small
-slice does not replace that requirement. Common enum checks, native acceptance
+slice does not replace that requirement. The internal finite restriction
+component now proves correspondence through actual contributions, accumulation,
+steps and complete circuit execution, and checks every ordered local sector.
+It enables no new source or native route: original Raw-root/arm binding and
+nominal integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an internal exact finite-sector restriction component for qmatch. Prove
+  correspondence with the actual contribution, accumulator, step and full
+  circuit execution; retain phases, axes, dependencies, errors and uncontrolled
+  conjugation scaffolding. Check every ordered local sector within unchanged
+  port, step and work limits. This enables no new source/native route; actual
+  Raw-root/arm binding, nominal integration and #64/#195 remain unfinished.
 - Reject typed ordinary source parameters in closed simulation and sampling,
   including Unit, Bits<0>, empty records and nested zero-width products. Empty
   Raw input lists do not erase the retained logical arguments; nullary typed
