@@ -203,9 +203,10 @@ component now proves correspondence through actual contributions, accumulation,
 steps and complete circuit execution, and checks every ordered local sector.
 Its internal Raw component checks the original pure program and independently
 reconstructed trace, retaining every circuit event and proving that omitted
-identity reorders are literal identities. Returned physical port wires and
-order must match the original two input owners, including zero-width ports.
-Physical widths do not establish original nominal or source type identity.
+identity reorders are literal identities. The physical port/wire frame is
+checked separately from logical source owner transport; empty wire lists alone
+cannot identify or order zero-width owners. Physical widths do not establish
+original nominal or source type identity.
 The enclosing QIRF component reuses fresh graph/root checks and proves exact
 original-program embedding into that pure Raw subject. It rejects observing,
 classical and branch instructions in this straight-line component.
@@ -237,10 +238,15 @@ ordinary tuples can group separate owners. A two-port subject retains the exact
 original parameter/result order and distinct logical identities at zero width.
 It cannot sharpen a public observing/isometric function to Unitary. Unknown
 prefix expressions refuse instead of contributing unproved type facts.
-General calls/control flow, source-to-Raw mapping, retained runtime data and
-native requests remain required before use. These components enable no new
-source or native route; general source binding, nominal execution and native/QDV
-integration remain required. Common enum checks, native acceptance
+The complete structural suffix and result retain actual returned roles. An
+independent run over original Raw joins, splits and owner-moving operations
+compares those roles with actual output-token order, including at zero width.
+A matching zero-width source/Raw permutation is allowed; a mismatched one
+refuses. Opaque-owner refinements, allocation/release and general calls/control
+flow still need their checked source/representation rules. The internal
+native/QDV component retains its actual graph/request but grants no ordinary
+source execution handle. General source binding and nominal execution remain
+unfinished. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

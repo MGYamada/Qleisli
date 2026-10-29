@@ -947,6 +947,14 @@ checks this component without granting an ordinary source execution handle or
 proving general source-body lowering. It does not complete the twelve-bit scope
 or #64/#195.
 
+The source component now derives logical owner transport from the original Raw
+operations, independently of coincident wire lists. Explicit join/split pairing
+retains complete source roles through unitary owner moves and checks each actual
+returned token against the source result. Matching zero-width source and Raw
+permutations are allowed; mismatched permutations refuse. An atomic source
+`Q<T>` stays opaque to this structural transport. Other typed refinements,
+allocation/release and general source/arm mappings remain separate obligations.
+
 Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.
 Preparation defers tables whose parameter/result types contain nominal nodes

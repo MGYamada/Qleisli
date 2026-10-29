@@ -71,7 +71,7 @@ fn actual_retained_graph_and_caches_match_both_independent_exact_phase_views() {
         views.push(actual);
         count += 1;
     }
-    assert_eq!(count, 8);
+    assert_eq!(count, 9);
     assert_ne!(views[0], views[1]);
     assert_ne!(views[2], views[3]);
 }

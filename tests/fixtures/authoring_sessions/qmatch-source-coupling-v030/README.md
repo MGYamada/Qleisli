@@ -160,3 +160,26 @@ The archive retains all original sources and streams passively. Fresh compiled
 native checks, guarded canonical proof maintenance, full CI/review, matching
 reordered Raw implementations and general source/arm execution remain pending.
 #64 keeps all eight criteria unchecked and #195 remains open.
+
+The [Raw owner first history](owner-flow-first.tar.xz),
+[index](owner-flow-index.json) and [validation](owner-flow-validation.json)
+retain the zero-width Raw-return substitution against the earlier complete-body
+candidate. Its first QDV mutation changes the wrong program field and reaches
+the actual decoded-view refusal. A separate correct mutation supplies a complete
+view and unexpectedly accepts; the failing expectation and original source stay
+unchanged. Both inline observers lack a separately saved wrapper; their actual
+Lean commands, stable input hashes and complete streams are retained.
+
+The repair derives opaque logical roles from original Raw input order, explicit
+joins/splits and owner-moving operations, then compares the actual output tokens
+with the complete source return. It rejects the mismatched zero-width return
+and accepts a matching source/Raw permutation. Eighteen small kernel reductions,
+the compiled declaration audit, current pure-context controls and normal/MSRV
+retained-data checks pass. The first unavailable width function/custom recursor
+and separate guard-decidability error remain rejected compiles. No proposed
+role/cache, noncomputable override or unsafe helper supplies acceptance.
+
+Other atomic-owner refinements, allocation/release and general source/call/arm
+mappings still need their checked rules. Fresh native execution, canonical
+both-package proof maintenance and full candidate CI/review remain pending.
+These observations complete neither #64/#195 nor broader source preservation.

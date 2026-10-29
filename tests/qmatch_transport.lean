@@ -121,4 +121,4 @@ def main (args : List String) : IO Unit := do
   execution executionPath
   let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
   execution (parent / "nominal-execution-cases.json") true
-  execution (parent / "body-execution-cases.json") true 4 8
+  execution (parent / "body-execution-cases.json") true 5 9

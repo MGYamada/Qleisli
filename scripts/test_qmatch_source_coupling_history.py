@@ -34,6 +34,34 @@ NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v
 BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
 
 
+def bounded_history(directory, stem):
+    """Read inert member bytes only; never extract or replay saved commands."""
+    index = json.loads((directory / (stem + '-index.json')).read_text())
+    packed = (directory / index['archive']).read_bytes()
+    if (len(packed) > 1024 * 1024 or len(packed) != index['bytes']
+            or hashlib.sha256(packed).hexdigest() != index['sha256']):
+        raise ValueError('history archive identity/capacity differs')
+    decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=64 * 1024 * 1024)
+    expanded = decoder.decompress(packed, max_length=32 * 1024 * 1024 + 1)
+    if len(expanded) > 32 * 1024 * 1024 or not decoder.eof or decoder.unused_data:
+        raise ValueError('incomplete, trailing or oversized history')
+    members = {}
+    with tarfile.open(fileobj=io.BytesIO(expanded)) as archive:
+        for entry in archive:
+            name = PurePosixPath(entry.name)
+            if (not entry.isfile() or name.is_absolute() or '..' in name.parts
+                    or entry.name in members or entry.name not in index['records']):
+                raise ValueError('unlisted, duplicate or nonregular history member')
+            content = archive.extractfile(entry).read()
+            row = index['records'][entry.name]
+            if len(content) != row['bytes'] or hashlib.sha256(content).hexdigest() != row['sha256']:
+                raise ValueError('history member identity differs')
+            members[entry.name] = content
+    if set(members) != set(index['records']):
+        raise ValueError('history member missing')
+    return members
+
+
 class OriginalCouplingHistory(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -256,6 +284,23 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads((directory / 'body-validation.json').read_text())
         self.assertFalse(current['compiled_native_validated'])
         self.assertEqual(current['issue195'], 'OPEN')
+
+    def test_raw_owner_counterexample_and_matching_permutation_remain_distinct(self):
+        directory = ROOT / BODY_ROOT
+        members = bounded_history(directory, 'owner-flow')
+        self.assertEqual(len(members), 118)
+        first = members['observations/qmatch-raw-return-owner-swap-first/stderr.txt']
+        second = members['observations/qmatch-raw-return-owner-swap-second/stderr.txt']
+        self.assertIn(b'Gate.Error.decodedView', first)
+        self.assertIn(b'qmatch original bytes/acceptance mismatch', second)
+        current = json.loads(members['observations/qmatch-raw-owner-flow-permutation-context-first/report.json.txt'])
+        self.assertEqual(current['exit_code'], 0)
+        self.assertTrue(current['stable_inputs'])
+        self.assertIn(b'5 exact controls and 9 QLV3',
+                      members['observations/qmatch-raw-owner-flow-permutation-context-first/stdout.txt'])
+        validation = json.loads((directory / 'owner-flow-validation.json').read_text())
+        self.assertFalse(validation['compiled_native_validated'])
+        self.assertEqual(validation['issue195'], 'OPEN')
 
     def test_nominal_first_proposals_and_precise_refusals_remain_separate(self):
         index = json.loads((ROOT / NOMINAL_INDEX).read_text())

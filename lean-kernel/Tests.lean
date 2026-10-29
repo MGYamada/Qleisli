@@ -9,6 +9,7 @@ import QleisliKernel.Tests.SourceQuantum
 import QleisliKernel.Tests.SourceEntries
 import QleisliKernel.Tests.QuantumMoves
 import QleisliKernel.Tests.QuantumBody
+import QleisliKernel.Tests.RawOwnerFlow
 import Protocol.ExecutionView.CheckedQmatch
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs

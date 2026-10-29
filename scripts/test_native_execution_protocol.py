@@ -192,7 +192,7 @@ def qmatch(probe):
     directory = ROOT / 'tests/fixtures/qmatch_v030'
     rows = []
     for name, count in [('execution-cases.json', 26), ('nominal-execution-cases.json', 26),
-                        ('body-execution-cases.json', 12)]:
+                        ('body-execution-cases.json', 14)]:
         cases = json.loads((directory / name).read_text())['cases']
         assert len(cases) == count
         rows.extend(cases)

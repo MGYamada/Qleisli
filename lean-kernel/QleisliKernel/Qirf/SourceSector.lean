@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.SourceArm
 import QleisliKernel.SourceTypes.QuantumBody
+import QleisliKernel.Semantics.RawOwnerFlow
 
 /-! Informed original source/IR arm coupling. Source rows and roots are derived
 from fresh queries and actual program subjects, never transport coverage flags.
@@ -10,6 +11,26 @@ namespace QleisliKernel.Qirf.SourceSector
 open Semantics.Exact Semantics.CarrierInterface Semantics.FiniteCarrier Finite
 
 abbrev Programs := SourceArm.Programs
+
+private def ownerFields (owners : List Semantics.SourceOwners.Owner) : Nat :=
+  owners.foldl (fun total owner => total + 1 + owner.basis.foldl (fun count atom =>
+    count + 1 + match atom with
+      | .enumeration origin names | .record origin names =>
+        origin.moduleName.utf8ByteSize + origin.declarationName.utf8ByteSize +
+          origin.source.utf8ByteSize + (names.map String.utf8ByteSize).sum
+      | _ => 0) 0) 0
+
+/-- The independent role run consumes the literal original Raw operations.
+The bound counts full source identities before comparing the final role list;
+no producer-proposed owner map is accepted. -/
+def readOwnerReturn (inputs outputs : List Semantics.SourceOwners.Owner)
+    (program : Semantics.Raw.Program) :
+    WorkM (PLift (Semantics.RawOwnerFlow.Returns inputs program outputs)) := do
+  exactWork (Exact.charge (8*(ownerFields inputs+ownerFields outputs+1) +
+    128*(program.operations.length+1)*(inputs.length+outputs.length+1)^2))
+  if returned : Semantics.RawOwnerFlow.run inputs program = some outputs then
+    return ⟨returned⟩
+  else throw .request
 
 private def typeRowCount {sources} (read : SourceTypes.TypeRead sources) : Nat :=
   read.resolutions.foldl (fun count query => count + query.result.visited.length) 0
@@ -26,7 +47,6 @@ structure CanonicalOperands {sources owner name offset}
     (selector target : Semantics.FiniteCarrier.Basis) where
   read : SourceTypes.QuantumOperands.Checked site selector target
   body : SourceTypes.QuantumBody.Checked read
-  returned : body.returnOrder = [0,1]
   declaredEffect : read.signature.original.parsedHeader.effect = none ∨
     read.signature.original.parsedHeader.effect = some .unitary
   inputOrder : read.signature.inputs = [selector,target]
@@ -34,11 +54,10 @@ structure CanonicalOperands {sources owner name offset}
   selectorOrdinal : read.selector.ordinal = 0
   targetOrdinal : read.target.ordinal = 1
 
-/-- The current Raw sector frame has two ordered input/output owners. Check
-the complete structural source body and its actual returned order against that
-frame. A legal reordered result needs a matching Raw output mapping; neither
-equal widths nor zero-width wires may silently erase the permutation. General
-call-site expressions/frames still need their own checked mapping. -/
+/-- Read the complete structural source body and retain its actual returned
+roles. The independent Raw role run and physical sector gates must match that
+return. Equal widths and empty wire lists cannot erase its permutation.
+General call-site expressions/frames still need their own checked mapping. -/
 def readOperands {sources owner name offset}
     (site : SourceTypes.QuantumMatch.Site sources owner name offset)
     (selector target : Semantics.FiniteCarrier.Basis) : WorkM (CanonicalOperands site selector target) := do
@@ -48,9 +67,7 @@ def readOperands {sources owner name offset}
     if effect : read.signature.original.parsedHeader.effect = none ∨
         read.signature.original.parsedHeader.effect = some .unitary then
       let body ← SourceTypes.QuantumBody.read read
-      if returned : body.returnOrder = [0,1] then
-        return ⟨read,body,returned,effect,mapping.1,mapping.2.1,mapping.2.2.1,mapping.2.2.2⟩
-      else throw .request
+      return ⟨read,body,effect,mapping.1,mapping.2.1,mapping.2.2.1,mapping.2.2.2⟩
     else throw .request
   else throw .request
 
@@ -117,6 +134,8 @@ structure Checked (artifact : Artifact) (owner name : String) (offset : Nat) whe
   roots : List Nat
   rows : List (String × String)
   subject : NominalSector.Prepared
+  sourceOwners : Semantics.RawOwnerFlow.Returns [operands.read.selector,operands.read.target]
+    subject.program (Semantics.SourceOwners.valueOwners operands.body.outcome.value)
   entries : List (RealizedArm artifact subject.root.receipts owner ports.selectorIn.basis ports.targetIn.basis)
   arms : List SectorArms.BoundArm
   logical : List Matrix
@@ -135,6 +154,8 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
   let prepared ← SourceTypes.NaturalAffine.witness
     (NominalSector.prepareWithRows artifact order attached required roots rows)
   let subject := prepared.val
+  let sourceOwners ← readOwnerReturn [operands.read.selector,operands.read.target]
+    (Semantics.SourceOwners.valueOwners operands.body.outcome.value) subject.program
   have fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none)
       order.toList subject.root.receipts := by
     obtain ⟨work,left,ran⟩ := prepared.property
@@ -145,7 +166,7 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
     subject.targetLayout.bits subject.targetInCode subject.targetOutCode subject.selectorLayout.labels.length references
   let logical ← NominalSector.checkLogicals subject.targetInCode subject.targetOutCode subject.restriction.sectors
     subject.selectorLayout.labels (arms.map (·.checked.logical))
-  return ⟨ports,source,operands,bindings,references,roots,rows,subject,entries,arms,logical⟩
+  return ⟨ports,source,operands,bindings,references,roots,rows,subject,sourceOwners.down,entries,arms,logical⟩
 
 theorem readRows_value {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
@@ -201,6 +222,7 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required
   obtain ⟨roots,w₄,hr,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨rows,w₅,hw,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨prepared,w₆,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨sourceOwners,ownerWork,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨entries,w₇,he,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨arms,w₈,ha,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨logical,w₉,hl,h⟩ := bind_success _ _ _ _ _ h
@@ -217,6 +239,14 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required
     SourceArm.readRoots_value _ _ _ _ _ hr,readRows_value _ _ _ _ _ hw,subject,?_,
     armFacts.2.1,armFacts.2.2,logicalFacts.2⟩
   exact FiniteRestriction.mapM_relation _ _ (fun bound result before after ok =>
-    readEntry_bound _ _ bound _ result before after ok) bindings entries w₆ w₇ he
+    readEntry_bound _ _ bound _ result before after ok) bindings entries ownerWork w₇ he
+
+/-- The retained complete source return is associated with the original Raw
+token flow, rather than inferred from coincident physical wire lists. -/
+theorem Checked.originalOwnerReturn {artifact owner name offset}
+    (checked : Checked artifact owner name offset) :
+    Semantics.RawOwnerFlow.Returns [checked.operands.read.selector,checked.operands.read.target]
+      checked.subject.program (Semantics.SourceOwners.valueOwners checked.operands.body.outcome.value) :=
+  checked.sourceOwners
 
 end QleisliKernel.Qirf.SourceSector
