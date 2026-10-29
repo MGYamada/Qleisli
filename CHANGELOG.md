@@ -49,6 +49,12 @@ development milestones from the scope of their evidence.
   name. Check original function bytes and exact arm/control/main equations.
   Original selector/target expression typing, source-body preservation, native
   dispatch/QDV and the full #64/#195 scope remain unfinished.
+- Read qmatch operands through original quantum parameter patterns and checked
+  structural owner moves. Preserve complete target types, tuple shape, linear
+  identities and the caller frame, including separate zero-width owners.
+  Reject consumed/undefined names, duplicate owners and whole-subject public
+  effect sharpening. Unknown prefix expressions refuse. General calls/control
+  flow, full source-to-Raw mapping, native execution and #64/#195 remain open.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

@@ -41,3 +41,21 @@ preservation, external schema, new guarantee or Issue completion is established.
 Selector/target expression typing, general/selected quantum nominal execution,
 the twelve-bit qmatch profile and #64/#195 remain unfinished. The two protected
 QLV1 scopes and all pending QS/PR/RS/EXACT obligations remain unchanged.
+
+The separate [operand history](operands-first.tar.xz),
+[index](operands-index.json) and [current checks](operands-validation.json)
+retain seven source-name/frame counterexamples, the equal-type zero-width owner
+substitution and the public Observe sharpening counterexample. All arise in
+unexposed components. Correct direct and tuple-aliased sources stay separate
+from malformed sources; the escaped local name reaches an unsupported-prefix
+barrier and is not evidence of general block-scope checking.
+
+Original structural parameter/move checking repairs those cases. The first
+compiled audit rejects a generated partial recursive helper; a library-fold
+repair and exact `take_cons`/declarative `Move` proofs preserve the name-transfer
+rule. Twelve small kernel reductions cover zero-width moves, grouping versus
+singleton tuples, atomic quantum product owners, wildcard/duplicate/consumed
+names and simultaneous tuple bindings. Thirty-four runtime observations retain
+separate scopes from the generic proofs and complete kernel Tests.
+Arbitrary calls, allocation, control flow, full source-to-Raw mapping and native
+execution remain unfinished; no component or barrier closes #64/#195.

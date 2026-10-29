@@ -16,6 +16,9 @@ README = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/README.m
 ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/first.tar.xz"
 INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/index.json"
 VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/validation.json"
+OPERANDS = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-first.tar.xz"
+OPERAND_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-index.json"
+OPERAND_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-validation.json"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -63,6 +66,39 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads((ROOT / VALIDATION).read_text())
         self.assertEqual(current["goal"]["issue195"], "OPEN")
         self.assertIn("NOT RUN", current["uncompleted_checks"]["proof_records"])
+
+    def test_operand_counterexamples_and_generated_partial_repair(self):
+        index = json.loads((ROOT / OPERAND_INDEX).read_text())
+        compressed = (ROOT / OPERANDS).read_bytes()
+        self.assertLessEqual(len(compressed), 1024 * 1024)
+        self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
+        with lzma.open(io.BytesIO(compressed)) as stream:
+            contents = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(contents), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(contents)) as archive:
+            for member in archive:
+                name = PurePosixPath(member.name)
+                self.assertTrue(member.isfile())
+                self.assertFalse(name.is_absolute())
+                self.assertNotIn("..", name.parts)
+                self.assertNotIn(member.name, members)
+                self.assertIn(member.name, index["records"])
+                content = archive.extractfile(member).read()
+                self.assertEqual(len(content), index["records"][member.name]["bytes"])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index["records"][member.name]["sha256"])
+                members[member.name] = content
+        self.assertEqual(set(members), set(index["records"]))
+        self.assertEqual(len(members), 195)
+        for label in ("source-operands-first", "source-operands-effect-first",
+                      "source-operands-equal-width-first", "source-operands-audit"):
+            self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 1)
+        self.assertIn(b"partial project declaration", members["observations/source-operands-audit/stdout.txt"])
+        for label in ("source-operands-final", "source-evidence-final", "source-operands-effect-final",
+                      "source-operands-equal-width-final", "source-operands-audit-second"):
+            self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 0)
+        current = json.loads((ROOT / OPERAND_VALIDATION).read_text())
+        self.assertFalse(current["native_activated"])
 
 
 if __name__ == "__main__":

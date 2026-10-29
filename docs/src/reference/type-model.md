@@ -933,9 +933,15 @@ main/arm/control programs. Original function bytes and resolution paths remain
 bound to the same checked entry; its complete input, body and dependency
 snapshot are retained. Keeping an evidence table and index cannot change the
 resolved function name. Exact code-space, phase and controlled-action checks
-remain required. This component does not yet check selector/target expression
-typing or prove source-body lowering, and has no native/QDV dispatch or source
-execution handle. It does not complete the twelve-bit scope or #64/#195.
+remain required. Original quantum parameter patterns and structural let/tuple
+moves now identify the selector and target in a complete linear source frame.
+The two-port subject uses the exact original parameter/result order, retaining
+distinct logical identities even when both types and physical widths coincide.
+Public Observe/Isometry cannot be sharpened by its whole-subject Unitary request.
+Unknown prefix expressions refuse; arbitrary calls/control flow and general
+source-to-Raw mapping remain required. The component does not prove source-body
+lowering and has no native/QDV dispatch or source execution handle. It does not
+complete the twelve-bit scope or #64/#195.
 
 Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.

@@ -223,17 +223,24 @@ subjects named by the request. Root membership comes from those subjects;
 unrelated nodes still refuse, and root membership supplies no source usage.
 Ordinary requests keep their original main-only root and reachability rules.
 Every canonical logical ordinal binds its actual original arm, independently
-of written order. Original source-site/function identities and public-effect
-binding remain required before native/source qmatch execution is enabled.
+of written order. The source component binds original named functions to actual
+function-evidence entries and their fresh complete inputs/dependency snapshots.
+It preserves the original function bytes, full target types and public effects.
 An independent source metadata component now retains the actual qmatch token
 occurrence in its original function, complete named-arm parameter/result owner
 forests, canonical enum labels and original import/reexport paths. It rejects
 public observing/isometric arms and keeps an absent private annotation unknown;
-body checking must independently establish its inferred effect. These reads
-still need binding to the actual implementation/control programs, selector and
-target expressions, retained runtime data and native request before use.
-These components enable no new source or native route: original source/arm,
-capability, nominal execution and native/QDV integration remain required. Common enum checks, native acceptance
+body checking must independently establish its inferred effect. Original
+quantum parameter patterns and structural let/tuple moves now identify operands
+in the complete live source frame. Quantum product owners remain atomic;
+ordinary tuples can group separate owners. A two-port subject retains the exact
+original parameter/result order and distinct logical identities at zero width.
+It cannot sharpen a public observing/isometric function to Unitary. Unknown
+prefix expressions refuse instead of contributing unproved type facts.
+General calls/control flow, source-to-Raw mapping, retained runtime data and
+native requests remain required before use. These components enable no new
+source or native route; general source binding, nominal execution and native/QDV
+integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing
