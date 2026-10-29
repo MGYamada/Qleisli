@@ -37,6 +37,7 @@ OWNER_FLOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v03
 RUNTIME_SIGNATURE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/first.tar.xz"
 RUNTIME_SIGNATURE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/index.json"
 RUNTIME_SIGNATURE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/validation.json"
+RUNTIME_SIGNATURE_README = "tests/fixtures/authoring_sessions/runtime-signature-v030/README.md"
 
 
 def bounded_history(archive_path, index_path):
@@ -72,6 +73,7 @@ def bounded_history(archive_path, index_path):
 class OriginalCouplingHistory(unittest.TestCase):
     def test_original_runtime_signatures_remain_metadata_and_inert_history(self):
         members = bounded_history(ROOT / RUNTIME_SIGNATURE_ARCHIVE, ROOT / RUNTIME_SIGNATURE_INDEX)
+        self.assertTrue((ROOT / RUNTIME_SIGNATURE_README).is_file())
         self.assertEqual(len(members), 93)
         rows = json.loads(members['cli/observations.json.txt'])
         self.assertEqual(len(rows), 14)

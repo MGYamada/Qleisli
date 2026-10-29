@@ -51,5 +51,14 @@
     "exit_code": 1,
     "stderr": "kernel module absent from root import/audit: QleisliKernel.Semantics.RuntimeType\nkernel module absent from root import/audit: QleisliKernel.SourceTypes.RuntimeSignature\n",
     "repair": "Import RuntimeSignature through the actual QleisliKernel root. Test imports alone do not establish production reachability."
+  },
+  "first_committed_preflight_refusal": {
+    "head": "e8cebe6cb352bc854555911f50d40adfd1ff49a7",
+    "new_fixtures": 4,
+    "referenced": 3,
+    "unreferenced": [
+      "tests/fixtures/authoring_sessions/runtime-signature-v030/README.md"
+    ],
+    "repair": "Explicit passive-test README path, retaining the original committed failure report."
   }
 }
