@@ -168,9 +168,8 @@ impl Compiler<'_> {
                     if let Some(error) = precise {
                         return Err(error);
                     }
-                    let closed = result.map_err(|error| {
-                        source_error(self.project, &self.project.root, error.in_module(module))
-                    })?;
+                    let closed =
+                        result.map_err(|error| self.originals.error(error.in_module(module)))?;
                     let mut precise = None;
                     let checked = types::closed_basis_capacity(&closed, span, &mut |at, cells| {
                         self.charge_at(&mut work, module, at, cells)
@@ -182,9 +181,7 @@ impl Compiler<'_> {
                     if let Some(error) = precise {
                         return Err(error);
                     }
-                    checked.map_err(|error| {
-                        source_error(self.project, &self.project.root, error.in_module(module))
-                    })?;
+                    checked.map_err(|error| self.originals.error(error.in_module(module)))?;
                     Ok(Some(closed))
                 };
                 Ok::<_, CompileError>((close(basis)?, close(codomain.as_ref().unwrap_or(basis))?))

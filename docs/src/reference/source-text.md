@@ -82,12 +82,18 @@ original type/member identity, visibility and written initializer order; see
 the [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile).
 Common preparation also checks ordinary `match` with exact qualified enum
 labels and exhaustive, disjoint arms. Runtime blocks allow an expression or
-block per arm; classical bodies allow ordinary expressions. General typed
-source execution remains pending.
-Both ordinary production source paths explicitly reject
-modules containing these declarations, including unused ones, after common
-type/body/effect preparation and before concrete lowering or native invocation.
-These frontend facts provide no execution evidence or accepted handle.
+block per arm; classical bodies allow ordinary expressions. The finite project
+adapter executes eligible closed ordinary callers through the strict native
+ordinary-v2 route, including ordinary parameter functions inlined by the common
+emitter. Nongeneric public selected ordinary runtime and classical roots use
+that same emitter and native gate after a fresh complete original-source
+judgment. The first selected slice emits classical Raw instructions only.
+Quantum nominal ports, generic selected/dependency transport, full qmatch and
+nominal finite-table consumers remain unfinished. The
+[type model](type-model.md#opaque-basis-specialization-in-the-selected-profile)
+and [production boundary](production-boundary.md#ordinary-inputresult-requests)
+specify the distinct capacities and checked scope. Common frontend facts alone
+provide no execution evidence or accepted handle.
 An explicit Rust check-only carrier adapter uses the same complete judgment
 and source lowering to check an independently requested exact logical matrix;
 its sealed typed result grants no ordinary execution. Its precise scope and
@@ -116,9 +122,13 @@ Prepared nominal facts retain the original references in field types and closed
 Nat-helper calls. Ordinary provenance collection follows these type dependencies,
 their transparent reexport chains and the helpers' original lexical dependencies.
 It checks retained declaration/source/occurrence identity before collecting
-bytes. This is untrusted provenance preparation; selected/host binding through
-typed native transport and public execution remain pending. Read-only retained
-nominal maps preserve the existing `Send + Sync` source-handle contract.
+bytes. This is untrusted provenance preparation. The ordinary-v2 route separately
+binds actual signature and recursive-field type paths, nominal origins and
+complete input/result storage; validating an unused helper grants no source-row
+coverage. Other intermediate nominal modules still require their own typed
+dependency transport. A host Basis description alone grants no execution
+authority. Read-only retained nominal maps preserve the existing `Send + Sync`
+source-handle contract.
 
 The Rust `Project` view labels `ResolvedImport.kind` as
 `ImportKind::Function(FnKind)` or `ImportKind::Type`. Its `declaration_span`
@@ -190,7 +200,8 @@ explicitly unsupported. Supporting the full twelve-joined-bit/64-label boundary
 still requires its checked restriction and arm-binding extension; the small
 slice does not replace that requirement. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
-preservation or enable ordinary nominal runtime. `qif` keeps its existing
+preservation or complete nominal integration. Ordinary nominal execution uses
+the separate ordinary-v2 route above. `qif` keeps its existing
 fixed `0`, then `1` syntax and access contract.
 
 ## One structured quantum result boundary

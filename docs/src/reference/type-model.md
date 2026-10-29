@@ -16,6 +16,37 @@ experiments; their historical failures are not current acceptance results.
 The common frontend is the only source grammar and source judgment. Rust
 preparation, binding and specialization types are exposed by `frontend::compile`.
 The ordinary CLI commands accept explicit entry/module bindings for specialization.
+For nominal collections, Raw/automatic selection also executes nongeneric public
+ordinary functions through the common finite emitter and the existing native
+ordinary-v2 gate. `ParsedProgram::instantiate_ordinary_with_types` checks all host
+bindings while deferring legacy body projection; `Instantiation::compile_ordinary_with_kernel`
+then borrows the unchanged original AST/text and obtains a fresh complete common
+judgment with its own original occurrence associations. It never combines cached
+facts with a different check's indices or fabricates a nongeneric source header.
+`SelectedOrdinaryProgram` retains that immutable instantiation and the actual
+accepted artifact/request. Its source check covers every supplied declaration;
+concrete eligibility and root acceptance concern the selected dependency closure.
+Closed function-equality and Meaning obligations in unused declarations and
+zero-count regions use the existing shared finite evidence gates before a
+selected result is returned. Their original Meaning, table and native body
+dependencies are prepared in dependency order, including references outside
+the selected closure. Each dependency retains its actual original declaration;
+source checking alone does not discharge those semantic obligations.
+An explicit public `main::main` selection uses exported-function eligibility.
+Project invocation retains its separate nullary ordinary-main contract, and
+private project mains do not become exported selections.
+The first selected profile permits classical Raw instructions only, with
+eight-bit words, 1024 function expansions, depth 16, 10000 Raw instructions and
+a conservative 100000-unit producer-work ceiling. Existing source, metadata and
+native caps remain separate. Generic selected roots/dependencies, quantum
+temporary values and portable nominal export still refuse explicitly. Unselected
+valid quantum declarations remain source checked without being execution roots.
+Public `classical fn` roots with the same ordinary interface use their original
+classical header and body through this same route; no ordinary wrapper is invented.
+Both closed simulation and sampling reject retained source parameters, including
+Unit, Bits<0> and empty records with no classical transport bits. CLI run/sample
+also require zero original runtime parameters. These are bounded implementation
+checks, not a source-preservation theorem or completion of #64/#195.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
 it does not excuse checking an unused definition, either branch or an empty loop.
@@ -764,9 +795,10 @@ description and an `Instantiation` remain untrusted preparation data. Ordinary
 nominal source execution requires a typed native route. The ordinary project
 adapter now checks finite ordinary parameters/results and executes eligible
 closed callers through the route described below.
-The selected Raw adapter retains its declaration transport refusal, so
-`--type=A=labels::Tri` still reaches its actual name/source checks before that
-refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
+The legacy selected projection retains its declaration transport refusal.
+Nongeneric public ordinary roots now use the common typed route; a generic
+`--type=A=labels::Tri` still checks its actual name/source bindings before the
+explicit missing-static-transport refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
 proofs remain pending; no inverse/control access follows from preparation.
 
 The internal `finite-ordinary-root-v2` request retains the original selected
@@ -810,7 +842,7 @@ from an external algorithm specification. Runtime output distributions retain
 the declared low-axis-first classical output order. Original AST lowering,
 decoder/native compiler and numerical runtime preservation are not proved by
 this gate. Existing simulation APIs still require closed roots; parameter
-checking grants no unchecked arbitrary-input runtime. General selected/dependency
+checking grants no unchecked arbitrary-input runtime. Generic selected/dependency
 integration, quantum ADTs, full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select this typed
 route when the final result is a built-in type. Body-only nominal modules must
@@ -875,8 +907,9 @@ zero-width owners. Calls and observation in any arm contribute their normal
 dependencies and effects; constant selection cannot hide an observing body
 behind a pure public label. A live `Q<T>` cannot be inspected by ordinary match.
 These source judgments provide no accepted handle independently of the concrete
-route. The selected adapter retains its transport refusal; the eligible ordinary
-project route uses the complete native result/history gate above. Neither
+route. Eligible ordinary project and nongeneric public selected roots use the
+complete native result/history gate above. General selected integration remains
+unfinished. Neither route
 provides implicit measurement, coherent `qmatch`, general `const<T>` or a
 source-preservation theorem.
 
@@ -896,7 +929,10 @@ Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.
 Preparation defers tables whose parameter/result types contain nominal nodes
 or whose original resolved bodies use nominal values, including through
-classical callees. Supported built-in-only tables remain eager. Actual coherent
+classical callees. Project preparation keeps supported built-in-only tables
+eager. When a selected dormant operation reaches a concrete table consumer,
+preparation follows only that original classical function and its classical
+callees; unrelated declarations do not become table roots. Actual coherent
 basis, Meaning and predicate table consumers retain an explicit unsupported
 result for these deferred tables. This preparation change alone supplies no
 accepted value transport or source-to-Raw preservation. Eligible closed ordinary

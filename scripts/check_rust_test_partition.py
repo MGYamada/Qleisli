@@ -17,7 +17,7 @@ import ci_runtime
 import ci_source_checks
 
 ROOT = Path(__file__).resolve().parents[1]
-HEAVY = ['frontend_ownership_differential', 'source_ir_correspondence']
+HEAVY = ['frontend_ownership_differential', 'input_corpus', 'source_ir_correspondence']
 CATEGORIES = ['--lib', '--bins', '--examples', '--benches']
 EXAMPLES = ['interop', 'lean_kernel', 'native_acceptance', 'sampled_shor15', 'shor15']
 WRAPPER = ['python3', 'scripts/run_kernel_tests.py', '--']

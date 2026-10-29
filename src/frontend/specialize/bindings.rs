@@ -140,6 +140,7 @@ pub(super) fn instantiate(
     types: &BTreeMap<String, BasisBinding>,
     naturals: &BTreeMap<String, u32>,
     operations: &BTreeMap<String, OperationBinding>,
+    require_entry_projection: bool,
 ) -> Result<(DefId, BTreeMap<String, DefId>)> {
     let (entry_id, interface) = visible_definition(program, entry, None, Span::default())?;
     let resolution = &program.checked.resolution;
@@ -290,7 +291,9 @@ pub(super) fn instantiate(
         }
         // Check every closed binding before any requested body eligibility.
         // An unsupported entry/body cannot mask an invalid supplied provider.
-        program.definition(entry_id)?;
+        if require_entry_projection {
+            program.definition(entry_id)?;
+        }
         for provider_id in providers.values() {
             program.definition(*provider_id)?;
         }

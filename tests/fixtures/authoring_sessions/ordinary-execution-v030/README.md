@@ -31,6 +31,33 @@ General ordinary inputs/functions, selected Raw, quantum nominal owners, full
 qmatch and original source/runtime/target preservation remain unfinished.
 This archive closes no Issue and admits no guarantee, release or publication.
 
+## Selected ordinary execution history, 2026-10-28
+
+The separate [selected archive](selected-first.tar.xz),
+[index](selected-first-index.json.gz) and [validation](selected-first-validation.json)
+retain392 original files as216 objects, with3,277,196 expanded bytes. Twelve
+unchanged first projects retain24 actual calls: the built-in control succeeds,
+while desired nominal programs, invalid source/effect/visibility controls and
+the original missing-`const` spelling retain their real refusals. The one-token
+generic repair is a separate two-call study and still refuses native transport.
+
+An incomplete after-window retains13 successes/13 refusals, including an
+unnecessary Rust rejection of the original public `classical fn` header.
+The corrected26-call window has15 successes/11 required refusals with no
+source repairs or new quantum execution. Public classical roots now use the
+already existing native header rule; no source translation or new Lean rule
+repairs them. Nonclosed nominal arguments, including zero-width values, still
+require an actual invocation before closed-only run/sample.
+
+Prototype compilation, test and lint failures remain beside separate repairs
+and exact source objects. Current normal/MSRV windows each pass62 source/CLI
+and13 native boundary tests with zero conditional skips;133 normal compiler
+tests and strict all-target Clippy pass separately. The local checker has the
+separately observed unchanged Lean closure; binary identity is not a candidate
+build attestation or fresh proof replay. Saved commands remain inert.
+Generic selected/dependency transport, quantum nominal interfaces, full qmatch,
+finite-table consumers and source/runtime/target preservation remain unfinished.
+
 ## Review and complete-input experiments, 2026-10-28
 
 The separate [review archive](review-first.tar.xz),
@@ -138,3 +165,49 @@ they are not a fresh checker build for the parent, binary attestation, proof
 replay or source/runtime-preservation theorem. Exact candidate CI must build
 and test its own checker before merge. Passive history checks never execute
 saved sources or commands. No Issue or broader guarantee is completed.
+
+## Selected ordinary review repairs
+
+The separate [review index](selected-review-first-index.json.gz),
+[inert archive](selected-review-first.tar.xz) and
+[validation](selected-review-first-validation.json) preserve335 original records
+as196 objects. They retain the original unchecked unused function inequality,
+valid Meaning refusal, refined-operation panics and incorrect public-main
+selection. The first incomplete dependency repair still refuses an honest
+function pair; failed tests and an intentionally interrupted batch remain failures.
+
+A separately retained primitive translation and actual pre-repair source control
+show why unrelated dormant owners must not become concrete table roots. Only
+actual Meaning/function evidence demands table preparation. The final22-call
+window uses unchanged sources and records12 successes/10 required refusals:
+false equalities reject semantically, honest Meanings pass, exported main follows
+its selected contract, and the unused primitive control retains compatibility.
+No source repair or quantum runtime execution occurs in that window.
+
+Current normal and MSRV each pass119 focused/native tests without conditional
+native skips;133 compiler tests and strict all-target Clippy pass separately.
+Exact source objects bind those repaired windows. The native checker closure is
+unchanged; these tests are not a fresh proof replay or binary attestation.
+Passive history tests read saved bytes only. #64/#195 and the remaining generic,
+quantum, qmatch and preservation obligations remain open.
+
+## Dormant operation table demand
+
+The separate [table-demand index](dormant-tables-first-index.json.gz),
+[inert archive](dormant-tables-first.tar.xz) and
+[validation](dormant-tables-first-validation.json) retain140 original records as87
+objects. Twelve first calls distinguish three valid selected-operation refusals,
+an already working controlled example, an unsupported nominal table and an
+unrelated large ordinary-table control. Their original diagnostics remain exact.
+The twelve unchanged-source after calls have nine successes and three required
+refusals, with no source repairs or quantum runtime execution.
+
+Actual table consumers prepare only their original classical callee closure,
+through the existing builder and limits, restoring the prior source owner.
+The packet also preserves the earlier hosted CI target-inventory refusal,
+its local reproduction, separate scheduling repair and the first stale expected
+target-count test failure. None is reclassified as a successful test.
+Normal and MSRV each pass139 focused/native tests, with133 compiler tests and
+strict all-target Clippy checked separately. Exact source objects bind each
+window; passive history checks never execute saved code. Native/proof coverage,
+admissions and unfinished #64/#195 obligations retain their separate status.

@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.selected-ordinary-first",
+  "version": 1,
+  "scope": "Inert selected ordinary execution history: complete first sources and real streams, separate const-token repair, incomplete first after-window, prototype failures, original source objects, corrected original public classical root and distinct normal/MSRV validation. No saved command/source executes. Selected producer Rust is not source/body/runtime preservation, checker build attestation, a new admission or completed Issue64/195.",
+  "original_files": 392,
+  "objects": 216,
+  "expanded_bytes": 3277196,
+  "index": {
+    "bytes": 24736,
+    "sha256": "2b5fbe16f035637f328d7759e19afd623d05d7f4f30d895bfef4dda6baec5f27",
+    "decoded_bytes": 165710,
+    "decoded_sha256": "0960bc1ef1a8b082b6e3ff22d4582464cdf38dde0a7f17b217dc00ad20fc6c67"
+  },
+  "archive": {
+    "bytes": 360852,
+    "sha256": "61bb4d27a016d726a0a00c6a0fa50b89f0b017962857903237dca376c6556734"
+  }
+}

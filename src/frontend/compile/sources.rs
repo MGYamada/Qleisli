@@ -114,7 +114,7 @@ impl Compiler<'_> {
                 ));
             }
             let source =
-                self.project.modules.get(name).ok_or_else(|| {
+                self.originals.module(name).ok_or_else(|| {
                     self.error(module, span, ErrorCode::InvalidIr,
                 "relevant source closure references a module outside the original collection")
                 })?;
@@ -144,7 +144,14 @@ impl Compiler<'_> {
             let row = if let Some(row) = self.source_rows.get(name) {
                 Arc::clone(row)
             } else {
-                let row = Arc::new((name.clone(), self.project.modules[name].source.clone()));
+                let row = Arc::new((
+                    name.clone(),
+                    self.originals
+                        .module(name)
+                        .expect("original module")
+                        .source
+                        .to_owned(),
+                ));
                 self.source_rows.insert(name.clone(), Arc::clone(&row));
                 row
             };
@@ -209,10 +216,10 @@ impl<'a> Collector<'a, '_> {
     fn source(&mut self, name: &'a str, expected: Option<&str>) -> Result<(), CompileError> {
         self.charge(
             name.len()
-                .saturating_mul(self.compiler.project.modules.len() + self.modules.len() + 1)
+                .saturating_mul(self.compiler.originals.len() + self.modules.len() + 1)
                 + 2,
         )?;
-        let Some(source) = self.compiler.project.modules.get(name) else {
+        let Some(source) = self.compiler.originals.module(name) else {
             return self.refusal("retained dependency source is outside the original collection");
         };
         if let Some(expected) = expected {
@@ -252,9 +259,8 @@ impl<'a> Collector<'a, '_> {
         };
         let original = self
             .compiler
-            .project
-            .modules
-            .get(&record.name.0)
+            .originals
+            .module(&record.name.0)
             .and_then(|source| source.ast.decls.get(record.ast_index));
         if !original
             .zip(self.compiler.declarations.get(&key))
@@ -351,9 +357,8 @@ impl<'a> Collector<'a, '_> {
         };
         let Some(original) = self
             .compiler
-            .project
-            .modules
-            .get(&record.name.0)
+            .originals
+            .module(&record.name.0)
             .and_then(|module| module.ast.type_decls.get(record.ast_index))
         else {
             return self.refusal("source closure type is outside the original declarations");
@@ -673,7 +678,7 @@ mod tests {
             let mut compiler = super::super::snapshot_tests::compiler(&empty);
             // Only read-only metadata is installed. No source body judgment,
             // runtime program, effect or native accepted handle is fabricated.
-            compiler.project = &changed;
+            compiler.originals = (&changed).into();
             compiler.source.resolution = metadata.resolution;
             compiler.source.nominals = metadata.types;
             compiler.source.nominal_uses = metadata.uses;

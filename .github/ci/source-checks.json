@@ -460,6 +460,8 @@
           "--test",
           "frontend_ownership_differential",
           "--test",
+          "input_corpus",
+          "--test",
           "source_ir_correspondence"
         ],
         [
@@ -583,8 +585,6 @@
           "--test",
           "inference_law",
           "--test",
-          "input_corpus",
-          "--test",
           "interchange",
           "--test",
           "interop",
@@ -668,6 +668,8 @@
           "selected_coherent_basis",
           "--test",
           "selected_function_contracts",
+          "--test",
+          "selected_ordinary_execution",
           "--test",
           "selected_source_cli",
           "--test",
@@ -874,6 +876,8 @@
           "--test",
           "frontend_ownership_differential",
           "--test",
+          "input_corpus",
+          "--test",
           "source_ir_correspondence"
         ],
         [
@@ -997,8 +1001,6 @@
           "--test",
           "inference_law",
           "--test",
-          "input_corpus",
-          "--test",
           "interchange",
           "--test",
           "interop",
@@ -1082,6 +1084,8 @@
           "selected_coherent_basis",
           "--test",
           "selected_function_contracts",
+          "--test",
+          "selected_ordinary_execution",
           "--test",
           "selected_source_cli",
           "--test",

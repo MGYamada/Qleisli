@@ -470,13 +470,29 @@ impl Lowerer<'_, '_> {
             )?;
             return self.call_instance(key, args, site, instance);
         }
-        if self.depth >= MAX_DEPTH {
+        let depth_limit = if self.compiler.force_ordinary_root {
+            16
+        } else {
+            MAX_DEPTH
+        };
+        if self.depth >= depth_limit {
             return Err(self.error(
                 &key_name.0,
                 decl.span,
                 ErrorCode::Limit,
                 "function expansion exceeds the initial depth limit",
             ));
+        }
+        if self.compiler.force_ordinary_root {
+            if self.compiler.selected_calls >= 1024 {
+                return Err(self.error(
+                    &key_name.0,
+                    decl.span,
+                    ErrorCode::Limit,
+                    "selected ordinary expansion exceeds 1024 calls",
+                ));
+            }
+            self.compiler.selected_calls += 1;
         }
         self.depth += 1;
         // A callee's lexical binders cannot explain the caller's operands.
@@ -1853,6 +1869,8 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             )?);
         };
+        self.compiler
+            .prepare_required_classical_table(key, module, function.span)?;
         let Some(predicate) = self.compiler.basis.get(&key) else {
             let (code, message) = self
                 .compiler
@@ -2097,9 +2115,13 @@ fn lower_function_in_context(
         classical_outputs,
         declared_effect: lower.effect,
     };
-    let needs_typed_root = !lower.nominal_modules.borrow().is_empty()
+    let needs_typed_root = lower.compiler.force_ordinary_root
+        || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
         || params.iter().any(ordinary::has_nominal);
+    if lower.compiler.force_ordinary_root {
+        super::selected::check_raw_capacity(lower.compiler, &key_name.0, decl.span, &raw)?;
+    }
     let accepted = if needs_typed_root {
         ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)
     } else {

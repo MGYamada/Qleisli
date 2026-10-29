@@ -6,10 +6,30 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Combine corpus execution and exact accepted-view checks after one compilation
+  per project. Preserve all 87 corpus projects, 14 examples, fresh native round
+  trips and reachable evidence-cache comparisons without a passed-result cache.
+  Balance the complete corpus harness into the differential CI partition while
+  retaining exact coverage guards, worker counts and command deadlines.
 - Reject typed ordinary source parameters in closed simulation and sampling,
   including Unit, Bits<0>, empty records and nested zero-width products. Empty
   Raw input lists do not erase the retained logical arguments; nullary typed
   Unit results remain executable. Preserve the native input/result request.
+- Execute nongeneric public selected enum/record functions through the common
+  original-source emitter and existing native ordinary-v2 gate. Retain complete
+  host bindings and source identity, check all unused bodies, and preserve exact
+  nominal input/result forests, zero-width parameters and full canonical rows.
+  Closed execution and sampling reject every retained source parameter, even an
+  empty record, Unit or Bits<0>. The initial selected slice emits classical Raw
+  instructions only; generic/quantum integration and full #64/#195 remain open.
+  Discharge dormant function equalities through the shared contract gate and
+  prepare original Meaning/body dependencies before visiting unused obligations.
+  Explicit public `main` selections retain exported-function eligibility.
+  Include selected ordinary integration tests in both complete CI partitions.
+  Prepare predicate tables and their classical callees when dormant operation
+  bodies actually consume them, retaining unrelated-table and nominal refusals.
+  Align the source Reference with those executable paths and repair the
+  ordinary input/result boundary link.
 - Execute the first closed ordinary enum/record result slice through a versioned
   native request. Bind the original declared result, complete storage tree,
   exact output order and every hidden instrument history to the retained QDV

@@ -11,9 +11,10 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 mod common;
+#[path = "common/roundtrip.rs"]
+mod roundtrip;
 
 use common::current_corpus_projects;
-use qleisli::AcceptedProgram;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
@@ -23,6 +24,7 @@ use qleisli::ir::{
     BasisShape, BitControl, CircuitAction, CircuitStep, ClassicalId, Effect, QuantumPhi,
     QuantumPort, RawOp, RawProgram, SingleGate, TokenId, WireId,
 };
+use roundtrip::{assert_cache_matches_implementation, assert_roundtrip, encode, receipts};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -31,72 +33,6 @@ use std::sync::Arc;
 fn kernel() -> Kernel {
     Kernel::selected(qleisli::edition::Edition::E2026)
         .expect("set QLEISLI_KERNEL to the matching native checker")
-}
-
-/// Every receipt reachable from a program, including nested receipts used by
-/// implementations and specifications. Shared receipts are visited once.
-fn receipts(program: &RawProgram) -> Vec<Arc<FunctionEvidence>> {
-    fn steps(steps: &[CircuitStep], out: &mut Vec<Arc<FunctionEvidence>>) {
-        for step in steps {
-            if let CircuitAction::Contract { evidence, .. } = &step.action {
-                out.push(Arc::clone(evidence));
-            }
-        }
-    }
-    fn ops(list: &[RawOp], out: &mut Vec<Arc<FunctionEvidence>>) {
-        for op in list {
-            match op {
-                RawOp::ApplyUnitary { steps: s, .. } => steps(s, out),
-                RawOp::CertifiedCompute {
-                    use_steps,
-                    logical_steps,
-                    ..
-                } => {
-                    steps(use_steps, out);
-                    steps(logical_steps, out);
-                }
-                RawOp::ClassicalBranch {
-                    then_ops, else_ops, ..
-                } => {
-                    ops(then_ops, out);
-                    ops(else_ops, out);
-                }
-                _ => {}
-            }
-        }
-    }
-    let (mut seen, mut found, mut pending) = (BTreeSet::new(), Vec::new(), Vec::new());
-    ops(&program.operations, &mut pending);
-    while let Some(receipt) = pending.pop() {
-        if seen.insert(Arc::as_ptr(&receipt) as usize) {
-            ops(&receipt.implementation().operations, &mut pending);
-            ops(&receipt.specification().operations, &mut pending);
-            found.push(receipt);
-        }
-    }
-    found
-}
-
-/// The execution cache must agree with the implementation Lean checked.
-fn assert_cache_matches_implementation(program: &AcceptedProgram, context: &str) -> usize {
-    let found = receipts(program.raw());
-    for receipt in &found {
-        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let implementation = receipt.circuit().matrix(&mut budget).unwrap();
-        assert_eq!(
-            &implementation,
-            receipt.meaning(),
-            "{context}: cached execution matrix differs from the implementation"
-        );
-    }
-    found.len()
-}
-
-fn encode(program: &AcceptedProgram) -> Vec<u8> {
-    Proposal::from_raw(program.raw(), program.root_interface(), Version::V2, None)
-        .unwrap()
-        .artifact()
-        .to_vec()
 }
 
 fn projects(root: &Path, out: &mut Vec<PathBuf>) {
@@ -238,26 +174,21 @@ fn compiled_project_discovery_selects_current_sources() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn compiled_programs_reencode_exactly_and_caches_match_implementations() {
+fn compiled_examples_reencode_exactly_and_caches_match_implementations() {
     let kernel = kernel();
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let roots = compiled_projects(manifest);
-    assert_eq!(roots.len(), 101, "logical compilation coverage changed");
+    let mut roots = Vec::new();
+    projects(&manifest.join("examples"), &mut roots);
+    assert_eq!(roots.len(), 14, "example compilation coverage changed");
     let mut evidence = 0;
     for root in &roots {
         let context = root.display().to_string();
         let compiled = qleisli::frontend::compile::compile_project(root).unwrap();
-        let first = encode(&compiled);
-        let checked = kernel.check(&first, None).unwrap();
-        assert_eq!(
-            first,
-            encode(checked.program()),
-            "{context}: decode/encode changed the proposal"
-        );
-        evidence += assert_cache_matches_implementation(checked.program(), &context);
+        evidence += assert_roundtrip(&compiled, &kernel, &context);
     }
-    // Coverage guard: the examples currently produce five receipts and the
-    // corpus none. A drop means this test stopped exercising evidence at all.
+    // All 87 corpus round trips run alongside their execution checks in
+    // input_corpus, using the same helper and one compilation per project.
+    // These examples must still exercise their five existing receipts.
     assert!(
         evidence >= 5,
         "only {evidence} evidence receipts were exercised"

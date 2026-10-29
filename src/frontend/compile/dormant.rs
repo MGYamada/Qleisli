@@ -410,6 +410,48 @@ impl<'a> Compiler<'a> {
         result
     }
 
+    /// Closed function pairs remain semantic obligations in unused generic
+    /// bodies and zero-count regions. Both source adapters use this same gate.
+    pub(super) fn check_dormant_function_contracts(&mut self) -> Result<(), CompileError> {
+        let previous = self.checking;
+        let result = (|| {
+            for ordinal in 0..self.source.obligations.len() {
+                let obligation = &self.source.obligations[ordinal];
+                let check::ObligationKind::FunctionEquality {
+                    implementation,
+                    specification,
+                } = obligation.kind
+                else {
+                    continue;
+                };
+                let (definition, span) = (obligation.definition, obligation.span);
+                self.checking = Some(definition);
+                let module = self
+                    .source
+                    .resolution
+                    .declaration(definition)
+                    .name
+                    .0
+                    .clone();
+                if self.effect_in_module(&module, implementation)
+                    == Some(crate::ir::Effect::Observe)
+                {
+                    self.instrument_contract_evidence(
+                        &module,
+                        span,
+                        implementation,
+                        specification,
+                    )?;
+                } else {
+                    self.function_contract_evidence(&module, span, implementation, specification)?;
+                }
+            }
+            Ok(())
+        })();
+        self.checking = previous;
+        result
+    }
+
     /// Every concrete owner revisits its original dead/zero source obligations
     /// before executable-body reuse. No placeholder actual or function handle
     /// stands in for a genuinely unbound original formal.

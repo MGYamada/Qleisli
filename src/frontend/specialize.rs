@@ -534,8 +534,45 @@ impl ParsedProgram {
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, OperationBinding>,
     ) -> Result<Instantiation> {
-        let (entry_id, operation_ids) =
-            bindings::instantiate(self, entry, &types, &naturals, &operations)?;
+        self.instantiate_prepared(entry, types, naturals, operations, true)
+    }
+
+    /// Whether the original collection contains nominal finite declarations.
+    /// Source-feature selection grants no concrete eligibility or acceptance.
+    pub fn requires_typed_ordinary_transport(&self) -> bool {
+        !self.checked.nominals.is_empty()
+    }
+
+    /// Check all host bindings without requiring the legacy body projection.
+    /// The original common judgment is retained. Actual ordinary execution
+    /// still requires `compile_ordinary_with_kernel`; legacy `elaborate` retains
+    /// its own body and transport refusals. No generic native route is enabled.
+    pub fn instantiate_ordinary_with_types(
+        &self,
+        entry: &str,
+        types: BTreeMap<String, BasisBinding>,
+        naturals: BTreeMap<String, u32>,
+        operations: BTreeMap<String, OperationBinding>,
+    ) -> Result<Instantiation> {
+        self.instantiate_prepared(entry, types, naturals, operations, false)
+    }
+
+    fn instantiate_prepared(
+        &self,
+        entry: &str,
+        types: BTreeMap<String, BasisBinding>,
+        naturals: BTreeMap<String, u32>,
+        operations: BTreeMap<String, OperationBinding>,
+        require_entry_projection: bool,
+    ) -> Result<Instantiation> {
+        let (entry_id, operation_ids) = bindings::instantiate(
+            self,
+            entry,
+            &types,
+            &naturals,
+            &operations,
+            require_entry_projection,
+        )?;
         Ok(Instantiation {
             program: self.clone(),
             entry: entry.into(),
@@ -650,6 +687,17 @@ pub struct Instantiation {
     operations: BTreeMap<String, OperationBinding>,
 }
 impl Instantiation {
+    /// Compile a nongeneric exported ordinary root through the common emitter
+    /// and the fresh native ordinary-v2 request/decoded-view check. Every source
+    /// declaration remains checked; native scope is the selected root only.
+    pub fn compile_ordinary_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> std::result::Result<super::compile::SelectedOrdinaryProgram, super::diagnostic::Diagnostic>
+    {
+        super::compile::selected::compile(self, &self.program.sources, kernel)
+    }
+
     /// Elaborate bounded concrete source bodies into an untrusted, source-order
     /// ownership proposal. No IR verification seal or execution authority is made.
     pub fn elaborate(&self) -> Result<ElaboratedProgram> {

@@ -114,6 +114,58 @@ impl Compiler<'_> {
     /// values use ordinary source bodies, including through classical callers.
     /// Actual finite-table consumers still require a supported table.
     pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
+        self.prepare_selected_classical_tables(None)
+    }
+
+    /// A concrete table consumer can be reached while materializing a dormant
+    /// operation outside the selected root. Prepare only its original classical
+    /// dependency closure, through the same table builder and existing limits.
+    pub(super) fn prepare_required_classical_table(
+        &mut self,
+        key: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<(), CompileError> {
+        if self.basis.contains_key(&key)
+            || self.deferred_nominal_tables.contains(&key)
+            || self.declarations[&key].kind != FnKind::Classical
+        {
+            return Ok(());
+        }
+        let previous = self.checking;
+        let result = (|| {
+            self.charge(module, span, 4)?;
+            let mut pending = vec![key];
+            let mut needed = BTreeSet::new();
+            while let Some(key) = pending.pop() {
+                self.charge(module, span, self.declarations.len() + 3)?;
+                if !needed.insert(key) {
+                    continue;
+                }
+                let uses = self.source.lexical[&key].resolved_uses();
+                self.charge(module, span, uses.len().saturating_mul(3) + 1)?;
+                for usage in self.source.lexical[&key].resolved_uses() {
+                    if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
+                        if self.declarations[&callee].kind == FnKind::Classical
+                            && !self.basis.contains_key(&callee)
+                            && !self.deferred_nominal_tables.contains(&callee)
+                        {
+                            pending.push(callee);
+                        }
+                    }
+                }
+            }
+            self.charge(module, span, self.source.dependency_order.len() + 1)?;
+            self.prepare_selected_classical_tables(Some(&needed))
+        })();
+        self.checking = previous;
+        result
+    }
+
+    pub(super) fn prepare_selected_classical_tables(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+    ) -> Result<(), CompileError> {
         fn has_nominal(ty: &Ty) -> bool {
             match &ty.kind {
                 Kind::Nominal(_) => true,
@@ -123,6 +175,9 @@ impl Compiler<'_> {
         }
         for ordinal in 0..self.source.dependency_order.len() {
             let key = self.source.dependency_order[ordinal];
+            if selected.is_some_and(|selected| !selected.contains(&key)) {
+                continue;
+            }
             self.checking = Some(key);
             if self.declarations[&key].kind != FnKind::Classical {
                 continue;
@@ -470,6 +525,8 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
                 ));
             }
         };
+        self.compiler
+            .prepare_required_classical_table(key, self.module, callee.span)?;
         let function = self.compiler.basis.get(&key).ok_or_else(|| {
             self.compiler.missing_basis_error(
                 self.module,

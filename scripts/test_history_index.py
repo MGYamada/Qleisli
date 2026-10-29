@@ -594,5 +594,218 @@ class OrdinaryClosedRuntimeHistory(unittest.TestCase):
             self.raw('ordinary-closed-fix-checks/after-normal/stdout'))
 
 
+class SelectedOrdinaryFirstHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'selected-first-index.json.gz', 'selected-first.tar.xz',
+                '2b5fbe16f035637f328d7759e19afd623d05d7f4f30d895bfef4dda6baec5f27',
+                360852, '61bb4d27a016d726a0a00c6a0fa50b89f0b017962857903237dca376c6556734',
+                3277196, index_gzip=dict(bytes=24736, decoded_bytes=165710,
+                    decoded_sha256='0960bc1ef1a8b082b6e3ff22d4582464cdf38dde0a7f17b217dc00ad20fc6c67'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'selected-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_first_sources_streams_repairs_and_incomplete_window_stay_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (392, 216))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, count, successes, key in [
+                ('selected-ordinary-first', 24, 2, 'observations'),
+                ('selected-ordinary-host-repair', 2, 0, 'observations'),
+                ('selected-ordinary-after', 26, 13, 'results'),
+                ('selected-ordinary-classical-after', 26, 15, 'results')]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            rows = report[key]
+            self.assertEqual((len(rows), sum(row['exit_code'] == 0 for row in rows)), (count, successes))
+            for row in rows:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+                self.assertEqual(json.loads(self.raw(folder + '/' + row['stdout']['path'])), row['document'])
+        self.assertIn(b'pub classical fn', self.raw('selected-ordinary-first/classical-intermediate/main.qli'))
+        final = self.record('selected-ordinary-classical-after/report.json')
+        self.assertEqual((final['source_repairs'], final['new_quantum_bits_executed']), (0, 0))
+        for row in final['results']:
+            if row['first'].get('case') == 'classical-intermediate':
+                self.assertEqual(row['exit_code'], 0)
+                if row['first']['action'] == 'run':
+                    self.assertEqual(row['document']['result']['distribution'],
+                                     [dict(bits=[True], probability=1)])
+
+    def test_failed_prototypes_and_later_current_windows_remain_separate(self):
+        for label in ['compile-normal', 'normal-selected', 'normal-selected-repaired',
+                      'normal-selected-dormant-scope', 'normal-selected-source-routing', 'normal-lint']:
+            self.assertEqual(self.record('selected-ordinary-checks/' + label + '/report.json')['exit_code'], 101)
+        for row in self.record('selected-port-validation-batch.json'):
+            report = self.record('selected-ordinary-port-checks/' + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['head'], 'b9ad43a0802a98d5f463884c419fbf4eb608475d')
+            if row['label'] != 'normal-lint':
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw('selected-ordinary-port-checks/' + row['label'] + '/stdout'))
+
+
+class SelectedOrdinaryReviewHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/selected-review-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'selected-review-first-index.json.gz', 'selected-review-first.tar.xz',
+                'b3f0656e1d174aa864834bdfc988aa68986310df3621d44413a13a9504dff395',
+                734192, 'ff29e40ac584c62fc4ba4e27d25dfed826de524bf17f929a859fc717ceb66687',
+                3175652, index_gzip=dict(bytes=21221, decoded_bytes=145141,
+                    decoded_sha256='e510b46cf76ad0e847dc80fed8abec34babd2fca76225c99c13132bcfd3658c7'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'selected-review-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_bytes_and_real_failures_are_not_repaired_in_place(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (335, 196))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, count, successes in [('selected-review-first', 16, 7),
+                ('selected-review-refined-first', 4, 1),
+                ('selected-review-after-first-prototype', 20, 10),
+                ('selected-review-unused-primitive-first', 2, 0),
+                ('selected-review-unused-primitive-repair', 2, 0),
+                ('selected-review-unused-primitive-baseline', 2, 1),
+                ('selected-review-after-final', 22, 12)]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual((len(report['results']), sum(row['exit_code'] == 0 for row in report['results'])),
+                             (count, successes))
+            for row in report['results']:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+        refined = self.record('selected-review-refined-first/report.json')['results']
+        self.assertEqual([row['exit_code'] for row in refined], [0, 101, 1, 101])
+        self.assertTrue(all(row['json_parse_error'] for row in refined if row['exit_code'] == 101))
+
+    def test_unchanged_final_sources_keep_semantic_and_entry_refusals(self):
+        final = self.record('selected-review-after-final/report.json')
+        self.assertEqual((final['source_repairs'], final['new_quantum_bits_executed']), (0, 0))
+        for row in final['results']:
+            case, mode = row['first']['case'], row['first']['mode']
+            self.assertIsNone(row['json_parse_error'])
+            self.assertEqual(json.loads(self.raw('selected-review-after-final/' + row['stdout']['path'])),
+                             row['document'])
+            if row['exit_code']:
+                expected = ('invalid_entry' if case in ['selected-main-parameter', 'selected-classical-main']
+                            else 'visibility' if case == 'private-project-main'
+                            else 'limit' if case == 'unused-primitive-only-owner' else 'contract')
+                self.assertEqual(row['document']['diagnostics'][0]['code'], expected)
+            if case == 'unused-function-inequality':
+                self.assertEqual(row['exit_code'], 1)
+            if case == 'unused-primitive-only-owner':
+                self.assertEqual(row['exit_code'], 0 if mode == 'selected' else 1)
+
+    def test_failed_interrupted_and_repaired_windows_retain_actual_source_identity(self):
+        prefix = 'selected-ordinary-port-checks/'
+        for label in ['review-first-normal', 'review-primitive-boundary', 'review-visited-boundary']:
+            self.assertEqual(self.record(prefix + label + '/report.json')['exit_code'], 101)
+        interrupted = self.record('selected-review-interrupted-batch.json')
+        self.assertEqual(interrupted['exit_code'], 130)
+        self.assertNotIn(interrupted['partial'] + '/report.json', self.index['original_records'])
+        for row in self.record('selected-review-repaired-validation-batch.json'):
+            report = self.record(prefix + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before']['src/frontend/compile/selected.rs'],
+                '937fc2f7313d289046dd47fa4b8475e1699c33bc4d55ff9f0b91429e518bf3c8')
+            if not row['label'].endswith('-lint'):
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw(prefix + row['label'] + '/stdout'))
+
+
+class SelectedDormantTableHistory(unittest.TestCase):
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first-index.json.gz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first.tar.xz"
+    # "tests/fixtures/authoring_sessions/ordinary-execution-v030/dormant-tables-first-validation.json"
+    @classmethod
+    def setUpClass(cls):
+        cls.root = history.ROOT / 'tests/fixtures/authoring_sessions/ordinary-execution-v030'
+        with patch.object(history, 'FIXTURES', cls.root):
+            cls.data = history.read_history(
+                'dormant-tables-first-index.json.gz', 'dormant-tables-first.tar.xz',
+                'ca99dc3ccd971ffc22be2f1961303ae8fd619d6b552d285d658a2a47ff906a05',
+                288284, 'ecb7e0ea4ec700509ff2d2bcb59fc884af0f5544b18f8dc3a1f85581dfe8f1cb',
+                1592308, index_gzip=dict(bytes=7910, decoded_bytes=62314,
+                    decoded_sha256='3297c4fecc762ae00b4cf89e0c90b9045b1c21d3301d012ada486c8bd0756352'))
+        cls.index = json.loads(gzip.decompress((cls.root / 'dormant-tables-first-index.json.gz').read_bytes()))
+
+    def raw(self, name):
+        return self.data[self.index['original_records'][name]['record']]
+
+    def record(self, name):
+        return json.loads(self.raw(name))
+
+    def test_original_missing_tables_controls_and_unchanged_after_sources_remain_distinct(self):
+        self.assertEqual((len(self.index['original_records']), len(self.data)), (140, 87))
+        for row in self.index['original_records'].values():
+            raw = self.data[row['record']]
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()), (row['bytes'], row['sha256']))
+        for folder, successes in [('selected-dormant-tables-first', 6), ('selected-dormant-tables-after', 9)]:
+            report = self.record(folder + '/report.json')
+            self.assertEqual(report['before'], report['after'])
+            self.assertEqual((report['source_repairs'], report['new_quantum_bits_executed']), (0, 0))
+            self.assertEqual((len(report['results']), sum(row['exit_code'] == 0 for row in report['results'])),
+                             (12, successes))
+            for row in report['results']:
+                for stream in ['stdout', 'stderr']:
+                    self.assertEqual(hashlib.sha256(self.raw(folder + '/' + row[stream]['path'])).hexdigest(),
+                                     row[stream]['sha256'])
+                self.assertEqual(json.loads(self.raw(folder + '/' + row['stdout']['path'])), row['document'])
+                original = row.get('first', row)
+                if original['case'] == 'controlled-computed':
+                    self.assertEqual(row['exit_code'], 0)  # Already worked before the repair.
+                if folder.endswith('-after') and original['case'] == 'nominal-table-refusal':
+                    self.assertEqual(row['document']['diagnostics'][0]['code'], 'unsupported')
+
+    def test_repaired_windows_bind_the_actual_source_and_current_ci_failure_remains_a_failure(self):
+        prefix = 'selected-ordinary-port-checks/'
+        reviewed = self.record('selected-dormant-table-metadata-review.json')['changed']
+        self.assertEqual(len(reviewed), 4)
+        for row in self.record('selected-dormant-table-validation-batch.json'):
+            report = self.record(prefix + row['label'] + '/report.json')
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            for source in reviewed:
+                self.assertEqual(report['before'][source['path']], source['after'])
+                self.assertFalse(source['public_surface_changed'])
+            if not row['label'].endswith('-lint'):
+                self.assertIn(b'native test gate: zero conditional native skips',
+                              self.raw(prefix + row['label'] + '/stdout'))
+        self.assertEqual(self.record(prefix + 'review-ci-partition-before-normal/report.json')['exit_code'], 1)
+        for label in ['review-ci-partition-after-normal', 'review-ci-partition-after-msrv']:
+            self.assertEqual(self.record(prefix + label + '/report.json')['exit_code'], 0)
+        self.assertIn(b'integration partition differs from complete Cargo target inventory',
+                      self.raw('pr443-cafed1-rust-remaining-failure.log'))
+        self.assertEqual(self.record('selected-ci-partition-repair-first.json')['first_updated_manifest_test']['exit_code'], 1)
+
+
 if __name__ == '__main__':
     unittest.main()

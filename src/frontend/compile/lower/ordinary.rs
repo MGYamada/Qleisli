@@ -236,7 +236,9 @@ pub(super) fn accept(
         .map(|row| row.as_ref().clone())
         .collect::<Vec<_>>();
     let request = Request {
-        selection: if name.0 == "main" && name.1 == "main" {
+        selection: if lower.compiler.selected_entry == Some(*key) {
+            Selection::Exported
+        } else if name.0 == "main" && name.1 == "main" {
             Selection::Project
         } else if !decl.public {
             Selection::Internal

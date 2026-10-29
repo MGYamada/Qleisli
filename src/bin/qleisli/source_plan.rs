@@ -6,7 +6,8 @@ use qleisli::{
         ast::Span,
         compile::{
             self, BasisBinding, ElaboratedProgram, HierarchyEligibility, HierarchyProposal,
-            OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal, SourceType,
+            OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal,
+            SelectedOrdinaryProgram, SourceType,
         },
         diagnostic::Diagnostic,
     },
@@ -28,8 +29,9 @@ use options::{IrProfile, Options};
 type Result<T> = std::result::Result<T, Failure>;
 
 struct SourceSite {
-    module: String,
+    module: Option<String>,
     span: Span,
+    path: Option<PathBuf>,
 }
 struct Failure {
     code: String,
@@ -53,12 +55,14 @@ impl Failure {
         let root = &source.definitions()[source.root()];
         let mut failure = Self::new("unsupported", message);
         failure.site = Some(Box::new(SourceSite {
-            module: root
-                .path()
-                .rsplit_once("::")
-                .map_or(root.path(), |(module, _)| module)
-                .into(),
+            module: Some(
+                root.path()
+                    .rsplit_once("::")
+                    .map_or(root.path(), |(module, _)| module)
+                    .into(),
+            ),
             span: root.span(),
+            path: None,
         }));
         failure
     }
@@ -75,14 +79,23 @@ impl Failure {
     }
     fn diagnostic(&self, options: Option<&Options>) -> String {
         let primary = self.site.as_ref().map(|site| {
-            let path = options
-                .and_then(|o| o.modules.get(&site.module))
-                .and_then(|p| p.to_str());
+            let path = site.path.as_deref().and_then(Path::to_str).or_else(|| {
+                options
+                    .and_then(|o| {
+                        site.module
+                            .as_ref()
+                            .and_then(|module| o.modules.get(module))
+                    })
+                    .and_then(|p| p.to_str())
+            });
             // The loader reports original byte spans but not original line/column
             // coordinates on failure. Never reread files or invent coordinates.
             format!(
                 "{{\"module\":{},\"path\":{},\"start\":{},\"end\":{}}}",
-                quoted(&site.module),
+                site.module
+                    .as_deref()
+                    .map(quoted)
+                    .unwrap_or_else(|| "null".into()),
                 path.map(quoted).unwrap_or_else(|| "null".into()),
                 site.span.start,
                 site.span.end
@@ -111,8 +124,9 @@ impl From<compile::Error> for Failure {
             text: error.to_string(),
             site: error.module().map(|module| {
                 Box::new(SourceSite {
-                    module: module.into(),
+                    module: Some(module.into()),
                     span: error.span(),
+                    path: None,
                 })
             }),
             pointer: None,
@@ -133,7 +147,15 @@ impl From<interchange::Error> for Failure {
 }
 impl From<Diagnostic> for Failure {
     fn from(error: Diagnostic) -> Self {
-        Self::new(error.code, error.message)
+        let mut failure = Self::new(error.code, error.message);
+        failure.site = error.primary.map(|location| {
+            Box::new(SourceSite {
+                module: None,
+                span: location.span,
+                path: Some(location.path),
+            })
+        });
+        failure
     }
 }
 impl<E: std::fmt::Display> From<hierarchical::execution::SamplingError<E>> for Failure {
@@ -199,6 +221,7 @@ impl PreparedRequest {
 }
 enum PreparedIr {
     Raw(Box<RawSourceProposal>),
+    Ordinary(Box<SelectedOrdinaryProgram>),
     Hierarchy {
         proposal: Box<HierarchyProposal>,
         request: PreparedRequest,
@@ -209,13 +232,18 @@ impl PreparedIr {
     fn name(&self) -> &'static str {
         match self {
             Self::Raw(_) => "raw",
+            Self::Ordinary(_) => "raw",
             Self::Hierarchy { .. } => "hierarchy",
         }
     }
-    fn payload(&self) -> &[u8] {
+    fn payload(&self) -> Result<&[u8]> {
         match self {
-            Self::Raw(p) => p.payload(),
-            Self::Hierarchy { proposal, .. } => proposal.payload(),
+            Self::Raw(p) => Ok(p.payload()),
+            Self::Hierarchy { proposal, .. } => Ok(proposal.payload()),
+            Self::Ordinary(_) => Err(Failure::new(
+                "unsupported",
+                "portable ordinary nominal proposals require their complete typed request transport",
+            )),
         }
     }
 }
@@ -277,14 +305,49 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             ))
         })
         .collect::<Result<_>>()?;
-    let source = program
-        .instantiate_with_types(
+    let ordinary = program.requires_typed_ordinary_transport()
+        && options.ir_profile != IrProfile::Hierarchy
+        && options.request.is_none()
+        && options.provider.is_none();
+    let types = bindings(&program, &options.types)?;
+    let instantiation = if ordinary {
+        program.instantiate_ordinary_with_types(
             &options.entry,
-            bindings(&program, &options.types)?,
+            types,
             options.ns.clone(),
             operations,
         )?
-        .elaborate()?;
+    } else {
+        program.instantiate_with_types(&options.entry, types, options.ns.clone(), operations)?
+    };
+    if ordinary {
+        if options.command == "emit-proposal" {
+            return Err(Failure::new(
+                "unsupported",
+                "portable ordinary nominal proposals require their complete typed request transport",
+            ));
+        }
+        if options.basis.is_some() {
+            return Err(Failure::new(
+                "unsupported",
+                "--basis is quantum hierarchy input, not ordinary data",
+            ));
+        }
+        let compiled = instantiation.compile_ordinary_with_kernel(&native::Kernel::new(
+            kernel_path(options)?,
+            program.edition(),
+        ))?;
+        if matches!(options.command.as_str(), "run" | "sample")
+            && compiled.runtime_parameters() != 0
+        {
+            return Err(Failure::new(
+                "unsupported",
+                "Raw run/sample require zero runtime parameters; even a Unit parameter requires an explicit checked invocation",
+            ));
+        }
+        return Ok(PreparedIr::Ordinary(Box::new(compiled)));
+    }
+    let source = instantiation.elaborate()?;
     let mut source_budget =
         qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK);
     let source = if source.has_function_contracts() {
@@ -448,6 +511,34 @@ fn raw_execute(options: &Options, proposal: &RawSourceProposal, kernel: PathBuf)
     ))
 }
 
+fn ordinary_execute(options: &Options, source: &SelectedOrdinaryProgram) -> Result<String> {
+    let checked = source.program();
+    let result = match options.command.as_str() {
+        "check" => "{\"status\":\"checked\"}".into(),
+        "sample" => {
+            let seed = options.seed.expect("parsed sample seed");
+            let (shots, steps) = super::samples::collect(
+                checked,
+                options.shots.expect("parsed sample shots") as u64,
+                seed,
+            )?;
+            super::json::samples_json(&shots, seed, steps, ",")
+        }
+        _ => super::json::distribution_json(
+            run_closed(checked, SimulationLimits::default())
+                .map_err(super::json::simulation_failure)?,
+        )?,
+    };
+    let result = fields(
+        result,
+        &super::check_report::ArtifactReport::new(checked).json_fields()?,
+    );
+    Ok(fields(
+        result,
+        "\"verification\":{\"scope\":\"finite-ordinary-root-v2\",\"request_origin\":\"producer\",\"source_steps_checked\":false,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"",
+    ))
+}
+
 fn hierarchy_execute(
     options: &Options,
     proposal: &HierarchyProposal,
@@ -580,7 +671,7 @@ fn execute(options: &Options) -> Result<String> {
     let result = if emitted {
         super::artifacts::write_new(
             options.output.as_ref().expect("parsed output"),
-            prepared.payload(),
+            prepared.payload()?,
         )
         .map_err(|error| match error {
             super::artifacts::Failure::Source(error) => Failure::from(error),
@@ -591,6 +682,7 @@ fn execute(options: &Options) -> Result<String> {
         let kernel = kernel_path(options)?;
         match &prepared {
             PreparedIr::Raw(proposal) => raw_execute(options, proposal, kernel)?,
+            PreparedIr::Ordinary(source) => ordinary_execute(options, source)?,
             PreparedIr::Hierarchy {
                 proposal,
                 request,

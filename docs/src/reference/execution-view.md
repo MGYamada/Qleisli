@@ -71,7 +71,7 @@ The retained Rust program keeps the same graph and typed request objects.
 An inspection/caller packet or an old-mode retry cannot authorize it. This
 ordinary input/result checking supplies no original-body or numerical
 runtime preservation theorem; see the
-[ordinary-result boundary](production-boundary.md#closed-ordinary-result-requests).
+[ordinary-result boundary](production-boundary.md#ordinary-inputresult-requests).
 
 Errors contain only the header, `error`, the rejection code and final newline;
 they assert no successfully checked context. Hierarchy finite-decoder errors retain

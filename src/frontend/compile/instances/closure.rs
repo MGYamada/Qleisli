@@ -419,9 +419,7 @@ impl Compiler<'_> {
                         if let Some(error) = precise {
                             return Err(error);
                         }
-                        checked.map_err(|error| {
-                            source_error(self.project, &self.project.root, error.in_module(module))
-                        })?;
+                        checked.map_err(|error| self.originals.error(error.in_module(module)))?;
                         let replacement = &self
                             .concrete_context
                             .current

@@ -42,8 +42,8 @@ pub(in crate::frontend::compile) fn check_dormant_primitive_control(
                 .resolution
                 .try_declaration(owner)
                 .map(|declaration| declaration.name.0.as_str())
-                .filter(|module| compiler.project.modules.contains_key(*module))
-                .or_else(|| compiler.project.modules.keys().next().map(String::as_str))
+                .filter(|module| compiler.originals.module(module).is_some())
+                .or_else(|| compiler.originals.modules().next().map(|(name, _)| name))
                 .expect("checked source compiler contains an original module");
             let message = "primitive control lacks its original owner declaration";
             let mut work = compiler.work;
