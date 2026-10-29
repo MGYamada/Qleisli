@@ -34,6 +34,9 @@ private def interface (value : Interface) : Value :=
   record "carrier-interface" [.array (value.inputs.map owner),.array (value.outputs.map owner),
     .natural (match value.publicEffect with | .unitary => 0 | .iso => 1 | .observe => 2)]
 
+/-- One complete typed-interface view for the internal finite profiles. -/
+def typedInterface (value : Interface) : Value := interface value
+
 def description (checked : Checked) : Finite.WorkM Value := do
   let graph ← FiniteView.graph checked.artifact checked.result.root
   return record "finite-carrier-pure-v1" [graph,interface checked.request.attached,

@@ -196,9 +196,51 @@ pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
 ```
 
 Nominal selector execution and the selected specialization projection remain
-explicitly unsupported. Supporting the full twelve-joined-bit/64-label boundary
-still requires its checked restriction and arm-binding extension; the small
-slice does not replace that requirement. Common enum checks, native acceptance
+explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
+still requires original source binding and native integration of the restriction
+and arm checks below; the small slice does not replace that requirement. The internal finite restriction
+component now proves correspondence through actual contributions, accumulation,
+steps and complete circuit execution, and checks every ordered local sector.
+Its internal Raw component checks the original pure program and independently
+reconstructed trace, retaining every circuit event and proving that omitted
+identity reorders are literal identities. Returned physical port wires and
+order must match the original two input owners, including zero-width ports.
+Physical widths do not establish original nominal or source type identity.
+The enclosing QIRF component reuses fresh graph/root checks and proves exact
+original-program embedding into that pure Raw subject. It rejects observing,
+classical and branch instructions in this straight-line component.
+Its internal nominal component independently checks original type declarations
+and each ordered owner's code, then compares each active physical sector on
+that code with the exact requested logical map. Product labels retain their
+actual physical coordinates; padding sectors are checked separately and do not
+increase logical cardinality. The original requested-sector checks and the new
+computed-sector path share reconstruction; the refactor preserves all old
+results, errors and remaining work.
+The internal arm component reconstructs each original QIRF implementation's
+logical map and checks a separate controlled implementation against exact
+identity/arm sectors. One fresh graph checks the main plus all actual arm/control
+subjects named by the request. Root membership comes from those subjects;
+unrelated nodes still refuse, and root membership supplies no source usage.
+Ordinary requests keep their original main-only root and reachability rules.
+Every canonical logical ordinal binds its actual original arm, independently
+of written order. The source component binds original named functions to actual
+function-evidence entries and their fresh complete inputs/dependency snapshots.
+It preserves the original function bytes, full target types and public effects.
+An independent source metadata component now retains the actual qmatch token
+occurrence in its original function, complete named-arm parameter/result owner
+forests, canonical enum labels and original import/reexport paths. It rejects
+public observing/isometric arms and keeps an absent private annotation unknown;
+body checking must independently establish its inferred effect. Original
+quantum parameter patterns and structural let/tuple moves now identify operands
+in the complete live source frame. Quantum product owners remain atomic;
+ordinary tuples can group separate owners. A two-port subject retains the exact
+original parameter/result order and distinct logical identities at zero width.
+It cannot sharpen a public observing/isometric function to Unitary. Unknown
+prefix expressions refuse instead of contributing unproved type facts.
+General calls/control flow, source-to-Raw mapping, retained runtime data and
+native requests remain required before use. These components enable no new
+source or native route; general source binding, nominal execution and native/QDV
+integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

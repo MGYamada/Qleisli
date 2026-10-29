@@ -10,6 +10,7 @@ pub(super) enum Mode {
     Contract,
     CarrierPure,
     OrdinaryRoot,
+    QmatchSource,
     Hierarchy,
     HierarchyRequest,
     HierarchyFourier,
@@ -30,6 +31,7 @@ impl Mode {
             Self::Contract => "--qirf-contract",
             Self::CarrierPure => "--carrier-pure-check",
             Self::OrdinaryRoot => "--ordinary-root-check",
+            Self::QmatchSource => "--qmatch-source-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
             Self::HierarchyFourier => "--hierarchy-fourier-pending",
@@ -50,6 +52,7 @@ impl Mode {
             "--qirf-contract" => Ok(Self::Contract),
             "--carrier-pure-check" => Ok(Self::CarrierPure),
             "--ordinary-root-check" => Ok(Self::OrdinaryRoot),
+            "--qmatch-source-check" => Ok(Self::QmatchSource),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
             "--hierarchy-fourier-pending" => Ok(Self::HierarchyFourier),
@@ -67,7 +70,11 @@ impl Mode {
 
     fn status(self) -> &'static str {
         match self {
-            Self::Ordinary | Self::Contract | Self::CarrierPure | Self::OrdinaryRoot => "accepted",
+            Self::Ordinary
+            | Self::Contract
+            | Self::CarrierPure
+            | Self::OrdinaryRoot
+            | Self::QmatchSource => "accepted",
             Self::Hierarchy
             | Self::HierarchyRequest
             | Self::HierarchyFourier
@@ -91,6 +98,7 @@ impl Mode {
             | Self::QpeInstrument => scope != Scope::Caller,
             Self::CarrierPure
             | Self::OrdinaryRoot
+            | Self::QmatchSource
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
@@ -245,6 +253,7 @@ mod tests {
             Mode::Contract,
             Mode::CarrierPure,
             Mode::OrdinaryRoot,
+            Mode::QmatchSource,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
             Mode::HierarchyFourier,
@@ -262,6 +271,7 @@ mod tests {
                 mode,
                 Mode::CarrierPure
                     | Mode::OrdinaryRoot
+                    | Mode::QmatchSource
                     | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument

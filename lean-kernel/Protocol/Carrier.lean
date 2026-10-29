@@ -49,7 +49,9 @@ private def owner (value : Json) : Except String Owner := do
   let atoms ← (← field value "basis").getArr?
   if atoms.size > 128 then throw "carrier node capacity"
   let wires ← (← (← field port "wires").getArr?).toList.mapM number
-  return ⟨⟨← number (← field port "token"),wires,← number (← field port "bits")⟩,
+  let bits ← number (← field port "bits")
+  if bits > 255 then throw "carrier port width exceeds u8"
+  return ⟨⟨← number (← field port "token"),wires,bits⟩,
     ← atoms.toList.mapM atom⟩
 
 private def interface (value : Json) : Except String Interface := do
@@ -63,6 +65,10 @@ private def interface (value : Json) : Except String Interface := do
     | "observe" => pure .observe
     | _ => throw "unknown public carrier effect"
   return ⟨← inputs.toList.mapM owner,← outputs.toList.mapM owner,effect⟩
+
+/-- Shared exact typed-interface syntax; individual profiles retain their own
+semantic obligations. Parsing alone issues no accepted handle. -/
+def readInterface (value : Json) : Except String Interface := interface value
 
 structure Request where
   attached : Interface

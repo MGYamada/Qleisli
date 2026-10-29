@@ -18,13 +18,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 47)
-        self.assertEqual(result['public_boundaries'], 26)
+        self.assertEqual(result['groups'], 48)
+        self.assertEqual(result['public_boundaries'], 27)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 33)
-        self.assertEqual(result['native_modes'], 15)
+        self.assertEqual(result['production_paths'], 36)
+        self.assertEqual(result['native_modes'], 16)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -64,7 +64,7 @@ class ProductionCoverage(unittest.TestCase):
         for name in ('raw-proposal', 'finite-proposal', 'source-documentation',
                      'sized-proposal', 'host-execution', 'hierarchy-execution',
                      'foreign-export', 'checked-views', 'carrier-proposal', 'carrier-views',
-                     'ordinary-result-proposal', 'ordinary-result-views'):
+                     'ordinary-result-proposal', 'ordinary-result-views', 'qmatch-proposal', 'qmatch-views'):
             data = copy.deepcopy(self.data)
             row = next(row for row in data['paths'] if row['id'] == name)
             self.assertEqual(paths[name]['native_modes'], [])
@@ -121,6 +121,30 @@ class ProductionCoverage(unittest.TestCase):
             next(row for row in data['paths'] if row['id'] == 'ordinary-result-check')[field] = value
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'ordinary-result proof scope'):
                 coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_qmatch_component_requires_its_bound_mode_and_explicit_proof_gaps(self):
+        for field, value, message in (
+            ('native_modes', ['--qirf-native'], 'classification or binding'),
+            ('classification', 'untrusted-proposal', 'classification or binding'),
+            ('proof_scope', 'The original complete source function is proved', 'qmatch-component proof scope'),
+            ('gaps', 'All source/runtime and constitutional obligations are complete', 'qmatch-component proof scope'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'qmatch-check')[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, message):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_qmatch_and_ordinary_roots_keep_their_original_subject_obligations(self):
+        for path, marker in (
+            ('src/interchange/native/qmatch.rs', 'qmatch::complete(prepared.graph(), &request)?'),
+            ('src/interchange/mod.rs', 'roots.push(programs.len() + evidence)'),
+            ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootFromRoots artifact order attached required [artifact.root]'),
+            ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootWithRows artifact order attached required roots []'),
+            ('lean-kernel/Protocol/Qmatch.lean', 'Qirf.SourceSector.check artifact order'),
+            ('lean-kernel/Protocol/NativeContext/Bindings.lean', 'theorem run_qmatch_binding '),
+        ):
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed required original-subject binding')
 
     def test_carrier_requires_original_source_body_view_and_false_source_claim(self):
         for path, marker in (

@@ -1,4 +1,14 @@
 import QleisliKernel
+import QleisliKernel.Tests.FiniteRestriction
+import QleisliKernel.Tests.RawSector
+import QleisliKernel.Tests.QirfSector
+import QleisliKernel.Tests.ComputedSectors
+import QleisliKernel.Tests.NominalSector
+import QleisliKernel.Tests.SectorArms
+import QleisliKernel.Tests.SourceQuantum
+import QleisliKernel.Tests.SourceEntries
+import QleisliKernel.Tests.QuantumMoves
+import Protocol.ExecutionView.CheckedQmatch
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import QleisliKernel.Qirf.ControlAccess
@@ -1574,3 +1584,60 @@ example : Represents [] [.pair,.unit,.unit] (.pair .unit .unit) (.pair .unit .un
   Represents.copy (Represents.unit : Represents [] [.unit] .unit .unit)
 
 end OrdinaryValueKernelTests
+
+
+/-! Small reductions of the actual transport definitions. These are data and
+framing checks; complete source/body acceptance is checked separately.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace QleisliKernel.Tests.QmatchTransport
+open Lean Protocol
+
+private def port (bits : Nat) : Json := Json.mkObj
+  [("token",.num 10),("wires",.arr #[]),("bits",.num bits)]
+
+private def owner (bits : Nat) : Json := Json.mkObj
+  [("port",port bits),("basis",.arr #[Json.mkObj [("tag",.str "unit")]])]
+
+private def interface (bits : Nat) (effect : String := "unitary") : Json := Json.mkObj
+  [("inputs",.arr #[owner bits]),("outputs",.arr #[owner bits]),("public_effect",.str effect)]
+
+private def request (arms : List Json) (source : Json) (extras : List (String × Json) := []) : Json :=
+  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 1),
+    ("profile",.str Qmatch.profile),("attached",interface 0),("required",interface 0),
+    ("source",source),("arms",.arr arms.toArray)] ++ extras)
+
+private def source : Json := Json.mkObj
+  [("module",.str "same"),("function",.str "choose"),("offset",.num 137)]
+
+private def arm (evidence : Nat) : Json := Json.mkObj
+  [("evidence",.num evidence),("controlled",.num 2)]
+
+-- Port storage is u8, independently of the smaller semantic physical bounds.
+example : (Carrier.readInterface (interface 255)).isOk = true := by decide +kernel
+example : (Carrier.readInterface (interface 256)).isOk = false := by decide +kernel
+example : (Carrier.readInterface (interface 0 "observe")).isOk = true := by decide +kernel
+example : (Carrier.readInterface (interface 0 "iso")).isOk = false := by decide +kernel
+
+example : ((Qmatch.decode (request [arm 0] source)).run 1000).1.isOk = true := by decide +kernel
+example : ((Qmatch.decode (request [] source)).run 1000).1.isOk = false := by decide +kernel
+example : ((Qmatch.decode (request [arm 4294967296] source)).run 1000).1.isOk = false := by decide +kernel
+example : ((Qmatch.decode (request [arm 0] source [("accepted",.bool true)])).run 1000).1.isOk = false := by decide +kernel
+
+private def framedInput (scope : ExecutionView.Packet.Scope) : ExecutionView.Packet.Input :=
+  ⟨.e2026,scope,ByteArray.empty,ByteArray.empty,ByteArray.empty,[]⟩
+
+example : (ExecutionView.CheckedQmatch.input (framedInput .inspection)).run 1000 =
+    (.error .packet,1000) := rfl
+example : (ExecutionView.CheckedQmatch.input (framedInput .caller)).run 1000 =
+    (.error .packet,1000) := rfl
+
+-- An unframed view is refused before source checking, not accepted as a receipt.
+example : (ExecutionView.CheckedQmatch.check ByteArray.empty ByteArray.empty).run 1000 =
+    (.error .invalidView,1000) := rfl
+
+#print axioms Protocol.Qirf.readAll_original
+#print axioms Qmatch.check_binding
+#print axioms ExecutionView.CheckedQmatch.check_binding
+#print axioms ExecutionView.CheckedQmatch.Binding.root_safe
+#print axioms ExecutionView.CheckedQmatch.run_binding
+end QleisliKernel.Tests.QmatchTransport

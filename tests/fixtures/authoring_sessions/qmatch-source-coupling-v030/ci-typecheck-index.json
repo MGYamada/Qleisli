@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.qmatch-ci-typecheck-first-history",
+  "version": 1,
+  "archive": "ci-typecheck-first.tar.xz",
+  "bytes": 35316,
+  "sha256": "9dd1f04eca07c760897c6926c7df3802d9b158ca94ba3bb4d31c0551e80cd2c1",
+  "source_commit": "c6615d53f5e237725e21bee36156990653e7a72e",
+  "source_path": "lean-kernel/QleisliKernel/FiniteRestriction/Coordinates.lean",
+  "workflow_run": 40842433850,
+  "job": 123341798955,
+  "artifact_id": 12883433994,
+  "artifact_zip_sha256": "e185447f9e1c3b45165f82ebc17cafeac09cb8d21b3c558360b8d5cf96cd5360",
+  "scope": "Inert original failed hosted kernel build and separate explicit type-parameter repair. Complete actual compiler streams and source bytes retained; no archived command is executed.",
+  "records": {
+    "observed/kernel-build.command.json.txt": {
+      "bytes": 100,
+      "sha256": "65d3a856cf48597e9b94709e21f1b30afffd648039911a86c5a7e0bf3ee74bc9"
+    },
+    "observed/kernel-build.stderr.txt": {
+      "bytes": 20,
+      "sha256": "c4a27db198c4d8632369ee6102944ef46e83c20d685f7c17a6aaff9cfcfc710f"
+    },
+    "observed/kernel-build.stdout.txt": {
+      "bytes": 170072,
+      "sha256": "ebc3ac86874e079724c569c5497a42ab17aecb7fe814bd90b8d9a3c4daa211d4"
+    },
+    "observers/compile_qmatch_current_sources.py.txt": {
+      "bytes": 2027,
+      "sha256": "1ef9848c360d4ae48666034309d642c0e4659a517a32624e5d7cba60a7a16cd5"
+    },
+    "observers/run_sector_stage_port.py.txt": {
+      "bytes": 3688,
+      "sha256": "4905819613615aee372b6d3b95b6d63d06ed38dbb11416326f770eee03f073ad"
+    },
+    "original/Coordinates.lean.txt": {
+      "bytes": 7360,
+      "sha256": "0bacf8a0fa9c8175f10ad369fa1d394f41fbf0b441b264b76f9d739f68953128"
+    },
+    "repair/Coordinates.lean.txt": {
+      "bytes": 7388,
+      "sha256": "ab237e781de5cd12fd0ac85b5887d800a2265bc530913482ee291aad0ffb2181"
+    },
+    "repair/changed-sources-plan.json.txt": {
+      "bytes": 9329,
+      "sha256": "a41e6c9ebc40f1ca8644015b58381e7c9aec1337713fd7e2c9a0f3a5693a55be"
+    },
+    "repair/changed-sources-report.json.txt": {
+      "bytes": 265780,
+      "sha256": "07e887e0320fa9d74e81367715fde9a9e32c6b1ae367cdef0ece4107c0339783"
+    }
+  }
+}

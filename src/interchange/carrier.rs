@@ -199,7 +199,7 @@ impl Owner {
 }
 
 impl Interface {
-    fn encode(&self) -> Value {
+    pub(super) fn encode(&self) -> Value {
         Value::object([
             (
                 "inputs",
@@ -220,7 +220,7 @@ impl Interface {
         ])
     }
 
-    fn decode(value: &Value) -> Result<Self> {
+    pub(super) fn decode(value: &Value) -> Result<Self> {
         value.fields(&["inputs", "outputs", "public_effect"])?;
         let owners = |name| -> Result<Vec<Owner>> {
             let values = value.field(name)?.array()?;

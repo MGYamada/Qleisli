@@ -1,0 +1,22 @@
+{
+  "format": "qleisli.qmatch-ci-typecheck-local-validation",
+  "version": 1,
+  "original_hosted_build_exit_code": 1,
+  "repair": "Declare independent explicit type parameters under unchanged autoImplicit=false and warningAsError=true; no proof or capacity weakening.",
+  "changed_source_sha256": "ab237e781de5cd12fd0ac85b5887d800a2265bc530913482ee291aad0ffb2181",
+  "fresh_modules": 98,
+  "exit_code": 0,
+  "stable_inputs": true,
+  "child_peak_rss_bytes": 2905210880,
+  "command_seconds": 121.47620762517909,
+  "source_compilation_scope": "Compile exactly these current production sources in order, with strict package options and stable existing imports. No full dependency rebuild/replay, native attestation, proof evidence refresh, source/native activation or Issue completion follows from these component checks.",
+  "current_metadata": "Explicit bounded qmatch component, native mode, original graph bindings and unchanged gaps added to technical inventory/coverage; no protected guarantee or admission record refreshed.",
+  "pending": [
+    "Fresh canonical hosted both-package builds/audits/replay and checked five-record patch.",
+    "Actual fresh compiled native component checks, required same-commit CI and review.",
+    "Ordinary/selected quantum integration, general expression/owner mappings and arms, full12bit/64label source profile."
+  ],
+  "issue64": "OPEN; all8criteria unchecked",
+  "issue195": "OPEN",
+  "compiled_native_validated": false
+}

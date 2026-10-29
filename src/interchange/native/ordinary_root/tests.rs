@@ -110,8 +110,14 @@ fn reject_request_both_readers(kernel: &Kernel, artifact: &[u8], original: &Requ
     let subject = kernel.subject(artifact, Some(wrong)).unwrap();
     let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let decoded = Arc::new(
-        crate::interchange::decode_subject_with_types(&subject, &mut budget, None, Some(original))
-            .unwrap(),
+        crate::interchange::decode_subject_with_types(
+            &subject,
+            &mut budget,
+            None,
+            Some(original),
+            None,
+        )
+        .unwrap(),
     );
     let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root]).unwrap();
     let prepared = Prepared {
@@ -194,8 +200,14 @@ fn stale_actual_metadata_and_wrong_scope_refuse_without_fallback() {
     let subject = kernel.subject(proposed.artifact(), Some(&bytes)).unwrap();
     let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let decoded = Arc::new(
-        crate::interchange::decode_subject_with_types(&subject, &mut budget, None, Some(&request))
-            .unwrap(),
+        crate::interchange::decode_subject_with_types(
+            &subject,
+            &mut budget,
+            None,
+            Some(&request),
+            None,
+        )
+        .unwrap(),
     );
     let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root]).unwrap();
     let prepared = Prepared {
@@ -596,8 +608,14 @@ fn prepared_imports(kernel: &Kernel, artifact: &[u8], request: &Request) -> Prep
         .unwrap();
     let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let decoded = Arc::new(
-        crate::interchange::decode_subject_with_types(&subject, &mut budget, None, Some(request))
-            .expect("bounded proposed rows must reach the native coverage gate"),
+        crate::interchange::decode_subject_with_types(
+            &subject,
+            &mut budget,
+            None,
+            Some(request),
+            None,
+        )
+        .expect("bounded proposed rows must reach the native coverage gate"),
     );
     let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root]).unwrap();
     Prepared {

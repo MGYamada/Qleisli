@@ -6,6 +6,79 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an internal exact finite-sector restriction component for qmatch. Prove
+  correspondence with the actual contribution, accumulator, step and full
+  circuit execution; retain phases, axes, dependencies, errors and uncontrolled
+  conjugation scaffolding. Check every ordered local sector within unchanged
+  port, step and work limits. This enables no new source/native route; actual
+  Raw-root/arm binding, nominal integration and #64/#195 remain unfinished.
+- Bind the original pure Raw program, independently reconstructed trace and
+  ordered physical owner frame to the shared sector check. Retain every circuit
+  event and prove that omitted identity reorders are literal identities. Test
+  token/wire identities, phase, selector actions and zero-width owners with
+  retained kernel-checked theorems. Original source/arm and nominal binding,
+  and native execution integration remain unfinished.
+- Reuse fresh QIRF graph/root checking before sector validation and prove exact
+  original-program embedding into the pure Raw subject. Refuse observing,
+  classical and branch instructions in this straight-line component. Retain
+  small dependency/body/phase/adjoint and hidden-observation regressions as
+  checked theorems. Source-arm/nominal and native/QDV integration remain open.
+- Share original Raw preparation and physical-sector reconstruction between
+  requested and computed results, preserving the existing checkers' complete
+  work/error behavior. Bind fresh nominal declarations, per-owner codes and
+  original QIRF/Raw bodies to exact logical sector equations. Keep three-state
+  cardinality, noncontiguous product labels, physical padding and zero-width
+  owners distinct. Source-arm/capability and native/QDV integration remain open.
+- Reconstruct each original QIRF arm on its target code and check its separately
+  supplied controlled implementation against exact identity/arm sectors. One
+  fresh graph covers the main and all requested arm/control subjects; ordinary
+  requests retain main-only reachability and every source-usage check. Bind
+  canonical labels independently of written order. Original source-site/function
+  identities, public effects and native/QDV integration remain unfinished.
+- Read original qmatch byte occurrences, canonical enum labels and named arm
+  headers with the shared declaration/type/import readers. Retain exact owner
+  forests, public effects and source routes; reject stale nominal declarations,
+  incomplete/overlapping labels and public observing/isometric arms. Missing
+  private annotations remain unknown until body checking. Binding these reads
+  to the actual arm/control programs and native execution remains unfinished.
+- Bind original qmatch arm queries to actual function-evidence entries, derive
+  their implementation indices and include those entries in the same fresh
+  graph as the main and controlled bodies. Prove that every retained receipt
+  comes from its original complete input and dependency snapshot, and that
+  retaining an evidence table/index preserves the resolved source function
+  name. Check original function bytes and exact arm/control/main equations.
+  Original selector/target expression typing, source-body preservation, native
+  dispatch/QDV and the full #64/#195 scope remain unfinished.
+- Read qmatch operands through original quantum parameter patterns and checked
+  structural owner moves. Preserve complete target types, tuple shape, linear
+  identities and the caller frame, including separate zero-width owners.
+  Reject consumed/undefined names, duplicate owners and whole-subject public
+  effect sharpening. Unknown prefix expressions refuse. General calls/control
+  flow, full source-to-Raw mapping, native execution and #64/#195 remain open.
+- Add strict internal named-arm qmatch request data and a pure QLV3/QDV
+  comparison component. Retain the original request bytes, complete fresh graph,
+  ordered typed owner forests, source byte occurrence and actual evidence/control
+  indices. Derive a complete proposed order without relaxing ordinary reachability;
+  the independent source check still rejects unrelated nodes and rows. Align the
+  shared carrier port reader with Rust's u8 storage. These components activate no
+  native dispatcher or accepted source handle; Rust retained-view binding,
+  ordinary/selected integration and the full #64/#195 contracts remain open.
+- Pair the internal named-arm qmatch mode with an actual retained Rust QDV
+  walker and private component handle. Derive joint proposal roots from the
+  original main/evidence/control subjects while preserving ordinary graph
+  reachability; fresh Lean source relevance and complete comparison remain
+  mandatory. Bind native product, edition, mode, scope and request presence.
+  This component grants no ordinary/selected source execution, inverse/control
+  access, source-body preservation or full #64/#195 completion.
+- Fix strict compilation of the finite-sector coordinate proofs by declaring
+  their generic type parameters explicitly. Record the bounded qmatch component
+  and remaining source/native integration gaps in production coverage; preserve
+  the first failed hosted build separately from the fresh local source checks.
+- Exercise the named-arm native component with independent three/four-label
+  nominal controls, zero-width targets, exact eighth-root phases and reordered
+  source arms. Require the intended equation/request/QDV refusal stages for
+  twenty-four additional faults; retain the first unsupported circuit proposal
+  and incorrect scalar-coordinate expectation separately from their repairs.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

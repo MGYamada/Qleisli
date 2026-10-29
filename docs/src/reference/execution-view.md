@@ -43,7 +43,7 @@ hierarchy payload retains its original bridge encoding. These inner payloads
 are checked by the existing definitions. Neither is accepted as an unwrapped
 external request after cutover. No compatibility retry is permitted.
 
-All fifteen native modes use `qleisli.native-result 3`. Successful replies
+All sixteen native modes use `qleisli.native-result 3`. Successful replies
 contain, one per line: claim (`accepted`, `pending`, `engineering-checked` or
 `checked`), checked edition, compiled complete product version, canonical mode
 argument, checked scope, and the mode's unchanged payload fields. A final
@@ -555,6 +555,45 @@ The private report authorizes only the declared engineering inequality; it
 does not authorize simulation, source/export preservation, control, exact
 cleanup or resources, including at epsilon zero. Existing envelope/view work
 and size limits remain; the target profile separately limits bytes and gates.
+
+## Internal named-arm qmatch component
+
+The preparatory `Protocol.Qmatch` and `ExecutionView.CheckedQmatch` definitions
+use a strict internal `qleisli.qmatch-request` version 1 with profile
+`finite-source-qmatch-named-v1`. The exact request keys are `format`, `version`,
+`profile`, `attached`, `required`, `source` and `arms`. Both interfaces use the
+existing complete carrier codec. `source` contains the original `module`,
+`function` and UTF-8 byte `offset`; each arm contains an actual original
+function-`evidence` index and a separate `controlled` program index. Indices are
+u32, names contain 1–4096 UTF-8 bytes and the arm list contains 1–64 entries.
+The request contains no logical matrix, label list, graph roots or success flag.
+Fresh original-source reads determine labels, names, types, effects and graph
+subjects; the shared Raw/nominal equations still check the actual bodies.
+
+Its QDV record contains the tag followed by the complete fresh finite graph,
+attached interface, required interface, `["source-focus", module, function,
+offset]` and an ordered array of `["qmatch-arm", evidence, controlled]` records.
+The pure QLV3 definition requires execution scope and exact bytes. Inspection,
+caller and malformed frames refuse. The complete proposed graph order supplies
+no reachability permission; independent subject checking rejects unrelated nodes
+and source rows. Ordinary graph checking retains its main-only roots.
+
+The paired `--qmatch-source-check` mode requires this execution-only comparison
+and the current product/edition context. Rust's proposal roots come from the
+original main, actual requested evidence entries and controlled program indices.
+Its walker borrows the exact retained graph and typed request; it does not replay
+the QIRF JSON encoder. Fresh success retains those same allocations in a private
+`QmatchChecked` component. It has no public ordinary-program conversion,
+inverse/control capability or receipt constructor, and performs no old-mode retry.
+
+The current source component uses named
+arms and an internal canonical selector/target frame. That frame is not a new
+language restriction: other valid source orders, general expression/call frames,
+constructed/static arms, ordinary/selected quantum nominal execution and the
+complete twelve-bit profile still require integration. The shared conformance
+vectors separately test the retained Rust walker and fresh native comparison.
+They do not establish native executable attestation, source-body lowering
+preservation, ordinary/selected execution or Issue completion.
 
 ## Required production profiles
 

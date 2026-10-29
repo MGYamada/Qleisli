@@ -40,7 +40,7 @@ fn owner(view: &mut View<'_>, value: &Owner) -> Result<()> {
     })
 }
 
-fn interface(view: &mut View<'_>, value: &Interface) -> Result<()> {
+pub(super) fn interface(view: &mut View<'_>, value: &Interface) -> Result<()> {
     view.record("carrier-interface", 3, |w| {
         w.list(&value.inputs, owner)?;
         w.list(&value.outputs, owner)?;

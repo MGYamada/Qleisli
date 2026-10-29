@@ -112,8 +112,8 @@ def sourceUses (artifact : Artifact) (extra : List (String × String)) : Array B
 /-- Shared graph checking retains every actual receipt. The caller of the
 carrier-only variant binds each extra row to an independently read nominal
 origin; ordinary checking supplies no extra rows. All other gates are shared. -/
-def checkGraphReceiptsWithSources (artifact : Artifact) (order : Array Nat)
-    (extra : List (String × String)) : WorkM Slots := do
+def checkGraphReceiptsFromRoots (artifact : Artifact) (order : Array Nat)
+    (extra : List (String × String)) (roots : List Nat) : WorkM Slots := do
   guard ((← get) ≤ 10000000) .limit
   guard (artifact.programs.size + artifact.entries.size ≤ 65536 && artifact.sources.size ≤ 128) .limit
   guard (artifact.sources.all sourceValid && Raw.unique (artifact.sources.toList.map (·.1)))
@@ -130,7 +130,7 @@ def checkGraphReceiptsWithSources (artifact : Artifact) (order : Array Nat)
       let source := artifact.sources[index]?.getD ("","")
       source.1.utf8ByteSize + source.2.utf8ByteSize)).sum
   guard (identityBytes ≤ 1048576) .limit
-  let schedule ← lift (match Hierarchical.Graph.check (nodes artifact) [artifact.root] order with
+  let schedule ← lift (match Hierarchical.Graph.check (nodes artifact) roots order with
     | .ok schedule => .ok schedule
     | .error error => .error (if error.kind == .limit then .limit else .invalid))
   guard (schedule.stats.depth ≤ 32) .limit
@@ -138,6 +138,17 @@ def checkGraphReceiptsWithSources (artifact : Artifact) (order : Array Nat)
   let receipts ← order.toList.foldlM (checkNode artifact) (Array.replicate artifact.entries.size none)
   guard (receipts.all Option.isSome)
   return receipts
+
+/-- Ordinary requests keep exactly their original main-root reachability.
+Joint subjects must derive their roots from the actual checked request. -/
+def checkGraphReceiptsWithSources (artifact : Artifact) (order : Array Nat)
+    (extra : List (String × String)) : WorkM Slots :=
+  checkGraphReceiptsFromRoots artifact order extra [artifact.root]
+
+def checkGraphFromRoots (artifact : Artifact) (order : Array Nat)
+    (extra : List (String × String)) (roots : List Nat) : WorkM (List Dependency) := do
+  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots
+  return (before receipts).map Receipt.dependency
 
 /-- Ordinary compatibility wrapper: no typed request can relax this path. -/
 def checkGraphReceipts (artifact : Artifact) (order : Array Nat) : WorkM Slots :=
@@ -216,8 +227,8 @@ theorem fold_fresh (artifact : Artifact) (nodes : List Nat) (slots final : Slots
     obtain ⟨next,middle,checked,remaining⟩ := bind_success _ _ _ _ _ ok
     exact .cons _ _ _ _ _ (checkNode_fresh _ _ _ _ _ _ checked) (ih next middle remaining)
 
-theorem checkGraphReceipts_freshWithSources (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (slots : Slots)
-    (work left : Nat) (ok : (checkGraphReceiptsWithSources artifact order extra).run work = (.ok slots,left)) :
+theorem checkGraphReceiptsFromRoots_fresh (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (roots : List Nat) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok slots,left)) :
     CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
       slots.all Option.isSome = true := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
@@ -238,15 +249,21 @@ theorem checkGraphReceipts_freshWithSources (artifact : Artifact) (order : Array
   subst slots
   exact ⟨fold_fresh _ _ _ _ _ _ hf,(guard_success _ _ _ _ hg).1⟩
 
+theorem checkGraphReceipts_freshWithSources (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceiptsWithSources artifact order extra).run work = (.ok slots,left)) :
+    CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
+      slots.all Option.isSome = true := by
+  exact checkGraphReceiptsFromRoots_fresh artifact order extra [artifact.root] slots work left ok
+
 theorem checkGraphReceipts_fresh (artifact : Artifact) (order : Array Nat) (slots : Slots)
     (work left : Nat) (ok : (checkGraphReceipts artifact order).run work = (.ok slots,left)) :
     CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
       slots.all Option.isSome = true := by
   exact checkGraphReceipts_freshWithSources artifact order [] slots work left ok
 
-theorem checkGraphReceipts_scheduleWithSources (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (slots : Slots)
-    (work left : Nat) (ok : (checkGraphReceiptsWithSources artifact order extra).run work = (.ok slots,left)) :
-    ∃ schedule, Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule ∧
+theorem checkGraphReceiptsFromRoots_schedule (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (roots : List Nat) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok slots,left)) :
+    ∃ schedule, Hierarchical.Graph.check (nodes artifact) roots order = .ok schedule ∧
       schedule.stats.depth ≤ 32 := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
@@ -260,9 +277,15 @@ theorem checkGraphReceipts_scheduleWithSources (artifact : Artifact) (order : Ar
   obtain ⟨schedule,_,hs,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,hd,_⟩ := bind_success _ _ _ _ _ h
   have found := (lift_success _ _ _ _ hs).1
-  have present : Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule := by
-    cases hg : Hierarchical.Graph.check (nodes artifact) [artifact.root] order <;> simp_all
+  have present : Hierarchical.Graph.check (nodes artifact) roots order = .ok schedule := by
+    cases hg : Hierarchical.Graph.check (nodes artifact) roots order <;> simp_all
   exact ⟨schedule,present,of_decide_eq_true (guard_success _ _ _ _ hd).1⟩
+
+theorem checkGraphReceipts_scheduleWithSources (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (slots : Slots)
+    (work left : Nat) (ok : (checkGraphReceiptsWithSources artifact order extra).run work = (.ok slots,left)) :
+    ∃ schedule, Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule ∧
+      schedule.stats.depth ≤ 32 := by
+  exact checkGraphReceiptsFromRoots_schedule artifact order extra [artifact.root] slots work left ok
 
 theorem checkGraphReceipts_schedule (artifact : Artifact) (order : Array Nat) (slots : Slots)
     (work left : Nat) (ok : (checkGraphReceipts artifact order).run work = (.ok slots,left)) :
@@ -300,7 +323,7 @@ theorem checkGraph_projection (artifact : Artifact) (order : Array Nat) :
       let receipts ← order.toList.foldlM (checkNode artifact) (Array.replicate artifact.entries.size none)
       guard (receipts.all Option.isSome)
       return receipts.toList.map (fun receipt => (receipt.getD emptyReceipt).dependency)) := by
-  simp [checkGraph,checkGraphReceipts,checkGraphReceiptsWithSources,sourceUses,before,
+  simp [checkGraph,checkGraphReceipts,checkGraphReceiptsWithSources,checkGraphReceiptsFromRoots,sourceUses,before,
     List.map_map,Function.comp_def,-bind_pure_comp]
   rfl
 

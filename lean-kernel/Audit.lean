@@ -1,4 +1,13 @@
 import QleisliKernel
+import QleisliKernel.Tests.FiniteRestriction
+import QleisliKernel.Tests.RawSector
+import QleisliKernel.Tests.QirfSector
+import QleisliKernel.Tests.ComputedSectors
+import QleisliKernel.Tests.NominalSector
+import QleisliKernel.Tests.SectorArms
+import QleisliKernel.Tests.SourceQuantum
+import QleisliKernel.Tests.SourceEntries
+import QleisliKernel.Tests.QuantumMoves
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import Main

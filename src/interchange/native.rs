@@ -7,6 +7,7 @@
 mod binding;
 mod carrier;
 mod ordinary_root;
+mod qmatch;
 mod reporting;
 mod runtime;
 
@@ -14,6 +15,7 @@ mod runtime;
 mod recheck_tests;
 
 pub use carrier::CarrierChecked;
+pub use qmatch::QmatchChecked;
 pub(crate) use reporting::DecisionLog;
 pub use reporting::NativeDecisionSummary;
 

@@ -1,0 +1,141 @@
+{
+  "format": "qleisli.qmatch-source-operands-validation",
+  "version": 1,
+  "status": "local-component-checkpoint;full-kernel-Tests-and-audit-pass;not-native-activation-or-issue-completion",
+  "previous_commit": "ae3a924c8f8c897f74abbff9bfd35ffc1a8d2fed",
+  "native_activated": false,
+  "reports": [
+    {
+      "label": "source-operands-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-first/report.json",
+      "sha256": "618e5942911fcc16b9337565586a6e9b1b7fd584763dfcc270da6715b0ffedb1",
+      "exit_code": 1,
+      "seconds": 4.671449291985482,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 649494528
+    },
+    {
+      "label": "source-operands-effect-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-effect-first/report.json",
+      "sha256": "0667fa4d66754177f5555a4510d70a854dc9f5b76afbcb7fd53cab5b2c2fdd90",
+      "exit_code": 1,
+      "seconds": 0.6713753329822794,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 647659520
+    },
+    {
+      "label": "source-operands-equal-width-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-equal-width-first/report.json",
+      "sha256": "1da789046b2ddb540ab1182e14e62d8715126a7b7da0f84902cb21db4299bed9",
+      "exit_code": 1,
+      "seconds": 0.5057032909826376,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 646905856
+    },
+    {
+      "label": "source-operands-audit",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-audit/report.json",
+      "sha256": "eb716e505443dc3a273d62aea8ec2444be30ff4a92c7f71e4d22f3b36e39792d",
+      "exit_code": 1,
+      "seconds": 2.826793042011559,
+      "stable_inputs": true
+    },
+    {
+      "label": "source-operands-audit-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-audit-second/report.json",
+      "sha256": "cbd799eb1559764a57ebe164a6587704214cdd050b95ec12bdad670715d7c811",
+      "exit_code": 0,
+      "seconds": 2.157580541999778,
+      "stable_inputs": true
+    },
+    {
+      "label": "source-operands-aggregate-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-aggregate-second/report.json",
+      "sha256": "65cdc354611388c7130b5971b249f2664b47a8b9e080df325047b9c62a651a22",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 850886656
+    },
+    {
+      "label": "source-operands-final",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-final/report.json",
+      "sha256": "a9ff7493199ecc3a8076f85c366bdb1c6e844635909818bdcdbf6219348bc944",
+      "exit_code": 0,
+      "seconds": 3.023368666996248,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 651444224
+    },
+    {
+      "label": "source-evidence-final",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-evidence-final/report.json",
+      "sha256": "fd68034826da51ba92ce65775a6d219acb8a0bed0cdc0b049c534249bb8bf508",
+      "exit_code": 0,
+      "seconds": 1.6435182499990333,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 656359424
+    },
+    {
+      "label": "source-operands-effect-final",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-effect-final/report.json",
+      "sha256": "6109f5bf8d55daebf0b745248e1d103e439bc7abe15b43411983f1728384ea4a",
+      "exit_code": 0,
+      "seconds": 0.7981760000111535,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 645677056
+    },
+    {
+      "label": "source-operands-equal-width-final",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-equal-width-final/report.json",
+      "sha256": "9ab3c26ef30dbca154e97de0aa09b4d3becc811983ad783aacf0e3a58cc75dfe",
+      "exit_code": 0,
+      "seconds": 0.5570530419936404,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 649003008
+    },
+    {
+      "label": "source-operands-full-tests",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-operands-full-tests/report.json",
+      "sha256": "cf0fea333ea4c1fd0d001d6f2df898acf594f524aa961cc8a1c0511c3d80ca93",
+      "exit_code": 0,
+      "seconds": 202.01979670798755,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 2723659776
+    }
+  ],
+  "sources": {
+    "lean-kernel/QleisliKernel/Semantics/SourceOwners.lean": "4e5e265c2a54d8a00b8c82524d802ef4a0a948eddeb66c3f34120395cac42c7e",
+    "lean-kernel/QleisliKernel/SourceTypes/QuantumMoves.lean": "0992a949c608d12d33ab7add2f5f1b971792ae15f8786d1f3c98bb5201cdd8dd",
+    "lean-kernel/QleisliKernel/SourceTypes/QuantumOperands.lean": "e317c1510128af956b764e1dc30dca7979473124b9d1cf99fe2c8bacb3e4ac20",
+    "lean-kernel/QleisliKernel/Qirf/SourceSector.lean": "2dfb2a8c0177cf54a8ef8d08ef9645a3930e2aa208299e635f57fb30533af0aa",
+    "lean-kernel/QleisliKernel/Tests/QuantumMoves.lean": "b20f75e5c1dca94d8d2a6c5c0e53498bb135a6099d540ae21a5c9ccafa94adf8"
+  },
+  "results": {
+    "runtime": "34 observations:9 original structural frame cases,22 retained source/evidence cases,1 public Observe whole-subject refusal,2 equal-type zero-width owner observations. The escaped local name is an unsupported-prefix barrier, not a general block-scope theorem.",
+    "kernel": "12 small structural reductions and generic Move/owner-partition/source-coupling postconditions compile strictly.",
+    "audit": "20416kernel/transport declarations,1195pure/1223executable import modules;private/generated included;onlypropext,Classical.choice,Quot.sound.",
+    "policy": "249kernel/transport/test modules;no external Lake dependencies.",
+    "history": "195inert new members;7797109expandedB/79808storedB;all bytes/hash read back without execution.",
+    "full_tests": "PASS202.0198s;peak2723659776B;all current Lean source identities match the stable validation window. Stable imported products are not a fresh both-package replay/native attestation.",
+    "other": "Docs2724links/103anchors/388Leanroots;3 passive history checks;whitespace passes. Rust/MSRV not repeated because Rust/protocol are unchanged."
+  },
+  "pending": [
+    "General calls,allocation,control flow,full source expression typing and source-to-Raw mapping.",
+    "Ordinary/selected quantum nominal execution,native/QDV/retained Rust integration and full12joined-bit/64label qmatch.",
+    "General source-body lowering,native compilation/runtime/target correspondence remain separately disclosed proof gaps.",
+    "Both-package guarded canonical build/audit/replay/schema and six fixed protected comparisons NOT RUN;current evidence/inventory remain stale;no hash-only update.",
+    "Hosted current-head CI/review and per-criterion acceptance audit;#64 all8 criteria and #195 remainOPEN."
+  ],
+  "goal": {
+    "completed_applicable": 72,
+    "approved_exclusions": 2,
+    "total": 127,
+    "percent": 58.27,
+    "remaining_applicable": 53
+  },
+  "guard_results": {
+    "trusted_base": "e4e77ce7c0992cff61bb906d8f550f2f6917685d",
+    "constitution": "FAIL:stale source identity lean-kernel/QleisliKernel/Qirf/Checked.lean",
+    "inventory": "FAIL:frozen source lean-kernel/Audit.lean",
+    "handling": "No protected/current evidence hashes changed; guarded shared maintenance/replay/fixed comparisons remain required before promotion."
+  }
+}

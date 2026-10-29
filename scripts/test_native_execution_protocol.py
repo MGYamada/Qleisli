@@ -43,7 +43,7 @@ def inner(artifact, request=None):
 
 def check_response_contexts():
     """Synthetic framing negatives supplement, never replace, native decisions."""
-    assert len(MODES) == 13
+    assert len(MODES) == 16
     for mode, (claim, scopes) in MODES.items():
         for scope in scopes:
             frame = f'qleisli.native-result 3\n{claim}\n2026\n{VERSION}\n{mode}\n{scope}\n42\n'.encode()
@@ -106,13 +106,16 @@ class Probe:
         reply = parse_reply(result.stdout, edition=self.edition, product=VERSION,
                             mode=mode, scope=scope or 'inspection')
         if error:
-            assert result.returncode == 1 and reply.error == error, (mode, result)
+            expected = error if isinstance(error, tuple) else (error,)
+            assert result.returncode == 1 and reply.error in expected, (mode, result)
         else:
             assert result.returncode == 0 and reply.claim in ('accepted', 'pending'), (mode, result)
             assert reply.context.scope == scope, (scope, result)
             if reply.claim == 'accepted':
                 assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= 10_000_000, reply
-                assert reply.payload[1] == ('1' if mode == '--qirf-contract' else '0'), reply
+                requested = mode in ('--qirf-contract', '--carrier-pure-check',
+                                     '--ordinary-root-check', '--qmatch-source-check')
+                assert reply.payload[1] == ('1' if requested else '0'), reply
             else:
                 check_pending_payload(mode, reply.payload)
         return reply
@@ -185,6 +188,32 @@ def callers(probe):
         probe.check('--qirf-native', envelope('2026', original, graph, wrong, row['indices']), error='decoded_view')
 
 
+def qmatch(probe):
+    directory = ROOT / 'tests/fixtures/qmatch_v030'
+    rows = []
+    for name in ['execution-cases.json', 'nominal-execution-cases.json']:
+        cases = json.loads((directory / name).read_text())['cases']
+        assert len(cases) == 26
+        rows.extend(cases)
+    for row in rows:
+        original = inner(row['artifact'], row['request'])
+        graph = qdv(row['view'])
+        error = (None if row['accepted'] else 'decoded_view'
+                 if row['error'] == 'decodedView' else ('invalid_ir', 'contract', 'limit'))
+        if not row['accepted'] and 'native_code' in row:
+            assert row['native_code'] in ('equation', 'request', 'decodedView')
+            error = 'decoded_view' if row['native_code'] == 'decodedView' else 'contract'
+        probe.check('--qmatch-source-check', envelope('2026', original, graph),
+                    'execution', error=error)
+        if row['accepted']:
+            probe.check('--qmatch-source-check', envelope('2026', original), error='format')
+            probe.check('--qmatch-source-check', envelope('2026', original, graph, qdv([])),
+                        'caller', error='format')
+            probe.check('--qmatch-source-check', original, error='format')
+            probe.check('--qmatch-source-check', envelope('2026', original, b'QDV1'),
+                        'execution', error='format')
+
+
 def hierarchy(kernel, directory):
     probe = Probe(kernel, edition='2026')
     modes = ['--hierarchy-pending', '--hierarchy-request-pending', '--hierarchy-fourier-pending',
@@ -214,7 +243,8 @@ def main():
     finite(probe)
     contracts(probe)
     callers(probe)
-    print(f'QLV3 native finite/contract/caller checks: {probe.count} passed')
+    qmatch(probe)
+    print(f'QLV3 native finite/contract/caller/qmatch checks: {probe.count} passed')
 
 
 if __name__ == '__main__':

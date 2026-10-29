@@ -24,6 +24,7 @@ impl Kernel {
             &mut budget,
             None,
             Some(&request),
+            None,
         )?);
         let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
         let prepared = Prepared {

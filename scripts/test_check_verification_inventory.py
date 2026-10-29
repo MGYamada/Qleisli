@@ -207,6 +207,22 @@ class InventoryTests(unittest.TestCase):
         finally:
             path.write_text(original)
 
+    def test_qmatch_component_scope_and_failure_cannot_be_widened(self):
+        for field, value in (
+            ('binding', 'Source spelling proves the original function and all lowering'),
+            ('domain', 'All general qmatch source programs execute and QS is complete'),
+            ('encoding', 'An ordinary-mode success may authorize the source component'),
+            ('failure', 'A missing native checker may use cached acceptance'),
+        ):
+            self.data = copy.deepcopy(self.baseline)
+            next(row for row in self.data['boundaries'] if row['id'] == 'qmatch-component')[field] = value
+            with self.subTest(field=field):
+                self.bad('unreviewed qmatch-component boundary contract')
+
+    def test_qmatch_public_source_requires_its_distinct_boundary(self):
+        self.data['boundaries'] = [row for row in self.data['boundaries'] if row['id'] != 'qmatch-component']
+        self.bad('missing qmatch-component public boundary')
+
     def test_nominal_declaration_family_cannot_be_omitted(self):
         self.data['enums'] = [row for row in self.data['enums'] if row['name'] != 'TypeDeclKind']
         self.bad('unlisted public constructor family: TypeDeclKind')

@@ -97,4 +97,42 @@ def read (bytes : ByteArray) : QleisliKernel.Finite.WorkM (QleisliKernel.Qirf.Ar
     return (artifact,order)
   QleisliKernel.Finite.lift (parsed.mapError (fun _ => .invalid))
 
+/-- Propose a complete order for profiles with several independently checked
+subjects. This supplies no roots or source-usage authority: the pure profile
+must still derive its own actual subjects and reject every unrelated node.
+The ordinary reader above retains its original main-only computation. -/
+def readAll (bytes : ByteArray) : QleisliKernel.Finite.WorkM (QleisliKernel.Qirf.Artifact × Array Nat) := do
+  let (artifact,rootOrder) ← read bytes
+  QleisliKernel.Finite.exactWork (QleisliKernel.Exact.charge (1+artifact.programs.size+artifact.entries.size))
+  let parsed : Except String (QleisliKernel.Qirf.Artifact × Array Nat) := do
+    let nodes := QleisliKernel.Qirf.nodes artifact
+    let colors := rootOrder.foldl (fun colors node => colors.set! node 2) (Array.replicate nodes.size 0)
+    let (_,order) ← (List.range nodes.size).foldlM
+      (fun state node => visit nodes 33 node state) (colors,rootOrder)
+    return (artifact,order)
+  QleisliKernel.Finite.lift (parsed.mapError (fun _ => .invalid))
+
+theorem readAll_original (bytes : ByteArray) (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (work left : Nat)
+    (ok : (readAll bytes).run work = (.ok (artifact,order),left)) :
+    ∃ originalOrder after, (read bytes).run work = (.ok (artifact,originalOrder),after) := by
+  obtain ⟨decoded,a,original,h⟩ := QleisliKernel.Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨_,b,_,h⟩ := QleisliKernel.Finite.bind_success _ _ _ _ _ h
+  have parsed := (QleisliKernel.Finite.lift_success _ _ _ _ h).1
+  cases decoded with
+  | mk result rootOrder =>
+    have resultSame : artifact = result := by
+      dsimp only at parsed
+      cases scanned : ((List.range (QleisliKernel.Qirf.nodes result).size).foldlM
+        (fun state node => visit (QleisliKernel.Qirf.nodes result) 33 node state)
+        (rootOrder.foldl (fun colors node => colors.set! node 2)
+          (Array.replicate (QleisliKernel.Qirf.nodes result).size 0),rootOrder)) with
+      | error error => rw [scanned] at parsed; cases parsed
+      | ok value =>
+        rw [scanned] at parsed
+        have pair : (result,value.2) = (artifact,order) := Except.ok.inj parsed
+        exact (congrArg Prod.fst pair).symm
+    subst result
+    exact ⟨rootOrder,a,original⟩
+
 end QleisliKernel.Protocol.Qirf

@@ -46,14 +46,25 @@ def sourceNodes (attached required : Interface) : Nat :=
 
 /-- Charge the exact-row coverage comparisons before traversing them. Ordinary
 graph checking keeps its original zero-extra accounting and strict source use. -/
-def sourceRoot (artifact : Artifact) (order : Array Nat) (attached required : Interface) :
+def sourceRootWithRows (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (originalRows : List (String × String)) :
     WorkM Validity.Root := do
   exactWork (Exact.charge (4 * sourceNodes attached required + 5))
-  let extra := sourceRows attached required
+  let extra := sourceRows attached required ++ originalRows
   let bytes := (artifact.sources.toList.map fun row =>
     row.1.utf8ByteSize + row.2.utf8ByteSize).sum
   exactWork (Exact.charge ((bytes + artifact.sources.size + 1) * (extra.length + 1)))
-  Validity.checkRootWithSources artifact order extra
+  Validity.checkRootFromRoots artifact order extra roots
+
+/-- Extra rows must be derived and precharged by the enclosing independent
+source query. Existing carrier requests supply exactly the empty extension. -/
+def sourceRootFromRoots (artifact : Artifact) (order : Array Nat) (attached required : Interface) (roots : List Nat) :
+    WorkM Validity.Root :=
+  sourceRootWithRows artifact order attached required roots []
+
+def sourceRoot (artifact : Artifact) (order : Array Nat) (attached required : Interface) :
+    WorkM Validity.Root :=
+  sourceRootFromRoots artifact order attached required [artifact.root]
 
 structure Checked where
   root : Validity.Root
@@ -120,14 +131,29 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
     Exact.Matrix.compose checked.physical checked.inputCode a = (.ok result,b) ∧
     Exact.Matrix.compose checked.outputCode logical c = (.ok result,d)
 
+theorem sourceRootWithRows_result (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (originalRows : List (String × String)) (root : Validity.Root) (work left : Nat)
+    (ok : (sourceRootWithRows artifact order attached required roots originalRows).run work = (.ok root,left)) :
+    ∃ after, (Validity.checkRootFromRoots artifact order (sourceRows attached required ++ originalRows) roots).run after =
+      (.ok root,left) := by
+  obtain ⟨_,charged,_,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,after,_,checked⟩ := bind_success _ _ _ _ _ rest
+  exact ⟨after,checked⟩
+
+theorem sourceRootFromRoots_result (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (root : Validity.Root) (work left : Nat)
+    (ok : (sourceRootFromRoots artifact order attached required roots).run work = (.ok root,left)) :
+    ∃ after, (Validity.checkRootFromRoots artifact order (sourceRows attached required) roots).run after =
+      (.ok root,left) := by
+  simpa only [List.append_nil] using
+    sourceRootWithRows_result artifact order attached required roots [] root work left ok
+
 theorem sourceRoot_result (artifact : Artifact) (order : Array Nat) (attached required : Interface)
     (root : Validity.Root) (work left : Nat)
     (ok : (sourceRoot artifact order attached required).run work = (.ok root,left)) :
     ∃ after, (Validity.checkRootWithSources artifact order (sourceRows attached required)).run after =
       (.ok root,left) := by
-  obtain ⟨_,charged,_,rest⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,after,_,checked⟩ := bind_success _ _ _ _ _ rest
-  exact ⟨after,checked⟩
+  exact sourceRootFromRoots_result artifact order attached required [artifact.root] root work left ok
 
 theorem readOwner_conditions (owner : Owner) (code : Semantics.FiniteCarrier.Layout)
     (work left : Nat) (ok : (readOwner owner).run work = (.ok code,left)) :
