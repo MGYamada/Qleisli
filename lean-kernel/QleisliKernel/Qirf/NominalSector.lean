@@ -91,6 +91,18 @@ theorem checkLogicals_bound (inputCode outputCode : Matrix) (physical : List Mat
       (LogicalBinding inputCode outputCode physical)
       (checkLogical_bound inputCode outputCode physical) (labels.zip required) actual w₁ left h⟩
 
+structure Prepared where
+  ports : Ports
+  selectorLayout : Semantics.FiniteCarrier.Layout
+  targetLayout : Semantics.FiniteCarrier.Layout
+  selectorInCode : Matrix
+  targetInCode : Matrix
+  selectorOutCode : Matrix
+  targetOutCode : Matrix
+  root : Validity.Root
+  program : Semantics.Raw.Program
+  restriction : QleisliKernel.Raw.Sector.Retained
+
 structure Checked where
   ports : Ports
   selectorLayout : Semantics.FiniteCarrier.Layout
@@ -104,6 +116,16 @@ structure Checked where
   restriction : QleisliKernel.Raw.Sector.Retained
   logical : List Matrix
 
+def Checked.subject (checked : Checked) : Prepared :=
+  ⟨checked.ports,checked.selectorLayout,checked.targetLayout,checked.selectorInCode,
+    checked.targetInCode,checked.selectorOutCode,checked.targetOutCode,checked.root,
+    checked.program,checked.restriction⟩
+
+def Prepared.finish (subject : Prepared) (logical : List Matrix) : Checked :=
+  ⟨subject.ports,subject.selectorLayout,subject.targetLayout,subject.selectorInCode,
+    subject.targetInCode,subject.selectorOutCode,subject.targetOutCode,subject.root,
+    subject.program,subject.restriction,logical⟩
+
 def shape (attached required : Interface) : Bool :=
   attached.inputs.length == 2 && attached.outputs.length == 2 &&
     required.inputs.length == 2 && required.outputs.length == 2
@@ -112,11 +134,9 @@ def sameTypes (required : Interface) (p : Ports) : Bool :=
   required.publicEffect == .unitary && p.selectorIn.basis == p.selectorOut.basis &&
     p.targetIn.basis == p.targetOut.basis
 
-/-- Each owner code retains its own existing six-bit profile. The selector's
-logical label list, rather than its physical width, selects the active sectors.
-All physical padding sectors are still reconstructed and checked unitary. -/
-def check (artifact : Artifact) (order : Array Nat) (attached required : Interface)
-    (logical : List Matrix) : WorkM Checked := do
+/-- Fresh typed original subject, reusable by arm checks without another graph pass. -/
+def prepareFromRoots (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) : WorkM Prepared := do
   guard (shape attached required) .request
   SourceTypes.checkMany artifact.sources (forests attached required)
   let p ← lift (readOption (ports required))
@@ -129,7 +149,7 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
   exactWork (Exact.charge (Carrier.sourceNodes attached required + 1))
   guard (attached == required) .request
   guard (sameTypes required p) .request
-  let root ← Carrier.sourceRoot artifact order attached required
+  let root ← Carrier.sourceRootFromRoots artifact order attached required roots
   guard (root.program.inputs == attached.inputs.map (·.port) &&
     root.program.outputs == attached.outputs.map (·.port.token)) .request
   exactWork (Exact.charge (attached.outputs.length * root.checked.state.quantum.live.length + 1))
@@ -137,11 +157,20 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
   exactWork (Exact.charge (root.program.operations.length + 1))
   let program ← lift (readOption (Sector.project root.program))
   let restriction ← QleisliKernel.Raw.Sector.read root.dependencies [.bits sl.bits] [.bits tl.bits] program
-  let logical ← checkLogicals ti to restriction.sectors sl.labels logical
-  return ⟨p,sl,tl,si,ti,so,to,root,program,restriction,logical⟩
+  return ⟨p,sl,tl,si,ti,so,to,root,program,restriction⟩
 
-structure Postcondition (artifact : Artifact) (order : Array Nat)
-    (attached required : Interface) (logical : List Matrix) (checked : Checked) : Prop where
+def prepare (artifact : Artifact) (order : Array Nat) (attached required : Interface) : WorkM Prepared :=
+  prepareFromRoots artifact order attached required [artifact.root]
+
+def check (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (logical : List Matrix) : WorkM Checked := do
+  let subject ← prepare artifact order attached required
+  let actual ← checkLogicals subject.targetInCode subject.targetOutCode
+    subject.restriction.sectors subject.selectorLayout.labels logical
+  return subject.finish actual
+
+structure PreparedPostconditionFromRoots (artifact : Artifact) (order : Array Nat)
+    (attached required : Interface) (roots : List Nat) (checked : Prepared) : Prop where
   ownerCounts : shape attached required = true
   sourceTypes : ∃ a b, (SourceTypes.checkMany artifact.sources (forests attached required)).run a = (.ok (),b)
   ports : ports required = some checked.ports
@@ -153,7 +182,7 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
   targetLayout : Semantics.FiniteCarrier.layout checked.ports.targetIn.basis = some checked.targetLayout
   interface : attached = required
   sameTypes : sameTypes required checked.ports = true
-  root : ∃ work, Validity.SourceRootPostcondition artifact order (Carrier.sourceRows attached required) checked.root work
+  root : ∃ work, Validity.SourceRootPostconditionFromRoots artifact order (Carrier.sourceRows attached required) roots checked.root work
   inputs : checked.root.program.inputs = attached.inputs.map (·.port)
   outputs : checked.root.program.outputs = attached.outputs.map (·.port.token)
   live : attached.outputs.all (fun owner => checked.root.checked.state.quantum.live.contains owner.port) = true
@@ -161,15 +190,24 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
   pureEffect : checked.program.effect = .unitary
   restriction : QleisliKernel.Raw.Sector.ReadBinding checked.root.dependencies
     [.bits checked.selectorLayout.bits] [.bits checked.targetLayout.bits] checked.program checked.restriction
+
+
+abbrev PreparedPostcondition (artifact : Artifact) (order : Array Nat)
+    (attached required : Interface) (checked : Prepared) : Prop :=
+  PreparedPostconditionFromRoots artifact order attached required [artifact.root] checked
+
+structure Postcondition (artifact : Artifact) (order : Array Nat)
+    (attached required : Interface) (logical : List Matrix) (checked : Checked) : Prop
+    extends PreparedPostcondition artifact order attached required checked.subject where
   logicalCount : logical.length = checked.selectorLayout.labels.length
   logical : QleisliKernel.Exact.ListRel
     (LogicalBinding checked.targetInCode checked.targetOutCode checked.restriction.sectors)
     (checked.selectorLayout.labels.zip logical) checked.logical
 
-theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
-    (logical : List Matrix) (checked : Checked) (work left : Nat)
-    (ok : (check artifact order attached required logical).run work = (.ok checked,left)) :
-    Postcondition artifact order attached required logical checked := by
+theorem prepareFromRoots_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (checked : Prepared) (work left : Nat)
+    (ok : (prepareFromRoots artifact order attached required roots).run work = (.ok checked,left)) :
+    PreparedPostconditionFromRoots artifact order attached required roots checked := by
   obtain ⟨_,w₁,hshape,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hsource,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨p,w₃,hp,h⟩ := bind_success _ _ _ _ _ h
@@ -189,7 +227,6 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required
   obtain ⟨_,w₁₇,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨program,w₁₈,hprogram,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨restriction,w₁₉,hrestriction,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨actual,w₂₀,hlogical,h⟩ := bind_success _ _ _ _ _ h
   have same := (pure_success _ _ _ _ h).1
   subst checked
   have selected : ports required = some p := by
@@ -198,18 +235,36 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required
   have projected : Sector.project root.program = some program := by
     have found := (lift_success _ _ _ _ hprogram).1
     cases entry : Sector.project root.program <;> simp_all [readOption]
-  have rootCheck := Carrier.sourceRoot_result artifact order attached required root w₁₂ w₁₃ hr
+  have rootCheck := Carrier.sourceRootFromRoots_result artifact order attached required roots root w₁₂ w₁₃ hr
   obtain ⟨rootWork,rootCheck⟩ := rootCheck
   have portEq := (guard_success _ _ _ _ hports).1
   simp only [Bool.and_eq_true,beq_iff_eq] at portEq
   have original := Sector.project_bound _ _ projected
-  have logicalEq := checkLogicals_bound ti to restriction.sectors sl.labels logical actual w₁₉ w₂₀ hlogical
   exact ⟨(guard_success _ _ _ _ hshape).1,⟨w₁,w₂,hsource⟩,selected,
     ⟨w₃,w₄,hsi⟩,⟨w₄,w₅,hti⟩,⟨w₅,w₆,hso⟩,⟨w₆,w₇,hto⟩,
     (Carrier.readOwner_conditions _ _ _ _ hsl).1,(Carrier.readOwner_conditions _ _ _ _ htl).1,
     beq_iff_eq.mp (guard_success _ _ _ _ hi).1,(guard_success _ _ _ _ htypes).1,
-    ⟨rootWork,Validity.checkRootWithSources_postcondition _ _ _ _ _ _ rootCheck⟩,
+    ⟨rootWork,Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ rootCheck⟩,
     portEq.1,portEq.2,(guard_success _ _ _ _ hlive).1,original.1,original.2,
-    QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hrestriction,logicalEq.1,logicalEq.2⟩
+    QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hrestriction⟩
+
+
+theorem prepare_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (checked : Prepared) (work left : Nat)
+    (ok : (prepare artifact order attached required).run work = (.ok checked,left)) :
+    PreparedPostcondition artifact order attached required checked := by
+  exact prepareFromRoots_bound artifact order attached required [artifact.root] checked work left ok
+
+theorem check_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (logical : List Matrix) (checked : Checked) (work left : Nat)
+    (ok : (check artifact order attached required logical).run work = (.ok checked,left)) :
+    Postcondition artifact order attached required logical checked := by
+  obtain ⟨subject,w₁,hsubject,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨actual,w₂,hlogical,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst checked
+  have facts := checkLogicals_bound subject.targetInCode subject.targetOutCode
+    subject.restriction.sectors subject.selectorLayout.labels logical actual w₁ w₂ hlogical
+  exact ⟨prepare_bound artifact order attached required subject work w₁ hsubject,facts.1,facts.2⟩
 
 end QleisliKernel.Qirf.NominalSector

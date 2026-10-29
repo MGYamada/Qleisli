@@ -125,7 +125,8 @@ theorem case22 : (outcome {artifact original with sources := #[("unrelated","pub
       (QleisliKernel.Finite.exactWork (QleisliKernel.Exact.charge 0)).run work = (.ok (),work) := rfl
   cases valid : QleisliKernel.Qirf.sourceValid ("unrelated","pub fn unused(){}") <;>
     simp [outcome,outcomeWith,QleisliKernel.Qirf.Sector.check,
-      Validity.checkRoot,Validity.checkRootWithSources,QleisliKernel.Qirf.checkGraphReceiptsWithSources,
+      Validity.checkRoot,Validity.checkRootWithSources,Validity.checkRootFromRoots,
+      QleisliKernel.Qirf.checkGraphReceiptsFromRoots,
       QleisliKernel.Finite.bind_run,QleisliKernel.Qirf.sourceUses,artifact,
       guarded,budget,chargeZero,valid,size] <;> decide +kernel
 

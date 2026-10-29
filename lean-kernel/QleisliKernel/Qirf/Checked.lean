@@ -83,15 +83,20 @@ def sourcesUsedWithSources (artifact : Qirf.Artifact) (extra : List (String × S
 /-- The same actual graph, original root and independent event reader. Only
 source-row coverage is parameterized; the carrier profile derives exact rows
 from checked original nominal declarations rather than a supplied flag. -/
-def checkRootWithSources (artifact : Qirf.Artifact) (order : Array Nat)
-    (extra : List (String × String)) : WorkM Root := do
-  let receipts ← checkGraphReceiptsWithSources artifact order extra
+def checkRootFromRoots (artifact : Qirf.Artifact) (order : Array Nat)
+    (extra : List (String × String)) (roots : List Nat) : WorkM Root := do
+  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots
   let dependencies := (before receipts).map Semantics.ObservingFunction.Receipt.dependency
   guard (sourcesUsedWithSources artifact extra)
   let program ← lift (readOption artifact.programs[artifact.root]?)
   let checked ← Raw.Observation.verify dependencies program
   guard (portInterfaceValid artifact program) .request
   return ⟨receipts,dependencies,program,checked⟩
+
+/-- Existing requests retain exactly the original main-root subject. -/
+def checkRootWithSources (artifact : Qirf.Artifact) (order : Array Nat)
+    (extra : List (String × String)) : WorkM Root :=
+  checkRootFromRoots artifact order extra [artifact.root]
 
 /-- Ordinary checking retains strict evidence-only source use. -/
 def checkRoot (artifact : Qirf.Artifact) (order : Array Nat) : WorkM Root :=

@@ -196,9 +196,9 @@ pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
 ```
 
 Nominal selector execution and the selected specialization projection remain
-explicitly unsupported. Supporting the full twelve-joined-bit/64-label boundary
-still requires its checked restriction and arm-binding extension; the small
-slice does not replace that requirement. The internal finite restriction
+explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
+still requires original source binding and native integration of the restriction
+and arm checks below; the small slice does not replace that requirement. The internal finite restriction
 component now proves correspondence through actual contributions, accumulation,
 steps and complete circuit execution, and checks every ordered local sector.
 Its internal Raw component checks the original pure program and independently
@@ -216,6 +216,15 @@ actual physical coordinates; padding sectors are checked separately and do not
 increase logical cardinality. The original requested-sector checks and the new
 computed-sector path share reconstruction; the refactor preserves all old
 results, errors and remaining work.
+The internal arm component reconstructs each original QIRF implementation's
+logical map and checks a separate controlled implementation against exact
+identity/arm sectors. One fresh graph checks the main plus all actual arm/control
+subjects named by the request. Root membership comes from those subjects;
+unrelated nodes still refuse, and root membership supplies no source usage.
+Ordinary requests keep their original main-only root and reachability rules.
+Every canonical logical ordinal binds its actual original arm, independently
+of written order. Original source-site/function identities and public-effect
+binding remain required before native/source qmatch execution is enabled.
 These components enable no new source or native route: original source/arm,
 capability, nominal execution and native/QDV integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
