@@ -1,0 +1,78 @@
+{
+  "format": "qleisli.qmatch-nominal-local-validation",
+  "version": 1,
+  "previous_commit": "bcad522f57dd06a86d7567fa7ba61da98c81dc2b",
+  "reports": [
+    {
+      "label": "qmatch-nominal-context-first",
+      "sha256": "4831c6e094a84fc1bd3bb2ce4bf9359333600c02e4272ebb3c86db42f999372b",
+      "exit_code": 1,
+      "seconds": 9.389191916998243,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1309261824
+    },
+    {
+      "label": "qmatch-nominal-context-third",
+      "sha256": "4625dd7f9ba0e5ccb94f89997d4872ead31bdb10daf523b06d2a731b1c0ccd03",
+      "exit_code": 1,
+      "seconds": 7.34518887498416,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1315831808
+    },
+    {
+      "label": "qmatch-nominal-context-fourth",
+      "sha256": "ca136435553ffea30d319e9fd297a2ec643020f1951e0e6782d922593bd737dc",
+      "exit_code": 0,
+      "seconds": 6.618936541985022,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1315356672
+    },
+    {
+      "label": "qmatch-nominal-context-diagnostic",
+      "sha256": "e8ebe19142c14b44029e74ab6aec9650ab96efe0e78bd2904adb19441c9f5440",
+      "exit_code": 0,
+      "seconds": 6.38639037500252,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1316667392
+    },
+    {
+      "label": "qmatch-nominal-maintained-first",
+      "sha256": "0800536b05d2e59da7058f0d5a61ea574ffafbb43c582d46f46c1c63750b771f",
+      "exit_code": 0,
+      "seconds": 11.058226958004525,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1318895616
+    },
+    {
+      "label": "qmatch-nominal-retained-rust-first",
+      "sha256": "d9fc812ab9ebdb86a089493fd2d54af9ee811b04f034bf46ace39108fc0ca85c",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1464156160
+    },
+    {
+      "label": "qmatch-nominal-retained-rust-msrv",
+      "sha256": "839a3f750167cf9ae29b307f983ba82eb8744893a4f391ce0b11184ee4b5df81",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1493417984
+    }
+  ],
+  "passing_scope": "Actual maintained pure context runs33shape cases and both26-case scalar/nominal groups:4accepted exactphasecontrols and48refusals. New nominal group requires10equation,12request and2decodedView refusals; no limit or parser refusal substitutes.",
+  "retained_view": "Normal1.99.1 andMSRV1.85.0 each pass3Rustretained-view cases covering4independent positive views,2context,1ordinarygraph,1reporting tests.2fresh-native tests stay deliberately unselected,not passed.",
+  "live_fixture": {
+    "path": "tests/fixtures/qmatch_v030/nominal-execution-cases.json",
+    "sha256": "03326965f476c6da8c1a70db698fd1e007af86a879d513ccf4375989ed2e0759"
+  },
+  "mathematical_oracle": "E embeds each declared ordinal j into physical |j>; targetUnit phases retain their exact scalar. Written order differs from ordinal order. Eighth-root QDV coordinates use sqrt(2)/2 on both real/imaginary radicals, not a zeta-power coordinate.",
+  "source_scope": "Two desired .qli texts are supplied as original source data to the component; no ordinary project/selected source execution or full source-body lowering theorem was established.",
+  "quantum_size": "Two selector bits and zero-width target; controlled implementations each oneBit. No maximum-size case or changed capacity.",
+  "compiled_native_validated": false,
+  "issue64": "OPEN;all8criteria unchecked",
+  "issue195": "OPEN",
+  "pending": [
+    "Fresh compiled-native checks and full current-head CI/review.",
+    "Canonical guarded both-package proof maintenance and exact five-record patch.",
+    "Ordinary/selected quantum integration,general source/call/owner mappings and arms,full12bit/64label contract; broader source/runtime/target/constitutional obligations remain open."
+  ]
+}

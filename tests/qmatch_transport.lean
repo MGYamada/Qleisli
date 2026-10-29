@@ -4,9 +4,9 @@ import Protocol.NativeContext.Bindings
 
 /-! Independent shared data expectations for the actual named-arm protocol.
 The QLV3 comparison and context-dispatch definitions run directly; fresh native
-compilation and Rust accepted-handle tests remain separate obligations. No maximal quantum
-system is generated; the two accepted controls use Unit owners and one Bit for
-the separately checked controlled implementation.
+compilation and Rust accepted-handle tests remain separate obligations. The
+scalar controls retain Unit owners; nominal three/four-label controls use two
+selector bits and a zero-width target. Each controlled arm uses one Bit.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 open Lean QleisliKernel QleisliKernel.Protocol.ExecutionView
 
@@ -45,7 +45,7 @@ private def shapes (path : System.FilePath) : IO Unit := do
     unless actual == expected do throw (IO.userError ("qmatch data mismatch: " ++ name))
   IO.println "passed 33 shared Rust/Lean request shape expectations; parsing confers no acceptance"
 
-private def execution (path : System.FilePath) : IO Unit := do
+private def execution (path : System.FilePath) (precise : Bool := false) : IO Unit := do
   let rows ← cases path
   unless rows.size == 26 do throw (IO.userError "qmatch execution inventory changed")
   let mut accepts := 0
@@ -102,6 +102,14 @@ private def execution (path : System.FilePath) : IO Unit := do
         | "native",.native _ => true
         | _,_ => false
       unless correct do throw (IO.userError ("qmatch wrong refusal stage: " ++ name ++ ": " ++ reprStr error))
+      if precise then
+        let code ← IO.ofExcept ((row.getObjVal? "native_code") >>= Json.getStr?)
+        let correct := match code,error with
+          | "equation",.native .equation => true
+          | "request",.native .request => true
+          | "decodedView",.decodedView => true
+          | _,_ => false
+        unless correct do throw (IO.userError ("qmatch wrong exact refusal: " ++ name ++ ": " ++ reprStr error))
       refusals := refusals+1
   unless accepts == 2 && refusals == 24 do throw (IO.userError "qmatch coverage changed")
   IO.println "passed 2 exact phase controls and 24 QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate"
@@ -110,3 +118,5 @@ def main (args : List String) : IO Unit := do
   let [shapePath,executionPath] := args | throw (IO.userError "expected qmatch shape and execution fixtures")
   shapes shapePath
   execution executionPath
+  let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
+  execution (parent / "nominal-execution-cases.json") true

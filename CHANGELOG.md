@@ -74,6 +74,11 @@ development milestones from the scope of their evidence.
   their generic type parameters explicitly. Record the bounded qmatch component
   and remaining source/native integration gaps in production coverage; preserve
   the first failed hosted build separately from the fresh local source checks.
+- Exercise the named-arm native component with independent three/four-label
+  nominal controls, zero-width targets, exact eighth-root phases and reordered
+  source arms. Require the intended equation/request/QDV refusal stages for
+  twenty-four additional faults; retain the first unsupported circuit proposal
+  and incorrect scalar-coordinate expectation separately from their repairs.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

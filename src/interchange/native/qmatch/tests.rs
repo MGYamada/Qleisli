@@ -4,10 +4,24 @@ use super::*;
 use crate::interchange::{execution_view, json};
 
 fn cases() -> json::Value {
-    json::parse(include_bytes!(
+    let scalar = json::parse(include_bytes!(
         "../../../../tests/fixtures/qmatch_v030/execution-cases.json"
     ))
-    .unwrap()
+    .unwrap();
+    let nominal = json::parse(include_bytes!(
+        "../../../../tests/fixtures/qmatch_v030/nominal-execution-cases.json"
+    ))
+    .unwrap();
+    let rows = scalar
+        .field("cases")
+        .unwrap()
+        .array()
+        .unwrap()
+        .iter()
+        .chain(nominal.field("cases").unwrap().array().unwrap())
+        .cloned()
+        .collect();
+    json::Value::object([("cases", json::Value::Array(rows))])
 }
 
 fn proposal(row: &json::Value) -> (Arc<Subject>, Request) {
@@ -47,13 +61,14 @@ fn actual_retained_graph_and_caches_match_both_independent_exact_phase_views() {
         assert!(Arc::ptr_eq(&subject, &prepared.subject));
         let actual = qmatch::complete(prepared.graph(), &request).unwrap();
         assert_eq!(actual, expected(row));
-        assert_eq!(prepared.decoded.evidence.len(), 1);
-        assert_eq!(prepared.decoded.programs.len(), 3);
+        assert_eq!(prepared.decoded.evidence.len(), request.arms.len());
+        assert_eq!(prepared.decoded.programs.len(), 1 + 2 * request.arms.len());
         views.push(actual);
         count += 1;
     }
-    assert_eq!(count, 2);
+    assert_eq!(count, 4);
     assert_ne!(views[0], views[1]);
+    assert_ne!(views[2], views[3]);
 }
 
 #[test]

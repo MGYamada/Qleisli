@@ -115,3 +115,26 @@ root checks reused import products and did not establish that full recompilation
 The technical inventory records the bounded component and its remaining gaps.
 Canonical both-package proof maintenance, native execution and required CI
 remain separate from these component observations; neither Issue is closed.
+
+The [nominal first history](nominal-first.tar.xz), [index](nominal-index.json)
+and [current checks](nominal-validation.json) retain informed three/four-label
+sources and independently authored exact phase/QDV expectations. Their two-bit
+selectors retain a distinct zero-width Unit target and reordered written arms.
+The first physical diagonal proposal acts on selector axes and meets the
+component's explicit unsupported-step barrier. A separately proposed controlled
+scalar decomposition preserves the same intended diagonal action.
+
+The first four-label QDV oracle incorrectly uses a zeta-power coordinate for
+the eighth-root scalar. Its actual `decodedView` refusal is retained. The
+separate repair follows the specified `a+b sqrt(2)+i(c+d sqrt(2))` coordinates:
+both radical coefficients are one half. This is an oracle correction, not a
+relaxation of the native comparison. All first compiler streams and source
+objects remain inert; tool-only observer setup failures are transcriptions.
+
+Current pure context checks and normal/MSRV retained-data tests cover four
+positive controls in total and the 24 new nominal refusals. Ten reach exact
+equation failure, twelve request failure and two stale-view failure; a work
+limit or an earlier parser barrier cannot replace those expected stages.
+Two conditional compiled-native Rust tests remain unexecuted locally. This
+does not establish ordinary project/selected quantum execution, a source-body
+preservation theorem, the full twelve-bit profile or Issue completion.

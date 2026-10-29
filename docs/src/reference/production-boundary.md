@@ -196,6 +196,16 @@ theorem, external schema, inverse/control capability or new guarantee follows.
 
 ### Named-arm qmatch component requests
 
+Shared conformance cases cover three- and four-label nominal selectors on two
+physical bits with a distinct zero-width Unit target, reordered written arms
+and exact relative phases. The three-state code leaves its padding label
+outside the logical interface. Literal retained-view expectations include
+the four dyadic coordinates of an eighth-root phase. Phase, control-polarity
+and evidence faults must reach the equation gate; original nominal/arm/owner
+substitutions reach the request gate, and stale compared output reaches QDV
+refusal. These component checks do not supply ordinary source execution or
+the full twelve-bit profile.
+
 `Kernel::check_qmatch_source` invokes the execution-only internal
 `--qmatch-source-check` mode. The [request and QDV schema](execution-view.md#internal-named-arm-qmatch-component)
 bind both complete typed interfaces, the original source byte occurrence and

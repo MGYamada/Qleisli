@@ -189,14 +189,20 @@ def callers(probe):
 
 
 def qmatch(probe):
-    path = ROOT / 'tests/fixtures/qmatch_v030/execution-cases.json'
-    rows = json.loads(path.read_text())['cases']
-    assert len(rows) == 26
+    directory = ROOT / 'tests/fixtures/qmatch_v030'
+    rows = []
+    for name in ['execution-cases.json', 'nominal-execution-cases.json']:
+        cases = json.loads((directory / name).read_text())['cases']
+        assert len(cases) == 26
+        rows.extend(cases)
     for row in rows:
         original = inner(row['artifact'], row['request'])
         graph = qdv(row['view'])
         error = (None if row['accepted'] else 'decoded_view'
                  if row['error'] == 'decodedView' else ('invalid_ir', 'contract', 'limit'))
+        if not row['accepted'] and 'native_code' in row:
+            assert row['native_code'] in ('equation', 'request', 'decodedView')
+            error = 'decoded_view' if row['native_code'] == 'decodedView' else 'contract'
         probe.check('--qmatch-source-check', envelope('2026', original, graph),
                     'execution', error=error)
         if row['accepted']:

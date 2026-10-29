@@ -28,6 +28,9 @@ NATIVE_BINDING_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-cou
 CI_TYPECHECK = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-first.tar.xz"
 CI_TYPECHECK_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-index.json"
 CI_TYPECHECK_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-validation.json"
+NOMINAL = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-first.tar.xz"
+NOMINAL_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-index.json"
+NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-validation.json"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -217,6 +220,43 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads((ROOT / NATIVE_BINDING_VALIDATION).read_text())
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["goal"]["issue195"], "OPEN")
+
+
+    def test_nominal_first_proposals_and_precise_refusals_remain_separate(self):
+        index = json.loads((ROOT / NOMINAL_INDEX).read_text())
+        packed = (ROOT / NOMINAL).read_bytes()
+        self.assertLessEqual(len(packed), 1024 * 1024)
+        self.assertEqual(len(packed), index["bytes"])
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), index["sha256"])
+        with lzma.open(io.BytesIO(packed)) as stream:
+            data = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(data), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+            for member in archive:
+                self.assertTrue(member.isfile())
+                self.assertFalse(PurePosixPath(member.name).is_absolute())
+                self.assertNotIn("..", PurePosixPath(member.name).parts)
+                self.assertNotIn(member.name, members)
+                self.assertIn(member.name, index["records"])
+                content = archive.extractfile(member).read()
+                self.assertEqual(len(content), index["records"][member.name]["bytes"])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index["records"][member.name]["sha256"])
+                members[member.name] = content
+        self.assertEqual(set(members), set(index["records"]))
+        self.assertEqual(len(members), 72)
+        for label in ["qmatch-nominal-context-first", "qmatch-nominal-context-third"]:
+            self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 1)
+        self.assertIn(b"Finite.Error.invalid", members["observations/qmatch-nominal-context-first/stderr.txt"])
+        self.assertIn(b"Gate.Error.decodedView", members["observations/qmatch-nominal-context-third/stderr.txt"])
+        self.assertEqual(json.loads(members["observations/qmatch-nominal-maintained-first/report.json.txt"])["exit_code"], 0)
+        diagnostics = members["observations/qmatch-nominal-context-diagnostic/stdout.txt"]
+        self.assertEqual(diagnostics.count(b"Finite.Error.equation"), 10)
+        self.assertEqual(diagnostics.count(b"Finite.Error.request"), 12)
+        self.assertEqual(diagnostics.count(b"Gate.Error.decodedView"), 2)
+        current = json.loads((ROOT / NOMINAL_VALIDATION).read_text())
+        self.assertFalse(current["compiled_native_validated"])
+        self.assertEqual(current["issue195"], "OPEN")
 
 
 if __name__ == "__main__":
