@@ -31,6 +31,39 @@ CI_TYPECHECK_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupl
 NOMINAL = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-first.tar.xz"
 NOMINAL_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-index.json"
 NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-validation.json"
+BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
+OWNER_FLOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-first.tar.xz"
+OWNER_FLOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-index.json"
+
+
+def bounded_history(archive_path, index_path):
+    """Read inert member bytes only; never extract or replay saved commands."""
+    index = json.loads(index_path.read_text())
+    if index['archive'] != archive_path.name:
+        raise ValueError('history archive name differs')
+    packed = archive_path.read_bytes()
+    if (len(packed) > 1024 * 1024 or len(packed) != index['bytes']
+            or hashlib.sha256(packed).hexdigest() != index['sha256']):
+        raise ValueError('history archive identity/capacity differs')
+    decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=64 * 1024 * 1024)
+    expanded = decoder.decompress(packed, max_length=32 * 1024 * 1024 + 1)
+    if len(expanded) > 32 * 1024 * 1024 or not decoder.eof or decoder.unused_data:
+        raise ValueError('incomplete, trailing or oversized history')
+    members = {}
+    with tarfile.open(fileobj=io.BytesIO(expanded)) as archive:
+        for entry in archive:
+            name = PurePosixPath(entry.name)
+            if (not entry.isfile() or name.is_absolute() or '..' in name.parts
+                    or entry.name in members or entry.name not in index['records']):
+                raise ValueError('unlisted, duplicate or nonregular history member')
+            content = archive.extractfile(entry).read()
+            row = index['records'][entry.name]
+            if len(content) != row['bytes'] or hashlib.sha256(content).hexdigest() != row['sha256']:
+                raise ValueError('history member identity differs')
+            members[entry.name] = content
+    if set(members) != set(index['records']):
+        raise ValueError('history member missing')
+    return members
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -221,6 +254,57 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["goal"]["issue195"], "OPEN")
 
+
+    def test_complete_body_failures_and_remaining_native_obligations_survive(self):
+        directory = ROOT / BODY_ROOT
+        index = json.loads((directory / 'body-index.json').read_text())
+        packed = (directory / 'body-first.tar.xz').read_bytes()
+        self.assertLessEqual(len(packed), 1024 * 1024)
+        self.assertEqual(len(packed), index['bytes'])
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), index['sha256'])
+        with lzma.open(io.BytesIO(packed)) as stream:
+            expanded = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(expanded), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(expanded)) as archive:
+            for entry in archive:
+                self.assertTrue(entry.isfile())
+                self.assertFalse(PurePosixPath(entry.name).is_absolute())
+                self.assertNotIn('..', PurePosixPath(entry.name).parts)
+                self.assertNotIn(entry.name, members)
+                self.assertIn(entry.name, index['records'])
+                content = archive.extractfile(entry).read()
+                self.assertEqual(len(content), index['records'][entry.name]['bytes'])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index['records'][entry.name]['sha256'])
+                members[entry.name] = content
+        self.assertEqual(set(members), set(index['records']))
+        self.assertEqual(len(members), 151)
+        failed = json.loads(members['observations/qmatch-complete-body-runtime-first/report.json.txt'])
+        passed = json.loads(members['observations/qmatch-complete-body-runtime-second/report.json.txt'])
+        self.assertEqual(failed['exit_code'], 1)
+        self.assertIn(b'Gate.Error.decodedView', members['observations/qmatch-complete-body-runtime-first/stderr.txt'])
+        self.assertEqual(passed['exit_code'], 0)
+        self.assertIn(b'4 exact controls and 8 QLV3', members['observations/qmatch-complete-body-runtime-second/stdout.txt'])
+        current = json.loads((directory / 'body-validation.json').read_text())
+        self.assertFalse(current['compiled_native_validated'])
+        self.assertEqual(current['issue195'], 'OPEN')
+
+    def test_raw_owner_counterexample_and_matching_permutation_remain_distinct(self):
+        directory = ROOT / BODY_ROOT
+        members = bounded_history(ROOT / OWNER_FLOW_ARCHIVE, ROOT / OWNER_FLOW_INDEX)
+        self.assertEqual(len(members), 118)
+        first = members['observations/qmatch-raw-return-owner-swap-first/stderr.txt']
+        second = members['observations/qmatch-raw-return-owner-swap-second/stderr.txt']
+        self.assertIn(b'Gate.Error.decodedView', first)
+        self.assertIn(b'qmatch original bytes/acceptance mismatch', second)
+        current = json.loads(members['observations/qmatch-raw-owner-flow-permutation-context-first/report.json.txt'])
+        self.assertEqual(current['exit_code'], 0)
+        self.assertTrue(current['stable_inputs'])
+        self.assertIn(b'5 exact controls and 9 QLV3',
+                      members['observations/qmatch-raw-owner-flow-permutation-context-first/stdout.txt'])
+        validation = json.loads((directory / 'owner-flow-validation.json').read_text())
+        self.assertFalse(validation['compiled_native_validated'])
+        self.assertEqual(validation['issue195'], 'OPEN')
 
     def test_nominal_first_proposals_and_precise_refusals_remain_separate(self):
         index = json.loads((ROOT / NOMINAL_INDEX).read_text())

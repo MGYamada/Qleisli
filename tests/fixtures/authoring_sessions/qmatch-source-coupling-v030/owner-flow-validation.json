@@ -1,0 +1,105 @@
+{
+  "format": "qleisli.qmatch-raw-owner-local-validation",
+  "version": 1,
+  "previous_commit": "b68c5b58deb681d28a27dd778ab1481478abb3e3",
+  "reports": [
+    {
+      "label": "qmatch-raw-return-owner-swap-first",
+      "report_sha256": "0d785e8d4f0c18e1f5f175ee516151c57fcf3c706d3c763ed675caff3bf0e1dd",
+      "exit_code": 1,
+      "seconds": 11.094294624985196,
+      "stable_inputs": true
+    },
+    {
+      "label": "qmatch-raw-return-owner-swap-second",
+      "report_sha256": "0e2fcd314967dd40c1b82e8286e2eaa97e7c69f848be6376853f9d6f8c18bbe7",
+      "exit_code": 1,
+      "seconds": 11.699040958017576,
+      "stable_inputs": true
+    },
+    {
+      "label": "qmatch-raw-owner-flow-production-first",
+      "report_sha256": "ac3d241042a90517cd6da969319b986a8ff6b716b176b30fb6b107ed387264fb",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 623443968
+    },
+    {
+      "label": "qmatch-raw-owner-flow-production-second",
+      "report_sha256": "831ef57f7c92d1db181579f7a2ec72a7c68855f0b8bc4852feb0e988e4e16399",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 633241600
+    },
+    {
+      "label": "qmatch-raw-owner-flow-integration-first",
+      "report_sha256": "916aadd0650e79b7e478bd5cbff084ec6bf29b21a384b59a8a0fc1cc410cff4e",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 674070528
+    },
+    {
+      "label": "qmatch-raw-owner-flow-integration-second",
+      "report_sha256": "b44656f855677e6d4d78d1acdfc39a37245e23087910a9d8388c0bb18ccd7326",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 800997376
+    },
+    {
+      "label": "qmatch-raw-owner-flow-audit-first",
+      "report_sha256": "275572d5896ae43f3135599aa5922aff837b9624bbeec44bc0596267844f15d5",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 903249920
+    },
+    {
+      "label": "qmatch-raw-owner-flow-context-first",
+      "report_sha256": "9e042729fc23b03f9e872b96a0d47d51e62f3289d35312363774b6028b00e6b6",
+      "exit_code": 0,
+      "seconds": 11.827195749996463,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1319010304
+    },
+    {
+      "label": "qmatch-raw-owner-flow-permutation-first",
+      "report_sha256": "b93f9494ec8740a0b31130c84f5604206684b313ea3e799a775a49585c5fdcc3",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 902283264
+    },
+    {
+      "label": "qmatch-raw-owner-flow-permutation-context-first",
+      "report_sha256": "55430460461981b382b561e3af90af9ae9cecb2771a6d749c4b4ba103bde1db6",
+      "exit_code": 0,
+      "seconds": 11.8784244999988,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1319698432
+    },
+    {
+      "label": "qmatch-raw-owner-flow-rust-first",
+      "report_sha256": "247657ffafe098d4fba42fc870742e7c69885c6ed6a9c3feca48e9eff6207a33",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1396408320
+    },
+    {
+      "label": "qmatch-raw-owner-flow-rust-msrv-first",
+      "report_sha256": "d54087eaa9ec35a042dea1272634ca243a1887305789a93317d9873138d98360",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1482293248
+    }
+  ],
+  "passing_scope": "18 small kernel owner-transport reductions and actual compiled audit; current pure context33shapes,9exactcontrols,57precise refusals; normal1.99.1/MSRV1.85.0 seven focused Rust tests each with9literal actual retained views. Two fresh-native Rust tests remain deliberately unselected locally.",
+  "representation": "Source logical roles and complete basis trees are opaque leaves. Run seeds from original Raw input order/ports; only its own joins build cached pair widths. No producer role table/cache supplies acceptance. The enclosing independent typed/Raw/sector checks remain required.",
+  "live_fixture": {
+    "path": "tests/fixtures/qmatch_v030/body-execution-cases.json",
+    "sha256": "e509a95e948d5e078e1899a72293970c3e55cac37711d423014c39f8b4f6be97"
+  },
+  "quantum_size": "Existing two-bit nominal selector controls and zero-width target;new permutation controls have no physical qubits. No maximum case.",
+  "compiled_native_validated": false,
+  "proof_records": "STALE and unchanged; real canonical maintenance is still required.",
+  "issue64": "OPEN;all8criteria unchecked",
+  "issue195": "OPEN",
+  "pending": "Canonical both-package guarded proof maintenance, freshly compiled native checks, full current-head CI/review and general typed source/call/arm/owner mappings, normal/selected quantum execution and full12bit/64label contract remain required. No new guarantee or broader source/runtime/target/constitutional discharge."
+}

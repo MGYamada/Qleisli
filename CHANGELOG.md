@@ -79,6 +79,16 @@ development milestones from the scope of their evidence.
   source arms. Require the intended equation/request/QDV refusal stages for
   twenty-four additional faults; retain the first unsupported circuit proposal
   and incorrect scalar-coordinate expectation separately from their repairs.
+- Bind the named-arm component's ordered Raw outputs to the complete structural
+  source return. Retain renaming and tuple moves, distinct zero-width owner
+  identities and the actual returned order; refuse ignored observing suffixes,
+  lost/duplicated owners and an unswapped Raw proposal for a reordered result.
+  Other valid Raw mappings and general source/arm lowering remain unfinished.
+- Check original Raw owner transport through joins, splits and owner-moving
+  operations against the complete source return. Empty wire lists do not erase
+  logical owner order: mismatched Raw returns refuse, while a matching source
+  and Raw zero-width permutation succeeds. Atomic-owner refinements and general
+  source/call/arm lowering remain required for the full language integration.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

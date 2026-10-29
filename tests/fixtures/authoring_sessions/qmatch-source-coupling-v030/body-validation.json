@@ -1,0 +1,102 @@
+{
+  "format": "qleisli.qmatch-whole-body-local-validation",
+  "version": 1,
+  "previous_commit": "f74bd2fbe9d588abf7dc6081c629c889e8ca29be",
+  "reports": [
+    {
+      "label": "qmatch-whole-body-cli-first",
+      "report_sha256": "ba4dbd351a0a31093833bee90f42f35df9722f77ca93c28a6cc117c52fadecee"
+    },
+    {
+      "label": "qmatch-whole-body-component-observed-first",
+      "report_sha256": "dfb29dd9881e4f05588a726a8f5b2c2e1cd6bbfdea1880ef2fd8938d2b627575",
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1302233088
+    },
+    {
+      "label": "qmatch-whole-body-read-observed-first",
+      "report_sha256": "ba6b8c22f0ed87cb85d67aea18c9e9b13a2a4549558de72741c4042c32105b92",
+      "exit_code": 0,
+      "seconds": 8.062151749996701,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1261502464
+    },
+    {
+      "label": "qmatch-whole-body-production-first",
+      "report_sha256": "40878d2b1bc52cd4d21f189df8a1957c9f24eeedc3437b83edf4bdc7dd6033d0",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 636207104
+    },
+    {
+      "label": "qmatch-whole-body-production-second",
+      "report_sha256": "85a3c69ea996943284f3082de65f1a20e16854484c6204b0750011b232b43dd7",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 650854400
+    },
+    {
+      "label": "qmatch-whole-body-integration-first",
+      "report_sha256": "f638d5ade09cceacd0963d98097987e708cb407572bdf147391360cab27fa651",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 802340864
+    },
+    {
+      "label": "qmatch-whole-body-integration-second",
+      "report_sha256": "2e150d4bd5f2b2f9705e6ac7c6765aa0722699dff1dd63655a4493213925186f",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 968097792
+    },
+    {
+      "label": "qmatch-complete-body-runtime-first",
+      "report_sha256": "199619882248015b9335d767b2c9b235fe1def1e22d6e360c99ea39aada4edf8",
+      "exit_code": 1,
+      "seconds": 12.273237124987645,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1319288832
+    },
+    {
+      "label": "qmatch-complete-body-runtime-second",
+      "report_sha256": "beb5614f8c93d8a55c7b19977b8e9190ce0bcc36dc160ae032cb4ec61cc3bbf9",
+      "exit_code": 0,
+      "seconds": 6.320499583001947,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1318567936
+    },
+    {
+      "label": "qmatch-complete-body-rust-first",
+      "report_sha256": "ed505c44e49b334d7c0155d89f8e23799754eb3459a2ea860c1c4a86bb92dccf",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1469595648
+    },
+    {
+      "label": "qmatch-complete-body-rust-msrv-first",
+      "report_sha256": "1a6851592ff5061c1d4e43adf63c5c39ba2acf82a86d986ba16b2e665ad7e306",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1433174016
+    },
+    {
+      "label": "qmatch-complete-body-audit-first",
+      "report_sha256": "f3855eaa28c2423768c097172babad920686b632b1044b73ef685db049d6ee4d",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 902807552
+    }
+  ],
+  "passing_scope": "17 small kernel reductions; fresh changed-module compilation and compiled declaration audit; maintained pure QLV3:33 shapes,8 accepted exact controls,56 exact refusals. Normal/MSRV Rust:7 focused tests each,8 actual independently expected retained views;2 native tests deliberately unselected locally.",
+  "source_mapping": "Complete structural return order is retained. The existing ordered Raw frame requires source order[0,1]; a matching reordered Raw implementation remains pending.",
+  "quantum_size": "Zero-width source owners; existing nominal controls use two selector bits and zero-width target. No maximum-size case.",
+  "live_fixture": {
+    "path": "tests/fixtures/qmatch_v030/body-execution-cases.json",
+    "sha256": "c73365d97cbd852b082dd0423bd2ca1936b46d42e3144d9fe913d91768f17d36"
+  },
+  "compiled_native_validated": false,
+  "proof_records": "STALE: canonical both-package proof maintenance is required for the new source closure.",
+  "issue64": "OPEN; all eight criteria unchecked",
+  "issue195": "OPEN",
+  "pending": "Actual compiled native checks, canonical protected proof maintenance, full current-head CI/review and ordinary/selected quantum integration, general mappings/arms, full12bit/64label scope and source/runtime/target preservation remain unfinished."
+}

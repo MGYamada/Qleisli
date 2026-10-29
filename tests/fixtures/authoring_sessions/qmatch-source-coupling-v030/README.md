@@ -138,3 +138,48 @@ limit or an earlier parser barrier cannot replace those expected stages.
 Two conditional compiled-native Rust tests remain unexecuted locally. This
 does not establish ordinary project/selected quantum execution, a source-body
 preservation theorem, the full twelve-bit profile or Issue completion.
+
+The [complete-body first history](body-first.tar.xz), [index](body-index.json)
+and [local validation](body-validation.json) retain both original project groups,
+actual common CLI diagnostics and the original private component's acceptance
+of an observing suffix. That component supplied no ordinary source handle or
+pure source label. The first `measure_z(Unit)` tail is a type error; the separate
+discard/replacement tail reaches the public Unitary versus Observe effect error.
+
+The structural repair reads the complete suffix and final expression, retaining
+renamed owners, tuple shape and actual return order. A legal reordered result
+cannot reuse the unswapped Raw subject, even for two identical zero-width types.
+Four exact controls and eight request-stage refusals run through the maintained
+pure context; seventeen small kernel reductions cover return and shape invariants.
+Normal/MSRV Rust checks compare eight independently expected retained views.
+
+First failures remain separate: the reserved Lean identifier, missing `Except`
+equality instances and stale source text in an evidence-identity QDV expectation.
+An earlier malformed source-focus expectation was repaired before execution.
+The archive retains all original sources and streams passively. Fresh compiled
+native checks, guarded canonical proof maintenance, full CI/review, matching
+reordered Raw implementations and general source/arm execution remain pending.
+#64 keeps all eight criteria unchecked and #195 remains open.
+
+The [Raw owner first history](owner-flow-first.tar.xz),
+[index](owner-flow-index.json) and [validation](owner-flow-validation.json)
+retain the zero-width Raw-return substitution against the earlier complete-body
+candidate. Its first QDV mutation changes the wrong program field and reaches
+the actual decoded-view refusal. A separate correct mutation supplies a complete
+view and unexpectedly accepts; the failing expectation and original source stay
+unchanged. Both inline observers lack a separately saved wrapper; their actual
+Lean commands, stable input hashes and complete streams are retained.
+
+The repair derives opaque logical roles from original Raw input order, explicit
+joins/splits and owner-moving operations, then compares the actual output tokens
+with the complete source return. It rejects the mismatched zero-width return
+and accepts a matching source/Raw permutation. Eighteen small kernel reductions,
+the compiled declaration audit, current pure-context controls and normal/MSRV
+retained-data checks pass. The first unavailable width function/custom recursor
+and separate guard-decidability error remain rejected compiles. No proposed
+role/cache, noncomputable override or unsafe helper supplies acceptance.
+
+Other atomic-owner refinements, allocation/release and general source/call/arm
+mappings still need their checked rules. Fresh native execution, canonical
+both-package proof maintenance and full candidate CI/review remain pending.
+These observations complete neither #64/#195 nor broader source preservation.
