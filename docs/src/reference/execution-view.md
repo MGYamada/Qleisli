@@ -556,6 +556,37 @@ does not authorize simulation, source/export preservation, control, exact
 cleanup or resources, including at epsilon zero. Existing envelope/view work
 and size limits remain; the target profile separately limits bytes and gates.
 
+## Internal named-arm qmatch component
+
+The preparatory `Protocol.Qmatch` and `ExecutionView.CheckedQmatch` definitions
+use a strict internal `qleisli.qmatch-request` version 1 with profile
+`finite-source-qmatch-named-v1`. The exact request keys are `format`, `version`,
+`profile`, `attached`, `required`, `source` and `arms`. Both interfaces use the
+existing complete carrier codec. `source` contains the original `module`,
+`function` and UTF-8 byte `offset`; each arm contains an actual original
+function-`evidence` index and a separate `controlled` program index. Indices are
+u32, names contain 1–4096 UTF-8 bytes and the arm list contains 1–64 entries.
+The request contains no logical matrix, label list, graph roots or success flag.
+Fresh original-source reads determine labels, names, types, effects and graph
+subjects; the shared Raw/nominal equations still check the actual bodies.
+
+Its QDV record contains the tag followed by the complete fresh finite graph,
+attached interface, required interface, `["source-focus", module, function,
+offset]` and an ordered array of `["qmatch-arm", evidence, controlled]` records.
+The pure QLV3 definition requires execution scope and exact bytes. Inspection,
+caller and malformed frames refuse. The complete proposed graph order supplies
+no reachability permission; independent subject checking rejects unrelated nodes
+and source rows. Ordinary graph checking retains its main-only roots.
+
+These definitions are imported and audited, but have no native-mode dispatcher
+or Rust accepted-handle constructor. The current source component uses named
+arms and an internal canonical selector/target frame. That frame is not a new
+language restriction: other valid source orders, general expression/call frames,
+constructed/static arms, ordinary/selected quantum nominal execution and the
+complete twelve-bit profile still require integration. The shared conformance
+vectors do not establish Rust retained-view binding, native executable
+attestation, source-body lowering preservation or Issue completion.
+
 ## Required production profiles
 
 Profile walkers must inspect actual retained typed data independently of the

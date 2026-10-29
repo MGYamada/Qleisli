@@ -1,0 +1,185 @@
+{
+  "format": "qleisli.qmatch-transport-component-validation",
+  "version": 1,
+  "status": "local pure transport/QLV3 definition checkpoint; not native dispatch or Issue completion",
+  "previous_commit": "93e347b76ffb094ff2ccfb7a56fd889b3f59498e",
+  "native_activated": false,
+  "reports": [
+    {
+      "label": "qmatch-complete-order-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-complete-order-first/report.json",
+      "sha256": "c187edce09075132b88010c569773e4d1f26d3a8cb53d7a49c8de80bcd0770f3",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 647561216
+    },
+    {
+      "label": "qmatch-complete-order-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-complete-order-second/report.json",
+      "sha256": "91f27da50d46525984f56856afc5fe115793b4b2399c020512fbbb991f8ac29e",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 684474368
+    },
+    {
+      "label": "qmatch-protocol-runtime-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-protocol-runtime-first/report.json",
+      "sha256": "85b562e68dd616175080f5f45df72a8bc3951cfd3686a7e37d8331e383cf44a1",
+      "exit_code": 1,
+      "seconds": 0.5564610420260578,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 656801792
+    },
+    {
+      "label": "qmatch-protocol-runtime-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-protocol-runtime-second/report.json",
+      "sha256": "d47fedd48e29eb38529813c1572857e3935348e2e61456f5504abfc2ebd1263a",
+      "exit_code": 0,
+      "seconds": 0.49937820801278576,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 658817024
+    },
+    {
+      "label": "qmatch-shape-runtime-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-shape-runtime-first/report.json",
+      "sha256": "6ae3bd6fba34d5e4fbdcd717e7a9566b9a7dec0b7a815b6dc44bcac0ebba5726",
+      "exit_code": 1,
+      "seconds": 4.1894183330005035,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 654180352
+    },
+    {
+      "label": "qmatch-shape-runtime-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-shape-runtime-second/report.json",
+      "sha256": "545c19cc3f17b32521ff1f6a82c6aa083941c0dd0e274ec3b535880cb38cd9c3",
+      "exit_code": 0,
+      "seconds": 0.5057360829960089,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 653934592
+    },
+    {
+      "label": "qmatch-owner-width-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-owner-width-second/report.json",
+      "sha256": "3eb44df5cee9b33e681b374fec2bfd74a033ee62a61ffa9409e610f465e70fb6",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 686325760
+    },
+    {
+      "label": "qmatch-transport-tests-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-transport-tests-first/report.json",
+      "sha256": "2b336f9b4a3bd579dea39bdb3e25c032a50fd4c1660adb28762c84513f365971",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 685637632
+    },
+    {
+      "label": "qmatch-transport-tests-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-transport-tests-second/report.json",
+      "sha256": "cea557d4e167e7f83d50a04297f0d5bce701444cd92db3d1e83ee162e1bb2b0c",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 735821824
+    },
+    {
+      "label": "qmatch-execution-runtime-observed-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-execution-runtime-observed-first/report.json",
+      "sha256": "6f8a24fb4c462dce02b8d8e829dd510eb2a1bd304b3f6efe1ebc37acf00dcb11",
+      "exit_code": 1,
+      "seconds": 8.682914290984627,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1262190592
+    },
+    {
+      "label": "qmatch-execution-runtime-observed-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-execution-runtime-observed-second/report.json",
+      "sha256": "9838f95f8f812e8a339c1eb66cc923899da0c7ffd370e946d3f33b1c60e833d0",
+      "exit_code": 0,
+      "seconds": 1.4532773749961052,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1272430592
+    },
+    {
+      "label": "qmatch-rust-checks-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-rust-checks-first/report.json",
+      "sha256": "c68e5d985f9fd140ad713d5157a4717417fede3ca2f80127b9d4b9f8618484a5",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1482407936
+    },
+    {
+      "label": "qmatch-transport-aggregate",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-transport-aggregate/report.json",
+      "sha256": "f835ffa7f9cfe2722cbbb7ead186293b96f515d7a9ecf60202f9b4ebce78c3ef",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 699908096
+    },
+    {
+      "label": "qmatch-transport-full-tests",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-transport-full-tests/report.json",
+      "sha256": "a00e5d360dcfd5902955c0020e5647938f11a1cf67f3c922d0d11709b25a3de0",
+      "exit_code": 0,
+      "seconds": 208.66846049999003,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 2596487168
+    },
+    {
+      "label": "qmatch-transport-audit",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-transport-audit/report.json",
+      "sha256": "d8e88a1471c212bfee12a3d70d8229cbb14edcee4bfb924ba456382ed267101f",
+      "exit_code": 0,
+      "seconds": 4.690406583977165,
+      "stable_inputs": true
+    }
+  ],
+  "sources": {
+    "lean-kernel/Protocol/Carrier.lean": "265a42ff3ac14db56d5889dcce45cb221370fa866e389e7892c86575cebe8441",
+    "lean-kernel/Protocol/Qirf.lean": "a9be02c9ce124afbcce006d1f95f67135c6d6963909a2c2df42ed1dce05425c7",
+    "lean-kernel/Protocol/Qmatch.lean": "4b0889669f7abb03437b195361855b264f2c5a4c2446afb3bd96886cdf2255f4",
+    "lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean": "66dda149e182945f888e139989b7e6486d67b8d79f5d1fb887ed35eb79d97c12",
+    "lean-kernel/Protocol/ExecutionView/CheckedQmatch.lean": "78464774249fa3d4c665472f95b078682644515043c589f8345956fde0d09173",
+    "lean-kernel/Main.lean": "f96de6df460e8b26f3c4f57ee670356a2785cfa8a79a0dc21130a5332514d921",
+    "lean-kernel/Tests.lean": "637a4856544470860ec02596a0b2f53c1f32610d9c7108d007f086f6310ab721",
+    "src/interchange/qmatch.rs": "9a9fce6980a83c047ea37dd0b8a4e1343d8a3516ad884cb87780699c6f5e2a1c",
+    "src/interchange/qmatch/tests.rs": "edf25bb6e9d31d11bdceaf38f27292ec746f394ad7cc1749efd6480093317760",
+    "src/interchange/carrier.rs": "5a6547641250070826c1f56fb4c7583bbae825b362b852a9be0eb315c347c2e5",
+    "src/interchange/mod.rs": "419eb7c0cfd70be0c4bdc7b1eaa9819aedf48f08a7a6bb9c63349cfd150b20e8",
+    "tests/qmatch_transport.lean": "6dba7df6261f43e0221e07ca0a103fe97db1e73f725d8eed3fb240479950522b",
+    "tests/fixtures/qmatch_v030/transport-cases.json": "3beea2cfd1c663c72b337cfee9518de306f54e16ff27f0782a18d13722302131",
+    "tests/fixtures/qmatch_v030/execution-cases.json": "3858b1a3b53c38a147be802259d69d957e0e222f1d1175d3f60f31479bb80bb0",
+    ".github/ci/native-comparisons.json": "edfddb24176916891e7df9eebb3418b20e7004138554faa84c6e339273d8f830",
+    "scripts/test_run_native_ci.py": "128b533e547b11b6cfa3886a409d3ebcdb623605f5f895e7ca1b3561a4ca3fe4"
+  },
+  "results": {
+    "shared_shapes": "33 independent expected shape decisions agree with actual Rust and Lean readers;3 are accepted data only. Initial u8 width mismatch preserved and repaired in the shared Carrier reader.",
+    "execution": "Actual pure CheckedQmatch.run over original QLV3 packets:2 exact Unit scalar i/-i controls and24 actual-source/evidence/body/QDV refusals. Scope gates and work exhaustion checked. All cases are small; the separate controlled body has1Bit.",
+    "kernel": "11 small maintained transport/framing reductions plus generic original-read/request/body/view/scope/root structural bindings compile with strict options. Source-body lowering is not proved.",
+    "full_tests": "PASS208.6685s;peak2596487168B. All current Lean sources and imported products stable. Existing primary imports are hash-bound, not a fresh two-package replay.",
+    "audit": "20559 kernel/transport declarations;1195pure/1244executable imports;private/generated included;onlypropext,Classical.choice,Quot.sound.",
+    "rust": "7focused pure DTO tests pass on normal Homebrew1.99.1 and MSRV1.85.0;0ignored,587filtered each. No native selection or claim of full Rust CI.",
+    "history": "112inert first records;4008163expandedB/55968storedB;all sizes/hashes read back without execution.",
+    "other": "251source-policy modules;28CI manifest/scheduler tests;4passive history checks;docs2727links/103anchors/390Leanroots;normal warnings-denied library Clippy,format and diff whitespace pass. Historical manifest digest retained. All-working fixture preflight17337files/154375278B before this final metadata adjustment."
+  },
+  "uncompleted_checks": {
+    "native_comparison": "NOT RUN: fresh compiled comparison-driver invocation, native dispatcher, Rust retained QDV walker/handle and normal/selected quantum source integration.",
+    "full_ci": "NOT RUN: complete normal/MSRV/native suites and hosted exact-head CI/review.",
+    "proof_records": "NOT RUN: both-package guarded canonical builds/audits/replay/schema plus all six fixed protected-output comparisons. No hash-only refresh.",
+    "language": "General source expressions/call frames, other valid owner mappings, constructed/static/generic arms and full12joined-bit/64label integration remain unfinished."
+  },
+  "guard_results": {
+    "trusted_base": "e4e77ce7c0992cff61bb906d8f550f2f6917685d",
+    "constitution": "FAIL:stale source identity lean-kernel/QleisliKernel/Qirf.lean",
+    "inventory": "FAIL:frozen source lean-kernel/Audit.lean",
+    "handling": "Protected/admission/current-evidence hashes remain unchanged; full guarded maintenance is required before promotion."
+  },
+  "goal": {
+    "completed_applicable": 72,
+    "approved_exclusions": 2,
+    "total": 127,
+    "percent": 58.27,
+    "remaining_applicable": 53,
+    "issue64": "OPEN;all8criteria unchecked",
+    "issue195": "OPEN"
+  }
+}

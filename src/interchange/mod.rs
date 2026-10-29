@@ -16,6 +16,7 @@ mod native_context;
 mod native_packet;
 pub mod ordinary_root;
 pub mod pure_leaf;
+pub mod qmatch;
 
 use codec::Codec;
 use json::Value;

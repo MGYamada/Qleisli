@@ -59,3 +59,27 @@ names and simultaneous tuple bindings. Thirty-four runtime observations retain
 separate scopes from the generic proofs and complete kernel Tests.
 Arbitrary calls, allocation, control flow, full source-to-Raw mapping and native
 execution remain unfinished; no component or barrier closes #64/#195.
+
+The [transport history](transport-first.tar.xz), [index](transport-index.json)
+and [current validation](transport-validation.json) retain the first named-arm
+request, original Unit-owner source, graph packet and 112 inert records. The
+old executable's first observation is a legacy IO/artifact error: it did not
+implement the proposed mode, and that input was request JSON rather than a
+QLV3 packet. It is not a semantic qmatch refusal or an explicit unknown-mode error.
+
+The first complete request check fails because the ordinary proposed order
+omits separate arm subjects. A complete-order adapter repairs the proposal;
+independent original-source checking still derives roots and rejects unrelated
+nodes. The shared 33-case reader study then finds the real port-width mismatch:
+Lean accepts 256 where Rust's u8 storage refuses. The separate repair aligns
+the shared codec. Private/generated declarations retain the existing audit.
+
+Other first failures include proof elaboration, unavailable JSON constructors,
+a forbidden pure-kernel import of a transport test, observer path restrictions
+and IO/error-helper mistakes. Their original sources and actual diagnostic
+streams remain separate from repairs; tool-only observer failures are identified
+as transcriptions, without inventing missing full streams. Two accepted exact
+scalar controls and 24 original-source/body/evidence/QDV refusals use independently
+authored literal expectations. These run the actual pure QLV3 definitions and
+do not establish Rust retained-view integration, native-mode dispatch, source
+body lowering, ordinary/selected quantum execution or Issue completion.

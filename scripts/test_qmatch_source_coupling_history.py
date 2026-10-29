@@ -19,6 +19,9 @@ VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/vali
 OPERANDS = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-first.tar.xz"
 OPERAND_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-index.json"
 OPERAND_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/operands-validation.json"
+TRANSPORT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-first.tar.xz"
+TRANSPORT_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-index.json"
+TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-validation.json"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -99,6 +102,46 @@ class OriginalCouplingHistory(unittest.TestCase):
             self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 0)
         current = json.loads((ROOT / OPERAND_VALIDATION).read_text())
         self.assertFalse(current["native_activated"])
+
+    def test_original_transport_mismatch_and_repairs_are_inert_and_retained(self):
+        index = json.loads((ROOT / TRANSPORT_INDEX).read_text())
+        compressed = (ROOT / TRANSPORT).read_bytes()
+        self.assertLessEqual(len(compressed), 1024 * 1024)
+        self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
+        with lzma.open(io.BytesIO(compressed)) as stream:
+            contents = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(contents), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(contents)) as archive:
+            for member in archive:
+                name = PurePosixPath(member.name)
+                self.assertTrue(member.isfile())
+                self.assertFalse(name.is_absolute())
+                self.assertNotIn("..", name.parts)
+                self.assertNotIn(member.name, members)
+                self.assertIn(member.name, index["records"])
+                content = archive.extractfile(member).read()
+                self.assertEqual(len(content), index["records"][member.name]["bytes"])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index["records"][member.name]["sha256"])
+                members[member.name] = content
+        self.assertEqual(set(members), set(index["records"]))
+        self.assertEqual(len(members), 112)
+        for label, code in [("qmatch-shape-runtime-first", 1), ("qmatch-shape-runtime-second", 0),
+                            ("qmatch-protocol-runtime-first", 1), ("qmatch-protocol-runtime-second", 0),
+                            ("qmatch-complete-order-first", 1), ("qmatch-complete-order-second", 0),
+                            ("qmatch-transport-tests-first", 1), ("qmatch-transport-tests-second", 0),
+                            ("qmatch-execution-runtime-observed-first", 1),
+                            ("qmatch-execution-runtime-observed-second", 0)]:
+            self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], code)
+        self.assertIn(b"port-bits-outside-u8: expected false, observed true",
+                      members["observations/qmatch-shape-runtime-first/stdout.txt"])
+        self.assertIn(b"2 exact phase controls and 24 QLV3",
+                      members["observations/qmatch-execution-runtime-observed-second/stdout.txt"])
+        notes = json.loads(members["observations/observer-notes.json.txt"])
+        self.assertIn("neither a semantic", notes["first_native_observation"])
+        current = json.loads((ROOT / TRANSPORT_VALIDATION).read_text())
+        self.assertFalse(current["native_activated"])
+        self.assertEqual(current["goal"]["percent"], 58.27)
 
 
 if __name__ == "__main__":

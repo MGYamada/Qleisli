@@ -12,6 +12,7 @@ import Cli.EngineeringInstrument
 import Cli.EngineeringOpenQasm
 import Protocol.Product
 import Protocol.ExecutionView.CheckedFinite
+import Protocol.ExecutionView.CheckedQmatch
 import Protocol.NativeContext.Bindings
 
 /-! Unproved transport adapter for the existing experimental profiles.

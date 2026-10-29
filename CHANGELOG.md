@@ -55,6 +55,14 @@ development milestones from the scope of their evidence.
   Reject consumed/undefined names, duplicate owners and whole-subject public
   effect sharpening. Unknown prefix expressions refuse. General calls/control
   flow, full source-to-Raw mapping, native execution and #64/#195 remain open.
+- Add strict internal named-arm qmatch request data and a pure QLV3/QDV
+  comparison component. Retain the original request bytes, complete fresh graph,
+  ordered typed owner forests, source byte occurrence and actual evidence/control
+  indices. Derive a complete proposed order without relaxing ordinary reachability;
+  the independent source check still rejects unrelated nodes and rows. Align the
+  shared carrier port reader with Rust's u8 storage. These components activate no
+  native dispatcher or accepted source handle; Rust retained-view binding,
+  ordinary/selected integration and the full #64/#195 contracts remain open.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

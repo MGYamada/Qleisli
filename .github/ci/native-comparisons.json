@@ -1121,6 +1121,13 @@
           "python3",
           "scripts/run_native_lean_test.py",
           "tests/ordinary_inputs.lean"
+        ],
+        [
+          "python3",
+          "scripts/run_native_lean_test.py",
+          "tests/qmatch_transport.lean",
+          "tests/fixtures/qmatch_v030/transport-cases.json",
+          "tests/fixtures/qmatch_v030/execution-cases.json"
         ]
       ],
       "env": {
