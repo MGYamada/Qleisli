@@ -60,7 +60,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
 | `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
 
-`lean-kernel/Main.lean` dispatches fourteen explicitly versioned native modes,
+`lean-kernel/Main.lean` dispatches sixteen explicitly versioned native modes,
 including four mechanically separate engineering-only comparisons.
 `lean-kernel/Cli/NativeContext.lean` invokes the pure
 `Protocol.NativeContext.run` dispatcher and its single reply projection. It
@@ -193,6 +193,34 @@ carrier/work limits remain. Text/JSON reports distinguish this declared
 result/history check from an independent external algorithm specification.
 No source-body, decoder/native compiler, simulator or target preservation
 theorem, external schema, inverse/control capability or new guarantee follows.
+
+### Named-arm qmatch component requests
+
+`Kernel::check_qmatch_source` invokes the execution-only internal
+`--qmatch-source-check` mode. The [request and QDV schema](execution-view.md#internal-named-arm-qmatch-component)
+bind both complete typed interfaces, the original source byte occurrence and
+actual evidence/control indices to one fresh graph. Original source reads
+determine the canonical labels, types, owners, public effects and source rows;
+actual receipt inputs and dependency snapshots bind the named arm bodies.
+The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
+The ordinary source-root wrapper retains its original main-only roots and empty
+extra source-query extension.
+
+The Rust walker describes the actual retained graph and circuit/matrix caches,
+then the same allocations enter `QmatchChecked` only after exact QDV and native
+product/edition/mode/scope/request matching. No public conversion yields an
+ordinary `AcceptedProgram`, inverse or controlled capability. Data constructors,
+request encoding and source headers alone supply no source-function theorem.
+Generic success bindings retain the original Raw ownership/classical-scope
+properties without enlarging either human-admitted guarantee.
+
+This named-arm component uses an internal canonical owner frame. General source
+expressions/call frames, other valid mappings, constructed/static/generic arms,
+ordinary/selected quantum nominal execution and the full twelve-bit/64-label
+source contract remain pending. The internal frame is not a new language
+restriction. Fresh native conformance, canonical proof maintenance and full CI
+remain required; original source-body lowering, decoder/walker/native compilation,
+runtime/target preservation and broader QS/PR/RS/EXACT duties are separate.
 
 ### Rectangular pure-leaf requests
 

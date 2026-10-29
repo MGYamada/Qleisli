@@ -318,6 +318,24 @@ ORDINARY_RESULT_BOUNDARY = {
 }
 
 
+QMATCH_BOUNDARY = {
+    'id': 'qmatch-component', 'group': 'qmatch-component',
+    'entry_points': [
+        'interchange::qmatch::{SourceSite,Arm,Request}; Request::{encode,decode}',
+        'interchange::native::Kernel::check_qmatch_source',
+        'QmatchChecked::{artifact,request_bytes,request,native} (read-only component binding)',
+    ],
+    'status': 'Bounded original-source-site and exact Raw sector component; no ordinary source execution',
+    'request': 'Strict qleisli.qmatch-request version1 / finite-source-qmatch-named-v1: attached and required ordered quantum owner forests, original module/function/UTF8 byte offset, and actual evidence/control indices. Labels, logical matrices, graph roots and success flags are not supplied. Parsing and public data constructors issue no acceptance.',
+    'binding': 'Fresh original source/header/operand/arm-name reads derive complete types, canonical labels, public effects, exact source rows and actual evidence subjects. One original graph supplies fresh receipts with complete input/dependency provenance and actual U/CU/main equations. Rust proposes joint roots from actual requested entries/control programs; Lean independently derives relevance. QDV compares the same retained graph/caches, both interfaces, source focus and arm indices. A private component handle retains the same allocations, without ordinary-program conversion or inverse/control access.',
+    'encoding': 'Explicit-edition execution-only QLV3 wraps exact original QLV1 body/request and finite-source-qmatch-named-v1 QDV1 graph/interfaces/source-focus/arm records. --qmatch-source-check requires matching native-result3 accepted/execution context, complete product version and actual request-presence flag. Inspection/caller, old frames and cross-mode replies refuse without fallback.',
+    'domain': 'Bounded pure two-owner original Raw subject with exact canonical named-arm source association, finite builtin/nominal ordered type trees and preserved zero-width identities/phase. The internal canonical source frame is not a language restriction. General expressions/call frames, other valid owner mappings, constructed/static/generic arms, ordinary/selected quantum execution, the full twelve-bit/64-label source contract and source-body lowering remain unfinished. No new guarantee, source/runtime/target preservation or full QS/PR/RS/EXACT discharge is claimed.',
+    'limits': 'Existing finite carrier/Raw/dependency/exact arithmetic and 10M native work limits remain. At most64 requested arms,128 source rows and1MiB aggregate source identity; source names1..4096 UTF8 bytes and indicesu32. Shared carrier forests/ports retain their configured bounds and u8 port-width representation. Existing16MiB body/request,64MiB envelope/view and60s process bounds remain. No maximum-size quantum case is generated or capacity raised.',
+    'failure': 'Reject stale types/ports/owner identity, false source occurrence/name/evidence association, overlapping/incomplete labels, original Raw observation, wrong public effect, phase/axis/dependency/body/control/Gram equations, unrelated nodes/rows, stale retained graph/request/caches and wrong context/scope. Source headers alone are not a source-body preservation theorem. A missing, failed, incompatible or timed-out checker grants no handle and never retries an old mode.',
+    'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
+}
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -506,6 +524,8 @@ def check(root=ROOT, data=None):
                 raise ValueError('unreviewed finite-carrier boundary contract')
             if boundary['id'] == 'ordinary-result' and boundary != ORDINARY_RESULT_BOUNDARY:
                 raise ValueError('unreviewed ordinary-result boundary contract')
+            if boundary['id'] == 'qmatch-component' and boundary != QMATCH_BOUNDARY:
+                raise ValueError('unreviewed qmatch-component boundary contract')
         if len({b['id'] for b in data['boundaries']}) != len(data['boundaries']):
             raise ValueError('duplicate boundary')
         if ('src/interchange/engineering_instrument.rs' in paths and
@@ -523,6 +543,9 @@ def check(root=ROOT, data=None):
         if ('src/interchange/ordinary_root.rs' in paths and
                 'ordinary-result' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing ordinary-result public boundary')
+        if ('src/interchange/native/qmatch.rs' in paths and
+                'qmatch-component' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing qmatch-component public boundary')
         for capacity in data['capacities']:
             if set(capacity) != {'id','scope','value','source','test','replacement'} or capacity['source'] not in paths:
                 raise ValueError('incomplete capacity scope')

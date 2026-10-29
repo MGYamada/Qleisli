@@ -203,6 +203,12 @@ ORDINARY_RESULT_PROOF = {
 }
 
 
+QMATCH_PROOF = {
+    'proof_scope': 'NativeContext.run_qmatch_binding retains the actual execution-only QLV3 subject and exact QDV comparison. Protocol.Qmatch.check_binding binds original packet/artifact/request bytes and one successful SourceSector check. SourceSector.check_bound retains original header/operand/arm queries, canonical label coverage, complete nominal code/owner frames, actual evidence-entry inputs/dependency snapshots and actual main/U/CU sector equations. FiniteRestriction checked theorems relate the actual step/accumulator/circuit computation to restricted sectors; Raw/QIRF bindings retain the original bodies. CheckedQmatch.Binding.root_safe derives original Raw ownership/classical scope through the shared gate without enlarging the human-admitted ledger scope. Rust view walkers retain the same graph, circuit/matrix caches, source focus and request objects before a fresh component decision.',
+    'gaps': 'Bounded named-arm component only; no ordinary/selected quantum source execution, general expression/call frames, other valid owner mappings, constructed/static/generic arms or complete twelve-bit/64-label source profile. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
+}
+
+
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
                 native_modes=modes.split(),
@@ -213,6 +219,31 @@ def path_rule(classification, boundaries, modes, sources, tests):
 # Reviewed declarations/dispatch markers, not a proof of the code they describe.
 # Every inventory boundary and every NativeContext.Mode must have an explicit rule.
 PATHS = {
+    'qmatch-proposal': path_rule('untrusted-proposal', 'qmatch-component', '', [
+        ('src/interchange/qmatch.rs', ['pub struct SourceSite', 'pub struct Arm', 'pub struct Request',
+            'pub fn encode(', 'pub fn decode(']),
+    ], [('src/interchange/qmatch/tests.rs', 'proposed_success_labels_logical_matrices_roots_and_implementations_refuse')]),
+    'qmatch-check': path_rule('native-acceptance', 'qmatch-component', '--qmatch-source-check', [
+        ('src/interchange/native/qmatch.rs', ['pub fn check_qmatch_source(', 'qmatch::complete(prepared.graph(), &request)?',
+            '"--qmatch-source-check"', 'prepared.bind(native)?']),
+        ('src/interchange/execution_view/finite/qmatch.rs', ['graph.write(&mut writer)?',
+            'carrier::interface(&mut view, &request.attached)?', 'carrier::interface(&mut view, &request.required)?',
+            'view.record("source-focus",', 'view.list(&request.arms,']),
+        ('src/interchange/mod.rs', ['graph_from_roots(programs, entries, &roots, version)?',
+            'roots.push(programs.len() + evidence)', 'roots.push(controlled)',
+            'ordinary.is_none() && qmatch.is_none() && used.len() != snapshot.len()']),
+        ('lean-kernel/Protocol/Qmatch.lean', ['Protocol.Qirf.readAll body', 'Qirf.SourceSector.check artifact order',
+            'theorem check_binding ']),
+        ('lean-kernel/QleisliKernel/Qirf/SourceSector.lean', ['def check ', 'theorem check_bound ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedQmatch.lean', ['supplied.data == expected.data',
+            '.inspection | .caller => throw .packet', 'theorem run_binding ', 'theorem Binding.root_safe ']),
+    ], [('src/interchange/native/qmatch/tests.rs', 'actual_retained_graph_and_caches_match_both_independent_exact_phase_views'),
+        ('src/interchange/native/qmatch/tests.rs', 'fresh_native_mode_checks_independent_views_and_all_original_substitutions'),
+        ('src/interchange/native/qmatch/tests.rs', 'proposal_roots_do_not_relax_ordinary_reachability_or_hide_unrelated_nodes')]),
+    'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
+        ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
+            'pub fn request_bytes(', 'pub fn native(']),
+    ], [('src/interchange/native/qmatch/tests.rs', 'component_retains_the_same_fresh_native_mode_and_original_request')]),
     'ordinary-result-proposal': path_rule('untrusted-proposal', 'ordinary-result', '', [
         ('src/interchange/ordinary_root.rs', ['pub enum Selection', 'pub enum Storage', 'pub struct Request',
             'pub fn encode(', 'pub fn decode(', '"finite-ordinary-root-v2"']),
@@ -311,7 +342,9 @@ PATHS = {
             'interface(&mut view, &request.required)?', 'view.matrix(&request.logical)?']),
         ('lean-kernel/Protocol/Carrier.lean', ['def check ', 'checkSources artifact.sources request',
             'Qirf.Carrier.check artifact order request.attached request.required request.logical', 'theorem check_binding ']),
-        ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', ['def sourceRoot ', 'Validity.checkRootWithSources artifact order extra',
+        ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', ['def sourceRoot ',
+            'sourceRootFromRoots artifact order attached required [artifact.root]',
+            'sourceRootWithRows artifact order attached required roots []',
             'def check ', 'guard (attached == required)', 'guard iso .notIsometric',
             'guard (actual == specified) .equation', 'theorem check_postcondition ', 'theorem sourceRoot_result ']),
         ('lean-kernel/Protocol/ExecutionView/CheckedCarrier.lean', ['def check ', 'supplied.data == expected.data',
@@ -1024,6 +1057,7 @@ PATHS['hierarchy-qpe']['tests'].extend(
 )
 
 NATIVE_DISPATCH = {
+    '--qmatch-source-check': '.qmatchSource',
     '--ordinary-root-check': '.ordinaryRoot',
     '--qirf-native': '.ordinary',
     '--qirf-contract': '.contract',
@@ -1516,6 +1550,8 @@ ROUTES['finite-carrier'] = ('src/interchange/native/carrier/tests.rs',
                             'original_carrier_body_source_and_logical_phase_are_bound')
 ROUTES['ordinary-result'] = ('tests/ordinary_nominal_execution.rs',
                             'actual_source_record_enum_and_match_keep_correlated_result_storage')
+ROUTES['qmatch-component'] = ('src/interchange/native/qmatch/tests.rs',
+                            'fresh_native_mode_checks_independent_views_and_all_original_substitutions')
 
 
 PATHS['ordinary-acceptance']['source_bindings'].extend([
@@ -1675,6 +1711,7 @@ for _rule in PATHS.values():
         ]))
 
 for _id, _binding in {
+    'qmatch-check': 'run_qmatch_binding',
     'ordinary-result-check': 'run_typed_ordinary_binding',
     'carrier-check': 'run_carrier_binding',
     'source-carrier-check': 'run_carrier_binding',
@@ -1775,6 +1812,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'ordinary-result-check':
             require({key: row[key] for key in ORDINARY_RESULT_PROOF} == ORDINARY_RESULT_PROOF,
                     'unreviewed ordinary-result proof scope')
+        if row['id'] == 'qmatch-check':
+            require({key: row[key] for key in QMATCH_PROOF} == QMATCH_PROOF,
+                    'unreviewed qmatch-component proof scope')
         if row['id'] == 'engineering-pure-check':
             require({key: row[key] for key in ENGINEERING_PURE_PROOF} == ENGINEERING_PURE_PROOF,
                     'unreviewed engineering-pure proof scope')

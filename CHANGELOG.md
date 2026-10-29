@@ -70,6 +70,10 @@ development milestones from the scope of their evidence.
   mandatory. Bind native product, edition, mode, scope and request presence.
   This component grants no ordinary/selected source execution, inverse/control
   access, source-body preservation or full #64/#195 completion.
+- Fix strict compilation of the finite-sector coordinate proofs by declaring
+  their generic type parameters explicitly. Record the bounded qmatch component
+  and remaining source/native integration gaps in production coverage; preserve
+  the first failed hosted build separately from the fresh local source checks.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

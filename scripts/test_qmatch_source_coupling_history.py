@@ -25,6 +25,9 @@ TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling
 NATIVE_BINDING = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-first.tar.xz"
 NATIVE_BINDING_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-index.json"
 NATIVE_BINDING_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-validation.json"
+CI_TYPECHECK = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-first.tar.xz"
+CI_TYPECHECK_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-index.json"
+CI_TYPECHECK_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ci-typecheck-validation.json"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -72,6 +75,42 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads((ROOT / VALIDATION).read_text())
         self.assertEqual(current["goal"]["issue195"], "OPEN")
         self.assertIn("NOT RUN", current["uncompleted_checks"]["proof_records"])
+
+    def test_first_hosted_failure_stays_distinct_from_component_repair(self):
+        index = json.loads((ROOT / CI_TYPECHECK_INDEX).read_text())
+        packed = (ROOT / CI_TYPECHECK).read_bytes()
+        self.assertEqual(len(packed), index["bytes"])
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), index["sha256"])
+        self.assertLessEqual(len(packed), 1024 * 1024)
+        with lzma.open(io.BytesIO(packed)) as stream:
+            expanded = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(expanded), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(expanded)) as archive:
+            for member in archive:
+                name = PurePosixPath(member.name)
+                self.assertTrue(member.isfile())
+                self.assertFalse(name.is_absolute())
+                self.assertNotIn("..", name.parts)
+                self.assertNotIn(member.name, members)
+                self.assertIn(member.name, index["records"])
+                content = archive.extractfile(member).read()
+                self.assertEqual(len(content), index["records"][member.name]["bytes"])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index["records"][member.name]["sha256"])
+                members[member.name] = content
+        self.assertEqual(len(members), 9)
+        self.assertEqual(set(members), set(index["records"]))
+        self.assertEqual(json.loads(members["observed/kernel-build.command.json.txt"])["exit_code"], 1)
+        self.assertIn("Unknown identifier `α`", members["observed/kernel-build.stdout.txt"].decode())
+        self.assertIn(b"autoImplicit", members["observed/kernel-build.stdout.txt"])
+        repaired = json.loads(members["repair/changed-sources-report.json.txt"])
+        self.assertEqual(repaired["exit_code"], 0)
+        self.assertTrue(repaired["stable_inputs"])
+        self.assertEqual(len(repaired["commands"]), 98)
+        self.assertTrue(all(row["exit_code"] == 0 for row in repaired["commands"]))
+        current = json.loads((ROOT / CI_TYPECHECK_VALIDATION).read_text())
+        self.assertFalse(current["compiled_native_validated"])
+        self.assertEqual(current["issue195"], "OPEN")
 
     def test_operand_counterexamples_and_generated_partial_repair(self):
         index = json.loads((ROOT / OPERAND_INDEX).read_text())

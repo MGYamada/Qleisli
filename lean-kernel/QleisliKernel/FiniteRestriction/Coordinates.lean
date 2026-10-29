@@ -62,7 +62,7 @@ theorem enabled_pack (selector low high : Nat) (bound : low < 2^selector)
       simpa [enabled, selectorControls, targetControls, before, after, actual,
         Bool.and_assoc, Bool.and_left_comm] using step
 
-theorem zipIdx_map (f : α → β) (xs : List α) (start : Nat) :
+theorem zipIdx_map {α : Type _} {β : Type _} (f : α → β) (xs : List α) (start : Nat) :
     (xs.map f).zipIdx start = (xs.zipIdx start).map (fun pair => (f pair.1,pair.2)) := by
   induction xs generalizing start with
   | nil => rfl

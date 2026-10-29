@@ -101,3 +101,17 @@ are not fresh compiled-native acceptance, full CI or a source-body theorem.
 The component has no public ordinary-program conversion or inverse/control
 access. Canonical hosted proof maintenance, actual native execution, complete
 ordinary/selected source integration and #64/#195 remain unfinished.
+
+The [first hosted build](ci-typecheck-first.tar.xz),
+[index](ci-typecheck-index.json) and [separate repair](ci-typecheck-validation.json)
+retain the actual failed kernel compiler streams at commit `c6615d53` and both
+versions of `Coordinates.lean`. Strict package compilation rejects undeclared
+type parameters with `autoImplicit = false`; the later `sorry` diagnostics are
+elaboration failures in that rejected build, not accepted project axioms.
+Explicit independent type parameters repair the declaration without changing
+proof limits or package options. All 98 changed modules and transitive local
+dependents then compile afresh using bound unchanged imports. Earlier local
+root checks reused import products and did not establish that full recompilation.
+The technical inventory records the bounded component and its remaining gaps.
+Canonical both-package proof maintenance, native execution and required CI
+remain separate from these component observations; neither Issue is closed.
