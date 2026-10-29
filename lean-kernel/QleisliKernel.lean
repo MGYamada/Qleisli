@@ -12,6 +12,9 @@ import QleisliKernel.Semantics.OrdinaryValue
 import QleisliKernel.Semantics.OrdinaryValueTransport
 import QleisliKernel.SourceTypes
 import QleisliKernel.SourceTypes.Members
+import QleisliKernel.SourceTypes.QuantumSignature
+import QleisliKernel.SourceTypes.QuantumMatch
+import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function

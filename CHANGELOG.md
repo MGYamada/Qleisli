@@ -35,6 +35,12 @@ development milestones from the scope of their evidence.
   requests retain main-only reachability and every source-usage check. Bind
   canonical labels independently of written order. Original source-site/function
   identities, public effects and native/QDV integration remain unfinished.
+- Read original qmatch byte occurrences, canonical enum labels and named arm
+  headers with the shared declaration/type/import readers. Retain exact owner
+  forests, public effects and source routes; reject stale nominal declarations,
+  incomplete/overlapping labels and public observing/isometric arms. Missing
+  private annotations remain unknown until body checking. Binding these reads
+  to the actual arm/control programs and native execution remains unfinished.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

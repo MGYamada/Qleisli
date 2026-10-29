@@ -169,15 +169,21 @@ def selectionAllowed {sources : Sources} {owner name : String}
   | .exported => original.declaration.isPublic
   | .internal => !original.declaration.isPublic && !(owner == "main" && name == "main")
 
-/-- Project main remains closed. Exported declarations may have ordinary
-parameters. Quantum/static binders and general source semantics remain separate. -/
-def read (sources : Sources) (selection : Selection) (owner name : String) :
-    WorkM (Checked sources owner name) := do
+/-- Shared original declaration and byte envelope, before interpreting the
+parameter/result type category. This does not grant visibility or execution. -/
+def readOriginal (sources : Sources) (owner name : String) :
+    WorkM (Original sources owner name) := do
   guard (sources.size ≤ 128) .limit
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
   exactWork (Exact.charge (512*(bytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
-  let original ← adapt (original sources owner name)
+  adapt (original sources owner name)
+
+/-- Project main remains closed. Exported declarations may have ordinary
+parameters. Quantum/static binders and general source semantics remain separate. -/
+def read (sources : Sources) (selection : Selection) (owner name : String) :
+    WorkM (Checked sources owner name) := do
+  let original ← readOriginal sources owner name
   guard (selectionAllowed selection original) .request
   let inputs ← NaturalAffine.witness (inputTypesWithSources sources owner original.parsedHeader.parameterTypes)
   let basis ← NaturalAffine.witness
@@ -191,10 +197,7 @@ theorem read_selection (sources : Sources) (selection : Selection) (owner name :
     (ok : (read sources selection owner name).run work = (.ok checked,left)) :
     selectionAllowed selection checked.original = true := by
   unfold read at ok
-  obtain ⟨_,a,_,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,b,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,c,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨original,d,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨original,d,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,e,allowed,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨inputs,f,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨basis,g,_,h⟩ := bind_success _ _ _ _ _ h

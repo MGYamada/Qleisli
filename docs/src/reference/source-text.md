@@ -225,6 +225,13 @@ Ordinary requests keep their original main-only root and reachability rules.
 Every canonical logical ordinal binds its actual original arm, independently
 of written order. Original source-site/function identities and public-effect
 binding remain required before native/source qmatch execution is enabled.
+An independent source metadata component now retains the actual qmatch token
+occurrence in its original function, complete named-arm parameter/result owner
+forests, canonical enum labels and original import/reexport paths. It rejects
+public observing/isometric arms and keeps an absent private annotation unknown;
+body checking must independently establish its inferred effect. These reads
+still need binding to the actual implementation/control programs, selector and
+target expressions, retained runtime data and native request before use.
 These components enable no new source or native route: original source/arm,
 capability, nominal execution and native/QDV integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
