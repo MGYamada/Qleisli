@@ -1,3 +1,8 @@
+The [runtime signature first history](runtime-signature-v030/README.md) retains
+seven complete programs, fourteen real prior-CLI observations, the first strict
+compiler failures and separate complete-type metadata repairs. Type/header
+reading remains distinct from actual body/effect and execution checking.
+
 The [original qmatch coupling history](qmatch-source-coupling-v030/README.md)
 retains first sector/header/arm sources, the source-function substitution
 counterexample and separate evidence-entry repair. Generic kernel proofs,

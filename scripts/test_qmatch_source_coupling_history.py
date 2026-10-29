@@ -34,6 +34,9 @@ NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v
 BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
 OWNER_FLOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-first.tar.xz"
 OWNER_FLOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-index.json"
+RUNTIME_SIGNATURE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/first.tar.xz"
+RUNTIME_SIGNATURE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/index.json"
+RUNTIME_SIGNATURE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -67,6 +70,30 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_original_runtime_signatures_remain_metadata_and_inert_history(self):
+        members = bounded_history(ROOT / RUNTIME_SIGNATURE_ARCHIVE, ROOT / RUNTIME_SIGNATURE_INDEX)
+        self.assertEqual(len(members), 93)
+        rows = json.loads(members['cli/observations.json.txt'])
+        self.assertEqual(len(rows), 14)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in rows), 2)
+        for row in rows:
+            result = json.loads(members['cli/' + row['stdout'] + '.txt'])
+            if row['case'] == 'ordinary-inspection-refusal':
+                self.assertIn('live Q<T>', result['diagnostics'][0]['message'])
+            if row['case'] == 'hidden-observation-refusal':
+                self.assertEqual(result['diagnostics'][0]['code'], 'effect')
+                self.assertIn('Observe', result['diagnostics'][0]['message'])
+        first = members['compile/runtime-signature-production-first/0.stdout.txt']
+        self.assertIn(b"unexpected token 'Type'", first)
+        second = members['compile/runtime-signature-production-second/1.stdout.txt']
+        self.assertIn(b'[].isEmpty', second)
+        audit = json.loads(members['compile/runtime-signature-audit-first/report.json.txt'])
+        self.assertEqual(audit['exit_code'], 0)
+        self.assertTrue(audit['stable_inputs'])
+        status = json.loads((ROOT / RUNTIME_SIGNATURE_VALIDATION).read_text())
+        self.assertEqual(status['native_execution'], 'NOT ENABLED')
+        self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
+
     @classmethod
     def setUpClass(cls):
         cls.index = json.loads((ROOT / INDEX).read_text())

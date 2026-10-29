@@ -47,6 +47,14 @@ Both closed simulation and sampling reject retained source parameters, including
 Unit, Bits<0> and empty records with no classical transport bits. CLI run/sample
 also require zero original runtime parameters. These are bounded implementation
 checks, not a source-preservation theorem or completion of #64/#195.
+An internal nongeneric runtime-signature reader additionally retains complete
+parameter/result prefixes rather than only a flattened quantum-owner list.
+Ordinary `Unit`, every tuple boundary and each explicit `Q` node remain present;
+the original finite type queries retain nominal declarations and source paths.
+Reading a declared effect annotation does not check its body or certify that
+effect. Ordinary/selected typed-root execution still needs the full type tree,
+actual body/effect and native code-space binding; this metadata reader alone
+provides no runtime capability.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
 it does not excuse checking an unused definition, either branch or an empty loop.

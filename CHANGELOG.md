@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain complete original runtime parameter/result type prefixes in an internal
+  nongeneric signature reader. Preserve ordinary fields, nested tuples, explicit
+  quantum-owner boundaries and original nominal type queries, including zero-width
+  owners. Reject nested quantum bases and quantum fields in ordinary records.
+  Declared effect metadata remains separate from actual body/effect checking.
+  This prepares ordinary/selected typed-root integration; it enables no execution
+  route or new verified source effect, and #64/#195 remain unfinished.
 - Add an internal exact finite-sector restriction component for qmatch. Prove
   correspondence with the actual contribution, accumulator, step and full
   circuit execution; retain phases, axes, dependencies, errors and uncontrolled
