@@ -7,6 +7,14 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Protocol.NativeContext
 open ExecutionView
 
+theorem run_qmatch_binding (product : String) (bytes : ByteArray)
+    (decision : Decision .qmatchSource) (work left : Nat)
+    (ok : (run .qmatchSource product bytes).run work = (.ok decision,left)) :
+    ∃ input, Packet.read bytes = .ok input ∧ input.scope = .execution ∧
+      Nonempty (CheckedQmatch.Binding input.original input.graph decision.value work left) := by
+  obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
+  exact CheckedQmatch.run_binding bytes decision.value work left checked
+
 theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
     (decision : Decision .ordinaryRoot) (work left : Nat)
     (ok : (run .ordinaryRoot product bytes).run work = (.ok decision,left)) :

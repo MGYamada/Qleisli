@@ -63,6 +63,13 @@ development milestones from the scope of their evidence.
   shared carrier port reader with Rust's u8 storage. These components activate no
   native dispatcher or accepted source handle; Rust retained-view binding,
   ordinary/selected integration and the full #64/#195 contracts remain open.
+- Pair the internal named-arm qmatch mode with an actual retained Rust QDV
+  walker and private component handle. Derive joint proposal roots from the
+  original main/evidence/control subjects while preserving ordinary graph
+  reachability; fresh Lean source relevance and complete comparison remain
+  mandatory. Bind native product, edition, mode, scope and request presence.
+  This component grants no ordinary/selected source execution, inverse/control
+  access, source-body preservation or full #64/#195 completion.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

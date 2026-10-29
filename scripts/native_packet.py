@@ -24,6 +24,9 @@ def envelope(edition, original, graph=b'', caller=b'', indices=()):
 MODES = {
     '--qirf-native': ('accepted', ('inspection', 'execution', 'caller')),
     '--qirf-contract': ('accepted', ('inspection', 'execution', 'caller')),
+    '--carrier-pure-check': ('accepted', ('execution',)),
+    '--ordinary-root-check': ('accepted', ('execution',)),
+    '--qmatch-source-check': ('accepted', ('execution',)),
     '--hierarchy-pending': ('pending', ('inspection', 'execution')),
     '--hierarchy-request-pending': ('pending', ('inspection', 'execution')),
     '--hierarchy-fourier-pending': ('pending', ('inspection', 'execution')),

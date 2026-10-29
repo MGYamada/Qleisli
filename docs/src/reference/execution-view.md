@@ -43,7 +43,7 @@ hierarchy payload retains its original bridge encoding. These inner payloads
 are checked by the existing definitions. Neither is accepted as an unwrapped
 external request after cutover. No compatibility retry is permitted.
 
-All fifteen native modes use `qleisli.native-result 3`. Successful replies
+All sixteen native modes use `qleisli.native-result 3`. Successful replies
 contain, one per line: claim (`accepted`, `pending`, `engineering-checked` or
 `checked`), checked edition, compiled complete product version, canonical mode
 argument, checked scope, and the mode's unchanged payload fields. A final
@@ -578,14 +578,22 @@ caller and malformed frames refuse. The complete proposed graph order supplies
 no reachability permission; independent subject checking rejects unrelated nodes
 and source rows. Ordinary graph checking retains its main-only roots.
 
-These definitions are imported and audited, but have no native-mode dispatcher
-or Rust accepted-handle constructor. The current source component uses named
+The paired `--qmatch-source-check` mode requires this execution-only comparison
+and the current product/edition context. Rust's proposal roots come from the
+original main, actual requested evidence entries and controlled program indices.
+Its walker borrows the exact retained graph and typed request; it does not replay
+the QIRF JSON encoder. Fresh success retains those same allocations in a private
+`QmatchChecked` component. It has no public ordinary-program conversion,
+inverse/control capability or receipt constructor, and performs no old-mode retry.
+
+The current source component uses named
 arms and an internal canonical selector/target frame. That frame is not a new
 language restriction: other valid source orders, general expression/call frames,
 constructed/static arms, ordinary/selected quantum nominal execution and the
 complete twelve-bit profile still require integration. The shared conformance
-vectors do not establish Rust retained-view binding, native executable
-attestation, source-body lowering preservation or Issue completion.
+vectors separately test the retained Rust walker and fresh native comparison.
+They do not establish native executable attestation, source-body lowering
+preservation, ordinary/selected execution or Issue completion.
 
 ## Required production profiles
 

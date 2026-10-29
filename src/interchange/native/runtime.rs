@@ -120,9 +120,10 @@ fn invoke_mode(
             | crate::interchange::native_context::Mode::Contract
             | crate::interchange::native_context::Mode::CarrierPure
             | crate::interchange::native_context::Mode::OrdinaryRoot
+            | crate::interchange::native_context::Mode::QmatchSource
     ) {
         return Err(Error::format(
-            "finite checking requires an ordinary, contract or carrier native mode",
+            "finite checking requires a finite native mode",
         ));
     }
     limits.invoke(executable, packet, mode.argument(), |bytes| {

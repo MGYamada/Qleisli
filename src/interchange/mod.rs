@@ -614,6 +614,17 @@ fn graph(
     root: usize,
     version: Version,
 ) -> Result<Vec<usize>> {
+    graph_from_roots(programs, entries, &[root], version)
+}
+
+// Proposal scheduling only. Each typed native gate independently derives its
+// original subjects and checks complete reachability before issuing a handle.
+fn graph_from_roots(
+    programs: &[Value],
+    entries: &[Value],
+    roots: &[usize],
+    version: Version,
+) -> Result<Vec<usize>> {
     let p = programs.len();
     let n = p
         .checked_add(entries.len())
@@ -654,31 +665,39 @@ fn graph(
     let mut states = vec![0u8; n];
     let mut heights = vec![0usize; n];
     let mut order = vec![];
-    let mut stack = vec![(root, 0usize)];
-    states[root] = 1;
-    while let Some((node, next)) = stack.last_mut() {
-        if let Some(&child) = edges[*node].get(*next) {
-            *next += 1;
-            match states[child] {
-                1 => return Err(Error::format("cyclic program/evidence graph")),
-                0 => {
-                    states[child] = 1;
-                    stack.push((child, 0));
-                    if stack.len() > 32 {
-                        return Err(Error::limit("graph depth exceeds 32"));
+    if roots.is_empty() || roots.iter().any(|&root| root >= n) {
+        return Err(Error::format("empty or dangling graph root"));
+    }
+    for &root in roots {
+        if states[root] == 2 {
+            continue;
+        }
+        let mut stack = vec![(root, 0usize)];
+        states[root] = 1;
+        while let Some((node, next)) = stack.last_mut() {
+            if let Some(&child) = edges[*node].get(*next) {
+                *next += 1;
+                match states[child] {
+                    1 => return Err(Error::format("cyclic program/evidence graph")),
+                    0 => {
+                        states[child] = 1;
+                        stack.push((child, 0));
+                        if stack.len() > 32 {
+                            return Err(Error::limit("graph depth exceeds 32"));
+                        }
                     }
+                    _ => {}
                 }
-                _ => {}
+            } else {
+                let id = *node;
+                heights[id] = 1 + edges[id].iter().map(|&c| heights[c]).max().unwrap_or(0);
+                if heights[id] > 32 {
+                    return Err(Error::limit("graph depth exceeds 32"));
+                }
+                states[id] = 2;
+                order.push(id);
+                stack.pop();
             }
-        } else {
-            let id = *node;
-            heights[id] = 1 + edges[id].iter().map(|&c| heights[c]).max().unwrap_or(0);
-            if heights[id] > 32 {
-                return Err(Error::limit("graph depth exceeds 32"));
-            }
-            states[id] = 2;
-            order.push(id);
-            stack.pop();
         }
     }
     if states.contains(&0) {
@@ -895,7 +914,7 @@ fn decode_subject_with_carrier(
     budget: &mut Budget,
     carrier: Option<&carrier::Request>,
 ) -> Result<DecodedGraph> {
-    decode_subject_with_types(subject, budget, carrier, None)
+    decode_subject_with_types(subject, budget, carrier, None, None)
 }
 
 fn decode_subject_with_types(
@@ -903,11 +922,28 @@ fn decode_subject_with_types(
     budget: &mut Budget,
     carrier: Option<&carrier::Request>,
     ordinary: Option<&ordinary_root::Request>,
+    qmatch: Option<&qmatch::Request>,
 ) -> Result<DecodedGraph> {
     let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
-    let order = graph(programs, entries, root, version)?;
+    let order = if let Some(request) = qmatch {
+        let mut roots = vec![root];
+        for arm in &request.arms {
+            let evidence = usize::try_from(arm.evidence)
+                .map_err(|_| Error::limit("qmatch evidence index overflows host capacity"))?;
+            let controlled = usize::try_from(arm.controlled)
+                .map_err(|_| Error::limit("qmatch program index overflows host capacity"))?;
+            if evidence >= entries.len() || controlled >= programs.len() {
+                return Err(Error::format("qmatch original subject index is absent"));
+            }
+            roots.push(programs.len() + evidence);
+            roots.push(controlled);
+        }
+        graph_from_roots(programs, entries, &roots, version)?
+    } else {
+        graph(programs, entries, root, version)?
+    };
     let mut checked = vec![None; programs.len()];
     let mut receipts = vec![None; entries.len()];
     let mut used = BTreeSet::new();
@@ -950,21 +986,35 @@ fn decode_subject_with_types(
             }
         }
     }
-    if let Some(request) = ordinary {
+    if ordinary.is_some() || qmatch.is_some() {
         let bytes = snapshot
             .iter()
             .map(|(p, s)| p.len() + s.len())
             .sum::<usize>();
+        let atoms = ordinary.map_or_else(
+            || {
+                let request = qmatch.expect("typed request");
+                [
+                    &request.attached.inputs,
+                    &request.attached.outputs,
+                    &request.required.inputs,
+                    &request.required.outputs,
+                ]
+                .into_iter()
+                .flatten()
+                .map(|owner| owner.basis.len())
+                .sum::<usize>()
+            },
+            |request| request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len(),
+        );
         budget
-            .charge((bytes + snapshot.len() + 1).saturating_mul(
-                request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len() + 2,
-            ))
+            .charge((bytes + snapshot.len() + 1).saturating_mul(atoms + 2))
             .map_err(|e| Error::limit(e.to_string()))?;
-        // This private typed proposal reaches exactly one fresh native root
+        // This private typed proposal reaches exactly one fresh native source
         // gate before any handle can escape. Account for every proposed row,
         // including path bytes, without declaring it justified by a type name.
-        // Lean derives actual import/field paths from the original signature
-        // and rejects unrelated rows before binding the compared graph.
+        // Lean derives actual import/field/arm paths from original source
+        // queries and rejects unrelated rows before binding the compared graph.
         for (index, (path, source)) in snapshot.iter().enumerate() {
             identity_bytes = identity_bytes
                 .checked_sub(path.len() + source.len())
@@ -1037,7 +1087,7 @@ fn decode_subject_with_types(
     // Ordinary proposals defer source relevance to the independent original
     // type-path check. This decoder returns no accepted handle; all other
     // routes retain their existing local unused-row refusal as well.
-    if ordinary.is_none() && used.len() != snapshot.len() {
+    if ordinary.is_none() && qmatch.is_none() && used.len() != snapshot.len() {
         return Err(Error::format("unused source entry").at("/sources"));
     }
     let interface = match value.field("root_interface")? {

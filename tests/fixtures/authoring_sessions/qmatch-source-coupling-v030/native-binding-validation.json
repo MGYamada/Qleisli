@@ -1,0 +1,93 @@
+{
+  "format": "qleisli.qmatch-native-binding-local-validation",
+  "version": 1,
+  "previous_commit": "3727426adae22a246e97e563137da7933031ef23",
+  "status": "Current pure dispatcher and actual Rust retained-view component checks; fresh compiled-native validation pending",
+  "native_dispatch_implemented": true,
+  "compiled_native_validated": false,
+  "reports": [
+    {
+      "label": "qmatch-native-dispatch-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-native-dispatch-first/report.json",
+      "sha256": "cae6c9c987f09ee0b654c6338b1dc90e22530bc08defbcb700f139a8cc633f9c",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 804061184
+    },
+    {
+      "label": "qmatch-rust-binding-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-rust-binding-first/report.json",
+      "sha256": "fa31b580c596cf3d080b0232db0d83358278f32575e42dc58406e049484f5feb",
+      "exit_code": 101,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 932560896
+    },
+    {
+      "label": "qmatch-rust-binding-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-rust-binding-second/report.json",
+      "sha256": "b6091309231bfa235cc8dfd7883d91fa8adc915dd266e0f5a8a89595db28cdce",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1467727872
+    },
+    {
+      "label": "qmatch-rust-binding-msrv",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-rust-binding-msrv/report.json",
+      "sha256": "e78eee85d2eb961b26dbf766228afb6c1e8cb8747d193b78414b988c0691af1a",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1495908352
+    },
+    {
+      "label": "qmatch-native-dispatch-runtime-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-native-dispatch-runtime-first/report.json",
+      "sha256": "c8e23b0a404f0c16b6f3c99747f2a2c26be3c436b40314eecf93d3832fefc275",
+      "exit_code": 0,
+      "seconds": 9.436162625002908,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 1313423360
+    },
+    {
+      "label": "qmatch-native-binding-audit",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/qmatch-native-binding-audit/report.json",
+      "sha256": "2a27141f9c894f88c0859e8ff3f147054e2dec95fda2212786bee3e1e782e3e6",
+      "exit_code": 0,
+      "seconds": 6.7218449159991,
+      "stable_inputs": true
+    }
+  ],
+  "sources": {
+    "src/interchange/mod.rs": "dc2ede70f937b0dbabe388f8987710624a303d8a63a427497461cd4030457e83",
+    "src/interchange/native.rs": "19ff33f8061074ab4b4d5d8540fadba8b7da2f12fe0b480c6f47a15936603168",
+    "src/interchange/native/qmatch.rs": "7a44681b8cb7eb1c39700dacb2ebee48cfb20efa4c67e69b9e3ee1709cbd1772",
+    "src/interchange/native/qmatch/tests.rs": "83f8c684600f62df1393ab1c24bd7b227e11c7613297076b117413d20618afbe",
+    "src/interchange/execution_view/finite/qmatch.rs": "89a0c5d6246d135d061ec985ebbd0fe0f7ab4d7bb339dd2fd821e44d9b9c1f22",
+    "src/interchange/native_context.rs": "8b16ec916ac5759283870ee2447d7c75be4acdad8d9d625a7c8a8e0c3b1db444",
+    "src/interchange/native/runtime.rs": "00652bb805979803c047f790422b47d060fc9d67355333d84af5e5345050d529",
+    "src/interchange/native/reporting.rs": "32b0c48071569d2423b495d7ee7a0e75a1ac2e10fc6cd287586840e832a6f697",
+    "lean-kernel/Protocol/NativeContext.lean": "4afd87920a247f42029deb8c9cd21986c944c97f058e9ca727b72d7bfcc6dafc",
+    "lean-kernel/Protocol/NativeContext/Bindings.lean": "5b42194db84f12b3f1baa310608333b1e9e06eb7709f9f521b75d801f657a12b",
+    "tests/qmatch_transport.lean": "2a2685c27d92fb2316f5f995c0427de9a370237e80180e8bbb4e3d54c732e337"
+  },
+  "performed": {
+    "rust": "Normal1.99.1 and MSRV1.85.0 each pass3actual retained graph/view tests,2contexttests,1existinggraphregression,1reportingsnapshot.2conditional fresh-native tests are ignored in this deliberately native-unselected observation,594filtered in each qmatch slice.",
+    "lean": "Actual pure NativeContext.run passes33data shapes,2exactphasecontrols,24source/evidence/body/viewrefusals;product/version,execution/inspection/caller context,requestflag and exact remaining work checked. Interpreted observation,not a fresh native executable.",
+    "audit": "20563kernel/transport declarations;1195pure/1244execimports;onlypropext,Classical.choice,Quot.sound;allprivate/generated included.",
+    "other": "Normal warnings-denied library+tests Clippy;251sourcepolicy modules;28CI manifest tests;16-mode synthetic Python context checks;docs2727links/103anchors/390Leanroots;whitespace pass."
+  },
+  "pending": [
+    "Fresh compatible checker and both conditional actual-native tests;full Python QLV3 executable fault checks and compiled Lean driver.",
+    "Guarded canonical both-package builds/audits/replay/current-record maintenance and six fixed protected comparisons. The fixed producer requires genuine hosted workflow context;no local hosted identity may be fabricated.",
+    "Latest main integration,full required same-commit CI/review and per-criterion audit.",
+    "Ordinary/selected quantum source execution,general source/call mappings/arms,full12joinedbits/64labels and full source-body preservation. No private component grants ordinary execution/inverse/control or new constitutional guarantees."
+  ],
+  "goal": {
+    "completed_applicable": 72,
+    "approved_exclusions": 2,
+    "total": 127,
+    "percent": 58.27,
+    "remaining_applicable": 53,
+    "issue64": "OPEN;all8unchecked",
+    "issue195": "OPEN"
+  }
+}

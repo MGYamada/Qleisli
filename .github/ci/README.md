@@ -125,7 +125,7 @@ only within an invocation; it caches no test results or cross-run executables.
 
 The default runner and hosted workflows continue to use fresh standalone
 drivers pending equivalent execution, coverage and representative timing/shadow
-evidence. The 73-group/115-command manifest, cases, seeds, timeouts, work limits,
+evidence. The 73-group/116-command manifest, cases, seeds, timeouts, work limits,
 actual-definition proofs, policy audits and full release/manual replay remain.
 Use the existing clean-checkout and pinned-tool requirements, for example:
 
@@ -675,12 +675,14 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 73 groups and 115 commands. The finite-carrier group
+The current manifest contains 73 groups and 116 commands. The finite-carrier group
 also executes 20 complete ordinary input/history controls against the actual
 compiled definitions, including omitted inputs and zero-probability histories.
 It compares 33 shared qmatch request shapes and two exact scalar controls with
 24 original source/evidence/execution-view refusals. This internal named-arm
-component does not activate a native mode or ordinary/selected source execution.
+component has an execution-only native mode and retains the actual compared Rust
+graph/request. Its private component handle grants no ordinary/selected source
+execution or inverse/control access. Fresh compiled-native checks remain required.
 These are conformance observations; generic domain/signature/history properties
 remain separate Lean proofs. Concrete IO tests do not use kernel reduction as
 a performance-intensive substitute for execution. The pure tensor group

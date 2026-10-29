@@ -120,10 +120,11 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 73)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 115)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 116)
         carrier = next(task for task in tasks if task['id'] == 'finite-carrier-pure')
         self.assertEqual(carrier['commands'], [
             ['cargo', '+1.98.1', 'test', '--lib', 'native::carrier', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'test', '--lib', 'native::qmatch', '--', '--include-ignored'],
             ['python3', 'scripts/run_native_lean_test.py', 'tests/ordinary_inputs.lean'],
             ['python3', 'scripts/run_native_lean_test.py', 'tests/qmatch_transport.lean',
              'tests/fixtures/qmatch_v030/transport-cases.json',

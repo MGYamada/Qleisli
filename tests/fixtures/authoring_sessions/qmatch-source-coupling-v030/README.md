@@ -83,3 +83,21 @@ scalar controls and 24 original-source/body/evidence/QDV refusals use independen
 authored literal expectations. These run the actual pure QLV3 definitions and
 do not establish Rust retained-view integration, native-mode dispatch, source
 body lowering, ordinary/selected quantum execution or Issue completion.
+
+The [native-binding first history](native-binding-first.tar.xz),
+[index](native-binding-index.json) and [local validation](native-binding-validation.json)
+retain 167 records of actual Rust retained-graph/QDV materialization and paired
+context dispatch. The first build misses three private ordinary-test adapter
+arguments; all original source objects and compiler diagnostics remain separate
+from the repair. The ordinary single-root check still rejects the same detached
+subjects; the qmatch proposal derives roots only from actual requested entries
+and controlled programs. Fresh Lean source relevance remains mandatory.
+
+Normal/MSRV observations each pass three retained-data tests and leave two
+fresh-native tests explicitly unexecuted. Independent exact phase expectations
+cover the actual circuit/matrix caches, not a JSON replay. Pure context dispatch
+checks the actual product/mode/scope/request and remaining work. These observations
+are not fresh compiled-native acceptance, full CI or a source-body theorem.
+The component has no public ordinary-program conversion or inverse/control
+access. Canonical hosted proof maintenance, actual native execution, complete
+ordinary/selected source integration and #64/#195 remain unfinished.

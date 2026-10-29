@@ -22,6 +22,9 @@ OPERAND_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v
 TRANSPORT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-first.tar.xz"
 TRANSPORT_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-index.json"
 TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/transport-validation.json"
+NATIVE_BINDING = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-first.tar.xz"
+NATIVE_BINDING_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-index.json"
+NATIVE_BINDING_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/native-binding-validation.json"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -142,6 +145,39 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads((ROOT / TRANSPORT_VALIDATION).read_text())
         self.assertFalse(current["native_activated"])
         self.assertEqual(current["goal"]["percent"], 58.27)
+
+    def test_first_retained_graph_compile_failure_and_native_test_limits_survive(self):
+        index = json.loads((ROOT / NATIVE_BINDING_INDEX).read_text())
+        compressed = (ROOT / NATIVE_BINDING).read_bytes()
+        self.assertLessEqual(len(compressed), 1024 * 1024)
+        self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
+        with lzma.open(io.BytesIO(compressed)) as stream:
+            contents = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(contents), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(contents)) as archive:
+            for member in archive:
+                name = PurePosixPath(member.name)
+                self.assertTrue(member.isfile())
+                self.assertFalse(name.is_absolute())
+                self.assertNotIn("..", name.parts)
+                self.assertNotIn(member.name, members)
+                self.assertIn(member.name, index["records"])
+                content = archive.extractfile(member).read()
+                self.assertEqual(len(content), index["records"][member.name]["bytes"])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index["records"][member.name]["sha256"])
+                members[member.name] = content
+        self.assertEqual(len(members), 167)
+        self.assertEqual(set(members), set(index["records"]))
+        first = json.loads(members["observations/qmatch-rust-binding-first/report.json.txt"])
+        self.assertEqual(first["exit_code"], 101)
+        self.assertIn(b"3 previous errors", members["observations/qmatch-rust-binding-first/0.stderr.txt"])
+        for label in ["qmatch-rust-binding-second", "qmatch-rust-binding-msrv"]:
+            self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 0)
+            self.assertIn(b"3 passed; 0 failed; 2 ignored", members[f"observations/{label}/0.stdout.txt"])
+        current = json.loads((ROOT / NATIVE_BINDING_VALIDATION).read_text())
+        self.assertFalse(current["compiled_native_validated"])
+        self.assertEqual(current["goal"]["issue195"], "OPEN")
 
 
 if __name__ == "__main__":
