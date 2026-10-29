@@ -23,6 +23,12 @@ development milestones from the scope of their evidence.
   classical and branch instructions in this straight-line component. Retain
   small dependency/body/phase/adjoint and hidden-observation regressions as
   checked theorems. Source-arm/nominal and native/QDV integration remain open.
+- Share original Raw preparation and physical-sector reconstruction between
+  requested and computed results, preserving the existing checkers' complete
+  work/error behavior. Bind fresh nominal declarations, per-owner codes and
+  original QIRF/Raw bodies to exact logical sector equations. Keep three-state
+  cardinality, noncontiguous product labels, physical padding and zero-width
+  owners distinct. Source-arm/capability and native/QDV integration remain open.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

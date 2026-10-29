@@ -209,8 +209,15 @@ Physical widths do not establish original nominal or source type identity.
 The enclosing QIRF component reuses fresh graph/root checks and proves exact
 original-program embedding into that pure Raw subject. It rejects observing,
 classical and branch instructions in this straight-line component.
+Its internal nominal component independently checks original type declarations
+and each ordered owner's code, then compares each active physical sector on
+that code with the exact requested logical map. Product labels retain their
+actual physical coordinates; padding sectors are checked separately and do not
+increase logical cardinality. The original requested-sector checks and the new
+computed-sector path share reconstruction; the refactor preserves all old
+results, errors and remaining work.
 These components enable no new source or native route: original source/arm,
-nominal and native/QDV integration remain required. Common enum checks, native acceptance
+capability, nominal execution and native/QDV integration remain required. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

@@ -125,6 +125,20 @@ def subjectFields (program : Program) : Nat :=
       | .quantumIf _ _ _ _ zero one => zero.length + one.length
       | _ => 0).sum)
 
+private structure Subject where
+  prepared : QleisliKernel.Raw.Prepared
+  steps : List Step
+
+private def readSubject (dependencies : List Dependency) (selector target : Basis)
+    (program : Program) : WorkM Subject := do
+  guard (basisValid selector && basisValid target && program.operations.length ≤ 1024) .limit
+  guard (program.effect == .unitary && program.inputs.length == 2 && program.outputs.length == 2) .request
+  exactWork (QleisliKernel.Exact.charge (subjectFields program))
+  let prepared ← lift (QleisliKernel.Raw.prepare (dependencies.map (·.signature)) program)
+  guard (ownerInterface selector target program prepared) .request
+  let steps ← lift (readEvents (width selector + width target) prepared.events)
+  return ⟨prepared,steps⟩
+
 structure Retained where
   prepared : QleisliKernel.Raw.Prepared
   steps : List Step
@@ -135,15 +149,10 @@ the shared sector gate. Fresh dependency/source/arm binding belongs to the
 enclosing caller; this component itself grants no native accepted handle. -/
 def check (dependencies : List Dependency) (selector target : Basis) (program : Program)
     (required : List Matrix) : WorkM Retained := do
-  guard (basisValid selector && basisValid target && program.operations.length ≤ 1024) .limit
-  guard (program.effect == .unitary && program.inputs.length == 2 && program.outputs.length == 2) .request
-  exactWork (QleisliKernel.Exact.charge (subjectFields program))
-  let prepared ← lift (QleisliKernel.Raw.prepare (dependencies.map (·.signature)) program)
-  guard (ownerInterface selector target program prepared) .request
-  let steps ← lift (readEvents (width selector + width target) prepared.events)
+  let subject ← readSubject dependencies selector target program
   let sectors ← QleisliKernel.FiniteRestriction.checkSectors dependencies selector target
-    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,steps⟩ required
-  return ⟨prepared,steps,sectors⟩
+    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,subject.steps⟩ required
+  return ⟨subject.prepared,subject.steps,sectors⟩
 
 /-- A retained physical Raw subject, its independent complete original trace,
 and all ordered exact sector equations. Source/nominal identities are separate. -/
@@ -168,6 +177,7 @@ theorem check_bound (dependencies : List Dependency) (selector target : Basis) (
     (required : List Matrix) (result : Retained) (work left : Nat)
     (ok : (check dependencies selector target program required).run work = (.ok result,left)) :
     Binding dependencies selector target program required result := by
+  simp only [check,readSubject,bind_assoc,pure_bind] at ok
   obtain ⟨_,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,he,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
@@ -213,4 +223,51 @@ theorem flatten_execution (dependencies : List Dependency) (pieces : List (List 
 #print axioms check_bound
 #print axioms reorder_identity
 #print axioms flatten_execution
+def read (dependencies : List Dependency) (selector target : Basis)
+    (program : Program) : WorkM Retained := do
+  let subject ← readSubject dependencies selector target program
+  let sectors ← QleisliKernel.FiniteRestriction.readSectors dependencies selector target
+    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,subject.steps⟩
+  return ⟨subject.prepared,subject.steps,sectors⟩
+
+def ReadBinding (dependencies : List Dependency) (selector target : Basis)
+    (program : Program) (result : Retained) : Prop :=
+  (basisValid selector && basisValid target && program.operations.length ≤ 1024) = true ∧
+    (program.effect == .unitary && program.inputs.length == 2 && program.outputs.length == 2) = true ∧
+    QleisliKernel.Raw.prepare (dependencies.map (·.signature)) program = .ok result.prepared ∧
+    QleisliKernel.Semantics.RawTrace.run program = some result.prepared.reference ∧
+    ownerInterface selector target program result.prepared = true ∧
+    (∃ pieces, QleisliKernel.Exact.ListRel (EventPiece (width selector + width target))
+      result.prepared.events pieces ∧ result.steps = pieces.flatten) ∧
+    (∃ before after,
+      (QleisliKernel.FiniteRestriction.readSectors dependencies selector target
+        ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,result.steps⟩).run before =
+          (.ok result.sectors,after)) ∧
+    QleisliKernel.Exact.ListRel
+      (QleisliKernel.FiniteRestriction.SectorEvaluationBinding dependencies (width selector) target result.steps)
+      (List.range (2^width selector)) result.sectors
+
+theorem read_bound (dependencies : List Dependency) (selector target : Basis)
+    (program : Program) (result : Retained) (work left : Nat)
+    (ok : (read dependencies selector target program).run work = (.ok result,left)) :
+    ReadBinding dependencies selector target program result := by
+  simp only [read,readSubject,bind_assoc,pure_bind] at ok
+  obtain ⟨_,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,w₂,he,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨prepared,w₄,hp,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₅,ho,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨steps,w₆,hs,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨sectors,w₇,hc,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst result
+  have preparedEq := (lift_success _ _ _ _ hp).1
+  have readEq := (lift_success _ _ _ _ hs).1
+  have sectorEq := QleisliKernel.FiniteRestriction.readSectors_bound dependencies selector target
+    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,steps⟩ sectors w₆ w₇ hc
+  exact ⟨(guard_success _ _ _ _ hl).1,(guard_success _ _ _ _ he).1,preparedEq,
+    QleisliKernel.Raw.prepare_reference _ _ _ preparedEq,(guard_success _ _ _ _ ho).1,
+    readEvents_bound _ _ _ readEq,⟨w₆,w₇,hc⟩,sectorEq.2.2.2⟩
+
+
 end QleisliKernel.Raw.Sector
