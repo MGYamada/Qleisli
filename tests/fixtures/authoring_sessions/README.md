@@ -1,3 +1,8 @@
+The [original qmatch coupling history](qmatch-source-coupling-v030/README.md)
+retains first sector/header/arm sources, the source-function substitution
+counterexample and separate evidence-entry repair. Generic kernel proofs,
+bounded runtime observations and failed full reductions keep separate scopes.
+
 The [ordinary-result execution history](ordinary-execution-v030/README.md)
 retains first source refusals, separate repairs and bounded syntax/storage/root
 experiments alongside 21 current CLI observations. Closed project result

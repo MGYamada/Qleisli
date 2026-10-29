@@ -135,8 +135,8 @@ def sameTypes (required : Interface) (p : Ports) : Bool :=
     p.targetIn.basis == p.targetOut.basis
 
 /-- Fresh typed original subject, reusable by arm checks without another graph pass. -/
-def prepareFromRoots (artifact : Artifact) (order : Array Nat) (attached required : Interface)
-    (roots : List Nat) : WorkM Prepared := do
+def prepareWithRows (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (originalRows : List (String × String)) : WorkM Prepared := do
   guard (shape attached required) .request
   SourceTypes.checkMany artifact.sources (forests attached required)
   let p ← lift (readOption (ports required))
@@ -149,7 +149,7 @@ def prepareFromRoots (artifact : Artifact) (order : Array Nat) (attached require
   exactWork (Exact.charge (Carrier.sourceNodes attached required + 1))
   guard (attached == required) .request
   guard (sameTypes required p) .request
-  let root ← Carrier.sourceRootFromRoots artifact order attached required roots
+  let root ← Carrier.sourceRootWithRows artifact order attached required roots originalRows
   guard (root.program.inputs == attached.inputs.map (·.port) &&
     root.program.outputs == attached.outputs.map (·.port.token)) .request
   exactWork (Exact.charge (attached.outputs.length * root.checked.state.quantum.live.length + 1))
@@ -158,6 +158,10 @@ def prepareFromRoots (artifact : Artifact) (order : Array Nat) (attached require
   let program ← lift (readOption (Sector.project root.program))
   let restriction ← QleisliKernel.Raw.Sector.read root.dependencies [.bits sl.bits] [.bits tl.bits] program
   return ⟨p,sl,tl,si,ti,so,to,root,program,restriction⟩
+
+def prepareFromRoots (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) : WorkM Prepared :=
+  prepareWithRows artifact order attached required roots []
 
 def prepare (artifact : Artifact) (order : Array Nat) (attached required : Interface) : WorkM Prepared :=
   prepareFromRoots artifact order attached required [artifact.root]
@@ -169,8 +173,8 @@ def check (artifact : Artifact) (order : Array Nat) (attached required : Interfa
     subject.restriction.sectors subject.selectorLayout.labels logical
   return subject.finish actual
 
-structure PreparedPostconditionFromRoots (artifact : Artifact) (order : Array Nat)
-    (attached required : Interface) (roots : List Nat) (checked : Prepared) : Prop where
+structure PreparedPostconditionWithRows (artifact : Artifact) (order : Array Nat)
+    (attached required : Interface) (roots : List Nat) (originalRows : List (String × String)) (checked : Prepared) : Prop where
   ownerCounts : shape attached required = true
   sourceTypes : ∃ a b, (SourceTypes.checkMany artifact.sources (forests attached required)).run a = (.ok (),b)
   ports : ports required = some checked.ports
@@ -182,7 +186,7 @@ structure PreparedPostconditionFromRoots (artifact : Artifact) (order : Array Na
   targetLayout : Semantics.FiniteCarrier.layout checked.ports.targetIn.basis = some checked.targetLayout
   interface : attached = required
   sameTypes : sameTypes required checked.ports = true
-  root : ∃ work, Validity.SourceRootPostconditionFromRoots artifact order (Carrier.sourceRows attached required) roots checked.root work
+  root : ∃ work, Validity.SourceRootPostconditionFromRoots artifact order (Carrier.sourceRows attached required ++ originalRows) roots checked.root work
   inputs : checked.root.program.inputs = attached.inputs.map (·.port)
   outputs : checked.root.program.outputs = attached.outputs.map (·.port.token)
   live : attached.outputs.all (fun owner => checked.root.checked.state.quantum.live.contains owner.port) = true
@@ -191,6 +195,10 @@ structure PreparedPostconditionFromRoots (artifact : Artifact) (order : Array Na
   restriction : QleisliKernel.Raw.Sector.ReadBinding checked.root.dependencies
     [.bits checked.selectorLayout.bits] [.bits checked.targetLayout.bits] checked.program checked.restriction
 
+
+abbrev PreparedPostconditionFromRoots (artifact : Artifact) (order : Array Nat)
+    (attached required : Interface) (roots : List Nat) (checked : Prepared) : Prop :=
+  PreparedPostconditionWithRows artifact order attached required roots [] checked
 
 abbrev PreparedPostcondition (artifact : Artifact) (order : Array Nat)
     (attached required : Interface) (checked : Prepared) : Prop :=
@@ -204,10 +212,10 @@ structure Postcondition (artifact : Artifact) (order : Array Nat)
     (LogicalBinding checked.targetInCode checked.targetOutCode checked.restriction.sectors)
     (checked.selectorLayout.labels.zip logical) checked.logical
 
-theorem prepareFromRoots_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
-    (roots : List Nat) (checked : Prepared) (work left : Nat)
-    (ok : (prepareFromRoots artifact order attached required roots).run work = (.ok checked,left)) :
-    PreparedPostconditionFromRoots artifact order attached required roots checked := by
+theorem prepareWithRows_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (originalRows : List (String × String)) (checked : Prepared) (work left : Nat)
+    (ok : (prepareWithRows artifact order attached required roots originalRows).run work = (.ok checked,left)) :
+    PreparedPostconditionWithRows artifact order attached required roots originalRows checked := by
   obtain ⟨_,w₁,hshape,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hsource,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨p,w₃,hp,h⟩ := bind_success _ _ _ _ _ h
@@ -235,7 +243,7 @@ theorem prepareFromRoots_bound (artifact : Artifact) (order : Array Nat) (attach
   have projected : Sector.project root.program = some program := by
     have found := (lift_success _ _ _ _ hprogram).1
     cases entry : Sector.project root.program <;> simp_all [readOption]
-  have rootCheck := Carrier.sourceRootFromRoots_result artifact order attached required roots root w₁₂ w₁₃ hr
+  have rootCheck := Carrier.sourceRootWithRows_result artifact order attached required roots originalRows root w₁₂ w₁₃ hr
   obtain ⟨rootWork,rootCheck⟩ := rootCheck
   have portEq := (guard_success _ _ _ _ hports).1
   simp only [Bool.and_eq_true,beq_iff_eq] at portEq
@@ -248,6 +256,12 @@ theorem prepareFromRoots_bound (artifact : Artifact) (order : Array Nat) (attach
     portEq.1,portEq.2,(guard_success _ _ _ _ hlive).1,original.1,original.2,
     QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hrestriction⟩
 
+
+theorem prepareFromRoots_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
+    (roots : List Nat) (checked : Prepared) (work left : Nat)
+    (ok : (prepareFromRoots artifact order attached required roots).run work = (.ok checked,left)) :
+    PreparedPostconditionFromRoots artifact order attached required roots checked := by
+  exact prepareWithRows_bound artifact order attached required roots [] checked work left ok
 
 theorem prepare_bound (artifact : Artifact) (order : Array Nat) (attached required : Interface)
     (checked : Prepared) (work left : Nat)

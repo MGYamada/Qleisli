@@ -6,6 +6,7 @@ import QleisliKernel.Tests.ComputedSectors
 import QleisliKernel.Tests.NominalSector
 import QleisliKernel.Tests.SectorArms
 import QleisliKernel.Tests.SourceQuantum
+import QleisliKernel.Tests.SourceEntries
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import QleisliKernel.Qirf.ControlAccess

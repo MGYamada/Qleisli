@@ -1,0 +1,163 @@
+{
+  "format": "qleisli.qmatch-source-coupling-validation",
+  "version": 1,
+  "status": "local-component-checkpoint;not-native-activation-or-issue-completion",
+  "previous_commit": "03893179da62bd3477dd43ee9c7d447c20d42a74",
+  "trusted_base": "e4e77ce7c0992cff61bb906d8f550f2f6917685d",
+  "reports": [
+    {
+      "label": "source-rows-carrier-equivalence-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-rows-carrier-equivalence-first/report.json",
+      "sha256": "7d21a9c4d4afbc4664638e48307055e6dd78fd04001aaee3c6bbc487d08a6bcf",
+      "exit_code": 0,
+      "seconds": 3.4625010000017937,
+      "stable_inputs": true
+    },
+    {
+      "label": "source-rows-nominal-equivalence-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-rows-nominal-equivalence-first/report.json",
+      "sha256": "adc3a429f8c943f3fdbe957bc7d779a0e3f5f1cc9011a59a6c84d10641ce0f42",
+      "exit_code": 0,
+      "seconds": 2.8499332089850213,
+      "stable_inputs": true
+    },
+    {
+      "label": "fresh-entries-port-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/fresh-entries-port-second/report.json",
+      "sha256": "8248a4c69c8cbfaf02eaecbc71ec580f6fe8473e76306aa21e4947cc680521cb",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 641220608
+    },
+    {
+      "label": "source-arm-sixth",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-arm-sixth/report.json",
+      "sha256": "b221b43778d227bba9e6ed3499344bcf8aa6b26d636c33205d59e2d3881b732e",
+      "exit_code": 0,
+      "seconds": 0.5602189170022029,
+      "stable_inputs": true
+    },
+    {
+      "label": "source-arm-port-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-arm-port-second/report.json",
+      "sha256": "93809f7c1ef1c05163523d0c5901e8adeff7eb4c6e7ae92d3eef920a65739855",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 673480704
+    },
+    {
+      "label": "source-sector-third",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-third/report.json",
+      "sha256": "939e8da3e933ec4e39527d77c812d3221664029022db8546b9832faaed9e90b6",
+      "exit_code": 0,
+      "seconds": 0.724401166982716,
+      "stable_inputs": true
+    },
+    {
+      "label": "source-sector-port-third",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-port-third/report.json",
+      "sha256": "d89ceda782c75ad31210cdfbe2c36e1d52ba6adfb75f029f3de4bacb04afd839",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 677888000
+    },
+    {
+      "label": "source-sector-runtime-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-runtime-first/report.json",
+      "sha256": "cc8aaebce08c6baf3585ca42159757d79e9e8129ade2ce3c3ed7a2a5a47c6fd5",
+      "exit_code": 1,
+      "seconds": 0.6192052919941489,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 646037504
+    },
+    {
+      "label": "source-sector-runtime-second",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-runtime-second/report.json",
+      "sha256": "078c6ecc2d479bbe059cc99187e080e7802c1ee866f44a3affc8d37eed917cef",
+      "exit_code": 0,
+      "seconds": 0.55914212501375,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 647282688
+    },
+    {
+      "label": "source-sector-runtime-fourth",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-runtime-fourth/report.json",
+      "sha256": "46fa972d28c3f45161dac6a9f547c810e01cfba95a603930bf2fa5a42691d771",
+      "exit_code": 0,
+      "seconds": 1.152565208991291,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 653557760
+    },
+    {
+      "label": "source-sector-aggregate-first",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-aggregate-first/report.json",
+      "sha256": "fa98e208121d8534bc6dfae3535381e48f6f97692379c6728cbacdd876b2221b",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 698286080
+    },
+    {
+      "label": "source-sector-full-tests",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-full-tests/report.json",
+      "sha256": "7f65ca7b1965119ae8886992fb1a37306583091b3f9b71dd01ebee814cacb692",
+      "exit_code": 0,
+      "seconds": 196.78941070800647,
+      "stable_inputs": true,
+      "child_peak_rss_bytes": 3056467968
+    },
+    {
+      "label": "source-sector-audit",
+      "external_path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/computed-sector-checks/source-sector-audit/report.json",
+      "sha256": "a30b53915c197eb85210a259fd526735c69164d1f95a0f0f0ee65a47f773105e",
+      "exit_code": 0,
+      "seconds": 3.6780351670167875,
+      "stable_inputs": true
+    }
+  ],
+  "sources": {
+    "lean-kernel/QleisliKernel/Qirf/Carrier.lean": "8208cde6dc9115f51f269657a4c139af142cdaa8d1c2ece5675514374a8846b0",
+    "lean-kernel/QleisliKernel/Qirf/NominalSector.lean": "d7cc5de5481fbb9968744c97a2ca80020997b941c32a66cb3c2fe1102537521e",
+    "lean-kernel/QleisliKernel/Qirf/FreshEntries.lean": "c5e598fa241e5ce0ee9b6bb1ba6ba1b68c49be365f7c3c43f5fdd389c975dc78",
+    "lean-kernel/QleisliKernel/Qirf/SourceArm.lean": "f77b5208422b69d35cbeceebde2a3c74f7928f4e9c2347d998420eda8c446df1",
+    "lean-kernel/QleisliKernel/Qirf/SourceSector.lean": "2a7b01533bf6e37130d4830c3431fd7ec1e428fbe7db7b4a1a642ba573fd9347",
+    "lean-kernel/QleisliKernel/Tests/SourceEntries.lean": "83354b47eeb5accaa905cb4ad75835a5e0ab6138a4f9ccde7930fbc425b0082f",
+    "lean-kernel/QleisliKernel.lean": "35f53a7b779cf12d9b9d34df6f4e4279dfe0b8979a69ce7ecd29ddf0bbeae753",
+    "lean-kernel/Tests.lean": "41629df22a7c77104644591e2b176c8b91847e645c305326952360d893e1fa76",
+    "lean-kernel/Audit.lean": "0f3e7762f0788a8243666bd7ddb4f12bd82bcdbdd1b820c42640ffea94417f2a"
+  },
+  "results": {
+    "runtime": "22 bounded original source/evidence observations pass, including separate valid schedules and actual main/control phase equation faults. Source function substitution with unchanged entries refuses.",
+    "kernel": "Generic actual graph receipt/input/original source coupling, full check_bound and same-evidence canonical-name theorem compile under strict options. Four concrete original identity reductions pass. Complete Tests passes.",
+    "audit": "20108 kernel/transport declarations;1192 pure/1223 executable import modules;only propext,Classical.choice,Quot.sound. Includes private/generated declarations.",
+    "source_policy": "245 kernel/transport/test modules pass;no external Lake dependencies.",
+    "history": "785 inert members;26938488 expanded bytes;220000 archive bytes;every member size/hash checked without execution.",
+    "scope": "Source-body lowering and selector/target expression typing, native/QDV binding, full 12-bit qmatch and general/selected quantum nominal execution remain pending. Two admitted QLV1 scopes and all wider pending obligations remain unchanged.",
+    "additional_checks": {
+      "history_tests": "2 passive checks pass; no extraction/execution",
+      "ci_runner_tests": "15 pass after adding the new history command to its exact expected list",
+      "docs": "2721 links,103 anchors,384 Lean roots",
+      "whitespace": "Complete working source tree passes"
+    }
+  },
+  "uncompleted_checks": {
+    "constitutional_continuity": "FAIL:stale source identity lean-kernel/Audit.lean at the trusted base comparison;no hash-only refresh.",
+    "inventory": "FAIL:frozen source lean-kernel/Audit.lean;guarded current-proof maintenance still required.",
+    "proof_records": "Both-package canonical build/audit/replay/schema and six protected fixed comparisons NOT RUN for this checkpoint. Stable imported primary products are not fresh replay or native attestation.",
+    "rust_msrv": "NOT REPEATED:no Rust/protocol changes.",
+    "hosted": "No current branch PR,push,CI or review;no release/tag/publication."
+  },
+  "goal": {
+    "applicable_completions": 72,
+    "approved_exclusions": 2,
+    "total": 127,
+    "percent": 58.27,
+    "remaining_applicable": 53,
+    "issue64": "OPEN:all8 acceptance criteria remain outstanding",
+    "issue195": "OPEN"
+  },
+  "ci_initial": {
+    "archive": "ci-first.tar.xz",
+    "index": "ci-first-index.json",
+    "scope": "Original CI command list and test sources before the expected-list repair. observation.txt transcribes the first actual tool failure; complete original streams were not saved and are not reconstructed. All records are inert."
+  }
+}

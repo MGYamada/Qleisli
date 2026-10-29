@@ -177,6 +177,10 @@
         [
           "python3",
           "scripts/test_finite_adts_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_qmatch_source_coupling_history.py"
         ]
       ],
       "prepare": []

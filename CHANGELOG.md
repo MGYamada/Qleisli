@@ -41,6 +41,14 @@ development milestones from the scope of their evidence.
   incomplete/overlapping labels and public observing/isometric arms. Missing
   private annotations remain unknown until body checking. Binding these reads
   to the actual arm/control programs and native execution remains unfinished.
+- Bind original qmatch arm queries to actual function-evidence entries, derive
+  their implementation indices and include those entries in the same fresh
+  graph as the main and controlled bodies. Prove that every retained receipt
+  comes from its original complete input and dependency snapshot, and that
+  retaining an evidence table/index preserves the resolved source function
+  name. Check original function bytes and exact arm/control/main equations.
+  Original selector/target expression typing, source-body preservation, native
+  dispatch/QDV and the full #64/#195 scope remain unfinished.
 - Combine corpus execution and exact accepted-view checks after one compilation
   per project. Preserve all 87 corpus projects, 14 examples, fresh native round
   trips and reachable evidence-cache comparisons without a passed-result cache.

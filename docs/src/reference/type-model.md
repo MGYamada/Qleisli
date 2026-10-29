@@ -925,6 +925,18 @@ nominal checks do not open nominal runtime or the selected projection. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 
+The internal `Qirf.SourceSector` component reads the actual written arm names,
+full source target trees and public effects. It associates each arm with an
+original function-evidence entry and derives its implementation index from
+that entry. One fresh graph includes those evidence subjects and the original
+main/arm/control programs. Original function bytes and resolution paths remain
+bound to the same checked entry; its complete input, body and dependency
+snapshot are retained. Keeping an evidence table and index cannot change the
+resolved function name. Exact code-space, phase and controlled-action checks
+remain required. This component does not yet check selector/target expression
+typing or prove source-body lowering, and has no native/QDV dispatch or source
+execution handle. It does not complete the twelve-bit scope or #64/#195.
+
 Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.
 Preparation defers tables whose parameter/result types contain nominal nodes

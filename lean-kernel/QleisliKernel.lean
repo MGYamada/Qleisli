@@ -61,6 +61,7 @@ import QleisliKernel.Qirf.Sector
 import QleisliKernel.Qirf.NominalSector
 import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.Qirf.SectorArms
+import QleisliKernel.Qirf.SourceSector
 import QleisliKernel.Qirf.Carrier
 import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.Ownership
