@@ -12,6 +12,10 @@ fn cases() -> json::Value {
         "../../../../tests/fixtures/qmatch_v030/nominal-execution-cases.json"
     ))
     .unwrap();
+    let body = json::parse(include_bytes!(
+        "../../../../tests/fixtures/qmatch_v030/body-execution-cases.json"
+    ))
+    .unwrap();
     let rows = scalar
         .field("cases")
         .unwrap()
@@ -19,6 +23,7 @@ fn cases() -> json::Value {
         .unwrap()
         .iter()
         .chain(nominal.field("cases").unwrap().array().unwrap())
+        .chain(body.field("cases").unwrap().array().unwrap())
         .cloned()
         .collect();
     json::Value::object([("cases", json::Value::Array(rows))])
@@ -66,7 +71,7 @@ fn actual_retained_graph_and_caches_match_both_independent_exact_phase_views() {
         views.push(actual);
         count += 1;
     }
-    assert_eq!(count, 4);
+    assert_eq!(count, 8);
     assert_ne!(views[0], views[1]);
     assert_ne!(views[2], views[3]);
 }

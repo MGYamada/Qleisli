@@ -191,9 +191,10 @@ def callers(probe):
 def qmatch(probe):
     directory = ROOT / 'tests/fixtures/qmatch_v030'
     rows = []
-    for name in ['execution-cases.json', 'nominal-execution-cases.json']:
+    for name, count in [('execution-cases.json', 26), ('nominal-execution-cases.json', 26),
+                        ('body-execution-cases.json', 12)]:
         cases = json.loads((directory / name).read_text())['cases']
-        assert len(cases) == 26
+        assert len(cases) == count
         rows.extend(cases)
     for row in rows:
         original = inner(row['artifact'], row['request'])

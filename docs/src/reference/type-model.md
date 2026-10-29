@@ -938,10 +938,14 @@ moves now identify the selector and target in a complete linear source frame.
 The two-port subject uses the exact original parameter/result order, retaining
 distinct logical identities even when both types and physical widths coincide.
 Public Observe/Isometry cannot be sharpened by its whole-subject Unitary request.
-Unknown prefix expressions refuse; arbitrary calls/control flow and general
-source-to-Raw mapping remain required. The component does not prove source-body
-lowering and has no native/QDV dispatch or source execution handle. It does not
-complete the twelve-bit scope or #64/#195.
+The complete structural suffix and final expression also retain the actual
+returned owner order. An unswapped Raw subject cannot implement a reordered
+return merely because both owners have equal or zero physical width. Unknown
+prefix/suffix expressions refuse; arbitrary calls/control flow and general
+source-to-Raw mapping remain required. The enclosing internal native/QDV route
+checks this component without granting an ordinary source execution handle or
+proving general source-body lowering. It does not complete the twelve-bit scope
+or #64/#195.
 
 Ordinary nominal classical calls lower their checked original bodies in the
 internal producer; they do not require enumeration of physical label tables.

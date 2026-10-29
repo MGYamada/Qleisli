@@ -138,3 +138,25 @@ limit or an earlier parser barrier cannot replace those expected stages.
 Two conditional compiled-native Rust tests remain unexecuted locally. This
 does not establish ordinary project/selected quantum execution, a source-body
 preservation theorem, the full twelve-bit profile or Issue completion.
+
+The [complete-body first history](body-first.tar.xz), [index](body-index.json)
+and [local validation](body-validation.json) retain both original project groups,
+actual common CLI diagnostics and the original private component's acceptance
+of an observing suffix. That component supplied no ordinary source handle or
+pure source label. The first `measure_z(Unit)` tail is a type error; the separate
+discard/replacement tail reaches the public Unitary versus Observe effect error.
+
+The structural repair reads the complete suffix and final expression, retaining
+renamed owners, tuple shape and actual return order. A legal reordered result
+cannot reuse the unswapped Raw subject, even for two identical zero-width types.
+Four exact controls and eight request-stage refusals run through the maintained
+pure context; seventeen small kernel reductions cover return and shape invariants.
+Normal/MSRV Rust checks compare eight independently expected retained views.
+
+First failures remain separate: the reserved Lean identifier, missing `Except`
+equality instances and stale source text in an evidence-identity QDV expectation.
+An earlier malformed source-focus expectation was repaired before execution.
+The archive retains all original sources and streams passively. Fresh compiled
+native checks, guarded canonical proof maintenance, full CI/review, matching
+reordered Raw implementations and general source/arm execution remain pending.
+#64 keeps all eight criteria unchecked and #195 remains open.

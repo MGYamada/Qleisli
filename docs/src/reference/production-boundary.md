@@ -232,6 +232,15 @@ restriction. Fresh native conformance, canonical proof maintenance and full CI
 remain required; original source-body lowering, decoder/walker/native compilation,
 runtime/target preservation and broader QS/PR/RS/EXACT duties are separate.
 
+The current ordered Raw frame additionally requires a complete structural
+source return. Checked renaming, ordinary tuple moves and the final expression
+retain the original logical owner identities, basis trees and returned order.
+Unknown suffix expressions, hidden observation/discard and missing or duplicated
+owners refuse. A legal source return that changes owner order requires a matching
+Raw output mapping; equal types or empty wire lists do not justify reusing the
+unswapped Raw subject. This check does not establish general source/arm lowering
+or expose ordinary source execution.
+
 ### Rectangular pure-leaf requests
 
 The version-paired native gate accepts `qleisli.native-contract` version 1

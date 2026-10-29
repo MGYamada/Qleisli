@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.SourceArm
-import QleisliKernel.SourceTypes.QuantumOperands
+import QleisliKernel.SourceTypes.QuantumBody
 
 /-! Informed original source/IR arm coupling. Source rows and roots are derived
 from fresh queries and actual program subjects, never transport coverage flags.
@@ -25,6 +25,8 @@ structure CanonicalOperands {sources owner name offset}
     (site : SourceTypes.QuantumMatch.Site sources owner name offset)
     (selector target : Semantics.FiniteCarrier.Basis) where
   read : SourceTypes.QuantumOperands.Checked site selector target
+  body : SourceTypes.QuantumBody.Checked read
+  returned : body.returnOrder = [0,1]
   declaredEffect : read.signature.original.parsedHeader.effect = none ∨
     read.signature.original.parsedHeader.effect = some .unitary
   inputOrder : read.signature.inputs = [selector,target]
@@ -32,9 +34,11 @@ structure CanonicalOperands {sources owner name offset}
   selectorOrdinal : read.selector.ordinal = 0
   targetOrdinal : read.target.ordinal = 1
 
-/-- This current whole-subject component has exactly two ordered input owners.
-General call-site expressions/frames need their actual source-to-Raw mapping;
-they cannot obtain it by relabeling these source parameter ordinals. -/
+/-- The current Raw sector frame has two ordered input/output owners. Check
+the complete structural source body and its actual returned order against that
+frame. A legal reordered result needs a matching Raw output mapping; neither
+equal widths nor zero-width wires may silently erase the permutation. General
+call-site expressions/frames still need their own checked mapping. -/
 def readOperands {sources owner name offset}
     (site : SourceTypes.QuantumMatch.Site sources owner name offset)
     (selector target : Semantics.FiniteCarrier.Basis) : WorkM (CanonicalOperands site selector target) := do
@@ -43,7 +47,10 @@ def readOperands {sources owner name offset}
       read.selector.ordinal = 0 ∧ read.target.ordinal = 1 then
     if effect : read.signature.original.parsedHeader.effect = none ∨
         read.signature.original.parsedHeader.effect = some .unitary then
-      return ⟨read,effect,mapping.1,mapping.2.1,mapping.2.2.1,mapping.2.2.2⟩
+      let body ← SourceTypes.QuantumBody.read read
+      if returned : body.returnOrder = [0,1] then
+        return ⟨read,body,returned,effect,mapping.1,mapping.2.1,mapping.2.2.1,mapping.2.2.2⟩
+      else throw .request
     else throw .request
   else throw .request
 

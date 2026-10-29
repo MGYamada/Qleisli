@@ -31,6 +31,7 @@ CI_TYPECHECK_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupl
 NOMINAL = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-first.tar.xz"
 NOMINAL_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-index.json"
 NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-validation.json"
+BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
 
 
 class OriginalCouplingHistory(unittest.TestCase):
@@ -221,6 +222,40 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["goal"]["issue195"], "OPEN")
 
+
+    def test_complete_body_failures_and_remaining_native_obligations_survive(self):
+        directory = ROOT / BODY_ROOT
+        index = json.loads((directory / 'body-index.json').read_text())
+        packed = (directory / 'body-first.tar.xz').read_bytes()
+        self.assertLessEqual(len(packed), 1024 * 1024)
+        self.assertEqual(len(packed), index['bytes'])
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), index['sha256'])
+        with lzma.open(io.BytesIO(packed)) as stream:
+            expanded = stream.read(32 * 1024 * 1024 + 1)
+        self.assertLessEqual(len(expanded), 32 * 1024 * 1024)
+        members = {}
+        with tarfile.open(fileobj=io.BytesIO(expanded)) as archive:
+            for entry in archive:
+                self.assertTrue(entry.isfile())
+                self.assertFalse(PurePosixPath(entry.name).is_absolute())
+                self.assertNotIn('..', PurePosixPath(entry.name).parts)
+                self.assertNotIn(entry.name, members)
+                self.assertIn(entry.name, index['records'])
+                content = archive.extractfile(entry).read()
+                self.assertEqual(len(content), index['records'][entry.name]['bytes'])
+                self.assertEqual(hashlib.sha256(content).hexdigest(), index['records'][entry.name]['sha256'])
+                members[entry.name] = content
+        self.assertEqual(set(members), set(index['records']))
+        self.assertEqual(len(members), 151)
+        failed = json.loads(members['observations/qmatch-complete-body-runtime-first/report.json.txt'])
+        passed = json.loads(members['observations/qmatch-complete-body-runtime-second/report.json.txt'])
+        self.assertEqual(failed['exit_code'], 1)
+        self.assertIn(b'Gate.Error.decodedView', members['observations/qmatch-complete-body-runtime-first/stderr.txt'])
+        self.assertEqual(passed['exit_code'], 0)
+        self.assertIn(b'4 exact controls and 8 QLV3', members['observations/qmatch-complete-body-runtime-second/stdout.txt'])
+        current = json.loads((directory / 'body-validation.json').read_text())
+        self.assertFalse(current['compiled_native_validated'])
+        self.assertEqual(current['issue195'], 'OPEN')
 
     def test_nominal_first_proposals_and_precise_refusals_remain_separate(self):
         index = json.loads((ROOT / NOMINAL_INDEX).read_text())

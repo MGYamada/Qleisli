@@ -45,9 +45,10 @@ private def shapes (path : System.FilePath) : IO Unit := do
     unless actual == expected do throw (IO.userError ("qmatch data mismatch: " ++ name))
   IO.println "passed 33 shared Rust/Lean request shape expectations; parsing confers no acceptance"
 
-private def execution (path : System.FilePath) (precise : Bool := false) : IO Unit := do
+private def execution (path : System.FilePath) (precise : Bool := false)
+    (positive : Nat := 2) (negative : Nat := 24) : IO Unit := do
   let rows ← cases path
-  unless rows.size == 26 do throw (IO.userError "qmatch execution inventory changed")
+  unless rows.size == positive+negative do throw (IO.userError "qmatch execution inventory changed")
   let mut accepts := 0
   let mut refusals := 0
   for row in rows do
@@ -111,8 +112,8 @@ private def execution (path : System.FilePath) (precise : Bool := false) : IO Un
           | _,_ => false
         unless correct do throw (IO.userError ("qmatch wrong exact refusal: " ++ name ++ ": " ++ reprStr error))
       refusals := refusals+1
-  unless accepts == 2 && refusals == 24 do throw (IO.userError "qmatch coverage changed")
-  IO.println "passed 2 exact phase controls and 24 QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate"
+  unless accepts == positive && refusals == negative do throw (IO.userError "qmatch coverage changed")
+  IO.println s!"passed {positive} exact controls and {negative} QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate"
 
 def main (args : List String) : IO Unit := do
   let [shapePath,executionPath] := args | throw (IO.userError "expected qmatch shape and execution fixtures")
@@ -120,3 +121,4 @@ def main (args : List String) : IO Unit := do
   execution executionPath
   let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
   execution (parent / "nominal-execution-cases.json") true
+  execution (parent / "body-execution-cases.json") true 4 8
