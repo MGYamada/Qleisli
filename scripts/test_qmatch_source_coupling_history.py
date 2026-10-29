@@ -32,12 +32,16 @@ NOMINAL = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal
 NOMINAL_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-index.json"
 NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-validation.json"
 BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
+OWNER_FLOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-first.tar.xz"
+OWNER_FLOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-index.json"
 
 
-def bounded_history(directory, stem):
+def bounded_history(archive_path, index_path):
     """Read inert member bytes only; never extract or replay saved commands."""
-    index = json.loads((directory / (stem + '-index.json')).read_text())
-    packed = (directory / index['archive']).read_bytes()
+    index = json.loads(index_path.read_text())
+    if index['archive'] != archive_path.name:
+        raise ValueError('history archive name differs')
+    packed = archive_path.read_bytes()
     if (len(packed) > 1024 * 1024 or len(packed) != index['bytes']
             or hashlib.sha256(packed).hexdigest() != index['sha256']):
         raise ValueError('history archive identity/capacity differs')
@@ -287,7 +291,7 @@ class OriginalCouplingHistory(unittest.TestCase):
 
     def test_raw_owner_counterexample_and_matching_permutation_remain_distinct(self):
         directory = ROOT / BODY_ROOT
-        members = bounded_history(directory, 'owner-flow')
+        members = bounded_history(ROOT / OWNER_FLOW_ARCHIVE, ROOT / OWNER_FLOW_INDEX)
         self.assertEqual(len(members), 118)
         first = members['observations/qmatch-raw-return-owner-swap-first/stderr.txt']
         second = members['observations/qmatch-raw-return-owner-swap-second/stderr.txt']
