@@ -63,8 +63,17 @@ and the complete logical Gram sum. Logical cardinalities and the actual Raw
 effect bound the public label; a physical square matrix cannot justify a
 rectangular logical Unitary label. Observation remains Observe, even at logical
 dimension one. The existing dense six-bit component limit is unchanged.
-This component grants no native execution handle: normal source/selected
-integration, execution-view binding and wider qmatch integration remain pending.
+The internal `finite-runtime-root-v1` mode now reads the full original request
+and compares its freshly checked graph, full parameter/result types, ordinary
+storage, ordered quantum ports, canonical inputs and public effect with the
+actual retained Rust objects through QLV3/QDV. Its execution-only decision
+retains this complete request in the accepted program and every clone. Rechecking
+walks those same objects again; altered types, storage or graph metadata refuse.
+Portable export cannot erase the typed frame. Closed simulation and sampling
+also inspect original runtime parameters, including zero-width arguments.
+This explicit internal artifact/request route does not yet lower ordinary or
+selected quantum nominal source programs. Generic/static and wider qmatch
+integration remain pending; no external schema or inverse/control API is admitted.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed

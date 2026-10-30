@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect the mixed runtime-root component to an execution-only native mode and
+  a retained-object QDV walker. Keep complete parameter/result types, canonical
+  input rows, classical storage, typed quantum ports and public effects in the
+  actual accepted program and clones. Fresh rechecking compares those same
+  objects; portable export cannot erase the frame, and zero-width arguments
+  still prevent closed execution. Internal raw requests use the existing gates;
+  normal `.qli` lowering, generic/static transport, wider qmatch integration and
+  #64/#195 completion remain pending. No new guarantee is admitted.
 - Add an internal mixed-runtime root component over complete original type
   trees, ordinary storage and ordered quantum owner ports. Reuse canonical
   ordinary-input and all-hidden-history checks with fresh Raw reconstruction;

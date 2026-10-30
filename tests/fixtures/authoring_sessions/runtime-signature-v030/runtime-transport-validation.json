@@ -1,0 +1,126 @@
+{
+  "format": "qleisli.runtime-root-transport-checks",
+  "version": 1,
+  "source_base": "d541d1d0e9817c3a2327d3abf06ca0f57c860557",
+  "checks": [
+    {
+      "label": "runtime-protocol-first",
+      "exit_code": 0,
+      "stable_source": true
+    },
+    {
+      "label": "runtime-dispatch-first",
+      "exit_code": 0,
+      "stable_source": true
+    },
+    {
+      "label": "rust-check-first",
+      "exit_code": 101,
+      "stable_source": true,
+      "peak_rss_bytes": 166264832
+    },
+    {
+      "label": "rust-check-pinned-first",
+      "exit_code": 101,
+      "stable_source": true,
+      "peak_rss_bytes": 772243456
+    },
+    {
+      "label": "rust-check-pinned-second",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 785072128
+    },
+    {
+      "label": "rust-codec-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 2128953344
+    },
+    {
+      "label": "kernel-build-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 2784903168
+    },
+    {
+      "label": "native-audit-first",
+      "exit_code": 1,
+      "stable_source": true,
+      "peak_rss_bytes": 52609024
+    },
+    {
+      "label": "native-audit-second",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 896368640
+    },
+    {
+      "label": "rust-native-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 1556299776
+    },
+    {
+      "label": "rust-ordinary-regression-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 39387136
+    },
+    {
+      "label": "rust-msrv-native-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 2214428672
+    },
+    {
+      "label": "rust-stable-clippy-first",
+      "exit_code": 101,
+      "stable_source": true,
+      "peak_rss_bytes": 168656896
+    },
+    {
+      "label": "rust-stable-clippy-pinned-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 1032847360
+    },
+    {
+      "label": "rust-context-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 39223296
+    },
+    {
+      "label": "rust-msrv-ordinary-first",
+      "exit_code": 0,
+      "stable_source": true,
+      "peak_rss_bytes": 38076416
+    }
+  ],
+  "compiled_declarations": 21744,
+  "native_tests": {
+    "stable": 10,
+    "msrv_1_85": 10,
+    "conditional_skips": 0
+  },
+  "previous_ordinary_tests": {
+    "stable": 13,
+    "msrv_1_85": 13
+  },
+  "native_binary_sha256": "7a4b0ebe90c906261ab25055dc23ae21b334383556be291f7377b4b56bd733d2",
+  "build_scope": "Current Lake source/dependency rehash with reused warm build artifacts, compiled audit and changed component checks. Not a fresh replay of every dependency or current-proof-record refresh.",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "goal_percent": 58.27,
+  "remaining": [
+    "normal .qli project/selected lowering",
+    "generic/static transport",
+    "wider qmatch integration",
+    "fresh full proof replay and genuine current proof-record maintenance",
+    "hosted CI and review"
+  ],
+  "scope": "Original bytes, retained typed requests/graphs, canonical ordinary inputs and every hidden quantum history are checked by the native runtime root. No source-body/runtime preservation theorem, independent algorithm meaning, inverse/control access, new human-admitted guarantee or release approval is claimed."
+}

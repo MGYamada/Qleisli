@@ -56,8 +56,37 @@ rules out a rectangular logical Unitary label. Public Observe is not sharpened.
 This is actual-IR typing and exact-computation evidence, not an arbitrary
 algorithm request, complex-denotation or source/runtime preservation theorem.
 
-Current native/QDV dispatch and normal project/selected execution do not use
-this component yet. Generic/static and wider qmatch integration, complete fresh
+At that component checkpoint, native/QDV dispatch and normal project/selected
+execution did not use it. Generic/static and wider qmatch integration, complete fresh
 package replay, genuine proof-record maintenance and hosted CI/review remain
 required. #64/#195 stay open; no new guarantee or release is claimed. Historical
 observers and sources are never executed or extracted by retention tests.
+
+## Native runtime transport
+
+The separate [transport archive](runtime-transport-first.tar.xz),
+[transport index](runtime-transport-index.json) and
+[transport validation](runtime-transport-validation.json) retain 572 inert
+records. The original incompatible Homebrew compiler observations, Rust closure
+type error and audit working-directory error remain alongside their corrections.
+No prior source, diagnostic or archive above is replaced.
+
+The current native mode independently reads the full mixed request and compares
+the retained Rust graph, type/storage forests and public effect through QDV.
+An accepted program and its clones retain those same objects. Fresh rechecking
+detects altered metadata and graph views; portable export cannot erase them.
+Zero-width source parameters still prevent closed simulation and sampling.
+Tests include code-space leakage, hidden observation under a pure label,
+invalid ordinary values on zero-probability histories, nominal/axis substitution
+and singleton quantum owners. New cases use at most three physical bits.
+
+The current kernel rebuild rehashes original source/dependency traces while
+reusing warm artifacts. Its compiled audit checks 21,744 declarations with only
+the existing standard axioms. Rust 1.99.1 and MSRV 1.85.0 each pass the ten new
+native/codec tests and thirteen existing ordinary-root tests, with zero skips.
+Two native-context tests and stable all-target warnings-denied Clippy also pass.
+Observed peak memory is 2,784,903,168 bytes (about 2.59 GiB). These checks do not
+constitute a fresh replay of every unchanged dependency, current-proof-record
+maintenance, source/runtime preservation or an independent algorithm contract.
+Normal `.qli` project/selected lowering, generic/static transport, wider qmatch,
+full proof maintenance and hosted CI/review remain required. #64/#195 stay open.

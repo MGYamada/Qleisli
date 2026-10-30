@@ -10,6 +10,7 @@ mod ordinary_root;
 mod qmatch;
 mod reporting;
 mod runtime;
+mod runtime_root;
 
 #[cfg(test)]
 mod recheck_tests;
@@ -150,6 +151,7 @@ impl Prepared {
                 source_pure_equations: Arc::from([]),
                 source_computed_normalizations: Arc::from([]),
                 ordinary_result: None,
+                runtime_result: None,
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -270,7 +272,8 @@ impl Kernel {
                 "accepted program belongs to a different edition",
             ));
         }
-        if program.native.mode() != "--qirf-native" {
+        let mode = program.native.mode();
+        if mode != "--qirf-native" && mode != "--runtime-root-check" {
             return Err(Error::new(
                 "kernel",
                 "rechecking this native mode requires its complete retained typed request view",
@@ -280,10 +283,20 @@ impl Kernel {
         // Compare the exact immutable graph and metadata the caller will keep
         // using. Decoding the original artifact again would compare a different
         // allocation and could hide a divergent retained execution view.
-        let graph = program.execution_view_description()?;
+        let graph = if mode == "--runtime-root-check" {
+            let request = program.runtime_result().ok_or_else(|| {
+                Error::format("runtime recheck requires the complete retained request")
+            })?;
+            super::execution_view::finite::runtime_root::complete(
+                program.execution_view_graph(),
+                request,
+            )?
+        } else {
+            program.execution_view_description()?
+        };
         let native = Self::submit_subject(
             subject,
-            "--qirf-native",
+            mode,
             Some(super::native_packet::View {
                 graph: &graph,
                 caller: None,
@@ -564,10 +577,14 @@ pub struct AcceptedProgram {
     // Actual typed objects compared with Lean's fresh decoding, retained by all
     // clones and execution. This is not an arbitrary source-meaning contract.
     ordinary_result: Option<Arc<super::ordinary_root::Request>>,
+    runtime_result: Option<Arc<super::runtime_root::Request>>,
 }
 impl AcceptedProgram {
     pub fn ordinary_result(&self) -> Option<&super::ordinary_root::Request> {
         self.ordinary_result.as_deref()
+    }
+    pub fn runtime_result(&self) -> Option<&super::runtime_root::Request> {
+        self.runtime_result.as_deref()
     }
     pub fn edition(&self) -> Edition {
         self.native.edition()
@@ -578,10 +595,10 @@ impl AcceptedProgram {
     /// Portable artifacts cannot silently drop the internal typed-result frame.
     /// `artifact()` remains inspection of the original untrusted subject bytes.
     pub fn portable_artifact(&self) -> Result<&[u8]> {
-        if self.ordinary_result.is_some() {
+        if self.ordinary_result.is_some() || self.runtime_result.is_some() {
             return Err(Error::new(
                 "unsupported",
-                "ordinary result export requires its typed artifact/request transport",
+                "typed result export requires its complete artifact/request transport",
             ));
         }
         Ok(self.artifact())

@@ -41,6 +41,9 @@ RUNTIME_SIGNATURE_README = "tests/fixtures/authoring_sessions/runtime-signature-
 RUNTIME_ROOT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-first.tar.xz"
 RUNTIME_ROOT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-index.json"
 RUNTIME_ROOT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-validation.json"
+RUNTIME_TRANSPORT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-first.tar.xz"
+RUNTIME_TRANSPORT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-index.json"
+RUNTIME_TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -74,6 +77,25 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_runtime_transport_preserves_failures_and_fresh_native_scope(self):
+        members = bounded_history(ROOT / RUNTIME_TRANSPORT_ARCHIVE, ROOT / RUNTIME_TRANSPORT_INDEX)
+        self.assertEqual(len(members), 572)
+        for label in ['rust-check-first', 'rust-stable-clippy-first']:
+            self.assertIn(b'compiled by an incompatible version of rustc',
+                          members[f'observations/{label}/stderr.txt'])
+        self.assertIn(b'E0631', members['observations/rust-check-pinned-first/stderr.txt'])
+        self.assertIn(b'Audit.lean', members['observations/native-audit-first/stderr.txt'])
+        self.assertIn(b'21744 kernel/transport declarations',
+                      members['observations/native-audit-second/stdout.txt'])
+        for label in ['rust-native-first', 'rust-msrv-native-first']:
+            self.assertIn(b'10 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
+        for label in ['rust-ordinary-regression-first', 'rust-msrv-ordinary-first']:
+            self.assertIn(b'13 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
+        current = json.loads((ROOT / RUNTIME_TRANSPORT_VALIDATION).read_text())
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertIn('normal .qli project/selected lowering', current['remaining'])
+        self.assertEqual(current['goal_percent'], 58.27)
+
     def test_mixed_root_first_failures_and_separate_audit_repair_are_retained(self):
         members = bounded_history(ROOT / RUNTIME_ROOT_ARCHIVE, ROOT / RUNTIME_ROOT_INDEX)
         self.assertEqual(len(members), 130)
