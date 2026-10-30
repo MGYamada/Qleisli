@@ -14,7 +14,7 @@ pub enum Atom {
     Quantum,
 }
 
-/// Prefix storage retains outer tuples and every logical owner, including Q<Unit>.
+/// Prefix storage retains outer tuples and every logical owner, including `Q<Unit>`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Storage {
     Ordinary(Vec<BasisAtom>, OrdinaryStorage),
