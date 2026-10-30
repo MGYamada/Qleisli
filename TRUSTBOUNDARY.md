@@ -193,16 +193,21 @@ instantiation and actual accepted request. Small quantum temporaries use the
 same Raw emitter and complete hidden-history checks under bounded producer limits.
 Internal ordinary v1 refuses without fallback.
 
-The internal `finite-runtime-root-v1` gate separately retains full mixed runtime
+The internal `finite-runtime-root-v2` gate separately retains full mixed runtime
 type prefixes and ordered quantum owners. It checks each exact hidden map against
 the original input/output codes, including padding leakage and the complete
 logical Gram sum. Public effects retain actual observation and logical dimensions.
 Its QLV3/QDV walker binds the actual retained graph, source selection, types,
 storage and all canonical inputs. The common emitter connects nongeneric project
 and selected mixed interfaces to this gate, preserving original AST/text and
-zero-width owners. Rechecking walks the same retained objects; portable export
-cannot erase them. Generic/static routes, full qmatch and nominal finite-table
-consumers remain pending. Exact computation witnesses supply no source-body,
+zero-width owners. Selected Basis/Nat roots additionally retain original generic
+headers, ordered numeric premises, complete named actuals and nominal declaration
+sources. Lean independently closes the original signature and binds those actuals
+in the retained-object comparison, including unused parameters. Old runtime
+request versions reject. Rechecking walks the same retained objects; portable
+export cannot erase them. Generic dependencies, operation-formal closure, full
+qmatch and nominal finite-table/Meaning consumers remain pending. Exact computation
+witnesses supply no source-body,
 complex-denotation or numerical-runtime preservation theorem, inverse/control
 capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.
 

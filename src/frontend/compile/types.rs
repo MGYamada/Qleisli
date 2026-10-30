@@ -809,10 +809,12 @@ mod tests {
         .unwrap();
         assert_eq!(basis_charge, charge);
         assert_eq!(checked.basis_bits(), None);
-        assert!(closed_basis_capacity(&checked, original.span, &mut |_, _| {
-            panic!("legacy coherent consumer must refuse before reservation")
-        })
-        .is_err());
+        assert!(
+            closed_basis_capacity(&checked, original.span, &mut |_, _| {
+                panic!("legacy coherent consumer must refuse before reservation")
+            })
+            .is_err()
+        );
         let record = Closed::nominal(Nominal {
             origin: Arc::clone(&nominal.origin),
             body: Body::Record(Vec::new()),
@@ -942,10 +944,12 @@ mod tests {
         .unwrap();
         assert!(basis_charge > 0);
         assert_eq!(checked.basis_bits(), None);
-        assert!(closed_basis_capacity(&checked, original.span, &mut |_, _| {
-            panic!("legacy record consumer must refuse before reservation")
-        })
-        .is_err());
+        assert!(
+            closed_basis_capacity(&checked, original.span, &mut |_, _| {
+                panic!("legacy record consumer must refuse before reservation")
+            })
+            .is_err()
+        );
     }
 
     #[test]

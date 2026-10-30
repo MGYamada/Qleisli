@@ -26,7 +26,7 @@ mod statics;
 mod transforms;
 mod value;
 
-use value::{env_size, Binding, Env, Register, Slot, Value};
+use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
 use crate::frontend::pattern::{self, BindingContext};
@@ -34,7 +34,7 @@ use crate::frontend::raw_state::RawState;
 use crate::ir::*;
 use std::borrow::Cow;
 
-pub(super) use dormant_access::{check_dormant_primitive_control, PrimitiveControlVisit};
+pub(super) use dormant_access::{PrimitiveControlVisit, check_dormant_primitive_control};
 
 #[derive(Clone, Copy)]
 enum CallArguments<'a> {

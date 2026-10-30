@@ -6,7 +6,7 @@ use common::SourceRoot;
 use qleisli::edition::Edition;
 use qleisli::frontend::compile::{self, Instantiation, ParsedProgram};
 use qleisli::interchange::native::Kernel;
-use qleisli::sim::{run_closed, SimulationLimits};
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 use std::process::Command;
 

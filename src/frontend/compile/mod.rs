@@ -45,7 +45,7 @@ use std::sync::Arc;
 
 use super::ast::*;
 use super::check::{self, Interface, SourceError, SourceLimits, StaticKind};
-use super::diagnostic::{coordinates, Diagnostic};
+use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{Project, SourcePolicy};
 use super::resolve::{DefId, PrimitiveId, Target};
 use crate::AcceptedProgram;

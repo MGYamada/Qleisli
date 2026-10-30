@@ -4,11 +4,11 @@
 mod common;
 use common::SourceRoot;
 use qleisli::edition::Edition;
-use qleisli::frontend::compile::{compile_project, ParsedProgram};
+use qleisli::frontend::compile::{ParsedProgram, compile_project};
 use qleisli::interchange::carrier::Atom as Basis;
 use qleisli::interchange::native::Kernel;
 use qleisli::interchange::runtime_root::{Atom, Storage};
-use qleisli::sim::{run_closed, SimulationLimits};
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 
 fn kernel() -> Kernel {
@@ -363,9 +363,11 @@ fn runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_expor
     assert!(text.contains("\"source_preservation_verified\":false"));
     let run = invoke("run");
     assert!(!run.status.success());
-    assert!(String::from_utf8(run.stdout)
-        .unwrap()
-        .contains("zero runtime parameters"));
+    assert!(
+        String::from_utf8(run.stdout)
+            .unwrap()
+            .contains("zero runtime parameters")
+    );
     let output = root.0.join("unportable.qirf");
     let emitted = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args([
@@ -383,7 +385,9 @@ fn runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_expor
         .unwrap();
     assert!(!emitted.status.success());
     assert!(!output.exists());
-    assert!(String::from_utf8(emitted.stdout)
-        .unwrap()
-        .contains("complete typed request transport"));
+    assert!(
+        String::from_utf8(emitted.stdout)
+            .unwrap()
+            .contains("complete typed request transport")
+    );
 }
