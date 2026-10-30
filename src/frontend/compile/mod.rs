@@ -513,7 +513,11 @@ impl<'a> Compiler<'a> {
         })();
         self.work = work;
         let (bases, naturals) = bindings?;
-        self.close_instance_interface(definition, bases, naturals, span)
+        let typed = self.source.interfaces[&definition]
+            .statics
+            .iter()
+            .all(|formal| !matches!(formal.kind, StaticKind::Operation { .. }));
+        self.close_instance_interface(definition, bases, naturals, span, typed)
     }
 
     fn close_instance_interface(
@@ -522,6 +526,7 @@ impl<'a> Compiler<'a> {
         bases: BTreeMap<BinderKey, super::types::Type<u32>>,
         naturals: BTreeMap<BinderKey, u32>,
         span: Span,
+        typed: bool,
     ) -> Result<super::closed::ClosedInterface, CompileError> {
         let module = self.dormant_module(definition, span)?;
         let work = std::cell::Cell::new(self.work);
@@ -542,13 +547,7 @@ impl<'a> Compiler<'a> {
                 result
             };
             for basis in bases.values() {
-                if self.force_typed_root
-                    && self.selected_entry == Some(definition)
-                    && !self.source.interfaces[&definition]
-                        .statics
-                        .iter()
-                        .any(|formal| matches!(formal.kind, StaticKind::Operation { .. }))
-                {
+                if typed {
                     types::typed_basis_capacity(basis, span, &mut |span, cells| {
                         charge(span, cells)
                     })?;

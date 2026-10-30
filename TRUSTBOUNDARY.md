@@ -205,8 +205,14 @@ headers, ordered numeric premises, complete named actuals and nominal declaratio
 sources. Lean independently closes the original signature and binds those actuals
 in the retained-object comparison, including unused parameters. Old runtime
 request versions reject. Rechecking walks the same retained objects; portable
-export cannot erase them. Generic dependencies, operation-formal closure, full
-qmatch and nominal finite-table/Meaning consumers remain pending. Exact computation
+export cannot erase them. Ordinary Basis/Nat calls now close original static
+plans through the shared emitter, preserving nominal trees, caller/callee
+binder identities and public effects. Concrete and unused nominal actuals use
+typed root checks even during global dormant validation; partial calls still
+check their closed siblings. This Rust preparation supplies no operation
+capability, and provider/inverse/control preparation retains its separate
+finite constraints. Operation-formal closure, full qmatch and nominal
+finite-table/Meaning consumers remain pending. Exact computation
 witnesses supply no source-body,
 complex-denotation or numerical-runtime preservation theorem, inverse/control
 capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.

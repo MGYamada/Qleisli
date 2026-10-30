@@ -6,7 +6,7 @@ use crate::frontend::check::plans::{
 use crate::frontend::resolve::{Target, locals::BindingKind};
 
 impl Compiler<'_> {
-    fn source_environment(
+    pub(super) fn source_environment(
         &mut self,
         environment: &StaticEnvironment,
         module: &str,
@@ -30,7 +30,7 @@ impl Compiler<'_> {
         Ok(())
     }
 
-    fn source_reference(
+    pub(super) fn source_reference(
         &mut self,
         reference: &ResolvedReference,
         environment: &StaticEnvironment,
@@ -323,6 +323,7 @@ impl Compiler<'_> {
                     outer_ops,
                     module,
                     value.span,
+                    false,
                 )?
                 else {
                     return Ok(StaticValue::Deferred);
@@ -553,6 +554,53 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<Option<Arc<ClosedInstance>>, CompileError> {
+        self.bind_source_instance_partial_mode(
+            target,
+            actuals,
+            environment,
+            outer_ops,
+            module,
+            span,
+            false,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(in crate::frontend::compile) fn bind_runtime_source_instance_partial(
+        &mut self,
+        target: Key,
+        actuals: &[StaticActual],
+        environment: &StaticEnvironment,
+        outer_ops: &operations::Bindings,
+        module: &str,
+        span: Span,
+    ) -> Result<Option<Arc<ClosedInstance>>, CompileError> {
+        let typed = self.source.interfaces[&target]
+            .statics
+            .iter()
+            .all(|formal| !matches!(formal.kind, StaticKind::Operation { .. }));
+        self.bind_source_instance_partial_mode(
+            target,
+            actuals,
+            environment,
+            outer_ops,
+            module,
+            span,
+            typed,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn bind_source_instance_partial_mode(
+        &mut self,
+        target: Key,
+        actuals: &[StaticActual],
+        environment: &StaticEnvironment,
+        outer_ops: &operations::Bindings,
+        module: &str,
+        span: Span,
+        typed: bool,
+    ) -> Result<Option<Arc<ClosedInstance>>, CompileError> {
         self.source_environment(environment, module, span)?;
         self.charge(module, span, actuals.len() + 1)?;
         let count = self
@@ -605,6 +653,7 @@ impl Compiler<'_> {
             outer_ops,
             module,
             span,
+            typed,
         )
     }
 
@@ -630,6 +679,34 @@ impl Compiler<'_> {
     }
 
     #[allow(clippy::too_many_arguments)]
+    pub(in crate::frontend::compile) fn bind_runtime_source_instance(
+        &mut self,
+        target: Key,
+        actuals: &[StaticActual],
+        environment: &StaticEnvironment,
+        outer_ops: &operations::Bindings,
+        module: &str,
+        span: Span,
+    ) -> Result<Arc<ClosedInstance>, CompileError> {
+        self.bind_runtime_source_instance_partial(
+            target,
+            actuals,
+            environment,
+            outer_ops,
+            module,
+            span,
+        )?
+        .ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "static actual remains unbound in the concrete runtime instance",
+            )
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn bind_resolved_instance<'s>(
         &mut self,
         target: Key,
@@ -638,6 +715,7 @@ impl Compiler<'_> {
         outer_ops: &operations::Bindings,
         module: &str,
         span: Span,
+        typed: bool,
     ) -> Result<Option<Arc<ClosedInstance>>, CompileError> {
         self.tick(module, span)?;
         let Some(interface) = self.source.interfaces.get(&target) else {
@@ -684,15 +762,20 @@ impl Compiler<'_> {
                 ),
             };
             // The formal demand is read before any deferral decision (#413).
-            let value = self.source_static(
-                actual,
-                environment,
-                category,
-                requested,
-                outer_ops,
-                module,
-                1,
-            )?;
+            let value = if typed && matches!(category, StaticCategory::Basis) {
+                self.runtime_basis(actual, environment, module)?
+                    .map_or(StaticValue::Deferred, StaticValue::Basis)
+            } else {
+                self.source_static(
+                    actual,
+                    environment,
+                    category,
+                    requested,
+                    outer_ops,
+                    module,
+                    1,
+                )?
+            };
             let formal = &self.source.interfaces[&target].statics[ordinal];
             self.charge(module, actual.span, formal.key.name.len() + 2)?;
             let key = self.source.interfaces[&target].statics[ordinal].key.clone();
@@ -731,7 +814,9 @@ impl Compiler<'_> {
         if !complete {
             return Ok(None);
         }
-        self.prepare_instance(target, bases, naturals, operations, module, span)
-            .map(Some)
+        self.prepare_instance_with_basis_transport(
+            target, bases, naturals, operations, module, span, typed,
+        )
+        .map(Some)
     }
 }

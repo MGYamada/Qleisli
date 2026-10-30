@@ -1,5 +1,21 @@
 # Original runtime signature observations
 
+The separate [generic-call archive](generic-calls-first.tar.xz),
+[index](generic-calls-index.json) and [validation](generic-calls-validation.json)
+preserve six informed first projects and six prior-CLI observations, plus the
+first implementation/test refusals and separate repairs. The concrete `type(T)`
+syntax mistake, test API mistakes and global dormant nominal refusal remain
+intact. These are inert observations, not an independent authoring evaluation.
+
+Ordinary Basis/Nat calls now preserve enum/record trees and original formal
+identities through the shared emitter. Small checks cover empty records,
+nested actuals, imported calls, unused actuals, public Observe and independent
+inverse/control refusal. The focused stable run passes 59 tests; after nominal
+copy-budget accounting, MSRV passes 26 selected tests, without skips. Those
+archived runs execute serially and peak below 1.1 GiB. These checks
+add no Lean acceptance mode or theorem and establish no source-body/runtime
+preservation or wider qmatch coverage. Full CI/review and #64/#195 remain open.
+
 The inert [archive](first.tar.xz), [index](index.json) and
 [validation record](validation.json) retain 93 original records. Seven complete
 projects have fourteen actual ordinary/selected CLI observations: ordinary

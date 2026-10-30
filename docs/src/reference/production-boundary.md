@@ -233,7 +233,14 @@ denotation, source-body preservation and numerical runtime correspondence.
 Selected roots with Basis/Nat actuals use this same emitter and gate, including
 unused nominal actuals and closed observing bodies. Their complete original
 source judgment is repeated, and actual trees are rebound to its original
-interface. Generic dependencies, operation-formal closure, nominal
+interface. Ordinary Basis/Nat dependencies use the same original call plans and
+bounded closure. Concrete nominal arguments use the existing `type(T)` form;
+forwarded formals retain their original binder identities. Nominal fields keep
+their declaration scope, and complete closed siblings are checked even when a
+different actual is unresolved. Unused nominal actuals also require typed
+checking when a closed dependency is materialized by the global dormant pass.
+This does not grant operation/provider access: those preparations retain their
+separate finite constraints and evidence. Operation-formal closure, nominal
 coherent-table/Meaning and wider qmatch integration remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.

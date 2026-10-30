@@ -113,6 +113,216 @@ fn selected_unused_static_nominal_actuals_retain_their_source_in_closed_executio
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_generic_dependencies_preserve_nominal_owners_and_distinct_formals() {
+    let source = "pub enum Tri{A,B,C} pub struct Empty{} pub struct Item{tag:Tri,bit:Bit}
+        pub unitary fn relay[const X:Basis,const m:Nat](q:Q<X>,word:Bits<m>)->(Q<X>,Bits<m>) requires m>=1 {(q,word)}
+        pub unitary fn keep[const n:Nat,const A:Basis](q:Q<A>,word:Bits<n>)->(Q<A>,Bits<n>) requires n>=1 {relay[A,n](q,word)}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    for name in ["main::Tri", "main::Empty", "main::Item"] {
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                BTreeMap::from([("A".into(), parsed.basis_binding(name).unwrap())]),
+                BTreeMap::from([("n".into(), 1)]),
+                Default::default(),
+            )
+            .unwrap();
+        let selected = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+        let request = selected.program().runtime_result().unwrap();
+        assert_eq!(request.static_naturals, vec![("n".into(), 1)]);
+        assert_eq!(request.static_bases[0].0, "A");
+        assert_eq!(request.parameters[1], vec![Atom::Finite(Basis::Bits(1))]);
+        assert_eq!(request.input_storage[0][0], request.storage[1]);
+        assert_eq!(request.public_effect, qleisli::ir::Effect::Unitary);
+        assert_eq!(
+            kernel()
+                .check_program(selected.program())
+                .unwrap()
+                .program()
+                .runtime_result(),
+            Some(request)
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn ordinary_generic_forwarding_does_not_grant_nominal_control() {
+    for action in ["controlled(relay[A])(c,q)", "(c,adjoint(relay[A])(q))"] {
+        let parsed = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([(
+                "main".into(),
+                format!(
+                    "pub enum Tri{{A,B,C}}
+        pub unitary fn relay[const X:Basis](q:Q<X>)->Q<X>{{q}}
+        pub unitary fn keep[const A:Basis](c:Q<Bit>,q:Q<A>)->(Q<Bit>,Q<A>){{{action}}}"
+                ),
+            )]),
+        )
+        .unwrap();
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                BTreeMap::from([("A".into(), parsed.basis_binding("main::Tri").unwrap())]),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap();
+        let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
+        assert!(error.message.contains("nominal"), "{error:?}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn generic_runtime_actuals_keep_original_nominal_names_and_nested_type_arguments() {
+    let declarations = "pub enum Tri{A,B,C}
+        pub unitary fn relay[const X:Basis](q:Q<X>)->Q<X>{q}";
+    for body in [
+        "pub unitary fn keep(q:Q<Tri>)->Q<Tri>{relay[type(Tri)](q)}",
+        "pub unitary fn keep(q:Q<(Tri,Bits<0>)>)->Q<(Tri,Bits<0>)>{relay[type((Tri,Bits<0>))](q)}",
+    ] {
+        let source = format!("{declarations}{body}");
+        compile_project(&SourceRoot::new(&format!("{source} fn main()->Unit{{()}}")).0).unwrap();
+        let checked = selected(&source);
+        let request = checked.program().runtime_result().unwrap();
+        assert_eq!(request.input_storage[0], request.storage);
+        assert_eq!(request.parameters[0], request.result);
+        assert_eq!(request.public_effect, qleisli::ir::Effect::Unitary);
+    }
+    let source = format!("{declarations}
+        pub unitary fn keep[const A:Basis,const n:Nat](q:Q<(A,Bits<n>)>)->Q<(A,Bits<n>)>{{relay[type((A,Bits<n>))](q)}}");
+    let parsed =
+        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)])).unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            BTreeMap::from([("A".into(), parsed.basis_binding("main::Tri").unwrap())]),
+            BTreeMap::from([("n".into(), 0)]),
+            Default::default(),
+        )
+        .unwrap();
+    let checked = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    let request = checked.program().runtime_result().unwrap();
+    assert_eq!(request.input_storage[0], request.storage);
+    assert_eq!(request.parameters[0], request.result);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn imported_generic_runtime_call_executes_with_unused_nominal_actuals() {
+    let parsed = ParsedProgram::parse(Edition::E2026, BTreeMap::from([
+        ("main".into(), "use helper::relay; pub observe fn keep[const A:Basis,const n:Nat]()->Bit requires n>=1 {measure_z(relay[A,n](init0()))}".into()),
+        ("helper".into(), "pub unitary fn relay[const Unused:Basis,const m:Nat](q:Q<Bit>)->Q<Bit> requires m>=1 {q}".into()),
+        ("types".into(), "pub enum Tri{A,B,C}".into()),
+    ])).unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            BTreeMap::from([("A".into(), parsed.basis_binding("types::Tri").unwrap())]),
+            BTreeMap::from([("n".into(), 1)]),
+            Default::default(),
+        )
+        .unwrap();
+    let checked = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    assert!(checked.program().runtime_result().is_some());
+    assert_eq!(
+        run_closed(checked.program(), SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![false], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn ordinary_generic_calls_check_unused_nominal_actuals_and_closed_partial_widths() {
+    let source = "pub enum Tri{A,B,C}
+        unitary fn relay[const Unused:Basis]()->Unit{()}
+        unitary fn main()->Unit{relay[type(Tri)]()}";
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+    let source = "unitary fn relay[const Unused:Basis](q:Q<Unit>)->Q<Unit>{q}
+        unitary fn unused[const A:Basis](q:Q<Unit>)->Q<Unit>{relay[type((A,Bits<13>))](q)}
+        pub unitary fn keep()->Unit{()}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
+    assert!(error.message.contains("12-bit"), "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn generic_nominal_calls_preserve_the_callees_public_observe_effect() {
+    let helper = "pub observe fn opaque[const A:Basis](q:Q<A>)->Q<A>{q}";
+    for effect in ["unitary", "isometry", "observe"] {
+        let source = format!(
+            "use helper::opaque; pub enum Tri{{A,B,C}}
+            pub {effect} fn keep[const B:Basis](q:Q<B>)->Q<B>{{opaque[B](q)}}"
+        );
+        let parsed = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), source), ("helper".into(), helper.into())]),
+        );
+        if effect != "observe" {
+            let error = parsed.unwrap_err();
+            assert!(error.message().contains("effect"), "{error:?}");
+            continue;
+        }
+        let parsed = parsed.unwrap();
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                BTreeMap::from([("B".into(), parsed.basis_binding("main::Tri").unwrap())]),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap();
+        let checked = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+        assert_eq!(
+            checked.program().runtime_result().unwrap().public_effect,
+            qleisli::ir::Effect::Observe
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn source_keeps_mixed_inputs_nominal_quantum_types_and_original_input_order() {
     let source = "pub enum Tri {A,B,C} pub unitary fn keep(flag:Bit,q:Q<Tri>)->(Bit,Q<Tri>){(flag,q)} fn main()->Unit{()}";
     // Project checking also visits the original public helper, with no fake entry.

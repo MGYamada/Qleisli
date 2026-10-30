@@ -205,7 +205,7 @@ ORDINARY_RESULT_PROOF = {
 
 RUNTIME_RESULT_PROOF = {
     'proof_scope': 'NativeContext.run_typed_runtime_binding connects the execution-only dispatcher to CheckedRuntimeRoot.run_binding and exact retained-object QDV comparison. Protocol.RuntimeRoot.check_binding binds original packet/request reads to RuntimeFamily.check. Its Checked.original_safe reuses the original Raw root gate; complete signature shapes, nominal origins and public effects remain bound. Checked.every_canonical_input and Row.every_hidden_history retain all independent ordinary inputs and exact reconstructed histories. CodeSpace checks actual per-history code equations and complete Gram equality; Checked.unitary_logical_dimensions proves the logical dimension condition. These are exact computation witnesses, not a new human-admitted guarantee.',
-    'gaps': 'No original source-body/AST preservation, complex-denotation correspondence, numerical-runtime/native compiler/deployed-binary/target preservation, external schema, arbitrary algorithm specification, inverse/control capability, cleanup/resource certification or broader QS/PR/RS/EXACT/S05 discharge. Nongeneric mixed source interfaces use the same untrusted emitter and actual native graph/request comparison. Selected Basis/Nat roots retain original header tokens and complete actuals. Generic dependencies, operation-formal closure, nominal coherent-table/Meaning and wider qmatch integration remain pending. Current canonical proof maintenance, full replay, CI and review remain separately required.',
+    'gaps': 'No original source-body/AST preservation, complex-denotation correspondence, numerical-runtime/native compiler/deployed-binary/target preservation, external schema, arbitrary algorithm specification, inverse/control capability, cleanup/resource certification or broader QS/PR/RS/EXACT/S05 discharge. Nongeneric mixed source interfaces use the same untrusted emitter and actual native graph/request comparison. Selected Basis/Nat roots retain original header tokens and complete actuals. Ordinary Basis/Nat dependencies reuse original static plans and bounded nominal closure, with separate provider preparation. Operation-formal closure, nominal coherent-table/Meaning and wider qmatch integration remain pending. Current canonical proof maintenance, full replay, CI and review remain separately required.',
 }
 
 
@@ -241,6 +241,9 @@ PATHS = {
             'runtime::accept(&mut lower, key, &params, inputs, &result, &raw)']),
         ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
             'prepare_borrowed_originals(originals, SourceLimits::selected())?', 'source: selected.clone()']),
+        ('src/frontend/compile/instances/runtime_basis.rs', ['fn runtime_basis(',
+            'self.source_environment(environment, module, value.span)?',
+            'check::close_type_budgeted(', 'types::typed_basis_capacity(']),
         ('src/frontend/specialize.rs', ['pub fn instantiate_runtime_with_types(', 'pub fn compile_runtime_with_kernel(']),
         ('lean-kernel/Protocol/RuntimeRoot.lean', ['Qirf.RuntimeFamily.check artifact order request', 'theorem check_binding ']),
         ('lean-kernel/Protocol/ExecutionView/CheckedRuntimeRoot.lean', ['supplied.data == expected.data',
@@ -260,7 +263,11 @@ PATHS = {
         ('src/interchange/native/runtime_root/tests.rs', 'runtime_original_request_decoder_and_scope_cannot_be_bypassed_by_a_valid_view'),
         ('src/interchange/native/runtime_root/tests.rs', 'runtime_static_actuals_are_original_complete_and_freshly_retained'),
         ('tests/selected_runtime_execution.rs', 'selected_static_bases_and_naturals_keep_the_original_generic_interface'),
-        ('tests/selected_runtime_execution.rs', 'selected_unused_static_nominal_actuals_retain_their_source_in_closed_execution')]),
+        ('tests/selected_runtime_execution.rs', 'selected_unused_static_nominal_actuals_retain_their_source_in_closed_execution'),
+        ('tests/selected_runtime_execution.rs', 'selected_generic_dependencies_preserve_nominal_owners_and_distinct_formals'),
+        ('tests/selected_runtime_execution.rs', 'ordinary_generic_calls_check_unused_nominal_actuals_and_closed_partial_widths'),
+        ('tests/selected_runtime_execution.rs', 'generic_nominal_calls_preserve_the_callees_public_observe_effect'),
+        ('tests/selected_runtime_execution.rs', 'ordinary_generic_forwarding_does_not_grant_nominal_control')]),
     'runtime-result-views': path_rule('checked-view', 'runtime-result', '', [
         ('src/interchange/native.rs', ['pub fn runtime_result(', 'self.runtime_result.is_some()', '"--runtime-root-check"']),
         ('src/frontend/compile/report.rs', ['pub fn entry_runtime_result_checked(']),

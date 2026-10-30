@@ -67,7 +67,8 @@ fn original_signature_u32_checks_differ_from_checked_helper_template_arithmetic(
         let span = compiler.declarations[&key].span;
         for n in [0, 1, 2_147_483_648] {
             let values = bindings(&compiler, key, n);
-            let result = compiler.close_instance_interface(key, BTreeMap::new(), values, span);
+            let result =
+                compiler.close_instance_interface(key, BTreeMap::new(), values, span, false);
             if refuses && n == 2_147_483_648 {
                 let error = match result {
                     Ok(_) => panic!("normalized zero erased the original signature overflow"),
@@ -116,7 +117,7 @@ fn original_signature_paths_bind_runtime_quantum_trees_and_both_operation_ports(
     let span = compiler.declarations[&key].span;
     let values = bindings(&compiler, key, 0);
     let mut closed = compiler
-        .close_instance_interface(key, BTreeMap::new(), values, span)
+        .close_instance_interface(key, BTreeMap::new(), values, span, false)
         .unwrap();
     assert_eq!(compiler.interface_naturals[&key].roots.len(), 4);
     closed.result =
@@ -155,7 +156,7 @@ fn interface_validation_refuses_missing_originals_and_preserves_consumed_work() 
     let span = compiler.declarations[&key].span;
     let values = bindings(&compiler, key, 0);
     let closed = compiler
-        .close_instance_interface(key, BTreeMap::new(), values, span)
+        .close_instance_interface(key, BTreeMap::new(), values, span, false)
         .unwrap();
     compiler.work = MAX_WORK - 2;
     assert_eq!(
