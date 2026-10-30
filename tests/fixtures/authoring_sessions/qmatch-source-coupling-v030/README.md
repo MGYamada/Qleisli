@@ -183,3 +183,20 @@ Other atomic-owner refinements, allocation/release and general source/call/arm
 mappings still need their checked rules. Fresh native execution, canonical
 both-package proof maintenance and full candidate CI/review remain pending.
 These observations complete neither #64/#195 nor broader source preservation.
+
+## Original compiler routing observations
+
+The separate [compiler archive](compiler-first.tar.xz),
+[index](compiler-index.json) and [validation](compiler-validation.json) retain
+six informed first projects and actual prior-CLI observations. Bit qmatch hits
+the legacy selected projection; nominal selectors reach their explicit native
+transport refusal, and ordinary matching of a live owner reaches its type error.
+The subsequent selected-runtime experiment exposes a missing original named-arm
+provider body. Test API errors and all first diagnostics remain unchanged.
+
+The separate repair connects the built-in slice and its ordinary callers to
+the common emitter and existing provider/equation gates. Three focused tests
+cover original parameters, public effects, inactive arms and phase interference.
+The archive's 66 inert records are byte-checked without extraction or execution.
+They supply no independent first-author evaluation, nominal/full qmatch support,
+source-preservation theorem, guarantee admission or #64/#195 completion.

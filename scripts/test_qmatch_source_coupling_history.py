@@ -56,6 +56,9 @@ RUNTIME_STATIC_V2_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signat
 RUNTIME_GENERIC_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-first.tar.xz"
 RUNTIME_GENERIC_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-index.json"
 RUNTIME_GENERIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-validation.json"
+COMPILER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-first.tar.xz"
+COMPILER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-index.json"
+COMPILER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -89,6 +92,24 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_compiler_history_keeps_real_projection_and_provider_refusals(self):
+        members = bounded_history(ROOT / COMPILER_ARCHIVE, ROOT / COMPILER_INDEX)
+        self.assertEqual(len(members), 66)
+        first = json.loads(members['first/observations.json.txt'])
+        self.assertEqual(len(first['records']), 6)
+        self.assertTrue(all(row['exit_code'] == 1 for row in first['records']))
+        self.assertIn(b'qmatch requires independently checked coherent lowering',
+                      members['first/bit-control/stdout.txt'])
+        self.assertIn(b'nominal selectors await typed source/native binding',
+                      members['first/tri-reordered/stdout.txt'])
+        self.assertIn(b'static target has not been independently checked',
+                      members['observations/qmatch-selected-second/stdout.txt'])
+        repaired = json.loads(members['observations/qmatch-selected-fifth/report.json.txt'])
+        self.assertEqual(repaired['exit_code'], 0)
+        self.assertEqual(repaired['before'], repaired['after'])
+        self.assertEqual(json.loads((ROOT / COMPILER_VALIDATION).read_text())['issues'],
+                         {'64': 'OPEN', '195': 'OPEN'})
+
     def test_generic_calls_retain_original_refusals_and_separate_repairs(self):
         members = bounded_history(ROOT / RUNTIME_GENERIC_ARCHIVE, ROOT / RUNTIME_GENERIC_INDEX)
         self.assertEqual(len(members), 94)

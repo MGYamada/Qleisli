@@ -128,6 +128,50 @@ fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
     }
 }
 
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lowering() {
+    let source = "pub unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+        pub unitary fn negative(q:Q<Bit>)->Q<Bit>{
+            global_phase_eighth(global_phase_eighth(global_phase_eighth(global_phase_eighth(q))))}
+        pub unitary fn choose(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            qmatch(s,q){1=>negative,0=>idle}}
+        pub observe fn route[const n:Nat]()->(Bit,Bit) requires n>=1 {
+            let (s,q)=choose(h(init0()),init0()); (measure_z(h(s)),measure_z(q))}
+        // The word qmatch in a comment is not a feature request for this root.
+        pub unitary fn unrelated(q:Q<Bit>)->Q<Bit>{q}";
+    let files = SourceRoot::new(source);
+    for profile in ["raw", "auto"] {
+        let text = result(
+            selected("run", &files.0.join("main.qli"), "main::route")
+                .arg("--nat=n=1")
+                .arg(format!("--ir-profile={profile}"))
+                .arg(format!("--lean-kernel={}", kernel().display()))
+                .output()
+                .unwrap(),
+            "run",
+            true,
+        );
+        distribution(&text, &[(&[true, false], 1.0)]);
+        assert!(text.contains("\"source_steps_checked\":false"), "{text}");
+        assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
+        assert!(text.contains("\"ir_profile\":\"raw\""), "{text}");
+    }
+    let text = result(
+        selected("check", &files.0.join("main.qli"), "main::unrelated")
+            .arg("--ir-profile=raw")
+            .arg(format!("--lean-kernel={}", kernel().display()))
+            .output()
+            .unwrap(),
+        "check",
+        true,
+    );
+    scope(&text, "main::unrelated", "raw");
+}
+
 fn distribution(text: &str, expected: &[(&[bool], f64)]) {
     // Parse only the documented compact distribution rows. The numerical oracle
     // below is independent of both lowering paths and of the CLI serializer.

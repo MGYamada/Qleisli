@@ -1,0 +1,44 @@
+{
+  "format": "qleisli.qmatch-compiler-checks",
+  "version": 1,
+  "source_base": "522f1b525cc9485aa675091cc697109ba82b4e5a",
+  "checks": [
+    {
+      "label": "qmatch-selected-first",
+      "exit_code": 101,
+      "seconds": 2.291379041,
+      "child_peak_rss_bytes": 139313152
+    },
+    {
+      "label": "qmatch-selected-second",
+      "exit_code": 101,
+      "seconds": 1.8886599999999998,
+      "child_peak_rss_bytes": 258883584
+    },
+    {
+      "label": "qmatch-selected-third",
+      "exit_code": 0,
+      "seconds": 13.9826125,
+      "child_peak_rss_bytes": 1207484416
+    },
+    {
+      "label": "qmatch-selected-fourth",
+      "exit_code": 101,
+      "seconds": 4.081250083,
+      "child_peak_rss_bytes": 872136704
+    },
+    {
+      "label": "qmatch-selected-fifth",
+      "exit_code": 0,
+      "seconds": 6.084615041,
+      "child_peak_rss_bytes": 279642112
+    }
+  ],
+  "first_projects": 6,
+  "first_cli_observations": 6,
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "scope": "Informed first programs and real prior-CLI refusals, plus test API failures and the missing named-provider body. The separate common-emitter and CLI repairs retain original inputs. The prior binary identity is not a source-build attestation. Only the existing built-in six-bit qmatch equation route is connected; nominal/full qmatch, source preservation, new guarantees and issue completion are not claimed."
+}

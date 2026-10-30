@@ -969,8 +969,10 @@ exact ordinals. Neither padding tags nor equal physical width identify a label
 or target. The finite executable built-in slice uses a fresh native whole-circuit
 encoded equation within the existing six-joined-bit/1024-step profile. Common
 nominal qmatch checks do not enable coherent execution of nominal selectors.
-Nongeneric nominal quantum owners can otherwise use the runtime-root gate; the
-legacy selected projection remains separate. The full
+Nominal quantum owners can otherwise use the runtime-root gate. Selected
+built-in qmatch and ordinary Basis/Nat callers use the common source emitter,
+preparing named arms through the existing provider evidence gates. The legacy
+hierarchy projection remains separate. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 

@@ -359,12 +359,16 @@ fn prepare_evidence_dependencies(
     let mut pending = Vec::new();
     for obligation in &compiler.source.obligations {
         if needed.contains(&obligation.definition) {
-            if let check::ObligationKind::FunctionEquality {
-                implementation,
-                specification,
-            } = obligation.kind
-            {
-                pending.extend([implementation, specification]);
+            match obligation.kind {
+                check::ObligationKind::FunctionEquality {
+                    implementation,
+                    specification,
+                } => pending.extend([implementation, specification]),
+                // Named qmatch/qif arms and other operation consumers need
+                // the original provider body even without a named Meaning.
+                // The existing finite provider gate still checks its evidence.
+                check::ObligationKind::Provider { provider, .. } => pending.push(provider),
+                _ => {}
             }
         }
     }

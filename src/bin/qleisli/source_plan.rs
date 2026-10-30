@@ -305,7 +305,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             ))
         })
         .collect::<Result<_>>()?;
-    let typed = program.requires_typed_ordinary_transport()
+    let typed = program.requires_typed_runtime_transport(&options.entry)?
         && options.ir_profile != IrProfile::Hierarchy
         && options.request.is_none()
         && options.provider.is_none();

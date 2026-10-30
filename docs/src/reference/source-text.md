@@ -88,10 +88,11 @@ ordinary-v2 route, including ordinary parameter functions inlined by the common
 emitter. Nongeneric public selected ordinary runtime and classical roots use
 that same emitter and native gate after a fresh complete original-source
 judgment. Small quantum temporaries use the same Raw emitter and complete
-hidden-history checks. Nongeneric mixed interfaces, including nominal quantum
-ports, use the separate runtime-v1 gate with full original type/storage trees.
-Generic selected/dependency transport, full qmatch and
-nominal finite-table consumers remain unfinished. The
+hidden-history checks. Mixed interfaces, including nominal quantum ports and
+selected Basis/Nat actuals, use the separate runtime-v2 gate with full original
+type/storage trees. Ordinary generic dependencies use the same source emitter.
+Operation-formal transport, full qmatch and nominal finite-table consumers
+remain unfinished. The
 [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile)
 and [production boundary](production-boundary.md#mixed-runtime-root-requests)
 specify the distinct capacities and checked scope. Common frontend facts alone
@@ -197,8 +198,16 @@ pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
 }
 ```
 
-Nominal selector execution and the selected specialization projection remain
-explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
+Selected Basis/Nat roots and their ordinary callers use the common emitter for
+this built-in slice. Before lowering, named arms obtain their original checked
+provider bodies through the existing native evidence gates, including arms in
+inactive static branches. For `raw`/`auto` without an independent hierarchy
+request, the CLI selects this route from original qmatch occurrences in the
+entry's lexical dependency closure. An unrelated qmatch declaration or a comment
+does not redirect a built-in entry. The legacy hierarchy projection still
+refuses qmatch; a failed check never triggers a different acceptance path.
+
+Nominal selector execution remains explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
 still requires original source binding and native integration of the restriction
 and arm checks below; the small slice does not replace that requirement. The internal finite restriction
 component now proves correspondence through actual contributions, accumulation,
