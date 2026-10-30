@@ -121,6 +121,8 @@ fn request(source: &str) -> Request {
         selection: Selection::Exported,
         module: "main".into(),
         declaration: "keep".into(),
+        static_bases: vec![],
+        static_naturals: vec![],
         parameters: vec![vec![Atom::Finite(Basis::Bit)], quantum.clone()],
         input_storage: vec![
             vec![Storage::Ordinary(
@@ -173,8 +175,8 @@ fn runtime_request_is_versioned_bounded_metadata_without_an_acceptance_handle() 
     let bytes = request.encode().unwrap();
     assert_eq!(Request::decode(&bytes).unwrap(), request);
     for (from, to) in [
-        ("finite-runtime-root-v1", "finite-ordinary-root-v2"),
-        ("\"version\":1", "\"version\":2"),
+        ("finite-runtime-root-v2", "finite-runtime-root-v1"),
+        ("\"version\":2", "\"version\":1"),
         ("\"quantum\"", "\"unknown\""),
     ] {
         let changed = String::from_utf8(bytes.clone()).unwrap().replace(from, to);
@@ -197,6 +199,94 @@ fn runtime_request_is_versioned_bounded_metadata_without_an_acceptance_handle() 
         129
     ]];
     assert!(huge.encode().is_err());
+}
+
+const STATIC_SOURCE: &str = "pub enum Tri{A,B,C} pub unitary fn keep[const A:Basis,const n:Nat](flag:Bit,q:Q<A>)->(Bit,Q<A>) requires n>=1 {(flag,q)}";
+
+fn static_request(source: &str) -> Request {
+    Request {
+        static_bases: vec![("A".into(), basis(source))],
+        static_naturals: vec![("n".into(), 1)],
+        ..request(source)
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn runtime_static_actuals_are_original_complete_and_freshly_retained() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let request = static_request(STATIC_SOURCE);
+    assert_eq!(
+        Request::decode(&request.encode().unwrap()).unwrap(),
+        request
+    );
+    let program = accept(&kernel, STATIC_SOURCE, &raw(STATIC_SOURCE), &request)
+        .unwrap()
+        .into_program();
+    assert_eq!(program.runtime_result(), Some(&request));
+    assert_eq!(
+        kernel
+            .check_program(&program)
+            .unwrap()
+            .program()
+            .runtime_result(),
+        Some(&request)
+    );
+    for variant in 0..9 {
+        let mut changed = request.clone();
+        match variant {
+            0 => changed.static_bases.clear(),
+            1 => changed.static_naturals.clear(),
+            2 => changed.static_bases.push(changed.static_bases[0].clone()),
+            3 => changed
+                .static_naturals
+                .push(changed.static_naturals[0].clone()),
+            4 => changed.static_naturals[0].1 = 0,
+            5 => changed.static_naturals[0].0 = "A".into(),
+            6 => changed.static_bases[0].0 = "n".into(),
+            7 => changed.static_bases[0].1 = vec![Basis::Bits(2)],
+            _ => changed.static_bases[0].1 = basis(SOURCE),
+        }
+        assert!(
+            accept(&kernel, STATIC_SOURCE, &raw(STATIC_SOURCE), &changed).is_err(),
+            "static request mutation {variant}"
+        );
+    }
+    // This unused Nat can change without altering the runtime graph, but the
+    // retained view must still agree with the exact original request bytes.
+    let mut changed = program.clone();
+    Arc::make_mut(changed.runtime_result.as_mut().unwrap()).static_naturals[0].1 = 2;
+    assert!(kernel.check_program(&changed).is_err());
+    let mut fresh = request;
+    fresh.static_naturals[0].1 = 2;
+    accept(&kernel, STATIC_SOURCE, &raw(STATIC_SOURCE), &fresh).unwrap();
+    assert!(program.portable_artifact().is_err());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn runtime_static_original_premises_and_unused_nominal_actuals_are_checked() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for source in [
+        STATIC_SOURCE.replace("n>=1", "n-1<=3,n>=1"),
+        STATIC_SOURCE.replace("const n:Nat", "const n:Nat,const U:Op<A>"),
+    ] {
+        assert!(accept(&kernel, &source, &raw(&source), &static_request(&source)).is_err());
+    }
+    let source = STATIC_SOURCE.replace("const n:Nat", "const n:Nat,const Unused:Basis");
+    let mut request = static_request(&source);
+    request.static_bases.push(("Unused".into(), basis(&source)));
+    accept(&kernel, &source, &raw(&source), &request).unwrap();
+    if let Basis::Enum(_, labels) = &mut request.static_bases[1].1[0] {
+        labels.swap(0, 1);
+    }
+    assert!(accept(&kernel, &source, &raw(&source), &request).is_err());
 }
 
 #[test]
@@ -473,7 +563,7 @@ fn runtime_original_request_decoder_and_scope_cannot_be_bypassed_by_a_valid_view
     for changed in [
         String::from_utf8(bytes.clone())
             .unwrap()
-            .replace("\"version\":1", "\"version\":2"),
+            .replace("\"version\":2", "\"version\":1"),
         String::from_utf8(bytes.clone())
             .unwrap()
             .replace("\"tag\":\"quantum\"", "\"tag\":\"quantum\",\"ignored\":0"),

@@ -89,15 +89,22 @@ private def dependencies (sources : Sources) (catalog : List Original) (original
   let calls ← scan (original.source.utf8ByteSize+1) sources catalog ⟨original.key.moduleName,original.helper.parameters⟩ pending []
   return {original with calls := calls.reverse}
 
-/-- Field expressions have an actual source module and an empty formal scope;
-no synthetic helper declaration or producer binding table is introduced. -/
-def expressionBindings (sources : Sources) (catalog : List Original) (moduleName : String)
-    (expression : Expr) : WorkM (List (Path × Key)) := do
+/-- Resolve expressions in an explicitly supplied original formal scope.
+This checks names/call categories, not formal provenance or arithmetic. The
+caller must bind the scope and expressions to their actual original header. -/
+def scopedExpressionBindings (sources : Sources) (catalog : List Original) (moduleName : String)
+    (parameters : List String) (expressions : List Expr) : WorkM (List (Path × Key)) := do
   Finite.exactWork (Exact.charge ((sources.toList.map fun row =>
     row.1.utf8ByteSize+row.2.utf8ByteSize).sum+moduleName.utf8ByteSize+1))
   let [(_,source)] := sources.toList.filter (fun row => row.1 == moduleName) | throw .request
-  let calls ← scan (source.utf8ByteSize+1) sources catalog ⟨moduleName,[]⟩ [expression] []
+  let calls ← scan (source.utf8ByteSize+1) sources catalog ⟨moduleName,parameters⟩ expressions []
   return calls.reverse
+
+/-- Field expressions have an actual source module and an empty formal scope;
+no synthetic helper declaration or producer binding table is introduced. -/
+def expressionBindings (sources : Sources) (catalog : List Original) (moduleName : String)
+    (expression : Expr) : WorkM (List (Path × Key)) :=
+  scopedExpressionBindings sources catalog moduleName [] [expression]
 
 private def order : Nat → List Original → List Original → WorkM (List Original) :=
   Nat.rec (fun pending ready => if pending.isEmpty then pure ready.reverse else throw .request)

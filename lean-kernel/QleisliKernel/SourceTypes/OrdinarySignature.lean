@@ -20,6 +20,8 @@ structure Header where
   ordinaryOnly : Bool
   parameterTypes : List (List String)
   resultTokens : List LocatedToken
+  staticTokens : Option (List LocatedToken)
+  requiresTokens : Option (List LocatedToken)
 
 private def expect (text : String) (tokens : List LocatedToken) :
     Except String (LocatedToken × List LocatedToken) := do
@@ -34,6 +36,17 @@ private def parameterClause : Nat → Nat → List LocatedToken → List Located
     if token.text == ")" && depth == 0 then return (reversed.reverse,rest)
     if token.text == "(" then return ← next (depth+1) rest (token :: reversed)
     if token.text == ")" then return ← next (depth-1) rest (token :: reversed)
+    next depth rest (token :: reversed))
+
+-- Retain the exact original binder clause before interpreting its kinds or
+-- substitutions. Angle brackets inside Op<A -> B> are not bracket delimiters.
+private def staticClause : Nat → Nat → List LocatedToken → List LocatedToken →
+    Except String (List LocatedToken × List LocatedToken) :=
+  Nat.rec (fun _ _ _ => throw "incomplete static clause") (fun _ next depth tokens reversed => do
+    let token :: rest := tokens | throw "missing static closing bracket"
+    if token.text == "]" && depth == 0 then return (reversed.reverse,rest)
+    if token.text == "[" then return ← next (depth+1) rest (token :: reversed)
+    if token.text == "]" then return ← next (depth-1) rest (token :: reversed)
     next depth rest (token :: reversed))
 
 private def parameterTypes (tokens : List LocatedToken) : Except String (List (List String)) := do
@@ -61,13 +74,21 @@ private def header (occurrence : BodyOccurrence) : Except String Header := do
   let (_,tokens) ← expect "fn" tokens
   let (name,tokens) ← expect occurrence.declaration.name tokens
   if name != occurrence.nameToken then throw "entry name occurrence mismatch"
+  let (statics,tokens) ← if tokens.head?.map (·.text) == some "[" then do
+      let (clause,rest) ← staticClause (tokens.length+1) 0 tokens.tail []
+      pure (some clause,rest)
+    else pure (none,tokens)
   let (_,tokens) ← expect "(" tokens
   let (parameters,tokens) ← parameterClause (tokens.length+1) 0 tokens []
   let parameters ← parameterTypes parameters
   let (_,tokens) ← expect "-" tokens
   let (_,tokens) ← expect ">" tokens
-  if tokens.isEmpty then throw "missing ordinary entry result"
-  return ⟨effect,ordinaryOnly,parameters,tokens⟩
+  let (result,tail) := tokens.span (·.text != "requires")
+  if result.isEmpty then throw "missing ordinary entry result"
+  let requirements ← if tail.isEmpty then pure none else do
+      if tail.tail.isEmpty then throw "empty entry requires clause"
+      pure (some tail.tail)
+  return ⟨effect,ordinaryOnly,parameters,result,statics,requirements⟩
 
 def envelope (occurrence : BodyOccurrence) : List LocatedToken :=
   occurrence.header ++ [occurrence.openBrace] ++ occurrence.body ++ [occurrence.closeBrace]
@@ -169,15 +190,25 @@ def selectionAllowed {sources : Sources} {owner name : String}
   | .exported => original.declaration.isPublic
   | .internal => !original.declaration.isPublic && !(owner == "main" && name == "main")
 
-/-- Shared original declaration and byte envelope, before interpreting the
-parameter/result type category. This does not grant visibility or execution. -/
-def readOriginal (sources : Sources) (owner name : String) :
+/-- Exact original declaration, including untouched static binders and requires
+tokens. Reading this envelope checks neither their substitution nor constraints
+and grants no visibility, operation access or execution authority. -/
+def readOriginalEnvelope (sources : Sources) (owner name : String) :
     WorkM (Original sources owner name) := do
   guard (sources.size ≤ 128) .limit
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
   exactWork (Exact.charge (512*(bytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
   adapt (original sources owner name)
+
+/-- The existing closed-header consumers retain their explicit refusal of
+static binders/constraints. Only an independent substitution checker may use
+readOriginalEnvelope to extend those consumers. -/
+def readOriginal (sources : Sources) (owner name : String) :
+    WorkM (Original sources owner name) := do
+  let original ← readOriginalEnvelope sources owner name
+  guard (original.parsedHeader.staticTokens.isNone && original.parsedHeader.requiresTokens.isNone) .request
+  pure original
 
 /-- Project main remains closed. Exported declarations may have ordinary
 parameters. Quantum/static binders and general source semantics remain separate. -/

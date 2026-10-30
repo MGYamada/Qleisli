@@ -27,6 +27,8 @@ pub struct Request {
     pub selection: Selection,
     pub module: String,
     pub declaration: String,
+    pub static_bases: Vec<(String, Vec<BasisAtom>)>,
+    pub static_naturals: Vec<(String, u32)>,
     pub parameters: Vec<Vec<Atom>>,
     pub input_storage: Vec<Vec<Storage>>,
     pub input_rows: Vec<Vec<bool>>,
@@ -136,11 +138,29 @@ impl Request {
         self.preflight()?;
         json::encode(&Value::object([
             ("format", text("qleisli.runtime-root-request")),
-            ("version", Value::Number(1)),
-            ("profile", text("finite-runtime-root-v1")),
+            ("version", Value::Number(2)),
+            ("profile", text("finite-runtime-root-v2")),
             ("selection", text(self.selection.name())),
             ("module", text(&self.module)),
             ("declaration", text(&self.declaration)),
+            (
+                "static_bases",
+                array(&self.static_bases, |(name, basis)| {
+                    Value::object([
+                        ("name", text(name)),
+                        ("basis", array(basis, BasisAtom::encode)),
+                    ])
+                }),
+            ),
+            (
+                "static_naturals",
+                array(&self.static_naturals, |(name, value)| {
+                    Value::object([
+                        ("name", text(name)),
+                        ("value", Value::Number(u64::from(*value))),
+                    ])
+                }),
+            ),
             (
                 "parameters",
                 array(&self.parameters, |tree| array(tree, Atom::encode)),
@@ -167,6 +187,15 @@ impl Request {
     }
 
     pub(super) fn preflight(&self) -> Result<()> {
+        if self
+            .static_bases
+            .len()
+            .saturating_add(self.static_naturals.len())
+            > 32
+            || self.static_bases.iter().any(|(_, basis)| basis.len() > 128)
+        {
+            return Err(Error::limit("runtime static argument capacity"));
+        }
         if self.parameters.len() > 64
             || self.input_storage.len() > 64
             || self.input_rows.len() > 64
@@ -212,6 +241,8 @@ impl Request {
             "selection",
             "module",
             "declaration",
+            "static_bases",
+            "static_naturals",
             "parameters",
             "input_storage",
             "input_rows",
@@ -220,10 +251,15 @@ impl Request {
             "public_effect",
         ])?;
         if value.field("format")?.text()? != "qleisli.runtime-root-request"
-            || value.field("version")?.number()? != 1
-            || value.field("profile")?.text()? != "finite-runtime-root-v1"
+            || value.field("version")?.number()? != 2
+            || value.field("profile")?.text()? != "finite-runtime-root-v2"
         {
             return Err(Error::format("unsupported runtime root request"));
+        }
+        let bases = value.field("static_bases")?.array()?;
+        let naturals = value.field("static_naturals")?.array()?;
+        if bases.len().saturating_add(naturals.len()) > 32 {
+            return Err(Error::limit("runtime static argument capacity"));
         }
         let parameters = value.field("parameters")?.array()?;
         let inputs = value.field("input_storage")?.array()?;
@@ -241,6 +277,31 @@ impl Request {
             },
             module: value.field("module")?.text()?.into(),
             declaration: value.field("declaration")?.text()?.into(),
+            static_bases: bases
+                .iter()
+                .map(|value| {
+                    value.fields(&["name", "basis"])?;
+                    let atoms = value.field("basis")?.array()?;
+                    if atoms.len() > 128 {
+                        return Err(Error::limit("runtime static basis capacity"));
+                    }
+                    Ok((
+                        value.field("name")?.text()?.into(),
+                        atoms.iter().map(BasisAtom::decode).collect::<Result<_>>()?,
+                    ))
+                })
+                .collect::<Result<_>>()?,
+            static_naturals: naturals
+                .iter()
+                .map(|value| {
+                    value.fields(&["name", "value"])?;
+                    Ok((
+                        value.field("name")?.text()?.into(),
+                        u32::try_from(value.field("value")?.number()?)
+                            .map_err(|_| Error::format("runtime natural exceeds u32"))?,
+                    ))
+                })
+                .collect::<Result<_>>()?,
             parameters: parameters
                 .iter()
                 .map(|value| tree(value, &mut type_left))

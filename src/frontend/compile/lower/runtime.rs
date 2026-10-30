@@ -193,11 +193,38 @@ pub(super) fn accept(
         .declaration(*key)
         .name
         .clone();
-    if !decl.static_params.is_empty() {
+    let instance = lower
+        .compiler
+        .concrete_context
+        .current
+        .clone()
+        .ok_or_else(|| {
+            crate::interchange::Error::new(
+                "format",
+                "typed runtime root lost its original instance",
+            )
+        })?;
+    if instance.definition != *key || !instance.operations.is_empty() {
         return Err(crate::interchange::Error::new(
             "unsupported",
-            "typed runtime roots require independent original static-binder transport",
+            "typed runtime root requires its original Basis/Nat instance without operation formals",
         ));
+    }
+    let mut static_bases = Vec::new();
+    let mut static_naturals = Vec::new();
+    for (formal, basis) in &instance.interface.bases {
+        lower
+            .compiler
+            .charge(&name.0, decl.span, formal.name.len() + 1)
+            .map_err(failure)?;
+        static_bases.push((formal.name.clone(), describe(lower, *key, basis)?));
+    }
+    for (formal, value) in &instance.interface.naturals {
+        lower
+            .compiler
+            .charge(&name.0, decl.span, formal.name.len() + 1)
+            .map_err(failure)?;
+        static_naturals.push((formal.name.clone(), *value));
     }
     lower
         .compiler
@@ -231,6 +258,11 @@ pub(super) fn accept(
     let mut names = BTreeSet::from([name.0.clone()]);
     for atom in parameters.iter().flatten().chain(&result_type) {
         if let Atom::Finite(BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _)) = atom {
+            names.insert(origin.module.clone());
+        }
+    }
+    for atom in static_bases.iter().flat_map(|(_, basis)| basis) {
+        if let BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _) = atom {
             names.insert(origin.module.clone());
         }
     }
@@ -289,6 +321,8 @@ pub(super) fn accept(
         },
         module: name.0,
         declaration: name.1,
+        static_bases,
+        static_naturals,
         parameters,
         input_storage,
         input_rows,

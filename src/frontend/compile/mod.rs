@@ -542,7 +542,21 @@ impl<'a> Compiler<'a> {
                 result
             };
             for basis in bases.values() {
-                types::closed_basis_capacity(basis, span, &mut |span, cells| charge(span, cells))?;
+                if self.force_typed_root
+                    && self.selected_entry == Some(definition)
+                    && !self.source.interfaces[&definition]
+                        .statics
+                        .iter()
+                        .any(|formal| matches!(formal.kind, StaticKind::Operation { .. }))
+                {
+                    types::typed_basis_capacity(basis, span, &mut |span, cells| {
+                        charge(span, cells)
+                    })?;
+                } else {
+                    types::closed_basis_capacity(basis, span, &mut |span, cells| {
+                        charge(span, cells)
+                    })?;
+                }
             }
             let checked = super::closed::CheckedInterface::original(
                 &self.source,

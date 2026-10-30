@@ -2,7 +2,7 @@ name: Produce reviewable current proof records
 
 on:
   push:
-    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts, codex/beta-typed-ordinary-runtime, codex/beta-qmatch, codex/beta-quantum-runtime-types]
+    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts, codex/beta-typed-ordinary-runtime, codex/beta-qmatch, codex/beta-quantum-runtime-types, codex/beta-runtime-static-bindings]
     paths:
       - .github/workflows/current-proof-records.yml
       - scripts/refresh_current_proof_records.py

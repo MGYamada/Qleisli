@@ -1007,6 +1007,12 @@ fn decode_subject_with_runtime(
             request.parameters.iter().map(Vec::len).sum::<usize>()
                 + request.result.len()
                 + request
+                    .static_bases
+                    .iter()
+                    .map(|(_, basis)| basis.len())
+                    .sum::<usize>()
+                + request.static_naturals.len()
+                + request
                     .input_storage
                     .iter()
                     .flatten()

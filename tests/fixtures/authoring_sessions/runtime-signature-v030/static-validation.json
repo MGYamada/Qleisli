@@ -1,0 +1,246 @@
+{
+  "format": "qleisli.runtime-static-component-checks",
+  "version": 1,
+  "source_base": "3599bbd5faca1eed3f3a2041c7070e3fc96e5378",
+  "checks": [
+    {
+      "label": "static-basis-original-first",
+      "exit_code": 1,
+      "seconds": 5.560960875009187,
+      "child_peak_rss_bytes": 666746880
+    },
+    {
+      "label": "static-basis-original-proof-carrier",
+      "exit_code": 1,
+      "seconds": 0.6560261670092586,
+      "child_peak_rss_bytes": 635289600
+    },
+    {
+      "label": "static-basis-original-unused-name",
+      "exit_code": 0,
+      "seconds": 0.7227688749844674,
+      "child_peak_rss_bytes": 650182656
+    },
+    {
+      "label": "static-categories-first",
+      "exit_code": 1,
+      "seconds": 8.537929500016617,
+      "child_peak_rss_bytes": 678445056
+    },
+    {
+      "label": "static-categories-layout",
+      "exit_code": 0,
+      "seconds": 4.116006249998463,
+      "child_peak_rss_bytes": 659193856
+    },
+    {
+      "label": "static-ci-manifest-repair",
+      "exit_code": 0,
+      "seconds": 3.171715458011022,
+      "child_peak_rss_bytes": 37142528
+    },
+    {
+      "label": "static-header-first",
+      "exit_code": 0,
+      "seconds": 3.91696224999032,
+      "child_peak_rss_bytes": 666959872
+    },
+    {
+      "label": "static-header-tests-first",
+      "exit_code": 0,
+      "seconds": 6.182624707987998,
+      "child_peak_rss_bytes": 1673560064
+    },
+    {
+      "label": "static-native-compiled-comparisons",
+      "exit_code": 0,
+      "seconds": 5.770109583012527,
+      "child_peak_rss_bytes": 628555776
+    },
+    {
+      "label": "static-native-finish-build",
+      "exit_code": 0,
+      "seconds": 225.4315707500209,
+      "child_peak_rss_bytes": 2850258944
+    },
+    {
+      "label": "static-native-incremental-build",
+      "exit_code": 1,
+      "seconds": 189.55961429100716,
+      "child_peak_rss_bytes": 3184410624
+    },
+    {
+      "label": "static-natural-constant-type",
+      "exit_code": 0,
+      "seconds": 3.9958592079929076,
+      "child_peak_rss_bytes": 660160512
+    },
+    {
+      "label": "static-natural-executable-comparisons",
+      "exit_code": 0,
+      "seconds": 0.6571600419993047,
+      "child_peak_rss_bytes": 630718464
+    },
+    {
+      "label": "static-natural-first",
+      "exit_code": 1,
+      "seconds": 4.210279958002502,
+      "child_peak_rss_bytes": 645316608
+    },
+    {
+      "label": "static-natural-first-kernel-reduction",
+      "exit_code": 0,
+      "seconds": 5.530351124994922,
+      "child_peak_rss_bytes": 975978496
+    },
+    {
+      "label": "static-natural-focused-kernel-reductions",
+      "exit_code": 1,
+      "seconds": 146.30805575000704,
+      "child_peak_rss_bytes": 3090808832
+    },
+    {
+      "label": "static-natural-independent-ordinals",
+      "exit_code": 1,
+      "seconds": 26.519005750014912,
+      "child_peak_rss_bytes": 3203153920
+    },
+    {
+      "label": "static-natural-kernel-reductions",
+      "exit_code": 1,
+      "seconds": 158.248935584008,
+      "child_peak_rss_bytes": 4042670080
+    },
+    {
+      "label": "static-natural-mixed-probe",
+      "exit_code": 1,
+      "seconds": 1.7825569999986328,
+      "child_peak_rss_bytes": 1082851328
+    },
+    {
+      "label": "static-natural-overflow-probe",
+      "exit_code": 0,
+      "seconds": 4.483209290978266,
+      "child_peak_rss_bytes": 818413568
+    },
+    {
+      "label": "static-natural-split-kernel-reductions",
+      "exit_code": 1,
+      "seconds": 148.7143017500057,
+      "child_peak_rss_bytes": 3750805504
+    },
+    {
+      "label": "static-natural-tests-first",
+      "exit_code": 1,
+      "seconds": 4.049710458988557,
+      "child_peak_rss_bytes": 623919104
+    },
+    {
+      "label": "static-natural-tests-io",
+      "exit_code": 0,
+      "seconds": 4.201308917021379,
+      "child_peak_rss_bytes": 630882304
+    },
+    {
+      "label": "static-original-type-comparisons",
+      "exit_code": 0,
+      "seconds": 2.7990534999989904,
+      "child_peak_rss_bytes": 636436480
+    },
+    {
+      "label": "static-runtime-original-signature",
+      "exit_code": 0,
+      "seconds": 0.6606350420042872,
+      "child_peak_rss_bytes": 646004736
+    },
+    {
+      "label": "static-runtime-shared-conditions",
+      "exit_code": 0,
+      "seconds": 4.716027041984489,
+      "child_peak_rss_bytes": 657637376
+    },
+    {
+      "label": "static-runtime-signature-comparisons",
+      "exit_code": 0,
+      "seconds": 2.873558333987603,
+      "child_peak_rss_bytes": 640778240
+    },
+    {
+      "label": "static-shared-type-grammar",
+      "exit_code": 1,
+      "seconds": 3.058523125015199,
+      "child_peak_rss_bytes": 660226048
+    },
+    {
+      "label": "static-shared-type-grammar-name",
+      "exit_code": 1,
+      "seconds": 0.8751636249944568,
+      "child_peak_rss_bytes": 659472384
+    },
+    {
+      "label": "static-shared-type-grammar-typed",
+      "exit_code": 0,
+      "seconds": 0.9999067919852678,
+      "child_peak_rss_bytes": 679100416
+    },
+    {
+      "label": "static-signature-incremental-build",
+      "exit_code": 0,
+      "seconds": 183.8721012499882,
+      "child_peak_rss_bytes": 2873229312
+    },
+    {
+      "label": "static-signature-kernel-test-root",
+      "exit_code": 0,
+      "seconds": 206.31040866699186,
+      "child_peak_rss_bytes": 2744418304
+    },
+    {
+      "label": "static-signature-native-carrier-regressions",
+      "exit_code": 0,
+      "seconds": 5.107069040997885,
+      "child_peak_rss_bytes": 39501824
+    },
+    {
+      "label": "static-signature-native-comparisons",
+      "exit_code": 0,
+      "seconds": 3.131414416973712,
+      "child_peak_rss_bytes": 638468096
+    },
+    {
+      "label": "static-signature-native-ordinary-regressions",
+      "exit_code": 0,
+      "seconds": 1.8365938749921042,
+      "child_peak_rss_bytes": 39387136
+    },
+    {
+      "label": "static-signature-native-runtime-regressions",
+      "exit_code": 0,
+      "seconds": 9.602842790976865,
+      "child_peak_rss_bytes": 1093058560
+    }
+  ],
+  "snapshot_limit": "Serial incremental-build manifests also name unchanged imported sources without copying them. Hash-only entries below are identity observations, not archived source snapshots. Missing full initial CI unit-test streams are explicitly disclosed in that separate observation.",
+  "source_identity_only": [],
+  "new_kernel_header_reductions": 10,
+  "executable_comparisons": {
+    "naturals": 24,
+    "bases": 18,
+    "original_runtime_signatures": 10
+  },
+  "existing_native_regressions": {
+    "runtime": 11,
+    "carrier": 12,
+    "ordinary": 13,
+    "ignored": 0
+  },
+  "native_checker_sha256": "0dd90f34b9217f466a69f210008a630fa058e3c52aaf9c4d5f3341aee275542a",
+  "compiled_audit_declarations": 22140,
+  "native_execution": "GENERIC ROUTE NOT ENABLED",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "proof_records": "Current evidence is stale after functional changes; genuine canonical proof maintenance and hosted CI/review remain pending. No historical guarantee or expected hash is rewritten.",
+  "scope": "Informed component inputs and executable comparisons; not independent initial authoring, host-visibility validation, operation closure, source/body/native-runtime preservation, fresh replay of all unchanged dependencies, an accepted generic handle, new guarantee or Issue completion."
+}

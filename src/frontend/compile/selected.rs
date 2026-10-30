@@ -92,13 +92,14 @@ fn process(
             "typed selected execution requires an exported runtime function",
         ));
     }
-    if !declaration.static_params.is_empty()
-        || !selected.types().is_empty()
-        || !selected.naturals().is_empty()
-        || !selected.operations().is_empty()
+    if !selected.operations().is_empty()
+        || declaration
+            .static_params
+            .iter()
+            .any(|formal| matches!(formal.kind, StaticParamKind::Operation { .. }))
     {
         return Err(error(
-            "generic selected ordinary roots require independent original static-binder transport",
+            "selected operation formals require independent original closure transport",
         ));
     }
     let interface = &source.interfaces[&entry];
@@ -150,7 +151,7 @@ fn process(
             continue;
         }
         let original = compiler.declarations[&key];
-        if !original.static_params.is_empty() && original.kind != FnKind::Static {
+        if key != entry && !original.static_params.is_empty() && original.kind != FnKind::Static {
             return Err(compiler.error(
                 &module,
                 span,
@@ -178,8 +179,11 @@ fn process(
     }
     compiler.prepare_selected_classical_tables(Some(&closure))?;
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
-    let program = lower::lower_function(&mut compiler, &entry)?;
-    compiler.checked.insert(entry, program.clone());
+    let instance = named_instance(&mut compiler, selected, entry, &module, span)?;
+    let program = lower::lower_instance_function(&mut compiler, instance)?;
+    if compiler.declarations[&entry].static_params.is_empty() {
+        compiler.checked.insert(entry, program.clone());
+    }
     // The selected producer's work limits do not reclassify dormant
     // quantum/control obligations from the complete common source judgment.
     // They use the existing finite evidence gates and never replace this root.
@@ -200,6 +204,58 @@ fn process(
         program,
         parameters,
     })
+}
+
+fn named_instance(
+    compiler: &mut Compiler<'_>,
+    selected: &Instantiation,
+    entry: Key,
+    module: &str,
+    span: Span,
+) -> Result<Arc<instances::ClosedInstance>, CompileError> {
+    // The immutable instantiation already checked host expressions/visibility.
+    // Bind their proposed trees to this fresh common judgment, including unused
+    // actuals. Binder identities come from this original interface only.
+    let mut work = compiler.work;
+    let closed = (|| {
+        let mut charge = |at, cells| {
+            compiler
+                .charge_at(&mut work, module, at, cells)
+                .map_err(|error| SourceError::new("limit", at, error.to_string()))
+        };
+        let checked = super::super::closed::CheckedInterface::original(
+            &compiler.source,
+            entry,
+            span,
+            &mut charge,
+        )?;
+        let substitution = super::super::closed::ClosedSubstitution::named_budgeted(
+            checked,
+            selected.types(),
+            selected.naturals(),
+            |basis| basis.ty(),
+            selected.entry(),
+            &mut charge,
+        )?;
+        // prepare_instance applies the existing finite capacity and provider
+        // gates below; this closure does not grant acceptance or extra access.
+        super::super::closed::close_interface_budgeted(
+            substitution,
+            selected.entry(),
+            charge,
+            |_, _| Ok(()),
+        )
+    })();
+    compiler.work = work;
+    let closed = closed.map_err(|error| compiler.originals.error(error.in_module(module)))?;
+    compiler.prepare_instance(
+        entry,
+        closed.bases,
+        closed.naturals,
+        BTreeMap::new(),
+        module,
+        span,
+    )
 }
 
 fn prepare_dormant_dependencies(

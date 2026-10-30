@@ -24,6 +24,16 @@ impl Compiler<'_> {
                 receipts: BTreeSet::new(),
             };
             collector.ordinary_signature(key)?;
+            if let Some(instance) = self
+                .concrete_context
+                .current
+                .as_ref()
+                .filter(|instance| instance.definition == key)
+            {
+                for basis in instance.interface.bases.values() {
+                    collector.actual_basis(basis)?;
+                }
+            }
             while let Some(dependency) = collector.pending.pop() {
                 match dependency {
                     Dependency::Type(key) => collector.nominal(key, false)?,
@@ -47,6 +57,33 @@ impl Compiler<'_> {
 }
 
 impl Collector<'_, '_> {
+    fn actual_basis(&mut self, basis: &Ty) -> Result<(), CompileError> {
+        let mut pending = vec![basis];
+        while let Some(basis) = pending.pop() {
+            self.charge(1)?;
+            match &basis.kind {
+                Kind::Nominal(nominal) => {
+                    self.charge(nominal.metadata_cells())?;
+                    let resolution = &self.compiler.source.resolution;
+                    let target = resolution
+                        .module(&nominal.origin.module)
+                        .and_then(|owner| resolution.local_target(owner, &nominal.origin.name));
+                    let Some(Target::Type(key)) = target else {
+                        return self.refusal("static Basis lacks its original nominal declaration");
+                    };
+                    self.type_root(key)?;
+                }
+                Kind::Tuple(fields) => {
+                    self.charge(fields.len())?;
+                    pending.extend(fields);
+                }
+                Kind::Unit | Kind::Bit | Kind::Bits(_) => {}
+                _ => return self.refusal("static Basis must be a closed ordinary type"),
+            }
+        }
+        Ok(())
+    }
+
     fn ordinary_signature(&mut self, key: Key) -> Result<(), CompileError> {
         self.charge(
             self.compiler.source.lexical.len()
@@ -83,7 +120,15 @@ impl Collector<'_, '_> {
             || interface.module != record.name.0
             || interface.ast_index != record.ast_index
             || interface.kind != declaration.kind
-            || !declaration.static_params.is_empty()
+            || (!declaration.static_params.is_empty()
+                && self
+                    .compiler
+                    .concrete_context
+                    .current
+                    .as_ref()
+                    .is_none_or(|instance| {
+                        instance.definition != key || !instance.operations.is_empty()
+                    }))
         {
             return self.refusal("ordinary type closure has a different or open interface");
         }
@@ -119,6 +164,21 @@ impl Collector<'_, '_> {
                         .is_none_or(|site| site.definition() != definition)
                     {
                         return self.refusal("ordinary type name lacks its original occurrence");
+                    }
+                    if let Some(key) = locals.local_key(name) {
+                        if self
+                            .compiler
+                            .concrete_context
+                            .current
+                            .as_ref()
+                            .is_some_and(|instance| {
+                                instance.definition == definition
+                                    && instance.interface.bases.contains_key(key)
+                            })
+                        {
+                            continue;
+                        }
+                        return self.refusal("ordinary type name is not its original static Basis");
                     }
                     let ResolvedUse::Global(Target::Type(key)) = locals.usage(name).target else {
                         return self.refusal("ordinary type name is not a finite declaration");

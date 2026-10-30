@@ -1137,6 +1137,11 @@
           "tests/qmatch_transport.lean",
           "tests/fixtures/qmatch_v030/transport-cases.json",
           "tests/fixtures/qmatch_v030/execution-cases.json"
+        ],
+        [
+          "python3",
+          "scripts/run_native_lean_test.py",
+          "tests/runtime_static.lean"
         ]
       ],
       "env": {

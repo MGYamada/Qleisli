@@ -1,0 +1,108 @@
+{
+  "format": "qleisli.runtime-static-v2-checks",
+  "version": 1,
+  "source_base": "d8260fb3",
+  "checks": [
+    {
+      "label": "static-v2-generic-source-capacity",
+      "exit_code": 0,
+      "seconds": 30.901192833000096,
+      "child_peak_rss_bytes": 837484544
+    },
+    {
+      "label": "static-v2-generic-source-first",
+      "exit_code": 101,
+      "seconds": 17.800618250010302,
+      "child_peak_rss_bytes": 258064384
+    },
+    {
+      "label": "static-v2-msrv-native",
+      "exit_code": 0,
+      "seconds": 30.617544832988642,
+      "child_peak_rss_bytes": 1743765504
+    },
+    {
+      "label": "static-v2-msrv-source",
+      "exit_code": 0,
+      "seconds": 47.23519650002709,
+      "child_peak_rss_bytes": 1689649152
+    },
+    {
+      "label": "static-v2-native-first",
+      "exit_code": 0,
+      "seconds": 71.18433258298319,
+      "child_peak_rss_bytes": 897892352
+    },
+    {
+      "label": "static-v2-rust-first",
+      "exit_code": 0,
+      "seconds": 31.741725875006523,
+      "child_peak_rss_bytes": 1872117760
+    },
+    {
+      "label": "static-v2-selected-cache-final",
+      "exit_code": 0,
+      "seconds": 5.555385041021509,
+      "child_peak_rss_bytes": 848707584
+    },
+    {
+      "label": "static-v2-selected-regressions",
+      "exit_code": 0,
+      "seconds": 26.031583499978296,
+      "child_peak_rss_bytes": 1666023424
+    },
+    {
+      "label": "static-v2-source-final",
+      "exit_code": 0,
+      "seconds": 34.06807054099045,
+      "child_peak_rss_bytes": 1087225856
+    },
+    {
+      "label": "static-v2-source-first",
+      "exit_code": 0,
+      "seconds": 20.212862249987666,
+      "child_peak_rss_bytes": 1132888064
+    },
+    {
+      "label": "static-v2-stable-clippy",
+      "exit_code": 0,
+      "seconds": 18.921695708006155,
+      "child_peak_rss_bytes": 831881216
+    },
+    {
+      "label": "static-v2-types-final",
+      "exit_code": 0,
+      "seconds": 19.47907841700362,
+      "child_peak_rss_bytes": 1640562688
+    }
+  ],
+  "selected_source_tests": {
+    "stable": 20,
+    "msrv": 20,
+    "ignored": 0
+  },
+  "native_tests": {
+    "stable": 13,
+    "msrv": 13,
+    "ignored": 0
+  },
+  "type_tests": 10,
+  "compiled_audit_declarations": 22145,
+  "native_checker_sha256": "38e9468f76336ff632578433ac0a43e5a23f37c799a1cf49297afad6fe2dfb7a",
+  "cli_observations": "The unchanged first generic .qli now checks; a closed generic observing entry runs. Exact executable hashes are observations, not a binary/source correspondence theorem.",
+  "snapshot_limit": "The serial native build binds unchanged import hashes without copying those source files. Original changed sources and separate repairs are retained; this is not a fresh replay of every unchanged dependency.",
+  "native_execution": "SELECTED BASIS/NAT ROOTS ENABLED",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "goal_percent": 58.27,
+  "proof_records": "Current evidence remains stale. Canonical proof maintenance and hosted CI/review are pending; no guarantee or proof identity is manually rewritten.",
+  "remaining": [
+    "generic dependency execution",
+    "operation-formal closure",
+    "nominal coherent-table/Meaning consumers",
+    "wider qmatch integration"
+  ],
+  "scope": "Informed source/implementation checks, not independent first authoring, source-body/native/runtime preservation, new guarantee admission, release or Issue completion."
+}

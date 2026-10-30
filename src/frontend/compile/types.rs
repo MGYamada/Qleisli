@@ -444,7 +444,7 @@ pub(super) fn closed_capacity(
     span: Span,
     charge: &mut impl FnMut(Span, usize) -> Result<(), SourceError>,
 ) -> Result<(), SourceError> {
-    capacity_at(checked, Stage::Runtime, span, charge)
+    capacity_at(checked, Stage::Runtime, false, span, charge)
 }
 
 pub(super) fn closed_basis_capacity(
@@ -452,12 +452,21 @@ pub(super) fn closed_basis_capacity(
     span: Span,
     charge: &mut impl FnMut(Span, usize) -> Result<(), SourceError>,
 ) -> Result<(), SourceError> {
-    capacity_at(checked, Stage::Basis, span, charge)
+    capacity_at(checked, Stage::Basis, false, span, charge)
+}
+
+pub(super) fn typed_basis_capacity(
+    checked: &crate::frontend::types::Type<u32>,
+    span: Span,
+    charge: &mut impl FnMut(Span, usize) -> Result<(), SourceError>,
+) -> Result<(), SourceError> {
+    capacity_at(checked, Stage::Basis, true, span, charge)
 }
 
 fn capacity_at(
     checked: &crate::frontend::types::Type<u32>,
     stage: Stage,
+    typed: bool,
     span: Span,
     charge: &mut impl FnMut(Span, usize) -> Result<(), SourceError>,
 ) -> Result<(), SourceError> {
@@ -477,11 +486,14 @@ fn capacity_at(
         };
         SourceError::new(code, failure.span, message)
     })?;
-    if stage == Stage::Basis && checked.basis_bits().is_none() {
+    // This reserves a closed finite type, not a legacy coherent lookup table.
+    // Nominal code spaces are checked independently by the typed native gate;
+    // their physical width cannot grant a built-in basis encoding or access.
+    if stage == Stage::Basis && !typed && checked.basis_bits().is_none() {
         return Err(SourceError::new(
             "type",
             span,
-            "ordinary nominal types have no coherent finite basis encoding",
+            "ordinary nominal types require typed runtime transport",
         ));
     }
     // Keep built-in accounting unchanged; nominal metadata is additional work.
@@ -789,9 +801,17 @@ mod tests {
         assert_eq!(charge, nominal.metadata_cells() + 1);
         assert_ne!(checked, Closed::unit());
         assert_ne!(checked, Closed::bits(0));
+        let mut basis_charge = 0;
+        typed_basis_capacity(&checked, original.span, &mut |_, cells| {
+            basis_charge += cells;
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(basis_charge, charge);
+        assert_eq!(checked.basis_bits(), None);
         assert!(
             closed_basis_capacity(&checked, original.span, &mut |_, _| {
-                panic!("nominal coherent basis must refuse before reservation")
+                panic!("legacy coherent consumer must refuse before reservation")
             })
             .is_err()
         );
@@ -916,9 +936,17 @@ mod tests {
                 assert!(!fields[1].public);
             }
         }
+        let mut basis_charge = 0;
+        typed_basis_capacity(&checked, original.span, &mut |_, cells| {
+            basis_charge += cells;
+            Ok(())
+        })
+        .unwrap();
+        assert!(basis_charge > 0);
+        assert_eq!(checked.basis_bits(), None);
         assert!(
             closed_basis_capacity(&checked, original.span, &mut |_, _| {
-                panic!("record coherent basis refuses before reservation")
+                panic!("legacy record consumer must refuse before reservation")
             })
             .is_err()
         );

@@ -112,12 +112,11 @@ structure Prepared (original : NaturalCatalog.Original) (calls : Calls) where
   body : NaturalNormalize.Result (NaturalFrames.names (NaturalFrames.original original)) calls
     (Meaning (NaturalFrames.original original) calls original.helper.premises) 128 original.helper.body
 
-/-- Check an original definition generically before any closed instantiation.
-Calls require source-bound readers; no external template is accepted here. -/
-def check (original : NaturalCatalog.Original) (calls : Calls)
-    (callReader : CallsReader (NaturalFrames.original original) calls) :
-    WorkM (Prepared original calls) := do
-  let frame := NaturalFrames.original original
+/-- Check ordered premises in their original frame before any closed values.
+Runtime signatures and original Nat helpers use this same implication gate. -/
+def checkPremises (frame : NaturalFrames.Frame) (calls : Calls)
+    (callReader : CallsReader frame calls) (premises : List Predicate) :
+    WorkM (Scope frame calls premises) := do
   let initial ← NaturalFrames.initial frame
   let scope : Scope frame calls [] := ⟨⟨initial.alternatives,by
       intro values
@@ -128,8 +127,17 @@ def check (original : NaturalCatalog.Original) (calls : Calls)
       · intro held
         exact held.1⟩,
     [],by simp [NumericsTruth,PredicatesTruth]⟩
-  let scope ← requirements callReader (original.helper.premises.length+1) [] original.helper.premises scope
+  let scope ← requirements callReader (premises.length+1) [] premises scope
   Finite.guard (← feasible scope.context) .request
+  pure scope
+
+/-- Check an original definition generically before any closed instantiation.
+Calls require source-bound readers; no external template is accepted here. -/
+def check (original : NaturalCatalog.Original) (calls : Calls)
+    (callReader : CallsReader (NaturalFrames.original original) calls) :
+    WorkM (Prepared original calls) := do
+  let frame := NaturalFrames.original original
+  let scope ← checkPremises frame calls callReader original.helper.premises
   let body ← NaturalNormalize.normalize frame.binders.length scope.context (readers scope callReader) 128 original.helper.body
   return ⟨scope,body⟩
 

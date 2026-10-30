@@ -54,11 +54,11 @@ private def storage (value : Json) : Except String Semantics.RuntimeStorage.Valu
 def decode (value : Json) : WorkM Qirf.RuntimeFamily.Request := do
   adapt (Carrier.fields value
     ["format","version","profile","selection","module","declaration","parameters","input_storage",
-      "input_rows","result","storage","public_effect"])
+      "input_rows","result","storage","public_effect","static_bases","static_naturals"])
   let get := value.getObjVal?
   guard (← adapt (do return (← (← get "format").getStr?) == "qleisli.runtime-root-request" &&
-    (← number (← get "version")) == 1 &&
-    (← (← get "profile").getStr?) == "finite-runtime-root-v1")) .request
+    (← number (← get "version")) == 2 &&
+    (← (← get "profile").getStr?) == "finite-runtime-root-v2")) .request
   let selection ← adapt (do match ← (← get "selection").getStr? with
     | "project" => pure SourceTypes.OrdinarySignature.Selection.project
     | "exported" => pure .exported
@@ -66,6 +66,15 @@ def decode (value : Json) : WorkM Qirf.RuntimeFamily.Request := do
     | _ => throw "unknown runtime entry selection")
   let owner ← adapt ((← adapt (get "module")).getStr?)
   let name ← adapt ((← adapt (get "declaration")).getStr?)
+  let bases ← adapt ((← adapt (get "static_bases")).getArr?)
+  let naturals ← adapt ((← adapt (get "static_naturals")).getArr?)
+  guard (bases.size+naturals.size ≤ 32) .limit
+  let bases ← adapt (bases.toList.mapM fun value => do
+    Carrier.fields value ["name","basis"]
+    return (← (← value.getObjVal? "name").getStr?,← basis (← value.getObjVal? "basis")))
+  let naturals ← adapt (naturals.toList.mapM fun value => do
+    Carrier.fields value ["name","value"]
+    return (← (← value.getObjVal? "name").getStr?,← number (← value.getObjVal? "value")))
   let parameters ← adapt ((← adapt (get "parameters")).getArr?)
   guard (parameters.size ≤ 64) .limit
   let parameters ← adapt (parameters.toList.mapM typeTree)
@@ -89,7 +98,7 @@ def decode (value : Json) : WorkM Qirf.RuntimeFamily.Request := do
     | "isometry" => pure .iso
     | "observe" => pure .observe
     | _ => throw "unknown runtime public effect")
-  return ⟨selection,owner,name,parameters,inputs,rows,result,stored,effect⟩
+  return ⟨selection,owner,name,parameters,inputs,rows,result,stored,effect,⟨bases,naturals⟩⟩
 
 def readRequest (bytes : ByteArray) : WorkM Qirf.RuntimeFamily.Request := do
   let value ← adapt (do

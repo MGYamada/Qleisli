@@ -177,30 +177,41 @@ private def naturalWidth (sources : Sources) (helpers : List NaturalHelpers.Entr
     else throw .limit
   else throw .request
 
-private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
-  Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
-    (fun _ recurse => ⟨fun sources current tokens => do
+-- Closed fields and original static signatures share the same type grammar.
+-- A nominal declaration's fields always use the closed declaration reader;
+-- caller static bindings must never capture names in those fields.
+private def typeNode {sources : Sources}
+    (recurse width named : List String → Finite.WorkM (TypeRead sources))
+    (tokens : List String) : Finite.WorkM (TypeRead sources) := do
       match tokens with
       | ["Unit"] => return ⟨[.unit],[]⟩
       | ["Bit"] => return ⟨[.bit],[]⟩
       | "Bits" :: "<" :: rest =>
         Finite.guard (rest.getLast? == some ">") .request
-        return ⟨[.bits (← naturalWidth sources helpers current rest.dropLast).value],[]⟩
+        width rest.dropLast
       | "(" :: rest =>
         if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then
           throw .request
         let parts ← adapt (splitMembers rest.dropLast)
         Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
-        let children ← parts.foldlM (fun acc part => do combine acc (← recurse.ty sources current part)) ⟨[],[]⟩
+        let children ← parts.foldlM (fun acc part => do combine acc (← recurse part)) ⟨[],[]⟩
         combine ⟨[if parts.length == 2 then Atom.pair else .tuple parts.length],[]⟩ children
-      | _ =>
-        let original ← NaturalAffine.witness (ResolutionProvenance.read sources current tokens)
-        let result ← recurse.decl sources original.val.moduleName original.val.declaration.name
-        Finite.guard (result.resolutions.length < 128) .limit
-        Finite.exactWork (Exact.charge (tokens.length+current.utf8ByteSize+2))
-        let resolution : TypeResolution sources :=
-          ⟨current,tokens,original.val,by with_reducible exact original.property⟩
-        return {result with resolutions := resolution :: result.resolutions},
+      | _ => named tokens
+
+private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
+  Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
+    (fun _ recurse => ⟨fun sources current tokens =>
+      typeNode (recurse.ty sources current)
+        (fun expression => do
+          return ⟨[.bits (← naturalWidth sources helpers current expression).value],[]⟩)
+        (fun tokens => do
+          let original ← NaturalAffine.witness (ResolutionProvenance.read sources current tokens)
+          let result ← recurse.decl sources original.val.moduleName original.val.declaration.name
+          Finite.guard (result.resolutions.length < 128) .limit
+          Finite.exactWork (Exact.charge (tokens.length+current.utf8ByteSize+2))
+          let resolution : TypeResolution sources :=
+            ⟨current,tokens,original.val,by with_reducible exact original.property⟩
+          return {result with resolutions := resolution :: result.resolutions}) tokens,
       fun sources moduleName name => do
         let (source,decl) ← load sources moduleName name
         let origin : Origin := ⟨moduleName,name,source⟩
@@ -345,6 +356,28 @@ def typeExpressionWithSources (sources : Sources) (moduleName : String) (tokens 
     Finite.WorkM (TypeRead sources) := do
   let helpers ← sourceHelpers sources
   (readers helpers 65).ty sources moduleName tokens
+
+/-- The shared type grammar with explicit original static-name/size readers.
+The caller must establish those readers' original binding and value proofs.
+Nominal fields use their own closed scope, not the caller's static environment.
+This supplies no acceptance authority and keeps the existing finite limits. -/
+def typeExpressionScopedWithSources (sources : Sources) (moduleName : String)
+    (size : List String → Finite.WorkM Nat)
+    (parameter : List String → Finite.WorkM (Option (TypeRead sources)))
+    (tokens : List String) : Finite.WorkM (TypeRead sources) := do
+  let helpers ← sourceHelpers sources
+  let read : List String → Finite.WorkM (TypeRead sources) := Nat.rec (fun _ => throw .limit)
+    (fun _ recurse => typeNode recurse
+      (fun expression => do
+        let width ← size expression
+        Finite.guard (width ≤ 6) .limit
+        pure ⟨[.bits width],[]⟩)
+      (fun name => do
+        let selected ← parameter name
+        match selected with
+        | some value => pure value
+        | none => (readers helpers 65).ty sources moduleName name)) 65
+  read tokens
 
 /-- Endpoint compatibility for existing carrier/member consumers. Both views
 use exactly the same reader; no second type resolver supplies coverage. -/

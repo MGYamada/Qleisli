@@ -80,7 +80,8 @@ not authorized by this rule.
 The separate `current-proof-records` workflow prepares reviewable proof metadata
 for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-ordinary-adts`, `codex/beta-typed-ordinary-runtime`,
-`codex/beta-qmatch` or `codex/beta-quantum-runtime-types`.
+`codex/beta-qmatch`, `codex/beta-quantum-runtime-types` or
+`codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree.
 It runs the canonical
 builds, audits, full reductions and fixed protected-output comparisons before
@@ -314,6 +315,14 @@ test reachability cannot satisfy a production module's root requirement. The
 same source restrictions and compiled ownership audit cover test declarations,
 including private and generated helpers. Test sources use kernel-checked
 reductions rather than `#eval` or native proof evaluation.
+
+Concrete runtime static-header, Basis/Nat substitution and signature comparisons
+run in `tests/runtime_static.lean` through the existing compiled native harness.
+They are executable tests, separate from the general correctness proofs in the
+production modules and small header reductions in `QleisliKernel.Tests`.
+Expanding a complete symbolic checker for each example is not needed to prove
+those general properties; compiled comparison success is not a kernel proof or
+source/runtime preservation claim.
 
 | Lane | Selection | Work |
 | --- | --- | --- |

@@ -408,7 +408,7 @@ fn selected_ordinary_prepares_only_tables_demanded_by_dormant_operations() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn selected_ordinary_refuses_generic_or_quantum_interfaces_without_fallback() {
+fn selected_ordinary_checks_generic_actuals_and_refuses_quantum_interfaces_without_fallback() {
     let program = ParsedProgram::parse(
         Edition::E2026,
         BTreeMap::from([(
@@ -426,13 +426,12 @@ fn selected_ordinary_refuses_generic_or_quantum_interfaces_without_fallback() {
         )
         .unwrap();
     let kernel = Kernel::new(kernel(), Edition::E2026);
-    assert!(
-        original
-            .compile_ordinary_with_kernel(&kernel)
-            .unwrap_err()
-            .message
-            .contains("static-binder")
+    let generic = original.compile_ordinary_with_kernel(&kernel).unwrap();
+    assert_eq!(
+        generic.program().runtime_result().unwrap().static_bases[0].0,
+        "A"
     );
+    assert!(run_closed(generic.program(), SimulationLimits::default()).is_err());
     let original = instance(&[(
         "main",
         "pub enum Tri {A,B,C} pub observe fn choose()->Tri {let b=measure_z(init0()); if b {Tri::A}else{Tri::C}}",
