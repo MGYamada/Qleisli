@@ -1,5 +1,18 @@
 # Original qmatch source and evidence coupling
 
+The [context history](context-first.tar.xz), [index](context-index.json) and
+[validation scope](context-validation.json) retain eleven original projects,
+literal-IR and source-mapping studies, the first malformed Raw effect token,
+all elaboration refusals and separate repairs. The shared component observations
+cover eighteen original source/frame/arm cases, including additional zero-width
+owners, argument/result order, public effects and actual phase/control faults.
+Generic root/history/effect bindings and fifteen small kernel reductions remain
+distinct from those runtime observations. A valid shifted IR interval explicitly
+does not establish source association. The composed rule currently binds one
+structural source qmatch; calls, general contexts, paired native/QDV dispatch,
+ordinary compiler integration and full validation remain pending. No archived
+command is executed and neither #64 nor #195 is completed by this component.
+
 The inert [archive](first.tar.xz) and [index](index.json) preserve original
 sources, actual diagnostics, separate repairs, exact source/import byte maps
 and observers as text. The archive includes the preceding finite/Raw/nominal

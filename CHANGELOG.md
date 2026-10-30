@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Bind an internal structural qmatch context to the complete original function,
+  actual input/result owner order and literal Raw interval. Retain additional
+  and zero-width owners and the outer public effect; reuse fresh graph,
+  original arm, controlled-body and exact code/sector checks. General source
+  contexts, paired native/QDV transport and ordinary compiler activation remain
+  pending; this component supplies no execution handle or issue completion.
 - Connect small nominal-enum qmatch functions to the existing original-source
   native gate. Check the actual complete call fragment, original owner roles,
   named-arm evidence and separate controlled bodies before accepting the whole

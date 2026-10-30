@@ -95,6 +95,30 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_context_history_preserves_failures_and_separate_repair(self):
+        root = ROOT / BODY_ROOT
+        members = bounded_history(root / 'context-first.tar.xz', root / 'context-index.json')
+        first = json.loads(members['source-first/observations.json.txt'])
+        self.assertTrue(first['stable'])
+        self.assertEqual(len(first['records']), 11)
+        before = json.loads(members['study/source-frame-first.json.txt'])
+        after = json.loads(members['study/source-frame-second.json.txt'])
+        self.assertEqual(len(before['cases']), 18)
+        for old, new in zip(before['cases'], after['cases']):
+            if old['name'] == 'public-isometry-preserved':
+                self.assertEqual(old['artifact']['programs'][0]['declared_effect'], 'isometry')
+                self.assertEqual(new['artifact']['programs'][0]['declared_effect'], 'iso')
+            else:
+                self.assertEqual(old, new)
+        failed = members['observations/context-sector-comparison-first/stdout.txt']
+        fixed = members['observations/context-sector-comparison-second/stdout.txt']
+        self.assertIn(b'work=0; expected=true', failed)
+        self.assertIn(b'cases=18; mismatches=1', failed)
+        self.assertIn(b'cases=18; mismatches=0', fixed)
+        self.assertIn(b'maximum number of heartbeats', members['observations/context-sector-first/stdout.txt'])
+        self.assertIn(b'shifted_non_qmatch_slice_not_source_evidence', members['study/fourth/stdout.txt'])
+        self.assertIn(b'depends on axioms: [propext]', members['study/fourth/stdout.txt'])
+
     def test_nominal_target_history_keeps_original_programs_and_budget_failures(self):
         members = bounded_history(ROOT / TARGET_ARCHIVE, ROOT / TARGET_INDEX)
         before = json.loads(members['first/observations.json.txt'])

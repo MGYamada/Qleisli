@@ -1,6 +1,7 @@
 import Lean
 import Protocol.ExecutionView.CheckedQmatch
 import Protocol.NativeContext.Bindings
+import QleisliKernel.Qirf.SourceFrameSector
 
 /-! Independent shared data expectations for the actual named-arm protocol.
 The QLV3 comparison and context-dispatch definitions run directly; fresh native
@@ -115,6 +116,33 @@ private def execution (path : System.FilePath) (precise : Bool := false)
   unless accepts == positive && refusals == negative do throw (IO.userError "qmatch coverage changed")
   IO.println s!"passed {positive} exact controls and {negative} QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate"
 
+-- tests/fixtures/qmatch_v030/frame-execution-cases.json keeps these data.
+private def frames (path : System.FilePath) : IO Unit := do
+  let rows ← cases path
+  unless rows.size == 18 do throw (IO.userError "qmatch source-frame inventory changed")
+  for row in rows do
+    let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
+    let artifact ← IO.ofExcept (row.getObjVal? "artifact")
+    let request ← IO.ofExcept (row.getObjVal? "request")
+    let expected ← IO.ofExcept ((row.getObjVal? "expected") >>= Json.getBool?)
+    let actual := (do
+      let (artifact,order) ← Protocol.Qirf.readAll artifact.compress.toUTF8
+      let request ← Protocol.Qmatch.decode request
+      let _ ← Qirf.SourceFrameSector.check artifact order request.attached request.required
+        request.source.moduleName request.source.functionName request.source.offset request.arms
+      pure ()).run 10000000
+    unless actual.1.isOk == expected do
+      throw (IO.userError ("qmatch source-frame mismatch: " ++ name ++ ": " ++ reprStr actual.1))
+    if !expected then
+      let code ← IO.ofExcept ((row.getObjVal? "native_code") >>= Json.getStr?)
+      let correct := match code,actual.1 with
+        | "request",.error .request => true
+        | "invalid",.error .invalid => true
+        | "equation",.error .equation => true
+        | _,_ => false
+      unless correct do throw (IO.userError ("qmatch source-frame wrong refusal: " ++ name))
+  IO.println "passed 18 original structural source/frame/arm/code checks; paired native/QDV and compiler integration remain separate"
+
 def main (args : List String) : IO Unit := do
   let [shapePath,executionPath] := args | throw (IO.userError "expected qmatch shape and execution fixtures")
   shapes shapePath
@@ -122,3 +150,4 @@ def main (args : List String) : IO Unit := do
   let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
   execution (parent / "nominal-execution-cases.json") true
   execution (parent / "body-execution-cases.json") true 5 9
+  frames (parent / "frame-execution-cases.json")
