@@ -40,6 +40,102 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
+    let source = "pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
+        pub unitary fn phase(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
+        pub unitary fn keep(s:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>){
+            qmatch(s,q){1=>phase,0=>idle}}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let kernel = kernel();
+    let selected = instance.compile_runtime_with_kernel(&kernel).unwrap();
+    let request = selected.program().runtime_result().unwrap();
+    assert_eq!(
+        request.parameters,
+        vec![
+            vec![Atom::Quantum, Atom::Finite(Basis::Bit)],
+            vec![Atom::Quantum, Atom::Finite(Basis::Unit)]
+        ]
+    );
+    assert_eq!(request.public_effect, qleisli::ir::Effect::Unitary);
+    assert_eq!(
+        kernel
+            .check_program(selected.program())
+            .unwrap()
+            .program()
+            .runtime_result(),
+        Some(request)
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_keeps_public_arm_effects_and_checks_inactive_arms() {
+    let root = "use helper::arm;
+        pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            qmatch(s,q){0=>h,1=>arm}}";
+    for effect in ["observe", "isometry"] {
+        let error = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([
+                ("main".into(), root.into()),
+                (
+                    "helper".into(),
+                    format!("pub {effect} fn arm(q:Q<Bit>)->Q<Bit>{{q}}"),
+                ),
+            ]),
+        )
+        .unwrap_err();
+        assert!(
+            error.to_string().contains("Unitary") || error.to_string().contains("unitary"),
+            "{error}"
+        );
+    }
+    let source = "pub unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+        pub unitary fn keep[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            if static n==0 {(s,q)} else {qmatch(s,q){0=>idle,1=>idle}}}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    assert!(
+        parsed
+            .requires_typed_runtime_transport("main::keep")
+            .unwrap()
+    );
+    for n in [0, 1] {
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                Default::default(),
+                BTreeMap::from([("n".into(), n)]),
+                Default::default(),
+            )
+            .unwrap();
+        instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_static_bases_and_naturals_keep_the_original_generic_interface() {
     let source = "pub enum Tri{A,B,C} pub unitary fn keep[const A:Basis,const n:Nat](q:Q<A>,word:Bits<n>)->(Q<A>,Bits<n>) requires n>=1 {(q,word)}";
     let parsed = ParsedProgram::parse(

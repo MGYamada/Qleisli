@@ -15,6 +15,7 @@ mod primitive;
 mod projection;
 mod qpe;
 mod raw;
+mod runtime_selection;
 
 pub(in crate::frontend) use basis_binding::carrier_description_budgeted;
 
@@ -70,6 +71,9 @@ pub struct ParsedProgram {
     projections: Arc<BTreeMap<DefId, Result<Arc<ast::Function>>>>,
     // Original resolved identities and exact trees, not spelling/width keys.
     meaning_targets: Arc<BTreeMap<DefId, meaning::TargetTable>>,
+    // Original source features requiring the shared runtime emitter, including
+    // their lexical callers. Selection is eligibility, never acceptance.
+    runtime_roots: Arc<std::collections::BTreeSet<DefId>>,
 }
 impl ParsedProgram {
     pub fn edition(&self) -> crate::edition::Edition {
@@ -270,46 +274,49 @@ impl ParsedProgram {
             .iter()
             .map(|(name, source)| (name, source.syntax()))
             .collect();
-        let (checked, (projections, meaning_targets)) = super::check::program_with_sources(
-            originals,
-            sources
-                .iter()
-                .map(|(name, source)| (name, source.text()))
-                .collect(),
-            super::check::SourceLimits::selected(),
-            |resolution, interfaces, helpers, _, order, indices, budget, nominals| {
-                let meaning_targets =
-                    meaning::validate(&sources, resolution, interfaces, indices, order, budget)?;
-                let mut projections = BTreeMap::new();
-                for (id, declaration) in resolution.declarations() {
-                    let original = &sources
-                        .get(&declaration.name.0)
-                        .expect("retained original")
-                        .syntax()
-                        .decls[declaration.ast_index];
-                    budget.charge(original.span, 1)?;
-                    if original.kind == super::ast::FnKind::Static {
-                        continue;
-                    }
-                    let result = projection::project_declaration(
-                        original,
-                        &indices[&id],
-                        helpers,
-                        budget,
-                        nominals,
-                    )
-                    .map_err(|e| e.in_module(&declaration.name.0));
-                    if let Err(error) = &result {
-                        if error.code == "limit" {
-                            return Err(super::check::SourceError::from(error.clone()));
+        let (checked, (projections, meaning_targets, runtime_roots)) =
+            super::check::program_with_sources(
+                originals,
+                sources
+                    .iter()
+                    .map(|(name, source)| (name, source.text()))
+                    .collect(),
+                super::check::SourceLimits::selected(),
+                |resolution, interfaces, helpers, _, order, indices, budget, nominals| {
+                    let meaning_targets = meaning::validate(
+                        &sources, resolution, interfaces, indices, order, budget,
+                    )?;
+                    let mut projections = BTreeMap::new();
+                    for (id, declaration) in resolution.declarations() {
+                        let original = &sources
+                            .get(&declaration.name.0)
+                            .expect("retained original")
+                            .syntax()
+                            .decls[declaration.ast_index];
+                        budget.charge(original.span, 1)?;
+                        if original.kind == super::ast::FnKind::Static {
+                            continue;
                         }
+                        let result = projection::project_declaration(
+                            original,
+                            &indices[&id],
+                            helpers,
+                            budget,
+                            nominals,
+                        )
+                        .map_err(|e| e.in_module(&declaration.name.0));
+                        if let Err(error) = &result {
+                            if error.code == "limit" {
+                                return Err(super::check::SourceError::from(error.clone()));
+                            }
+                        }
+                        projections.insert(id, result);
                     }
-                    projections.insert(id, result);
-                }
-                Ok((projections, meaning_targets))
-            },
-        )
-        .map_err(Error::from)?;
+                    let runtime_roots = runtime_selection::roots(order, indices, budget)?;
+                    Ok((projections, meaning_targets, runtime_roots))
+                },
+            )
+            .map_err(Error::from)?;
         let projections = projections
             .into_iter()
             .map(|(id, projected)| {
@@ -326,6 +333,7 @@ impl ParsedProgram {
             checked: Arc::new(checked),
             projections: Arc::new(projections),
             meaning_targets: Arc::new(meaning_targets),
+            runtime_roots: Arc::new(runtime_roots),
         })
     }
 
@@ -541,6 +549,20 @@ impl ParsedProgram {
     /// Source-feature selection grants no concrete eligibility or acceptance.
     pub fn requires_typed_ordinary_transport(&self) -> bool {
         !self.checked.nominals.is_empty()
+    }
+
+    /// Select the original-source runtime emitter for nominal declarations or
+    /// a qmatch in this entry's lexical closure. Unsupported syntax still
+    /// refuses at its actual checking boundary; no projection-error retry is used.
+    pub fn requires_typed_runtime_transport(&self, entry: &str) -> Result<bool> {
+        let id = self.checked.resolution.qualified(entry).map_err(|kind| {
+            Self::resolution_error(Failure {
+                module: String::new(),
+                span: Span::default(),
+                kind,
+            })
+        })?;
+        Ok(self.requires_typed_ordinary_transport() || self.runtime_roots.contains(&id))
     }
 
     /// Check all host bindings without requiring the legacy body projection.

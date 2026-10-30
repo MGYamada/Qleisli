@@ -239,6 +239,12 @@ forwarded formals retain their original binder identities. Nominal fields keep
 their declaration scope, and complete closed siblings are checked even when a
 different actual is unresolved. Unused nominal actuals also require typed
 checking when a closed dependency is materialized by the global dormant pass.
+Selected built-in qmatch and its ordinary callers also use this emitter. Named
+operation arms require their original provider bodies to pass the existing
+finite evidence gates; the actual emitted circuit still passes the separate
+six-bit encoded equation. Original AST occurrences and lexical dependencies
+select CLI routing before compilation. That routing grants no acceptance and
+never retries a failed native decision. Nominal qmatch remains pending.
 This does not grant operation/provider access: those preparations retain their
 separate finite constraints and evidence. Operation-formal closure, nominal
 coherent-table/Meaning and wider qmatch integration remain pending. Independent

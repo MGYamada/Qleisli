@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Route selected built-in qmatch bodies and their ordinary callers through the
+  common original-source emitter. Prepare each named operation provider through
+  its existing native evidence gate before lowering; preserve public effects,
+  inactive-arm checking and exact phase. CLI selection follows original lexical
+  dependencies rather than retrying a failed projection. The six-bit equation
+  profile is unchanged; nominal/full qmatch and #64/#195 remain unfinished.
 - Forward nominal Basis/Nat actuals through ordinary generic calls in the
   shared project/selected emitter. Preserve original caller/callee binders,
   declaration-scoped nominal fields, zero-width owners, numeric premises and
