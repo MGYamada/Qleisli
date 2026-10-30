@@ -30,6 +30,8 @@ private def owner (value : Owner) : Value :=
   record "typed-owner" [record "port" [.natural value.port.token,
     .array (value.port.wires.map .natural),.natural value.port.bits],.array (value.basis.map atom)]
 
+def typedOwner (value : Owner) : Value := owner value
+
 private def interface (value : Interface) : Value :=
   record "carrier-interface" [.array (value.inputs.map owner),.array (value.outputs.map owner),
     .natural (match value.publicEffect with | .unitary => 0 | .iso => 1 | .observe => 2)]

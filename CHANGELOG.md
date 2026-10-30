@@ -6,6 +6,38 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect nongeneric mixed runtime interfaces to the shared original-source
+  emitter and native runtime-root gate. Preserve `Q<enum>`/`Q<record>` identity,
+  ordinary tuple fields, zero-width owners and split/join axis order. Selected
+  ordinary functions may use small quantum temporaries through the same Raw
+  checks. Report the actual typed scope in CLI text/JSON; missing native checking
+  and export without typed metadata refuse. Generic/static, nominal finite-table
+  and wider qmatch integration remain pending; #64/#195 remain unfinished.
+  Keep Python, installation and regression JSON consumers aligned with the
+  actual runtime-check flag; refresh current proof records from fresh replay.
+- Connect the mixed runtime-root component to an execution-only native mode and
+  a retained-object QDV walker. Keep complete parameter/result types, canonical
+  input rows, classical storage, typed quantum ports and public effects in the
+  actual accepted program and clones. Fresh rechecking compares those same
+  objects; portable export cannot erase the frame, and zero-width arguments
+  still prevent closed execution. Internal raw requests use the existing gates;
+  normal `.qli` lowering, generic/static transport, wider qmatch integration and
+  #64/#195 completion remain pending. No new guarantee is admitted.
+- Add an internal mixed-runtime root component over complete original type
+  trees, ordinary storage and ordered quantum owner ports. Reuse canonical
+  ordinary-input and all-hidden-history checks with fresh Raw reconstruction;
+  compute exact logical maps, reject code-space leakage and check their complete
+  Gram sum. Prove that a Unitary public label requires equal logical dimensions.
+  Retain zero-width owners, actual observing effects and shared work/width caps.
+  Native/QDV activation, ordinary/selected source integration and #64/#195
+  completion remain pending; this component supplies no new guarantee.
+- Retain complete original runtime parameter/result type prefixes in an internal
+  nongeneric signature reader. Preserve ordinary fields, nested tuples, explicit
+  quantum-owner boundaries and original nominal type queries, including zero-width
+  owners. Reject nested quantum bases and quantum fields in ordinary records.
+  Declared effect metadata remains separate from actual body/effect checking.
+  This prepares ordinary/selected typed-root integration; it enables no execution
+  route or new verified source effect, and #64/#195 remain unfinished.
 - Add an internal exact finite-sector restriction component for qmatch. Prove
   correspondence with the actual contribution, accumulator, step and full
   circuit execution; retain phases, axes, dependencies, errors and uncontrolled

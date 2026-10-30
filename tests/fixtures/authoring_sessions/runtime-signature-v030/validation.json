@@ -1,0 +1,64 @@
+{
+  "format": "qleisli.runtime-signature-component-checks",
+  "version": 1,
+  "source_base": "3113839daecb9ca4f7a7b77e2d13201a6c4d2569",
+  "programs": 7,
+  "actual_prior_cli_observations": 14,
+  "checks": [
+    {
+      "label": "runtime-signature-production-first",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 619020288
+    },
+    {
+      "label": "runtime-signature-production-second",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 637059072
+    },
+    {
+      "label": "runtime-signature-production-third",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 1357266944
+    },
+    {
+      "label": "runtime-signature-production-fourth",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 1771487232
+    },
+    {
+      "label": "runtime-signature-audit-first",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 1506082816
+    }
+  ],
+  "current_small_kernel_reductions": 22,
+  "compiled_declarations": 21130,
+  "proof_records": "STALE for this new candidate; real canonical maintenance required before merge",
+  "native_execution": "NOT ENABLED",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "scope": "Informed sources and actual prior-executable diagnostics; strict component compilation/audit with bound existing imports. Metadata is not a body/effect label, fresh dependency replay, native activation or source-preservation theorem. Full ordinary/selected execution and generic/static transport remain required.",
+  "initial_count_note": "The inert archive observer initially counted23; actual theorem inventory22. Original observer retained unchanged.",
+  "initial_source_policy_refusal": {
+    "report": "runtime-signature-local-checks/report.json",
+    "exit_code": 1,
+    "stderr": "kernel module absent from root import/audit: QleisliKernel.Semantics.RuntimeType\nkernel module absent from root import/audit: QleisliKernel.SourceTypes.RuntimeSignature\n",
+    "repair": "Import RuntimeSignature through the actual QleisliKernel root. Test imports alone do not establish production reachability."
+  },
+  "first_committed_preflight_refusal": {
+    "head": "e8cebe6cb352bc854555911f50d40adfd1ff49a7",
+    "new_fixtures": 4,
+    "referenced": 3,
+    "unreferenced": [
+      "tests/fixtures/authoring_sessions/runtime-signature-v030/README.md"
+    ],
+    "repair": "Explicit passive-test README path, retaining the original committed failure report."
+  }
+}

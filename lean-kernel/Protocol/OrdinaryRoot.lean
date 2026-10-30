@@ -66,6 +66,12 @@ private def storageBudget : Nat → List (Storage × Nat) → Nat → Nat → Wo
       guard (bits+width ≤ 6 && children.length+rest.length ≤ 128) .limit
       next ((children.map (fun child => (child,depth+1))) ++ rest) (nodes+1) (bits+width))
 
+/-- Reuse the same bounded ordinary storage syntax in mixed runtime forests. -/
+def readStorage (value : Json) : Except String Storage := storage 33 value
+
+def checkStorageBudget (values : List Storage) : WorkM Unit :=
+  storageBudget 129 (values.map (fun value => (value,0))) 0 0
+
 def decode (value : Json) : WorkM Qirf.OrdinaryFamily.Request := do
   adapt (Carrier.fields value
     ["format","version","profile","selection","module","declaration","parameters","input_storage",

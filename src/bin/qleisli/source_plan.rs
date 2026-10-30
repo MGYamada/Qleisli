@@ -7,7 +7,7 @@ use qleisli::{
         compile::{
             self, BasisBinding, ElaboratedProgram, HierarchyEligibility, HierarchyProposal,
             OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal,
-            SelectedOrdinaryProgram, SourceType,
+            SelectedRuntimeProgram, SourceType,
         },
         diagnostic::Diagnostic,
     },
@@ -221,7 +221,7 @@ impl PreparedRequest {
 }
 enum PreparedIr {
     Raw(Box<RawSourceProposal>),
-    Ordinary(Box<SelectedOrdinaryProgram>),
+    Runtime(Box<SelectedRuntimeProgram>),
     Hierarchy {
         proposal: Box<HierarchyProposal>,
         request: PreparedRequest,
@@ -232,7 +232,7 @@ impl PreparedIr {
     fn name(&self) -> &'static str {
         match self {
             Self::Raw(_) => "raw",
-            Self::Ordinary(_) => "raw",
+            Self::Runtime(_) => "raw",
             Self::Hierarchy { .. } => "hierarchy",
         }
     }
@@ -240,9 +240,9 @@ impl PreparedIr {
         match self {
             Self::Raw(p) => Ok(p.payload()),
             Self::Hierarchy { proposal, .. } => Ok(proposal.payload()),
-            Self::Ordinary(_) => Err(Failure::new(
+            Self::Runtime(_) => Err(Failure::new(
                 "unsupported",
-                "portable ordinary nominal proposals require their complete typed request transport",
+                "portable typed nominal proposals require their complete typed request transport",
             )),
         }
     }
@@ -305,13 +305,13 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             ))
         })
         .collect::<Result<_>>()?;
-    let ordinary = program.requires_typed_ordinary_transport()
+    let typed = program.requires_typed_ordinary_transport()
         && options.ir_profile != IrProfile::Hierarchy
         && options.request.is_none()
         && options.provider.is_none();
     let types = bindings(&program, &options.types)?;
-    let instantiation = if ordinary {
-        program.instantiate_ordinary_with_types(
+    let instantiation = if typed {
+        program.instantiate_runtime_with_types(
             &options.entry,
             types,
             options.ns.clone(),
@@ -320,11 +320,11 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
     } else {
         program.instantiate_with_types(&options.entry, types, options.ns.clone(), operations)?
     };
-    if ordinary {
+    if typed {
         if options.command == "emit-proposal" {
             return Err(Failure::new(
                 "unsupported",
-                "portable ordinary nominal proposals require their complete typed request transport",
+                "portable typed nominal proposals require their complete typed request transport",
             ));
         }
         if options.basis.is_some() {
@@ -333,7 +333,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
                 "--basis is quantum hierarchy input, not ordinary data",
             ));
         }
-        let compiled = instantiation.compile_ordinary_with_kernel(&native::Kernel::new(
+        let compiled = instantiation.compile_runtime_with_kernel(&native::Kernel::new(
             kernel_path(options)?,
             program.edition(),
         ))?;
@@ -345,7 +345,7 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
                 "Raw run/sample require zero runtime parameters; even a Unit parameter requires an explicit checked invocation",
             ));
         }
-        return Ok(PreparedIr::Ordinary(Box::new(compiled)));
+        return Ok(PreparedIr::Runtime(Box::new(compiled)));
     }
     let source = instantiation.elaborate()?;
     let mut source_budget =
@@ -511,7 +511,7 @@ fn raw_execute(options: &Options, proposal: &RawSourceProposal, kernel: PathBuf)
     ))
 }
 
-fn ordinary_execute(options: &Options, source: &SelectedOrdinaryProgram) -> Result<String> {
+fn runtime_execute(options: &Options, source: &SelectedRuntimeProgram) -> Result<String> {
     let checked = source.program();
     let result = match options.command.as_str() {
         "check" => "{\"status\":\"checked\"}".into(),
@@ -533,9 +533,16 @@ fn ordinary_execute(options: &Options, source: &SelectedOrdinaryProgram) -> Resu
         result,
         &super::check_report::ArtifactReport::new(checked).json_fields()?,
     );
+    let scope = if checked.runtime_result().is_some() {
+        "finite-runtime-root-v1"
+    } else {
+        "finite-ordinary-root-v2"
+    };
     Ok(fields(
         result,
-        "\"verification\":{\"scope\":\"finite-ordinary-root-v2\",\"request_origin\":\"producer\",\"source_steps_checked\":false,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"",
+        &format!(
+            "\"verification\":{{\"scope\":\"{scope}\",\"request_origin\":\"producer\",\"source_steps_checked\":false,\"source_meaning_verified\":false}},\"execution_authority\":\"checked-produced-ir\""
+        ),
     ))
 }
 
@@ -682,7 +689,7 @@ fn execute(options: &Options) -> Result<String> {
         let kernel = kernel_path(options)?;
         match &prepared {
             PreparedIr::Raw(proposal) => raw_execute(options, proposal, kernel)?,
-            PreparedIr::Ordinary(source) => ordinary_execute(options, source)?,
+            PreparedIr::Runtime(source) => runtime_execute(options, source)?,
             PreparedIr::Hierarchy {
                 proposal,
                 request,

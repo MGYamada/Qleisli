@@ -33,7 +33,7 @@ pub(super) fn atom(view: &mut View<'_>, value: &Atom) -> Result<()> {
     }
 }
 
-fn owner(view: &mut View<'_>, value: &Owner) -> Result<()> {
+pub(super) fn owner(view: &mut View<'_>, value: &Owner) -> Result<()> {
     view.record("typed-owner", 2, |w| {
         w.port(&value.port)?;
         w.list(&value.basis, atom)

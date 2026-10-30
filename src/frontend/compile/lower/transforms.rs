@@ -33,7 +33,8 @@ impl Lowerer<'_, '_> {
         name: &Ident,
         basis: &Ty,
     ) -> Result<Option<Matrix>, CompileError> {
-        if basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
+        let width = self.circuit_width(module, name.span, basis)?;
+        if width > MAX_CONTRACT_BITS {
             return Ok(None);
         }
         if let Some(op) = self.bound_operation(name) {
@@ -94,7 +95,7 @@ impl Lowerer<'_, '_> {
             Callee::Primitive(PrimitiveId::GlobalPhaseEighth) => {
                 // Independent full scalar expectation, never a phase quotient
                 // or a recognition of the candidate's source name/body.
-                let dimension = 1 << basis.basis_bits().expect("basis");
+                let dimension = 1 << width;
                 self.compiler
                     .exact_work
                     .charge(dimension * dimension)

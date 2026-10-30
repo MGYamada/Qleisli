@@ -248,10 +248,10 @@ impl Lowerer<'_, '_> {
         let packed = self.pack_runtime_group(module, original.span, value)?;
         let slot = self.quantum(module, original.span, &packed, false)?;
         let basis = &self.raw.registers[&slot].basis;
+        let width = self.circuit_width(module, original.span, basis)?;
         let mut expected = if body.raw().quantum_inputs.len() == 1
             && body.raw().quantum_outputs.len() == 1
-            && basis.basis_bits().expect("packed quantum basis")
-                <= crate::contract::MAX_CONTRACT_BITS
+            && width <= crate::contract::MAX_CONTRACT_BITS
         {
             Some(
                 crate::contract::function::verified_meaning(
@@ -295,7 +295,6 @@ impl Lowerer<'_, '_> {
         }
         self.check_transformed(module, original.span, &basis, &steps, expected.as_ref())?;
         let output = if let Some(control) = control {
-            let width = basis.basis_bits().expect("packed quantum basis");
             self.compiler.charge(
                 module,
                 original.span,

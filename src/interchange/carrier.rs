@@ -151,7 +151,7 @@ impl Atom {
 }
 
 impl Owner {
-    fn encode(&self) -> Value {
+    pub(super) fn encode(&self) -> Value {
         Value::object([
             (
                 "port",
@@ -171,7 +171,7 @@ impl Owner {
         ])
     }
 
-    fn decode(value: &Value) -> Result<Self> {
+    pub(super) fn decode(value: &Value) -> Result<Self> {
         value.fields(&["port", "basis"])?;
         let port = value.field("port")?;
         port.fields(&["token", "wires", "bits"])?;

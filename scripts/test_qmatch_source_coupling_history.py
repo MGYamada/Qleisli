@@ -34,6 +34,19 @@ NOMINAL_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v
 BODY_ROOT = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030"
 OWNER_FLOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-first.tar.xz"
 OWNER_FLOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/owner-flow-index.json"
+RUNTIME_SIGNATURE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/first.tar.xz"
+RUNTIME_SIGNATURE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/index.json"
+RUNTIME_SIGNATURE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/validation.json"
+RUNTIME_SIGNATURE_README = "tests/fixtures/authoring_sessions/runtime-signature-v030/README.md"
+RUNTIME_ROOT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-first.tar.xz"
+RUNTIME_ROOT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-index.json"
+RUNTIME_ROOT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-validation.json"
+RUNTIME_TRANSPORT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-first.tar.xz"
+RUNTIME_TRANSPORT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-index.json"
+RUNTIME_TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-validation.json"
+RUNTIME_SOURCE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-first.tar.xz"
+RUNTIME_SOURCE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-index.json"
+RUNTIME_SOURCE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -67,6 +80,93 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_runtime_source_first_failures_and_repaired_scope_are_retained(self):
+        members = bounded_history(ROOT / RUNTIME_SOURCE_ARCHIVE, ROOT / RUNTIME_SOURCE_INDEX)
+        first = members['observations/source-native-first/stderr.txt']
+        self.assertIn(b'E0560', first)
+        self.assertIn(b'E0502', first)
+        failed = json.loads(members['observations/source-regression-second/report.json.txt'])
+        self.assertEqual(failed['exit_code'], 101)
+        for label, passed in [('source-final-eight', 8), ('source-msrv-eight', 8),
+                              ('source-native-eleven', 11), ('source-msrv-native-eleven', 11),
+                              ('source-types-final', 10), ('source-msrv-types-final', 10)]:
+            report = json.loads(members[f'observations/{label}/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertIn(f'{passed} passed; 0 failed; 0 ignored'.encode(),
+                          members[f'observations/{label}/stdout.txt'])
+        current = json.loads((ROOT / RUNTIME_SOURCE_VALIDATION).read_text())
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertEqual(current['goal_percent'], 58.27)
+        self.assertIn('FAIL stale current source identity', current['constitutional_check'])
+        self.assertIn('generic/static original-binder transport', current['remaining'])
+
+    def test_runtime_transport_preserves_failures_and_fresh_native_scope(self):
+        members = bounded_history(ROOT / RUNTIME_TRANSPORT_ARCHIVE, ROOT / RUNTIME_TRANSPORT_INDEX)
+        self.assertEqual(len(members), 572)
+        for label in ['rust-check-first', 'rust-stable-clippy-first']:
+            self.assertIn(b'compiled by an incompatible version of rustc',
+                          members[f'observations/{label}/stderr.txt'])
+        self.assertIn(b'E0631', members['observations/rust-check-pinned-first/stderr.txt'])
+        self.assertIn(b'Audit.lean', members['observations/native-audit-first/stderr.txt'])
+        self.assertIn(b'21744 kernel/transport declarations',
+                      members['observations/native-audit-second/stdout.txt'])
+        for label in ['rust-native-first', 'rust-msrv-native-first']:
+            self.assertIn(b'10 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
+        for label in ['rust-ordinary-regression-first', 'rust-msrv-ordinary-first']:
+            self.assertIn(b'13 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
+        current = json.loads((ROOT / RUNTIME_TRANSPORT_VALIDATION).read_text())
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertIn('normal .qli project/selected lowering', current['remaining'])
+        self.assertEqual(current['goal_percent'], 58.27)
+
+    def test_mixed_root_first_failures_and_separate_audit_repair_are_retained(self):
+        members = bounded_history(ROOT / RUNTIME_ROOT_ARCHIVE, ROOT / RUNTIME_ROOT_INDEX)
+        self.assertEqual(len(members), 130)
+        rows = json.loads(members['cli/observations.json.txt'])
+        self.assertEqual(len(rows), 8)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in rows), 0)
+        for row in rows:
+            result = json.loads(members['cli/' + row['stdout'] + '.txt'])
+            self.assertEqual(result['diagnostics'][0]['code'],
+                             'effect' if row['case'] == 'hidden-discard-refusal' else 'unsupported')
+        first = members['compile/runtime-code-space-production-first/0.stdout.txt']
+        self.assertIn(b'Unknown constant `QleisliKernel.Semantics.Exact.Matrix.compose`', first)
+        failure = members['compile/runtime-root-controls-fifth/4.stdout.txt']
+        self.assertIn(b'Maps.logicals._unsafe_rec: partial project declaration', failure)
+        audit = json.loads(members['compile/runtime-root-audit-repair-first/report.json.txt'])
+        self.assertEqual(audit['exit_code'], 0)
+        self.assertTrue(audit['stable_inputs'])
+        status = json.loads((ROOT / RUNTIME_ROOT_VALIDATION).read_text())
+        self.assertEqual(status['native_execution'], 'NOT ENABLED')
+        self.assertEqual(status['current_bounded_integration_controls'], 21)
+        self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
+
+    def test_original_runtime_signatures_remain_metadata_and_inert_history(self):
+        members = bounded_history(ROOT / RUNTIME_SIGNATURE_ARCHIVE, ROOT / RUNTIME_SIGNATURE_INDEX)
+        self.assertTrue((ROOT / RUNTIME_SIGNATURE_README).is_file())
+        self.assertEqual(len(members), 93)
+        rows = json.loads(members['cli/observations.json.txt'])
+        self.assertEqual(len(rows), 14)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in rows), 2)
+        for row in rows:
+            result = json.loads(members['cli/' + row['stdout'] + '.txt'])
+            if row['case'] == 'ordinary-inspection-refusal':
+                self.assertIn('live Q<T>', result['diagnostics'][0]['message'])
+            if row['case'] == 'hidden-observation-refusal':
+                self.assertEqual(result['diagnostics'][0]['code'], 'effect')
+                self.assertIn('Observe', result['diagnostics'][0]['message'])
+        first = members['compile/runtime-signature-production-first/0.stdout.txt']
+        self.assertIn(b"unexpected token 'Type'", first)
+        second = members['compile/runtime-signature-production-second/1.stdout.txt']
+        self.assertIn(b'[].isEmpty', second)
+        audit = json.loads(members['compile/runtime-signature-audit-first/report.json.txt'])
+        self.assertEqual(audit['exit_code'], 0)
+        self.assertTrue(audit['stable_inputs'])
+        status = json.loads((ROOT / RUNTIME_SIGNATURE_VALIDATION).read_text())
+        self.assertEqual(status['native_execution'], 'NOT ENABLED')
+        self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
+
     @classmethod
     def setUpClass(cls):
         cls.index = json.loads((ROOT / INDEX).read_text())

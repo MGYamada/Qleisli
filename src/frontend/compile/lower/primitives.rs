@@ -176,7 +176,7 @@ impl Lowerer<'_, '_> {
                 };
                 let b = fields.pop().expect("second field");
                 let a = fields.pop().expect("first field");
-                let width = a.basis_bits().expect("basis type");
+                let width = a.basis_width().expect("retained finite basis type") as usize;
                 let left = self.register(a, reg.wires[..width].to_vec());
                 let right = self.register(b, reg.wires[width..].to_vec());
                 let left_slot = self.quantum(module, span, &left, false)?;

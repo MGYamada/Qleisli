@@ -17,13 +17,13 @@ The common frontend is the only source grammar and source judgment. Rust
 preparation, binding and specialization types are exposed by `frontend::compile`.
 The ordinary CLI commands accept explicit entry/module bindings for specialization.
 For nominal collections, Raw/automatic selection also executes nongeneric public
-ordinary functions through the common finite emitter and the existing native
-ordinary-v2 gate. `ParsedProgram::instantiate_ordinary_with_types` checks all host
-bindings while deferring legacy body projection; `Instantiation::compile_ordinary_with_kernel`
+runtime functions through the common finite emitter and the native ordinary-v2
+or runtime-v1 gate. `ParsedProgram::instantiate_runtime_with_types` checks all host
+bindings while deferring legacy body projection; `Instantiation::compile_runtime_with_kernel`
 then borrows the unchanged original AST/text and obtains a fresh complete common
 judgment with its own original occurrence associations. It never combines cached
 facts with a different check's indices or fabricates a nongeneric source header.
-`SelectedOrdinaryProgram` retains that immutable instantiation and the actual
+`SelectedRuntimeProgram` retains that immutable instantiation and the actual
 accepted artifact/request. Its source check covers every supplied declaration;
 concrete eligibility and root acceptance concern the selected dependency closure.
 Closed function-equality and Meaning obligations in unused declarations and
@@ -35,11 +35,12 @@ source checking alone does not discharge those semantic obligations.
 An explicit public `main::main` selection uses exported-function eligibility.
 Project invocation retains its separate nullary ordinary-main contract, and
 private project mains do not become exported selections.
-The first selected profile permits classical Raw instructions only, with
-eight-bit words, 1024 function expansions, depth 16, 10000 Raw instructions and
+The selected producer retains eight-bit words, 1024 function expansions,
+depth 16, 10000 Raw instructions and
 a conservative 100000-unit producer-work ceiling. Existing source, metadata and
-native caps remain separate. Generic selected roots/dependencies, quantum
-temporary values and portable nominal export still refuse explicitly. Unselected
+native caps remain separate. Small quantum temporaries use the same Raw emitter
+and all-history checks. Generic selected roots/dependencies and portable nominal
+export still refuse explicitly. Unselected
 valid quantum declarations remain source checked without being execution roots.
 Public `classical fn` roots with the same ordinary interface use their original
 classical header and body through this same route; no ordinary wrapper is invented.
@@ -47,6 +48,42 @@ Both closed simulation and sampling reject retained source parameters, including
 Unit, Bits<0> and empty records with no classical transport bits. CLI run/sample
 also require zero original runtime parameters. These are bounded implementation
 checks, not a source-preservation theorem or completion of #64/#195.
+An internal nongeneric runtime-signature reader additionally retains complete
+parameter/result prefixes rather than only a flattened quantum-owner list.
+Ordinary `Unit`, every tuple boundary and each explicit `Q` node remain present;
+the original finite type queries retain nominal declarations and source paths.
+Reading a declared effect annotation does not check its body or certify that
+effect. Ordinary/selected typed-root execution still needs the full type tree,
+actual body/effect and native code-space binding; this metadata reader alone
+provides no runtime capability.
+The internal mixed-runtime root component additionally matches those complete
+types to ordinary storage and ordered Raw quantum ports, then reuses fresh
+original-root validation. For every independently enumerated ordinary input,
+it checks every reconstructed hidden history, exact quantum code-space equations
+and the complete logical Gram sum. Logical cardinalities and the actual Raw
+effect bound the public label; a physical square matrix cannot justify a
+rectangular logical Unitary label. Observation remains Observe, even at logical
+dimension one. The existing dense six-bit component limit is unchanged.
+The internal `finite-runtime-root-v1` mode now reads the full original request
+and compares its freshly checked graph, full parameter/result types, ordinary
+storage, ordered quantum ports, canonical inputs and public effect with the
+actual retained Rust objects through QLV3/QDV. Its execution-only decision
+retains this complete request in the accepted program and every clone. Rechecking
+walks those same objects again; altered types, storage or graph metadata refuse.
+Portable export cannot erase the typed frame. Closed simulation and sampling
+also inspect original runtime parameters, including zero-width arguments.
+The common project and selected emitters now connect nongeneric mixed runtime
+interfaces to this gate, including `Q<enum>`, `Q<record>`, mixed tuples, zero-width
+owners and structural split/join. They snapshot actual input storage before
+expansion consumes it and retain complete output types and ordered owner ports.
+Native reconstruction checks the actual emitted body rather than trusting its
+descriptor. The older `compile_ordinary_with_kernel` method still requires an
+ordinary-only interface and uses the same emitter; `SelectedOrdinaryProgram` is
+a compatibility name for the retained wrapper. Neither API synthesizes source.
+Generic/static, nominal coherent-table/Meaning consumers and wider qmatch
+integration remain pending; no external schema or inverse/control API is admitted.
+Its exact computation witnesses are separate from complex denotation,
+original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
 it does not excuse checking an unused definition, either branch or an empty loop.
@@ -796,9 +833,9 @@ nominal source execution requires a typed native route. The ordinary project
 adapter now checks finite ordinary parameters/results and executes eligible
 closed callers through the route described below.
 The legacy selected projection retains its declaration transport refusal.
-Nongeneric public ordinary roots now use the common typed route; a generic
+Nongeneric public ordinary and mixed quantum roots now use the common typed routes; a generic
 `--type=A=labels::Tri` still checks its actual name/source bindings before the
-explicit missing-static-transport refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
+explicit missing-static-transport refusal. Full nominal `qmatch` and source-preservation
 proofs remain pending; no inverse/control access follows from preparation.
 
 The internal `finite-ordinary-root-v2` request retains the original selected
@@ -842,8 +879,9 @@ from an external algorithm specification. Runtime output distributions retain
 the declared low-axis-first classical output order. Original AST lowering,
 decoder/native compiler and numerical runtime preservation are not proved by
 this gate. Existing simulation APIs still require closed roots; parameter
-checking grants no unchecked arbitrary-input runtime. Generic selected/dependency
-integration, quantum ADTs, full qmatch and nominal finite-table consumers remain pending.
+checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
+interfaces use the runtime-root gate described earlier. Generic selected/dependency
+integration, full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select this typed
 route when the final result is a built-in type. Body-only nominal modules must
 already be retained by the selected original or parameter/result origins; other intermediate
@@ -921,7 +959,9 @@ original declaration identity and logical variant order; built-in labels retain
 exact ordinals. Neither padding tags nor equal physical width identify a label
 or target. The finite executable built-in slice uses a fresh native whole-circuit
 encoded equation within the existing six-joined-bit/1024-step profile. Common
-nominal checks do not open nominal runtime or the selected projection. The full
+nominal qmatch checks do not enable coherent execution of nominal selectors.
+Nongeneric nominal quantum owners can otherwise use the runtime-root gate; the
+legacy selected projection remains separate. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 

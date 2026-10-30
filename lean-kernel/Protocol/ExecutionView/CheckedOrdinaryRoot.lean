@@ -31,6 +31,9 @@ private def storage : Nat → Semantics.OrdinaryValue.Storage → Finite.WorkM V
         return record "field" [.text name,← next value]
       return record "record" [CheckedCarrier.origin source,.array children])
 
+/-- The shared actual ordinary storage walker, with the existing depth bound. -/
+def storedValue (value : Semantics.OrdinaryValue.Storage) : Finite.WorkM Value := storage 33 value
+
 def description (checked : Checked) : Finite.WorkM Value := do
   let graph ← FiniteView.graph checked.artifact checked.result.root
   let request := checked.request

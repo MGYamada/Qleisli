@@ -120,6 +120,7 @@ fn invoke_mode(
             | crate::interchange::native_context::Mode::Contract
             | crate::interchange::native_context::Mode::CarrierPure
             | crate::interchange::native_context::Mode::OrdinaryRoot
+            | crate::interchange::native_context::Mode::RuntimeRoot
             | crate::interchange::native_context::Mode::QmatchSource
     ) {
         return Err(Error::format(

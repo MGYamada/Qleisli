@@ -557,6 +557,19 @@ impl ParsedProgram {
         self.instantiate_prepared(entry, types, naturals, operations, false)
     }
 
+    /// Prepare a full runtime interface without the legacy body projection.
+    /// This checks host bindings only; `compile_runtime_with_kernel` must obtain
+    /// a fresh native decision before execution. Generic native roots still refuse.
+    pub fn instantiate_runtime_with_types(
+        &self,
+        entry: &str,
+        types: BTreeMap<String, BasisBinding>,
+        naturals: BTreeMap<String, u32>,
+        operations: BTreeMap<String, OperationBinding>,
+    ) -> Result<Instantiation> {
+        self.instantiate_prepared(entry, types, naturals, operations, false)
+    }
+
     fn instantiate_prepared(
         &self,
         entry: &str,
@@ -695,7 +708,19 @@ impl Instantiation {
         kernel: &crate::interchange::native::Kernel,
     ) -> std::result::Result<super::compile::SelectedOrdinaryProgram, super::diagnostic::Diagnostic>
     {
-        super::compile::selected::compile(self, &self.program.sources, kernel)
+        super::compile::selected::compile(self, &self.program.sources, kernel, true)
+    }
+
+    /// Compile a nongeneric selected runtime interface, retaining ordinary
+    /// fields and complete quantum owners through the same original-source
+    /// emitter. Native checking binds its full types, storage and actual Raw
+    /// body; source/runtime preservation remains a separate obligation.
+    pub fn compile_runtime_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> std::result::Result<super::compile::SelectedRuntimeProgram, super::diagnostic::Diagnostic>
+    {
+        super::compile::selected::compile(self, &self.program.sources, kernel, false)
     }
 
     /// Elaborate bounded concrete source bodies into an untrusted, source-order

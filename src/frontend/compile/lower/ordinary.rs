@@ -7,7 +7,7 @@ use crate::interchange::carrier::{Atom, Origin};
 use crate::interchange::native::Proposal;
 use crate::interchange::ordinary_root::{Request, Selection, Storage};
 
-type NativeResult<T> = std::result::Result<T, crate::interchange::Error>;
+pub(super) type NativeResult<T> = std::result::Result<T, crate::interchange::Error>;
 fn invalid(message: impl Into<String>) -> crate::interchange::Error {
     crate::interchange::Error::new("format", message)
 }
@@ -17,7 +17,7 @@ fn limit(message: impl Into<String>) -> crate::interchange::Error {
 
 // Untrusted preparation only: native Lean independently enumerates the original
 // finite code and rejects any different/subset/permuted proposed rows.
-fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bool>>> {
+pub(super) fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bool>>> {
     type Layout = (usize, Vec<usize>);
     fn tensor((low_bits, low): Layout, (high_bits, high): Layout) -> NativeResult<Layout> {
         if low_bits + high_bits > 6 || low.len() * high.len() > 64 {
@@ -82,14 +82,6 @@ pub(super) fn has_nominal(ty: &Ty) -> bool {
         Kind::Nominal(_) => true,
         Kind::Q(inner) => has_nominal(inner),
         Kind::Tuple(fields) => fields.iter().any(has_nominal),
-        _ => false,
-    }
-}
-
-pub(super) fn has_quantum_nominal(ty: &Ty) -> bool {
-    match &ty.kind {
-        Kind::Q(inner) => has_nominal(inner),
-        Kind::Tuple(fields) => fields.iter().any(has_quantum_nominal),
         _ => false,
     }
 }

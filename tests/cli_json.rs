@@ -208,7 +208,7 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
                 assert!(text.starts_with("{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":["), "{text}");
                 assert!(text.contains("\"checker_identity\":\"unpinned\""), "{text}");
                 assert!(
-                    text.contains("\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false}"),
+                    text.contains("\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false}"),
                     "{text}"
                 );
                 assert!(

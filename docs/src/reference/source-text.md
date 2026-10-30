@@ -87,11 +87,13 @@ adapter executes eligible closed ordinary callers through the strict native
 ordinary-v2 route, including ordinary parameter functions inlined by the common
 emitter. Nongeneric public selected ordinary runtime and classical roots use
 that same emitter and native gate after a fresh complete original-source
-judgment. The first selected slice emits classical Raw instructions only.
-Quantum nominal ports, generic selected/dependency transport, full qmatch and
+judgment. Small quantum temporaries use the same Raw emitter and complete
+hidden-history checks. Nongeneric mixed interfaces, including nominal quantum
+ports, use the separate runtime-v1 gate with full original type/storage trees.
+Generic selected/dependency transport, full qmatch and
 nominal finite-table consumers remain unfinished. The
 [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile)
-and [production boundary](production-boundary.md#ordinary-inputresult-requests)
+and [production boundary](production-boundary.md#mixed-runtime-root-requests)
 specify the distinct capacities and checked scope. Common frontend facts alone
 provide no execution evidence or accepted handle.
 An explicit Rust check-only carrier adapter uses the same complete judgment

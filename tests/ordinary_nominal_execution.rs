@@ -193,7 +193,7 @@ fn zero_width_nominal_result_and_public_observe_bound_survive_execution() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn hidden_observation_and_unconnected_quantum_nominal_interfaces_refuse() {
+fn hidden_observation_refuses_and_quantum_nominal_helpers_are_checked() {
     let root = SourceRoot::new(&FIRST.replace("pub observe fn", "pub unitary fn"));
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
@@ -202,12 +202,11 @@ fn hidden_observation_and_unconnected_quantum_nominal_interfaces_refuse() {
     let root = SourceRoot::new(
         "enum Tri { A,B,C } pub unitary fn f(q:Q<Tri>)->Q<Tri>{q} observe fn main()->Bit{0}",
     );
-    let error = compile_project(&root.0).unwrap_err();
+    let actual = compile_project(&root.0).unwrap();
     assert_eq!(
-        error.code,
-        qleisli::frontend::compile::ErrorCode::Unsupported
+        run_closed(&actual, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![false], 1.0)])
     );
-    assert!(error.message.contains("quantum nominal"));
 }
 
 #[test]

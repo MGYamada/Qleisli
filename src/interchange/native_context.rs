@@ -10,6 +10,7 @@ pub(super) enum Mode {
     Contract,
     CarrierPure,
     OrdinaryRoot,
+    RuntimeRoot,
     QmatchSource,
     Hierarchy,
     HierarchyRequest,
@@ -31,6 +32,7 @@ impl Mode {
             Self::Contract => "--qirf-contract",
             Self::CarrierPure => "--carrier-pure-check",
             Self::OrdinaryRoot => "--ordinary-root-check",
+            Self::RuntimeRoot => "--runtime-root-check",
             Self::QmatchSource => "--qmatch-source-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
@@ -52,6 +54,7 @@ impl Mode {
             "--qirf-contract" => Ok(Self::Contract),
             "--carrier-pure-check" => Ok(Self::CarrierPure),
             "--ordinary-root-check" => Ok(Self::OrdinaryRoot),
+            "--runtime-root-check" => Ok(Self::RuntimeRoot),
             "--qmatch-source-check" => Ok(Self::QmatchSource),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
@@ -74,6 +77,7 @@ impl Mode {
             | Self::Contract
             | Self::CarrierPure
             | Self::OrdinaryRoot
+            | Self::RuntimeRoot
             | Self::QmatchSource => "accepted",
             Self::Hierarchy
             | Self::HierarchyRequest
@@ -98,6 +102,7 @@ impl Mode {
             | Self::QpeInstrument => scope != Scope::Caller,
             Self::CarrierPure
             | Self::OrdinaryRoot
+            | Self::RuntimeRoot
             | Self::QmatchSource
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
@@ -253,6 +258,7 @@ mod tests {
             Mode::Contract,
             Mode::CarrierPure,
             Mode::OrdinaryRoot,
+            Mode::RuntimeRoot,
             Mode::QmatchSource,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
@@ -271,6 +277,7 @@ mod tests {
                 mode,
                 Mode::CarrierPure
                     | Mode::OrdinaryRoot
+                    | Mode::RuntimeRoot
                     | Mode::QmatchSource
                     | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor

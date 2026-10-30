@@ -1,21 +1,23 @@
-//! Selected ordinary roots use the common original-source compiler and v2 gate.
+//! Selected typed roots use the common original-source compiler and native gates.
 //! No projected or rewritten source supplies their independent type binding.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::frontend::source::SourceCollection;
 
-/// A selected ordinary source and its actual native-accepted artifact. The
+/// A selected source and its actual native-accepted artifact. The
 /// retained request checks the original interface and every canonical input
 /// and hidden output history; it does not prove source preservation.
-/// This first selected profile emits only classical Raw instructions.
 #[derive(Debug)]
-pub struct SelectedOrdinaryProgram {
+pub struct SelectedRuntimeProgram {
     source: Instantiation,
     program: AcceptedProgram,
     parameters: usize,
 }
 
-impl SelectedOrdinaryProgram {
+/// Compatibility name for clients selecting ordinary-only interfaces.
+pub type SelectedOrdinaryProgram = SelectedRuntimeProgram;
+
+impl SelectedRuntimeProgram {
     pub fn source(&self) -> &Instantiation {
         &self.source
     }
@@ -32,15 +34,17 @@ pub(in crate::frontend) fn compile(
     source: &Instantiation,
     originals: &SourceCollection,
     kernel: &crate::interchange::native::Kernel,
-) -> Result<SelectedOrdinaryProgram, Diagnostic> {
-    process(source, originals, kernel).map_err(Diagnostic::from_compile)
+    ordinary_only: bool,
+) -> Result<SelectedRuntimeProgram, Diagnostic> {
+    process(source, originals, kernel, ordinary_only).map_err(Diagnostic::from_compile)
 }
 
 fn process(
     selected: &Instantiation,
     originals: &SourceCollection,
     kernel: &crate::interchange::native::Kernel,
-) -> Result<SelectedOrdinaryProgram, CompileError> {
+    ordinary_only: bool,
+) -> Result<SelectedRuntimeProgram, CompileError> {
     let originals = Originals::Selected(originals);
     // Selected preparations own their AST. Borrow it intact and obtain a fresh
     // complete common judgment with its actual occurrence associations. Never
@@ -98,7 +102,8 @@ fn process(
         ));
     }
     let interface = &source.interfaces[&entry];
-    if interface.params.iter().any(|ty| ty.linear()) || interface.result.linear() {
+    if ordinary_only && (interface.params.iter().any(|ty| ty.linear()) || interface.result.linear())
+    {
         return Err(error(
             "typed selected ordinary roots require ordinary input and output ports",
         ));
@@ -111,7 +116,7 @@ fn process(
         interface_naturals,
         locals: Forest::from_occurrences(occurrences),
         declarations,
-        force_ordinary_root: true,
+        force_typed_root: true,
         selected_entry: Some(entry),
         selected_calls: 0,
         basis: BTreeMap::new(),
@@ -175,10 +180,10 @@ fn process(
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let program = lower::lower_function(&mut compiler, &entry)?;
     compiler.checked.insert(entry, program.clone());
-    // The selected producer's classical-only limits do not reclassify dormant
+    // The selected producer's work limits do not reclassify dormant
     // quantum/control obligations from the complete common source judgment.
     // They use the existing finite evidence gates and never replace this root.
-    compiler.force_ordinary_root = false;
+    compiler.force_typed_root = false;
     // Global dormant passes visit original obligations outside this root's
     // closure. Prepare their actual Meaning/table dependencies under the
     // existing finite evidence profile, without widening the selected root.
@@ -190,7 +195,7 @@ fn process(
         .retain_instruments(compiler.instrument_evidence.into_values().collect())
         .retain_pure_equations(compiler.pure_equations)
         .retain_computed_normalizations(compiler.computed_normalizations);
-    Ok(SelectedOrdinaryProgram {
+    Ok(SelectedRuntimeProgram {
         source: selected.clone(),
         program,
         parameters,
@@ -333,11 +338,10 @@ fn prepare_evidence_dependencies(
             }
         }
     }
-    // Evidence bodies have the existing finite quantum profile. They do not
-    // inherit the selected ordinary producer's classical-only Raw restriction.
-    let selected = compiler.force_ordinary_root;
+    // Evidence bodies retain the existing finite profile and its work limits.
+    let selected = compiler.force_typed_root;
     let checking = compiler.checking;
-    compiler.force_ordinary_root = false;
+    compiler.force_typed_root = false;
     let result = (|| {
         // Only actual Meaning/function evidence roots demand tables. A Nat
         // obligation in an unused owner does not require every classical
@@ -372,7 +376,7 @@ fn prepare_evidence_dependencies(
         }
         Ok(())
     })();
-    compiler.force_ordinary_root = selected;
+    compiler.force_typed_root = selected;
     compiler.checking = checking;
     result
 }
@@ -395,20 +399,17 @@ pub(super) fn check_raw_capacity(
                 module,
                 span,
                 ErrorCode::Limit,
-                "selected ordinary Raw exceeds 10000 instructions or branch depth 16",
+                "selected typed Raw exceeds 10000 instructions or branch depth 16",
             ));
         }
         for operation in operations {
-            match operation {
-                RawOp::ClassicalConst {..} | RawOp::ClassicalNot {..} |
-                RawOp::ClassicalXor {..} | RawOp::ClassicalAnd {..} => {}
-                RawOp::ClassicalBranch { then_ops, else_ops, quantum_phis, .. } if quantum_phis.is_empty() => {
-                    compiler.charge(module, span, 4)?;
-                    pending.push((then_ops, depth + 1));
-                    pending.push((else_ops, depth + 1));
-                }
-                _ => return Err(compiler.error(module, span, ErrorCode::Unsupported,
-                    "selected nominal execution currently requires classical Raw instructions; quantum temporary values remain unsupported")),
+            if let RawOp::ClassicalBranch {
+                then_ops, else_ops, ..
+            } = operation
+            {
+                compiler.charge(module, span, 4)?;
+                pending.push((then_ops, depth + 1));
+                pending.push((else_ops, depth + 1));
             }
         }
     }
@@ -422,7 +423,7 @@ pub(super) fn check_type_capacity(
     span: Span,
     ty: &Ty,
 ) -> Result<(), CompileError> {
-    if !compiler.force_ordinary_root {
+    if !compiler.force_typed_root {
         return Ok(());
     }
     compiler.charge_at(work, module, span, 2)?;
@@ -438,13 +439,9 @@ pub(super) fn check_type_capacity(
                     "selected ordinary words exceed eight bits",
                 ));
             }
-            Kind::Q(_) => {
-                return Err(compiler.error(
-                    module,
-                    span,
-                    ErrorCode::Unsupported,
-                    "selected nominal execution currently requires classical temporary values",
-                ));
+            Kind::Q(basis) => {
+                compiler.charge_at(work, module, span, 1)?;
+                pending.push(basis);
             }
             Kind::Tuple(fields) => {
                 compiler.charge_at(work, module, span, fields.len())?;

@@ -78,7 +78,7 @@ fn read_ids(value: &Value) -> Result<Vec<ClassicalId>> {
 }
 
 impl Storage {
-    fn encode(&self) -> Value {
+    pub(super) fn encode(&self) -> Value {
         let (tag, fields) = match self {
             Self::Unit => ("unit", vec![]),
             Self::Bit(id) => ("bit", vec![("id", Value::Number(u64::from(id.0)))]),
@@ -119,7 +119,7 @@ impl Storage {
         Value::object(std::iter::once(("tag", text(tag))).chain(fields))
     }
 
-    fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
+    pub(super) fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
         if depth > 32 || *remaining == 0 {
             return Err(Error::limit(
                 "ordinary storage exceeds 128 nodes or depth 32",
@@ -252,7 +252,7 @@ impl Request {
         Self::storage_preflight(std::iter::once(&self.storage))
     }
 
-    fn storage_preflight<'a>(values: impl Iterator<Item = &'a Storage>) -> Result<()> {
+    pub(super) fn storage_preflight<'a>(values: impl Iterator<Item = &'a Storage>) -> Result<()> {
         let mut pending = values.map(|value| (value, 0usize)).collect::<Vec<_>>();
         let (mut nodes, mut bits) = (0usize, 0usize);
         while let Some((value, depth)) = pending.pop() {

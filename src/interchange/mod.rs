@@ -17,6 +17,7 @@ mod native_packet;
 pub mod ordinary_root;
 pub mod pure_leaf;
 pub mod qmatch;
+pub mod runtime_root;
 
 use codec::Codec;
 use json::Value;
@@ -924,6 +925,17 @@ fn decode_subject_with_types(
     ordinary: Option<&ordinary_root::Request>,
     qmatch: Option<&qmatch::Request>,
 ) -> Result<DecodedGraph> {
+    decode_subject_with_runtime(subject, budget, carrier, ordinary, qmatch, None)
+}
+
+fn decode_subject_with_runtime(
+    subject: &Arc<native::Subject>,
+    budget: &mut Budget,
+    carrier: Option<&carrier::Request>,
+    ordinary: Option<&ordinary_root::Request>,
+    qmatch: Option<&qmatch::Request>,
+    runtime: Option<&runtime_root::Request>,
+) -> Result<DecodedGraph> {
     let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
@@ -986,27 +998,45 @@ fn decode_subject_with_types(
             }
         }
     }
-    if ordinary.is_some() || qmatch.is_some() {
+    if ordinary.is_some() || qmatch.is_some() || runtime.is_some() {
         let bytes = snapshot
             .iter()
             .map(|(p, s)| p.len() + s.len())
             .sum::<usize>();
-        let atoms = ordinary.map_or_else(
-            || {
-                let request = qmatch.expect("typed request");
-                [
-                    &request.attached.inputs,
-                    &request.attached.outputs,
-                    &request.required.inputs,
-                    &request.required.outputs,
-                ]
-                .into_iter()
-                .flatten()
-                .map(|owner| owner.basis.len())
-                .sum::<usize>()
-            },
-            |request| request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len(),
-        );
+        let atoms = if let Some(request) = runtime {
+            request.parameters.iter().map(Vec::len).sum::<usize>()
+                + request.result.len()
+                + request
+                    .input_storage
+                    .iter()
+                    .flatten()
+                    .chain(&request.storage)
+                    .map(|node| match node {
+                        runtime_root::Storage::Ordinary(basis, _) => basis.len(),
+                        runtime_root::Storage::Quantum(owner) => owner.basis.len(),
+                        runtime_root::Storage::Tuple(_) => 1,
+                    })
+                    .sum::<usize>()
+        } else {
+            ordinary.map_or_else(
+                || {
+                    let request = qmatch.expect("typed request");
+                    [
+                        &request.attached.inputs,
+                        &request.attached.outputs,
+                        &request.required.inputs,
+                        &request.required.outputs,
+                    ]
+                    .into_iter()
+                    .flatten()
+                    .map(|owner| owner.basis.len())
+                    .sum::<usize>()
+                },
+                |request| {
+                    request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len()
+                },
+            )
+        };
         budget
             .charge((bytes + snapshot.len() + 1).saturating_mul(atoms + 2))
             .map_err(|e| Error::limit(e.to_string()))?;

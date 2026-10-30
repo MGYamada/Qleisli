@@ -36,7 +36,8 @@ class JsonCliTests(unittest.TestCase):
         self.assertEqual(result["checker_paths"], [self.checker_path()])
         self.assertEqual(result["checker_identity"], "unpinned")
         self.assertEqual(result["entry"], {"present": True, "request_checked": False,
-                                         "ordinary_result_checked": False})
+                                         "ordinary_result_checked": False,
+                                         "runtime_result_checked": False})
         self.assertIs(result["source_preservation_verified"], False)
         roots = result["concrete_ir_roots"]
         self.assertEqual(set(roots), {"local", "bundled"})
@@ -248,6 +249,7 @@ class JsonCliTests(unittest.TestCase):
         artifact_scope = {
             "checker_path": self.checker_path(), "checker_identity": "unpinned",
             "request_checked": False, "ordinary_result_checked": False,
+            "runtime_result_checked": False,
             "source_preservation_verified": False,
         }
         self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"],

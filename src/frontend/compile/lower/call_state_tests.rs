@@ -57,7 +57,7 @@ fn compiler_from_prepared<'p>(
         interface_naturals,
         locals: Forest::from_occurrences(occurrences),
         declarations,
-        force_ordinary_root: false,
+        force_typed_root: false,
         selected_entry: None,
         selected_calls: 0,
         basis: BTreeMap::new(),

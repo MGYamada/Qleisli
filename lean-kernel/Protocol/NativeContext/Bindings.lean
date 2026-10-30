@@ -23,6 +23,14 @@ theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
   obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
   exact CheckedOrdinaryRoot.run_binding bytes decision.value work left checked
 
+theorem run_typed_runtime_binding (product : String) (bytes : ByteArray)
+    (decision : Decision .runtimeRoot) (work left : Nat)
+    (ok : (run .runtimeRoot product bytes).run work = (.ok decision,left)) :
+    ∃ input, Packet.read bytes = .ok input ∧ input.scope = .execution ∧
+      Nonempty (CheckedRuntimeRoot.Binding input.original input.graph decision.value work left) := by
+  obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
+  exact CheckedRuntimeRoot.run_binding bytes decision.value work left checked
+
 theorem run_carrier_binding (product : String) (bytes : ByteArray)
     (decision : Decision .carrierPure) (work left : Nat)
     (ok : (run .carrierPure product bytes).run work = (.ok decision,left)) :

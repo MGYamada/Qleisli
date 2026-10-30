@@ -3,7 +3,7 @@
 use super::*;
 use crate::interchange::ordinary_root::{Request, Storage};
 
-fn storage(view: &mut View<'_>, value: &Storage) -> Result<()> {
+pub(super) fn storage(view: &mut View<'_>, value: &Storage) -> Result<()> {
     match value {
         Storage::Unit => view.record("unit", 0, |_| Ok(())),
         Storage::Bit(id) => view.record("bit", 1, |w| w.n(id.0 as usize)),

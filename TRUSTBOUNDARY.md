@@ -189,11 +189,22 @@ Nongeneric public selected ordinary functions now use the same original-source
 emitter and native v2 gate. Their AST/text are borrowed intact for a fresh
 complete common judgment and associated indices; cached facts and newly built
 indices are never mixed. The returned selected wrapper retains its immutable
-instantiation and actual accepted request. This first selected slice emits only
-classical Raw instructions under bounded producer limits. Generic
-selected/dependency routes, quantum nominal interfaces, full qmatch and nominal
-finite-table consumers remain separate pending integration. Internal v1 refuses
-without fallback.
+instantiation and actual accepted request. Small quantum temporaries use the
+same Raw emitter and complete hidden-history checks under bounded producer limits.
+Internal ordinary v1 refuses without fallback.
+
+The internal `finite-runtime-root-v1` gate separately retains full mixed runtime
+type prefixes and ordered quantum owners. It checks each exact hidden map against
+the original input/output codes, including padding leakage and the complete
+logical Gram sum. Public effects retain actual observation and logical dimensions.
+Its QLV3/QDV walker binds the actual retained graph, source selection, types,
+storage and all canonical inputs. The common emitter connects nongeneric project
+and selected mixed interfaces to this gate, preserving original AST/text and
+zero-width owners. Rechecking walks the same retained objects; portable export
+cannot erase them. Generic/static routes, full qmatch and nominal finite-table
+consumers remain pending. Exact computation witnesses supply no source-body,
+complex-denotation or numerical-runtime preservation theorem, inverse/control
+capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.
 
 ### Non-verifier backend implementation scope (2026-10-11)
 

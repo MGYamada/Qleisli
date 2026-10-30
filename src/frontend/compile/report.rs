@@ -11,6 +11,7 @@ pub struct ProjectCheckReport {
     native_decisions: NativeDecisionSummary,
     entry_request_checked: Option<bool>,
     entry_ordinary_result_checked: bool,
+    entry_runtime_result_checked: bool,
     concrete_local_roots: usize,
     concrete_bundled_roots: usize,
 }
@@ -21,6 +22,10 @@ impl ProjectCheckReport {
         native_decisions: NativeDecisionSummary,
     ) -> Self {
         Self {
+            entry_runtime_result_checked: result
+                .entry
+                .as_ref()
+                .is_some_and(|entry| entry.runtime_result().is_some()),
             entry_ordinary_result_checked: result
                 .entry
                 .as_ref()
@@ -51,6 +56,12 @@ impl ProjectCheckReport {
     /// and all hidden histories. This is not an external algorithm specification.
     pub fn entry_ordinary_result_checked(&self) -> bool {
         self.entry_ordinary_result_checked
+    }
+
+    /// Full runtime types, actual storage and ordered quantum code spaces were
+    /// checked for the original nongeneric interface. This is no body proof.
+    pub fn entry_runtime_result_checked(&self) -> bool {
+        self.entry_runtime_result_checked
     }
 
     pub fn concrete_local_roots(&self) -> usize {

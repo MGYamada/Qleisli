@@ -18,13 +18,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 48)
-        self.assertEqual(result['public_boundaries'], 27)
+        self.assertEqual(result['groups'], 49)
+        self.assertEqual(result['public_boundaries'], 28)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 36)
-        self.assertEqual(result['native_modes'], 16)
+        self.assertEqual(result['production_paths'], 39)
+        self.assertEqual(result['native_modes'], 17)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -120,6 +120,17 @@ class ProductionCoverage(unittest.TestCase):
             data = copy.deepcopy(self.data)
             next(row for row in data['paths'] if row['id'] == 'ordinary-result-check')[field] = value
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'ordinary-result proof scope'):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_runtime_root_keeps_its_native_mode_and_limited_proof_scope(self):
+        for field, value, message in (
+            ('native_modes', ['--qirf-native'], 'classification or binding'),
+            ('proof_scope', 'Complete source and numerical runtime preservation', 'runtime-result proof scope'),
+            ('gaps', 'All generic and qmatch obligations are discharged', 'runtime-result proof scope'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'runtime-result-check')[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, message):
                 coverage.check(coverage.ROOT, data, self.inventory)
 
     def test_qmatch_component_requires_its_bound_mode_and_explicit_proof_gaps(self):

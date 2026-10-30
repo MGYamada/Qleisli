@@ -54,6 +54,9 @@ private def owner (value : Json) : Except String Owner := do
   return ⟨⟨← number (← field port "token"),wires,bits⟩,
     ← atoms.toList.mapM atom⟩
 
+/-- Shared typed owner syntax. This decoder confers no acceptance. -/
+def readOwner (value : Json) : Except String Owner := owner value
+
 private def interface (value : Json) : Except String Interface := do
   fields value ["inputs","outputs","public_effect"]
   let inputs ← (← field value "inputs").getArr?

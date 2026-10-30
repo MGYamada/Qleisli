@@ -43,6 +43,9 @@ impl ExecutableProgram for AcceptedProgram {
     fn has_source_parameters(&self) -> bool {
         self.ordinary_result()
             .is_some_and(|request| !request.parameters.is_empty())
+            || self
+                .runtime_result()
+                .is_some_and(|request| !request.parameters.is_empty())
     }
 }
 

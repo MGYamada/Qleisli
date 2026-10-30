@@ -203,6 +203,12 @@ ORDINARY_RESULT_PROOF = {
 }
 
 
+RUNTIME_RESULT_PROOF = {
+    'proof_scope': 'NativeContext.run_typed_runtime_binding connects the execution-only dispatcher to CheckedRuntimeRoot.run_binding and exact retained-object QDV comparison. Protocol.RuntimeRoot.check_binding binds original packet/request reads to RuntimeFamily.check. Its Checked.original_safe reuses the original Raw root gate; complete signature shapes, nominal origins and public effects remain bound. Checked.every_canonical_input and Row.every_hidden_history retain all independent ordinary inputs and exact reconstructed histories. CodeSpace checks actual per-history code equations and complete Gram equality; Checked.unitary_logical_dimensions proves the logical dimension condition. These are exact computation witnesses, not a new human-admitted guarantee.',
+    'gaps': 'No original source-body/AST preservation, complex-denotation correspondence, numerical-runtime/native compiler/deployed-binary/target preservation, external schema, arbitrary algorithm specification, inverse/control capability, cleanup/resource certification or broader QS/PR/RS/EXACT/S05 discharge. Nongeneric mixed source interfaces use the same untrusted emitter and actual native graph/request comparison. Generic/static, nominal coherent-table/Meaning and wider qmatch integration remain pending. Current canonical proof maintenance, full replay, CI and review remain separately required.',
+}
+
+
 QMATCH_PROOF = {
     'proof_scope': 'NativeContext.run_qmatch_binding retains the actual execution-only QLV3 subject and exact QDV comparison. Protocol.Qmatch.check_binding binds original packet/artifact/request bytes and one successful SourceSector check. SourceSector.check_bound retains original header/operand/arm queries, canonical label coverage, complete nominal code/owner frames, actual evidence-entry inputs/dependency snapshots and actual main/U/CU sector equations. FiniteRestriction checked theorems relate the actual step/accumulator/circuit computation to restricted sectors; Raw/QIRF bindings retain the original bodies. CheckedQmatch.Binding.root_safe derives original Raw ownership/classical scope through the shared gate without enlarging the human-admitted ledger scope. Rust view walkers retain the same graph, circuit/matrix caches, source focus and request objects before a fresh component decision.',
     'gaps': 'Bounded named-arm component only; no ordinary/selected quantum source execution, general expression/call frames, other valid owner mappings, constructed/static/generic arms or complete twelve-bit/64-label source profile. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
@@ -219,6 +225,46 @@ def path_rule(classification, boundaries, modes, sources, tests):
 # Reviewed declarations/dispatch markers, not a proof of the code they describe.
 # Every inventory boundary and every NativeContext.Mode must have an explicit rule.
 PATHS = {
+    'runtime-result-proposal': path_rule('untrusted-proposal', 'runtime-result', '', [
+        ('src/interchange/runtime_root.rs', ['pub enum Atom', 'pub enum Storage', 'pub struct Request',
+            'pub fn encode(', 'pub fn decode(', '"finite-runtime-root-v1"']),
+    ], [('src/interchange/native/runtime_root/tests.rs', 'runtime_request_is_versioned_bounded_metadata_without_an_acceptance_handle')]),
+    'runtime-result-check': path_rule('native-acceptance', 'runtime-result', '--runtime-root-check', [
+        ('src/interchange/native/runtime_root.rs', ['pub fn check_runtime_root(', 'decode_subject_with_runtime(',
+            'runtime_root::complete(prepared.graph(), &request)?', '"--runtime-root-check"', 'prepared.bind(native)?']),
+        ('src/interchange/execution_view/finite/runtime_root.rs', ['graph.write(&mut writer)?',
+            'view.list(&request.parameters,', 'view.list(&request.input_storage,', 'view.effect(request.public_effect)?']),
+        ('src/frontend/compile/lower/runtime.rs', ['fn type_tree(', 'fn storage(', 'fn inputs(',
+            'values: values.to_vec()', 'registers: lower.raw.registers.clone()',
+            'ordinary::proposed_rows(&ordinary)?', 'check_runtime_root(proposal.artifact(), &bytes)?']),
+        ('src/frontend/compile/lower/mod.rs', ['runtime::inputs(&mut lower, *key, &args)?',
+            'runtime::accept(&mut lower, key, &params, inputs, &result, &raw)']),
+        ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
+            'prepare_borrowed_originals(originals, SourceLimits::selected())?', 'source: selected.clone()']),
+        ('src/frontend/specialize.rs', ['pub fn instantiate_runtime_with_types(', 'pub fn compile_runtime_with_kernel(']),
+        ('lean-kernel/Protocol/RuntimeRoot.lean', ['Qirf.RuntimeFamily.check artifact order request', 'theorem check_binding ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedRuntimeRoot.lean', ['supplied.data == expected.data',
+            '.inspection | .caller => throw .packet', 'theorem Binding.root_safe ', 'theorem run_binding ']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeFamily.lean', ['SourceTypes.RuntimeSignature.read',
+            'request.inputRows = OrdinaryDomain.assignments domain', 'theorem Checked.original_safe ',
+            'theorem Checked.unitary_logical_dimensions ', 'theorem Checked.every_canonical_input ',
+            'theorem Row.every_hidden_history ']),
+    ], [('tests/selected_runtime_execution.rs', 'source_keeps_mixed_inputs_nominal_quantum_types_and_original_input_order'),
+        ('tests/selected_runtime_execution.rs', 'quantum_record_and_nested_runtime_tuples_keep_distinct_shapes'),
+        ('tests/selected_runtime_execution.rs', 'nominal_quantum_products_split_join_without_erasing_basis_or_axis_order'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_invalid_result_on_zero_probability_history_is_still_rejected'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_physical_unitary_cannot_leak_a_nominal_code_into_padding'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_actual_boundary_rejects_type_axis_domain_and_raw_owner_substitution'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_public_observe_is_not_sharpened_and_hidden_observation_is_not_unitary'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_quantum_interface_requires_an_explicit_public_effect_even_without_operations'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_original_request_decoder_and_scope_cannot_be_bypassed_by_a_valid_view')]),
+    'runtime-result-views': path_rule('checked-view', 'runtime-result', '', [
+        ('src/interchange/native.rs', ['pub fn runtime_result(', 'self.runtime_result.is_some()', '"--runtime-root-check"']),
+        ('src/frontend/compile/report.rs', ['pub fn entry_runtime_result_checked(']),
+        ('src/bin/qleisli/check_report.rs', ['runtime_result_checked', 'program.runtime_result().is_some()']),
+    ], [('src/interchange/native/runtime_root/tests.rs', 'runtime_full_request_is_retained_by_execution_clone_and_fresh_recheck'),
+        ('src/interchange/native/runtime_root/tests.rs', 'runtime_stale_retained_type_storage_and_graph_cannot_borrow_original_bytes'),
+        ('tests/selected_runtime_execution.rs', 'runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_export')]),
     'qmatch-proposal': path_rule('untrusted-proposal', 'qmatch-component', '', [
         ('src/interchange/qmatch.rs', ['pub struct SourceSite', 'pub struct Arm', 'pub struct Request',
             'pub fn encode(', 'pub fn decode(']),
@@ -270,7 +316,7 @@ PATHS = {
             'Request {', 'check_ordinary_root(proposed.artifact(), &bytes)?', '.is_subset(&names)']),
         ('src/frontend/compile/lower/mod.rs', ['fn note_nominal(', 'nominal_modules: std::rc::Rc',
             'ordinary::has_nominal(&result.ty())', 'ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)']),
-        ('src/frontend/compile/selected.rs', ['pub struct SelectedOrdinaryProgram',
+        ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
             'prepare_borrowed_originals(originals, SourceLimits::selected())?',
             'let uses = compiler.source.lexical[&key].resolved_uses();',
             'lower::lower_function(&mut compiler, &entry)?', 'compiler.check_dormant_operations()?',
@@ -294,8 +340,8 @@ PATHS = {
             'pub fn compile_ordinary_with_kernel(', 'super::compile::selected::compile(']),
         ('src/bin/qleisli/source_plan.rs', ['program.requires_typed_ordinary_transport()',
             'options.request.is_none()', 'options.provider.is_none()',
-            'instantiation.compile_ordinary_with_kernel(', 'compiled.runtime_parameters() != 0',
-            'fn ordinary_execute(', 'finite-ordinary-root-v2']),
+            'instantiation.compile_runtime_with_kernel(', 'compiled.runtime_parameters() != 0',
+            'fn runtime_execute(', 'finite-ordinary-root-v2']),
         ('lean-kernel/Protocol/OrdinaryRoot.lean', ['def check ', 'Qirf.OrdinaryFamily.check artifact order request',
             'theorem check_binding ']),
         ('lean-kernel/QleisliKernel/Qirf/OrdinaryFamily.lean', ['Validity.checkRootWithSources artifact order',
@@ -321,11 +367,11 @@ PATHS = {
         ('src/interchange/native/ordinary_root/tests.rs', 'ordinary_input_subsets_permutations_padding_and_same_width_erasure_refuse'),
         ('tests/ordinary_nominal_execution.rs', 'general_ordinary_parameters_use_all_input_native_checks_and_actual_closed_callers'),
         ('tests/ordinary_nominal_execution.rs', 'foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back_to_raw'),
-        ('tests/ordinary_nominal_execution.rs', 'hidden_observation_and_unconnected_quantum_nominal_interfaces_refuse'),
+        ('tests/ordinary_nominal_execution.rs', 'hidden_observation_refuses_and_quantum_nominal_helpers_are_checked'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_uses_actual_public_nominal_types_and_classical_bodies'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_keeps_import_paths_and_every_nominal_input_row'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_preparation_preserves_visibility_bindings_and_unused_checks'),
-        ('tests/selected_ordinary_execution.rs', 'selected_ordinary_refuses_quantum_and_generic_routes_without_fallback'),
+        ('tests/selected_ordinary_execution.rs', 'selected_ordinary_refuses_generic_or_quantum_interfaces_without_fallback'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_preserves_word_and_call_depth_capacity'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_cli_reports_actual_typed_scope_and_preserves_export_refusal'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_discharges_unused_function_equalities_in_both_effect_profiles'),
@@ -1066,6 +1112,7 @@ PATHS['hierarchy-qpe']['tests'].extend(
 )
 
 NATIVE_DISPATCH = {
+    '--runtime-root-check': '.runtimeRoot',
     '--qmatch-source-check': '.qmatchSource',
     '--ordinary-root-check': '.ordinaryRoot',
     '--qirf-native': '.ordinary',
@@ -1559,6 +1606,8 @@ ROUTES['finite-carrier'] = ('src/interchange/native/carrier/tests.rs',
                             'original_carrier_body_source_and_logical_phase_are_bound')
 ROUTES['ordinary-result'] = ('tests/ordinary_nominal_execution.rs',
                             'actual_source_record_enum_and_match_keep_correlated_result_storage')
+ROUTES['runtime-result'] = ('tests/selected_runtime_execution.rs',
+                            'source_keeps_mixed_inputs_nominal_quantum_types_and_original_input_order')
 ROUTES['qmatch-component'] = ('src/interchange/native/qmatch/tests.rs',
                             'fresh_native_mode_checks_independent_views_and_all_original_substitutions')
 
@@ -1598,9 +1647,10 @@ PATHS['foreign-export']['tests'].extend([
 PATHS['ordinary-acceptance']['source_bindings'].extend([
     dict(path='src/interchange/native.rs', markers=[
         'pub fn check_program(',
-        'program.native.mode() != "--qirf-native"',
+        'let mode = program.native.mode();',
         'self.subject(program.artifact(), program.request())?',
-        'let graph = program.execution_view_description()?',
+        'let graph = if mode == "--runtime-root-check"',
+        'program.execution_view_description()?',
         'let retained = AcceptedProgram {',
         '..program.clone()',
     ]),
@@ -1722,6 +1772,7 @@ for _rule in PATHS.values():
 for _id, _binding in {
     'qmatch-check': 'run_qmatch_binding',
     'ordinary-result-check': 'run_typed_ordinary_binding',
+    'runtime-result-check': 'run_typed_runtime_binding',
     'carrier-check': 'run_carrier_binding',
     'source-carrier-check': 'run_carrier_binding',
     'ordinary-acceptance': 'run_ordinary_root_safe',
@@ -1821,6 +1872,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'ordinary-result-check':
             require({key: row[key] for key in ORDINARY_RESULT_PROOF} == ORDINARY_RESULT_PROOF,
                     'unreviewed ordinary-result proof scope')
+        if row['id'] == 'runtime-result-check':
+            require({key: row[key] for key in RUNTIME_RESULT_PROOF} == RUNTIME_RESULT_PROOF,
+                    'unreviewed runtime-result proof scope')
         if row['id'] == 'qmatch-check':
             require({key: row[key] for key in QMATCH_PROOF} == QMATCH_PROOF,
                     'unreviewed qmatch-component proof scope')
