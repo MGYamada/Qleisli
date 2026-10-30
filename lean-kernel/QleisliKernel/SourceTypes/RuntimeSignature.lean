@@ -32,37 +32,79 @@ private def checkForest {sources} (parts : List (Part sources)) (extra : Nat) : 
   -- Reserve list copies before flattening the bounded children.
   exactWork (Exact.charge (4*(nodes+bases+parts.length+extra+1)))
 
-private def reader : Nat → (sources : Sources) → String → List String → WorkM (Part sources) :=
-  Nat.rec (fun _ _ _ => throw .limit) (fun _ recurse sources owner tokens => do
+private def reader : Nat → (sources : Sources) →
+    (String → List String → WorkM (TypeRead sources)) → String → List String → WorkM (Part sources) :=
+  Nat.rec (fun _ _ _ _ => throw .limit) (fun _ recurse sources finiteType owner tokens => do
     exactWork (Exact.charge (8*tokens.length+1))
     match tokens with
     | "Q" :: _ =>
       let inner ← adapt (QuantumSignature.quantumTokens tokens)
-      let query ← typeExpressionWithSources sources owner inner
+      let query ← finiteType owner inner
       let _ ← FiniteCarrier.read query.basis
       bounded ⟨Semantics.RuntimeType.owner query.basis,[query]⟩
     | "(" :: rest =>
       guard (rest.getLast? == some ")" && rest.dropLast.getLast? != some ",") .request
       let parts ← adapt (splitMembers rest.dropLast)
       guard (2 ≤ parts.length && parts.length ≤ 64) .limit
-      let fields ← parts.mapM (recurse sources owner)
+      let fields ← parts.mapM (recurse sources finiteType owner)
       checkForest fields 1
       pure ⟨Semantics.RuntimeType.tuple parts.length (fields.map (·.tree)),
         fields.flatMap (·.queries)⟩
     | _ =>
-      let query ← typeExpressionWithSources sources owner tokens
+      let query ← finiteType owner tokens
       let _ ← FiniteCarrier.read query.basis
       bounded ⟨Semantics.RuntimeType.ordinary query.basis,[query]⟩)
 
-def readType (sources : Sources) (owner : String) (tokens : List String) :
-    WorkM (Part sources) := reader 65 sources owner tokens
+def readTypeWith (sources : Sources)
+    (finiteType : String → List String → WorkM (TypeRead sources))
+    (owner : String) (tokens : List String) : WorkM (Part sources) :=
+  reader 65 sources finiteType owner tokens
 
-def readTypes (sources : Sources) (owner : String) (tokens : List (List String)) :
+def readTypesWith (sources : Sources)
+    (finiteType : String → List String → WorkM (TypeRead sources))
+    (owner : String) (tokens : List (List String)) :
     WorkM (List (Part sources)) := do
   guard (tokens.length ≤ 64) .limit
-  let result ← tokens.mapM (readType sources owner)
+  let result ← tokens.mapM (readTypeWith sources finiteType owner)
   checkForest result 0
   pure result
+
+def readType (sources : Sources) (owner : String) (tokens : List String) :
+    WorkM (Part sources) := readTypeWith sources (typeExpressionWithSources sources) owner tokens
+
+def readTypes (sources : Sources) (owner : String) (tokens : List (List String)) :
+    WorkM (List (Part sources)) := readTypesWith sources (typeExpressionWithSources sources) owner tokens
+
+structure Conditions {sources owner name} (original : OrdinarySignature.Original sources owner name)
+    (parameters : List (Part sources)) (result : Part sources) : Type where
+  parameterShapes : ∀ part ∈ parameters, (Semantics.RuntimeType.shape part.tree).isSome = true
+  resultShape : (Semantics.RuntimeType.shape result.tree).isSome = true
+  classicalHeader : original.parsedHeader.ordinaryOnly = true →
+    (parameters.flatMap fun part => (Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty = true ∧
+    (Semantics.RuntimeType.ownerBases result.tree).getD [] = []
+  publicEffect : original.declaration.isPublic = true →
+    (parameters.any fun part => !((Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty) = true ∨
+      !((Semantics.RuntimeType.ownerBases result.tree).getD []).isEmpty = true →
+    original.parsedHeader.effect.isSome = true
+
+def checkConditions {sources owner name} (original : OrdinarySignature.Original sources owner name)
+    (parameters : List (Part sources)) (result : Part sources) :
+    WorkM (Conditions original parameters result) := do
+  let nodes := (forestSize parameters).1+result.tree.length
+  exactWork (Exact.charge (16*(nodes+1)^2))
+  if shapes : (∀ part ∈ parameters, (Semantics.RuntimeType.shape part.tree).isSome = true) ∧
+      (Semantics.RuntimeType.shape result.tree).isSome = true then
+    if classical : original.parsedHeader.ordinaryOnly = true →
+        (parameters.flatMap fun part => (Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty = true ∧
+        (Semantics.RuntimeType.ownerBases result.tree).getD [] = [] then
+      if effect : original.declaration.isPublic = true →
+          (parameters.any fun part => !((Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty) = true ∨
+            !((Semantics.RuntimeType.ownerBases result.tree).getD []).isEmpty = true →
+          original.parsedHeader.effect.isSome = true then
+        return ⟨shapes.1,shapes.2,classical,effect⟩
+      else throw .request
+    else throw .request
+  else throw .request
 
 structure Checked (sources : Sources) (owner name : String) where
   original : OrdinarySignature.Original sources owner name
@@ -87,25 +129,10 @@ def read (sources : Sources) (owner name : String) : WorkM (Checked sources owne
   let parameters ← NaturalAffine.witness (readTypes sources owner original.parsedHeader.parameterTypes)
   let result ← NaturalAffine.witness
     (readType sources owner (original.parsedHeader.resultTokens.map (·.text)))
-  -- Shape/reference decoding uses only these bounded prefix nodes. Charge its
-  -- repeated structural traversals independently of source parsing above.
-  let nodes := (forestSize parameters.val).1+result.val.tree.length
-  exactWork (Exact.charge (16*(nodes+1)^2))
-  if shapes : (∀ part ∈ parameters.val, (Semantics.RuntimeType.shape part.tree).isSome = true) ∧
-      (Semantics.RuntimeType.shape result.val.tree).isSome = true then
-    if classical : original.parsedHeader.ordinaryOnly = true →
-        (parameters.val.flatMap fun part => (Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty = true ∧
-        (Semantics.RuntimeType.ownerBases result.val.tree).getD [] = [] then
-      if effect : original.declaration.isPublic = true →
-          (parameters.val.any fun part => !((Semantics.RuntimeType.ownerBases part.tree).getD []).isEmpty) = true ∨
-            !((Semantics.RuntimeType.ownerBases result.val.tree).getD []).isEmpty = true →
-          original.parsedHeader.effect.isSome = true then
-        return ⟨original,parameters.val,result.val,
-          by with_reducible exact parameters.property,by with_reducible exact result.property,
-          shapes.1,shapes.2,classical,effect⟩
-      else throw .request
-    else throw .request
-  else throw .request
+  let conditions ← checkConditions original parameters.val result.val
+  return ⟨original,parameters.val,result.val,
+    by with_reducible exact parameters.property,by with_reducible exact result.property,
+    conditions.parameterShapes,conditions.resultShape,conditions.classicalHeader,conditions.publicEffect⟩
 
 def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) :
     List (String × String) :=

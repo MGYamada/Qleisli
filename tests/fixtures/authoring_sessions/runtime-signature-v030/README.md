@@ -122,3 +122,33 @@ proof replay/current-record maintenance and hosted CI/review remain unfinished.
 The stale current-proof identity check remains a failure, separately from the
 successful protected-record continuity check. No new guarantee or preservation
 theorem is claimed; #64 and #195 remain open.
+
+## Original static signature component
+
+The separate [static archive](static-first.tar.xz), [index](static-index.json)
+and [validation](static-validation.json) preserve 1,289 inert records. They
+retain the original header, Basis/Nat substitution and runtime-signature
+sources, actual diagnostics and separate repairs. The first attempted large
+kernel reductions retain their code-137 and resource-limit failures. Concrete
+comparisons now use the existing external compiled test harness; general
+properties remain kernel-checked. No work or memory limit was raised to pass.
+
+The component checks original formal kinds and order, numeric premises,
+complete closed actuals, nominal declarations and the actual parameter/result
+tokens through the shared finite/runtime type grammar. Ten small header
+reductions and 52 compiled comparisons pass. The rebuilt native checker also
+passes 36 existing runtime/carrier/ordinary regressions without skips; its
+compiled audit checks 22,140 declarations using only the standard axiom basis.
+The complete kernel test root passes. Latest single-process peaks are about
+0.59 GiB for the 52 comparisons and 2.68 GiB for the incremental native build.
+New cases use at most three physical bits.
+
+These are informed component checks, not an independent first-authoring study.
+Generic native/runtime activation, host-expression visibility, operation
+closures, nominal coherent-table consumers and wider qmatch integration remain
+unfinished. Current evidence is stale after functional changes; canonical proof
+maintenance and hosted CI/review remain required. Neither unchanged dependency
+hashes nor the reused warm build establish a fresh full dependency replay.
+The original CI-unit-test observation explicitly discloses its missing complete
+terminal streams. No current guarantee or proof record is rewritten, no generic
+accepted handle is issued, and #64/#195 remain open.

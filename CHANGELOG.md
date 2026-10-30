@@ -6,6 +6,15 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain original runtime static binders and ordered premises in an internal
+  signature reader. Reuse checked Nat helper resolution, generic normalization
+  and exact Basis/Nat substitution before reading complete runtime type trees.
+  Preserve mixed-kind ordinals and reject missing, duplicate, foreign and
+  overflowing arguments, including unused stale nominal types. Nominal fields
+  retain their own declaration scope instead of capturing caller parameters.
+  General correctness remains kernel-checked; bounded executable comparisons
+  use the existing native CI harness. Generic runtime activation, complete
+  operation substitution and #64/#195 completion remain pending.
 - Connect nongeneric mixed runtime interfaces to the shared original-source
   emitter and native runtime-root gate. Preserve `Q<enum>`/`Q<record>` identity,
   ordinary tuple fields, zero-width owners and split/join axis order. Selected

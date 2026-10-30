@@ -315,6 +315,14 @@ same source restrictions and compiled ownership audit cover test declarations,
 including private and generated helpers. Test sources use kernel-checked
 reductions rather than `#eval` or native proof evaluation.
 
+Concrete runtime static-header, Basis/Nat substitution and signature comparisons
+run in `tests/runtime_static.lean` through the existing compiled native harness.
+They are executable tests, separate from the general correctness proofs in the
+production modules and small header reductions in `QleisliKernel.Tests`.
+Expanding a complete symbolic checker for each example is not needed to prove
+those general properties; compiled comparison success is not a kernel proof or
+source/runtime preservation claim.
+
 | Lane | Selection | Work |
 | --- | --- | --- |
 | `tests` | Ordinary known implementation/test changes; explicit manual tests | Native kernel build, source/compiled policy and Audit, all native positive/negative/differential comparisons; registry source identity and policy tests. |

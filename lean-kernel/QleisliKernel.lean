@@ -14,6 +14,9 @@ import QleisliKernel.SourceTypes
 import QleisliKernel.SourceTypes.Members
 import QleisliKernel.SourceTypes.QuantumSignature
 import QleisliKernel.SourceTypes.RuntimeSignature
+import QleisliKernel.SourceTypes.StaticNatural
+import QleisliKernel.SourceTypes.StaticTypes
+import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.Raw.Finite

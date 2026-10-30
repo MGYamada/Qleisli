@@ -47,6 +47,9 @@ RUNTIME_TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signat
 RUNTIME_SOURCE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-first.tar.xz"
 RUNTIME_SOURCE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-index.json"
 RUNTIME_SOURCE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-validation.json"
+RUNTIME_STATIC_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-first.tar.xz"
+RUNTIME_STATIC_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-index.json"
+RUNTIME_STATIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -80,6 +83,25 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_static_signature_first_failures_and_bounded_comparisons_are_retained(self):
+        members = bounded_history(ROOT / RUNTIME_STATIC_ARCHIVE, ROOT / RUNTIME_STATIC_INDEX)
+        self.assertEqual(len(members), 1289)
+        self.assertIn(b'Lean exited with code 137', members[
+            'observations/static-natural-kernel-reductions/stdout.txt'])
+        for name in ['StaticNatMixedProbe.lean', 'StaticNatOverflowProbe.lean']:
+            self.assertTrue(members[f'probes/{name}.txt'])
+        final = members['observations/static-signature-native-comparisons/stdout.txt']
+        for count in [24, 18, 10]:
+            self.assertIn(f'passed {count} original'.encode(), final)
+        for label, count in [('runtime', 11), ('carrier', 12), ('ordinary', 13)]:
+            self.assertIn(f'{count} passed; 0 failed; 0 ignored'.encode(), members[
+                f'observations/static-signature-native-{label}-regressions/stdout.txt'])
+        current = json.loads((ROOT / RUNTIME_STATIC_VALIDATION).read_text())
+        self.assertEqual(current['native_execution'], 'GENERIC ROUTE NOT ENABLED')
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertEqual(sum(current['executable_comparisons'].values()), 52)
+        self.assertIn('Current evidence is stale', current['proof_records'])
+
     def test_runtime_source_first_failures_and_repaired_scope_are_retained(self):
         members = bounded_history(ROOT / RUNTIME_SOURCE_ARCHIVE, ROOT / RUNTIME_SOURCE_INDEX)
         first = members['observations/source-native-first/stderr.txt']
