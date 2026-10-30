@@ -28,9 +28,9 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
         limit: MAX_BYTES,
         depth: 0,
     };
-    writer.sized(5, 11)?;
+    writer.sized(5, 13)?;
     writer.depth += 1;
-    writer.text("finite-runtime-root-v1")?;
+    writer.text("finite-runtime-root-v2")?;
     graph.write(&mut writer)?;
     let mut view = View {
         writer: &mut writer,
@@ -39,6 +39,22 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     view.writer.text(request.selection.name())?;
     view.writer.text(&request.module)?;
     view.writer.text(&request.declaration)?;
+    view.list(&request.static_bases, |w, (name, basis)| {
+        w.writer.sized(5, 2)?;
+        w.writer.depth += 1;
+        w.writer.text(name)?;
+        w.list(basis, carrier::atom)?;
+        w.writer.depth -= 1;
+        Ok(())
+    })?;
+    view.list(&request.static_naturals, |w, (name, value)| {
+        w.writer.sized(5, 2)?;
+        w.writer.depth += 1;
+        w.writer.text(name)?;
+        w.n(*value as usize)?;
+        w.writer.depth -= 1;
+        Ok(())
+    })?;
     view.list(&request.parameters, |w, tree| w.list(tree, atom))?;
     view.list(&request.input_storage, |w, tree| w.list(tree, storage))?;
     view.list(&request.input_rows, |w, row| {

@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Carry complete named Basis/Nat actuals through version2 runtime requests and
+  QDV comparison. Selected ordinary and mixed roots retain their original
+  generic header, numeric premises, nominal sources and closed actuals through
+  the common emitter and fresh native gate. Unused actuals remain checked and
+  retained; old request versions reject. Generic dependencies, operation-formal
+  closure, nominal coherent tables/Meanings and wider qmatch remain pending.
 - Retain original runtime static binders and ordered premises in an internal
   signature reader. Reuse checked Nat helper resolution, generic normalization
   and exact Basis/Nat substitution before reading complete runtime type trees.
@@ -13,8 +19,8 @@ development milestones from the scope of their evidence.
   overflowing arguments, including unused stale nominal types. Nominal fields
   retain their own declaration scope instead of capturing caller parameters.
   General correctness remains kernel-checked; bounded executable comparisons
-  use the existing native CI harness. Generic runtime activation, complete
-  operation substitution and #64/#195 completion remain pending.
+  use the existing native CI harness. Complete operation substitution and
+  #64/#195 completion remain pending.
 - Connect nongeneric mixed runtime interfaces to the shared original-source
   emitter and native runtime-root gate. Preserve `Q<enum>`/`Q<record>` identity,
   ordinary tuple fields, zero-width owners and split/join axis order. Selected

@@ -1,6 +1,6 @@
 import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.Carrier
-import QleisliKernel.SourceTypes.RuntimeSignature
+import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.RuntimeStorage
 import QleisliKernel.CodeSpace
 
@@ -9,7 +9,8 @@ Ordinary fields reuse complete canonical input/history checking; quantum fields
 add exact per-history code-space and logical Gram checks. The dense instrument
 component retains its existing six-bit limit. Wider qmatch integration remains
 a separate use of the existing sector proofs, not a dense-matrix fallback.
-This component has no native dispatcher or source execution authority yet.
+The native dispatcher binds these checks to the original request and host view;
+source-body and runtime preservation remain separate obligations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeFamily
 open Finite Semantics.FiniteCarrier Semantics.RuntimeStorage Semantics.OrdinaryValue
@@ -24,6 +25,7 @@ structure Request where
   result : Semantics.RuntimeType.Tree
   storage : Semantics.RuntimeStorage.Value
   publicEffect : Semantics.Raw.Effect
+  staticArguments : SourceTypes.StaticTypes.Arguments := {}
 
 def inputValues (request : Request) : List (Basis × Storage) :=
   request.inputStorage.flatMap Semantics.RuntimeStorage.ordinary
@@ -77,7 +79,7 @@ def annotationAllowed (declared : Option Semantics.Raw.Effect) (isPublic quantum
   | none => !isPublic || !quantum
 
 def sourceRows (request : Request) {sources : SourceTypes.Sources}
-    (entry : SourceTypes.RuntimeSignature.Checked sources request.moduleName request.declarationName) :
+    (entry : SourceTypes.StaticRuntimeSignature.Checked sources request.moduleName request.declarationName request.staticArguments) :
     List (String × String) :=
   entry.sourceRows ++
     ((request.inputStorage.flatMap Semantics.RuntimeStorage.bases) ++
@@ -87,7 +89,7 @@ def sourceRows (request : Request) {sources : SourceTypes.Sources}
       | _ => none
 
 private def sourceRoot (artifact : Artifact) (order : Array Nat) (request : Request)
-    (entry : SourceTypes.RuntimeSignature.Checked artifact.sources request.moduleName request.declarationName) :
+    (entry : SourceTypes.StaticRuntimeSignature.Checked artifact.sources request.moduleName request.declarationName request.staticArguments) :
     WorkM Validity.Root := do
   let queryNodes := fun (query : SourceTypes.TypeRead artifact.sources) =>
     query.resolutions.foldl (fun count resolution => count+resolution.result.visited.length+1) 1
@@ -102,14 +104,16 @@ private def sourceRoot (artifact : Artifact) (order : Array Nat) (request : Requ
     request.inputStorage.foldl (fun count store => count+storedNodes store) (storedNodes request.storage)
   -- Reserve every input/result query path and stored nominal origin before
   -- allocating rows, then charge actual byte comparisons at the common root.
-  exactWork (Exact.charge (8*nodes+5))
+  let actualNodes := (request.staticArguments.bases.map (fun argument =>
+    argument.1.utf8ByteSize+argument.2.length+1)).sum
+  exactWork (Exact.charge (8*(nodes+actualNodes)+5))
   let extra := sourceRows request entry
   let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   exactWork (Exact.charge (2*(bytes+artifact.sources.size+1)*(extra.length+1)))
   Validity.checkRootWithSources artifact order extra
 
 private theorem sourceRoot_result (artifact : Artifact) (order : Array Nat) (request : Request)
-    (entry : SourceTypes.RuntimeSignature.Checked artifact.sources request.moduleName request.declarationName)
+    (entry : SourceTypes.StaticRuntimeSignature.Checked artifact.sources request.moduleName request.declarationName request.staticArguments)
     (root : Validity.Root) (work left : Nat)
     (ok : (sourceRoot artifact order request entry).run work = (.ok root,left)) :
     ∃ after, (Validity.checkRootWithSources artifact order (sourceRows request entry)).run after = (.ok root,left) := by
@@ -164,9 +168,9 @@ private def readRows (root : Validity.Root) (request : Request) (inputCode outpu
       pure (.cons ⟨inputs,instrument.result,⟨instrument.before,instrument.after,instrument.ran⟩,outputs,code⟩ tail))
 
 structure Checked (artifact : Artifact) (order : Array Nat) (request : Request) where
-  entry : SourceTypes.RuntimeSignature.Checked artifact.sources request.moduleName request.declarationName
+  entry : SourceTypes.StaticRuntimeSignature.Checked artifact.sources request.moduleName request.declarationName request.staticArguments
   originalEntry : ∃ before after,
-    (SourceTypes.RuntimeSignature.read artifact.sources request.moduleName request.declarationName).run before =
+    (SourceTypes.StaticRuntimeSignature.read artifact.sources request.moduleName request.declarationName request.staticArguments).run before =
       (.ok entry,after)
   selection : SourceTypes.OrdinarySignature.selectionAllowed request.selection entry.original = true
   parameterTypes : entry.parameters.map (·.tree) = request.parameters
@@ -214,7 +218,7 @@ def check (artifact : Artifact) (order : Array Nat) (request : Request) :
     request.inputStorage.foldl (fun count store =>
       count+QleisliKernel.RuntimeStorage.footprint [] store) 0
   exactWork (Exact.charge (16*(metadata+1)))
-  let original ← perform (SourceTypes.RuntimeSignature.read artifact.sources request.moduleName request.declarationName)
+  let original ← perform (SourceTypes.StaticRuntimeSignature.read artifact.sources request.moduleName request.declarationName request.staticArguments)
   let entry := original.result
   if selected : SourceTypes.OrdinarySignature.selectionAllowed request.selection entry.original = true then
     if parameters : entry.parameters.map (·.tree) = request.parameters then

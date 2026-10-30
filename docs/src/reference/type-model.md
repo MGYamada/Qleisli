@@ -64,9 +64,10 @@ and the complete logical Gram sum. Logical cardinalities and the actual Raw
 effect bound the public label; a physical square matrix cannot justify a
 rectangular logical Unitary label. Observation remains Observe, even at logical
 dimension one. The existing dense six-bit component limit is unchanged.
-The internal `finite-runtime-root-v1` mode now reads the full original request
+The internal `finite-runtime-root-v2` mode now reads the full original request
 and compares its freshly checked graph, full parameter/result types, ordinary
-storage, ordered quantum ports, canonical inputs and public effect with the
+storage, ordered quantum ports, complete named Basis/Nat actuals, canonical
+inputs and public effect with the
 actual retained Rust objects through QLV3/QDV. Its execution-only decision
 retains this complete request in the accepted program and every clone. Rechecking
 walks those same objects again; altered types, storage or graph metadata refuse.
@@ -80,8 +81,11 @@ Native reconstruction checks the actual emitted body rather than trusting its
 descriptor. The older `compile_ordinary_with_kernel` method still requires an
 ordinary-only interface and uses the same emitter; `SelectedOrdinaryProgram` is
 a compatibility name for the retained wrapper. Neither API synthesizes source.
-Generic/static, nominal coherent-table/Meaning consumers and wider qmatch
-integration remain pending; no external schema or inverse/control API is admitted.
+Selected Basis/Nat roots now retain their original generic header, closed
+actuals and numeric premises through this gate. The same common emitter handles
+ordinary and mixed interfaces; unused nominal actuals retain original sources.
+Generic dependencies, operation-formal closure, nominal coherent-table/Meaning
+consumers and wider qmatch integration remain pending; no external schema or inverse/control API is admitted.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed

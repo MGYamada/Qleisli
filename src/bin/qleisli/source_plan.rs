@@ -534,7 +534,7 @@ fn runtime_execute(options: &Options, source: &SelectedRuntimeProgram) -> Result
         &super::check_report::ArtifactReport::new(checked).json_fields()?,
     );
     let scope = if checked.runtime_result().is_some() {
-        "finite-runtime-root-v1"
+        "finite-runtime-root-v2"
     } else {
         "finite-ordinary-root-v2"
     };

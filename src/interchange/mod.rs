@@ -24,12 +24,12 @@ use json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use crate::AcceptedProgram;
 use crate::contract::exact::Budget;
 use crate::contract::function::RetainedIdentity;
 use crate::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use crate::contract::{BasisType, ContractError, FunctionEvidence};
 use crate::ir::{Effect, RawProgram};
+use crate::AcceptedProgram;
 
 const MAX_OBJECTS: usize = 65_536;
 const MAX_NODES: usize = 1_000_000;
@@ -1006,6 +1006,12 @@ fn decode_subject_with_runtime(
         let atoms = if let Some(request) = runtime {
             request.parameters.iter().map(Vec::len).sum::<usize>()
                 + request.result.len()
+                + request
+                    .static_bases
+                    .iter()
+                    .map(|(_, basis)| basis.len())
+                    .sum::<usize>()
+                + request.static_naturals.len()
                 + request
                     .input_storage
                     .iter()

@@ -50,6 +50,9 @@ RUNTIME_SOURCE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature
 RUNTIME_STATIC_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-first.tar.xz"
 RUNTIME_STATIC_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-index.json"
 RUNTIME_STATIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-validation.json"
+RUNTIME_STATIC_V2_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-first.tar.xz"
+RUNTIME_STATIC_V2_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-index.json"
+RUNTIME_STATIC_V2_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -83,6 +86,25 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_static_execution_keeps_the_first_source_refusal_and_separate_success(self):
+        members = bounded_history(ROOT / RUNTIME_STATIC_V2_ARCHIVE, ROOT / RUNTIME_STATIC_V2_INDEX)
+        self.assertEqual(len(members), 664)
+        first = json.loads(members['runtime-static-v2-first/observation.json.txt'])
+        self.assertNotEqual(first['exit_code'], 0)
+        self.assertIn(b'original static-binder transport', members['runtime-static-v2-first/stdout.txt'])
+        later = json.loads(members['runtime-static-v2-current-cli/observations.json.txt'])
+        self.assertEqual(later['records'][0]['source_sha256'], first['source_sha256'])
+        self.assertTrue(all(row['exit_code'] == 0 for row in later['records']))
+        failed = json.loads(members['observations/static-v2-generic-source-first/report.json.txt'])
+        self.assertNotEqual(failed['exit_code'], 0)
+        for label in ['static-v2-source-final', 'static-v2-msrv-source']:
+            self.assertEqual(members[f'observations/{label}/stdout.txt'].count(
+                b'10 passed; 0 failed; 0 ignored'), 2)
+        current = json.loads((ROOT / RUNTIME_STATIC_V2_VALIDATION).read_text())
+        self.assertEqual(current['native_execution'], 'SELECTED BASIS/NAT ROOTS ENABLED')
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertEqual(current['goal_percent'], 58.27)
+
     def test_static_signature_first_failures_and_bounded_comparisons_are_retained(self):
         members = bounded_history(ROOT / RUNTIME_STATIC_ARCHIVE, ROOT / RUNTIME_STATIC_INDEX)
         self.assertEqual(len(members), 1289)

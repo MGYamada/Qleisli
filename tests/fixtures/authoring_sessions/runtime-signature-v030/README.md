@@ -152,3 +152,31 @@ hashes nor the reused warm build establish a fresh full dependency replay.
 The original CI-unit-test observation explicitly discloses its missing complete
 terminal streams. No current guarantee or proof record is rewritten, no generic
 accepted handle is issued, and #64/#195 remain open.
+
+## Selected Basis/Nat execution
+
+The [version2 archive](static-v2-first.tar.xz), [index](static-v2-index.json)
+and [validation](static-v2-validation.json) retain 664 further inert records.
+The unchanged first generic `.qli` and its actual static-binder refusal remain
+beside the later successful check. A separate closed observing entry also runs.
+The first nominal-capacity failure remains beside its repair: selected typed
+roots reserve ordinary nominal trees, while legacy coherent consumers retain
+their refusal and require their separate code-space evidence.
+
+Version2 requests and QDV retain complete named actuals, even when unused and
+when a changed Nat leaves the runtime graph unchanged. Lean checks original
+headers, ordered premises, exact type trees and all-history runtime obligations.
+The common emitter rebinds proposed actual trees to a fresh original judgment;
+it neither rewrites the generic source nor caches its body under a bare name.
+Rust 1.99.1 and MSRV 1.85.0 each pass 20 source and 13 native tests without skips;
+ten type tests and warnings-denied all-target Clippy pass. The serial native
+build/audit passes in about 71 seconds, peaking at about 0.84 GiB, and audits
+22,145 declarations with the existing standard axiom basis. Source tests peak
+below 1.6 GiB. No maximum-size quantum case is generated.
+
+Original command streams and source snapshots are observations, not independent
+first-authoring evidence or a source/native-runtime preservation theorem.
+Unchanged imports are hash-bound, not freshly replayed. Generic dependencies,
+operation-formal closure, nominal coherent-table/Meaning consumers and wider
+qmatch remain pending. Current proof records still need canonical maintenance
+and hosted CI/review; #64 and #195 remain open.

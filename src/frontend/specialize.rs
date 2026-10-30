@@ -546,7 +546,7 @@ impl ParsedProgram {
     /// Check all host bindings without requiring the legacy body projection.
     /// The original common judgment is retained. Actual ordinary execution
     /// still requires `compile_ordinary_with_kernel`; legacy `elaborate` retains
-    /// its own body and transport refusals. No generic native route is enabled.
+    /// its own body and transport refusals. Basis/Nat roots use typed native transport; operation formals and generic dependencies remain separate.
     pub fn instantiate_ordinary_with_types(
         &self,
         entry: &str,
@@ -559,7 +559,7 @@ impl ParsedProgram {
 
     /// Prepare a full runtime interface without the legacy body projection.
     /// This checks host bindings only; `compile_runtime_with_kernel` must obtain
-    /// a fresh native decision before execution. Generic native roots still refuse.
+    /// a fresh native decision before execution. Basis/Nat roots use typed native transport; operation formals still refuse.
     pub fn instantiate_runtime_with_types(
         &self,
         entry: &str,
@@ -700,8 +700,8 @@ pub struct Instantiation {
     operations: BTreeMap<String, OperationBinding>,
 }
 impl Instantiation {
-    /// Compile a nongeneric exported ordinary root through the common emitter
-    /// and the fresh native ordinary-v2 request/decoded-view check. Every source
+    /// Compile an exported ordinary root through the common emitter and fresh
+    /// native type/storage checking, including closed Basis/Nat actuals. Every source
     /// declaration remains checked; native scope is the selected root only.
     pub fn compile_ordinary_with_kernel(
         &self,
@@ -711,7 +711,7 @@ impl Instantiation {
         super::compile::selected::compile(self, &self.program.sources, kernel, true)
     }
 
-    /// Compile a nongeneric selected runtime interface, retaining ordinary
+    /// Compile a selected runtime interface with closed Basis/Nat actuals, retaining ordinary
     /// fields and complete quantum owners through the same original-source
     /// emitter. Native checking binds its full types, storage and actual Raw
     /// body; source/runtime preservation remains a separate obligation.

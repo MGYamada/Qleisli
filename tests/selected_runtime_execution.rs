@@ -4,11 +4,11 @@
 mod common;
 use common::SourceRoot;
 use qleisli::edition::Edition;
-use qleisli::frontend::compile::{ParsedProgram, compile_project};
+use qleisli::frontend::compile::{compile_project, ParsedProgram};
 use qleisli::interchange::carrier::Atom as Basis;
 use qleisli::interchange::native::Kernel;
 use qleisli::interchange::runtime_root::{Atom, Storage};
-use qleisli::sim::{SimulationLimits, run_closed};
+use qleisli::sim::{run_closed, SimulationLimits};
 use std::collections::BTreeMap;
 
 fn kernel() -> Kernel {
@@ -33,6 +33,79 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
     .unwrap()
     .compile_runtime_with_kernel(&kernel())
     .unwrap()
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_static_bases_and_naturals_keep_the_original_generic_interface() {
+    let source = "pub enum Tri{A,B,C} pub unitary fn keep[const A:Basis,const n:Nat](q:Q<A>,word:Bits<n>)->(Q<A>,Bits<n>) requires n>=1 {(q,word)}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            BTreeMap::from([("A".into(), parsed.basis_binding("main::Tri").unwrap())]),
+            BTreeMap::from([("n".into(), 1)]),
+            Default::default(),
+        )
+        .unwrap();
+    let selected = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    let request = selected.program().runtime_result().unwrap();
+    assert_eq!(request.static_naturals, vec![("n".into(), 1)]);
+    assert_eq!(request.static_bases[0].0, "A");
+    assert!(
+        matches!(&request.static_bases[0].1[0], Basis::Enum(origin, _)
+        if origin.source == source)
+    );
+    assert_eq!(request.parameters[1], vec![Atom::Finite(Basis::Bits(1))]);
+    assert_eq!(request.input_rows, vec![vec![false], vec![true]]);
+    assert_eq!(
+        kernel()
+            .check_program(selected.program())
+            .unwrap()
+            .program()
+            .runtime_result(),
+        Some(request)
+    );
+    assert!(run_closed(selected.program(), SimulationLimits::default()).is_err());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_unused_static_nominal_actuals_retain_their_source_in_closed_execution() {
+    let parsed = ParsedProgram::parse(Edition::E2026, BTreeMap::from([
+        ("main".into(), "pub observe fn keep[const Unused:Basis,const n:Nat]()->Bit requires n>=1 {measure_z(init0())}".into()),
+        ("types".into(), "pub enum Tri{A,B,C}".into()),
+    ])).unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            BTreeMap::from([("Unused".into(), parsed.basis_binding("types::Tri").unwrap())]),
+            BTreeMap::from([("n".into(), 2)]),
+            Default::default(),
+        )
+        .unwrap();
+    let selected = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    let request = selected.program().runtime_result().unwrap();
+    assert!(
+        matches!(&request.static_bases[0].1[0], Basis::Enum(origin, _)
+        if origin.module == "types" && origin.source == "pub enum Tri{A,B,C}")
+    );
+    assert_eq!(request.static_naturals, vec![("n".into(), 2)]);
+    assert_eq!(request.public_effect, qleisli::ir::Effect::Observe);
+    assert_eq!(
+        run_closed(selected.program(), SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![false], 1.0)])
+    );
 }
 
 #[test]
@@ -284,17 +357,15 @@ fn runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_expor
         String::from_utf8_lossy(&checked.stdout)
     );
     let text = String::from_utf8(checked.stdout).unwrap();
-    assert!(text.contains("\"scope\":\"finite-runtime-root-v1\""));
+    assert!(text.contains("\"scope\":\"finite-runtime-root-v2\""));
     assert!(text.contains("\"runtime_result_checked\":true"));
     assert!(text.contains("\"ordinary_result_checked\":false"));
     assert!(text.contains("\"source_preservation_verified\":false"));
     let run = invoke("run");
     assert!(!run.status.success());
-    assert!(
-        String::from_utf8(run.stdout)
-            .unwrap()
-            .contains("zero runtime parameters")
-    );
+    assert!(String::from_utf8(run.stdout)
+        .unwrap()
+        .contains("zero runtime parameters"));
     let output = root.0.join("unportable.qirf");
     let emitted = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args([
@@ -312,9 +383,7 @@ fn runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_expor
         .unwrap();
     assert!(!emitted.status.success());
     assert!(!output.exists());
-    assert!(
-        String::from_utf8(emitted.stdout)
-            .unwrap()
-            .contains("complete typed request transport")
-    );
+    assert!(String::from_utf8(emitted.stdout)
+        .unwrap()
+        .contains("complete typed request transport"));
 }

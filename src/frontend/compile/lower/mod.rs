@@ -26,7 +26,7 @@ mod statics;
 mod transforms;
 mod value;
 
-use value::{Binding, Env, Register, Slot, Value, env_size};
+use value::{env_size, Binding, Env, Register, Slot, Value};
 
 use super::*;
 use crate::frontend::pattern::{self, BindingContext};
@@ -34,7 +34,7 @@ use crate::frontend::raw_state::RawState;
 use crate::ir::*;
 use std::borrow::Cow;
 
-pub(super) use dormant_access::{PrimitiveControlVisit, check_dormant_primitive_control};
+pub(super) use dormant_access::{check_dormant_primitive_control, PrimitiveControlVisit};
 
 #[derive(Clone, Copy)]
 enum CallArguments<'a> {
@@ -2062,7 +2062,10 @@ fn lower_function_in_context(
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let runtime_inputs = if return_type.linear() || params.iter().any(Ty::linear) {
+    let runtime_inputs = if return_type.linear()
+        || params.iter().any(Ty::linear)
+        || (lower.compiler.force_typed_root && !decl.static_params.is_empty())
+    {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
         None

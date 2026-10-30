@@ -37,6 +37,10 @@ structure Checked (sources : Sources) (owner name : String) (arguments : StaticT
     (readResult environment).run before = (.ok result,after)
   conditions : RuntimeSignature.Conditions environment.numeric.original.envelope parameters result
 
+def Checked.original {sources owner name arguments}
+    (checked : Checked sources owner name arguments) : OrdinarySignature.Original sources owner name :=
+  checked.environment.numeric.original.envelope
+
 def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments) :
     WorkM (Checked sources owner name arguments) := do
   let environment ← StaticTypes.prepare sources owner name arguments

@@ -33,6 +33,10 @@ def requestDescription (request : Qirf.RuntimeFamily.Request) : Finite.WorkM (Li
   return [.text (match request.selection with
       | .project => "project" | .exported => "exported" | .internal => "internal"),
     .text request.moduleName,.text request.declarationName,
+    .array (request.staticArguments.bases.map fun (name,basis) =>
+      .array [.text name,.array (basis.map CheckedCarrier.atom)]),
+    .array (request.staticArguments.naturals.map fun (name,value) =>
+      .array [.text name,.natural value]),
     .array (request.parameters.map (fun tree => .array (tree.map typeAtom))),
     .array inputs,.array (request.inputRows.map (fun row => .array (row.map .boolean))),
     .array (request.result.map typeAtom),.array stored,
@@ -40,7 +44,7 @@ def requestDescription (request : Qirf.RuntimeFamily.Request) : Finite.WorkM (Li
 
 def description (checked : Checked) : Finite.WorkM Value := do
   let graph ← FiniteView.graph checked.artifact checked.result.root
-  return record "finite-runtime-root-v1" (graph :: (← requestDescription checked.request))
+  return record "finite-runtime-root-v2" (graph :: (← requestDescription checked.request))
 
 def check (bytes supplied : ByteArray) : CheckM Checked := do
   guard (framed supplied) .invalidView

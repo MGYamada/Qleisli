@@ -198,12 +198,16 @@ theorem, external schema, inverse/control capability or new guarantee follows.
 
 ### Mixed runtime root requests
 
-The internal `--runtime-root-check` mode reads strict version1
-`qleisli.runtime-root-request` metadata with profile `finite-runtime-root-v1`.
+The internal `--runtime-root-check` mode reads strict version2
+`qleisli.runtime-root-request` metadata with profile `finite-runtime-root-v2`.
 Full parameter/result prefixes preserve each `Q` boundary, nominal declaration,
 ordinary tuple and zero-width owner. Storage binds actual ordinary SSA values
 and ordered quantum ports. The original runtime signature and shared Raw root
-checks remain independent of these producer descriptions.
+checks remain independent of these producer descriptions. Version2 requires
+complete named Basis/Nat actuals, including unused formals, and rechecks original
+premises and nominal declarations before instantiating the actual header tokens.
+QLV3/QDV retains these actuals even when they do not change the runtime graph.
+Version1 requests reject; operation-formal closure is not enabled by this mode.
 
 For every independently enumerated ordinary input, `RuntimeFamily` reconstructs
 all hidden maps, checks ordinary results even on zero-probability histories,
@@ -217,7 +221,7 @@ QLV3/QDV compares this complete request and the actual retained graph.
 objects to an execution-only native decision; inspection/caller scopes refuse.
 `AcceptedProgram::runtime_result` exposes read-only metadata. Portable export
 cannot erase that metadata. Original parameters prevent closed execution even
-at zero physical width. The common nongeneric project/selected emitter uses
+at zero physical width. The common project/selected emitter uses
 this gate for mixed runtime interfaces, retaining actual input storage before
 call expansion and complete output types/owners afterward.
 
@@ -226,8 +230,12 @@ call expansion and complete output types/owners afterward.
 The root safety theorem reuses the original Raw gate without enlarging either
 human-admitted guarantee. Exact computation witnesses are separate from complex
 denotation, source-body preservation and numerical runtime correspondence.
-Generic/static, nominal coherent-table/Meaning and wider qmatch integration
-remain pending. No external schema, inverse/control capability, new guarantee
+Selected roots with Basis/Nat actuals use this same emitter and gate, including
+unused nominal actuals and closed observing bodies. Their complete original
+source judgment is repeated, and actual trees are rebound to its original
+interface. Generic dependencies, operation-formal closure, nominal
+coherent-table/Meaning and wider qmatch integration remain pending. Independent
+host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 
 ### Named-arm qmatch component requests
