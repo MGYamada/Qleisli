@@ -1,0 +1,92 @@
+{
+  "format": "qleisli.runtime-root-component-checks",
+  "version": 1,
+  "source_base": "2e8b644b00201be6cc4fa83ef2ed0b8333cbfc8a",
+  "programs": 4,
+  "actual_prior_cli_observations": 8,
+  "checks": [
+    {
+      "label": "runtime-storage-production-first",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 630013952
+    },
+    {
+      "label": "runtime-storage-production-second",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 638976000
+    },
+    {
+      "label": "runtime-code-space-production-first",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 599719936
+    },
+    {
+      "label": "runtime-root-production-first",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 677658624
+    },
+    {
+      "label": "runtime-root-production-second",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 691453952
+    },
+    {
+      "label": "runtime-root-controls-first",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 797458432
+    },
+    {
+      "label": "runtime-root-controls-second",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 810336256
+    },
+    {
+      "label": "runtime-root-controls-third",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 660717568
+    },
+    {
+      "label": "runtime-root-controls-fourth",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 676167680
+    },
+    {
+      "label": "runtime-root-controls-fifth",
+      "exit_code": 1,
+      "stable_inputs": true,
+      "peak_rss_bytes": 895221760
+    },
+    {
+      "label": "runtime-root-audit-repair-first",
+      "exit_code": 0,
+      "stable_inputs": true,
+      "peak_rss_bytes": 905428992
+    }
+  ],
+  "current_small_kernel_reductions": 24,
+  "current_bounded_integration_controls": 21,
+  "compiled_declarations": 21637,
+  "native_execution": "NOT ENABLED",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "proof_records": "STALE for this candidate; real canonical maintenance required before merge",
+  "remaining": [
+    "normal project/selected lowering",
+    "native/QDV execution binding",
+    "wide qmatch integration",
+    "generic/static transport",
+    "full package rebuild/replay and hosted CI/review"
+  ],
+  "scope": "The exact computation and original-root structural witnesses do not prove complex denotation, original AST/source-body preservation, numerical runtime correctness or arbitrary requested algorithm meanings. Existing interpretations and admitted scopes are unchanged."
+}

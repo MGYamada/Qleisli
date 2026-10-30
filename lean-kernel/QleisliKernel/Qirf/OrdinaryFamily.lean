@@ -137,6 +137,17 @@ private def hasQuantum : Nat → List Op → Bool :=
 private def rank : Semantics.Raw.Effect → Nat
   | .unitary => 0 | .iso => 1 | .observe => 2
 
+/-- Shared ordinary components of a mixed runtime interface. These adapters
+retain the existing readers and their complete work/error behavior. -/
+def storageIds (stores : List Storage) : WorkM (List Nat) := inputIds stores
+
+def readStores (values : Valuation) (bases : List Basis) (stores : List Storage) :
+    WorkM (InputsFor values bases stores) := inputReaders values 65 bases stores
+
+def usesQuantum (operations : List Op) : Bool := hasQuantum 65 operations
+
+def effectRank (effect : Semantics.Raw.Effect) : Nat := rank effect
+
 def sourceRows (request : Request) {sources : SourceTypes.Sources}
     (entry : SourceTypes.OrdinarySignature.Checked sources request.moduleName request.declarationName) :
     List (String × String) :=

@@ -38,6 +38,9 @@ RUNTIME_SIGNATURE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature
 RUNTIME_SIGNATURE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/index.json"
 RUNTIME_SIGNATURE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/validation.json"
 RUNTIME_SIGNATURE_README = "tests/fixtures/authoring_sessions/runtime-signature-v030/README.md"
+RUNTIME_ROOT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-first.tar.xz"
+RUNTIME_ROOT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-index.json"
+RUNTIME_ROOT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-root-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -71,6 +74,28 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_mixed_root_first_failures_and_separate_audit_repair_are_retained(self):
+        members = bounded_history(ROOT / RUNTIME_ROOT_ARCHIVE, ROOT / RUNTIME_ROOT_INDEX)
+        self.assertEqual(len(members), 130)
+        rows = json.loads(members['cli/observations.json.txt'])
+        self.assertEqual(len(rows), 8)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in rows), 0)
+        for row in rows:
+            result = json.loads(members['cli/' + row['stdout'] + '.txt'])
+            self.assertEqual(result['diagnostics'][0]['code'],
+                             'effect' if row['case'] == 'hidden-discard-refusal' else 'unsupported')
+        first = members['compile/runtime-code-space-production-first/0.stdout.txt']
+        self.assertIn(b'Unknown constant `QleisliKernel.Semantics.Exact.Matrix.compose`', first)
+        failure = members['compile/runtime-root-controls-fifth/4.stdout.txt']
+        self.assertIn(b'Maps.logicals._unsafe_rec: partial project declaration', failure)
+        audit = json.loads(members['compile/runtime-root-audit-repair-first/report.json.txt'])
+        self.assertEqual(audit['exit_code'], 0)
+        self.assertTrue(audit['stable_inputs'])
+        status = json.loads((ROOT / RUNTIME_ROOT_VALIDATION).read_text())
+        self.assertEqual(status['native_execution'], 'NOT ENABLED')
+        self.assertEqual(status['current_bounded_integration_controls'], 21)
+        self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
+
     def test_original_runtime_signatures_remain_metadata_and_inert_history(self):
         members = bounded_history(ROOT / RUNTIME_SIGNATURE_ARCHIVE, ROOT / RUNTIME_SIGNATURE_INDEX)
         self.assertTrue((ROOT / RUNTIME_SIGNATURE_README).is_file())

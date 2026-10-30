@@ -11,6 +11,9 @@ import QleisliKernel.Tests.QuantumMoves
 import QleisliKernel.Tests.QuantumBody
 import QleisliKernel.Tests.RawOwnerFlow
 import QleisliKernel.Tests.RuntimeSignature
+import QleisliKernel.Tests.RuntimeStorage
+import QleisliKernel.Tests.RuntimeCode
+import QleisliKernel.Tests.RuntimeFamily
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import Main

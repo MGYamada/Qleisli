@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an internal mixed-runtime root component over complete original type
+  trees, ordinary storage and ordered quantum owner ports. Reuse canonical
+  ordinary-input and all-hidden-history checks with fresh Raw reconstruction;
+  compute exact logical maps, reject code-space leakage and check their complete
+  Gram sum. Prove that a Unitary public label requires equal logical dimensions.
+  Retain zero-width owners, actual observing effects and shared work/width caps.
+  Native/QDV activation, ordinary/selected source integration and #64/#195
+  completion remain pending; this component supplies no new guarantee.
 - Retain complete original runtime parameter/result type prefixes in an internal
   nongeneric signature reader. Preserve ordinary fields, nested tuples, explicit
   quantum-owner boundaries and original nominal type queries, including zero-width

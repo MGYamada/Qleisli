@@ -55,6 +55,18 @@ Reading a declared effect annotation does not check its body or certify that
 effect. Ordinary/selected typed-root execution still needs the full type tree,
 actual body/effect and native code-space binding; this metadata reader alone
 provides no runtime capability.
+The internal mixed-runtime root component additionally matches those complete
+types to ordinary storage and ordered Raw quantum ports, then reuses fresh
+original-root validation. For every independently enumerated ordinary input,
+it checks every reconstructed hidden history, exact quantum code-space equations
+and the complete logical Gram sum. Logical cardinalities and the actual Raw
+effect bound the public label; a physical square matrix cannot justify a
+rectangular logical Unitary label. Observation remains Observe, even at logical
+dimension one. The existing dense six-bit component limit is unchanged.
+This component grants no native execution handle: normal source/selected
+integration, execution-view binding and wider qmatch integration remain pending.
+Its exact computation witnesses are separate from complex denotation,
+original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
 it does not excuse checking an unused definition, either branch or an empty loop.
