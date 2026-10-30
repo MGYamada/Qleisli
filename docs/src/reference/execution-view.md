@@ -559,8 +559,8 @@ and size limits remain; the target profile separately limits bytes and gates.
 ## Internal named-arm qmatch component
 
 The preparatory `Protocol.Qmatch` and `ExecutionView.CheckedQmatch` definitions
-use a strict internal `qleisli.qmatch-request` version 1 with profile
-`finite-source-qmatch-named-v1`. The exact request keys are `format`, `version`,
+use a strict internal `qleisli.qmatch-request` version 2 with profile
+`finite-source-qmatch-named-v2`. Version 1 refuses without fallback. The exact request keys are `format`, `version`,
 `profile`, `attached`, `required`, `source` and `arms`. Both interfaces use the
 existing complete carrier codec. `source` contains the original `module`,
 `function` and UTF-8 byte `offset`; each arm contains an actual original
@@ -569,6 +569,11 @@ u32, names contain 1–4096 UTF-8 bytes and the arm list contains 1–64 entries
 The request contains no logical matrix, label list, graph roots or success flag.
 Fresh original-source reads determine labels, names, types, effects and graph
 subjects; the shared Raw/nominal equations still check the actual bodies.
+The interfaces describe the selected pair in selector/target order. The graph
+retains the complete original function's parameter and result order, including
+additional zero-width owners. Fresh original-source moves bind those two
+orders; equal widths or an arbitrary interval cannot replace that judgment.
+The outer public effect remains bound independently of the pure selected pair.
 
 Its QDV record contains the tag followed by the complete fresh finite graph,
 attached interface, required interface, `["source-focus", module, function,

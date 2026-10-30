@@ -63,6 +63,9 @@ TARGET_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/
 TARGET_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-index.json"
 TARGET_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-validation.json"
 CONTEXT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-validation.json"
+CONTEXT_V2_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-first.tar.xz"
+CONTEXT_V2_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-index.json"
+CONTEXT_V2_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-validation.json"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -97,6 +100,41 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_context_v2_keeps_exact_first_inputs_and_separate_native_observations(self):
+        members = bounded_history(ROOT / CONTEXT_V2_ARCHIVE, ROOT / CONTEXT_V2_INDEX)
+        original = bounded_history(ROOT / BODY_ROOT / 'context-first.tar.xz',
+                                   ROOT / BODY_ROOT / 'context-index.json')
+        first = json.loads(original['source-first/observations.json.txt'])
+        after = json.loads(members['after/observations.json.txt'])
+        self.assertTrue(after['stable'])
+        self.assertEqual(after['before'], after['after'])
+        inputs = [json.loads(original['source-first/' + row['name'] + '/plan.json.txt'])['inputs']
+                  for row in first['records']]
+        self.assertEqual([row['inputs'] for row in after['records']], inputs)
+        self.assertEqual([row['exit_code'] for row in after['records']],
+                         [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1])
+        refs = json.loads(members['source-review/refs.json.txt'])
+        kernel = None
+        for suffix, count in [('selected', 26), ('units', 15),
+                              ('msrv-selected', 26), ('msrv-units', 15)]:
+            prefix = 'observations/context-native-v2-' + suffix + '/'
+            report = json.loads(members[prefix + 'report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertEqual(report['before'], report['after'])
+            self.assertTrue(report['stable_source'])
+            self.assertIn(f'{count} passed; 0 failed; 0 ignored'.encode(),
+                          members[prefix + 'stdout.txt'])
+            if kernel is None:
+                kernel = report['kernel_sha256']
+            self.assertEqual(report['kernel_sha256'], kernel)
+            for name, digest in report['before'].items():
+                self.assertEqual(refs[digest]['path'], name)
+                self.assertIn(refs[digest]['patch'], members)
+        validation = json.loads((ROOT / CONTEXT_V2_VALIDATION).read_text())
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['ignored_native_tests'], 0)
+
     def test_context_history_preserves_failures_and_separate_repair(self):
         root = ROOT / BODY_ROOT
         members = bounded_history(root / 'context-first.tar.xz', root / 'context-index.json')

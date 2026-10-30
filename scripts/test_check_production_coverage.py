@@ -151,7 +151,10 @@ class ProductionCoverage(unittest.TestCase):
             ('src/interchange/mod.rs', 'roots.push(programs.len() + evidence)'),
             ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootFromRoots artifact order attached required [artifact.root]'),
             ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootWithRows artifact order attached required roots []'),
-            ('lean-kernel/Protocol/Qmatch.lean', 'Qirf.SourceSector.check artifact order'),
+            ('lean-kernel/Protocol/Qmatch.lean', 'Qirf.SourceFrameSector.check artifact order'),
+            ('lean-kernel/QleisliKernel/Qirf/SourceFrameSector.lean', 'let context ← SourceTypes.NaturalAffine.witness'),
+            ('lean-kernel/QleisliKernel/Qirf/SourceInterval.lean', 'Raw.OwnerFlow.check allInputs allOutputs'),
+            ('lean-kernel/QleisliKernel/Qirf/PureInterval.lean', 'let whole ← SourceTypes.NaturalAffine.witness'),
             ('lean-kernel/Protocol/NativeContext/Bindings.lean', 'theorem run_qmatch_binding '),
         ):
             with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):

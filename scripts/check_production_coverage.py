@@ -210,8 +210,8 @@ RUNTIME_RESULT_PROOF = {
 
 
 QMATCH_PROOF = {
-    'proof_scope': 'NativeContext.run_qmatch_binding retains the actual execution-only QLV3 subject and exact QDV comparison. Protocol.Qmatch.check_binding binds original packet/artifact/request bytes and one successful SourceSector check. SourceSector.check_bound retains original header/operand/arm queries, canonical label coverage, complete nominal code/owner frames, actual evidence-entry inputs/dependency snapshots and actual main/U/CU sector equations. FiniteRestriction checked theorems relate the actual step/accumulator/circuit computation to restricted sectors; Raw/QIRF bindings retain the original bodies. CheckedQmatch.Binding.root_safe derives original Raw ownership/classical scope through the shared gate without enlarging the human-admitted ledger scope. Rust view walkers retain the same graph, circuit/matrix caches, source focus and request objects before a fresh component decision.',
-    'gaps': 'Bounded named-arm component only. The untrusted compiler adapter submits actual complete two-argument structural nominal call fragments and separately checks the whole runtime root; the component handle has no raw conversion. Nominal targets use physical arm proposals bound to original full types and actual code/body/control equations by the same native gate. General expression/call frames, other valid owner mappings, constructed/static/generic arms and the complete twelve-bit/64-label source profile remain pending. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
+    'proof_scope': 'NativeContext.run_qmatch_binding retains the actual execution-only QLV3 subject and exact QDV comparison. Protocol.Qmatch.check_binding binds original packet/artifact/request bytes and one successful SourceFrameSector check. Its checked stages retain original header/operand/arm queries, canonical label coverage, every original quantum parameter/result, literal interval and suspended owner frame, actual evidence-entry inputs/dependency snapshots and actual main/U/CU sector equations. SourceInterval binds original parameter/result order and outer public effects separately from the local selector/target pair; PureInterval retains fresh whole-root and literal-body checks with global history and exact local role return. FiniteRestriction checked theorems relate the actual step/accumulator/circuit computation to restricted sectors; Raw/QIRF bindings retain the original bodies. CheckedQmatch.Binding.root_safe derives original Raw ownership/classical scope through the shared gate without enlarging the human-admitted ledger scope. Rust view walkers retain the same graph, circuit/matrix caches, source focus and request objects before a fresh component decision.',
+    'gaps': 'Bounded named-arm component only. The untrusted compiler adapter submits actual complete structural nominal call fragments with all quantum parameters, flat quantum-owner results and original source return order and separately checks the whole runtime root; the component handle has no raw conversion. Nominal targets use physical arm proposals bound to original full types and actual code/body/control equations by the same native gate. General expression/call frames, mixed ordinary/quantum parameters, multiple selections, constructed/static/generic arms and the complete twelve-bit/64-label source profile remain pending. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
 }
 
 
@@ -298,7 +298,8 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_preserves_nominal_targets_and_original_phases'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_nominal_target_keeps_two_empty_owner_identities'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_target_arms_keep_original_imports_and_public_effects'),
-        ('src/interchange/qmatch/tests.rs', 'physical_arm_proposals_require_full_nominal_code_and_actual_control')]),
+        ('src/interchange/qmatch/tests.rs', 'physical_arm_proposals_require_full_nominal_code_and_actual_control'),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_retains_extra_zero_width_owners_and_original_result_order')]),
     'qmatch-check': path_rule('native-acceptance', 'qmatch-component', '--qmatch-source-check', [
         ('src/interchange/native/qmatch.rs', ['pub fn check_qmatch_source(', 'qmatch::complete(prepared.graph(), &request)?',
             '"--qmatch-source-check"', 'prepared.bind(native)?']),
@@ -308,12 +309,20 @@ PATHS = {
         ('src/interchange/mod.rs', ['graph_from_roots(programs, entries, &roots, version)?',
             'roots.push(programs.len() + evidence)', 'roots.push(controlled)',
             'ordinary.is_none() && qmatch.is_none() && used.len() != snapshot.len()']),
-        ('lean-kernel/Protocol/Qmatch.lean', ['Protocol.Qirf.readAll body', 'Qirf.SourceSector.check artifact order',
+        ('lean-kernel/Protocol/Qmatch.lean', ['Protocol.Qirf.readAll body', 'Qirf.SourceFrameSector.check artifact order',
             'theorem check_binding ']),
-        ('lean-kernel/QleisliKernel/Qirf/SourceSector.lean', ['def check ', 'theorem check_bound ',
-            'let body ← SourceTypes.QuantumBody.read read', 'def readOwnerReturn ',
-            'let sourceOwners ← readOwnerReturn [operands.read.selector,operands.read.target]',
-            'theorem Checked.originalOwnerReturn ']),
+        ('lean-kernel/QleisliKernel/Qirf/SourceSector.lean', ['def readRowsWithSignature ', 'def readEntry ']),
+        ('lean-kernel/QleisliKernel/Qirf/SourceFrameSector.lean', ['def check ', 'def readHeader ', 'def prepare ',
+            'def finish ', 'theorem Checked.originalRoot ', 'theorem Checked.publicEffect ',
+            'let context ← SourceTypes.NaturalAffine.witness',
+            'SourceSector.readEntry artifact root.val.receipts bound (rootFresh root)']),
+        ('lean-kernel/QleisliKernel/Qirf/SourceInterval.lean', ['def checkFrom ', 'parameterOwners operands.signature',
+            'PureInterval.check dependencies program 0 program.operations.length', 'theorem Checked.completeOperations ',
+            'Raw.OwnerFlow.check allInputs allOutputs',
+            'theorem Checked.publicEffect ']),
+        ('lean-kernel/QleisliKernel/Qirf/PureInterval.lean', ['def check ', 'Raw.Observation.verify dependencies program',
+            'let whole ← SourceTypes.NaturalAffine.witness',
+            'retainedFrame : spectators before.val inputs = spectators after.val outputs', 'theorem Checked.boundaryHistory']),
         ('lean-kernel/QleisliKernel/SourceTypes/QuantumBody.lean', ['def finish ', 'def read ',
             'complete : owners outcome.remaining = []', 'ownerReturn :', 'resultTypes :',
             'theorem Checked.sourceOwnerReturn ', 'theorem Checked.originalBody ']),
@@ -324,7 +333,8 @@ PATHS = {
             '.inspection | .caller => throw .packet', 'theorem run_binding ', 'theorem Binding.root_safe ']),
     ], [('src/interchange/native/qmatch/tests.rs', 'actual_retained_graph_and_caches_match_both_independent_exact_phase_views'),
         ('src/interchange/native/qmatch/tests.rs', 'fresh_native_mode_checks_independent_views_and_all_original_substitutions'),
-        ('src/interchange/native/qmatch/tests.rs', 'proposal_roots_do_not_relax_ordinary_reachability_or_hide_unrelated_nodes')]),
+        ('src/interchange/native/qmatch/tests.rs', 'proposal_roots_do_not_relax_ordinary_reachability_or_hide_unrelated_nodes'),
+        ('src/interchange/native/qmatch/tests.rs', 'full_source_frames_require_fresh_native_source_body_control_and_qdv_checks')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
         ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
             'pub fn request_bytes(', 'pub fn native(']),

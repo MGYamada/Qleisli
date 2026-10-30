@@ -60,6 +60,55 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
+    for reverse in [false, true] {
+        for (effect, expected) in [
+            ("unitary", qleisli::ir::Effect::Unitary),
+            ("isometry", qleisli::ir::Effect::Isometry),
+            ("observe", qleisli::ir::Effect::Observe),
+        ] {
+            let (params, result, value) = if reverse {
+                (
+                    "q:Q<Unit>,s:Q<Tri>,z:Q<Unit>",
+                    "(Q<Unit>,Q<Tri>,Q<Unit>)",
+                    "(q,s,z)",
+                )
+            } else {
+                (
+                    "s:Q<Tri>,q:Q<Unit>,z:Q<Unit>",
+                    "(Q<Tri>,Q<Unit>,Q<Unit>)",
+                    "(s,q,z)",
+                )
+            };
+            let source = format!(
+                "pub enum Tri{{A,B,C}}
+                pub unitary fn idle(q:Q<Unit>)->Q<Unit>{{q}}
+                pub unitary fn phase(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}
+                pub {effect} fn keep({params})->{result}{{
+                    let(s,q)=qmatch(s,q){{Tri::A=>idle,Tri::B=>phase,Tri::C=>idle}};
+                    {value}}}"
+            );
+            let accepted = selected(&source);
+            let raw = accepted.program().raw();
+            assert_eq!(raw.quantum_inputs.len(), 3);
+            assert_eq!(raw.quantum_outputs.len(), 3);
+            let last = raw.quantum_inputs[2].token;
+            assert!(raw.quantum_inputs[2].wires.is_empty());
+            assert_eq!(raw.quantum_outputs[2], last);
+            assert_eq!(
+                accepted.program().runtime_result().unwrap().public_effect,
+                expected
+            );
+            kernel().check_program(accepted.program()).unwrap();
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_preserves_nominal_targets_and_original_phases() {
     for (declaration, target, bits) in [
         ("pub enum Tri { A,B,C }", "Tri", 2),

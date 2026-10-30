@@ -12,7 +12,41 @@ pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
     inputs: Vec<Owner>,
     start: usize,
-    selection: Option<(Span, Vec<ArmSubject>)>,
+    selection: Option<Selection>,
+}
+
+struct Selection {
+    span: Span,
+    arms: Vec<ArmSubject>,
+    inputs: Vec<Owner>,
+    outputs: Vec<Owner>,
+}
+
+fn outputs(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    value: &Value,
+) -> Result<Vec<Owner>, CompileError> {
+    // The native structural rule reads an atomic Q owner or a flat tuple of
+    // such owners. Preserve source order and every zero-width owner.
+    match value {
+        Value::Quantum(..) => Ok(vec![owner(lower, module, span, value)?]),
+        Value::Pair(left, right) => Ok(vec![
+            owner(lower, module, span, left)?,
+            owner(lower, module, span, right)?,
+        ]),
+        Value::Tuple(fields) => fields
+            .iter()
+            .map(|field| owner(lower, module, span, field))
+            .collect(),
+        _ => Err(lower.error(
+            module,
+            span,
+            ErrorCode::Unsupported,
+            "qmatch source context currently requires a flat quantum-owner result",
+        )),
+    }
 }
 
 fn owner(
@@ -52,12 +86,13 @@ impl Frame {
         key: Key,
         args: &[Value],
     ) -> Result<Option<Self>, CompileError> {
-        let [Value::Quantum(selector, _), Value::Quantum(target, _)] = args else {
+        if args.len() < 2 || !args.iter().all(|arg| matches!(arg, Value::Quantum(..))) {
             return Ok(None);
-        };
-        if lower.raw.registers[selector].basis.basis_bits().is_some()
-            && lower.raw.registers[target].basis.basis_bits().is_some()
-        {
+        }
+        if !args.iter().any(|arg| match arg {
+            Value::Quantum(slot, _) => lower.raw.registers[slot].basis.basis_bits().is_none(),
+            _ => false,
+        }) {
             return Ok(None);
         }
         let name = lower
@@ -84,7 +119,13 @@ impl Frame {
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<(), CompileError> {
-        let Some((span, arms)) = self.selection else {
+        let Some(Selection {
+            span,
+            arms,
+            inputs: selected_inputs,
+            outputs: selected_outputs,
+        }) = self.selection
+        else {
             return Ok(());
         };
         let name = lower
@@ -94,18 +135,7 @@ impl Frame {
             .declaration(self.key)
             .name
             .clone();
-        let Value::Pair(left, right) = value else {
-            return Err(lower.error(
-                &name.0,
-                span,
-                ErrorCode::Unsupported,
-                "nominal qmatch requires the original two-owner result",
-            ));
-        };
-        let outputs = vec![
-            owner(lower, &name.0, span, left)?,
-            owner(lower, &name.0, span, right)?,
-        ];
+        let outputs = outputs(lower, &name.0, span, value)?;
         lower.compiler.charge(
             &name.0,
             span,
@@ -117,7 +147,9 @@ impl Frame {
             operations: lower.raw.operations[self.start..].to_vec(),
             quantum_outputs: outputs.iter().map(|owner| owner.port.token).collect(),
             classical_outputs: vec![],
-            declared_effect: Effect::Unitary,
+            declared_effect: lower.compiler.source.effects[&self.key]
+                .asserted()
+                .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred()),
         };
         let rows = lower
             .compiler
@@ -142,8 +174,8 @@ impl Frame {
         let proposal = crate::interchange::qmatch::proposal(
             &raw,
             Interface {
-                inputs: self.inputs,
-                outputs,
+                inputs: selected_inputs,
+                outputs: selected_outputs,
                 public_effect: Effect::Unitary,
             },
             SourceSite {
@@ -236,7 +268,7 @@ pub(super) fn emit(
         .as_ref()
         .is_none_or(|frame| frame.selection.is_some())
     {
-        return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires one original structural function with selector and target parameters"));
+        return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch currently requires one original structural function with quantum parameters"));
     }
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
@@ -347,13 +379,24 @@ pub(super) fn emit(
             "qmatch requires every exact enum label",
         ));
     }
+    let inputs = vec![
+        owner(lower, module, span, &selector)?,
+        owner(lower, module, span, &target)?,
+    ];
+    let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
+    let slot = lower.quantum(module, span, &joined, false)?;
+    lower.apply_circuit(slot, steps);
+    let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+    let selected_outputs = outputs(lower, module, span, &result)?;
     lower
         .nominal_qmatch
         .as_mut()
         .expect("checked original frame")
-        .selection = Some((span, arms));
-    let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
-    let slot = lower.quantum(module, span, &joined, false)?;
-    lower.apply_circuit(slot, steps);
-    lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])
+        .selection = Some(Selection {
+        span,
+        arms,
+        inputs,
+        outputs: selected_outputs,
+    });
+    Ok(result)
 }

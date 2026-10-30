@@ -10,8 +10,10 @@ development milestones from the scope of their evidence.
   actual input/result owner order and literal Raw interval. Retain additional
   and zero-width owners and the outer public effect; reuse fresh graph,
   original arm, controlled-body and exact code/sector checks. General source
-  contexts, paired native/QDV transport and ordinary compiler activation remain
-  pending; this component supplies no execution handle or issue completion.
+  contexts, multiple selections and static/constructed arms remain pending.
+  The structural component now uses version2 native requests/QDV and
+  the shared source emitter; old request versions reject. It supplies no
+  ordinary-program conversion, source-preservation theorem or issue completion.
 - Connect small nominal-enum qmatch functions to the existing original-source
   native gate. Check the actual complete call fragment, original owner roles,
   named-arm evidence and separate controlled bodies before accepting the whole

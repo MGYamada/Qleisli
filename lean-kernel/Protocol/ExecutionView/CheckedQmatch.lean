@@ -23,7 +23,7 @@ def arm (value : Qirf.SourceArm.Programs) : Value :=
   record "qmatch-arm" [.natural value.evidence,.natural value.controlled]
 
 def description (checked : Checked) : Finite.WorkM Value := do
-  let graph ← FiniteView.graph checked.artifact checked.result.subject.root
+  let graph ← FiniteView.graph checked.artifact checked.result.body.root
   return record Protocol.Qmatch.profile [graph,CheckedCarrier.typedInterface checked.request.attached,
     CheckedCarrier.typedInterface checked.request.required,source checked.request.source,
     .array (checked.request.arms.map arm)]
@@ -77,12 +77,11 @@ theorem Binding.original {bytes supplied : ByteArray} {checked : Checked} {work 
 properties too. This theorem does not enlarge the human-admitted ledger scope. -/
 theorem Binding.root_safe {bytes supplied : ByteArray} {checked : Checked} {work left : Nat}
     (binding : Binding bytes supplied checked work left) :
-    checked.artifact.programs[checked.artifact.root]? = some checked.result.subject.root.program ∧
-      Semantics.Ownership.OwnershipSafe checked.result.subject.root.program ∧
-      Semantics.ClassicalScope.ScopeSafe checked.result.subject.root.program := by
+    checked.artifact.programs[checked.artifact.root]? = some checked.result.body.root.program ∧
+      Semantics.Ownership.OwnershipSafe checked.result.body.root.program ∧
+      Semantics.ClassicalScope.ScopeSafe checked.result.body.root.program := by
   obtain ⟨a,accepted⟩ := binding.original.core
-  have facts := Qirf.SourceSector.check_bound _ _ _ _ _ _ _ _ _ _ _ accepted
-  obtain ⟨b,original⟩ := facts.subject.root
+  obtain ⟨b,original⟩ := checked.result.originalRoot
   obtain ⟨c,d,verified⟩ := original.verification
   exact ⟨original.original,Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     Raw.Observation.verify_scopeSafe _ _ _ _ _ verified⟩
