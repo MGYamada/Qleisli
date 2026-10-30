@@ -34,7 +34,7 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, span, self.raw.registers[&slot].size())?;
         let basis = self.raw.registers[&slot].basis.clone();
-        let bits = basis.basis_bits().expect("quantum basis");
+        let bits = self.circuit_width(module, span, &basis)?;
         if bits > MAX_CONTRACT_BITS {
             return Err(self.error(
                 module,

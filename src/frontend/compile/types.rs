@@ -190,8 +190,15 @@ fn measure_inner<N: FiniteRegisterSize>(
                 nodes: 1,
                 copy_work: metadata_work,
                 metadata_work,
-                // Ordinary nominal storage is never a coherent Basis encoding.
-                basis_bits: None,
+                // Physical storage only; this never substitutes for logical
+                // cardinality or the native code-space obligation.
+                basis_bits: Some(match &nominal.body {
+                    Body::Enum(labels) => {
+                        usize::BITS as usize
+                            - labels.len().saturating_sub(1).leading_zeros() as usize
+                    }
+                    Body::Record(_) => 0,
+                }),
             };
             for field in nominal.fields() {
                 let child = measure_inner(original, field, stage, depth + 1, visited, true)?;
@@ -207,6 +214,13 @@ fn measure_inner<N: FiniteRegisterSize>(
                     .metadata_work
                     .checked_add(child.metadata_work)
                     .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?;
+                result.basis_bits = match (result.basis_bits, child.basis_bits) {
+                    (Some(a), Some(b)) => Some(
+                        a.checked_add(b)
+                            .ok_or_else(|| Failure::at(original, FailureKind::WorkOverflow))?,
+                    ),
+                    _ => None,
+                };
             }
             result.copy_work = result
                 .copy_work
@@ -340,7 +354,7 @@ fn copy_reserved<'a, N: FiniteRegisterSize>(
         }
         Kind::Q(basis) => {
             let copied = copy_reserved(original_basis(original), basis, Stage::Basis)?;
-            if copied.basis_bits().is_none() {
+            if copied.basis_width().is_none() {
                 return Err(Failure::at(original_basis(original), FailureKind::Nominal));
             }
             Ok(Ty::quantum(copied))
@@ -463,7 +477,7 @@ fn capacity_at(
         };
         SourceError::new(code, failure.span, message)
     })?;
-    if stage == Stage::Basis && measured.basis_bits.is_none() {
+    if stage == Stage::Basis && checked.basis_bits().is_none() {
         return Err(SourceError::new(
             "type",
             span,
@@ -760,7 +774,7 @@ mod tests {
     }
 
     #[test]
-    fn enum_runtime_capacity_does_not_open_coherent_types() {
+    fn quantum_nominal_runtime_copy_retains_type_without_opening_legacy_tables() {
         let original = named(Span { start: 1, end: 2 });
         let checked = enumeration("main", &["A"]);
         let Kind::Nominal(nominal) = &checked.kind else {
@@ -785,17 +799,19 @@ mod tests {
             origin: Arc::clone(&nominal.origin),
             body: Body::Record(Vec::new()),
         });
-        for invalid in [Closed::quantum(checked), Closed::quantum(record)] {
-            let error = reserve_and_copy(
+        for quantum in [Closed::quantum(checked), Closed::quantum(record)] {
+            let actual = reserve_and_copy(
                 &original,
-                &invalid,
+                &quantum,
                 Stage::Runtime,
                 |failure| failure,
-                |_, _| panic!("unsupported types must refuse before reservation"),
-                |_| panic!("unsupported types must refuse before copying"),
+                |_, _| Ok(()),
+                |ty| copy_reserved(&original, ty, Stage::Runtime),
             )
-            .unwrap_err();
-            assert_eq!(error.kind, FailureKind::Nominal);
+            .unwrap();
+            assert_eq!(actual, quantum);
+            assert_ne!(actual, Closed::quantum(Closed::unit()));
+            assert_ne!(actual, Closed::quantum(Closed::bits(0)));
         }
     }
 

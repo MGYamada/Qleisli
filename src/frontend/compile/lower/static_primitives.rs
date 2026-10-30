@@ -355,7 +355,7 @@ impl Lowerer<'_, '_> {
                 let [n] = naturals else {
                     unreachable!("checked arity")
                 };
-                let limit = if self.compiler.force_ordinary_root {
+                let limit = if self.compiler.force_typed_root {
                     8
                 } else {
                     MAX_BITS as u32
@@ -365,7 +365,7 @@ impl Lowerer<'_, '_> {
                         module,
                         span,
                         ErrorCode::Limit,
-                        if self.compiler.force_ordinary_root {
+                        if self.compiler.force_typed_root {
                             "ordinary word exceeds eight bits"
                         } else {
                             "ordinary word exceeds 12 bits"

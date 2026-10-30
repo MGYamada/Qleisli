@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect nongeneric mixed runtime interfaces to the shared original-source
+  emitter and native runtime-root gate. Preserve `Q<enum>`/`Q<record>` identity,
+  ordinary tuple fields, zero-width owners and split/join axis order. Selected
+  ordinary functions may use small quantum temporaries through the same Raw
+  checks. Report the actual typed scope in CLI text/JSON; missing native checking
+  and export without typed metadata refuse. Generic/static, nominal finite-table
+  and wider qmatch integration remain pending; #64/#195 remain unfinished.
 - Connect the mixed runtime-root component to an execution-only native mode and
   a retained-object QDV walker. Keep complete parameter/result types, canonical
   input rows, classical storage, typed quantum ports and public effects in the

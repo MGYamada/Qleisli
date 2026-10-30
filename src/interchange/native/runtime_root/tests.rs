@@ -355,6 +355,21 @@ fn runtime_public_observe_is_not_sharpened_and_hidden_observation_is_not_unitary
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn runtime_quantum_interface_requires_an_explicit_public_effect_even_without_operations() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for header in ["pub fn", "pub classical fn"] {
+        let source = SOURCE.replace("pub unitary fn", header);
+        let body = raw(&source);
+        assert!(body.operations.is_empty());
+        assert!(accept(&kernel, &source, &body, &request(&source)).is_err());
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn runtime_zero_width_source_parameter_still_prevents_closed_execution() {
     let kernel = Kernel::selected(Edition::E2026).unwrap();
     let source = "pub fn keep(empty:Unit)->Unit{empty}";

@@ -136,7 +136,8 @@ private non-entry declaration without exporting its name. Original parameter and
 result types must be ordinary finite types; quantum ports remain unsupported here.
 
 Nongeneric public selected functions use this same gate through the common
-original-source compiler, initially for classical Raw instructions only.
+original-source compiler, including small quantum temporaries checked over every
+hidden history. Interfaces remain ordinary in this mode.
 Selection retains the exact original instantiation, complete checked host
 bindings and accepted request. Both closed simulation and sampling reject
 nonempty retained parameter forests even when every parameter has zero width.
@@ -144,7 +145,8 @@ The source wrapper also discharges dormant function pairs through the same
 contract gate as project checking, preparing the original Meaning/body
 dependencies visited by global obligations. Explicit public `main` selections
 use the exported rule; project-main restrictions remain separate.
-General generic/quantum selected integration remains unfinished. Untrusted
+Generic selected integration remains unfinished. Mixed quantum interfaces use
+the separate runtime-root mode below. Untrusted
 portable nominal emission refuses until its complete typed request is transported.
 
 The basis retains the existing complete nominal prefix representation. Storage
@@ -185,14 +187,48 @@ and native dispatcher retain this binding through `CheckedOrdinaryRoot` and
 typed request, complete checked input rows and graph. Ordinary source callers
 use the common original-body lowering. Existing `run_closed`/`sample_closed`
 APIs still reject any nonclosed root; checking parameters adds no unchecked
-arbitrary-input execution API. General selected/dependency integration, quantum
-ADTs, full qmatch and nominal finite-table consumers remain separate work.
+arbitrary-input execution API. Generic selected/dependency integration, full
+qmatch and nominal finite-table consumers remain separate work.
 Untyped rechecking and portable export refuse until
 the complete typed artifact transport exists. Existing six-bit instrument and
 carrier/work limits remain. Text/JSON reports distinguish this declared
 result/history check from an independent external algorithm specification.
 No source-body, decoder/native compiler, simulator or target preservation
 theorem, external schema, inverse/control capability or new guarantee follows.
+
+### Mixed runtime root requests
+
+The internal `--runtime-root-check` mode reads strict version1
+`qleisli.runtime-root-request` metadata with profile `finite-runtime-root-v1`.
+Full parameter/result prefixes preserve each `Q` boundary, nominal declaration,
+ordinary tuple and zero-width owner. Storage binds actual ordinary SSA values
+and ordered quantum ports. The original runtime signature and shared Raw root
+checks remain independent of these producer descriptions.
+
+For every independently enumerated ordinary input, `RuntimeFamily` reconstructs
+all hidden maps, checks ordinary results even on zero-probability histories,
+checks exact input/output code-space equations and their complete logical Gram
+sum. Physical padding may not leak into a logical result. Observation remains
+Observe, and a Unitary label requires equal logical dimensions. The six-bit
+dense component limit and existing work limits remain unchanged.
+
+QLV3/QDV compares this complete request and the actual retained graph.
+`Kernel::check_runtime_root` and fresh `check_program` rechecking bind the same
+objects to an execution-only native decision; inspection/caller scopes refuse.
+`AcceptedProgram::runtime_result` exposes read-only metadata. Portable export
+cannot erase that metadata. Original parameters prevent closed execution even
+at zero physical width. The common nongeneric project/selected emitter uses
+this gate for mixed runtime interfaces, retaining actual input storage before
+call expansion and complete output types/owners afterward.
+
+`RuntimeRoot.check_binding`, `CheckedRuntimeRoot.run_binding` and
+`NativeContext.run_typed_runtime_binding` connect actual reads and comparisons.
+The root safety theorem reuses the original Raw gate without enlarging either
+human-admitted guarantee. Exact computation witnesses are separate from complex
+denotation, source-body preservation and numerical runtime correspondence.
+Generic/static, nominal coherent-table/Meaning and wider qmatch integration
+remain pending. No external schema, inverse/control capability, new guarantee
+admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 
 ### Named-arm qmatch component requests
 

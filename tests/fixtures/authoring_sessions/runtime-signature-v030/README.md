@@ -90,3 +90,35 @@ constitute a fresh replay of every unchanged dependency, current-proof-record
 maintenance, source/runtime preservation or an independent algorithm contract.
 Normal `.qli` project/selected lowering, generic/static transport, wider qmatch,
 full proof maintenance and hosted CI/review remain required. #64/#195 stay open.
+
+## Common source integration
+
+The separate [source archive](runtime-source-first.tar.xz),
+[source index](runtime-source-index.json) and
+[source validation](runtime-source-validation.json) preserve the original Rust
+field/borrow errors, overly broad nominal-type refusal, obsolete regression
+expectations and first CLI usage error alongside their separate repairs.
+Source objects and observed streams remain inert; no previous history is changed.
+
+Nongeneric project and selected `.qli` interfaces now reach the runtime gate
+through the common emitter. Input snapshots retain the actual values and owners
+before expansion consumes them. Tests cover mixed/nested types, nominal quantum
+records, zero-width owners, original imports, split/join axis order, honest
+Observe effects, dishonest pure labels, closed-only execution and export refusal.
+Ordinary results may use small quantum temporaries under the same all-history
+gate. New cases use at most three physical bits.
+
+Rust 1.99.1 and MSRV 1.85.0 each pass eight new integration tests, eleven native
+tests, ten type tests and twenty-two existing integration tests, with no skips.
+The stable combined first regression command still fails on the separately
+recorded CLI usage error; its two existing test binaries pass, and the repaired
+new binary subsequently passes all eight cases. Warnings-denied all-target
+Clippy and the changed inventory/coverage/CI policy checks pass. Maximum
+observed child memory is 1,830,436,864 bytes (about 1.70 GiB).
+
+This slice changes no Lean source and uses the prior bound native executable.
+Generic/static transport, full qmatch, nominal coherent-table consumers, complete
+proof replay/current-record maintenance and hosted CI/review remain unfinished.
+The stale current-proof identity check remains a failure, separately from the
+successful protected-record continuity check. No new guarantee or preservation
+theorem is claimed; #64 and #195 remain open.

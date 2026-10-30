@@ -46,14 +46,6 @@ pub(super) fn check(declaration: &Decl, interface: &Interface) -> Result<(), Fai
 }
 
 fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
-    fn nominal(ty: &check::Ty) -> bool {
-        match &ty.kind {
-            Kind::Nominal(_) => true,
-            Kind::Q(inner) => nominal(inner),
-            Kind::Tuple(fields) => fields.iter().any(nominal),
-            _ => false,
-        }
-    }
     match &ty.kind {
         // Full instance closure validates every actual (including unused
         // Basis values), original Nat roots and the existing finite limits.
@@ -77,12 +69,6 @@ fn ty(ty: &Type, checked: &check::Ty) -> Result<(), Failure> {
             let Kind::Q(checked) = &checked.kind else {
                 unreachable!("checked quantum constructor differs")
             };
-            if nominal(checked) {
-                return Err((
-                    ty.span,
-                    "quantum nominal owners require their typed native execution route",
-                ));
-            }
             self::ty(inner, checked)?;
         }
         _ => {}

@@ -1,0 +1,148 @@
+{
+  "format": "qleisli.runtime-source-checks",
+  "version": 1,
+  "source_base": "82b4feb24f37484a77bb65d0a29aa864f5580f5b",
+  "checks": [
+    {
+      "label": "source-native-first",
+      "exit_code": 101,
+      "stable_source": true,
+      "seconds": 5.923588583013043,
+      "child_peak_rss_bytes": 741736448
+    },
+    {
+      "label": "source-native-second",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 27.354082457983168,
+      "child_peak_rss_bytes": 1607106560
+    },
+    {
+      "label": "source-regression-first",
+      "exit_code": 101,
+      "stable_source": true,
+      "seconds": 87.06741362501634,
+      "child_peak_rss_bytes": 1061879808
+    },
+    {
+      "label": "source-selected-second",
+      "exit_code": 101,
+      "stable_source": true,
+      "seconds": 19.272801499988418,
+      "child_peak_rss_bytes": 813187072
+    },
+    {
+      "label": "source-regression-second",
+      "exit_code": 101,
+      "stable_source": true,
+      "seconds": 107.78841116701369,
+      "child_peak_rss_bytes": 826146816
+    },
+    {
+      "label": "source-cli-third",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 11.364928666997002,
+      "child_peak_rss_bytes": 820658176
+    },
+    {
+      "label": "source-final-eight",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 8.220393457973842,
+      "child_peak_rss_bytes": 247201792
+    },
+    {
+      "label": "source-types-final",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 20.849549582984764,
+      "child_peak_rss_bytes": 1770225664
+    },
+    {
+      "label": "source-native-eleven",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 1.7848143750161398,
+      "child_peak_rss_bytes": 39239680
+    },
+    {
+      "label": "source-msrv-eight",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 33.88260262500262,
+      "child_peak_rss_bytes": 1830436864
+    },
+    {
+      "label": "source-msrv-native-eleven",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 24.682199999981094,
+      "child_peak_rss_bytes": 1531183104
+    },
+    {
+      "label": "source-msrv-regression-final",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 100.57295966698439,
+      "child_peak_rss_bytes": 241729536
+    },
+    {
+      "label": "source-msrv-types-final",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 0.9868793330097105,
+      "child_peak_rss_bytes": 30261248
+    },
+    {
+      "label": "source-clippy-final",
+      "exit_code": 0,
+      "stable_source": true,
+      "seconds": 19.06572574999882,
+      "child_peak_rss_bytes": 852967424
+    }
+  ],
+  "native_binary_sha256": "7a4b0ebe90c906261ab25055dc23ae21b334383556be291f7377b4b56bd733d2",
+  "new_integration_tests": {
+    "stable": 8,
+    "msrv_1_85": 8,
+    "ignored": 0
+  },
+  "native_tests": {
+    "stable": 11,
+    "msrv_1_85": 11,
+    "ignored": 0
+  },
+  "type_tests": {
+    "stable": 10,
+    "msrv_1_85": 10,
+    "ignored": 0
+  },
+  "existing_integration_tests": {
+    "stable": 22,
+    "msrv_1_85": 22,
+    "ignored": 0
+  },
+  "stable_regression_note": "source-regression-second exits 101 because the first CLI invocation used an invalid positional module. Its ordinary 12 and selected ordinary 10 test binaries separately pass. source-final-eight uses the repaired explicit module argument and passes all eight new tests.",
+  "other_checks": {
+    "stable_all_target_clippy": "PASS, warnings denied",
+    "production_coverage": "PASS, 49 groups / 28 boundaries / 39 paths / 17 modes",
+    "production_coverage_policy_tests": "PASS, 47 tests",
+    "verification_inventory": "PASS, 617 frozen sources",
+    "inventory_policy_tests": "PASS, 36 tests",
+    "ci_source_check_tests": "PASS, 15 tests"
+  },
+  "constitutional_check": "FAIL stale current source identity; protected-record continuity separately passes against e4e77ce7c0992cff61bb906d8f550f2f6917685d. No proof record or admitted guarantee is rewritten here.",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "goal_percent": 58.27,
+  "remaining": [
+    "generic/static original-binder transport",
+    "full qmatch and nominal finite-table consumers",
+    "fresh full proof replay and genuine current proof-record maintenance",
+    "hosted CI and review"
+  ],
+  "scope": "Nongeneric ordinary/mixed source roots use the common original-source emitter and fresh native full-type/storage/code/history checks. Tests use at most three physical bits. This is bounded implementation validation, not independent initial authoring, complete source/runtime preservation, arbitrary algorithm correctness, inverse/control capability, a new guarantee or Issue completion. No Lean source changes occur in this source-integration slice; the prior native build identity is retained and its current source closure remains to be fully replayed."
+}

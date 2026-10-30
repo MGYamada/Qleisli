@@ -598,7 +598,7 @@ impl AcceptedProgram {
         if self.ordinary_result.is_some() || self.runtime_result.is_some() {
             return Err(Error::new(
                 "unsupported",
-                "typed result export requires its complete artifact/request transport",
+                "typed result export requires complete typed artifact/request transport",
             ));
         }
         Ok(self.artifact())

@@ -17,13 +17,13 @@ The common frontend is the only source grammar and source judgment. Rust
 preparation, binding and specialization types are exposed by `frontend::compile`.
 The ordinary CLI commands accept explicit entry/module bindings for specialization.
 For nominal collections, Raw/automatic selection also executes nongeneric public
-ordinary functions through the common finite emitter and the existing native
-ordinary-v2 gate. `ParsedProgram::instantiate_ordinary_with_types` checks all host
-bindings while deferring legacy body projection; `Instantiation::compile_ordinary_with_kernel`
+runtime functions through the common finite emitter and the native ordinary-v2
+or runtime-v1 gate. `ParsedProgram::instantiate_runtime_with_types` checks all host
+bindings while deferring legacy body projection; `Instantiation::compile_runtime_with_kernel`
 then borrows the unchanged original AST/text and obtains a fresh complete common
 judgment with its own original occurrence associations. It never combines cached
 facts with a different check's indices or fabricates a nongeneric source header.
-`SelectedOrdinaryProgram` retains that immutable instantiation and the actual
+`SelectedRuntimeProgram` retains that immutable instantiation and the actual
 accepted artifact/request. Its source check covers every supplied declaration;
 concrete eligibility and root acceptance concern the selected dependency closure.
 Closed function-equality and Meaning obligations in unused declarations and
@@ -35,11 +35,12 @@ source checking alone does not discharge those semantic obligations.
 An explicit public `main::main` selection uses exported-function eligibility.
 Project invocation retains its separate nullary ordinary-main contract, and
 private project mains do not become exported selections.
-The first selected profile permits classical Raw instructions only, with
-eight-bit words, 1024 function expansions, depth 16, 10000 Raw instructions and
+The selected producer retains eight-bit words, 1024 function expansions,
+depth 16, 10000 Raw instructions and
 a conservative 100000-unit producer-work ceiling. Existing source, metadata and
-native caps remain separate. Generic selected roots/dependencies, quantum
-temporary values and portable nominal export still refuse explicitly. Unselected
+native caps remain separate. Small quantum temporaries use the same Raw emitter
+and all-history checks. Generic selected roots/dependencies and portable nominal
+export still refuse explicitly. Unselected
 valid quantum declarations remain source checked without being execution roots.
 Public `classical fn` roots with the same ordinary interface use their original
 classical header and body through this same route; no ordinary wrapper is invented.
@@ -71,8 +72,15 @@ retains this complete request in the accepted program and every clone. Recheckin
 walks those same objects again; altered types, storage or graph metadata refuse.
 Portable export cannot erase the typed frame. Closed simulation and sampling
 also inspect original runtime parameters, including zero-width arguments.
-This explicit internal artifact/request route does not yet lower ordinary or
-selected quantum nominal source programs. Generic/static and wider qmatch
+The common project and selected emitters now connect nongeneric mixed runtime
+interfaces to this gate, including `Q<enum>`, `Q<record>`, mixed tuples, zero-width
+owners and structural split/join. They snapshot actual input storage before
+expansion consumes it and retain complete output types and ordered owner ports.
+Native reconstruction checks the actual emitted body rather than trusting its
+descriptor. The older `compile_ordinary_with_kernel` method still requires an
+ordinary-only interface and uses the same emitter; `SelectedOrdinaryProgram` is
+a compatibility name for the retained wrapper. Neither API synthesizes source.
+Generic/static, nominal coherent-table/Meaning consumers and wider qmatch
 integration remain pending; no external schema or inverse/control API is admitted.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.

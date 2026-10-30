@@ -18,6 +18,7 @@ mod ordinary;
 mod primitives;
 mod quantum_match;
 mod record;
+mod runtime;
 mod runtime_transforms;
 mod scope;
 mod static_primitives;
@@ -237,6 +238,17 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
 }
 
 impl Lowerer<'_, '_> {
+    fn circuit_width(&self, module: &str, span: Span, basis: &Ty) -> Result<usize, CompileError> {
+        basis.basis_bits().ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "this finite circuit consumer requires typed nominal code-space evidence",
+            )
+        })
+    }
+
     fn note_nominal(&mut self, ty: &Ty, module: &str, span: Span) -> Result<(), CompileError> {
         let Kind::Nominal(nominal) = &ty.kind else {
             unreachable!("checked nominal constructor")
@@ -351,22 +363,14 @@ impl Lowerer<'_, '_> {
                 Value::Classical(id)
             }
             Kind::Q(basis) => {
-                if ordinary::has_nominal(basis) {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Unsupported,
-                        "quantum nominal inputs require their typed native execution route",
-                    ));
-                }
-                let width = basis.basis_bits().ok_or_else(|| {
+                let width = basis.basis_width().ok_or_else(|| {
                     self.error(
                         module,
                         span,
                         ErrorCode::TypeMismatch,
                         "finite quantum input requires a closed ordinary basis tree",
                     )
-                })?;
+                })? as usize;
                 if width > MAX_BITS {
                     return Err(self.error(
                         module,
@@ -470,7 +474,7 @@ impl Lowerer<'_, '_> {
             )?;
             return self.call_instance(key, args, site, instance);
         }
-        let depth_limit = if self.compiler.force_ordinary_root {
+        let depth_limit = if self.compiler.force_typed_root {
             16
         } else {
             MAX_DEPTH
@@ -483,7 +487,7 @@ impl Lowerer<'_, '_> {
                 "function expansion exceeds the initial depth limit",
             ));
         }
-        if self.compiler.force_ordinary_root {
+        if self.compiler.force_typed_root {
             if self.compiler.selected_calls >= 1024 {
                 return Err(self.error(
                     &key_name.0,
@@ -1450,7 +1454,8 @@ impl Lowerer<'_, '_> {
                 let q = self.expr(module, target, env)?;
                 let slot = self.quantum(module, target.span, &q, false)?;
                 let basis = self.raw.registers[&slot].basis.clone();
-                let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
+                let width = self.circuit_width(module, expr.span, &basis)?;
+                let axes: Vec<_> = (1..=width).collect();
                 let mut steps = Vec::new();
                 let mut operation_arm = false;
                 let mut expectations = Vec::new();
@@ -1463,13 +1468,11 @@ impl Lowerer<'_, '_> {
                         Some(steps) => steps,
                         None => self.static_steps(module, name, &basis, env)?,
                     };
-                    expectations.push(
-                        if basis.basis_bits().expect("basis") < crate::contract::MAX_CONTRACT_BITS {
-                            self.target_meaning(module, name, &basis)?
-                        } else {
-                            None
-                        },
-                    );
+                    expectations.push(if width < crate::contract::MAX_CONTRACT_BITS {
+                        self.target_meaning(module, name, &basis)?
+                    } else {
+                        None
+                    });
                     self.compiler.charge(
                         module,
                         expr.span,
@@ -1785,6 +1788,7 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, span, self.raw.registers[&slot].size())?;
         let reg = self.raw.registers[&slot].clone();
+        self.circuit_width(module, span, &reg.basis)?;
         let mut result_ty = None;
         let mut table = Vec::new();
         let mut seen = BTreeSet::new();
@@ -1815,7 +1819,7 @@ impl Lowerer<'_, '_> {
         let basis = result_ty.expect("nonempty domain");
         self.compiler
             .charge(module, span, basis.tree_size().nodes)?;
-        let bits = basis.basis_bits().expect("basis result");
+        let bits = self.circuit_width(module, span, &basis)?;
         if bits < reg.wires.len() {
             return Err(self.error(
                 module,
@@ -2022,7 +2026,7 @@ fn lower_function_in_context(
 ) -> Result<AcceptedProgram, CompileError> {
     let decl = compiler.declarations[key];
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
-    let (params, _) = compiler.signature(key)?;
+    let (params, return_type) = compiler.signature(key)?;
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         compiler,
@@ -2058,6 +2062,11 @@ fn lower_function_in_context(
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
+    let runtime_inputs = if return_type.linear() || params.iter().any(Ty::linear) {
+        Some(runtime::inputs(&mut lower, *key, &args)?)
+    } else {
+        None
+    };
     // Retain the original argument forest before call expansion consumes it.
     // Ordinary zero-width arguments still contribute their complete storage node.
     let input_storage = if quantum_inputs.is_empty() {
@@ -2087,14 +2096,6 @@ fn lower_function_in_context(
         vec![]
     };
     let result = lower.call_user(key, args, None)?;
-    if ordinary::has_quantum_nominal(&result.ty()) {
-        return Err(lower.error(
-            &key_name.0,
-            decl.span,
-            ErrorCode::Unsupported,
-            "quantum nominal results require their typed native execution route",
-        ));
-    }
     lower.compiler.charge(
         &key_name.0,
         decl.span,
@@ -2115,15 +2116,19 @@ fn lower_function_in_context(
         classical_outputs,
         declared_effect: lower.effect,
     };
-    let needs_typed_root = lower.compiler.force_ordinary_root
+    let needs_typed_root = lower.compiler.force_typed_root
         || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
         || params.iter().any(ordinary::has_nominal);
-    if lower.compiler.force_ordinary_root {
+    if lower.compiler.force_typed_root {
         super::selected::check_raw_capacity(lower.compiler, &key_name.0, decl.span, &raw)?;
     }
     let accepted = if needs_typed_root {
-        ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)
+        if let Some(inputs) = runtime_inputs {
+            runtime::accept(&mut lower, key, &params, inputs, &result, &raw)
+        } else {
+            ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)
+        }
     } else {
         lower
             .compiler

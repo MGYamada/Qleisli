@@ -29,7 +29,7 @@ mod types;
 use types::finite_type;
 
 pub use report::ProjectCheckReport;
-pub use selected::SelectedOrdinaryProgram;
+pub use selected::{SelectedOrdinaryProgram, SelectedRuntimeProgram};
 
 pub use super::specialize::{
     BasisBinding, CheckedSourceCarrier, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort,
@@ -228,7 +228,7 @@ struct Compiler<'a> {
     interface_naturals: BTreeMap<Key, check::plans::InterfaceNaturals>,
     locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
-    force_ordinary_root: bool,
+    force_typed_root: bool,
     selected_entry: Option<Key>,
     selected_calls: usize,
     basis: BTreeMap<Key, BasisFunction>,
@@ -317,7 +317,7 @@ impl<'a> Compiler<'a> {
         span: Span,
         amount: usize,
     ) -> Result<(), CompileError> {
-        let ceiling = if self.force_ordinary_root {
+        let ceiling = if self.force_typed_root {
             100_000
         } else {
             MAX_WORK
@@ -1085,7 +1085,7 @@ fn process_loaded_project_details(
         source,
         interface_naturals,
         declarations,
-        force_ordinary_root: false,
+        force_typed_root: false,
         selected_entry: None,
         selected_calls: 0,
         locals,
@@ -1382,7 +1382,7 @@ mod snapshot_tests {
             source,
             interface_naturals,
             declarations,
-            force_ordinary_root: false,
+            force_typed_root: false,
             selected_entry: None,
             selected_calls: 0,
             locals: Forest::from_occurrences(occurrences),

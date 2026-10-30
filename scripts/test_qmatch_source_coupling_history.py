@@ -44,6 +44,9 @@ RUNTIME_ROOT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v
 RUNTIME_TRANSPORT_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-first.tar.xz"
 RUNTIME_TRANSPORT_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-index.json"
 RUNTIME_TRANSPORT_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-transport-validation.json"
+RUNTIME_SOURCE_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-first.tar.xz"
+RUNTIME_SOURCE_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-index.json"
+RUNTIME_SOURCE_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/runtime-source-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -77,6 +80,27 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_runtime_source_first_failures_and_repaired_scope_are_retained(self):
+        members = bounded_history(ROOT / RUNTIME_SOURCE_ARCHIVE, ROOT / RUNTIME_SOURCE_INDEX)
+        first = members['observations/source-native-first/stderr.txt']
+        self.assertIn(b'E0560', first)
+        self.assertIn(b'E0502', first)
+        failed = json.loads(members['observations/source-regression-second/report.json.txt'])
+        self.assertEqual(failed['exit_code'], 101)
+        for label, passed in [('source-final-eight', 8), ('source-msrv-eight', 8),
+                              ('source-native-eleven', 11), ('source-msrv-native-eleven', 11),
+                              ('source-types-final', 10), ('source-msrv-types-final', 10)]:
+            report = json.loads(members[f'observations/{label}/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['stable_source'])
+            self.assertIn(f'{passed} passed; 0 failed; 0 ignored'.encode(),
+                          members[f'observations/{label}/stdout.txt'])
+        current = json.loads((ROOT / RUNTIME_SOURCE_VALIDATION).read_text())
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertEqual(current['goal_percent'], 58.27)
+        self.assertIn('FAIL stale current source identity', current['constitutional_check'])
+        self.assertIn('generic/static original-binder transport', current['remaining'])
+
     def test_runtime_transport_preserves_failures_and_fresh_native_scope(self):
         members = bounded_history(ROOT / RUNTIME_TRANSPORT_ARCHIVE, ROOT / RUNTIME_TRANSPORT_INDEX)
         self.assertEqual(len(members), 572)
