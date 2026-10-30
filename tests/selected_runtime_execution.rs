@@ -40,6 +40,148 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_nominal_qmatch_binds_the_actual_complete_call() {
+    let source = "pub enum Tri { A, B, C }
+        pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
+        pub unitary fn phase(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
+        pub unitary fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
+            qmatch(s,q){Tri::C=>phase,Tri::A=>idle,Tri::B=>phase}}";
+    let selected = selected(source);
+    let request = selected.program().runtime_result().unwrap();
+    assert!(
+        matches!(request.parameters[0].get(1), Some(Atom::Finite(Basis::Enum(_, labels))) if labels == &["A", "B", "C"])
+    );
+    assert_eq!(request.public_effect, qleisli::ir::Effect::Unitary);
+    kernel().check_program(selected.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers() {
+    let declarations = "pub enum Tri { A,B,C }
+        pub unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+        pub unitary fn phase(q:Q<Bit>)->Q<Bit>{global_phase_eighth(q)}
+        pub unitary fn route(s:Q<Tri>,q:Q<Bit>)->(Q<Tri>,Q<Bit>){
+            let pair=(s,q); let (tag,value)=pair;
+            let result=qmatch(tag,value){Tri::C=>phase,Tri::A=>idle,Tri::B=>phase};
+            let (tag,value)=result; (tag,value)}";
+    let source = format!(
+        "{declarations}
+        pub unitary fn keep(s:Q<Tri>,q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Tri>,Q<Bit>){{
+            let r=h(r); let (s,q)=route(s,q); (r,s,q)}}"
+    );
+    let accepted = selected(&source);
+    let raw = accepted.program().raw();
+    assert_eq!(raw.quantum_inputs.len(), 3);
+    assert_eq!(raw.quantum_outputs.len(), 3);
+    kernel().check_program(accepted.program()).unwrap();
+    let empty = selected(
+        "pub enum One{Only}
+        pub unitary fn phase(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}
+        pub unitary fn keep(s:Q<One>,q:Q<Unit>)->(Q<One>,Q<Unit>){
+            let result=qmatch(s,q){One::Only=>phase}; result}",
+    );
+    assert_eq!(empty.program().raw().quantum_inputs.len(), 2);
+    assert!(
+        empty
+            .program()
+            .raw()
+            .quantum_inputs
+            .iter()
+            .all(|port| port.wires.is_empty())
+    );
+    assert_eq!(empty.program().raw().quantum_outputs.len(), 2);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site() {
+    for prefix in [
+        "let s=global_phase_eighth(s);",
+        "let hidden=measure_z(init0());",
+    ] {
+        let effect = if prefix.contains("measure_z") {
+            "observe"
+        } else {
+            "unitary"
+        };
+        let source = format!(
+            "pub enum Tri{{A,B,C}}
+            pub unitary fn idle(q:Q<Unit>)->Q<Unit>{{q}}
+            pub {effect} fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){{
+                {prefix} qmatch(s,q){{Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}}}"
+        );
+        let parsed =
+            ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)]))
+                .unwrap();
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                Default::default(),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap();
+        let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
+        assert!(
+            error.message.contains("native") || error.message.contains("request"),
+            "{error:?}"
+        );
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_qmatch_uses_original_imports_and_public_arm_effects() {
+    for effect in ["unitary", "observe", "isometry"] {
+        let main = "use facade::Tri; use facade::arm;
+            pub unitary fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
+                qmatch(s,q){Tri::C=>arm,Tri::A=>arm,Tri::B=>arm}}";
+        let sources = BTreeMap::from([
+            ("main".into(), main.into()),
+            (
+                "facade".into(),
+                "pub use types::Tri; pub use implementation::arm;".into(),
+            ),
+            ("types".into(), "pub enum Tri{A,B,C}".into()),
+            (
+                "implementation".into(),
+                format!("pub {effect} fn arm(q:Q<Unit>)->Q<Unit>{{q}}"),
+            ),
+        ]);
+        let result = ParsedProgram::parse(Edition::E2026, sources)
+            .and_then(|parsed| {
+                parsed.instantiate_runtime_with_types(
+                    "main::keep",
+                    Default::default(),
+                    Default::default(),
+                    Default::default(),
+                )
+            })
+            .map_err(|error| error.to_string())
+            .and_then(|instance| {
+                instance
+                    .compile_runtime_with_kernel(&kernel())
+                    .map_err(|error| error.message)
+            });
+        assert_eq!(result.is_ok(), effect == "unitary", "{effect}: {result:?}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
     let source = "pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
         pub unitary fn phase(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}

@@ -121,6 +121,7 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
+            nominal_qmatch: None,
             tuple_binding_origins: vec![BTreeMap::new()],
             access_updates: vec![BTreeSet::new()],
             effect: Effect::Observe,

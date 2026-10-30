@@ -968,8 +968,12 @@ original declaration identity and logical variant order; built-in labels retain
 exact ordinals. Neither padding tags nor equal physical width identify a label
 or target. The finite executable built-in slice uses a fresh native whole-circuit
 encoded equation within the existing six-joined-bit/1024-step profile. Common
-nominal qmatch checks do not enable coherent execution of nominal selectors.
-Nominal quantum owners can otherwise use the runtime-root gate. Selected
+nominal preparation alone grants no execution. Small closed named-arm functions
+with a nominal enum selector now additionally submit the actual complete callee
+fragment, original two-owner frame and separate controlled arm bodies to the
+native source/arm gate before runtime-root acceptance. General bodies and nominal
+targets remain unsupported by this bounded adapter.
+Nominal quantum owners also use the runtime-root gate. Selected
 built-in qmatch and ordinary Basis/Nat callers use the common source emitter,
 preparing named arms through the existing provider evidence gates. The legacy
 hierarchy projection remains separate. The full

@@ -7,6 +7,47 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
+/// Pack actual source/body subjects with the shared QIRF encoder. The returned
+/// bytes are a proposal only; indices are derived from this exact graph.
+pub(crate) fn proposal(
+    raw: &crate::ir::RawProgram,
+    interface: Interface,
+    source: SourceSite,
+    arms: &[(
+        std::sync::Arc<crate::contract::FunctionEvidence>,
+        crate::ir::RawProgram,
+    )],
+    sources: &[(String, String)],
+) -> Result<(Vec<u8>, Vec<u8>)> {
+    if arms.is_empty() || arms.len() > 64 {
+        return Err(Error::limit("qmatch arm capacity"));
+    }
+    let mut remaining = json::MAX_BYTES;
+    interface_storage(&interface, &mut remaining)?;
+    let mut encoder = super::Encoder::new(super::Version::V2);
+    for (name, text) in sources {
+        encoder.source(name, text)?;
+    }
+    let (root, mut encoder) = super::prepare_proposal(raw, None, encoder)?;
+    let mut indices = Vec::with_capacity(arms.len());
+    for (evidence, controlled) in arms {
+        indices.push(Arm {
+            evidence: encoder.evidence(evidence)? as u32,
+            controlled: encoder.program(controlled)? as u32,
+        });
+    }
+    let request = Request {
+        required: interface.clone(),
+        attached: interface,
+        source,
+        arms: indices,
+    };
+    Ok((
+        super::finish_proposal(root, None, encoder)?,
+        request.encode()?,
+    ))
+}
+
 const PROFILE: &str = "finite-source-qmatch-named-v1";
 
 /// An actual original UTF-8 byte occurrence, independently read by Lean.

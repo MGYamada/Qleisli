@@ -200,3 +200,22 @@ cover original parameters, public effects, inactive arms and phase interference.
 The archive's 66 inert records are byte-checked without extraction or execution.
 They supply no independent first-author evaluation, nominal/full qmatch support,
 source-preservation theorem, guarantee admission or #64/#195 completion.
+
+## Nominal compiler integration observations
+
+The [nominal compiler archive](nominal-compiler-first.tar.xz),
+[index](nominal-compiler-index.json) and
+[validation](nominal-compiler-validation.json) preserve 73 inert records.
+They bind the actual complete call fragments, first test API errors and
+separate repairs to stable source windows. The six original projects above
+are unchanged: reordered/renamed three-state and singleton selections now
+pass; public Observe arms and ordinary matching of a quantum owner refuse.
+Actual CLI streams retain their typed-runtime scope and false source-preservation
+flags. The binary hashes are observations, not build attestations.
+
+Four new source regressions cover named-arm/native binding, structural moves,
+suspended caller owners, zero-width owners, imports/reexports, public effects
+and rejection of nonstructural prefixes. The retained stable/MSRV runs pass
+74/40 tests with none ignored; clippy passes all targets. This small six-bit
+adapter leaves general bodies/arms, nominal targets, the full twelve-bit profile,
+source preservation, full CI/review and #64/#195 completion pending.

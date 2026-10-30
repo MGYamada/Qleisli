@@ -92,6 +92,30 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_nominal_compiler_history_preserves_first_sources_and_api_failures(self):
+        folder = ROOT / BODY_ROOT
+        members = bounded_history(folder / 'nominal-compiler-first.tar.xz',
+                                  folder / 'nominal-compiler-index.json')
+        self.assertEqual(len(members), 73)
+        for label, diagnostic in [('third', b'mismatched types'),
+                                  ('fourth', b"doesn't implement")]:
+            prefix = 'observations/nominal-qmatch-' + label + '/'
+            self.assertIn(diagnostic, members[prefix + 'stderr.txt'])
+            report = json.loads(members[prefix + 'report.json.txt'])
+            self.assertEqual(report['exit_code'], 101)
+            self.assertEqual(report['before'], report['after'])
+        after = json.loads(members['after/observations.json.txt'])
+        self.assertEqual([row['exit_code'] for row in after['records']], [0, 0, 0, 0, 1, 1])
+        before = bounded_history(ROOT / COMPILER_ARCHIVE, ROOT / COMPILER_INDEX)
+        original = json.loads(before['first/observations.json.txt'])
+        original_inputs = [json.loads(before['first/' + row['name'] + '/plan.json.txt'])['inputs']
+                           for row in original['records']]
+        self.assertEqual([row['inputs'] for row in after['records']], original_inputs)
+        validation = json.loads((folder / 'nominal-compiler-validation.json').read_text())
+        self.assertEqual(validation['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        self.assertEqual(validation['stable_tests'], 74)
+        self.assertEqual(validation['msrv_tests'], 40)
+
     def test_compiler_history_keeps_real_projection_and_provider_refusals(self):
         members = bounded_history(ROOT / COMPILER_ARCHIVE, ROOT / COMPILER_INDEX)
         self.assertEqual(len(members), 66)

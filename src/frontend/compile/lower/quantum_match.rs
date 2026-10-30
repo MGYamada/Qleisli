@@ -1,13 +1,15 @@
 //! Coherent exact-label construction with a fresh native whole-circuit equation.
 //!
-//! The first executable slice uses the existing six-bit encoded contract gate.
-//! The full twelve-bit/64-label route still requires the kernel's actual-circuit
-//! restriction and arm-binding component; Rust sector projections cannot replace it.
+//! Built-in selectors use the existing six-bit encoded contract gate; small
+//! nominal named-arm functions use the original-source gate on their whole call.
+//! The full twelve-bit/64-label route remains pending. Rust sector projections
+//! cannot replace independent source, arm, owner or actual-circuit checking.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::contract::exact::{Budget, Exact, Matrix};
 use crate::contract::{Circuit, Contract, ContractError, Encoding, MAX_CONTRACT_BITS};
 
+pub(super) mod nominal;
 #[cfg(test)]
 mod tests;
 
@@ -154,6 +156,9 @@ impl Lowerer<'_, '_> {
         let selector = self.expr(module, &selection.selector, env)?;
         let selector_slot = self.quantum(module, selection.selector.span, &selector, false)?;
         let selector_basis = &self.raw.registers[&selector_slot].basis;
+        if matches!(selector_basis.kind, Kind::Nominal(_)) {
+            return nominal::emit(self, module, span, selection, env, selector, selector_slot);
+        }
         let selector_bits = match &selector_basis.kind {
             Kind::Unit => 0,
             Kind::Bit => 1,

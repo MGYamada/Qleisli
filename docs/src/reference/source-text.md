@@ -207,7 +207,22 @@ entry's lexical dependency closure. An unrelated qmatch declaration or a comment
 does not redirect a built-in entry. The legacy hierarchy projection still
 refuses qmatch; a failed check never triggers a different acceptance path.
 
-Nominal selector execution remains explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
+Small nominal enum selectors also use the shared emitter for a closed named
+function with exactly two quantum parameters and one structural qmatch body.
+The target must currently be a built-in finite basis; the six-joined-bit and
+1024-step producer limits remain. Original names/tuple bindings and the complete
+structural return may surround the selection. Each actual call fragment, with
+its original input/output owners and every emitted operation, passes the native
+source/arm gate described below. Named arms provide their existing function
+evidence and a separately checked controlled implementation through the shared
+QIRF encoder. Ordinary callers may retain other owners; only the actual callee
+fragment is submitted for its original function, and the complete runtime root
+still passes its independent typed gate. General expressions, nonstructural
+prefixes/suffixes, multiple selections, generic/constructed arms and nominal
+targets remain unsupported here. No source text or owner frame is synthesized
+to avoid those refusals.
+
+Exposing the full twelve-joined-bit/64-label boundary
 still requires original source binding and native integration of the restriction
 and arm checks below; the small slice does not replace that requirement. The internal finite restriction
 component now proves correspondence through actual contributions, accumulation,
@@ -256,8 +271,9 @@ A matching zero-width source/Raw permutation is allowed; a mismatched one
 refuses. Opaque-owner refinements, allocation/release and general calls/control
 flow still need their checked source/representation rules. The internal
 native/QDV component retains its actual graph/request but grants no ordinary
-source execution handle. General source binding and nominal execution remain
-unfinished. Common enum checks, native acceptance
+source execution handle on its own. The bounded compiler adapter above checks
+that component before the separate runtime-root acceptance; general source
+binding and nominal integration remain unfinished. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing
