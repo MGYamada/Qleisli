@@ -165,7 +165,8 @@ def check(root, binary):
         require(checked["checker_paths"] == [env["QLEISLI_KERNEL"]]
                 and checked["checker_identity"] == "unpinned"
                 and checked["entry"] == {"present": True, "request_checked": False,
-                                         "ordinary_result_checked": False}
+                                         "ordinary_result_checked": False,
+                                         "runtime_result_checked": False}
                 and checked["source_preservation_verified"] is False
                 and "verified" not in checked,
                 "Bell JSON check did not report the actual checker and request-free scope")

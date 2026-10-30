@@ -13,6 +13,8 @@ development milestones from the scope of their evidence.
   checks. Report the actual typed scope in CLI text/JSON; missing native checking
   and export without typed metadata refuse. Generic/static, nominal finite-table
   and wider qmatch integration remain pending; #64/#195 remain unfinished.
+  Keep Python, installation and regression JSON consumers aligned with the
+  actual runtime-check flag; refresh current proof records from fresh replay.
 - Connect the mixed runtime-root component to an execution-only native mode and
   a retained-object QDV walker. Keep complete parameter/result types, canonical
   input rows, classical storage, typed quantum ports and public effects in the

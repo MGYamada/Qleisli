@@ -573,7 +573,9 @@ The version-1 JSON result envelope retains `outcome: "ok"` and an empty
 | `native_decisions.requests_checked` | Number of those decisions with a separate native request payload checked by Lean. This counts decisions, not distinct source declarations or whole-source meanings. |
 | `native_decisions.complete` | Whether the metadata covers every successful decision and its checker path. If false, the bounded report is incomplete and its path list or counts must not be treated as exhaustive. |
 | `entry.present` | Whether the ordinary project has a supported `main::main` entry. A library without that entry can still check successfully. |
-| `entry.request_checked` | Whether that entry's own ordinary accepted artifact has an independent request; `null` when there is no entry. Requests on other roots or partial contracts do not change this value. |
+| `entry.request_checked` | Whether that entry's own accepted artifact has a separately checked native request payload; `null` when there is no entry. Producer-generated typed requests count here without establishing an independent algorithm specification. Requests on other roots or partial contracts do not change this value. |
+| `entry.ordinary_result_checked` | Whether this entry retains the native ordinary-v2 input/result and all-hidden-history check. False for absent entries and other modes. |
+| `entry.runtime_result_checked` | Whether this entry retains the native runtime-v1 complete type/storage, quantum code-space and all-hidden-history check. False for absent entries and other modes. |
 | `concrete_ir_roots.local`, `concrete_ir_roots.bundled` | Counts of checked concrete ordinary function roots, separating loaded project/dependency modules from bundled library modules. |
 | `source_preservation_verified` | `false`: this command does not prove source-to-IR preservation. |
 
@@ -601,6 +603,8 @@ actual `checker_path`, `checker_identity: "unpinned"`, `request_checked` and
 `source_preservation_verified: false`, alongside their existing `verification`
 scope and `request_origin`. The Raw route's native-validity scope is distinct
 from hierarchy composition, Fourier, instrument and named-QPE request scopes.
+Finite artifact reports additionally expose `ordinary_result_checked` and
+`runtime_result_checked` with the same meanings as the project-entry fields.
 `request_checked: true` also applies to a checked producer-consistency request;
 it does not assert an independent specification of the source's Meaning.
 The existing `source_meaning_verified: false` remains explicit. These fields

@@ -833,9 +833,9 @@ nominal source execution requires a typed native route. The ordinary project
 adapter now checks finite ordinary parameters/results and executes eligible
 closed callers through the route described below.
 The legacy selected projection retains its declaration transport refusal.
-Nongeneric public ordinary roots now use the common typed route; a generic
+Nongeneric public ordinary and mixed quantum roots now use the common typed routes; a generic
 `--type=A=labels::Tri` still checks its actual name/source bindings before the
-explicit missing-static-transport refusal. Quantum nominal owners, full nominal `qmatch` and source-preservation
+explicit missing-static-transport refusal. Full nominal `qmatch` and source-preservation
 proofs remain pending; no inverse/control access follows from preparation.
 
 The internal `finite-ordinary-root-v2` request retains the original selected
@@ -879,8 +879,9 @@ from an external algorithm specification. Runtime output distributions retain
 the declared low-axis-first classical output order. Original AST lowering,
 decoder/native compiler and numerical runtime preservation are not proved by
 this gate. Existing simulation APIs still require closed roots; parameter
-checking grants no unchecked arbitrary-input runtime. Generic selected/dependency
-integration, quantum ADTs, full qmatch and nominal finite-table consumers remain pending.
+checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
+interfaces use the runtime-root gate described earlier. Generic selected/dependency
+integration, full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select this typed
 route when the final result is a built-in type. Body-only nominal modules must
 already be retained by the selected original or parameter/result origins; other intermediate
@@ -958,7 +959,9 @@ original declaration identity and logical variant order; built-in labels retain
 exact ordinals. Neither padding tags nor equal physical width identify a label
 or target. The finite executable built-in slice uses a fresh native whole-circuit
 encoded equation within the existing six-joined-bit/1024-step profile. Common
-nominal checks do not open nominal runtime or the selected projection. The full
+nominal qmatch checks do not enable coherent execution of nominal selectors.
+Nongeneric nominal quantum owners can otherwise use the runtime-root gate; the
+legacy selected projection remains separate. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 
