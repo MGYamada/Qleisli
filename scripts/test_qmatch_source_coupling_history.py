@@ -62,6 +62,8 @@ COMPILER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-
 TARGET_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-first.tar.xz"
 TARGET_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-index.json"
 TARGET_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-validation.json"
+CONTEXT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-validation.json"
+FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -118,6 +120,14 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertIn(b'maximum number of heartbeats', members['observations/context-sector-first/stdout.txt'])
         self.assertIn(b'shifted_non_qmatch_slice_not_source_evidence', members['study/fourth/stdout.txt'])
         self.assertIn(b'depends on axioms: [propext]', members['study/fourth/stdout.txt'])
+        validation = json.loads((ROOT / CONTEXT_VALIDATION).read_text())
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+        current = json.loads((ROOT / FRAME_CASES).read_text())['cases']
+        self.assertEqual({row['name'] for row in current}, {row['name'] for row in after['cases']})
+        faults = {row['name']: row['native_code'] for row in current if not row['expected']}
+        for name in ['wrong-actual-phase', 'wrong-controlled-phase', 'nominal-relative-phase']:
+            self.assertEqual(faults[name], 'equation')
 
     def test_nominal_target_history_keeps_original_programs_and_budget_failures(self):
         members = bounded_history(ROOT / TARGET_ARCHIVE, ROOT / TARGET_INDEX)
