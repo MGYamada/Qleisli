@@ -84,7 +84,11 @@ a compatibility name for the retained wrapper. Neither API synthesizes source.
 Selected Basis/Nat roots now retain their original generic header, closed
 actuals and numeric premises through this gate. The same common emitter handles
 ordinary and mixed interfaces; unused nominal actuals retain original sources.
-Generic dependencies, operation-formal closure, nominal coherent-table/Meaning
+Ordinary Basis/Nat dependencies may forward those same nominal trees, including
+concrete `type(T)` arguments and nested tuples. Original caller/callee binders,
+numeric premises and module-public effects remain distinct. Closed unused
+arguments are still checked; ordinary forwarding grants no operation capability.
+Operation-formal closure, nominal coherent-table/Meaning
 consumers and wider qmatch integration remain pending; no external schema or inverse/control API is admitted.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
@@ -884,8 +888,9 @@ the declared low-axis-first classical output order. Original AST lowering,
 decoder/native compiler and numerical runtime preservation are not proved by
 this gate. Existing simulation APIs still require closed roots; parameter
 checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
-interfaces use the runtime-root gate described earlier. Generic selected/dependency
-integration, full qmatch and nominal finite-table consumers remain pending.
+interfaces and selected Basis/Nat roots use the runtime-root gate described
+earlier, including ordinary generic dependencies. Operation-formal closure,
+full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select this typed
 route when the final result is a built-in type. Body-only nominal modules must
 already be retained by the selected original or parameter/result origins; other intermediate

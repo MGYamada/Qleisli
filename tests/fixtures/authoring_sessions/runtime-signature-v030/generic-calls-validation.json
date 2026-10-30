@@ -1,0 +1,64 @@
+{
+  "format": "qleisli.runtime-generic-call-checks",
+  "version": 1,
+  "source_base": "9450039ae8829a1941fa8e2b361e9222975036cc",
+  "checks": [
+    {
+      "label": "generic-calls-first",
+      "exit_code": 101,
+      "seconds": 16.235827583000003,
+      "child_peak_rss_bytes": 1134739456
+    },
+    {
+      "label": "generic-calls-second",
+      "exit_code": 101,
+      "seconds": 31.177971540999998,
+      "child_peak_rss_bytes": 929628160
+    },
+    {
+      "label": "generic-calls-third",
+      "exit_code": 101,
+      "seconds": 14.864671333,
+      "child_peak_rss_bytes": 863780864
+    },
+    {
+      "label": "generic-calls-fourth",
+      "exit_code": 101,
+      "seconds": 36.671047125,
+      "child_peak_rss_bytes": 914767872
+    },
+    {
+      "label": "generic-calls-fifth",
+      "exit_code": 0,
+      "seconds": 38.636027958,
+      "child_peak_rss_bytes": 1073102848
+    },
+    {
+      "label": "generic-calls-sixth",
+      "exit_code": 101,
+      "seconds": 0.962563125,
+      "child_peak_rss_bytes": 140558336
+    },
+    {
+      "label": "generic-calls-seventh",
+      "exit_code": 0,
+      "seconds": 192.11688375,
+      "child_peak_rss_bytes": 276938752
+    },
+    {
+      "label": "generic-calls-msrv",
+      "exit_code": 0,
+      "seconds": 48.236481584,
+      "child_peak_rss_bytes": 1170669568
+    }
+  ],
+  "first_projects": 6,
+  "first_cli_observations": 6,
+  "native_checker_sha256": "38e9468f76336ff632578433ac0a43e5a23f37c799a1cf49297afad6fe2dfb7a",
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "native_execution": "BASIS/NAT ORDINARY CALLS WITH NOMINAL ACTUALS",
+  "scope": "Informed bounded inputs and actual compile/test observations. First source, parser, concrete-profile and test API failures are retained separately from repairs. The first CLI identity is an observation, not source-build attestation. This Rust producer change adds no native acceptance mode or Lean theorem, no operation-formal/Meaning/control/inverse capability, no source-body preservation, no wider qmatch integration and no guarantee admission. Required CI/review and full Issue completion remain separate."
+}

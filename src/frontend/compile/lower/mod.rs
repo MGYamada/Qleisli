@@ -1260,7 +1260,7 @@ impl Lowerer<'_, '_> {
                 let plan = &self.compiler.source.static_calls[&original];
                 let actuals = plan.arguments.clone();
                 let environment = Arc::clone(&plan.environment);
-                let instance = self.compiler.bind_source_instance(
+                let instance = self.compiler.bind_runtime_source_instance(
                     key,
                     &actuals,
                     &environment,
@@ -2064,7 +2064,7 @@ fn lower_function_in_context(
         .collect::<Result<Vec<_>, _>>()?;
     let runtime_inputs = if return_type.linear()
         || params.iter().any(Ty::linear)
-        || (lower.compiler.force_typed_root && !decl.static_params.is_empty())
+        || !decl.static_params.is_empty()
     {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
@@ -2119,7 +2119,35 @@ fn lower_function_in_context(
         classical_outputs,
         declared_effect: lower.effect,
     };
+    // Unused nominal actuals still belong to the original signature. In
+    // particular, global dormant checking must not erase them when it runs
+    // outside the selected root's smaller producer limits.
+    let static_basis_cost =
+        lower
+            .compiler
+            .concrete_context
+            .current
+            .as_ref()
+            .map_or(0, |instance| {
+                total_size(
+                    instance
+                        .interface
+                        .bases
+                        .values()
+                        .map(|ty| ty.tree_size().nodes),
+                )
+            });
+    lower
+        .compiler
+        .charge(&key_name.0, decl.span, static_basis_cost)?;
+    let nominal_actuals = lower
+        .compiler
+        .concrete_context
+        .current
+        .as_ref()
+        .is_some_and(|instance| instance.interface.bases.values().any(ordinary::has_nominal));
     let needs_typed_root = lower.compiler.force_typed_root
+        || nominal_actuals
         || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
         || params.iter().any(ordinary::has_nominal);

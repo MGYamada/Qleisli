@@ -53,6 +53,9 @@ RUNTIME_STATIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature
 RUNTIME_STATIC_V2_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-first.tar.xz"
 RUNTIME_STATIC_V2_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-index.json"
 RUNTIME_STATIC_V2_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/static-v2-validation.json"
+RUNTIME_GENERIC_ARCHIVE = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-first.tar.xz"
+RUNTIME_GENERIC_INDEX = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-index.json"
+RUNTIME_GENERIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signature-v030/generic-calls-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -86,6 +89,24 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_generic_calls_retain_original_refusals_and_separate_repairs(self):
+        members = bounded_history(ROOT / RUNTIME_GENERIC_ARCHIVE, ROOT / RUNTIME_GENERIC_INDEX)
+        self.assertEqual(len(members), 94)
+        first = json.loads(members['first/observations.json.txt'])
+        self.assertEqual(len(first['records']), 6)
+        self.assertEqual(next(row['exit_code'] for row in first['records']
+                              if row['name'] == 'basis-nominal'), 1)
+        self.assertIn(b'Q<A>', members['first/basis-nominal/main.qli.txt'])
+        self.assertIn(b'nominal source types require typed native transport',
+                      members['observations/generic-calls-fourth/stdout.txt'])
+        self.assertIn(b'use type(T)', members['observations/generic-calls-third/stdout.txt'])
+        for label in ['generic-calls-fifth', 'generic-calls-seventh', 'generic-calls-msrv']:
+            result = json.loads(members[f'observations/{label}/report.json.txt'])
+            self.assertEqual(result['exit_code'], 0)
+            self.assertEqual(result['before'], result['after'])
+        current = json.loads((ROOT / RUNTIME_GENERIC_VALIDATION).read_text())
+        self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
+
     def test_static_execution_keeps_the_first_source_refusal_and_separate_success(self):
         members = bounded_history(ROOT / RUNTIME_STATIC_V2_ARCHIVE, ROOT / RUNTIME_STATIC_V2_INDEX)
         self.assertEqual(len(members), 664)

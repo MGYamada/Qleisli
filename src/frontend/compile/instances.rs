@@ -12,6 +12,7 @@ mod bindings;
 mod closure;
 mod contracts;
 mod provider;
+mod runtime_basis;
 #[cfg(test)]
 mod tests;
 
@@ -158,6 +159,40 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<Arc<ClosedInstance>, CompileError> {
+        self.prepare_instance_with_basis_transport(
+            definition, bases, naturals, operations, module, span, false,
+        )
+    }
+
+    pub(super) fn prepare_runtime_instance(
+        &mut self,
+        definition: Key,
+        bases: BTreeMap<BinderKey, Ty>,
+        naturals: BTreeMap<BinderKey, u32>,
+        operations: operations::Bindings,
+        module: &str,
+        span: Span,
+    ) -> Result<Arc<ClosedInstance>, CompileError> {
+        let typed = self.source.interfaces[&definition]
+            .statics
+            .iter()
+            .all(|formal| !matches!(formal.kind, StaticKind::Operation { .. }));
+        self.prepare_instance_with_basis_transport(
+            definition, bases, naturals, operations, module, span, typed,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn prepare_instance_with_basis_transport(
+        &mut self,
+        definition: Key,
+        bases: BTreeMap<BinderKey, Ty>,
+        naturals: BTreeMap<BinderKey, u32>,
+        operations: operations::Bindings,
+        module: &str,
+        span: Span,
+        typed: bool,
+    ) -> Result<Arc<ClosedInstance>, CompileError> {
         let source_effect = self.effect_in_module(module, definition).ok_or_else(|| {
             self.error(
                 module,
@@ -167,7 +202,7 @@ impl Compiler<'_> {
             )
         })?;
         // The shared closer checks every Basis actual, including unused ones.
-        let closed = self.close_instance_interface(definition, bases, naturals, span)?;
+        let closed = self.close_instance_interface(definition, bases, naturals, span, typed)?;
         let required = self.required_bindings_closed(&definition, &closed)?;
         self.charge(
             module,

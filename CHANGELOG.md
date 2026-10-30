@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Forward nominal Basis/Nat actuals through ordinary generic calls in the
+  shared project/selected emitter. Preserve original caller/callee binders,
+  declaration-scoped nominal fields, zero-width owners, numeric premises and
+  public effects. Closed siblings remain checked in partial/unused calls, and
+  nominal metadata copies consume the existing work budget. Native typed roots
+  retain unused nominal actuals; operation/provider preparation still requires
+  its separate capabilities. Full qmatch and #64/#195 completion remain pending.
 - Carry complete named Basis/Nat actuals through version2 runtime requests and
   QDV comparison. Selected ordinary and mixed roots retain their original
   generic header, numeric premises, nominal sources and closed actuals through

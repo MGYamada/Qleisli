@@ -713,16 +713,15 @@ impl<'a> Compiler<'a> {
                 self.charge_at(&mut work, module, at, message.len() + 1)?;
                 return Err(self.error(module, at, ErrorCode::TypeMismatch, message));
             }
-            if !matches!(
-                self.locals()
-                    .original_node_budgeted(node, |span, cells| self
-                        .charge_at(&mut work, module, span, cells))?,
-                Some(OriginalNode::Expression(_))
-            ) {
+            let expression = self.locals().original_node_budgeted(node, |span, cells| {
+                self.charge_at(&mut work, module, span, cells)
+            })?;
+            let Some(OriginalNode::Expression(expression)) = expression else {
                 let message = "dormant call lacks its original expression association";
                 self.charge_at(&mut work, module, at, message.len() + 1)?;
                 return Err(self.error(module, at, ErrorCode::TypeMismatch, message));
-            }
+            };
+            let runtime = matches!(expression.kind, ExprKind::Call { .. });
             for actual in &plan.arguments {
                 self.charge_at(
                     &mut work,
@@ -731,11 +730,26 @@ impl<'a> Compiler<'a> {
                     actual.formal.name.len() + 2,
                 )?;
             }
-            Ok((plan.arguments.clone(), Arc::clone(&plan.environment)))
+            Ok((
+                plan.arguments.clone(),
+                Arc::clone(&plan.environment),
+                runtime,
+            ))
         })();
         self.work = work;
-        let (arguments, environment) = arguments?;
+        let (arguments, environment, runtime) = arguments?;
         let outer = self.dormant_operation_bindings(module, at)?;
-        self.bind_source_instance_partial(target, &arguments, &environment, &outer, module, at)
+        if runtime {
+            self.bind_runtime_source_instance_partial(
+                target,
+                &arguments,
+                &environment,
+                &outer,
+                module,
+                at,
+            )
+        } else {
+            self.bind_source_instance_partial(target, &arguments, &environment, &outer, module, at)
+        }
     }
 }

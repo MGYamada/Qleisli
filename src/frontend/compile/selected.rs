@@ -151,12 +151,17 @@ fn process(
             continue;
         }
         let original = compiler.declarations[&key];
-        if key != entry && !original.static_params.is_empty() && original.kind != FnKind::Static {
+        if key != entry
+            && original
+                .static_params
+                .iter()
+                .any(|formal| matches!(formal.kind, StaticParamKind::Operation { .. }))
+        {
             return Err(compiler.error(
                 &module,
                 span,
                 ErrorCode::Unsupported,
-                "selected ordinary dependencies require independent generic transport",
+                "selected operation dependencies require independent closure transport",
             ));
         }
         if original.kind != FnKind::Static {
@@ -248,7 +253,7 @@ fn named_instance(
     })();
     compiler.work = work;
     let closed = closed.map_err(|error| compiler.originals.error(error.in_module(module)))?;
-    compiler.prepare_instance(
+    compiler.prepare_runtime_instance(
         entry,
         closed.bases,
         closed.naturals,

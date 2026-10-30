@@ -75,13 +75,17 @@ mod identity_tests;
 mod pure;
 pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
 
-/// Exact bounded type-node count without a temporary traversal allocation.
+/// Bounded port-copy work, including nominal fields and their retained metadata.
 pub(super) fn port_nodes(ty: &Ty) -> usize {
     match &ty.kind {
         Kind::Q(child) => 1 + port_nodes(child),
         Kind::Tuple(fields) => fields.iter().fold(1usize, |cells, field| {
             cells.saturating_add(port_nodes(field))
         }),
+        Kind::Nominal(nominal) => nominal.fields().fold(
+            1usize.saturating_add(nominal.metadata_cells()),
+            |cells, field| cells.saturating_add(port_nodes(field)),
+        ),
         _ => 1,
     }
 }
