@@ -83,7 +83,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
     def test_hosted_context_refuses_unrelated_or_mixed_producers(self):
         commit = "a" * 40
         refs = ("refs/heads/codex/beta-finite-adts", "refs/heads/codex/beta-ordinary-adts",
-                "refs/heads/codex/beta-typed-ordinary-runtime", "refs/heads/codex/beta-qmatch")
+                "refs/heads/codex/beta-typed-ordinary-runtime", "refs/heads/codex/beta-qmatch",
+                "refs/heads/codex/beta-quantum-runtime-types")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
