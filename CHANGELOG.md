@@ -10,7 +10,11 @@ development milestones from the scope of their evidence.
   native gate. Check the actual complete call fragment, original owner roles,
   named-arm evidence and separate controlled bodies before accepting the whole
   runtime root. Preserve structural moves, zero-width owners and suspended
-  callers. General bodies, nominal targets and the full twelve-bit profile
+  callers. Support enum/record targets with enum or built-in ordinal selectors;
+  full nominal code/body/control equations check their physical arm proposals.
+  Reuse immutable type descriptions and closed signatures within one source
+  compilation, accounting for shared original bytes without raising work limits.
+  General bodies and the full twelve-bit profile
   remain pending; this supplies no source-preservation theorem or issue completion.
 - Route selected built-in qmatch bodies and their ordinary callers through the
   common original-source emitter. Prepare each named operation provider through

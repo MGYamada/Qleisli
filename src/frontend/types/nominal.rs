@@ -45,14 +45,20 @@ impl<N> Nominal<N> {
         self.origin.source.len()
             + self.origin.module.len()
             + self.origin.name.len()
-            + 1
-            + match &self.body {
-                Body::Enum(variants) => variants.iter().map(|name| name.len() + 1).sum::<usize>(),
-                Body::Record(fields) => fields
-                    .iter()
-                    .map(|field| field.name.len() + 2)
-                    .sum::<usize>(),
-            }
+            + self.metadata_copy_cells()
+    }
+
+    /// Cloning keeps the immutable origin behind its original Arc. Only member
+    /// strings and the Arc reference are copied; comparisons/serialization must
+    /// still reserve the complete metadata through `metadata_cells`.
+    pub fn metadata_copy_cells(&self) -> usize {
+        1 + match &self.body {
+            Body::Enum(variants) => variants.iter().map(|name| name.len() + 1).sum::<usize>(),
+            Body::Record(fields) => fields
+                .iter()
+                .map(|field| field.name.len() + 2)
+                .sum::<usize>(),
+        }
     }
 
     pub fn map_parts<M, E>(

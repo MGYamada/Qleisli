@@ -195,6 +195,19 @@ impl Value {
         }
     }
 
+    /// Type metadata copied by a Value clone; original identities stay shared.
+    pub(super) fn nominal_copy_work(&self) -> usize {
+        use crate::frontend::compile::operations::port_copy_nodes;
+        match self {
+            Self::Enumeration(ty, _) | Self::Quantum(_, ty) => port_copy_nodes(ty),
+            Self::Record(ty, fields) => port_copy_nodes(ty)
+                .saturating_add(total_size(fields.iter().map(Self::nominal_copy_work))),
+            Self::Pair(a, b) => a.nominal_copy_work().saturating_add(b.nominal_copy_work()),
+            Self::Tuple(fields) => total_size(fields.iter().map(Self::nominal_copy_work)),
+            _ => 0,
+        }
+    }
+
     /// Equality may inspect complete original source and label metadata. Charge
     /// those bytes separately from structural/data-cell copy accounting.
     pub(super) fn nominal_type_work(ty: &Ty) -> usize {

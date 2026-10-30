@@ -4,9 +4,9 @@
 use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
-use crate::interchange::qmatch::SourceSite;
+use crate::interchange::qmatch::{ArmSubject, SourceSite};
 
-type ArmSubject = (Arc<crate::contract::FunctionEvidence>, RawProgram);
+mod arms;
 
 pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
@@ -23,21 +23,17 @@ fn owner(
 ) -> Result<Owner, CompileError> {
     let slot = lower.quantum(module, span, value, false)?;
     let register = &lower.raw.registers[&slot];
-    let cost = register
-        .size()
-        .saturating_add(Value::nominal_type_work(&register.basis));
+    let cost =
+        register
+            .size()
+            .saturating_add(crate::frontend::compile::operations::port_copy_nodes(
+                &register.basis,
+            ));
     lower.compiler.charge(module, span, cost)?;
     let register = lower.raw.registers[&slot].clone();
-    let basis = crate::frontend::specialize::carrier_description_budgeted(
-        &register.basis,
-        &mut |_, cells| {
-            lower
-                .compiler
-                .charge(module, span, cells)
-                .map_err(|e| crate::frontend::compile::Error::new("limit", span, e.to_string()))
-        },
-    )
-    .map_err(|e| lower.error(module, span, ErrorCode::Unsupported, e.to_string()))?;
+    let basis = lower
+        .compiler
+        .carrier_description(module, span, &register.basis)?;
     Ok(Owner {
         port: QuantumPort {
             token: register.token,
@@ -56,10 +52,12 @@ impl Frame {
         key: Key,
         args: &[Value],
     ) -> Result<Option<Self>, CompileError> {
-        let [Value::Quantum(selector, _), Value::Quantum(_, _)] = args else {
+        let [Value::Quantum(selector, _), Value::Quantum(target, _)] = args else {
             return Ok(None);
         };
-        if !matches!(lower.raw.registers[selector].basis.kind, Kind::Nominal(_)) {
+        if lower.raw.registers[selector].basis.basis_bits().is_some()
+            && lower.raw.registers[target].basis.basis_bits().is_some()
+        {
             return Ok(None);
         }
         let name = lower
@@ -221,6 +219,7 @@ fn controlled(steps: Vec<CircuitStep>, bits: usize) -> RawProgram {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn emit(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
@@ -229,6 +228,8 @@ pub(super) fn emit(
     env: &mut Env,
     selector: Value,
     selector_slot: Slot,
+    target: Value,
+    target_slot: Slot,
 ) -> Result<Value, CompileError> {
     if lower
         .nominal_qmatch
@@ -238,39 +239,42 @@ pub(super) fn emit(
         return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires one original structural function with selector and target parameters"));
     }
     let basis = &lower.raw.registers[&selector_slot].basis;
-    let Kind::Nominal(nominal) = &basis.kind else {
-        unreachable!("nominal dispatch")
+    let count = match &basis.kind {
+        Kind::Nominal(nominal) => match &nominal.body {
+            Body::Enum(labels) => labels.len(),
+            _ => {
+                return Err(lower.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "qmatch requires a fieldless enum or built-in ordinal selector",
+                ));
+            }
+        },
+        Kind::Unit => 1,
+        Kind::Bit => 2,
+        Kind::Bits(bits) if *bits <= 6 => 1usize << *bits,
+        _ => {
+            return Err(lower.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "qmatch requires a fieldless enum or built-in ordinal selector",
+            ));
+        }
     };
-    let Body::Enum(labels) = &nominal.body else {
-        return Err(lower.error(
-            module,
-            span,
-            ErrorCode::TypeMismatch,
-            "nominal qmatch requires a fieldless enum selector",
-        ));
-    };
-    let count = labels.len();
     let selector_bits = lower.raw.registers[&selector_slot].wires.len();
     lower
         .compiler
         .charge(module, span, Value::nominal_type_work(basis) + count)?;
     let basis = lower.raw.registers[&selector_slot].basis.clone();
-    let target = lower.expr(module, &selection.target, env)?;
-    let target_slot = lower.quantum(module, selection.target.span, &target, false)?;
     lower.compiler.charge(
         module,
         span,
         Value::nominal_type_work(&lower.raw.registers[&target_slot].basis),
     )?;
     let target_basis = lower.raw.registers[&target_slot].basis.clone();
-    let target_bits = target_basis.basis_bits().ok_or_else(|| {
-        lower.error(
-            module,
-            span,
-            ErrorCode::Unsupported,
-            "nominal qmatch arm providers currently require a built-in finite target",
-        )
-    })?;
+    let target_bits = lower.raw.registers[&target_slot].wires.len();
     if count == 0 || count > 64 || selector_bits + target_bits > MAX_CONTRACT_BITS {
         return Err(lower.error(
             module,
@@ -283,16 +287,21 @@ pub(super) fn emit(
     let mut steps = Vec::new();
     let mut arms = Vec::new();
     for arm in &selection.arms {
-        let QuantumLabel::Variant(label) = &arm.label else {
-            return Err(lower.error(
-                module,
-                arm.span,
-                ErrorCode::TypeMismatch,
-                "nominal qmatch requires original enum labels",
-            ));
+        let (label_basis, ordinal) = match (&basis.kind, &arm.label) {
+            (Kind::Nominal(_), QuantumLabel::Variant(label)) => lower.enum_label(module, label)?,
+            (Kind::Unit | Kind::Bit | Kind::Bits(_), QuantumLabel::Ordinal(label)) => {
+                (basis.clone(), *label as usize)
+            }
+            _ => {
+                return Err(lower.error(
+                    module,
+                    arm.span,
+                    ErrorCode::TypeMismatch,
+                    "qmatch requires labels from the exact original selector type",
+                ));
+            }
         };
-        let (label_basis, ordinal) = lower.enum_label(module, label)?;
-        if label_basis != basis || !seen.insert(ordinal) {
+        if label_basis != basis || ordinal >= count || !seen.insert(ordinal) {
             return Err(lower.error(
                 module,
                 arm.span,
@@ -300,36 +309,24 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        lower.static_name(module, &arm.operation, env)?;
-        let operation = lower.compiler.provider(module, &arm.operation, None)?;
-        if operation.basis != target_basis
-            || operation.codomain != target_basis
-            || operation.effect != Effect::Unitary
-        {
-            return Err(lower.error(
-                module,
-                arm.span,
-                ErrorCode::TypeMismatch,
-                "qmatch arm requires the exact Unitary target interface",
-            ));
-        }
-        let super::super::super::operations::Node::Provider(evidence) = operation.node.as_ref()
-        else {
-            return Err(lower.error(
-                module,
-                arm.span,
-                ErrorCode::Unsupported,
-                "nominal qmatch requires an original named function-evidence entry",
-            ));
-        };
-        let mut body = operation.steps(module, arm.span, Access::Controlled, lower.compiler)?;
+        let (subject, mut body) = arms::prepare(
+            lower,
+            module,
+            &arm.operation,
+            &target_basis,
+            target_bits,
+            env,
+        )?;
         lower.compiler.charge(
             module,
             span,
             total_size(body.iter().map(super::super::super::circuit::size)).saturating_mul(2)
                 + body.len() * (selector_bits + 1),
         )?;
-        arms.push((Arc::clone(evidence), controlled(body.clone(), target_bits)));
+        arms.push(ArmSubject {
+            body: subject,
+            controlled: controlled(body.clone(), target_bits),
+        });
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
             .map_err(|e| lower.compiler.op_error(module, arm.span, e))?;
         if steps.len().saturating_add(body.len()) > crate::contract::MAX_CONTRACT_STEPS {

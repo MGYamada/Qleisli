@@ -249,7 +249,11 @@ also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
 two quantum arguments, structural body, actual returned owners and named-arm
 evidence; suspended caller owners stay in the complete outer Raw state.
-Nonstructural bodies, nominal targets and the full twelve-bit profile remain pending.
+Nominal enum/record targets, including empty records, retain their full original
+types with enum or built-in ordinal selectors. Their physical arm entries and
+controls are untrusted proposals: the same native source/sector gate binds the
+full target type, actual body and code equations. It issues no provider capability.
+Nonstructural bodies and the full twelve-bit profile remain pending.
 This does not grant operation/provider access: those preparations retain their
 separate finite constraints and evidence. Operation-formal closure, nominal
 coherent-table/Meaning and wider qmatch integration remain pending. Independent
@@ -288,8 +292,8 @@ Generic success bindings retain the original Raw ownership/classical-scope
 properties without enlarging either human-admitted guarantee.
 
 This named-arm component uses an internal canonical owner frame. General source
-expressions/call frames, other valid mappings, constructed/static/generic arms,
-nominal targets and the full twelve-bit/64-label source contract remain pending.
+expressions/call frames, other valid mappings, constructed/static/generic arms
+and the full twelve-bit/64-label source contract remain pending.
 The bounded source adapter retains the actual complete two-argument call and
 restores the suspended caller's frame; it does not synthesize a replacement
 source function or expose a raw conversion of `QmatchChecked`. The internal frame is not a new language

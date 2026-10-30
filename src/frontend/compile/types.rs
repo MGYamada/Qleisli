@@ -131,7 +131,8 @@ fn original_field(original: Location<'_>, arity: usize, ordinal: usize) -> Locat
 /// This bounded preflight uses only borrowed nodes and fixed-size stack frames.
 /// It creates no temporary Vec, Box or copied type. The total copy charge is
 /// the former sum of subtree.tree_size().nodes over every copied node, plus
-/// complete nominal metadata. It reserves that work before cloning labels.
+/// copied nominal metadata. Immutable origins retain their Arc; equality and
+/// serialization keep separate full-metadata accounting. Reserve before copying.
 fn measure<'a, N: FiniteRegisterSize>(
     original: impl Into<Location<'a>>,
     checked: &crate::frontend::types::Type<N>,
@@ -188,7 +189,7 @@ fn measure_inner<N: FiniteRegisterSize>(
             let metadata_work = nominal.metadata_cells();
             let mut result = Measured {
                 nodes: 1,
-                copy_work: metadata_work,
+                copy_work: nominal.metadata_copy_cells(),
                 metadata_work,
                 // Physical storage only; this never substitutes for logical
                 // cardinality or the native code-space obligation.
@@ -749,7 +750,7 @@ mod tests {
         let Kind::Nominal(nominal) = &checked.kind else {
             panic!("enum fixture")
         };
-        let cost = nominal.metadata_cells() + 1;
+        let cost = nominal.metadata_copy_cells() + 1;
         for available in [cost - 1, cost] {
             let copied = Cell::new(false);
             let result = reserve_and_copy(
@@ -774,6 +775,10 @@ mod tests {
             );
             assert_eq!(copied.get(), available == cost);
             if let Ok(value) = result {
+                let Kind::Nominal(copied_nominal) = &value.kind else {
+                    panic!("copied enum fixture")
+                };
+                assert!(Arc::ptr_eq(&copied_nominal.origin, &nominal.origin));
                 assert_eq!(value, checked);
                 assert_ne!(value, enumeration("foreign", &["A", "B", "C"]));
                 assert_ne!(value, enumeration("main", &["B", "A", "C"]));
@@ -870,11 +875,11 @@ mod tests {
         let Kind::Nominal(nominal) = &checked.kind else {
             panic!("record fixture");
         };
-        let metadata = nominal.metadata_cells()
+        let metadata = nominal.metadata_copy_cells()
             + nominal
                 .fields()
                 .map(|field| match &field.kind {
-                    Kind::Nominal(child) => child.metadata_cells(),
+                    Kind::Nominal(child) => child.metadata_copy_cells(),
                     _ => 0,
                 })
                 .sum::<usize>();

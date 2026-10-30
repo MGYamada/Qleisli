@@ -183,7 +183,7 @@ vector `|s,y>` to `sum_z U_s[z,y] |s,z>` and extends linearly to every input,
 including inputs entangled with an external reference. Thus it preserves
 coherence between selector sectors and agrees exactly with `qif` for `Bit`.
 
-The finite executable slice currently accepts built-in selectors only and
+The encoded-contract executable slice uses built-in interfaces and
 retains the existing encoded-contract limits of six joined selector/target
 bits and 1024 circuit steps. Selector axes precede target axes, so `(s,y)` has
 integer coordinate `s + 2^selector_bits * y`, independently of written arm
@@ -209,17 +209,22 @@ refuses qmatch; a failed check never triggers a different acceptance path.
 
 Small nominal enum selectors also use the shared emitter for a closed named
 function with exactly two quantum parameters and one structural qmatch body.
-The target must currently be a built-in finite basis; the six-joined-bit and
-1024-step producer limits remain. Original names/tuple bindings and the complete
+Targets may be built-in bases, fieldless enums or finite records, including
+empty records. Built-in ordinal selectors may also select nominal targets.
+The six-joined-bit and 1024-step producer limits remain. Original names/tuple
+bindings and the complete
 structural return may surround the selection. Each actual call fragment, with
 its original input/output owners and every emitted operation, passes the native
-source/arm gate described below. Named arms provide their existing function
-evidence and a separately checked controlled implementation through the shared
-QIRF encoder. Ordinary callers may retain other owners; only the actual callee
+source/arm gate described below. Built-in target arms provide their existing
+function evidence. Nominal target arms submit their original physical body and
+a proposed controlled implementation through the same QIRF encoder; the native
+gate binds the full original target type and checks its actual code/body and
+controlled equations. The physical entry alone grants no operation capability.
+Ordinary callers may retain other owners; only the actual callee
 fragment is submitted for its original function, and the complete runtime root
 still passes its independent typed gate. General expressions, nonstructural
-prefixes/suffixes, multiple selections, generic/constructed arms and nominal
-targets remain unsupported here. No source text or owner frame is synthesized
+prefixes/suffixes, multiple selections and generic/constructed arms remain
+unsupported here. No source text or owner frame is synthesized
 to avoid those refusals.
 
 Exposing the full twelve-joined-bit/64-label boundary

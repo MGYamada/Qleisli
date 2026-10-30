@@ -32,7 +32,7 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
     )
     .unwrap()
     .compile_runtime_with_kernel(&kernel())
-    .unwrap()
+    .unwrap_or_else(|error| panic!("{error:?}\nOriginal test source:\n{source}"))
 }
 
 #[test]
@@ -53,6 +53,124 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     );
     assert_eq!(request.public_effect, qleisli::ir::Effect::Unitary);
     kernel().check_program(selected.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_preserves_nominal_targets_and_original_phases() {
+    for (declaration, target, bits) in [
+        ("pub enum Tri { A,B,C }", "Tri", 2),
+        (
+            "pub enum Tri { A,B,C } pub struct Record { payload: Tri, flag: Bit }",
+            "Record",
+            3,
+        ),
+        ("pub struct Empty {}", "Empty", 0),
+    ] {
+        for (selector, selector_declaration, labels) in [
+            (
+                "Select",
+                "pub enum Select { Left,Right }",
+                "Select::Right=>phase,Select::Left=>idle",
+            ),
+            ("Bit", "", "1=>phase,0=>idle"),
+            ("Unit", "", "0=>phase"),
+        ] {
+            let source = format!(
+                "{declaration} {selector_declaration}
+                pub unitary fn idle(q:Q<{target}>)->Q<{target}>{{q}}
+                pub unitary fn phase(q:Q<{target}>)->Q<{target}>{{global_phase_eighth(q)}}
+                pub unitary fn keep(s:Q<{selector}>,q:Q<{target}>)->(Q<{selector}>,Q<{target}>){{
+                    qmatch(s,q){{{labels}}}}}"
+            );
+            let accepted = selected(&source);
+            let raw = accepted.program().raw();
+            assert_eq!(raw.quantum_inputs.len(), 2);
+            assert_eq!(raw.quantum_inputs[1].wires.len(), bits);
+            assert_eq!(raw.quantum_outputs.len(), 2);
+            let request = accepted.program().runtime_result().unwrap();
+            assert!(matches!(
+                request.parameters[1].get(1),
+                Some(Atom::Finite(Basis::Enum(_, _) | Basis::Record(_, _)))
+            ));
+            kernel().check_program(accepted.program()).unwrap();
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_nominal_target_keeps_two_empty_owner_identities() {
+    let accepted = selected(
+        "pub enum One{Only} pub struct Empty{}
+        pub unitary fn phase(q:Q<Empty>)->Q<Empty>{global_phase_eighth(q)}
+        pub unitary fn keep(s:Q<One>,q:Q<Empty>)->(Q<One>,Q<Empty>){
+            let pair=(s,q); let (tag,value)=pair;
+            qmatch(tag,value){One::Only=>phase}}",
+    );
+    assert_eq!(accepted.program().raw().quantum_inputs.len(), 2);
+    assert_eq!(accepted.program().raw().quantum_outputs.len(), 2);
+    assert!(
+        accepted
+            .program()
+            .raw()
+            .quantum_inputs
+            .iter()
+            .all(|port| port.wires.is_empty())
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_target_arms_keep_original_imports_and_public_effects() {
+    for effect in ["unitary", "observe", "isometry"] {
+        let sources = BTreeMap::from([
+            (
+                "main".into(),
+                "use facade::Tri; use facade::arm;
+                pub unitary fn keep(s:Q<Bit>,q:Q<Tri>)->(Q<Bit>,Q<Tri>){
+                    qmatch(s,q){0=>arm,1=>arm}}"
+                    .into(),
+            ),
+            (
+                "facade".into(),
+                "pub use types::Tri; pub use implementation::arm;".into(),
+            ),
+            ("types".into(), "pub enum Tri{A,B,C}".into()),
+            (
+                "implementation".into(),
+                format!(
+                    "use types::Tri;
+                pub {effect} fn arm(q:Q<Tri>)->Q<Tri>{{global_phase_eighth(q)}}"
+                ),
+            ),
+        ]);
+        let result = ParsedProgram::parse(Edition::E2026, sources)
+            .and_then(|parsed| {
+                parsed.instantiate_runtime_with_types(
+                    "main::keep",
+                    Default::default(),
+                    Default::default(),
+                    Default::default(),
+                )
+            })
+            .map_err(|error| error.to_string())
+            .and_then(|instance| {
+                instance
+                    .compile_runtime_with_kernel(&kernel())
+                    .map_err(|error| error.message)
+            });
+        assert_eq!(result.is_ok(), effect == "unitary", "{effect}: {result:?}");
+    }
 }
 
 #[test]

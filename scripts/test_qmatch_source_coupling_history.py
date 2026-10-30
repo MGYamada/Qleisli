@@ -59,6 +59,9 @@ RUNTIME_GENERIC_VALIDATION = "tests/fixtures/authoring_sessions/runtime-signatur
 COMPILER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-first.tar.xz"
 COMPILER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-index.json"
 COMPILER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/compiler-validation.json"
+TARGET_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-first.tar.xz"
+TARGET_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-index.json"
+TARGET_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-validation.json"
 
 
 def bounded_history(archive_path, index_path):
@@ -92,6 +95,43 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_nominal_target_history_keeps_original_programs_and_budget_failures(self):
+        members = bounded_history(ROOT / TARGET_ARCHIVE, ROOT / TARGET_INDEX)
+        before = json.loads(members['first/observations.json.txt'])
+        after = json.loads(members['after/observations.json.txt'])
+        self.assertTrue(before['stable'])
+        self.assertEqual([row['exit_code'] for row in before['records']], [1] * 6)
+        self.assertEqual([row['exit_code'] for row in after['records']], [0, 0, 0, 0, 1, 1])
+        for row in after['records']:
+            prefix = 'first/' + row['name'] + '/'
+            inputs = json.loads(members[prefix + 'plan.json.txt'])['inputs']
+            self.assertEqual(row['inputs'], inputs)
+            for name, digest in inputs.items():
+                self.assertEqual(hashlib.sha256(members[prefix + name + '.txt']).hexdigest(), digest)
+            if row['exit_code'] == 0:
+                result = json.loads(members['after/' + row['name'] + '/stdout.txt'])['result']
+                self.assertTrue(result['runtime_result_checked'])
+                self.assertFalse(result['source_preservation_verified'])
+        self.assertIn(b'built-in finite target', members['first/record-target/stdout.txt'])
+        for suffix, diagnostic in [('eighth', b'work'),
+                                   ('stable-units', b'must exercise a partially emitted body'),
+                                   ('clippy', b'large size difference between variants')]:
+            prefix = 'observations/nominal-target-' + suffix + '/'
+            report = json.loads(members[prefix + 'report.json.txt'])
+            self.assertEqual(report['exit_code'], 101)
+            self.assertEqual(report['before'], report['after'])
+            self.assertIn(diagnostic, members[prefix + 'stdout.txt'] + members[prefix + 'stderr.txt'])
+        validation = json.loads((ROOT / TARGET_VALIDATION).read_text())
+        self.assertEqual(validation['issues'], {'64': 'OPEN', '195': 'OPEN'})
+        for key in ['stable_integration_tests', 'msrv_integration_tests']:
+            self.assertEqual(validation[key], 77)
+        for key in ['stable_unit_tests', 'msrv_unit_tests']:
+            self.assertEqual(validation[key], 31)
+        for suffix in ['final-selected', 'final-msrv-units', 'clippy-second']:
+            report = json.loads(members['observations/nominal-target-' + suffix + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertEqual(report['before'], report['after'])
+
     def test_nominal_compiler_history_preserves_first_sources_and_api_failures(self):
         folder = ROOT / BODY_ROOT
         members = bounded_history(folder / 'nominal-compiler-first.tar.xz',
