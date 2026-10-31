@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Store four passive ADT-authoring history indices with the existing explicit
+  gzip reader, preserving every decoded byte, original pin and archive member.
+  Recover 576,145 bytes of fixture headroom without changing size limits or
+  executable inputs; retained history remains separate from current validation.
 - Keep evidence and selected typed materializations in separate body/provider
   caches, retaining the actual native root representation during nongeneric
   reuse. Four-way controlled permutations no longer fail when a provider was

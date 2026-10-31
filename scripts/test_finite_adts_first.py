@@ -35,7 +35,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 # and "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-index.json".
 # Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/match-keyword-validation.json".
 # Ordinary value reference: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-first.tar.xz"
-# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-index.json".
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-index.json.gz".
 # Proposal record: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-value-reference-validation.json".
 import gzip
 import hashlib
@@ -579,14 +579,16 @@ class FirstCarrierSourceNumerals(unittest.TestCase):
 
 
 # Nat syntax history: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-first.tar.xz"
-# and "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-index.json".
+# and "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-index.json.gz".
 # Scope: "tests/fixtures/authoring_sessions/finite-adts-v030/naturals-syntax-validation.json".
 class FirstFieldNaturalSyntax(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.data = read_history('naturals-syntax-index.json', 'naturals-syntax-first.tar.xz',
-            '54b64ba69903ac1fa2c76a893e952c7d13d04ca89f6d345fa28cdfe2d9ee145a',
-            818488, '14f9f900086faf87d6672af34fbed26e5b55d6e3e9348b5c00b69a6e9d65337e', 38_792_408)
+        cls.data = read_history('naturals-syntax-index.json.gz', 'naturals-syntax-first.tar.xz',
+            '1e9b2a66d188f3e454bc858964a4ed916a58aa046bc439ea3429af03f1c3b2ab',
+            818488, '14f9f900086faf87d6672af34fbed26e5b55d6e3e9348b5c00b69a6e9d65337e', 38_792_408,
+            index_gzip={'bytes': 12222, 'decoded_bytes': 120111,
+                        'decoded_sha256': '54b64ba69903ac1fa2c76a893e952c7d13d04ca89f6d345fa28cdfe2d9ee145a'})
 
     def test_original_field_programs_keep_their_actual_source_and_native_barriers(self):
         first = json.loads(self.data['first-study/report.json'])
@@ -938,12 +940,16 @@ class FirstOrdinaryValues(unittest.TestCase):
                          '0b2aae13383acde445bbff974515418a79f61d3b32d652169188fca6f1fa6dfc')
 
 
+# Compressed passive index: "tests/fixtures/authoring_sessions/finite-adts-v030/carrier-source-index.json.gz"
 class CarrierSourceHistory(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.data = read_history(
-            'carrier-source-index.json', 'carrier-source-first.tar.xz',
-            '431ca032f33b9c2077e81f908943050508b3987306037577207e65cdcaa43acb', 493792, '21df188096ceff6675f1377abad656cd2cf08379b40c70c252aa40ae5b86684a', 8269775)
+            'carrier-source-index.json.gz', 'carrier-source-first.tar.xz',
+            '8eddcc9b6eb8a3bfe1f84bb216de4c801ebe902f541ba86d9760d47b1163541c',
+            493792, '21df188096ceff6675f1377abad656cd2cf08379b40c70c252aa40ae5b86684a', 8269775,
+            index_gzip={'bytes': 26981, 'decoded_bytes': 127836,
+                        'decoded_sha256': '431ca032f33b9c2077e81f908943050508b3987306037577207e65cdcaa43acb'})
 
     def observation(self, stage):
         return json.loads(self.data[stage + '/observation.json'])
@@ -1611,6 +1617,8 @@ class OrdinaryValueReferenceHistory(unittest.TestCase):
 
     STEM = 'ordinary-value-reference-'
     INDEX_SHA = '9e691dbce382e92ba1df58ab6532687f18fcaca6ac715bb4dc0451345598756a'
+    INDEX_GZIP_SHA = '1fa398f571b6000d721c93d5afd8973637586309d3b084e05ff1426e14a29646'
+    INDEX_GZIP = {'bytes': 12173, 'decoded_bytes': 108527, 'decoded_sha256': INDEX_SHA}
     ARCHIVE_SHA = 'ad3da88dbe714eedb4eec6d14d934d6e26de12251d07ce2e4933b37bae330557'
     VALIDATION_SHA = '89b2d632dc623e8ae3738b31a7ba17dfb33f558a5a79be6b91f785258d9960f3'
     # Historical strings are compared only, never resolved or opened.
@@ -1637,7 +1645,8 @@ class OrdinaryValueReferenceHistory(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        index = (FIXTURES / (cls.STEM + 'index.json')).read_bytes()
+        index = read_history_index(cls.STEM + 'index.json.gz', cls.INDEX_GZIP_SHA,
+                                   index_gzip=cls.INDEX_GZIP)
         validation = (FIXTURES / (cls.STEM + 'validation.json')).read_bytes()
         if cls.pin(index) != {'bytes': 108527, 'sha256': cls.INDEX_SHA}:
             raise AssertionError('ordinary value index changed')
@@ -1645,8 +1654,9 @@ class OrdinaryValueReferenceHistory(unittest.TestCase):
             raise AssertionError('ordinary value summary changed')
         cls.index, cls.validation = json.loads(index), json.loads(validation)
         cls.originals = cls.index['original_records']
-        cls.data = read_history(cls.STEM + 'index.json', cls.STEM + 'first.tar.xz',
-                                cls.INDEX_SHA, 1521176, cls.ARCHIVE_SHA, 141896245)
+        cls.data = read_history(cls.STEM + 'index.json.gz', cls.STEM + 'first.tar.xz',
+                                cls.INDEX_GZIP_SHA, 1521176, cls.ARCHIVE_SHA, 141896245,
+                                index_gzip=cls.INDEX_GZIP)
 
     @classmethod
     def tearDownClass(cls):
@@ -2340,10 +2350,13 @@ class OrdinaryPhiEffectsProductionHistory(_PhiEffectsHistory, unittest.TestCase)
 # Inert member-authoring history; external full inventories remain referenced only.
 # Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 # History: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-first.tar.xz"
-# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-index.json"
+# Index: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-index.json.gz"
 # Observations: "tests/fixtures/authoring_sessions/finite-adts-v030/ordinary-members-validation.json.gz"
 class OrdinaryMemberHistory(unittest.TestCase):
     STEM = 'ordinary-members-'
+    INDEX_GZIP_SHA = 'e23ddcacbb9b3c07e084e6ef46d67b142dd1b6567246fca1510182b656bd48b3'
+    INDEX_GZIP = {'bytes': 58244, 'decoded_bytes': 329291,
+                  'decoded_sha256': '749f55f720f06a3b6b497ab91406f5fae06fccf94d09bb3bb1e96ec6199bd947'}
     HEAD = 'e4652ccaf001fd90cd53276165f0b78231e87c65'
     AUTHORING = '/private/tmp/qleisli-ordinary-members-20261023-iCLsR0/'
     REPAIR = '/private/tmp/qleisli-member-v9-test-repair-sh_6y56k/'
@@ -2413,7 +2426,8 @@ class OrdinaryMemberHistory(unittest.TestCase):
         missing = [key for key, value in cls.META.items() if value is None]
         if missing:
             raise AssertionError('Fill completed-retention META first: ' + ', '.join(missing))
-        index = (FIXTURES / (cls.STEM + 'index.json')).read_bytes()
+        index = read_history_index(cls.STEM + 'index.json.gz', cls.INDEX_GZIP_SHA,
+                                   index_gzip=cls.INDEX_GZIP)
         with (FIXTURES / (cls.STEM + 'validation.json.gz')).open('rb') as stream:
             compressed = stream.read(cls.META['validation_gzip_bytes'] + 1)
         if cls.pin(compressed) != {'bytes': cls.META['validation_gzip_bytes'],
@@ -2427,9 +2441,10 @@ class OrdinaryMemberHistory(unittest.TestCase):
                 raise AssertionError('ordinary member ' + label + ' changed')
         cls.index, cls.validation = json.loads(index), json.loads(validation)
         cls.originals = cls.index['original_records']
-        cls.data = read_history(cls.STEM + 'index.json', cls.STEM + 'first.tar.xz',
-                                cls.META['index_sha256'], cls.META['archive_bytes'],
-                                cls.META['archive_sha256'], cls.META['expanded_bytes'])
+        cls.data = read_history(cls.STEM + 'index.json.gz', cls.STEM + 'first.tar.xz',
+                                cls.INDEX_GZIP_SHA, cls.META['archive_bytes'],
+                                cls.META['archive_sha256'], cls.META['expanded_bytes'],
+                                index_gzip=cls.INDEX_GZIP)
 
     @classmethod
     def tearDownClass(cls):

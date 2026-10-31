@@ -1,5 +1,16 @@
 # Finite ADT first studies
 
+The member, source-carrier, field-Nat-syntax and ordinary-value-reference
+indices use the existing explicitly selected gzip history reader. Each decoded
+JSON is byte-identical to its original at commit
+[`fd322b679615fb1fd0c19ad2027eea3a54f3fb7e`](https://github.com/MGYamada/Qleisli/tree/fd322b679615fb1fd0c19ad2027eea3a54f3fb7e/tests/fixtures/authoring_sessions/finite-adts-v030).
+The reader pins both stored and decoded sizes/hashes under unchanged 4 MiB
+limits; the original decoded pins and archive-member checks remain unchanged.
+Historical validation records still name their original plain index paths and
+hashes. All source/diagnostic archives, member inventories, modes and historical
+validation bytes are unchanged. Only index storage changes, saving 576,145 bytes;
+this neither executes history nor supplies current proof or Issue completion.
+
 The [resolution recovery archive](resolution-recovery-first.tar.xz),
 [index](resolution-recovery-index.json) and
 [observation](resolution-recovery-validation.json) preserve selected proof
@@ -236,7 +247,7 @@ All8 #64 criteria stay open; no guarantee scope or excluded #39/#63 work changes
 
 
 The [field-Nat syntax history](naturals-syntax-first.tar.xz),
-[index](naturals-syntax-index.json) and [scope](naturals-syntax-validation.json)
+[index](naturals-syntax-index.json.gz) and [scope](naturals-syntax-validation.json)
 preserve571 inert records /38,792,408 original bytes /818,488 stored bytes.
 Fourteen original projects and28 actual calls distinguish valid field arithmetic
 and guarded helpers from generic subtraction/nonlinearity, false premises,
@@ -402,7 +413,7 @@ pending. All 8 #64 criteria remain open; no #39/#63 extension, new guarantee,
 publication or release is claimed.
 
 The [carrier source history](carrier-source-first.tar.xz),
-[index](carrier-source-index.json) and [retention record](carrier-source-validation.json)
+[index](carrier-source-index.json.gz) and [retention record](carrier-source-validation.json)
 retain 650 inert records / 8269775 expanded bytes /
 493792 stored archive bytes. The original first `.qli` projects,
 source snapshots, actual diagnostics and scripts remain unchanged. Repeated
@@ -616,7 +627,7 @@ they do not rerun the archived commands or establish current proof validity.
 
 
 The [ordinary value reference history](ordinary-value-reference-first.tar.xz),
-[index](ordinary-value-reference-index.json) and
+[index](ordinary-value-reference-index.json.gz) and
 [observations](ordinary-value-reference-validation.json) preserve all 289 original
 files and modes as 113 complete-byte objects. The first candidate remains
 uncompiled; pre-spawn, authoring and example failures are retained separately.
@@ -677,7 +688,7 @@ rerun Lean or establish current proof validity.
 
 
 The [ordinary member history](ordinary-members-first.tar.xz),
-[index](ordinary-members-index.json) and
+[index](ordinary-members-index.json.gz) and
 [compressed observations](ordinary-members-validation.json.gz) preserve 932
 original files and modes as 508 complete-byte objects. The original first
 candidate retains its uncompiled status. Ten recorded runs contain 77 bounded
@@ -696,9 +707,9 @@ recorded identities; they are not claimed as fresh imported-source rebuilds.
 No historical full 28-stage attempt or final `AllCompiledImports` stage passes.
 Canonical repository build, Audit and Tests results are separate current records.
 
-The index and archive retain every selected original byte and map. Only the
-validation JSON's storage uses deterministic gzip; bounded reads check both its
-compressed identity and the exact 303,775 decoded bytes. The complete raw JSON
+The index and archive retain every selected original byte and map. The index
+and validation JSON use deterministic gzip; bounded reads check their stored
+identities and exact 329,291 and 303,775 decoded bytes, respectively. The complete raw JSON
 remains an unchanged external original. Routine full before/report inventories
 also remain external with exact references. Compact fields are explicitly
 derived and cannot independently replay those omitted inventories. The passive
