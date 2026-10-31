@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Classify the mathematical audit's compiled declarations once for both
+  existing audit passes. Preserve declaration order, private/generated helpers,
+  import and runtime-replacement checks, exact theorem assertions and output.
+  The fresh proof-replay plan and its time limits remain unchanged.
 - Connect complete structural qmatch sequences to fresh per-interval
   source/arm/control/sector checks and the common compiler. Require every
   original occurrence and exhaustive ordered literal Raw intervals, retaining
