@@ -62,11 +62,32 @@ COMPILER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-
 TARGET_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-first.tar.xz"
 TARGET_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-index.json"
 TARGET_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/nominal-target-validation.json"
+CONTEXT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-validation.json"
+CONTEXT_V2_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-first.tar.xz"
+CONTEXT_V2_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-index.json"
+CONTEXT_V2_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-validation.json"
+PROVIDER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-first.tar.xz"
+PROVIDER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-index.json.xz"
+PROVIDER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-validation.json.xz"
+FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
+
+
+def history_json(path):
+    """Read bounded inert metadata, including explicitly compressed JSON."""
+    data = path.read_bytes()
+    if len(data) > 4 * 1024 * 1024:
+        raise ValueError('oversized history metadata')
+    if path.suffix == '.xz':
+        decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=64 * 1024 * 1024)
+        data = decoder.decompress(data, max_length=4 * 1024 * 1024 + 1)
+        if len(data) > 4 * 1024 * 1024 or not decoder.eof or decoder.unused_data:
+            raise ValueError('incomplete, trailing or oversized history metadata')
+    return json.loads(data)
 
 
 def bounded_history(archive_path, index_path):
     """Read inert member bytes only; never extract or replay saved commands."""
-    index = json.loads(index_path.read_text())
+    index = history_json(index_path)
     if index['archive'] != archive_path.name:
         raise ValueError('history archive name differs')
     packed = archive_path.read_bytes()
@@ -95,6 +116,102 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_provider_profiles_keep_first_controls_and_exact_failed_sources(self):
+        members = bounded_history(ROOT / PROVIDER_ARCHIVE, ROOT / PROVIDER_INDEX)
+        first = json.loads(members['first-checks/observations.json.txt'])
+        after = json.loads(members['after-checks/observations.json.txt'])
+        plan = json.loads(members['control-plan.json.txt'])
+        self.assertTrue(first['stable'] and after['stable'])
+        self.assertEqual([r['exit_code'] for r in first['records']], [0, 0, 1, 1, 1, 1, 1])
+        self.assertEqual([r['exit_code'] for r in after['records']], [0, 0, 0, 1, 1, 1, 1])
+        for row in plan['cases']:
+            for name, digest in row['inputs'].items():
+                content = members['first/' + row['name'] + '/' + name + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), digest)
+        self.assertEqual(first['before']['sources'], after['before']['sources'])
+        self.assertIn(b'different freshly checked Raw/source graph',
+                      members['first-checks/four-controlled-permutations/stdout.txt'])
+        self.assertIn(b'no entry found for key', members['checks/compiler/stdout.txt'])
+        self.assertIn(b'does not have a field named `function`', members['checks/compiler-second/stderr.txt'])
+        for label in ['final-stable', 'final-msrv', 'compiler-third', 'msrv-compiler', 'clippy', 'msrv-clippy']:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertEqual(report['before'], report['after'])
+        validation = history_json(ROOT / PROVIDER_VALIDATION)
+        self.assertEqual(validation['stable_integration'], 88)
+        self.assertEqual(validation['msrv_integration'], 88)
+        self.assertEqual(validation['stable_compiler_units'], 136)
+        self.assertEqual(validation['msrv_compiler_units'], 136)
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+
+    def test_context_v2_keeps_exact_first_inputs_and_separate_native_observations(self):
+        members = bounded_history(ROOT / CONTEXT_V2_ARCHIVE, ROOT / CONTEXT_V2_INDEX)
+        original = bounded_history(ROOT / BODY_ROOT / 'context-first.tar.xz',
+                                   ROOT / BODY_ROOT / 'context-index.json')
+        first = json.loads(original['source-first/observations.json.txt'])
+        after = json.loads(members['after/observations.json.txt'])
+        self.assertTrue(after['stable'])
+        self.assertEqual(after['before'], after['after'])
+        inputs = [json.loads(original['source-first/' + row['name'] + '/plan.json.txt'])['inputs']
+                  for row in first['records']]
+        self.assertEqual([row['inputs'] for row in after['records']], inputs)
+        self.assertEqual([row['exit_code'] for row in after['records']],
+                         [0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1])
+        refs = json.loads(members['source-review/refs.json.txt'])
+        kernel = None
+        for suffix, count in [('selected', 26), ('units', 15),
+                              ('msrv-selected', 26), ('msrv-units', 15)]:
+            prefix = 'observations/context-native-v2-' + suffix + '/'
+            report = json.loads(members[prefix + 'report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertEqual(report['before'], report['after'])
+            self.assertTrue(report['stable_source'])
+            self.assertIn(f'{count} passed; 0 failed; 0 ignored'.encode(),
+                          members[prefix + 'stdout.txt'])
+            if kernel is None:
+                kernel = report['kernel_sha256']
+            self.assertEqual(report['kernel_sha256'], kernel)
+            for name, digest in report['before'].items():
+                self.assertEqual(refs[digest]['path'], name)
+                self.assertIn(refs[digest]['patch'], members)
+        validation = json.loads((ROOT / CONTEXT_V2_VALIDATION).read_text())
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['ignored_native_tests'], 0)
+
+    def test_context_history_preserves_failures_and_separate_repair(self):
+        root = ROOT / BODY_ROOT
+        members = bounded_history(root / 'context-first.tar.xz', root / 'context-index.json')
+        first = json.loads(members['source-first/observations.json.txt'])
+        self.assertTrue(first['stable'])
+        self.assertEqual(len(first['records']), 11)
+        before = json.loads(members['study/source-frame-first.json.txt'])
+        after = json.loads(members['study/source-frame-second.json.txt'])
+        self.assertEqual(len(before['cases']), 18)
+        for old, new in zip(before['cases'], after['cases']):
+            if old['name'] == 'public-isometry-preserved':
+                self.assertEqual(old['artifact']['programs'][0]['declared_effect'], 'isometry')
+                self.assertEqual(new['artifact']['programs'][0]['declared_effect'], 'iso')
+            else:
+                self.assertEqual(old, new)
+        failed = members['observations/context-sector-comparison-first/stdout.txt']
+        fixed = members['observations/context-sector-comparison-second/stdout.txt']
+        self.assertIn(b'work=0; expected=true', failed)
+        self.assertIn(b'cases=18; mismatches=1', failed)
+        self.assertIn(b'cases=18; mismatches=0', fixed)
+        self.assertIn(b'maximum number of heartbeats', members['observations/context-sector-first/stdout.txt'])
+        self.assertIn(b'shifted_non_qmatch_slice_not_source_evidence', members['study/fourth/stdout.txt'])
+        self.assertIn(b'depends on axioms: [propext]', members['study/fourth/stdout.txt'])
+        validation = json.loads((ROOT / CONTEXT_VALIDATION).read_text())
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+        current = json.loads((ROOT / FRAME_CASES).read_text())['cases']
+        self.assertEqual({row['name'] for row in current}, {row['name'] for row in after['cases']})
+        faults = {row['name']: row['native_code'] for row in current if not row['expected']}
+        for name in ['wrong-actual-phase', 'wrong-controlled-phase', 'nominal-relative-phase']:
+            self.assertEqual(faults[name], 'equation')
+
     def test_nominal_target_history_keeps_original_programs_and_budget_failures(self):
         members = bounded_history(ROOT / TARGET_ARCHIVE, ROOT / TARGET_INDEX)
         before = json.loads(members['first/observations.json.txt'])

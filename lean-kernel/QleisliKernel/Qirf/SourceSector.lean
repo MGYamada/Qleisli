@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.SourceArm
 import QleisliKernel.SourceTypes.QuantumBody
 import QleisliKernel.Semantics.RawOwnerFlow
+import QleisliKernel.Raw.OwnerFlow
 
 /-! Informed original source/IR arm coupling. Source rows and roots are derived
 from fresh queries and actual program subjects, never transport coverage flags.
@@ -12,25 +13,18 @@ open Semantics.Exact Semantics.CarrierInterface Semantics.FiniteCarrier Finite
 
 abbrev Programs := SourceArm.Programs
 
-private def ownerFields (owners : List Semantics.SourceOwners.Owner) : Nat :=
-  owners.foldl (fun total owner => total + 1 + owner.basis.foldl (fun count atom =>
-    count + 1 + match atom with
-      | .enumeration origin names | .record origin names =>
-        origin.moduleName.utf8ByteSize + origin.declarationName.utf8ByteSize +
-          origin.source.utf8ByteSize + (names.map String.utf8ByteSize).sum
-      | _ => 0) 0) 0
-
 /-- The independent role run consumes the literal original Raw operations.
 The bound counts full source identities before comparing the final role list;
 no producer-proposed owner map is accepted. -/
 def readOwnerReturn (inputs outputs : List Semantics.SourceOwners.Owner)
     (program : Semantics.Raw.Program) :
-    WorkM (PLift (Semantics.RawOwnerFlow.Returns inputs program outputs)) := do
-  exactWork (Exact.charge (8*(ownerFields inputs+ownerFields outputs+1) +
-    128*(program.operations.length+1)*(inputs.length+outputs.length+1)^2))
-  if returned : Semantics.RawOwnerFlow.run inputs program = some outputs then
-    return ⟨returned⟩
-  else throw .request
+    WorkM (PLift (Semantics.RawOwnerFlow.Returns inputs program outputs)) :=
+  Raw.OwnerFlow.check inputs outputs program
+
+/-- Factoring the shared checker preserves successes, errors and remaining work. -/
+theorem readOwnerReturn_shared (inputs outputs : List Semantics.SourceOwners.Owner)
+    (program : Semantics.Raw.Program) :
+    readOwnerReturn inputs outputs program = Raw.OwnerFlow.check inputs outputs program := rfl
 
 private def typeRowCount {sources} (read : SourceTypes.TypeRead sources) : Nat :=
   read.resolutions.foldl (fun count query => count + query.result.visited.length) 0
@@ -81,26 +75,36 @@ theorem CanonicalOperands.publicUnitary {sources owner name offset selector targ
   · simp [absent] at present
   · exact exactEffect
 
+def sourceRowsWithSignature {sources owner name offset selector target}
+    (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
+    (signature : SourceTypes.QuantumSignature.Checked sources owner name) : List (String × String) :=
+  ((owner,table.site.original.source) :: table.arms.flatMap (·.sourceRows) ++
+    signature.sourceRows).eraseDups
+
 def sourceRows {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
     (operands : CanonicalOperands table.site selector target) : List (String × String) :=
-  ((owner,table.site.original.source) :: table.arms.flatMap (·.sourceRows) ++
-    operands.read.signature.sourceRows).eraseDups
+  sourceRowsWithSignature table operands.read.signature
 
 /-- Count borrowed provenance paths before allocating or deduplicating rows.
 Every string compared is bounded by the original source table; the quadratic
 charge precedes construction. Source queries do not cover unused helper rows. -/
-def readRows {sources owner name offset selector target}
+def readRowsWithSignature {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
-    (operands : CanonicalOperands table.site selector target) : WorkM (List (String × String)) := do
+    (signature : SourceTypes.QuantumSignature.Checked sources owner name) : WorkM (List (String × String)) := do
   guard (sources.size ≤ 128) .limit
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
   let count := 2 + table.arms.foldl (fun total arm => total+armRowCount arm) 0 +
-    (operands.read.signature.parameterReads ++ operands.read.signature.resultReads).foldl
+    (signature.parameterReads ++ signature.resultReads).foldl
       (fun total ty => total+typeRowCount ty) 0
   exactWork (Exact.charge (8*(bytes+sources.size+1)*(count+1)^2))
-  return sourceRows table operands
+  return sourceRowsWithSignature table signature
+
+def readRows {sources owner name offset selector target}
+    (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
+    (operands : CanonicalOperands table.site selector target) : WorkM (List (String × String)) :=
+  readRowsWithSignature table operands.read.signature
 
 structure RealizedArm (artifact : Artifact) (slots : Slots) (owner : String)
     (selector target : Semantics.FiniteCarrier.Basis) where
@@ -184,7 +188,7 @@ theorem sourceRows_only {sources owner name offset selector target}
     (row : String × String) (member : row ∈ sourceRows table operands) :
     row = (owner,table.site.original.source) ∨ (∃ arm ∈ table.arms, row ∈ arm.sourceRows) ∨
       row ∈ operands.read.signature.sourceRows := by
-  simpa only [sourceRows,List.mem_eraseDups,List.mem_cons,List.mem_append,List.mem_flatMap,or_assoc] using member
+  simpa only [sourceRows,sourceRowsWithSignature,List.mem_eraseDups,List.mem_cons,List.mem_append,List.mem_flatMap,or_assoc] using member
 
 
 structure Postcondition (artifact : Artifact) (order : Array Nat) (attached required : Interface)

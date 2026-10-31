@@ -282,7 +282,9 @@ fn nested_context_and_fold_index_restore_without_refunding_work() {
 )]
 #[test]
 fn closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body() {
-    let project = project("unitary fn identity(q:Q<Unit>)->Q<Unit>{q}");
+    let project = project(
+        "unitary fn identity(q:Q<Unit>)->Q<Unit>{q}\nunitary fn caller(q:Q<Unit>)->Q<Unit>{identity(q)}",
+    );
     let mut compiler = super::super::snapshot_tests::compiler(&project);
     let key = compiler
         .source
@@ -321,6 +323,12 @@ fn closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body() 
         compiler.instances.is_empty(),
         "nongeneric providers do not consume generic registry slots"
     );
+    compiler.checked.insert(
+        key,
+        compiler.providers[&(key, None, Effect::Unitary, operations::ProviderRoot::Raw)]
+            .body
+            .clone(),
+    );
     use crate::ir::*;
     let wrong = compiler
         .kernel
@@ -351,7 +359,7 @@ fn closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body() 
     // This private corruption control is never accepted as source evidence.
     compiler
         .providers
-        .get_mut(&(key, None, Effect::Unitary))
+        .get_mut(&(key, None, Effect::Unitary, operations::ProviderRoot::Raw))
         .unwrap()
         .body = wrong;
     let error = compiler
@@ -363,4 +371,123 @@ fn closed_provider_reuses_issued_identity_only_for_the_same_fresh_native_body() 
             .message
             .contains("different freshly checked Raw/source graph")
     );
+    let caller = compiler
+        .source
+        .resolution
+        .qualified("main::caller")
+        .unwrap();
+    let FnBody::Quantum(block) = &project.modules["main"].ast.decls[1].body else {
+        unreachable!()
+    };
+    let ExprKind::Call { callee, .. } = &block.result.kind else {
+        unreachable!()
+    };
+    compiler.checking = Some(caller);
+    let error = compiler
+        .provider("main", callee, None)
+        .expect_err("the ordinary provider path also refuses a corrupted body");
+    assert_eq!(error.code, ErrorCode::Contract);
+    assert!(
+        error
+            .message
+            .contains("different freshly checked Raw/source graph")
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn closed_provider_keeps_distinct_raw_and_typed_root_profiles() {
+    let project = project("unitary fn identity(q:Q<Unit>)->Q<Unit>{q}");
+    let mut compiler = super::super::snapshot_tests::compiler(&project);
+    let key = compiler
+        .source
+        .resolution
+        .qualified("main::identity")
+        .unwrap();
+    let span = compiler.declarations[&key].span;
+    let instance = compiler
+        .prepare_instance(
+            key,
+            BTreeMap::new(),
+            BTreeMap::new(),
+            BTreeMap::new(),
+            "main",
+            span,
+        )
+        .unwrap();
+    let mut issued: [Option<operations::Operation>; 2] = [None, None];
+    for typed in [false, true, false, true] {
+        compiler.force_typed_root = typed;
+        let body = compiler
+            .materialize_instance(Arc::clone(&instance), "main", span)
+            .unwrap();
+        assert_eq!(body.runtime_result().is_some(), typed);
+        let operation = compiler
+            .provider_instance(Arc::clone(&instance), None, "main", span)
+            .unwrap();
+        let previous = &mut issued[usize::from(typed)];
+        if let Some(previous) = previous {
+            assert!(
+                previous
+                    .same_descriptor_budgeted(&operation, &mut |_| Ok::<_, CompileError>(()))
+                    .unwrap()
+            );
+        } else {
+            *previous = Some(operation);
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn generic_provider_rechecks_the_requested_body_profile() {
+    let project = project("unitary fn identity[const n:Nat](q:Q<Unit>)->Q<Unit>{q}");
+    let mut compiler = super::super::snapshot_tests::compiler(&project);
+    let key = compiler
+        .source
+        .resolution
+        .qualified("main::identity")
+        .unwrap();
+    let span = compiler.declarations[&key].span;
+    let formal = compiler.source.interfaces[&key].statics[0].key.clone();
+    let instance = compiler
+        .prepare_instance(
+            key,
+            BTreeMap::new(),
+            BTreeMap::from([(formal, 0)]),
+            BTreeMap::new(),
+            "main",
+            span,
+        )
+        .unwrap();
+    let record = instance.record.unwrap();
+    let mut issued: [Option<operations::Operation>; 2] = [None, None];
+    for typed in [false, true, false, true] {
+        compiler.force_typed_root = typed;
+        let body = compiler
+            .materialize_instance(Arc::clone(&instance), "main", span)
+            .unwrap();
+        assert_eq!(body.runtime_result().is_some(), typed);
+        let operation = compiler
+            .provider_instance(Arc::clone(&instance), None, "main", span)
+            .unwrap();
+        let previous = &mut issued[usize::from(typed)];
+        if let Some(previous) = previous {
+            assert!(
+                previous
+                    .same_descriptor_budgeted(&operation, &mut |_| Ok::<_, CompileError>(()))
+                    .unwrap()
+            );
+        } else {
+            *previous = Some(operation);
+        }
+        assert_eq!(compiler.instances.len(), 1);
+        assert_eq!(instance.record, Some(record));
+    }
 }

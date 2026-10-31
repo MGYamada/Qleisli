@@ -227,10 +227,12 @@ fn inactive_original_region_restores_the_complete_instance_on_every_result() {
         assert!(compiler.work >= before && compiler.work <= MAX_WORK);
         assert_eq!(compiler.exact_work.remaining(), exact_before);
         assert!(compiler.checked.is_empty());
-        assert!(matches!(
-            compiler.instances[instance.record.unwrap()].body,
-            instances::BodyState::Unprepared
-        ));
+        assert!(
+            compiler.instances[instance.record.unwrap()]
+                .bodies
+                .iter()
+                .all(|body| matches!(body, instances::BodyState::Unprepared))
+        );
         match outcome {
             0 => assert!(result.is_ok()),
             1 => assert_eq!(result.unwrap_err().code, ErrorCode::TypeMismatch),

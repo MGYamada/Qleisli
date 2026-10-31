@@ -1,0 +1,110 @@
+{
+  "scope": "Unexposed structural source/frame component. No paired native/QDV or ordinary compiler integration, full proof maintenance or issue completion.",
+  "base_commit": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+  "shared_driver": "context-sector-shared-driver",
+  "observation_counts": {
+    "source_context_first": 11,
+    "ir_interval": 15,
+    "source_mapping": 12,
+    "combined_frame": 18
+  },
+  "all_first_sources_preserved": true,
+  "source_frame_first_expected_mismatches": 1,
+  "source_frame_repair": "Raw effect token is iso; the source keyword is isometry. The first parse failure is not effect evidence.",
+  "kernel_reductions": 15,
+  "limits_raised": false,
+  "full_replay": "Both-package proof maintenance, fixed protected-output/extraction comparisons and fresh native compilation remain pending; complete kernel Tests and compiled audit pass.",
+  "hosted_ci": "pending",
+  "issues_open": [
+    64,
+    195,
+    142
+  ],
+  "current_checks": {
+    "context-sector-reducible": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "build",
+        "QleisliKernel.Qirf.SourceFrameSector"
+      ],
+      "head": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+      "exit_code": 0,
+      "seconds": 3.178115209011594,
+      "child_peak_rss_bytes": 687882240,
+      "stable_source": true
+    },
+    "context-sector-shared-driver": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--run",
+        "/private/tmp/qleisli-ordinary-closed-fix/tests/qmatch_transport.lean",
+        "/private/tmp/qleisli-ordinary-closed-fix/tests/fixtures/qmatch_v030/transport-cases.json",
+        "/private/tmp/qleisli-ordinary-closed-fix/tests/fixtures/qmatch_v030/execution-cases.json"
+      ],
+      "head": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+      "exit_code": 0,
+      "seconds": 5.971050708001712,
+      "child_peak_rss_bytes": 1328234496,
+      "stable_source": true
+    },
+    "context-kernel-build": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "build",
+        "QleisliKernel"
+      ],
+      "head": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+      "exit_code": 0,
+      "seconds": 5.284920292004244,
+      "child_peak_rss_bytes": 813481984,
+      "stable_source": true
+    },
+    "context-compiled-audit-absolute": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-ordinary-closed-fix/lean-kernel/Audit.lean"
+      ],
+      "head": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+      "exit_code": 0,
+      "seconds": 3.190356083010556,
+      "child_peak_rss_bytes": 899727360,
+      "stable_source": true
+    },
+    "context-kernel-tests": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "/private/tmp/qleisli-ordinary-closed-fix/lean-kernel/Tests.lean"
+      ],
+      "head": "cb0794297863760776ec20e8c7b2c03592fd02a1",
+      "exit_code": 0,
+      "seconds": 208.193797541986,
+      "child_peak_rss_bytes": 2952183808,
+      "stable_source": true
+    }
+  },
+  "performed_other_checks": [
+    "20 passive history tests",
+    "working fixture budget: 17389 files / 157211338 bytes",
+    "docs: 2777 links / 104 anchors / 416 Lean roots"
+  ],
+  "uncommitted_reference_note": "The exact fixture-reference check is rerun after the source checkpoint is committed; the earlier HEAD check did not cover new working files."
+}

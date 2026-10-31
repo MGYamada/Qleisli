@@ -1,5 +1,5 @@
 import Protocol.Carrier
-import QleisliKernel.Qirf.SourceSector
+import QleisliKernel.Qirf.SourceFrameSector
 
 /-! Strict version-paired transport for the internal named-arm source component.
 Existing carrier syntax, QIRF decoding and fresh source/arm checking are reused.
@@ -8,7 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Protocol.Qmatch
 open Lean Finite Semantics.CarrierInterface
 
-def profile := "finite-source-qmatch-named-v1"
+def profile := "finite-source-qmatch-named-v2"
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .invalid)
@@ -48,7 +48,7 @@ def decode (value : Json) : WorkM Request := do
   adapt (Carrier.fields value ["format","version","profile","attached","required","source","arms"])
   let supported ← adapt (do
     return (← text (← field value "format")) == "qleisli.qmatch-request" &&
-      (← number (← field value "version")) == 1 && (← text (← field value "profile")) == profile)
+      (← number (← field value "version")) == 2 && (← text (← field value "profile")) == profile)
   guard supported .request
   let attached ← adapt (Carrier.readInterface (← adapt (field value "attached")))
   let required ← adapt (Carrier.readInterface (← adapt (field value "required")))
@@ -70,14 +70,15 @@ structure Checked where
   artifact : Qirf.Artifact
   order : Array Nat
   request : Request
-  result : Qirf.SourceSector.Checked artifact request.source.moduleName request.source.functionName request.source.offset
+  result : Qirf.SourceFrameSector.Checked artifact order request.attached request.required
+    request.source.moduleName request.source.functionName request.source.offset request.arms
 
 def check (bytes : ByteArray) : WorkM Checked := do
   let (body,requested) ← adapt (Validity.packet bytes)
   let some requestBytes := requested | throw .request
   let (artifact,order) ← Protocol.Qirf.readAll body
   let request ← readRequest requestBytes
-  let result ← Qirf.SourceSector.check artifact order request.attached request.required
+  let result ← Qirf.SourceFrameSector.check artifact order request.attached request.required
     request.source.moduleName request.source.functionName request.source.offset request.arms
   return ⟨body,requestBytes,artifact,order,request,result⟩
 
@@ -85,7 +86,7 @@ structure Binding (bytes : ByteArray) (checked : Checked) (work left : Nat) : Pr
   packet : Validity.packet bytes = .ok (checked.body,some checked.requestBytes)
   artifact : ∃ a b, (Protocol.Qirf.readAll checked.body).run a = (.ok (checked.artifact,checked.order),b)
   request : ∃ a b, (readRequest checked.requestBytes).run a = (.ok checked.request,b)
-  core : ∃ a, (Qirf.SourceSector.check checked.artifact checked.order checked.request.attached
+  core : ∃ a, (Qirf.SourceFrameSector.check checked.artifact checked.order checked.request.attached
     checked.request.required checked.request.source.moduleName checked.request.source.functionName
     checked.request.source.offset checked.request.arms).run a = (.ok checked.result,left)
 

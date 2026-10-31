@@ -983,7 +983,7 @@ hierarchy projection remains separate. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 
-The internal `Qirf.SourceSector` component reads the actual written arm names,
+The internal `Qirf.SourceFrameSector` component reads the actual written arm names,
 full source target trees and public effects. It associates each arm with an
 original function-evidence entry and derives its implementation index from
 that entry. One fresh graph includes those evidence subjects and the original
@@ -993,6 +993,10 @@ snapshot are retained. Keeping an evidence table and index cannot change the
 resolved function name. Exact code-space, phase and controlled-action checks
 remain required. Original quantum parameter patterns and structural let/tuple
 moves now identify the selector and target in a complete linear source frame.
+The complete original function keeps every quantum parameter and returned owner,
+including additional zero-width owners and differing parameter/result order.
+The independently derived local pair remains in selector/target order. Its
+pure contract cannot sharpen the outer function's public Isometry/Observe label.
 The two-port subject uses the exact original parameter/result order, retaining
 distinct logical identities even when both types and physical widths coincide.
 Public Observe/Isometry cannot be sharpened by its whole-subject Unitary request.

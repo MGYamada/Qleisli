@@ -60,6 +60,89 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
+    for reverse in [false, true] {
+        for (effect, expected) in [
+            ("unitary", qleisli::ir::Effect::Unitary),
+            ("isometry", qleisli::ir::Effect::Isometry),
+            ("observe", qleisli::ir::Effect::Observe),
+        ] {
+            let (params, result, value) = if reverse {
+                (
+                    "q:Q<Unit>,s:Q<Tri>,z:Q<Unit>",
+                    "(Q<Unit>,Q<Tri>,Q<Unit>)",
+                    "(q,s,z)",
+                )
+            } else {
+                (
+                    "s:Q<Tri>,q:Q<Unit>,z:Q<Unit>",
+                    "(Q<Tri>,Q<Unit>,Q<Unit>)",
+                    "(s,q,z)",
+                )
+            };
+            let source = format!(
+                "pub enum Tri{{A,B,C}}
+                pub unitary fn idle(q:Q<Unit>)->Q<Unit>{{q}}
+                pub unitary fn phase(q:Q<Unit>)->Q<Unit>{{global_phase_eighth(q)}}
+                pub {effect} fn keep({params})->{result}{{
+                    let(s,q)=qmatch(s,q){{Tri::A=>idle,Tri::B=>phase,Tri::C=>idle}};
+                    {value}}}"
+            );
+            let accepted = selected(&source);
+            let raw = accepted.program().raw();
+            assert_eq!(raw.quantum_inputs.len(), 3);
+            assert_eq!(raw.quantum_outputs.len(), 3);
+            let last = raw.quantum_inputs[2].token;
+            assert!(raw.quantum_inputs[2].wires.is_empty());
+            assert_eq!(raw.quantum_outputs[2], last);
+            assert_eq!(
+                accepted.program().runtime_result().unwrap().public_effect,
+                expected
+            );
+            kernel().check_program(accepted.program()).unwrap();
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_keeps_controlled_permutations_after_evidence_preparation() {
+    let source = "unitary fn flip(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}
+        unitary fn idle(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}
+        unitary fn exchange(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(b,a)}
+        unitary fn increment(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{
+            let(a,b)=split(q);let(a,b)=controlled(flip)(a,b);let a=flip(a);join(a,b)}
+        unitary fn decrement(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{
+            let(a,b)=split(q);let a=flip(a);let(a,b)=controlled(flip)(a,b);join(a,b)}
+        pub unitary fn route(s:Q<Bits<2>>,q:Q<(Bit,Bit)>)->(Q<Bits<2>>,Q<(Bit,Bit)>){
+            qmatch(s,q){3=>decrement,0=>idle,2=>increment,1=>exchange}}";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::route",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let accepted = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    assert_eq!(accepted.program().raw().quantum_inputs.len(), 2);
+    assert_eq!(accepted.program().raw().quantum_outputs.len(), 2);
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_preserves_nominal_targets_and_original_phases() {
     for (declaration, target, bits) in [
         ("pub enum Tri { A,B,C }", "Tri", 2),

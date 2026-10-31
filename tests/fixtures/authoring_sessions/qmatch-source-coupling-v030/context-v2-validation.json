@@ -1,0 +1,117 @@
+{
+  "format": "qleisli.qmatch-source-frame-native-checks",
+  "version": 1,
+  "source_base": "ae8897093bdc368b7392d8dd33ce18fa3fcffd5c",
+  "checks": [
+    {
+      "label": "context-native-v2-audit",
+      "exit_code": 0,
+      "seconds": 3.1252098330005538,
+      "child_peak_rss_bytes": 899907584,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-native-v2-binary",
+      "exit_code": 0,
+      "seconds": 7.676969042018754,
+      "child_peak_rss_bytes": 814415872,
+      "kernel_sha256": null
+    },
+    {
+      "label": "context-native-v2-clippy",
+      "exit_code": 0,
+      "seconds": 18.212753625004552,
+      "child_peak_rss_bytes": 707575808,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-native-v2-first",
+      "exit_code": 0,
+      "seconds": 5.9857025840028655,
+      "child_peak_rss_bytes": 689897472,
+      "kernel_sha256": null
+    },
+    {
+      "label": "context-native-v2-msrv-selected",
+      "exit_code": 0,
+      "seconds": 48.45278800002416,
+      "child_peak_rss_bytes": 1141506048,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-native-v2-msrv-units",
+      "exit_code": 0,
+      "seconds": 16.38538387499284,
+      "child_peak_rss_bytes": 1558953984,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-native-v2-selected",
+      "exit_code": 0,
+      "seconds": 47.19841812501545,
+      "child_peak_rss_bytes": 1159774208,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-native-v2-shared",
+      "exit_code": 0,
+      "seconds": 13.631745875027264,
+      "child_peak_rss_bytes": 1327808512,
+      "kernel_sha256": null
+    },
+    {
+      "label": "context-native-v2-units",
+      "exit_code": 0,
+      "seconds": 12.008149834000506,
+      "child_peak_rss_bytes": 1593622528,
+      "kernel_sha256": "20f76f91a3ab48e41fed47c93ebc3754e76c60efa9eb72b07b4ef2061e38b6eb"
+    },
+    {
+      "label": "context-rust-v2-codec",
+      "exit_code": 0,
+      "seconds": 16.553442167001776,
+      "child_peak_rss_bytes": 1721237504,
+      "kernel_sha256": null
+    }
+  ],
+  "shared_cases": {
+    "transport": 33,
+    "scalar": 26,
+    "nominal": 26,
+    "complete_body": 14,
+    "frame": 18
+  },
+  "stable_tests": {
+    "selected": 26,
+    "qmatch_units": 15
+  },
+  "msrv_tests": {
+    "selected": 26,
+    "qmatch_units": 15
+  },
+  "ignored_native_tests": 0,
+  "cli_exit_codes": [
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "original_v1_fixtures": "Git ae8897093bdc368b7392d8dd33ce18fa3fcffd5c:tests/fixtures/qmatch_v030/",
+  "first_history": "context-first.tar.xz",
+  "limits_raised": false,
+  "source_retention": "Exact immutable Git base plus inert full and intermediate source patches. First programs and diagnostics remain in the unchanged first history. Patches and refs are never executed by passive readers.",
+  "issues_open": [
+    64,
+    195,
+    142
+  ],
+  "goal_percent": 58.27,
+  "scope": "Separate v2 source-frame/native/QDV/compiler integration observations. Exact unchanged first programs are replayed with newly authored commands; saved commands remain inert. All original quantum parameters/results, extra and zero-width owners, parameter/result order and outer public effects remain present. Local interfaces retain selector/target order. Version/profile 1 refuses without fallback. First sources, first diagnostics and earlier component-only validation are unchanged. All normal/MSRV tests ran with the freshly built native checker and none skipped. This bounded structural context permits one named-arm qmatch, not general calls, ordinary arguments or multiple selections. Full canonical both-package proof maintenance, latest-head hosted CI/review, source-preservation proofs and issue completion remain pending."
+}

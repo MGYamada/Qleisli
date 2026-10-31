@@ -11,7 +11,7 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     };
     writer.sized(5, 6)?;
     writer.depth += 1;
-    writer.text("finite-source-qmatch-named-v1")?;
+    writer.text(crate::interchange::qmatch::PROFILE)?;
     graph.write(&mut writer)?;
     let mut view = View {
         writer: &mut writer,

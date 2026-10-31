@@ -81,7 +81,8 @@ fn profile_format_version_and_required_fields_are_exact() {
     for (key, value) in [
         ("format", text("qleisli.carrier-request")),
         ("profile", text("finite-carrier-pure-v1")),
-        ("version", n(2)),
+        ("profile", text("finite-source-qmatch-named-v1")),
+        ("version", n(1)),
     ] {
         let bytes = changed(|fields| {
             fields.insert(key.into(), value.clone());

@@ -85,7 +85,7 @@ pub(crate) fn proposal(
     ))
 }
 
-const PROFILE: &str = "finite-source-qmatch-named-v1";
+pub(crate) const PROFILE: &str = "finite-source-qmatch-named-v2";
 
 /// An actual original UTF-8 byte occurrence, independently read by Lean.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -231,7 +231,7 @@ impl Request {
         )?;
         json::encode(&Value::object([
             ("format", text("qleisli.qmatch-request")),
-            ("version", n(1)),
+            ("version", n(2)),
             ("profile", text(PROFILE)),
             ("attached", self.attached.encode()),
             ("required", self.required.encode()),
@@ -250,7 +250,7 @@ impl Request {
             "format", "version", "profile", "attached", "required", "source", "arms",
         ])?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
-            || value.field("version")?.number()? != 1
+            || value.field("version")?.number()? != 2
             || value.field("profile")?.text()? != PROFILE
         {
             return Err(Error::format("unsupported qmatch request profile"));

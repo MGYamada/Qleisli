@@ -207,8 +207,8 @@ entry's lexical dependency closure. An unrelated qmatch declaration or a comment
 does not redirect a built-in entry. The legacy hierarchy projection still
 refuses qmatch; a failed check never triggers a different acceptance path.
 
-Small nominal enum selectors also use the shared emitter for a closed named
-function with exactly two quantum parameters and one structural qmatch body.
+Small nominal enum selectors also use the shared emitter for a nongeneric named
+function with quantum parameters, a flat quantum-owner result and one structural qmatch body.
 Targets may be built-in bases, fieldless enums or finite records, including
 empty records. Built-in ordinal selectors may also select nominal targets.
 The six-joined-bit and 1024-step producer limits remain. Original names/tuple
@@ -220,6 +220,10 @@ function evidence. Nominal target arms submit their original physical body and
 a proposed controlled implementation through the same QIRF encoder; the native
 gate binds the full original target type and checks its actual code/body and
 controlled equations. The physical entry alone grants no operation capability.
+Additional quantum arguments remain in the complete original frame. Parameter
+and result order may differ; the original source return determines that order,
+including distinct zero-width owners. Public Isometry/Observe annotations remain
+the outer contract even when the selected operation is pure.
 Ordinary callers may retain other owners; only the actual callee
 fragment is submitted for its original function, and the complete runtime root
 still passes its independent typed gate. General expressions, nonstructural

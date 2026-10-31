@@ -255,7 +255,17 @@ struct Compiler<'a> {
     pure_equations: Vec<Arc<crate::interchange::pure_leaf::SourcePureEquation>>,
     computed_normalizations: Vec<Arc<crate::interchange::finite_leaf::SourceUnitaryEquation>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
-    providers: BTreeMap<(Key, Option<Key>, crate::ir::Effect), operations::CachedProvider>,
+    // The retained Raw/ordinary/runtime root representation belongs to cache
+    // identity too; fresh native artifacts from different modes cannot match.
+    providers: BTreeMap<
+        (
+            Key,
+            Option<Key>,
+            crate::ir::Effect,
+            operations::ProviderRoot,
+        ),
+        operations::CachedProvider,
+    >,
     instances: Vec<instances::Record>,
     concrete_context: instances::Context,
     work: usize,

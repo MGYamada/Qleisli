@@ -247,8 +247,10 @@ select CLI routing before compilation. That routing grants no acceptance and
 never retries a failed native decision. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
-two quantum arguments, structural body, actual returned owners and named-arm
+complete quantum argument/result order, structural body and named-arm
 evidence; suspended caller owners stay in the complete outer Raw state.
+Version 2 separately binds the selected pair in selector/target order while
+retaining additional arguments, zero-width owners and the outer public effect.
 Nominal enum/record targets, including empty records, retain their full original
 types with enum or built-in ordinal selectors. Their physical arm entries and
 controls are untrusted proposals: the same native source/sector gate binds the

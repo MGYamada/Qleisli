@@ -10,6 +10,7 @@ import QleisliKernel.Tests.SourceEntries
 import QleisliKernel.Tests.QuantumMoves
 import QleisliKernel.Tests.QuantumBody
 import QleisliKernel.Tests.RawOwnerFlow
+import QleisliKernel.Tests.PureInterval
 import QleisliKernel.Tests.RuntimeSignature
 import QleisliKernel.Tests.RuntimeStaticHeader
 import QleisliKernel.Tests.RuntimeStorage
@@ -1609,7 +1610,7 @@ private def interface (bits : Nat) (effect : String := "unitary") : Json := Json
   [("inputs",.arr #[owner bits]),("outputs",.arr #[owner bits]),("public_effect",.str effect)]
 
 private def request (arms : List Json) (source : Json) (extras : List (String × Json) := []) : Json :=
-  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 1),
+  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 2),
     ("profile",.str Qmatch.profile),("attached",interface 0),("required",interface 0),
     ("source",source),("arms",.arr arms.toArray)] ++ extras)
 

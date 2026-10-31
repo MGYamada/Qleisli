@@ -35,6 +35,23 @@ pub(super) struct CachedProvider {
     pub operation: Operation,
     pub body: AcceptedProgram,
 }
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+pub(super) enum ProviderRoot {
+    Raw,
+    Ordinary,
+    Runtime,
+}
+impl ProviderRoot {
+    pub(super) fn of(body: &AcceptedProgram) -> Self {
+        if body.runtime_result().is_some() {
+            Self::Runtime
+        } else if body.ordinary_result().is_some() {
+            Self::Ordinary
+        } else {
+            Self::Raw
+        }
+    }
+}
 #[derive(Debug)]
 pub(super) enum Node {
     Provider(Arc<FunctionEvidence>),
@@ -652,10 +669,31 @@ impl Compiler<'_> {
         }
         // A same-module Unitary provider must never lend inverse/control access
         // to a caller whose public contract only promises Isometry.
-        let cache = (key, mkey, effect);
+        let program = self.checked.get(&key).ok_or_else(|| {
+            self.error(
+                module,
+                name.span,
+                ErrorCode::InvalidIr,
+                "provider has not been independently checked",
+            )
+        })?;
+        let cache = (key, mkey, effect, ProviderRoot::of(program));
         if let Some(op) = self.providers.get(&cache) {
-            let cost = op.operation.copy_size();
+            let cost = op
+                .body
+                .artifact()
+                .len()
+                .saturating_add(program.artifact().len())
+                .saturating_add(op.operation.copy_size());
             self.charge(module, name.span, cost)?;
+            if self.providers[&cache].body.artifact() != self.checked[&key].artifact() {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Contract,
+                    "cached provider has a different freshly checked Raw/source graph",
+                ));
+            }
             return Ok(self.providers[&cache].operation.clone());
         }
         self.charge(

@@ -205,3 +205,30 @@ fn component_retains_the_same_fresh_native_mode_and_original_request() {
     assert_eq!(summary.decisions(), 1);
     assert_eq!(summary.requests_checked(), 1);
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn full_source_frames_require_fresh_native_source_body_control_and_qdv_checks() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let fixture = json::parse(include_bytes!(
+        "../../../../tests/fixtures/qmatch_v030/frame-execution-cases.json"
+    ))
+    .unwrap();
+    for row in fixture.field("cases").unwrap().array().unwrap() {
+        let name = row.field("name").unwrap().text().unwrap();
+        let artifact = json::encode(row.field("artifact").unwrap()).unwrap();
+        let request = json::encode(row.field("request").unwrap()).unwrap();
+        let expected = row.field("expected").unwrap().boolean().unwrap();
+        let actual = kernel.check_qmatch_source(&artifact, &request);
+        assert_eq!(actual.is_ok(), expected, "{name}: {actual:?}");
+        if let Ok(checked) = actual {
+            assert_eq!(checked.artifact(), artifact);
+            assert_eq!(checked.request_bytes(), request);
+            assert_eq!(checked.request().attached.inputs.len(), 2);
+            assert_eq!(checked.native().mode(), "--qmatch-source-check");
+        }
+    }
+}

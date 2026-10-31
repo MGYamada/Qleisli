@@ -40,8 +40,10 @@ pub(super) enum BodyState {
 }
 pub(super) struct Record {
     identity: Identity,
-    pub body: BodyState,
-    pub providers: Vec<(Option<Key>, operations::Operation)>,
+    // Evidence preparation and selected typed lowering have different producer
+    // contracts. They share source/substitution identity, not prepared bodies.
+    pub bodies: [BodyState; 2],
+    pub providers: [Vec<(Option<Key>, operations::Operation)>; 2],
 }
 pub(super) struct ClosedInstance {
     pub definition: Key,
@@ -140,12 +142,12 @@ impl Compiler<'_> {
             self.charge(module, span, self.instances.len().saturating_add(1))?;
             self.instances.reserve_exact(1);
         }
-        self.charge(module, span, 1)?;
+        self.charge(module, span, 3)?;
         let ordinal = self.instances.len();
         self.instances.push(Record {
             identity,
-            body: BodyState::Unprepared,
-            providers: Vec::new(),
+            bodies: [BodyState::Unprepared, BodyState::Unprepared],
+            providers: [Vec::new(), Vec::new()],
         });
         Ok(ordinal)
     }

@@ -1,5 +1,37 @@
 # Original qmatch source and evidence coupling
 
+The [provider cache history](provider-cache-first.tar.xz), compressed
+[index](provider-cache-index.json.xz) and [validation](provider-cache-validation.json.xz)
+retain seven informed controls, their first real refusal and separate repairs.
+The unchanged four-way permutation passes after Raw/typed cache separation;
+normal/MSRV checks retain corrupt-cache refusals. Original source variants use
+immutable Git bases and inert patches. Duplicate plan fields remain in complete
+reports. This is not independent initial authoring or issue completion.
+
+The separate [v2 integration history](context-v2-first.tar.xz),
+[index](context-v2-index.json) and [validation](context-v2-validation.json)
+retain fresh native/QDV and compiler observations for the structural context.
+All eleven first programs remain unchanged; additional zero-width owners and
+reordered parameters now pass. Normal/MSRV selected and native-unit tests have
+no skips. Exact source hashes are tied to the immutable Git base and inert
+patches, including intermediate variants. Passive readers never apply patches
+or execute saved commands. General calls, ordinary arguments, multiple
+selections, canonical proof maintenance and hosted CI/review remain separate;
+neither issue is completed by these bounded observations.
+
+The [context history](context-first.tar.xz), [index](context-index.json) and
+[validation scope](context-validation.json) retain eleven original projects,
+literal-IR and source-mapping studies, the first malformed Raw effect token,
+all elaboration refusals and separate repairs. The shared component observations
+cover eighteen original source/frame/arm cases, including additional zero-width
+owners, argument/result order, public effects and actual phase/control faults.
+Generic root/history/effect bindings and fifteen small kernel reductions remain
+distinct from those runtime observations. A valid shifted IR interval explicitly
+does not establish source association. The composed rule currently binds one
+structural source qmatch; at that earlier component checkpoint, paired native/QDV
+dispatch, ordinary compiler integration and full validation were pending. No archived
+command is executed and neither #64 nor #195 is completed by this component.
+
 The inert [archive](first.tar.xz) and [index](index.json) preserve original
 sources, actual diagnostics, separate repairs, exact source/import byte maps
 and observers as text. The archive includes the preceding finite/Raw/nominal

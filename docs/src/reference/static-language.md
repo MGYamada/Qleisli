@@ -620,6 +620,13 @@ static environment and caller context; issued identities and charged work do
 not rewind. This bounded materialization supplies no source-preservation theorem
 or general caller-frame/cleanup guarantee.
 
+Evidence preparation and selected typed lowering keep separate prepared bodies
+and providers for the same original specialization. Nongeneric provider reuse
+also retains the actual Raw, ordinary or runtime root representation: identical
+Raw instructions do not identify different native request/view data. Each
+representation still undergoes its original checks, and reuse within it still
+requires the complete accepted artifact to match.
+
 The current common judgment has a 1,000,000-unit work allowance. Its selected
 profile also limits retained scope storage to 16,384 cells. Natural-expression
 depth is limited to 128; type trees have separate 4,096-cell, depth-64 and

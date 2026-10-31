@@ -151,7 +151,10 @@ class ProductionCoverage(unittest.TestCase):
             ('src/interchange/mod.rs', 'roots.push(programs.len() + evidence)'),
             ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootFromRoots artifact order attached required [artifact.root]'),
             ('lean-kernel/QleisliKernel/Qirf/Carrier.lean', 'sourceRootWithRows artifact order attached required roots []'),
-            ('lean-kernel/Protocol/Qmatch.lean', 'Qirf.SourceSector.check artifact order'),
+            ('lean-kernel/Protocol/Qmatch.lean', 'Qirf.SourceFrameSector.check artifact order'),
+            ('lean-kernel/QleisliKernel/Qirf/SourceFrameSector.lean', 'let context ← SourceTypes.NaturalAffine.witness'),
+            ('lean-kernel/QleisliKernel/Qirf/SourceInterval.lean', 'Raw.OwnerFlow.check allInputs allOutputs'),
+            ('lean-kernel/QleisliKernel/Qirf/PureInterval.lean', 'let whole ← SourceTypes.NaturalAffine.witness'),
             ('lean-kernel/Protocol/NativeContext/Bindings.lean', 'theorem run_qmatch_binding '),
         ):
             with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
@@ -168,6 +171,18 @@ class ProductionCoverage(unittest.TestCase):
         ):
             with self.subTest(path=path), self.assertRaisesRegex(ValueError, 'source binding changed'):
                 self.check_changed_source(path, marker, 'removed reviewed binding')
+
+    def test_provider_reuse_keeps_producer_and_native_root_profiles(self):
+        for path, marker in (
+            ('src/frontend/compile/instances.rs', 'pub bodies: [BodyState; 2]'),
+            ('src/frontend/compile/instances/provider.rs', 'match &self.instances[record].bodies[profile]'),
+            ('src/frontend/compile/instances/provider.rs', 'operations::ProviderRoot::of(&body)'),
+            ('src/frontend/compile/instances/provider.rs', 'cached.body.artifact() != body.artifact()'),
+            ('src/frontend/compile/operations.rs', 'ProviderRoot::of(program)'),
+            ('src/frontend/compile/operations.rs', 'self.providers[&cache].body.artifact() != self.checked[&key].artifact()'),
+        ):
+            with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
+                self.check_changed_source(path, marker, 'removed reviewed cache binding')
 
     def test_contract_bridge_does_not_widen_encoded_or_admitted_guarantees(self):
         for field, claim in (
