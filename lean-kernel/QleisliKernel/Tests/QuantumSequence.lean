@@ -57,7 +57,38 @@ def controls : List (String × Bool) := [
   ("outer Observe annotation is retained",
     effectView (source body "(Q<Unit>,Q<Tag>,Q<Bit>)" "observe") == some (some .observe))]
 
+def shadowSource (body : String) (parameters : String := "s:Q<Bit>,q:Q<Bit>") : String :=
+  "unitary fn turn(q:Q<Bit>)->Q<Bit>{q} pub unitary fn route(" ++ parameters ++
+    ")->(Q<Bit>,Q<Bit>){" ++ body ++ "}"
+
+def shadowChoice := "qmatch(s,q){0=>turn,1=>turn}"
+
+def lexicalControls : List (String × Bool) := [
+  ("consumed parameter still shadows a global static arm",
+    rejected (shadowSource ("let q=turn;" ++ shadowChoice) "s:Q<Bit>,turn:Q<Bit>")),
+  ("consumed let name still shadows a global static arm",
+    rejected (shadowSource ("let turn=q;let q=turn;" ++ shadowChoice))),
+  ("owner-free local name shadows a global static arm",
+    rejected (shadowSource ("let turn=();" ++ shadowChoice))),
+  ("consumed owner-free local name remains in scope",
+    rejected (shadowSource ("let turn=();let _=turn;" ++ shadowChoice))),
+  ("tuple-pattern binders remain after their owner is moved",
+    rejected (shadowSource ("let (turn,z)=(q,());let q=turn;" ++ shadowChoice))),
+  ("qualified function retains module resolution despite a consumed local",
+    view (shadowSource "let q=turn;qmatch(s,q){0=>main::turn,1=>main::turn}"
+      "s:Q<Bit>,turn:Q<Bit>") == some (1,[(0,1)],[0,1])),
+  ("unshadowed structural move preserves the global function",
+    view (shadowSource ("let q=input;" ++ shadowChoice) "s:Q<Bit>,input:Q<Bit>") ==
+      some (1,[(0,1)],[0,1])),
+  ("a let binder does not shadow its own RHS",
+    view (shadowSource ("let turn=" ++ shadowChoice ++ ";turn")) == some (1,[(0,1)],[0,1])),
+  ("later bindings do not affect earlier original arm resolution",
+    view (shadowSource ("let(s,q)=" ++ shadowChoice ++ ";let turn=();(s,q)")) ==
+      some (1,[(0,1)],[0,1]))]
+
 example : controls.length = 14 := by decide +kernel
+example : lexicalControls.length = 9 := by decide +kernel
 #guard controls.all (·.2)
+#guard lexicalControls.all (·.2)
 
 end QleisliKernel.Tests.QuantumSequence

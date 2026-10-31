@@ -27,6 +27,7 @@ def covers (length : Nat) (positions : List Position) : Bool :=
 def eventFields (event : Event) : Nat :=
   let cells := event.before ++ event.remaining
   (event.parsed.tokens.map fun token => token.text.utf8ByteSize+4).sum*4 +
+    (event.scope.map fun name => name.utf8ByteSize+1).sum +
     (cells.map fun cell => cell.name.utf8ByteSize+cell.value.length+1).sum +
     Raw.OwnerFlow.fields (owners cells ++ [event.selector,event.target])
 

@@ -15,6 +15,9 @@ development milestones from the scope of their evidence.
   pass, including original zero-width spectators and result permutations.
   Migrate the full Lean test root's request fixture as well, retaining explicit
   legacy-request refusal and the exact decoded source/interval fields.
+  Retain lexical parameter and let names after their values are consumed;
+  reject bare qmatch arms shadowed by those names, including owner-free bindings.
+  Qualified function paths keep their existing module and visibility checks.
   General expressions/calls, mixed parameters, constructed/generic arms and
   the full twelve-bit profile remain pending; no issue completion or
   source/native/runtime preservation theorem follows.

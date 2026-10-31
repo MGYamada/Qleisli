@@ -75,6 +75,8 @@ SECTOR_SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupl
 SECTOR_SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-index.json.xz"
 SEQUENCE_TESTS_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-first.tar.xz"
 SEQUENCE_TESTS_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-index.json"
+SHADOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/lexical-shadow-first.tar.xz"
+SHADOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/lexical-shadow-index.json.xz"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -122,6 +124,30 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_original_lexical_shadow_counterexample_and_controls(self):
+        members = bounded_history(ROOT / SHADOW_ARCHIVE, ROOT / SHADOW_INDEX)
+        self.assertEqual(history_json(ROOT / SHADOW_INDEX)['sha256'],
+                         '464d93d50de923cab8ea33c0c2c38dbbddcb855b1d15c146266aa81e30c30f58')
+        self.assertEqual(len(members), 79)
+        initial = json.loads(members['native-candidate-first/observations-first/report.json'])
+        self.assertTrue(initial['stable'])
+        self.assertEqual(initial['before'], initial['after'])
+        results = {row['label']: row for row in initial['results']}
+        rust = json.loads(members['native-rust-project-controls/report.json'])
+        for row in rust['results']:
+            label = row['label']
+            self.assertEqual(results[label + '-native']['exit_code'], 0)
+            self.assertEqual(row['exit_code'], int(label == 'consumed-local'))
+            self.assertTrue(row['source_identical'])
+            self.assertEqual(members['native-candidate-first/' + label + '/main.qli'],
+                             members['native-rust-project-controls/' + label + '/main.qli'])
+        rejected = next(row for row in rust['results'] if row['label'] == 'consumed-local')
+        self.assertEqual(rejected['document']['diagnostics'][0]['message'],
+                         'static operation requires a function name, not a local value')
+        repaired = json.loads(members['production-repair-first/report.json'])
+        self.assertTrue(repaired['stable'])
+        self.assertEqual(repaired['exit_code'], 0)
+
     def test_sequence_transport_test_migration_preserves_real_failure(self):
         members = bounded_history(ROOT / SEQUENCE_TESTS_ARCHIVE, ROOT / SEQUENCE_TESTS_INDEX)
         self.assertEqual(history_json(ROOT / SEQUENCE_TESTS_INDEX)['sha256'],

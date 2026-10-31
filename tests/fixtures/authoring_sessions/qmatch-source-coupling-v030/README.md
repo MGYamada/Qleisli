@@ -1,5 +1,17 @@
 # Original qmatch source and evidence coupling
 
+The [lexical-shadow counterexample](lexical-shadow-first.tar.xz) and compressed
+[index](lexical-shadow-index.json.xz) preserve 79 original records. A consumed
+local parameter shadows a bare arm name: the Rust frontend rejects it, while
+the original native packet incorrectly selected the global function. The scalar
+packet uses zero physical bits and two logical owners. Baseline, qualified and
+unshadowed controls remain separate. Initial missing-manifest failures are kept
+alongside the metadata-repaired projects with identical source bytes. The
+focused scope repair retains all completed bindings, including owner-free ones,
+and evaluates each RHS before introducing its pattern. Full native replay,
+canonical proof maintenance and final CI/review are separate from this history.
+No issue completion or guarantee admission is claimed.
+
 The [version3 full-test repair](sequence-tests-v3-first.tar.xz) and
 [index](sequence-tests-v3-index.json) retain the unchanged old test source,
 actual hosted failure and separate local repair. One active `Tests.lean` fixture
