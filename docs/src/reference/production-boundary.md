@@ -277,8 +277,11 @@ separate whole-root runtime acceptance.
 
 `Kernel::check_qmatch_source` invokes the execution-only internal
 `--qmatch-source-check` mode. The [request and QDV schema](execution-view.md#internal-named-arm-qmatch-component)
-bind both complete typed interfaces, the original source byte occurrence and
-actual evidence/control indices to one fresh graph. Original source reads
+bind every site's complete typed interfaces, original source byte occurrence,
+literal Raw interval and actual evidence/control indices to one fresh graph.
+Every original selection appears in order, and intervals exhaust the complete
+call without gaps or overlaps. Each retains its actual owner frame and passes
+its own exact equations. Original source reads
 determine the canonical labels, types, owners, public effects and source rows;
 actual receipt inputs and dependency snapshots bind the named arm bodies.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.

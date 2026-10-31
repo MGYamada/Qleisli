@@ -1,5 +1,79 @@
 # Original qmatch source and evidence coupling
 
+The [lexical-shadow counterexample](lexical-shadow-first.tar.xz) and compressed
+[index](lexical-shadow-index.json.xz) preserve 79 original records. A consumed
+local parameter shadows a bare arm name: the Rust frontend rejects it, while
+the original native packet incorrectly selected the global function. The scalar
+packet uses zero physical bits and two logical owners. Baseline, qualified and
+unshadowed controls remain separate. Initial missing-manifest failures are kept
+alongside the metadata-repaired projects with identical source bytes. The
+focused scope repair retains all completed bindings, including owner-free ones,
+and evaluates each RHS before introducing its pattern. Full native replay,
+canonical proof maintenance and final CI/review are separate from this history.
+No issue completion or guarantee admission is claimed.
+
+The [version3 full-test repair](sequence-tests-v3-first.tar.xz) and
+[index](sequence-tests-v3-index.json) retain the unchanged old test source,
+actual hosted failure and separate local repair. One active `Tests.lean` fixture
+still used the retired single-site version2 request after the decoder migration.
+The corrected version3 fixture preserves decoded source/interval fields and
+explicitly rejects both the old request and a mixed source shape. Full local
+Tests pass; the first incorrect working-directory invocation remains a failure.
+These are test observations using existing imports, not fresh transitive proof
+replay, a source-preservation theorem or completion of #64/#195.
+
+The [sequence sector integration history](sequence-sector-first.tar.xz) and
+bounded compressed [index](sequence-sector-index.json.xz) retain 20 actual check
+windows and all 42 distinct working-source objects. Every original occurrence
+now binds a literal Raw interval, its actual owner frame and separate exact
+arm/control/sector equations through version3 requests/QDV and the shared
+compiler. Wrong intervals reject even when their total operator agrees.
+Missing, duplicate, reordered, overlapping and gapped intervals also reject.
+The unchanged multiple-selection first program now passes the ordinary CLI;
+its output correctly keeps source-preservation verification false.
+
+The first heartbeat/type errors, missing native selection, wrong Lake target
+and oversized pretty-JSON preparation remain separate from successful repairs.
+No limit is raised. The initial cargo-1.85 observation used the PATH-selected
+Homebrew compiler and is explicitly not MSRV evidence; the later pinned
+Rust1.85 test/Clippy records retain their actual compiler version and paths.
+Fifteen new semantic controls, paired protocol regressions, normal native and
+selected-runtime tests and the standard 22,900-declaration audit pass. Canonical
+full proof replay, current-head CI/review, general expression/call/mixed frames,
+constructed/generic arms and the full twelve-bit profile remain separate.
+These informed controls do not complete #64/#195/#142 or admit a guarantee.
+
+The [sequence first history](sequence-first.tar.xz) and compressed
+[index](sequence-index.json.xz) retain seven complete informed programs, their
+untouched first CLI observations and fifteen separate component-check windows.
+The structural control passes; target/spectator prefixes, a target suffix,
+multiple selections and an ordinary spectator expose current profile refusals.
+Hidden observation under a false Unitary annotation correctly refuses.
+The largest source case uses four physical bits. Later symbolic oracles are
+explicitly separate from the fixed pre-check predictions; no independent
+first-authoring evaluation is claimed. The source observer ran from stdin
+without a separately saved pre-run script, as the retained later notes disclose.
+
+Internal sequence checking subsequently reads every original occurrence and
+binds contiguous literal Raw intervals through original owner moves, including
+zero-width identities. Its structural result does not establish the arm/control
+or sector equations: a deliberately wrong pure operator still passes that
+component and must be rejected by the enclosing semantic gate. Compiler and
+versioned native/QDV integration remain pending. First equality-instance,
+record-layout and proof-carrying equality errors are retained with their separate
+repairs. Large source computations move from repeated kernel normalization to
+executable `#guard` regressions; these observations are not promoted into proofs.
+Generic owner/occurrence/token-origin facts remain kernel-checked definitions
+and proofs. The focused compiled audit uses the unchanged standard audit body;
+it does not freshly replay imported modules or establish full current coverage.
+
+All 111 records and 580,557 original member bytes remain inert. The existing
+source-identity guard correctly refuses the changed kernel root pending a
+canonical proof refresh; no expected hash is changed to bypass it. Full kernel
+Tests/replay, current native/compiler integration and hosted validation remain
+separate. Shared observer descriptions do not widen the actual saved argv and
+scope. Neither #64/#195/#142 nor a guarantee is completed by this history.
+
 The [provider cache history](provider-cache-first.tar.xz), compressed
 [index](provider-cache-index.json.xz) and [validation](provider-cache-validation.json.xz)
 retain seven informed controls, their first real refusal and separate repairs.

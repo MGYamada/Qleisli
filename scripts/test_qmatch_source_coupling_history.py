@@ -69,6 +69,14 @@ CONTEXT_V2_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-couplin
 PROVIDER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-first.tar.xz"
 PROVIDER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-index.json.xz"
 PROVIDER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-validation.json.xz"
+SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-first.tar.xz"
+SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-index.json.xz"
+SECTOR_SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-first.tar.xz"
+SECTOR_SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-index.json.xz"
+SEQUENCE_TESTS_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-first.tar.xz"
+SEQUENCE_TESTS_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-index.json"
+SHADOW_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/lexical-shadow-first.tar.xz"
+SHADOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/lexical-shadow-index.json.xz"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -116,6 +124,125 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_original_lexical_shadow_counterexample_and_controls(self):
+        members = bounded_history(ROOT / SHADOW_ARCHIVE, ROOT / SHADOW_INDEX)
+        self.assertEqual(history_json(ROOT / SHADOW_INDEX)['sha256'],
+                         '464d93d50de923cab8ea33c0c2c38dbbddcb855b1d15c146266aa81e30c30f58')
+        self.assertEqual(len(members), 79)
+        initial = json.loads(members['native-candidate-first/observations-first/report.json'])
+        self.assertTrue(initial['stable'])
+        self.assertEqual(initial['before'], initial['after'])
+        results = {row['label']: row for row in initial['results']}
+        rust = json.loads(members['native-rust-project-controls/report.json'])
+        for row in rust['results']:
+            label = row['label']
+            self.assertEqual(results[label + '-native']['exit_code'], 0)
+            self.assertEqual(row['exit_code'], int(label == 'consumed-local'))
+            self.assertTrue(row['source_identical'])
+            self.assertEqual(members['native-candidate-first/' + label + '/main.qli'],
+                             members['native-rust-project-controls/' + label + '/main.qli'])
+        rejected = next(row for row in rust['results'] if row['label'] == 'consumed-local')
+        self.assertEqual(rejected['document']['diagnostics'][0]['message'],
+                         'static operation requires a function name, not a local value')
+        repaired = json.loads(members['production-repair-first/report.json'])
+        self.assertTrue(repaired['stable'])
+        self.assertEqual(repaired['exit_code'], 0)
+
+    def test_sequence_transport_test_migration_preserves_real_failure(self):
+        members = bounded_history(ROOT / SEQUENCE_TESTS_ARCHIVE, ROOT / SEQUENCE_TESTS_INDEX)
+        self.assertEqual(history_json(ROOT / SEQUENCE_TESTS_INDEX)['sha256'],
+                         '2277e15144bb39b3e48697278748cf2f63ead09da05428e9e7f7feb3329818d0')
+        identity = json.loads(members['hosted/identity.json.txt'])
+        self.assertEqual(hashlib.sha256(members['first/Tests.lean.before.txt']).hexdigest(),
+                         identity['original_tests_sha256'])
+        self.assertIn(b'Tests.lean:1632:82: error:', members['hosted/full-tests/stdout.txt'])
+        for label, code in [('qmatch-tests-v3-full', 1), ('qmatch-tests-v3-full-correct-path', 0)]:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], code)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['objects/' + digest]).hexdigest(), digest)
+
+    def test_sequence_sector_integration_keeps_actual_inputs_and_refusals(self):
+        members = bounded_history(ROOT / SECTOR_SEQUENCE_ARCHIVE, ROOT / SECTOR_SEQUENCE_INDEX)
+        index = history_json(ROOT / SECTOR_SEQUENCE_INDEX)
+        self.assertEqual(index['sha256'], '702430a45960dd37a1b8e745c1d998cef4874d80d1bafef79f0ff8e81f366ed4')
+        self.assertEqual(len(members), 111)
+        self.assertEqual(len(index['checks']), 20)
+        for label, code in index['checks'].items():
+            suffix = label.removeprefix('qmatch-sequence-')
+            report = json.loads(members['checks/' + suffix + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], code)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['objects/' + digest]).hexdigest(), digest)
+        for suffix in ['msrv-185-pinned', 'msrv-clippy']:
+            report = json.loads(members['checks/' + suffix + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['rustc_version'].startswith('rustc 1.85.0 '))
+        self.assertIn(b'15 passed; 0 failed; 0 ignored', members['checks/native-interval-faults/stdout.txt'])
+        self.assertIn(b'28 passed; 0 failed; 0 ignored', members['checks/selected-runtime/stdout.txt'])
+        self.assertIn(b'22900 kernel/transport declarations', members['checks/current-audit/stdout.txt'])
+        result = json.loads(members['checks/original-cli/stdout.txt'])['result']
+        self.assertTrue(result['runtime_result_checked'])
+        self.assertFalse(result['source_preservation_verified'])
+        first = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        self.assertEqual(members['unchanged-first/main.qli.txt'], first['source-first/multiple-selections/main.qli.txt'])
+        self.assertEqual(json.loads(members['scope.json.txt'])['issues_open'], [64, 195, 142])
+
+    def test_sequence_first_programs_and_actual_refusals_are_unchanged(self):
+        self.assertEqual(hashlib.sha256((ROOT / SEQUENCE_INDEX).read_bytes()).hexdigest(),
+                         'c992bbb6fcc5ee8a6383fc1023e2f185da68d0dc241142830926174eeddd8e00')
+        members = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        self.assertEqual(len(members), 111)
+        plan_bytes = members['source-first/plan.json.txt']
+        report_bytes = members['source-first/observations-first/report.json.txt']
+        self.assertEqual(hashlib.sha256(plan_bytes).hexdigest(),
+                         'dd81eed676367ba7fdb64cb0c70f64895113f5792495ef787406b35ea13b6440')
+        self.assertEqual(hashlib.sha256(report_bytes).hexdigest(),
+                         '1ba001d9b43ed9f52a2c956ab198f692bd52f395c3fa47d9aa9d6625c5e1c7be')
+        plan, report = json.loads(plan_bytes), json.loads(report_bytes)
+        self.assertTrue(report['unchanged'])
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(plan['max_physical_bits'], 4)
+        self.assertEqual([row['exit_code'] for row in report['records']], [0, 1, 1, 1, 1, 1, 1])
+        for row in plan['cases']:
+            for name, digest in row['inputs'].items():
+                content = members['source-first/' + row['name'] + '/' + name + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), digest)
+        for row in report['records']:
+            for stream in ('stdout', 'stderr'):
+                content = members['source-first/observations-first/' + row['name'] + '.' + stream + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), row[stream + '_sha256'])
+            self.assertEqual(json.loads(members['source-first/observations-first/' + row['name'] + '.stdout.txt']),
+                             row['document'])
+        self.assertIn(b'body effect', members['source-first/observations-first/hidden-observe-negative.stdout.txt'])
+
+    def test_sequence_first_component_errors_and_separate_repairs_are_retained(self):
+        members = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        index = history_json(ROOT / SEQUENCE_INDEX)
+        self.assertEqual(len(index['checks']), 15)
+        failed = {'qmatch-sequence-current-source-guard', 'qmatch-sequence-interval-tests-first',
+                  'qmatch-sequence-intrinsic-event-build', 'qmatch-sequence-source-tests-first'}
+        for label in index['checks']:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], int(label in failed))
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['source-objects/' + digest + '.txt']).hexdigest(), digest)
+        self.assertIn(b'failed to synthesize', members['checks/qmatch-sequence-source-tests-first/stdout.txt'])
+        self.assertIn(b'LawfulBEq Environment', members['checks/qmatch-sequence-intrinsic-event-build/stdout.txt'])
+        self.assertIn(b'unexpected identifier', members['checks/qmatch-sequence-interval-tests-first/stdout.txt'])
+        self.assertIn(b'stale source identity: lean-kernel/QleisliKernel.lean',
+                      members['checks/qmatch-sequence-current-source-guard/stderr.txt'])
+        self.assertIn(b'Audited 22705 kernel/transport declarations',
+                      members['checks/qmatch-sequence-compiled-audit-first/stdout.txt'])
+        repaired = json.loads(members['checks/qmatch-sequence-source-tests-guard/report.json.txt'])
+        self.assertLess(repaired['child_peak_rss_bytes'], 1024 * 1024 * 1024)
+
     def test_provider_profiles_keep_first_controls_and_exact_failed_sources(self):
         members = bounded_history(ROOT / PROVIDER_ARCHIVE, ROOT / PROVIDER_INDEX)
         first = json.loads(members['first-checks/observations.json.txt'])

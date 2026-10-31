@@ -45,6 +45,9 @@ structure BoundArm (sources : Sources) (owner : String) (selector target : Basis
   declaredEffect : operation.signature.original.parsedHeader.effect = none ∨
     operation.signature.original.parsedHeader.effect = some .unitary
 
+/-- Header-only module resolution. The enclosing original-body gate must first
+check lexical shadowing, including consumed names; this function does not
+authorize a source occurrence or replace that persistent-scope check. -/
 def readArm (sources : Sources) (owner : String) (selector target : Basis) (written : QuantumMatch.Arm) :
     WorkM (BoundArm sources owner selector target) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
@@ -80,6 +83,8 @@ def partition {sources owner selector target} (count : Nat) (arms : List (BoundA
   let labels := arms.map (·.label.ordinal)
   labels.length == count && labels.all (· < count) && labels.eraseDups.length == labels.length
 
+/-- Original arm headers and label coverage, not an enclosing lexical-scope
+judgment. Current native admission also requires QuantumSequence.read. -/
 structure Table (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) where
   site : QuantumMatch.Site sources owner name offset
   layout : Semantics.FiniteCarrier.Layout
