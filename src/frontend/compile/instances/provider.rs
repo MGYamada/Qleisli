@@ -24,6 +24,7 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<AcceptedProgram, CompileError> {
+        let profile = usize::from(self.force_typed_root);
         if self.effect_in_module(module, instance.definition) != Some(instance.source_effect) {
             return Err(self.error(
                 module,
@@ -69,7 +70,7 @@ impl Compiler<'_> {
         }
         self.check_dormant_instance(Arc::clone(&instance), module, span)?;
         if let Some(record) = instance.record {
-            match &self.instances[record].body {
+            match &self.instances[record].bodies[profile] {
                 BodyState::Preparing => {
                     return Err(self.error(
                         module,
@@ -89,7 +90,7 @@ impl Compiler<'_> {
                         ));
                     let work = Self::accepted_copy_work(&instance, body).saturating_add(transport);
                     self.charge(module, span, work)?;
-                    let BodyState::Ready(body) = &self.instances[record].body else {
+                    let BodyState::Ready(body) = &self.instances[record].bodies[profile] else {
                         unreachable!()
                     };
                     // A Ready key does not replace this occurrence's actual
@@ -113,7 +114,7 @@ impl Compiler<'_> {
                 }
                 BodyState::Unprepared => {}
             }
-            self.instances[record].body = BodyState::Preparing;
+            self.instances[record].bodies[profile] = BodyState::Preparing;
         }
         let result = lower::lower_instance_function(self, Arc::clone(&instance));
         if let Some(record) = instance.record {
@@ -122,12 +123,12 @@ impl Compiler<'_> {
                     let charge =
                         self.charge(module, span, Self::accepted_copy_work(&instance, body));
                     if let Err(error) = charge {
-                        self.instances[record].body = BodyState::Unprepared;
+                        self.instances[record].bodies[profile] = BodyState::Unprepared;
                         return Err(error);
                     }
-                    self.instances[record].body = BodyState::Ready(body.clone());
+                    self.instances[record].bodies[profile] = BodyState::Ready(body.clone());
                 }
-                Err(_) => self.instances[record].body = BodyState::Unprepared,
+                Err(_) => self.instances[record].bodies[profile] = BodyState::Unprepared,
             }
         }
         result
@@ -140,6 +141,7 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<operations::Operation, CompileError> {
+        let profile = usize::from(self.force_typed_root);
         if instance.source_effect > Effect::Isometry
             || self.effect_in_module(module, instance.definition) != Some(instance.source_effect)
         {
@@ -205,7 +207,12 @@ impl Compiler<'_> {
                     "nongeneric provider cache requires the original empty substitution",
                 ));
             }
-            Some((instance.definition, meaning, instance.source_effect))
+            Some((
+                instance.definition,
+                meaning,
+                instance.source_effect,
+                operations::ProviderRoot::of(&body),
+            ))
         } else {
             None
         };
@@ -237,18 +244,26 @@ impl Compiler<'_> {
             }
         }
         if let Some(record) = instance.record {
-            self.charge(module, span, self.instances[record].providers.len() + 1)?;
+            self.charge(
+                module,
+                span,
+                self.instances[record].providers[profile].len() + 1,
+            )?;
             let mut found = None;
-            for (ordinal, (requested, _)) in self.instances[record].providers.iter().enumerate() {
+            for (ordinal, (requested, _)) in
+                self.instances[record].providers[profile].iter().enumerate()
+            {
                 if *requested == meaning {
                     found = Some(ordinal);
                     break;
                 }
             }
             if let Some(ordinal) = found {
-                let cost = self.instances[record].providers[ordinal].1.copy_size();
+                let cost = self.instances[record].providers[profile][ordinal]
+                    .1
+                    .copy_size();
                 self.charge(module, span, cost)?;
-                return Ok(self.instances[record].providers[ordinal].1.clone());
+                return Ok(self.instances[record].providers[profile][ordinal].1.clone());
             }
         }
         self.charge(
@@ -279,7 +294,7 @@ impl Compiler<'_> {
         operation.access[1] &= reverse;
         operation.access[2] &= reverse && control;
         if let Some(record) = instance.record {
-            let providers = &self.instances[record].providers;
+            let providers = &self.instances[record].providers[profile];
             let growth = if providers.len() == providers.capacity() {
                 providers.len() + 1
             } else {
@@ -287,11 +302,9 @@ impl Compiler<'_> {
             };
             self.charge(module, span, growth + operation.copy_size() + 1)?;
             if growth != 0 {
-                self.instances[record].providers.reserve_exact(1);
+                self.instances[record].providers[profile].reserve_exact(1);
             }
-            self.instances[record]
-                .providers
-                .push((meaning, operation.clone()));
+            self.instances[record].providers[profile].push((meaning, operation.clone()));
         } else if let Some(cache) = closed_provider {
             self.charge(module, span, operation.copy_size() + 1)?;
             self.providers.insert(

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Keep evidence and selected typed materializations in separate body/provider
+  caches, retaining the actual native root representation during nongeneric
+  reuse. Four-way controlled permutations no longer fail when a provider was
+  prepared in the other profile. Fresh checks and complete artifact comparison
+  remain required; matching Raw instructions alone do not replace typed data.
 - Bind an internal structural qmatch context to the complete original function,
   actual input/result owner order and literal Raw interval. Retain additional
   and zero-width owners and the outer public effect; reuse fresh graph,
