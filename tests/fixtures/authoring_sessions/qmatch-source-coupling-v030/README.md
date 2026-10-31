@@ -1,5 +1,13 @@
 # Original qmatch source and evidence coupling
 
+The [provider cache history](provider-cache-first.tar.xz), compressed
+[index](provider-cache-index.json.xz) and [validation](provider-cache-validation.json.xz)
+retain seven informed controls, their first real refusal and separate repairs.
+The unchanged four-way permutation passes after Raw/typed cache separation;
+normal/MSRV checks retain corrupt-cache refusals. Original source variants use
+immutable Git bases and inert patches. Duplicate plan fields remain in complete
+reports. This is not independent initial authoring or issue completion.
+
 The separate [v2 integration history](context-v2-first.tar.xz),
 [index](context-v2-index.json) and [validation](context-v2-validation.json)
 retain fresh native/QDV and compiler observations for the structural context.

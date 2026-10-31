@@ -66,12 +66,28 @@ CONTEXT_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v
 CONTEXT_V2_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-first.tar.xz"
 CONTEXT_V2_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-index.json"
 CONTEXT_V2_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/context-v2-validation.json"
+PROVIDER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-first.tar.xz"
+PROVIDER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-index.json.xz"
+PROVIDER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-validation.json.xz"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
+
+
+def history_json(path):
+    """Read bounded inert metadata, including explicitly compressed JSON."""
+    data = path.read_bytes()
+    if len(data) > 4 * 1024 * 1024:
+        raise ValueError('oversized history metadata')
+    if path.suffix == '.xz':
+        decoder = lzma.LZMADecompressor(format=lzma.FORMAT_XZ, memlimit=64 * 1024 * 1024)
+        data = decoder.decompress(data, max_length=4 * 1024 * 1024 + 1)
+        if len(data) > 4 * 1024 * 1024 or not decoder.eof or decoder.unused_data:
+            raise ValueError('incomplete, trailing or oversized history metadata')
+    return json.loads(data)
 
 
 def bounded_history(archive_path, index_path):
     """Read inert member bytes only; never extract or replay saved commands."""
-    index = json.loads(index_path.read_text())
+    index = history_json(index_path)
     if index['archive'] != archive_path.name:
         raise ValueError('history archive name differs')
     packed = archive_path.read_bytes()
@@ -100,6 +116,35 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_provider_profiles_keep_first_controls_and_exact_failed_sources(self):
+        members = bounded_history(ROOT / PROVIDER_ARCHIVE, ROOT / PROVIDER_INDEX)
+        first = json.loads(members['first-checks/observations.json.txt'])
+        after = json.loads(members['after-checks/observations.json.txt'])
+        plan = json.loads(members['control-plan.json.txt'])
+        self.assertTrue(first['stable'] and after['stable'])
+        self.assertEqual([r['exit_code'] for r in first['records']], [0, 0, 1, 1, 1, 1, 1])
+        self.assertEqual([r['exit_code'] for r in after['records']], [0, 0, 0, 1, 1, 1, 1])
+        for row in plan['cases']:
+            for name, digest in row['inputs'].items():
+                content = members['first/' + row['name'] + '/' + name + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), digest)
+        self.assertEqual(first['before']['sources'], after['before']['sources'])
+        self.assertIn(b'different freshly checked Raw/source graph',
+                      members['first-checks/four-controlled-permutations/stdout.txt'])
+        self.assertIn(b'no entry found for key', members['checks/compiler/stdout.txt'])
+        self.assertIn(b'does not have a field named `function`', members['checks/compiler-second/stderr.txt'])
+        for label in ['final-stable', 'final-msrv', 'compiler-third', 'msrv-compiler', 'clippy', 'msrv-clippy']:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertEqual(report['before'], report['after'])
+        validation = history_json(ROOT / PROVIDER_VALIDATION)
+        self.assertEqual(validation['stable_integration'], 88)
+        self.assertEqual(validation['msrv_integration'], 88)
+        self.assertEqual(validation['stable_compiler_units'], 136)
+        self.assertEqual(validation['msrv_compiler_units'], 136)
+        self.assertFalse(validation['limits_raised'])
+        self.assertEqual(validation['issues_open'], [64, 195, 142])
+
     def test_context_v2_keeps_exact_first_inputs_and_separate_native_observations(self):
         members = bounded_history(ROOT / CONTEXT_V2_ARCHIVE, ROOT / CONTEXT_V2_INDEX)
         original = bounded_history(ROOT / BODY_ROOT / 'context-first.tar.xz',
