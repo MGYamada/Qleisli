@@ -231,7 +231,7 @@ the outer contract even when the selected operation is pure.
 Ordinary callers may retain other owners; only the actual callee
 fragment is submitted for its original function, and the complete runtime root
 still passes its independent typed gate. General expressions, nonstructural
-prefixes/suffixes, multiple selections and generic/constructed arms remain
+prefixes/suffixes and generic/constructed arms remain
 unsupported here. No source text or owner frame is synthesized
 to avoid those refusals.
 
