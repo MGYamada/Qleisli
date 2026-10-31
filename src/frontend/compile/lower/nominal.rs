@@ -12,7 +12,7 @@ mod tests;
 impl Lowerer<'_, '_> {
     /// Resolve the original constructor/label occurrence through the common
     /// source table. Spelling, width or a caller-supplied type is not authority.
-    fn enum_label(
+    pub(super) fn enum_label(
         &mut self,
         module: &str,
         value: &VariantValue,

@@ -1,13 +1,15 @@
 //! Coherent exact-label construction with a fresh native whole-circuit equation.
 //!
-//! The first executable slice uses the existing six-bit encoded contract gate.
-//! The full twelve-bit/64-label route still requires the kernel's actual-circuit
-//! restriction and arm-binding component; Rust sector projections cannot replace it.
+//! Built-in interfaces use the existing six-bit encoded contract gate; small
+//! nominal selector/target functions use the original-source gate on their whole call.
+//! The full twelve-bit/64-label route remains pending. Rust sector projections
+//! cannot replace independent source, arm, owner or actual-circuit checking.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::contract::exact::{Budget, Exact, Matrix};
 use crate::contract::{Circuit, Contract, ContractError, Encoding, MAX_CONTRACT_BITS};
 
+pub(super) mod nominal;
 #[cfg(test)]
 mod tests;
 
@@ -153,7 +155,27 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let selector = self.expr(module, &selection.selector, env)?;
         let selector_slot = self.quantum(module, selection.selector.span, &selector, false)?;
+        let target = self.expr(module, &selection.target, env)?;
+        let target_slot = self.quantum(module, selection.target.span, &target, false)?;
         let selector_basis = &self.raw.registers[&selector_slot].basis;
+        if selector_basis.basis_bits().is_none()
+            || self.raw.registers[&target_slot]
+                .basis
+                .basis_bits()
+                .is_none()
+        {
+            return nominal::emit(
+                self,
+                module,
+                span,
+                selection,
+                env,
+                selector,
+                selector_slot,
+                target,
+                target_slot,
+            );
+        }
         let selector_bits = match &selector_basis.kind {
             Kind::Unit => 0,
             Kind::Bit => 1,
@@ -173,8 +195,6 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, span, selector_basis.tree_size().nodes + count)?;
         let selector_basis = self.raw.registers[&selector_slot].basis.clone();
-        let target = self.expr(module, &selection.target, env)?;
-        let target_slot = self.quantum(module, selection.target.span, &target, false)?;
         let target_basis = &self.raw.registers[&target_slot].basis;
         let target_bits = target_basis.basis_bits().ok_or_else(|| {
             self.error(

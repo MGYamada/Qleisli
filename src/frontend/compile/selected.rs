@@ -123,6 +123,8 @@ fn process(
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),
+        runtime_signatures: BTreeMap::new(),
+        carrier_descriptions: Vec::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
         source_rows: BTreeMap::new(),

@@ -439,6 +439,7 @@ mod tests {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
+            nominal_qmatch: None,
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,

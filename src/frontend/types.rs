@@ -320,9 +320,20 @@ impl<N> Type<N> {
                     };
                 }
                 (Kind::Nominal(a), Kind::Nominal(b)) => {
-                    charge(a.metadata_cells())?;
-                    charge(b.metadata_cells())?;
-                    equal &= a.origin == b.origin;
+                    let shared = std::sync::Arc::ptr_eq(&a.origin, &b.origin);
+                    charge(if shared {
+                        a.metadata_copy_cells()
+                    } else {
+                        a.metadata_cells()
+                    })?;
+                    charge(if shared {
+                        b.metadata_copy_cells()
+                    } else {
+                        b.metadata_cells()
+                    })?;
+                    // Only the same immutable allocation skips the original
+                    // byte comparison. Names, widths and hashes never suffice.
+                    equal &= shared || a.origin == b.origin;
                     match (&a.body, &b.body) {
                         (nominal::Body::Enum(a), nominal::Body::Enum(b)) => equal &= a == b,
                         (nominal::Body::Record(a), nominal::Body::Record(b))
@@ -546,5 +557,44 @@ mod tests {
                 .equivalent_by(&T::tuple(vec![b]), same_size)
                 .unwrap()
         );
+    }
+
+    #[test]
+    fn shared_nominal_origins_skip_only_identical_original_bytes() {
+        use std::sync::Arc;
+        let original = nominal::Nominal {
+            origin: Arc::new(nominal::Origin {
+                module: "main".into(),
+                name: "Tri".into(),
+                source: Arc::from("pub enum Tri { A, B, C }"),
+                span: crate::frontend::ast::Span { start: 0, end: 23 },
+            }),
+            body: nominal::Body::Enum(vec!["A".into(), "B".into(), "C".into()]),
+        };
+        let first = T::nominal(original.clone());
+        let compare = |other: &T| {
+            let mut work = 0;
+            let equal = first
+                .equivalent_by_budgeted(other, &mut |a, b| Ok::<_, ()>(a == b), &mut |cells| {
+                    work += cells;
+                    Ok(())
+                })
+                .unwrap();
+            (equal, work)
+        };
+        let shared = compare(&first.clone());
+        let mut independent = original.clone();
+        independent.origin = Arc::new((*independent.origin).clone());
+        let copied = compare(&T::nominal(independent.clone()));
+        assert!(shared.0 && copied.0);
+        assert!(shared.1 < copied.1);
+        Arc::make_mut(&mut independent.origin).source = Arc::from("pub enum Tri { B, A, C }");
+        assert!(!compare(&T::nominal(independent)).0);
+        let mut reordered = original;
+        let nominal::Body::Enum(labels) = &mut reordered.body else {
+            unreachable!()
+        };
+        labels.swap(0, 1);
+        assert!(!compare(&T::nominal(reordered)).0);
     }
 }

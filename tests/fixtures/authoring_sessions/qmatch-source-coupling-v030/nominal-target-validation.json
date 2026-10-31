@@ -1,0 +1,148 @@
+{
+  "format": "qleisli.nominal-target-checks",
+  "version": 1,
+  "source_base": "c756de75ba3d9c7f0b4d66667b0e9677a5b54ee4",
+  "checks": [
+    {
+      "label": "nominal-target-first",
+      "exit_code": 101,
+      "seconds": 2.7567664169999997,
+      "child_peak_rss_bytes": 630292480
+    },
+    {
+      "label": "nominal-target-second",
+      "exit_code": 101,
+      "seconds": 13.426374375,
+      "child_peak_rss_bytes": 1185103872
+    },
+    {
+      "label": "nominal-target-third",
+      "exit_code": 101,
+      "seconds": 3.7467567500000003,
+      "child_peak_rss_bytes": 259997696
+    },
+    {
+      "label": "nominal-target-fourth",
+      "exit_code": 101,
+      "seconds": 8.196064667,
+      "child_peak_rss_bytes": 987201536
+    },
+    {
+      "label": "nominal-target-work-trace",
+      "exit_code": 101,
+      "seconds": 10.301187624999999,
+      "child_peak_rss_bytes": 1073872896
+    },
+    {
+      "label": "nominal-target-fifth",
+      "exit_code": 101,
+      "seconds": 10.534824125,
+      "child_peak_rss_bytes": 1096941568
+    },
+    {
+      "label": "nominal-target-sixth",
+      "exit_code": 101,
+      "seconds": 18.416983875,
+      "child_peak_rss_bytes": 1705820160
+    },
+    {
+      "label": "nominal-target-seventh",
+      "exit_code": 101,
+      "seconds": 13.016871292000001,
+      "child_peak_rss_bytes": 1133707264
+    },
+    {
+      "label": "nominal-target-eighth",
+      "exit_code": 101,
+      "seconds": 14.802332708,
+      "child_peak_rss_bytes": 1234698240
+    },
+    {
+      "label": "nominal-target-ninth",
+      "exit_code": 0,
+      "seconds": 16.93093475,
+      "child_peak_rss_bytes": 1118044160
+    },
+    {
+      "label": "nominal-target-native-first",
+      "exit_code": 0,
+      "seconds": 24.176245458,
+      "child_peak_rss_bytes": 2108882944
+    },
+    {
+      "label": "nominal-target-stable-focused-first",
+      "exit_code": 0,
+      "seconds": 72.97164791700001,
+      "child_peak_rss_bytes": 928382976
+    },
+    {
+      "label": "nominal-target-stable-units",
+      "exit_code": 101,
+      "seconds": 13.669124457999999,
+      "child_peak_rss_bytes": 1582497792
+    },
+    {
+      "label": "nominal-target-stable-units-second",
+      "exit_code": 0,
+      "seconds": 11.612706833,
+      "child_peak_rss_bytes": 1476706304
+    },
+    {
+      "label": "nominal-target-original-cli",
+      "exit_code": 0,
+      "seconds": 4.4306445420000005,
+      "child_peak_rss_bytes": 158810112
+    },
+    {
+      "label": "nominal-target-msrv-focused",
+      "exit_code": 0,
+      "seconds": 82.609986625,
+      "child_peak_rss_bytes": 1803763712
+    },
+    {
+      "label": "nominal-target-msrv-units",
+      "exit_code": 0,
+      "seconds": 28.963378834,
+      "child_peak_rss_bytes": 2233090048
+    },
+    {
+      "label": "nominal-target-clippy",
+      "exit_code": 101,
+      "seconds": 3.2198981669999998,
+      "child_peak_rss_bytes": 629194752
+    },
+    {
+      "label": "nominal-target-clippy-second",
+      "exit_code": 0,
+      "seconds": 17.993780249991687,
+      "child_peak_rss_bytes": 809664512
+    },
+    {
+      "label": "nominal-target-final-selected",
+      "exit_code": 0,
+      "seconds": 23.548393207980553,
+      "child_peak_rss_bytes": 1158430720
+    },
+    {
+      "label": "nominal-target-final-msrv-units",
+      "exit_code": 0,
+      "seconds": 16.317190792004112,
+      "child_peak_rss_bytes": 1542078464
+    }
+  ],
+  "stable_integration_tests": 77,
+  "stable_unit_tests": 31,
+  "msrv_integration_tests": 77,
+  "msrv_unit_tests": 31,
+  "final_arm_allocation_checks": {
+    "stable_selected_tests": 25,
+    "msrv_unit_tests": 31
+  },
+  "cli_observations": 6,
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "goal_percent": 58.27,
+  "scope": "Informed bounded source/compiler work, not independent initial authoring. First sources and real refusals remain unchanged; successful CLI observations use those exact first programs. Prior work-capacity and cache-sensitive test failures remain bound to their original Rust source bytes. Six-bit/64-arm/1024-step and host work limits are unchanged. Native checks cover full nominal target types, phase, padding leakage, actual controlled implementations and fresh retained-object comparison. No Lean or native rule changed. No source-preservation theorem, full qmatch support, protected guarantee expansion, full CI/review, release approval or issue completion is claimed."
+}

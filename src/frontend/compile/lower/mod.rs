@@ -125,6 +125,7 @@ struct Lowerer<'c, 'p> {
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
+    nominal_qmatch: Option<quantum_match::nominal::Frame>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
@@ -502,7 +503,16 @@ impl Lowerer<'_, '_> {
         // A callee's lexical binders cannot explain the caller's operands.
         let caller_origins = std::mem::take(&mut self.tuple_binding_origins);
         let caller_updates = std::mem::take(&mut self.access_updates);
-        let result = self.call_user_inner(key, args, site);
+        let caller_qmatch = self.nominal_qmatch.take();
+        let result = (|| {
+            self.nominal_qmatch = quantum_match::nominal::Frame::start(self, *key, &args)?;
+            let value = self.call_user_inner(key, args, site)?;
+            if let Some(frame) = self.nominal_qmatch.take() {
+                frame.finish(self, &value)?;
+            }
+            Ok(value)
+        })();
+        self.nominal_qmatch = caller_qmatch;
         self.tuple_binding_origins = caller_origins;
         self.access_updates = caller_updates;
         self.depth -= 1;
@@ -566,14 +576,13 @@ impl Lowerer<'_, '_> {
             });
             self.compiler
                 .charge(module, span, value.tree_size().nodes)?;
-            self.compiler.charge(
-                module,
-                span,
-                value
-                    .nominal_equality_work()
-                    .saturating_add(Value::nominal_type_work(&ty)),
-            )?;
-            if value.ty() != ty {
+            self.compiler
+                .charge(module, span, value.nominal_copy_work())?;
+            if !value.ty().equivalent_by_budgeted(
+                &ty,
+                &mut |a, b| Ok::<_, CompileError>(a == b),
+                &mut |cells| self.compiler.charge(module, span, cells),
+            )? {
                 let argument = match &param.pattern.kind {
                     PatternKind::Name(name) => format!("argument `{}`", name.text),
                     _ => format!("argument {}", index + 1),
@@ -612,14 +621,13 @@ impl Lowerer<'_, '_> {
             };
             self.compiler
                 .charge(&key_name.0, result_span, value.tree_size().nodes)?;
-            self.compiler.charge(
-                &key_name.0,
-                result_span,
-                value
-                    .nominal_equality_work()
-                    .saturating_add(Value::nominal_type_work(&return_ty)),
-            )?;
-            if value.ty() != return_ty {
+            self.compiler
+                .charge(&key_name.0, result_span, value.nominal_copy_work())?;
+            if !value.ty().equivalent_by_budgeted(
+                &return_ty,
+                &mut |a, b| Ok::<_, CompileError>(a == b),
+                &mut |cells| self.compiler.charge(&key_name.0, result_span, cells),
+            )? {
                 return Err(self.error(
                     &key_name.0,
                     result_span,
@@ -1726,6 +1734,7 @@ impl Lowerer<'_, '_> {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
+            nominal_qmatch: None,
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
@@ -2033,6 +2042,7 @@ fn lower_function_in_context(
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
+        nominal_qmatch: None,
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,

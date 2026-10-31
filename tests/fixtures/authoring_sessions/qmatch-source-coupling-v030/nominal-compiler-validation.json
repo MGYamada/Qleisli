@@ -1,0 +1,74 @@
+{
+  "format": "qleisli.nominal-qmatch-compiler-checks",
+  "version": 1,
+  "source_base": "0eb85c6509c1a4a7bffc6ebca087f8e0ab1cee25",
+  "original_first_sources": {
+    "archive": "compiler-first.tar.xz",
+    "sha256": "22b7b96d245c358d439447f8b1067e95b0df40c13e1fc2f35b18fddedd67f792"
+  },
+  "checks": [
+    {
+      "label": "nominal-qmatch-first",
+      "exit_code": 0,
+      "seconds": 14.652162042,
+      "child_peak_rss_bytes": 1219395584
+    },
+    {
+      "label": "nominal-qmatch-second",
+      "exit_code": 0,
+      "seconds": 6.087612791,
+      "child_peak_rss_bytes": 258932736
+    },
+    {
+      "label": "nominal-qmatch-third",
+      "exit_code": 101,
+      "seconds": 7.088699417,
+      "child_peak_rss_bytes": 1128857600
+    },
+    {
+      "label": "nominal-qmatch-fourth",
+      "exit_code": 101,
+      "seconds": 2.472557292,
+      "child_peak_rss_bytes": 863748096
+    },
+    {
+      "label": "nominal-qmatch-fifth",
+      "exit_code": 0,
+      "seconds": 5.456055875,
+      "child_peak_rss_bytes": 280150016
+    },
+    {
+      "label": "nominal-qmatch-stable",
+      "exit_code": 0,
+      "seconds": 53.39896825,
+      "child_peak_rss_bytes": 277397504
+    },
+    {
+      "label": "nominal-qmatch-msrv",
+      "exit_code": 0,
+      "seconds": 26.53112,
+      "child_peak_rss_bytes": 1165705216
+    },
+    {
+      "label": "nominal-qmatch-clippy",
+      "exit_code": 0,
+      "seconds": 17.986166209,
+      "child_peak_rss_bytes": 754958336
+    },
+    {
+      "label": "nominal-qmatch-original-cli",
+      "exit_code": 0,
+      "seconds": 2.043997083004797,
+      "child_peak_rss_bytes": 161185792
+    }
+  ],
+  "stable_tests": 74,
+  "msrv_tests": 40,
+  "cli_observations": 6,
+  "issues": {
+    "64": "OPEN",
+    "195": "OPEN"
+  },
+  "goal_percent": 58.27,
+  "scope": "Informed bounded compiler integration; first source bytes and prior refusals remain in the referenced original archive. New command streams, before/after source identities, test Error/Diagnostic API mistakes and repairs are retained. Four new native source regressions and the unchanged six original CLI cases are observations, not a source-preservation theorem, binary attestation, full qmatch support, new guarantee, full CI or issue completion."
+}

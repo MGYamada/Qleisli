@@ -7,6 +7,84 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
+/// Original physical arm subjects, still untrusted until the enclosing source
+/// and carrier-sector check. A physical signature is not a nominal contract.
+pub(crate) enum ArmBody {
+    Evidence(std::sync::Arc<crate::contract::FunctionEvidence>),
+    Physical {
+        bits: u32,
+        raw: crate::ir::RawProgram,
+        identity: Box<crate::contract::function::RetainedIdentity>,
+    },
+}
+
+pub(crate) struct ArmSubject {
+    pub body: ArmBody,
+    pub controlled: crate::ir::RawProgram,
+}
+
+/// Pack actual source/body subjects with the shared QIRF encoder. The returned
+/// bytes are a proposal only; indices are derived from this exact graph.
+pub(crate) fn proposal(
+    raw: &crate::ir::RawProgram,
+    interface: Interface,
+    source: SourceSite,
+    arms: &[ArmSubject],
+    sources: &[(String, String)],
+) -> Result<(Vec<u8>, Vec<u8>)> {
+    if arms.is_empty() || arms.len() > 64 {
+        return Err(Error::limit("qmatch arm capacity"));
+    }
+    let mut remaining = json::MAX_BYTES;
+    interface_storage(&interface, &mut remaining)?;
+    let mut encoder = super::Encoder::new(super::Version::V2);
+    for (name, text) in sources {
+        encoder.source(name, text)?;
+    }
+    let (root, mut encoder) = super::prepare_proposal(raw, None, encoder)?;
+    let mut indices = Vec::with_capacity(arms.len());
+    for arm in arms {
+        let evidence = match &arm.body {
+            ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
+            ArmBody::Physical {
+                bits,
+                raw,
+                identity,
+            } => {
+                // Encode a proposal, not a FunctionEvidence constructor. The
+                // fresh source gate associates this entry with the original
+                // full target type and checks both actual encoded bodies.
+                encoder.object()?;
+                let index = encoder.entries.len();
+                encoder.entries.push(Value::Null);
+                encoder.evidence_fields(
+                    index,
+                    &crate::contract::BasisType::Bits(*bits),
+                    raw,
+                    raw,
+                    identity.parts(),
+                    None,
+                )?;
+                index
+            }
+        };
+        indices.push(Arm {
+            evidence: evidence as u32,
+            controlled: encoder.program(&arm.controlled)? as u32,
+        });
+    }
+    let request = Request {
+        required: interface.clone(),
+        attached: interface,
+        source,
+        arms: indices,
+    };
+    Ok((
+        super::finish_proposal(root, None, encoder)?,
+        request.encode()?,
+    ))
+}
+
 const PROFILE: &str = "finite-source-qmatch-named-v1";
 
 /// An actual original UTF-8 byte occurrence, independently read by Lean.

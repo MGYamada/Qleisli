@@ -12,6 +12,7 @@
 
 mod basis;
 mod calls;
+mod carriers;
 mod circuit;
 mod dormant;
 mod instances;
@@ -235,6 +236,10 @@ struct Compiler<'a> {
     // Ordinary nominal calls use bodies; physical label tables stay unavailable.
     deferred_nominal_tables: BTreeSet<Key>,
     checked: BTreeMap<Key, AcceptedProgram>,
+    // Closed nongeneric type copies within this immutable source judgment.
+    // The producer profile is part of the key; effects/evidence are not cached.
+    runtime_signatures: BTreeMap<(Key, bool), (Vec<Ty>, Ty)>,
+    carrier_descriptions: Vec<(Ty, Vec<crate::interchange::carrier::Atom>)>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
@@ -387,6 +392,40 @@ impl<'a> Compiler<'a> {
     }
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
+        let decl = self.declarations[key];
+        let eligible = decl.static_params.is_empty()
+            && matches!(
+                decl.kind,
+                FnKind::Inferred | FnKind::Unitary | FnKind::Isometry | FnKind::Observe
+            );
+        let cache = (*key, self.force_typed_root);
+        let module = self.source.resolution.declaration(*key).name.0.clone();
+        let copy_cost = |parameters: &[Ty], result: &Ty| {
+            parameters
+                .iter()
+                .map(operations::port_copy_nodes)
+                .sum::<usize>()
+                + operations::port_copy_nodes(result)
+                + parameters.len()
+                + 1
+        };
+        if eligible {
+            self.charge(&module, decl.span, self.runtime_signatures.len() + 1)?;
+            if let Some((parameters, result)) = self.runtime_signatures.get(&cache) {
+                let cost = copy_cost(parameters, result);
+                self.charge(&module, decl.span, cost)?;
+                return Ok(self.runtime_signatures[&cache].clone());
+            }
+        }
+        let value = self.uncached_signature(key)?;
+        if eligible {
+            self.charge(&module, decl.span, copy_cost(&value.0, &value.1))?;
+            self.runtime_signatures.insert(cache, value.clone());
+        }
+        Ok(value)
+    }
+
+    fn uncached_signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
         let module = self.dormant_module(*key, decl.span)?;
         let interface = &self.source.interfaces[key];
@@ -1105,6 +1144,8 @@ fn process_loaded_project_details(
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),
+        runtime_signatures: BTreeMap::new(),
+        carrier_descriptions: Vec::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
         source_rows: BTreeMap::new(),
@@ -1402,6 +1443,8 @@ mod snapshot_tests {
             basis: BTreeMap::new(),
             deferred_nominal_tables: BTreeSet::new(),
             checked: BTreeMap::new(),
+            runtime_signatures: BTreeMap::new(),
+            carrier_descriptions: Vec::new(),
             function_evidence: BTreeMap::new(),
             instrument_evidence: BTreeMap::new(),
             source_rows: BTreeMap::new(),

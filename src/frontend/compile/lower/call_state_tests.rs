@@ -63,6 +63,8 @@ fn compiler_from_prepared<'p>(
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         checked: BTreeMap::new(),
+        runtime_signatures: BTreeMap::new(),
+        carrier_descriptions: Vec::new(),
         function_evidence: BTreeMap::new(),
         instrument_evidence: BTreeMap::new(),
         source_rows: BTreeMap::new(),
@@ -86,6 +88,19 @@ fn compiler_from_prepared<'p>(
 )]
 #[test]
 fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
+    check_body_budget_refusal(false);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn cached_signature_budget_refusal_keeps_the_same_caller_and_owner_obligations() {
+    check_body_budget_refusal(true);
+}
+
+fn check_body_budget_refusal(warm_signature: bool) {
     let text = " isometry fn make() -> Q<Unit> { let u = unit(()); u }";
     let project = Project {
         edition_context: crate::frontend::project::ProjectEdition::Explicit(
@@ -113,6 +128,13 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
     // Vary host work around one zero-qubit body. This is not a maximum-width
     // quantum case, and no rejected result is submitted for native acceptance.
     for remaining in 0..=4096 {
+        // Keep each probe's starting cache state fixed. Otherwise a preceding
+        // refusal may populate the cache and skip the next body's failure window.
+        compiler.runtime_signatures.clear();
+        compiler.work = 0;
+        if warm_signature {
+            compiler.signature(&key).expect("original closed signature");
+        }
         let started = MAX_WORK - remaining;
         compiler.work = started;
         let mut lower = Lowerer {
@@ -121,6 +143,7 @@ fn body_budget_refusal_restores_effect_context_but_keeps_raw_owners_and_work() {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
+            nominal_qmatch: None,
             tuple_binding_origins: vec![BTreeMap::new()],
             access_updates: vec![BTreeSet::new()],
             effect: Effect::Observe,

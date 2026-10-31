@@ -22,13 +22,10 @@ fn describe(lower: &mut Lowerer<'_, '_>, key: Key, ty: &Ty) -> NativeResult<Vec<
         .0
         .clone();
     let span = lower.compiler.declarations[&key].span;
-    crate::frontend::specialize::carrier_description_budgeted(ty, &mut |_, cells| {
-        lower
-            .compiler
-            .charge(&name, span, cells)
-            .map_err(|e| crate::frontend::compile::Error::new("limit", span, e.to_string()))
-    })
-    .map_err(|e| crate::interchange::Error::new(e.code, e.to_string()))
+    lower
+        .compiler
+        .carrier_description(&name, span, ty)
+        .map_err(failure)
 }
 
 fn type_tree(lower: &mut Lowerer<'_, '_>, key: Key, ty: &Ty) -> NativeResult<Vec<Atom>> {
@@ -96,7 +93,7 @@ fn storage(
                 .tree_size()
                 .nodes
                 .saturating_mul(2)
-                .saturating_add(value.nominal_equality_work()),
+                .saturating_add(value.nominal_copy_work()),
         )
         .map_err(failure)?;
     if !value.owns_quantum() {
@@ -163,12 +160,14 @@ pub(super) fn inputs(
         value
             .tree_size()
             .nodes
-            .saturating_add(value.nominal_equality_work())
+            .saturating_add(value.nominal_copy_work())
     }))
     .saturating_add(total_size(lower.raw.registers.values().map(|register| {
         register
             .size()
-            .saturating_add(Value::nominal_type_work(&register.basis))
+            .saturating_add(crate::frontend::compile::operations::port_copy_nodes(
+                &register.basis,
+            ))
     })));
     lower.compiler.charge(&name, span, cost)?;
     Ok(Inputs {
@@ -234,11 +233,11 @@ pub(super) fn accept(
             total_size(parameters.iter().map(|ty| ty.tree_size().nodes))
                 .saturating_mul(3)
                 .saturating_add(result.tree_size().nodes.saturating_mul(3))
-                .saturating_add(result.nominal_equality_work())
+                .saturating_add(result.nominal_copy_work())
                 .saturating_add(total_size(lower.raw.registers.values().map(|register| {
-                    register
-                        .size()
-                        .saturating_add(Value::nominal_type_work(&register.basis))
+                    register.size().saturating_add(
+                        crate::frontend::compile::operations::port_copy_nodes(&register.basis),
+                    )
                 }))),
         )
         .map_err(failure)?;

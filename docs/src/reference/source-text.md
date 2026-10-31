@@ -183,7 +183,7 @@ vector `|s,y>` to `sum_z U_s[z,y] |s,z>` and extends linearly to every input,
 including inputs entangled with an external reference. Thus it preserves
 coherence between selector sectors and agrees exactly with `qif` for `Bit`.
 
-The finite executable slice currently accepts built-in selectors only and
+The encoded-contract executable slice uses built-in interfaces and
 retains the existing encoded-contract limits of six joined selector/target
 bits and 1024 circuit steps. Selector axes precede target axes, so `(s,y)` has
 integer coordinate `s + 2^selector_bits * y`, independently of written arm
@@ -207,7 +207,27 @@ entry's lexical dependency closure. An unrelated qmatch declaration or a comment
 does not redirect a built-in entry. The legacy hierarchy projection still
 refuses qmatch; a failed check never triggers a different acceptance path.
 
-Nominal selector execution remains explicitly unsupported. Exposing the full twelve-joined-bit/64-label boundary
+Small nominal enum selectors also use the shared emitter for a closed named
+function with exactly two quantum parameters and one structural qmatch body.
+Targets may be built-in bases, fieldless enums or finite records, including
+empty records. Built-in ordinal selectors may also select nominal targets.
+The six-joined-bit and 1024-step producer limits remain. Original names/tuple
+bindings and the complete
+structural return may surround the selection. Each actual call fragment, with
+its original input/output owners and every emitted operation, passes the native
+source/arm gate described below. Built-in target arms provide their existing
+function evidence. Nominal target arms submit their original physical body and
+a proposed controlled implementation through the same QIRF encoder; the native
+gate binds the full original target type and checks its actual code/body and
+controlled equations. The physical entry alone grants no operation capability.
+Ordinary callers may retain other owners; only the actual callee
+fragment is submitted for its original function, and the complete runtime root
+still passes its independent typed gate. General expressions, nonstructural
+prefixes/suffixes, multiple selections and generic/constructed arms remain
+unsupported here. No source text or owner frame is synthesized
+to avoid those refusals.
+
+Exposing the full twelve-joined-bit/64-label boundary
 still requires original source binding and native integration of the restriction
 and arm checks below; the small slice does not replace that requirement. The internal finite restriction
 component now proves correspondence through actual contributions, accumulation,
@@ -256,8 +276,9 @@ A matching zero-width source/Raw permutation is allowed; a mismatched one
 refuses. Opaque-owner refinements, allocation/release and general calls/control
 flow still need their checked source/representation rules. The internal
 native/QDV component retains its actual graph/request but grants no ordinary
-source execution handle. General source binding and nominal execution remain
-unfinished. Common enum checks, native acceptance
+source execution handle on its own. The bounded compiler adapter above checks
+that component before the separate runtime-root acceptance; general source
+binding and nominal integration remain unfinished. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
 the separate ordinary-v2 route above. `qif` keeps its existing

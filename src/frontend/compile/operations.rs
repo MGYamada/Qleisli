@@ -90,6 +90,21 @@ pub(super) fn port_nodes(ty: &Ty) -> usize {
     }
 }
 
+/// Owned type cloning shares immutable original source identities.
+pub(super) fn port_copy_nodes(ty: &Ty) -> usize {
+    match &ty.kind {
+        Kind::Q(child) => 1 + port_copy_nodes(child),
+        Kind::Tuple(fields) => fields.iter().fold(1usize, |cells, field| {
+            cells.saturating_add(port_copy_nodes(field))
+        }),
+        Kind::Nominal(nominal) => nominal.fields().fold(
+            1usize.saturating_add(nominal.metadata_copy_cells()),
+            |cells, field| cells.saturating_add(port_copy_nodes(field)),
+        ),
+        _ => 1,
+    }
+}
+
 /// Required metadata from the complete checked declaration; never executable.
 pub(super) struct RequiredOperation {
     pub(super) basis: Ty,
@@ -123,7 +138,7 @@ fn remapped(mut steps: Vec<CircuitStep>, axes: &[usize]) -> Vec<CircuitStep> {
     }
     steps
 }
-fn controlled(steps: Vec<CircuitStep>, bits: usize) -> Vec<CircuitStep> {
+pub(super) fn controlled(steps: Vec<CircuitStep>, bits: usize) -> Vec<CircuitStep> {
     let mut steps = remapped(steps, &(1..=bits).collect::<Vec<_>>());
     for s in &mut steps {
         s.controls.push(BitControl {

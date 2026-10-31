@@ -169,3 +169,190 @@ fn shared_dto_faults_agree_with_the_independent_lean_reader() {
         assert_eq!(Request::decode(bytes).is_ok(), expected, "DTO case {name}");
     }
 }
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
+    use crate::contract::function::{FunctionIdentity, RetainedIdentity};
+    use crate::ir::{BitControl, CircuitAction, CircuitStep, RawOp, RawProgram, WireId};
+    let source = "pub enum Tri{A,B,C} pub enum Other{A,B,C}
+        pub unitary fn idle(q:Q<Tri>)->Q<Tri>{q}
+        pub unitary fn phase(q:Q<Tri>)->Q<Tri>{global_phase_eighth(q)}
+        pub unitary fn choose(s:Q<Bit>,q:Q<Tri>)->(Q<Bit>,Q<Tri>){
+            qmatch(s,q){0=>idle,1=>phase}}";
+    let port = |token, wires: Vec<u32>| QuantumPort {
+        token: TokenId(token),
+        shape: BasisShape {
+            bits: wires.len() as u8,
+        },
+        wires: wires.into_iter().map(WireId).collect(),
+    };
+    let phase = |power, control: bool| CircuitStep {
+        controls: if control {
+            vec![BitControl {
+                index: 0,
+                when_one: true,
+            }]
+        } else {
+            vec![]
+        },
+        action: CircuitAction::Monomial {
+            indices: vec![],
+            permutation: vec![0],
+            phases: vec![power],
+        },
+    };
+    let body = |steps: Vec<CircuitStep>| RawProgram {
+        quantum_inputs: vec![port(0, vec![0]), port(1, vec![1, 2])],
+        classical_inputs: vec![],
+        operations: vec![
+            RawOp::Join {
+                left: TokenId(0),
+                right: TokenId(1),
+                output: TokenId(2),
+            },
+            RawOp::ApplyUnitary {
+                input: TokenId(2),
+                output: TokenId(3),
+                steps,
+            },
+            RawOp::Split {
+                input: TokenId(3),
+                left: TokenId(4),
+                right: TokenId(5),
+                left_bits: 1,
+            },
+        ],
+        quantum_outputs: vec![TokenId(4), TokenId(5)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let subjects = || {
+        ["idle", "phase"]
+            .into_iter()
+            .enumerate()
+            .map(|(ordinal, name)| {
+                let raw = RawProgram {
+                    quantum_inputs: vec![port(0, vec![0, 1])],
+                    classical_inputs: vec![],
+                    operations: vec![RawOp::ApplyUnitary {
+                        input: TokenId(0),
+                        output: TokenId(1),
+                        steps: if ordinal == 0 {
+                            vec![]
+                        } else {
+                            vec![phase(1, false)]
+                        },
+                    }],
+                    quantum_outputs: vec![TokenId(1)],
+                    classical_outputs: vec![],
+                    declared_effect: Effect::Unitary,
+                };
+                ArmSubject {
+                    body: ArmBody::Physical {
+                        bits: 2,
+                        raw,
+                        identity: Box::new(RetainedIdentity::Owned(FunctionIdentity {
+                            implementation: format!("main::{name}"),
+                            specification: format!("main::{name}"),
+                            sources: vec![("main".into(), source.into())],
+                        })),
+                    },
+                    controlled: body(if ordinal == 0 {
+                        vec![]
+                    } else {
+                        vec![phase(1, true)]
+                    }),
+                }
+            })
+            .collect::<Vec<_>>()
+    };
+    let target = vec![Atom::Enum(
+        Arc::new(Origin {
+            module: "main".into(),
+            declaration: "Tri".into(),
+            source: source.into(),
+        }),
+        vec!["A".into(), "B".into(), "C".into()],
+    )];
+    let interface = Interface {
+        inputs: vec![
+            Owner {
+                port: port(0, vec![0]),
+                basis: vec![Atom::Bit],
+            },
+            Owner {
+                port: port(1, vec![1, 2]),
+                basis: target.clone(),
+            },
+        ],
+        outputs: vec![
+            Owner {
+                port: port(4, vec![0]),
+                basis: vec![Atom::Bit],
+            },
+            Owner {
+                port: port(5, vec![1, 2]),
+                basis: target,
+            },
+        ],
+        public_effect: Effect::Unitary,
+    };
+    let site = SourceSite {
+        module: "main".into(),
+        function: "choose".into(),
+        offset: source.find("qmatch").unwrap() as u32,
+    };
+    let kernel =
+        crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
+    let check = |raw: &RawProgram, interface: Interface, arms: &[ArmSubject]| {
+        let (artifact, request) = proposal(
+            raw,
+            interface,
+            site.clone(),
+            arms,
+            &[("main".into(), source.into())],
+        )
+        .unwrap();
+        kernel.check_qmatch_source(&artifact, &request)
+    };
+    let actual = body(vec![phase(1, true)]);
+    assert_eq!(
+        check(&actual, interface.clone(), &subjects())
+            .unwrap()
+            .native()
+            .mode(),
+        "--qmatch-source-check"
+    );
+    assert!(check(&body(vec![phase(7, true)]), interface.clone(), &subjects()).is_err());
+    let mut wrong = subjects();
+    wrong[1].controlled = body(vec![phase(7, true)]);
+    assert!(check(&actual, interface.clone(), &wrong).is_err());
+    let mut leaking = subjects();
+    let ArmBody::Physical { raw, .. } = &mut leaking[1].body else {
+        unreachable!()
+    };
+    let RawOp::ApplyUnitary { steps, .. } = &mut raw.operations[0] else {
+        unreachable!()
+    };
+    *steps = vec![CircuitStep {
+        controls: vec![],
+        action: CircuitAction::Monomial {
+            indices: vec![0, 1],
+            permutation: vec![3, 1, 2, 0],
+            phases: vec![0; 4],
+        },
+    }];
+    assert!(check(&actual, interface.clone(), &leaking).is_err());
+    let mut wrong_type = interface;
+    for owner in [&mut wrong_type.inputs[1], &mut wrong_type.outputs[1]] {
+        let Atom::Enum(origin, _) = &mut owner.basis[0] else {
+            unreachable!()
+        };
+        Arc::make_mut(origin).declaration = "Other".into();
+    }
+    assert!(check(&actual, wrong_type, &subjects()).is_err());
+}

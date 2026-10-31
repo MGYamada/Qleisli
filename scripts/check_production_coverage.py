@@ -211,7 +211,7 @@ RUNTIME_RESULT_PROOF = {
 
 QMATCH_PROOF = {
     'proof_scope': 'NativeContext.run_qmatch_binding retains the actual execution-only QLV3 subject and exact QDV comparison. Protocol.Qmatch.check_binding binds original packet/artifact/request bytes and one successful SourceSector check. SourceSector.check_bound retains original header/operand/arm queries, canonical label coverage, complete nominal code/owner frames, actual evidence-entry inputs/dependency snapshots and actual main/U/CU sector equations. FiniteRestriction checked theorems relate the actual step/accumulator/circuit computation to restricted sectors; Raw/QIRF bindings retain the original bodies. CheckedQmatch.Binding.root_safe derives original Raw ownership/classical scope through the shared gate without enlarging the human-admitted ledger scope. Rust view walkers retain the same graph, circuit/matrix caches, source focus and request objects before a fresh component decision.',
-    'gaps': 'Bounded named-arm component only; no ordinary/selected quantum source execution, general expression/call frames, other valid owner mappings, constructed/static/generic arms or complete twelve-bit/64-label source profile. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
+    'gaps': 'Bounded named-arm component only. The untrusted compiler adapter submits actual complete two-argument structural nominal call fragments and separately checks the whole runtime root; the component handle has no raw conversion. Nominal targets use physical arm proposals bound to original full types and actual code/body/control equations by the same native gate. General expression/call frames, other valid owner mappings, constructed/static/generic arms and the complete twelve-bit/64-label source profile remain pending. No original source-body lowering, decoder/walker/native compiler/deployed binary/runtime/target preservation theorem, inverse/control grant, cleanup/resource certification, new guarantee admission or broader QS/PR/RS/EXACT/S05 discharge. Headers/names and valid output Raw alone do not prove source-function preservation. Fresh compiled native checks, full canonical proof maintenance and current-head CI remain separately required.',
 }
 
 
@@ -280,8 +280,25 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_export')]),
     'qmatch-proposal': path_rule('untrusted-proposal', 'qmatch-component', '', [
         ('src/interchange/qmatch.rs', ['pub struct SourceSite', 'pub struct Arm', 'pub struct Request',
-            'pub fn encode(', 'pub fn decode(']),
-    ], [('src/interchange/qmatch/tests.rs', 'proposed_success_labels_logical_matrices_roots_and_implementations_refuse')]),
+            'pub fn encode(', 'pub fn decode(', 'pub(crate) fn proposal(', 'encoder.evidence(evidence)?', 'encoder.program(&arm.controlled)?', 'encoder.evidence_fields(']),
+        ('src/frontend/compile/lower/quantum_match/nominal.rs', ['struct Frame', 'fn start(', 'fn finish(',
+            'lower.raw.operations[self.start..].to_vec()', 'check_qmatch_source(&artifact, &request)',
+            'lower.enum_label(module, label)?', 'arms::prepare(']),
+        ('src/frontend/compile/lower/quantum_match/nominal/arms.rs', ['fn prepare(', 'ArmBody::Physical',
+            'Access::Controlled', 'circuit::flatten(', 'operations::controlled(', 'retained_sources(']),
+        ('src/frontend/compile/carriers.rs', ['fn carrier_description(', 'equivalent_by_budgeted(',
+            'carrier_description_budgeted(', 'self.work = work;']),
+        ('src/frontend/compile/lower/mod.rs', ['Frame::start(self, *key, &args)?', 'frame.finish(self, &value)?',
+            'self.nominal_qmatch = caller_qmatch;']),
+    ], [('src/interchange/qmatch/tests.rs', 'proposed_success_labels_logical_matrices_roots_and_implementations_refuse'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_binds_the_actual_complete_call'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_uses_original_imports_and_public_arm_effects'),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_preserves_nominal_targets_and_original_phases'),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_nominal_target_keeps_two_empty_owner_identities'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_target_arms_keep_original_imports_and_public_effects'),
+        ('src/interchange/qmatch/tests.rs', 'physical_arm_proposals_require_full_nominal_code_and_actual_control')]),
     'qmatch-check': path_rule('native-acceptance', 'qmatch-component', '--qmatch-source-check', [
         ('src/interchange/native/qmatch.rs', ['pub fn check_qmatch_source(', 'qmatch::complete(prepared.graph(), &request)?',
             '"--qmatch-source-check"', 'prepared.bind(native)?']),

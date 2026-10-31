@@ -244,7 +244,16 @@ operation arms require their original provider bodies to pass the existing
 finite evidence gates; the actual emitted circuit still passes the separate
 six-bit encoded equation. Original AST occurrences and lexical dependencies
 select CLI routing before compilation. That routing grants no acceptance and
-never retries a failed native decision. Nominal qmatch remains pending.
+never retries a failed native decision. Small nominal named-arm qmatch functions
+also submit the complete actual callee fragment to the existing source/arm gate
+below before whole-root runtime acceptance. The fragment retains its original
+two quantum arguments, structural body, actual returned owners and named-arm
+evidence; suspended caller owners stay in the complete outer Raw state.
+Nominal enum/record targets, including empty records, retain their full original
+types with enum or built-in ordinal selectors. Their physical arm entries and
+controls are untrusted proposals: the same native source/sector gate binds the
+full target type, actual body and code equations. It issues no provider capability.
+Nonstructural bodies and the full twelve-bit profile remain pending.
 This does not grant operation/provider access: those preparations retain their
 separate finite constraints and evidence. Operation-formal closure, nominal
 coherent-table/Meaning and wider qmatch integration remain pending. Independent
@@ -260,8 +269,9 @@ outside the logical interface. Literal retained-view expectations include
 the four dyadic coordinates of an eighth-root phase. Phase, control-polarity
 and evidence faults must reach the equation gate; original nominal/arm/owner
 substitutions reach the request gate, and stale compared output reaches QDV
-refusal. These component checks do not supply ordinary source execution or
-the full twelve-bit profile.
+refusal. These component checks alone do not supply ordinary source execution
+or the full twelve-bit profile; the bounded compiler adapter above also requires
+separate whole-root runtime acceptance.
 
 `Kernel::check_qmatch_source` invokes the execution-only internal
 `--qmatch-source-check` mode. The [request and QDV schema](execution-view.md#internal-named-arm-qmatch-component)
@@ -282,9 +292,11 @@ Generic success bindings retain the original Raw ownership/classical-scope
 properties without enlarging either human-admitted guarantee.
 
 This named-arm component uses an internal canonical owner frame. General source
-expressions/call frames, other valid mappings, constructed/static/generic arms,
-ordinary/selected quantum nominal execution and the full twelve-bit/64-label
-source contract remain pending. The internal frame is not a new language
+expressions/call frames, other valid mappings, constructed/static/generic arms
+and the full twelve-bit/64-label source contract remain pending.
+The bounded source adapter retains the actual complete two-argument call and
+restores the suspended caller's frame; it does not synthesize a replacement
+source function or expose a raw conversion of `QmatchChecked`. The internal frame is not a new language
 restriction. Fresh native conformance, canonical proof maintenance and full CI
 remain required; original source-body lowering, decoder/walker/native compilation,
 runtime/target preservation and broader QS/PR/RS/EXACT duties are separate.
