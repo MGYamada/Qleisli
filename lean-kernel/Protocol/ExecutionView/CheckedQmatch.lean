@@ -5,9 +5,9 @@ import Protocol.ExecutionView.Packet
 import QleisliKernel.Raw.ObservationOwnership
 import QleisliKernel.Raw.ObservationScope
 
-/-! Execution-view binding for the internal named-arm source component.
-Compare the complete fresh graph, both typed interfaces, original source focus
-and actual evidence/control indices. This module alone dispatches no native mode
+/-! Execution-view binding for the complete original source context.
+Compare the fresh graph, typed interfaces, original source focus, every literal
+event position and actual evidence/control indices. This module alone dispatches no native mode
 and constructs no host execution handle.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.ExecutionView.CheckedQmatch
@@ -22,14 +22,18 @@ def source (value : Protocol.Qmatch.SourceSite) : Value :=
 def arm (value : Qirf.SourceArm.Programs) : Value :=
   record "qmatch-arm" [.natural value.evidence,.natural value.controlled]
 
-def site (value : Qirf.SequenceSector.Request) : Value :=
+def position (value : Qirf.SourceSequence.Position) : Value :=
+  record "source-interval" [.natural value.offset,.natural value.start,.natural value.count]
+
+def site (value : Qirf.SelectionContract.Request) : Value :=
   record "qmatch-site" [CheckedCarrier.typedInterface value.attached,CheckedCarrier.typedInterface value.required,
-    record "source-interval" [.natural value.position.offset,.natural value.position.start,.natural value.position.count],
+    position value.position,
     .array (value.programs.map arm)]
 
 def description (checked : Checked) : Finite.WorkM Value := do
   let graph ← FiniteView.graph checked.artifact checked.result.body.root.val
-  return record Protocol.Qmatch.profile [graph,source checked.request.source,.array (checked.request.sites.map site)]
+  return record Protocol.Qmatch.profile [graph,source checked.request.source,
+    .array (checked.request.positions.map position),.array (checked.request.sites.map site)]
 
 def check (bytes supplied : ByteArray) : CheckM Checked := do
   guard (framed supplied) .invalidView

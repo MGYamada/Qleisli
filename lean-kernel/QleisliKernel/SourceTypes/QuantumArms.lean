@@ -94,9 +94,13 @@ structure Table (sources : Sources) (owner name : String) (offset : Nat) (select
   originalArms : arms.map (·.written) = site.parsed.arms
   complete : partition layout.labels.length arms = true
 
-def read (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :
+/-- Reuse the exact already-read caller; all arm, source-type and partition
+checks remain in this shared continuation. No alternate source body is supplied. -/
+def readArms {sources owner name}
+    (originalCaller : OrdinarySignature.Original sources owner name)
+    (offset : Nat) (selector target : Basis) :
     WorkM (Table sources owner name offset selector target) := do
-  let site ← QuantumMatch.read sources owner name offset
+  let site ← QuantumMatch.readSite originalCaller offset
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
@@ -109,5 +113,10 @@ def read (sources : Sources) (owner name : String) (offset : Nat) (selector targ
         arms,same,complete⟩
     else throw .request
   else throw .request
+
+def read (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :
+    WorkM (Table sources owner name offset selector target) := do
+  let original ← OrdinarySignature.readOriginal sources owner name
+  readArms original offset selector target
 
 end QleisliKernel.SourceTypes.QuantumArms

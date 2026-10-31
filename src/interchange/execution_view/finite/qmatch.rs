@@ -1,4 +1,4 @@
-//! Walk the exact retained graph and named-arm request; no JSON replay.
+//! Walk the exact retained graph, every context position and arm request.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::interchange::qmatch::Request;
@@ -9,7 +9,7 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
         limit: MAX_BYTES,
         depth: 0,
     };
-    writer.sized(5, 4)?;
+    writer.sized(5, 5)?;
     writer.depth += 1;
     writer.text(crate::interchange::qmatch::PROFILE)?;
     graph.write(&mut writer)?;
@@ -20,6 +20,13 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     view.record("source-function", 2, |w| {
         w.writer.text(&request.source.module)?;
         w.writer.text(&request.source.function)
+    })?;
+    view.list(&request.positions, |w, position| {
+        w.record("source-interval", 3, |w| {
+            w.n(position.offset as usize)?;
+            w.n(position.start as usize)?;
+            w.n(position.count as usize)
+        })
     })?;
     view.list(&request.sites, |w, site| {
         w.record("qmatch-site", 4, |w| {

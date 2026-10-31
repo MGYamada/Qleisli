@@ -1,14 +1,14 @@
 import Protocol.Carrier
-import QleisliKernel.Qirf.SequenceSector
+import QleisliKernel.Qirf.ContextSector
 
-/-! Strict version-paired transport for the internal named-arm source component.
+/-! Strict version-paired transport for complete original source contexts.
 Existing carrier syntax, QIRF decoding and fresh source/arm checking are reused.
 This adapter has no dispatcher or accepted-handle constructor of its own.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.Qmatch
 open Lean Finite Semantics.CarrierInterface
 
-def profile := "finite-source-qmatch-named-v3"
+def profile := "finite-source-qmatch-context-v4"
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .invalid)
@@ -39,13 +39,14 @@ private def arm (value : Json) : Except String Qirf.SourceArm.Programs := do
 
 structure Request where
   source : SourceSite
-  sites : List Qirf.SequenceSector.Request
+  positions : List Qirf.SourceSequence.Position
+  sites : List Qirf.SelectionContract.Request
 
 private def position (value : Json) : Except String Qirf.SourceSequence.Position := do
   Carrier.fields value ["offset","start","count"]
   return ⟨← number (← field value "offset"),← number (← field value "start"),← number (← field value "count")⟩
 
-private def site (value : Json) : WorkM Qirf.SequenceSector.Request := do
+private def site (value : Json) : WorkM Qirf.SelectionContract.Request := do
   adapt (Carrier.fields value ["attached","required","position","arms"])
   let attached ← adapt (Carrier.readInterface (← adapt (field value "attached")))
   let required ← adapt (Carrier.readInterface (← adapt (field value "required")))
@@ -55,15 +56,18 @@ private def site (value : Json) : WorkM Qirf.SequenceSector.Request := do
   return ⟨attached,required,location,← adapt (arms.toList.mapM arm)⟩
 
 def decode (value : Json) : WorkM Request := do
-  adapt (Carrier.fields value ["format","version","profile","source","sites"])
+  adapt (Carrier.fields value ["format","version","profile","source","positions","sites"])
   let supported ← adapt (do
     return (← text (← field value "format")) == "qleisli.qmatch-request" &&
-      (← number (← field value "version")) == 3 && (← text (← field value "profile")) == profile)
+      (← number (← field value "version")) == 4 && (← text (← field value "profile")) == profile)
   guard supported .request
   let source ← adapt (sourceSite (← adapt (field value "source")))
+  let positions ← adapt ((← adapt (field value "positions")).getArr?)
+  exactWork (Exact.charge (8*(positions.size+1)))
+  let positions ← adapt (positions.toList.mapM position)
   let sites ← adapt ((← adapt (field value "sites")).getArr?)
   guard (0 < sites.size && sites.size ≤ 128) .limit
-  return ⟨source,← sites.toList.mapM site⟩
+  return ⟨source,positions,← sites.toList.mapM site⟩
 
 def readRequest (bytes : ByteArray) : WorkM Request := do
   let value ← adapt (do
@@ -77,22 +81,24 @@ structure Checked where
   artifact : Qirf.Artifact
   order : Array Nat
   request : Request
-  result : Qirf.SequenceSector.Checked artifact order request.source.moduleName request.source.functionName request.sites
+  result : Qirf.ContextSector.Checked artifact order request.source.moduleName request.source.functionName
+    request.positions request.sites
 
 def check (bytes : ByteArray) : WorkM Checked := do
   let (body,requested) ← adapt (Validity.packet bytes)
   let some requestBytes := requested | throw .request
   let (artifact,order) ← Protocol.Qirf.readAll body
   let request ← readRequest requestBytes
-  let result ← Qirf.SequenceSector.check artifact order request.source.moduleName request.source.functionName request.sites
+  let result ← Qirf.ContextSector.check artifact order request.source.moduleName request.source.functionName
+    request.positions request.sites
   return ⟨body,requestBytes,artifact,order,request,result⟩
 
 structure Binding (bytes : ByteArray) (checked : Checked) (work left : Nat) : Prop where
   packet : Validity.packet bytes = .ok (checked.body,some checked.requestBytes)
   artifact : ∃ a b, (Protocol.Qirf.readAll checked.body).run a = (.ok (checked.artifact,checked.order),b)
   request : ∃ a b, (readRequest checked.requestBytes).run a = (.ok checked.request,b)
-  core : ∃ a, (Qirf.SequenceSector.check checked.artifact checked.order checked.request.source.moduleName
-    checked.request.source.functionName checked.request.sites).run a = (.ok checked.result,left)
+  core : ∃ a, (Qirf.ContextSector.check checked.artifact checked.order checked.request.source.moduleName
+    checked.request.source.functionName checked.request.positions checked.request.sites).run a = (.ok checked.result,left)
 
 theorem check_binding (bytes : ByteArray) (checked : Checked) (work left : Nat)
     (ok : (check bytes).run work = (.ok checked,left)) : Binding bytes checked work left := by

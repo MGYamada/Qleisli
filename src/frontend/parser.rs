@@ -1896,6 +1896,7 @@ impl Parser {
         let end = self.expect(&TokenKind::RBrace)?;
         Ok(Expr {
             kind: ExprKind::QuantumMatch(Box::new(QuantumMatch {
+                keyword: start.span,
                 selector,
                 target,
                 arms,

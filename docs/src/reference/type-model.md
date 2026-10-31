@@ -983,7 +983,7 @@ hierarchy projection remains separate. The full
 twelve-joined-bit/64-label extension and original-source preservation remain
 required separate work; no inverse/control grant follows merely from a label.
 
-The internal `Qirf.SourceFrameSector` component reads the actual written arm names,
+The internal `Qirf.ContextSector` component reads the actual written arm names,
 full source target trees and public effects. It associates each arm with an
 original function-evidence entry and derives its implementation index from
 that entry. One fresh graph includes those evidence subjects and the original
@@ -1003,7 +1003,11 @@ Public Observe/Isometry cannot be sharpened by its whole-subject Unitary request
 The complete structural suffix and final expression also retain the actual
 returned owner order. An unswapped Raw subject cannot implement a reordered
 return merely because both owners have equal or zero physical width. Unknown
-prefix/suffix expressions refuse; arbitrary calls/control flow and general
+prefix/suffix expressions refuse. Direct `h` and `global_phase_eighth` calls
+are checked as exact primitive events before, between and after selections,
+including grouped/nested calls with their original callee-token coordinates.
+The source traversal derives argument evaluation order independently of the
+proposed literal positions. Arbitrary calls/control flow and general
 source-to-Raw mapping remain required. The enclosing internal native/QDV route
 checks this component without granting an ordinary source execution handle or
 proving general source-body lowering. It does not complete the twelve-bit scope

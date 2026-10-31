@@ -1,7 +1,7 @@
 import Lean
 import Protocol.ExecutionView.CheckedQmatch
 import Protocol.NativeContext.Bindings
-import QleisliKernel.Qirf.SequenceSector
+import QleisliKernel.Qirf.ContextSector
 
 /-! Independent shared data expectations for the actual named-arm protocol.
 The QLV3 comparison and context-dispatch definitions run directly; fresh native
@@ -37,14 +37,14 @@ private def cases (path : System.FilePath) : IO (Array Json) := do
 
 private def shapes (path : System.FilePath) : IO Unit := do
   let rows ← cases path
-  unless rows.size == 43 do throw (IO.userError "qmatch shape inventory changed")
+  unless rows.size == 48 do throw (IO.userError "qmatch shape inventory changed")
   for row in rows do
     let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
     let text ← IO.ofExcept ((row.getObjVal? "text") >>= Json.getStr?)
     let expected ← IO.ofExcept ((row.getObjVal? "accepted") >>= Json.getBool?)
     let actual := ((Protocol.Qmatch.readRequest text.toUTF8).run 10000000).1.isOk
     unless actual == expected do throw (IO.userError ("qmatch data mismatch: " ++ name))
-  IO.println "passed 43 shared Rust/Lean request shape expectations; parsing confers no acceptance"
+  IO.println "passed 48 shared Rust/Lean request shape expectations; parsing confers no acceptance"
 
 private def execution (path : System.FilePath) (precise : Bool := false)
     (positive : Nat := 2) (negative : Nat := 24) : IO Unit := do
@@ -128,8 +128,8 @@ private def frames (path : System.FilePath) : IO Unit := do
     let actual := (do
       let (artifact,order) ← Protocol.Qirf.readAll artifact.compress.toUTF8
       let request ← Protocol.Qmatch.decode request
-      let _ ← Qirf.SequenceSector.check artifact order
-        request.source.moduleName request.source.functionName request.sites
+      let _ ← Qirf.ContextSector.check artifact order
+        request.source.moduleName request.source.functionName request.positions request.sites
       pure ()).run 10000000
     unless actual.1.isOk == expected do
       throw (IO.userError ("qmatch source-frame mismatch: " ++ name ++ ": " ++ reprStr actual.1))

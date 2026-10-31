@@ -352,38 +352,129 @@ fn selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site() {
-    for prefix in [
-        "let s=global_phase_eighth(s);",
-        "let hidden=measure_z(init0());",
-    ] {
-        let effect = if prefix.contains("measure_z") {
-            "observe"
-        } else {
-            "unitary"
-        };
-        let source = format!(
-            "pub enum Tri{{A,B,C}}
-            pub unitary fn idle(q:Q<Unit>)->Q<Unit>{{q}}
-            pub {effect} fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){{
-                {prefix} qmatch(s,q){{Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}}}"
+    let source = String::from(
+            "pub enum Tri{A,B,C}
+            pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
+            pub observe fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
+                let hidden=measure_z(init0()); qmatch(s,q){Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}"
         );
-        let parsed =
-            ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)]))
-                .unwrap();
-        let instance = parsed
-            .instantiate_runtime_with_types(
-                "main::keep",
-                Default::default(),
-                Default::default(),
-                Default::default(),
-            )
-            .unwrap();
-        let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
-        assert!(
-            error.message.contains("native") || error.message.contains("request"),
-            "{error:?}"
-        );
-    }
+    let parsed =
+        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)])).unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
+    assert!(
+        error.message.contains("native") || error.message.contains("request"),
+        "{error:?}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_context_retains_the_exact_prefix_phase() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, Circuit};
+    let accepted = selected(
+        "pub enum Tri{A,B,C}
+        pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
+        pub unitary fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
+            let s=global_phase_eighth(s);
+            qmatch(s,q){Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}",
+    );
+    let raw = accepted.program().raw();
+    assert_eq!(raw.operations.len(), 4);
+    let qleisli::ir::RawOp::ApplyUnitary { input, steps, .. } = &raw.operations[0] else {
+        panic!("the original scalar action must precede the selection");
+    };
+    assert_eq!(*input, raw.quantum_inputs[0].token);
+    let actual = Circuit::new(BasisType::Bits(2), steps.clone())
+        .unwrap()
+        .matrix(&mut Budget::new(10_000))
+        .unwrap();
+    let expected = Matrix::new(
+        4,
+        4,
+        (0..16)
+            .map(|index| {
+                if index / 4 == index % 4 {
+                    Exact::phase(1)
+                } else {
+                    Exact::zero()
+                }
+            })
+            .collect(),
+    )
+    .unwrap();
+    assert_eq!(actual, expected);
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_context_preserves_grouped_postorder_calls_and_zero_width_owners() {
+    let accepted = selected(
+        "pub enum Tag{A,B}
+        unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+        pub unitary fn keep(s:Q<Tag>,q:Q<Bit>,z:Q<Unit>)->(Q<Unit>,Q<Tag>,Q<Bit>){
+            let q=((/* λ */ h((h(q)))));
+            let (s,q)=((/* μ */ qmatch(s,q){Tag::A=>idle,Tag::B=>idle}));
+            let q=(h(h(q))); (z,s,q)}",
+    );
+    let raw = accepted.program().raw();
+    assert_eq!(raw.operations.len(), 7);
+    assert!(raw.quantum_inputs[2].wires.is_empty());
+    assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
+    let source = "pub enum Tag{A,B}
+        unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+        unitary fn turn(q:Q<Bit>)->Q<Bit>{h(q)}
+        pub unitary fn keep(s:Q<Bit>,q:Q<Bit>,z:Q<Tag>)->(Q<Tag>,Q<Bit>,Q<Bit>){
+            let(s,q)=qmatch(s,q){0=>idle,1=>turn}; (z,s,q)}";
+    let accepted = selected(source);
+    let raw = accepted.program().raw();
+    assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
+    kernel().check_program(accepted.program()).unwrap();
+
+    // A built-in selected pair must not bypass the active original-source
+    // context. Primitive arm operands still need named evidence wrappers.
+    let unsupported = source.replace("0=>idle,1=>turn", "0=>h,1=>h");
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), unsupported)]),
+    )
+    .unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::keep",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_err();
+    assert_eq!(error.code, "type_mismatch");
+    assert!(error.message.contains("wrap the gate"), "{error:?}");
 }
 
 #[test]

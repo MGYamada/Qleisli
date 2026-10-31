@@ -87,9 +87,9 @@ structure Site (sources : Sources) (owner name : String) (offset : Nat) where
 
 /-- An offset selects an actual token in the freshly read original function,
 not a supplied substring or independently submitted occurrence table. -/
-def read (sources : Sources) (owner name : String) (offset : Nat) :
+def readSite {sources owner name}
+    (original : OrdinarySignature.Original sources owner name) (offset : Nat) :
     WorkM (Site sources owner name offset) := do
-  let original ← OrdinarySignature.readOriginal sources owner name
   let body := original.occurrence.body
   exactWork (Exact.charge (256*(body.length+1)))
   let leading := body.takeWhile (fun token => token.span.startByte != offset)
@@ -99,5 +99,11 @@ def read (sources : Sources) (owner name : String) (offset : Nat) :
     if same : body = leading ++ site.tokens ++ suffix ∧ site.keyword.span.startByte = offset then
       return ⟨original,site,leading,suffix,same.1,same.2,parsed⟩
     else throw .request
+
+/-- Standalone reading retains the original complete read before the shared suffix. -/
+def read (sources : Sources) (owner name : String) (offset : Nat) :
+    WorkM (Site sources owner name offset) := do
+  let original ← OrdinarySignature.readOriginal sources owner name
+  readSite original offset
 
 end QleisliKernel.SourceTypes.QuantumMatch

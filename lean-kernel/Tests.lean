@@ -14,6 +14,26 @@ import QleisliKernel.Tests.RawOwnerFlow
 import QleisliKernel.Tests.PureInterval
 import QleisliKernel.Tests.SourceSequence
 import QleisliKernel.Tests.SequenceSector
+import QleisliKernel.Tests.CallSyntaxTests
+import QleisliKernel.Tests.StatementSyntaxTests
+import QleisliKernel.Tests.SourceLookupTests
+import QleisliKernel.Tests.CallNameTests
+import QleisliKernel.Tests.SourceContextTests
+import QleisliKernel.Tests.SourceTraceTests
+import QleisliKernel.Tests.SourceTraceCacheTests
+import QleisliKernel.Tests.PrimitiveActionTests
+import QleisliKernel.Tests.RawTraceTests
+import QleisliKernel.Tests.OwnerBoundariesTests
+import QleisliKernel.Tests.ContextSectorTests
+import QleisliKernel.Tests.ContextSectorCost
+import QleisliKernel.Tests.RawTraceCost
+import QleisliKernel.Tests.RawTraceMeterTests
+import QleisliKernel.Tests.CallCoordinateTests
+import QleisliKernel.Tests.PreparedIntervalTests
+import QleisliKernel.Tests.SequenceSectorSharingTests
+import QleisliKernel.Tests.ContextIntervalContinuity
+import QleisliKernel.Tests.OriginalSelectionContinuity
+import QleisliKernel.Tests.RawTraceMeterContinuity
 import QleisliKernel.Tests.RuntimeSignature
 import QleisliKernel.Tests.RuntimeStaticHeader
 import QleisliKernel.Tests.RuntimeStorage
@@ -1612,12 +1632,14 @@ private def owner (bits : Nat) : Json := Json.mkObj
 private def interface (bits : Nat) (effect : String := "unitary") : Json := Json.mkObj
   [("inputs",.arr #[owner bits]),("outputs",.arr #[owner bits]),("public_effect",.str effect)]
 
-private def request (arms : List Json) (source : Json) (extras : List (String × Json) := []) : Json :=
+private def request (arms : List Json) (source : Json) (extras : List (String × Json) := [])
+    (version : Nat := 4) : Json :=
   let position := Json.mkObj [("offset",.num 137),("start",.num 0),("count",.num 1)]
   let site := Json.mkObj [("attached",interface 0),("required",interface 0),
     ("position",position),("arms",.arr arms.toArray)]
-  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 3),
-    ("profile",.str Qmatch.profile),("source",source),("sites",.arr #[site])] ++ extras)
+  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num version),
+    ("profile",.str Qmatch.profile),("source",source),
+    ("positions",.arr #[position]),("sites",.arr #[site])] ++ extras)
 
 private def source : Json := Json.mkObj
   [("module",.str "same"),("function",.str "choose")]
@@ -1637,12 +1659,16 @@ example : (Carrier.readInterface (interface 0 "iso")).isOk = false := by decide 
 example : ((Qmatch.decode (request [arm 0] source)).run 1000).1.isOk = true := by decide +kernel
 example : (((Qmatch.decode (request [arm 0] source)).run 1000).1.toOption.map fun decoded =>
     (decoded.source.moduleName, decoded.source.functionName,
-      decoded.sites.map fun site => (site.position.offset,site.position.start,site.position.count))) =
-    some ("same","choose",[(137,0,1)]) := by decide +kernel
+      decoded.positions.map (fun position => (position.offset,position.start,position.count)),
+      decoded.sites.map (fun site => (site.position.offset,site.position.start,site.position.count)))) =
+    some ("same","choose",[(137,0,1)],[(137,0,1)]) := by rfl
 example : ((Qmatch.decode (request [] source)).run 1000).1.isOk = false := by decide +kernel
 example : ((Qmatch.decode (request [arm 4294967296] source)).run 1000).1.isOk = false := by decide +kernel
 example : ((Qmatch.decode (request [arm 0] source [("accepted",.bool true)])).run 1000).1.isOk = false := by decide +kernel
 example : ((Qmatch.decode (request [arm 0] legacySource)).run 1000).1.isOk = false := by decide +kernel
+
+-- Even a current-shaped request cannot select the retired v3 contract.
+example : ((Qmatch.decode (request [arm 0] source [] 3)).run 1000).1.isOk = false := by decide +kernel
 
 -- The retired single-site wire shape cannot regain acceptance through a fallback.
 private def legacyRequest : Json := Json.mkObj

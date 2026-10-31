@@ -6,6 +6,20 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Consolidate passive qmatch histories in one bounded object store, preserving
+  exact original archive/index bytes, member modes, hashes and first failures.
+  Retain the new source-context experiments within unchanged fixture limits.
+  The passive reader rejects sparse TAR expansion, unknown paths and changed
+  snapshots; existing history assertions remain in the normal check group.
+- Check supported primitive calls around qmatch through the same original
+  source-context and literal Raw-interval boundary. Retain callee-token and
+  qmatch-keyword coordinates through grouping, argument evaluation order,
+  original name-resolution evidence and complete owner frames. Internal v4
+  requests and QDV compare every event position; v1–v3 refuse without fallback.
+  Share fresh original-root verification and selected-sector equations across
+  intervals while retaining the original two-owner API with checked transport.
+  General calls, mixed parameters, constructed/static/generic arms and the full
+  twelve-bit profile remain pending; this does not complete #64 or #195.
 - Classify the mathematical audit's compiled declarations once for both
   existing audit passes. Preserve declaration order, private/generated helpers,
   import and runtime-replacement checks, exact theorem assertions and output.

@@ -277,6 +277,12 @@ ordinary tuples can group separate owners. A two-port subject retains the exact
 original parameter/result order and distinct logical identities at zero width.
 It cannot sharpen a public observing/isometric function to Unitary. Unknown
 prefix expressions refuse instead of contributing unproved type facts.
+The complete context reader also checks direct `h` and `global_phase_eighth`
+events around named-arm selections. It traverses call arguments first, retains
+the original callee token and `qmatch` keyword through grouping/comments, and
+compares every event with its literal Raw interval. Original lexical/module/
+prelude lookup establishes primitive identity. Whole-body cancellation cannot
+replace any interval's exact action or owner-frame obligation.
 The complete structural suffix and result retain actual returned roles. An
 independent run over original Raw joins, splits and owner-moving operations
 compares those roles with actual output-token order, including at zero width.
