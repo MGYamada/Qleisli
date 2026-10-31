@@ -9,6 +9,10 @@ import lzma
 from pathlib import Path, PurePosixPath
 import tarfile
 import unittest
+from unittest.mock import patch
+
+import inert_qmatch_history as shared_history
+from test_inert_qmatch_history import BoundedPhysicalReader, SnapshotStructure
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,9 +84,47 @@ SHADOW_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/le
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
+
+SHARED = None
+CONTEXT_ARCHIVE = BODY_ROOT + '/context-prototype/context-first.tar.xz'
+CONTEXT_INDEX = BODY_ROOT + '/context-prototype/context-index.json.xz'
+
+
+def setUpModule():
+    global SHARED
+    SHARED = shared_history.Snapshot(ROOT)
+
+
+def tearDownModule():
+    SHARED.assert_inputs_unchanged()
+
+
+def retained_history_path(path):
+    logical = path.relative_to(ROOT).as_posix()
+    if not logical.startswith(shared_history.PREFIX):
+        return None
+    name = path.name
+    if (name.endswith('.tar.xz') or name == 'index.json'
+            or name.endswith(('-index.json', '-index.json.xz'))
+            or logical.startswith(shared_history.PREFIX + 'context-prototype/')):
+        return logical
+    return None
+
+
+def history_bytes(path):
+    logical = retained_history_path(path)
+    if logical is not None:
+        return SHARED.read(logical)
+    return path.read_bytes()
+
+
+def history_text(path):
+    return history_bytes(path).decode('utf-8')
+
+
 def history_json(path):
     """Read bounded inert metadata, including explicitly compressed JSON."""
-    data = path.read_bytes()
+    data = history_bytes(path)
     if len(data) > 4 * 1024 * 1024:
         raise ValueError('oversized history metadata')
     if path.suffix == '.xz':
@@ -98,7 +140,7 @@ def bounded_history(archive_path, index_path):
     index = history_json(index_path)
     if index['archive'] != archive_path.name:
         raise ValueError('history archive name differs')
-    packed = archive_path.read_bytes()
+    packed = history_bytes(archive_path)
     if (len(packed) > 1024 * 1024 or len(packed) != index['bytes']
             or hashlib.sha256(packed).hexdigest() != index['sha256']):
         raise ValueError('history archive identity/capacity differs')
@@ -124,6 +166,96 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_shared_history_complete_pinned_reconstruction(self):
+        self.assertEqual(hashlib.sha256((ROOT / shared_history.MANIFEST).read_bytes()).hexdigest(),
+                         '9613d0539a1318096cf2daa1e051ffe46926cd680f317c4c296d2e365a54920c')
+        self.assertEqual(SHARED.audit_originals(), (63, 20))
+
+    def test_missing_retained_path_has_no_disk_fallback(self):
+        path = ROOT / BODY_ROOT / 'missing-index.json'
+        with patch.object(Path, 'read_bytes', side_effect=AssertionError('disk fallback')):
+            with self.assertRaisesRegex(ValueError, 'unregistered logical history'):
+                history_bytes(path)
+
+    def test_complete_context_original_paths_and_external_bindings(self):
+        self.assertEqual(hashlib.sha256(history_bytes(ROOT / CONTEXT_INDEX)).hexdigest(),
+                         'a92a651966c3f19e60adfc5d0d1aaddd4d41f825611ed19dc7980045c825cb6e')
+        index = history_json(ROOT / CONTEXT_INDEX)
+        self.assertEqual(index['sha256'],
+                         '4d960e4b16b6b02636213e8dbd1f3769a922b249e7c6e45da2defdfd41e3e855')
+        members = bounded_history(ROOT / CONTEXT_ARCHIVE, ROOT / CONTEXT_INDEX)
+        self.assertEqual(len(members), 606)
+        mapping = json.loads(members['original-records.json'])
+        provenance = json.loads(members['provenance.json'])
+        self.assertEqual(mapping['format'], 'qleisli.inert-original-records')
+        self.assertEqual(mapping['version'], 1)
+        self.assertEqual(len(mapping['records']), 941)
+        self.assertEqual(len(mapping['external_objects']), 68)
+        self.assertEqual(provenance['repository_commit'], shared_history.SOURCE_COMMIT)
+        self.assertEqual(provenance['original_path_count'], 941)
+        self.assertEqual(provenance['original_expanded_bytes'], 3987256)
+        self.assertFalse(provenance['cap_changes'])
+        expected_histories = {'sequence': (SEQUENCE_ARCHIVE, SEQUENCE_INDEX),
+                              'shadow': (SHADOW_ARCHIVE, SHADOW_INDEX)}
+        external = {}
+        for pin in provenance['external_histories']:
+            self.assertIn(pin['id'], expected_histories)
+            self.assertNotIn(pin['id'], external)
+            archive_path, index_path = expected_histories[pin['id']]
+            self.assertEqual((pin['archive_path'], pin['index_path']), (archive_path, index_path))
+            self.assertEqual(pin['commit'], shared_history.SOURCE_COMMIT)
+            stored_index = history_bytes(ROOT / index_path)
+            self.assertEqual((len(stored_index), hashlib.sha256(stored_index).hexdigest()),
+                             (pin['index_bytes'], pin['index_sha256']))
+            decoded_index = shared_history.decode(stored_index, shared_history.INDEX_MAX)
+            self.assertEqual((len(decoded_index), hashlib.sha256(decoded_index).hexdigest()),
+                             (pin['decoded_index_bytes'], pin['decoded_index_sha256']))
+            packed = history_bytes(ROOT / archive_path)
+            self.assertEqual((len(packed), hashlib.sha256(packed).hexdigest()),
+                             (pin['archive_bytes'], pin['archive_sha256']))
+            self.assertEqual(len(shared_history.decode(packed, shared_history.TAR_MAX)),
+                             pin['expanded_tar_bytes'])
+            values = bounded_history(ROOT / archive_path, ROOT / index_path)
+            self.assertEqual(len(values), pin['members'])
+            external[pin['id']] = (archive_path, values)
+        self.assertEqual(set(external), set(expected_histories))
+        originals, used_local, used_external = {}, set(), set()
+        for name, row in mapping['records'].items():
+            shared_history.canonical_path(name)
+            self.assertEqual(set(row), {'bytes', 'sha256', 'original_mode', 'object'})
+            digest = row['object']
+            self.assertEqual(digest, row['sha256'])
+            self.assertIs(type(row['original_mode']), int)
+            self.assertTrue(0 <= row['original_mode'] <= 0o777)
+            if digest in mapping['external_objects']:
+                ref = mapping['external_objects'][digest]
+                archive_path, values = external[ref['container']]
+                data = values[ref['member']]
+                self.assertEqual(ref['member_mode'], SHARED.member_mode(archive_path, ref['member']))
+                self.assertEqual((ref['bytes'], ref['sha256']), (len(data), digest))
+                used_external.add(digest)
+            else:
+                object_name = 'objects/' + digest
+                data = members[object_name]
+                used_local.add(object_name)
+            self.assertEqual((len(data), hashlib.sha256(data).hexdigest()), (row['bytes'], digest))
+            originals[name] = data
+        self.assertEqual(used_local, set(members) - {'original-records.json', 'provenance.json'})
+        self.assertEqual(used_external, set(mapping['external_objects']))
+        reports = []
+        for name, data in originals.items():
+            if name.startswith('qmatch-context-interval-checks/') and name.endswith(('/plan.json', '/report.json')):
+                observation = json.loads(data)
+                for side in ('before', 'after'):
+                    for digest in observation.get(side, {}).values():
+                        body = originals['qmatch-context-interval-source-objects/' + digest]
+                        self.assertEqual(hashlib.sha256(body).hexdigest(), digest)
+                if name.endswith('/report.json'):
+                    reports.append(observation)
+        self.assertEqual(len(reports), 133)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in reports), 85)
+        self.assertEqual(sum(row['exit_code'] != 0 for row in reports), 48)
+
     def test_original_lexical_shadow_counterexample_and_controls(self):
         members = bounded_history(ROOT / SHADOW_ARCHIVE, ROOT / SHADOW_INDEX)
         self.assertEqual(history_json(ROOT / SHADOW_INDEX)['sha256'],
@@ -193,7 +325,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(json.loads(members['scope.json.txt'])['issues_open'], [64, 195, 142])
 
     def test_sequence_first_programs_and_actual_refusals_are_unchanged(self):
-        self.assertEqual(hashlib.sha256((ROOT / SEQUENCE_INDEX).read_bytes()).hexdigest(),
+        self.assertEqual(hashlib.sha256(history_bytes(ROOT / SEQUENCE_INDEX)).hexdigest(),
                          'c992bbb6fcc5ee8a6383fc1023e2f185da68d0dc241142830926174eeddd8e00')
         members = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
         self.assertEqual(len(members), 111)
@@ -302,7 +434,7 @@ class OriginalCouplingHistory(unittest.TestCase):
             for name, digest in report['before'].items():
                 self.assertEqual(refs[digest]['path'], name)
                 self.assertIn(refs[digest]['patch'], members)
-        validation = json.loads((ROOT / CONTEXT_V2_VALIDATION).read_text())
+        validation = json.loads(history_text(ROOT / CONTEXT_V2_VALIDATION))
         self.assertEqual(validation['issues_open'], [64, 195, 142])
         self.assertFalse(validation['limits_raised'])
         self.assertEqual(validation['ignored_native_tests'], 0)
@@ -330,10 +462,10 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertIn(b'maximum number of heartbeats', members['observations/context-sector-first/stdout.txt'])
         self.assertIn(b'shifted_non_qmatch_slice_not_source_evidence', members['study/fourth/stdout.txt'])
         self.assertIn(b'depends on axioms: [propext]', members['study/fourth/stdout.txt'])
-        validation = json.loads((ROOT / CONTEXT_VALIDATION).read_text())
+        validation = json.loads(history_text(ROOT / CONTEXT_VALIDATION))
         self.assertFalse(validation['limits_raised'])
         self.assertEqual(validation['issues_open'], [64, 195, 142])
-        current = json.loads((ROOT / FRAME_CASES).read_text())['cases']
+        current = json.loads(history_text(ROOT / FRAME_CASES))['cases']
         self.assertEqual({row['name'] for row in current}, {row['name'] for row in after['cases']})
         faults = {row['name']: row['native_code'] for row in current if not row['expected']}
         for name in ['wrong-actual-phase', 'wrong-controlled-phase', 'nominal-relative-phase']:
@@ -365,7 +497,7 @@ class OriginalCouplingHistory(unittest.TestCase):
             self.assertEqual(report['exit_code'], 101)
             self.assertEqual(report['before'], report['after'])
             self.assertIn(diagnostic, members[prefix + 'stdout.txt'] + members[prefix + 'stderr.txt'])
-        validation = json.loads((ROOT / TARGET_VALIDATION).read_text())
+        validation = json.loads(history_text(ROOT / TARGET_VALIDATION))
         self.assertEqual(validation['issues'], {'64': 'OPEN', '195': 'OPEN'})
         for key in ['stable_integration_tests', 'msrv_integration_tests']:
             self.assertEqual(validation[key], 77)
@@ -395,7 +527,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         original_inputs = [json.loads(before['first/' + row['name'] + '/plan.json.txt'])['inputs']
                            for row in original['records']]
         self.assertEqual([row['inputs'] for row in after['records']], original_inputs)
-        validation = json.loads((folder / 'nominal-compiler-validation.json').read_text())
+        validation = json.loads(history_text(folder / 'nominal-compiler-validation.json'))
         self.assertEqual(validation['issues'], {'64': 'OPEN', '195': 'OPEN'})
         self.assertEqual(validation['stable_tests'], 74)
         self.assertEqual(validation['msrv_tests'], 40)
@@ -415,7 +547,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         repaired = json.loads(members['observations/qmatch-selected-fifth/report.json.txt'])
         self.assertEqual(repaired['exit_code'], 0)
         self.assertEqual(repaired['before'], repaired['after'])
-        self.assertEqual(json.loads((ROOT / COMPILER_VALIDATION).read_text())['issues'],
+        self.assertEqual(json.loads(history_text(ROOT / COMPILER_VALIDATION))['issues'],
                          {'64': 'OPEN', '195': 'OPEN'})
 
     def test_generic_calls_retain_original_refusals_and_separate_repairs(self):
@@ -433,7 +565,7 @@ class OriginalCouplingHistory(unittest.TestCase):
             result = json.loads(members[f'observations/{label}/report.json.txt'])
             self.assertEqual(result['exit_code'], 0)
             self.assertEqual(result['before'], result['after'])
-        current = json.loads((ROOT / RUNTIME_GENERIC_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / RUNTIME_GENERIC_VALIDATION))
         self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
 
     def test_static_execution_keeps_the_first_source_refusal_and_separate_success(self):
@@ -450,7 +582,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         for label in ['static-v2-source-final', 'static-v2-msrv-source']:
             self.assertEqual(members[f'observations/{label}/stdout.txt'].count(
                 b'10 passed; 0 failed; 0 ignored'), 2)
-        current = json.loads((ROOT / RUNTIME_STATIC_V2_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / RUNTIME_STATIC_V2_VALIDATION))
         self.assertEqual(current['native_execution'], 'SELECTED BASIS/NAT ROOTS ENABLED')
         self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
         self.assertEqual(current['goal_percent'], 58.27)
@@ -468,7 +600,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         for label, count in [('runtime', 11), ('carrier', 12), ('ordinary', 13)]:
             self.assertIn(f'{count} passed; 0 failed; 0 ignored'.encode(), members[
                 f'observations/static-signature-native-{label}-regressions/stdout.txt'])
-        current = json.loads((ROOT / RUNTIME_STATIC_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / RUNTIME_STATIC_VALIDATION))
         self.assertEqual(current['native_execution'], 'GENERIC ROUTE NOT ENABLED')
         self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
         self.assertEqual(sum(current['executable_comparisons'].values()), 52)
@@ -489,7 +621,7 @@ class OriginalCouplingHistory(unittest.TestCase):
             self.assertTrue(report['stable_source'])
             self.assertIn(f'{passed} passed; 0 failed; 0 ignored'.encode(),
                           members[f'observations/{label}/stdout.txt'])
-        current = json.loads((ROOT / RUNTIME_SOURCE_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / RUNTIME_SOURCE_VALIDATION))
         self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
         self.assertEqual(current['goal_percent'], 58.27)
         self.assertIn('FAIL stale current source identity', current['constitutional_check'])
@@ -509,7 +641,7 @@ class OriginalCouplingHistory(unittest.TestCase):
             self.assertIn(b'10 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
         for label in ['rust-ordinary-regression-first', 'rust-msrv-ordinary-first']:
             self.assertIn(b'13 passed; 0 failed; 0 ignored', members[f'observations/{label}/stdout.txt'])
-        current = json.loads((ROOT / RUNTIME_TRANSPORT_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / RUNTIME_TRANSPORT_VALIDATION))
         self.assertEqual(current['issues'], {'64': 'OPEN', '195': 'OPEN'})
         self.assertIn('normal .qli project/selected lowering', current['remaining'])
         self.assertEqual(current['goal_percent'], 58.27)
@@ -531,7 +663,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         audit = json.loads(members['compile/runtime-root-audit-repair-first/report.json.txt'])
         self.assertEqual(audit['exit_code'], 0)
         self.assertTrue(audit['stable_inputs'])
-        status = json.loads((ROOT / RUNTIME_ROOT_VALIDATION).read_text())
+        status = json.loads(history_text(ROOT / RUNTIME_ROOT_VALIDATION))
         self.assertEqual(status['native_execution'], 'NOT ENABLED')
         self.assertEqual(status['current_bounded_integration_controls'], 21)
         self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
@@ -557,14 +689,14 @@ class OriginalCouplingHistory(unittest.TestCase):
         audit = json.loads(members['compile/runtime-signature-audit-first/report.json.txt'])
         self.assertEqual(audit['exit_code'], 0)
         self.assertTrue(audit['stable_inputs'])
-        status = json.loads((ROOT / RUNTIME_SIGNATURE_VALIDATION).read_text())
+        status = json.loads(history_text(ROOT / RUNTIME_SIGNATURE_VALIDATION))
         self.assertEqual(status['native_execution'], 'NOT ENABLED')
         self.assertEqual(status['issues'], {'64': 'OPEN', '195': 'OPEN'})
 
     @classmethod
     def setUpClass(cls):
-        cls.index = json.loads((ROOT / INDEX).read_text())
-        cls.archive = (ROOT / ARCHIVE).read_bytes()
+        cls.index = json.loads(history_text(ROOT / INDEX))
+        cls.archive = history_bytes(ROOT / ARCHIVE)
         if len(cls.archive) > 1024 * 1024:
             raise ValueError("historical archive exceeds expected bounded size")
         with lzma.open(io.BytesIO(cls.archive)) as stream:
@@ -602,13 +734,13 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(report("source-sector-runtime-fourth")["exit_code"], 0)
         self.assertIn(b"22 bounded source/evidence observations passed",
                       self.members["observations/source-sector-runtime-fourth/stdout.txt"])
-        current = json.loads((ROOT / VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / VALIDATION))
         self.assertEqual(current["goal"]["issue195"], "OPEN")
         self.assertIn("NOT RUN", current["uncompleted_checks"]["proof_records"])
 
     def test_first_hosted_failure_stays_distinct_from_component_repair(self):
-        index = json.loads((ROOT / CI_TYPECHECK_INDEX).read_text())
-        packed = (ROOT / CI_TYPECHECK).read_bytes()
+        index = json.loads(history_text(ROOT / CI_TYPECHECK_INDEX))
+        packed = history_bytes(ROOT / CI_TYPECHECK)
         self.assertEqual(len(packed), index["bytes"])
         self.assertEqual(hashlib.sha256(packed).hexdigest(), index["sha256"])
         self.assertLessEqual(len(packed), 1024 * 1024)
@@ -638,13 +770,13 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertTrue(repaired["stable_inputs"])
         self.assertEqual(len(repaired["commands"]), 98)
         self.assertTrue(all(row["exit_code"] == 0 for row in repaired["commands"]))
-        current = json.loads((ROOT / CI_TYPECHECK_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / CI_TYPECHECK_VALIDATION))
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["issue195"], "OPEN")
 
     def test_operand_counterexamples_and_generated_partial_repair(self):
-        index = json.loads((ROOT / OPERAND_INDEX).read_text())
-        compressed = (ROOT / OPERANDS).read_bytes()
+        index = json.loads(history_text(ROOT / OPERAND_INDEX))
+        compressed = history_bytes(ROOT / OPERANDS)
         self.assertLessEqual(len(compressed), 1024 * 1024)
         self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
         with lzma.open(io.BytesIO(compressed)) as stream:
@@ -672,12 +804,12 @@ class OriginalCouplingHistory(unittest.TestCase):
         for label in ("source-operands-final", "source-evidence-final", "source-operands-effect-final",
                       "source-operands-equal-width-final", "source-operands-audit-second"):
             self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 0)
-        current = json.loads((ROOT / OPERAND_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / OPERAND_VALIDATION))
         self.assertFalse(current["native_activated"])
 
     def test_original_transport_mismatch_and_repairs_are_inert_and_retained(self):
-        index = json.loads((ROOT / TRANSPORT_INDEX).read_text())
-        compressed = (ROOT / TRANSPORT).read_bytes()
+        index = json.loads(history_text(ROOT / TRANSPORT_INDEX))
+        compressed = history_bytes(ROOT / TRANSPORT)
         self.assertLessEqual(len(compressed), 1024 * 1024)
         self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
         with lzma.open(io.BytesIO(compressed)) as stream:
@@ -711,13 +843,13 @@ class OriginalCouplingHistory(unittest.TestCase):
                       members["observations/qmatch-execution-runtime-observed-second/stdout.txt"])
         notes = json.loads(members["observations/observer-notes.json.txt"])
         self.assertIn("neither a semantic", notes["first_native_observation"])
-        current = json.loads((ROOT / TRANSPORT_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / TRANSPORT_VALIDATION))
         self.assertFalse(current["native_activated"])
         self.assertEqual(current["goal"]["percent"], 58.27)
 
     def test_first_retained_graph_compile_failure_and_native_test_limits_survive(self):
-        index = json.loads((ROOT / NATIVE_BINDING_INDEX).read_text())
-        compressed = (ROOT / NATIVE_BINDING).read_bytes()
+        index = json.loads(history_text(ROOT / NATIVE_BINDING_INDEX))
+        compressed = history_bytes(ROOT / NATIVE_BINDING)
         self.assertLessEqual(len(compressed), 1024 * 1024)
         self.assertEqual(hashlib.sha256(compressed).hexdigest(), index["sha256"])
         with lzma.open(io.BytesIO(compressed)) as stream:
@@ -744,15 +876,15 @@ class OriginalCouplingHistory(unittest.TestCase):
         for label in ["qmatch-rust-binding-second", "qmatch-rust-binding-msrv"]:
             self.assertEqual(json.loads(members[f"observations/{label}/report.json.txt"])["exit_code"], 0)
             self.assertIn(b"3 passed; 0 failed; 2 ignored", members[f"observations/{label}/0.stdout.txt"])
-        current = json.loads((ROOT / NATIVE_BINDING_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / NATIVE_BINDING_VALIDATION))
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["goal"]["issue195"], "OPEN")
 
 
     def test_complete_body_failures_and_remaining_native_obligations_survive(self):
         directory = ROOT / BODY_ROOT
-        index = json.loads((directory / 'body-index.json').read_text())
-        packed = (directory / 'body-first.tar.xz').read_bytes()
+        index = json.loads(history_text(directory / 'body-index.json'))
+        packed = history_bytes(directory / 'body-first.tar.xz')
         self.assertLessEqual(len(packed), 1024 * 1024)
         self.assertEqual(len(packed), index['bytes'])
         self.assertEqual(hashlib.sha256(packed).hexdigest(), index['sha256'])
@@ -779,7 +911,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertIn(b'Gate.Error.decodedView', members['observations/qmatch-complete-body-runtime-first/stderr.txt'])
         self.assertEqual(passed['exit_code'], 0)
         self.assertIn(b'4 exact controls and 8 QLV3', members['observations/qmatch-complete-body-runtime-second/stdout.txt'])
-        current = json.loads((directory / 'body-validation.json').read_text())
+        current = json.loads(history_text(directory / 'body-validation.json'))
         self.assertFalse(current['compiled_native_validated'])
         self.assertEqual(current['issue195'], 'OPEN')
 
@@ -796,13 +928,13 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertTrue(current['stable_inputs'])
         self.assertIn(b'5 exact controls and 9 QLV3',
                       members['observations/qmatch-raw-owner-flow-permutation-context-first/stdout.txt'])
-        validation = json.loads((directory / 'owner-flow-validation.json').read_text())
+        validation = json.loads(history_text(directory / 'owner-flow-validation.json'))
         self.assertFalse(validation['compiled_native_validated'])
         self.assertEqual(validation['issue195'], 'OPEN')
 
     def test_nominal_first_proposals_and_precise_refusals_remain_separate(self):
-        index = json.loads((ROOT / NOMINAL_INDEX).read_text())
-        packed = (ROOT / NOMINAL).read_bytes()
+        index = json.loads(history_text(ROOT / NOMINAL_INDEX))
+        packed = history_bytes(ROOT / NOMINAL)
         self.assertLessEqual(len(packed), 1024 * 1024)
         self.assertEqual(len(packed), index["bytes"])
         self.assertEqual(hashlib.sha256(packed).hexdigest(), index["sha256"])
@@ -832,7 +964,7 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(diagnostics.count(b"Finite.Error.equation"), 10)
         self.assertEqual(diagnostics.count(b"Finite.Error.request"), 12)
         self.assertEqual(diagnostics.count(b"Gate.Error.decodedView"), 2)
-        current = json.loads((ROOT / NOMINAL_VALIDATION).read_text())
+        current = json.loads(history_text(ROOT / NOMINAL_VALIDATION))
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["issue195"], "OPEN")
 
