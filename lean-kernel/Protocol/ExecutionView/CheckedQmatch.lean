@@ -17,16 +17,19 @@ abbrev Checked := Protocol.Qmatch.Checked
 private def record (tag : String) (fields : List Value) : Value := .array (.text tag :: fields)
 
 def source (value : Protocol.Qmatch.SourceSite) : Value :=
-  record "source-focus" [.text value.moduleName,.text value.functionName,.natural value.offset]
+  record "source-function" [.text value.moduleName,.text value.functionName]
 
 def arm (value : Qirf.SourceArm.Programs) : Value :=
   record "qmatch-arm" [.natural value.evidence,.natural value.controlled]
 
+def site (value : Qirf.SequenceSector.Request) : Value :=
+  record "qmatch-site" [CheckedCarrier.typedInterface value.attached,CheckedCarrier.typedInterface value.required,
+    record "source-interval" [.natural value.position.offset,.natural value.position.start,.natural value.position.count],
+    .array (value.programs.map arm)]
+
 def description (checked : Checked) : Finite.WorkM Value := do
-  let graph ← FiniteView.graph checked.artifact checked.result.body.root
-  return record Protocol.Qmatch.profile [graph,CheckedCarrier.typedInterface checked.request.attached,
-    CheckedCarrier.typedInterface checked.request.required,source checked.request.source,
-    .array (checked.request.arms.map arm)]
+  let graph ← FiniteView.graph checked.artifact checked.result.body.root.val
+  return record Protocol.Qmatch.profile [graph,source checked.request.source,.array (checked.request.sites.map site)]
 
 def check (bytes supplied : ByteArray) : CheckM Checked := do
   guard (framed supplied) .invalidView
@@ -77,9 +80,9 @@ theorem Binding.original {bytes supplied : ByteArray} {checked : Checked} {work 
 properties too. This theorem does not enlarge the human-admitted ledger scope. -/
 theorem Binding.root_safe {bytes supplied : ByteArray} {checked : Checked} {work left : Nat}
     (binding : Binding bytes supplied checked work left) :
-    checked.artifact.programs[checked.artifact.root]? = some checked.result.body.root.program ∧
-      Semantics.Ownership.OwnershipSafe checked.result.body.root.program ∧
-      Semantics.ClassicalScope.ScopeSafe checked.result.body.root.program := by
+    checked.artifact.programs[checked.artifact.root]? = some checked.result.body.root.val.program ∧
+      Semantics.Ownership.OwnershipSafe checked.result.body.root.val.program ∧
+      Semantics.ClassicalScope.ScopeSafe checked.result.body.root.val.program := by
   obtain ⟨a,accepted⟩ := binding.original.core
   obtain ⟨b,original⟩ := checked.result.originalRoot
   obtain ⟨c,d,verified⟩ := original.verification

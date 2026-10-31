@@ -60,6 +60,55 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
+    // The unchanged first authoring attempt: repeated H/Z sectors cancel as a
+    // whole, so checking only the final identity would miss incorrect intervals.
+    let source = "pub enum Tag { A, B, C, D }\nunitary fn idle(q: Q<Bit>) -> Q<Bit> { q }\nunitary fn turn(q: Q<Bit>) -> Q<Bit> { h(q) }\nunitary fn sign(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }\npub unitary fn route(s:Q<Tag>, q:Q<Bit>) -> (Q<Tag>,Q<Bit>) { let (s,q)=qmatch(s,q) { Tag::D=>sign, Tag::B=>turn, Tag::A=>idle, Tag::C=>sign }; qmatch(s,q) { Tag::D=>sign, Tag::B=>turn, Tag::A=>idle, Tag::C=>sign } }\n";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let instance = parsed
+        .instantiate_runtime_with_types(
+            "main::route",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let accepted = instance.compile_runtime_with_kernel(&kernel()).unwrap();
+    let raw = accepted.program().raw();
+    assert_eq!(raw.operations.len(), 6);
+    assert_eq!(raw.quantum_inputs.len(), 2);
+    assert_eq!(raw.quantum_outputs.len(), 2);
+    kernel().check_program(accepted.program()).unwrap();
+
+    for effect in ["unitary", "isometry", "observe"] {
+        let source = format!(
+            "pub enum Tag{{A,B}}
+            unitary fn idle(q:Q<Bit>)->Q<Bit>{{q}}
+            unitary fn sign(q:Q<Bit>)->Q<Bit>{{phase[1,1](q)}}
+            pub {effect} fn keep(q:Q<Bit>,u:Q<Unit>,s:Q<Tag>)->(Q<Unit>,Q<Tag>,Q<Bit>){{
+                let pair=(s,q); let (s,q)=pair;
+                let (s,q)=qmatch(s,q){{Tag::B=>sign,Tag::A=>idle}};
+                let next=qmatch(s,q){{Tag::A=>idle,Tag::B=>sign}};
+                let (s,q)=next; (u,s,q)}}"
+        );
+        let accepted = selected(&source);
+        let raw = accepted.program().raw();
+        assert_eq!(raw.operations.len(), 6);
+        assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[1].token);
+        assert!(raw.quantum_inputs[1].wires.is_empty());
+        kernel().check_program(accepted.program()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
     for reverse in [false, true] {
         for (effect, expected) in [

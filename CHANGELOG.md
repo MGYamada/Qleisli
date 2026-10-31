@@ -6,6 +6,30 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Classify the mathematical audit's compiled declarations once for both
+  existing audit passes. Preserve declaration order, private/generated helpers,
+  import and runtime-replacement checks, exact theorem assertions and output.
+  The fresh proof-replay plan and its time limits remain unchanged.
+- Connect complete structural qmatch sequences to fresh per-interval
+  source/arm/control/sector checks and the common compiler. Require every
+  original occurrence and exhaustive ordered literal Raw intervals, retaining
+  actual owner frames and public effects. A matching whole-function operator
+  cannot hide wrong local phases. Pair internal version3 requests and QDV;
+  older formats refuse without fallback. Multiple named-arm selections now
+  pass, including original zero-width spectators and result permutations.
+  Migrate the full Lean test root's request fixture as well, retaining explicit
+  legacy-request refusal and the exact decoded source/interval fields.
+  Retain lexical parameter and let names after their values are consumed;
+  reject bare qmatch arms shadowed by those names, including owner-free bindings.
+  Qualified function paths keep their existing module and visibility checks.
+  General expressions/calls, mixed parameters, constructed/generic arms and
+  the full twelve-bit profile remain pending; no issue completion or
+  source/native/runtime preservation theorem follows.
+- Add an internal original-body qmatch sequence reader and literal Raw-interval
+  correspondence. Retain every source occurrence, complete owner/result order
+  and zero-width identity; reject gaps, overlaps and stale tokens. Exact
+  arm/control/sector checking and native/QDV/compiler integration remain
+  required before this component can authorize execution.
 - Store four passive ADT-authoring history indices with the existing explicit
   gzip reader, preserving every decoded byte, original pin and archive member.
   Recover 576,145 bytes of fixture headroom without changing size limits or

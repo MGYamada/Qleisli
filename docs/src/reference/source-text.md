@@ -208,14 +208,18 @@ does not redirect a built-in entry. The legacy hierarchy projection still
 refuses qmatch; a failed check never triggers a different acceptance path.
 
 Small nominal enum selectors also use the shared emitter for a nongeneric named
-function with quantum parameters, a flat quantum-owner result and one structural qmatch body.
+function with quantum parameters, a flat quantum-owner result and a structural
+body containing one or more named-arm selections.
 Targets may be built-in bases, fieldless enums or finite records, including
 empty records. Built-in ordinal selectors may also select nominal targets.
 The six-joined-bit and 1024-step producer limits remain. Original names/tuple
 bindings and the complete
-structural return may surround the selection. Each actual call fragment, with
+structural return may surround the selections. Each actual call fragment, with
 its original input/output owners and every emitted operation, passes the native
-source/arm gate described below. Built-in target arms provide their existing
+source/arm gate described below. Each original selection binds a literal,
+contiguous Raw interval and its actual owner frame; all intervals cover the
+complete emitted call in source order. Each interval passes its own exact
+equations even when successive operations cancel. Built-in target arms provide their existing
 function evidence. Nominal target arms submit their original physical body and
 a proposed controlled implementation through the same QIRF encoder; the native
 gate binds the full original target type and checks its actual code/body and
@@ -227,7 +231,7 @@ the outer contract even when the selected operation is pure.
 Ordinary callers may retain other owners; only the actual callee
 fragment is submitted for its original function, and the complete runtime root
 still passes its independent typed gate. General expressions, nonstructural
-prefixes/suffixes, multiple selections and generic/constructed arms remain
+prefixes/suffixes and generic/constructed arms remain
 unsupported here. No source text or owner frame is synthesized
 to avoid those refusals.
 

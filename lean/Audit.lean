@@ -16,25 +16,41 @@ axioms are rejected. This command is run separately after the library build.
 open Lean in
 run_cmd do
   let env ← getEnv
-  let allowed := #[``propext, ``Classical.choice, ``Quot.sound]
-  let mut checked := 0
-  let mut used : Array Name := #[]
-  for (name, _) in env.constants.toList do
-    let fromProject := match env.getModuleIdxFor? name with
-      | some idx => (`Qleisli).isPrefixOf env.header.moduleNames[idx.toNat]!
+  let targetModules := #[`QleisliKernel.Semantics.OrdinaryValue,
+    `Qleisli.Semantics.OrdinaryValue, `Qleisli.OrdinaryValueExamples, `Qleisli.OrdinaryValueRawExamples,
+    `QleisliKernel.Semantics.OrdinaryValueTransport, `Qleisli.Semantics.OrdinaryValuePhi,
+    `Qleisli.Semantics.OrdinaryValueEffects, `Qleisli.OrdinaryValuePhiExamples,
+    `Qleisli.OrdinaryValuePhiTypes, `Qleisli.OrdinaryValueEffectsExamples,
+    `Qleisli.Semantics.OrdinaryValueBranch, `Qleisli.OrdinaryValueBranchTypes,
+    `Qleisli.OrdinaryValueBranchExamples]
+  -- Classify the actual compiled environment once, retaining its existing
+  -- traversal order and the module-ownership fallback for current declarations.
+  let mut projectDeclarations : Array Name := #[]
+  let mut targetDeclarations : Array (Name × ConstantInfo × Name) := #[]
+  for (name, info) in env.constants.toList do
+    let owner := (env.getModuleIdxFor? name).map (fun idx => env.header.moduleNames[idx.toNat]!)
+    let fromProject := match owner with
+      | some moduleName => (`Qleisli).isPrefixOf moduleName
       | none => (`Qleisli).isPrefixOf name
-    if fromProject then
-      checked := checked + 1
-      for axiomName in ← collectAxioms name do
-        unless allowed.contains axiomName do
-          throwError "{name} depends on forbidden axiom {axiomName}"
-        unless used.contains axiomName do
-          used := used.push axiomName
-  if checked == 0 then
+    if fromProject then projectDeclarations := projectDeclarations.push name
+    if let some moduleName := owner then
+      if targetModules.contains moduleName then
+        targetDeclarations := targetDeclarations.push (name,info,moduleName)
+  let allowed := #[``propext, ``Classical.choice, ``Quot.sound]
+  let mut projectChecked : Nat := 0
+  let mut used : Array Name := #[]
+  for name in projectDeclarations do
+    projectChecked := projectChecked + 1
+    for axiomName in ← collectAxioms name do
+      unless allowed.contains axiomName do
+        throwError "{name} depends on forbidden axiom {axiomName}"
+      unless used.contains axiomName do
+        used := used.push axiomName
+  if projectChecked == 0 then
     throwError "No Qleisli declarations were audited"
-  logInfo m!"Audited {checked} Qleisli declarations; axioms used: {used}"
+  logInfo m!"Audited {projectChecked} Qleisli declarations; axioms used: {used}"
 
-/-!
+/-
 Audit the ordinary-value definitions and their examples by compiled module
 ownership, including private and generated helpers. Exact direct imports,
 executable definitions and the stated theorem premises remain checked.
@@ -43,21 +59,9 @@ adequacy review or constitutional admission.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 -/
 
--- Use compiled module ownership, not declaration prefixes: private names and
--- generated deriving helpers need not have a public semantic namespace prefix.
-open Lean in
-run_cmd do
-  let env ← getEnv
-  let targetModules := #[`QleisliKernel.Semantics.OrdinaryValue,
-    `Qleisli.Semantics.OrdinaryValue, `Qleisli.OrdinaryValueExamples, `Qleisli.OrdinaryValueRawExamples,
-    `QleisliKernel.Semantics.OrdinaryValueTransport, `Qleisli.Semantics.OrdinaryValuePhi,
-    `Qleisli.Semantics.OrdinaryValueEffects, `Qleisli.OrdinaryValuePhiExamples,
-    `Qleisli.OrdinaryValuePhiTypes, `Qleisli.OrdinaryValueEffectsExamples,
-    `Qleisli.Semantics.OrdinaryValueBranch, `Qleisli.OrdinaryValueBranchTypes,
-    `Qleisli.OrdinaryValueBranchExamples]
   let allowedAxioms := #[``propext, ``Classical.choice, ``Quot.sound]
   let mut present : NameSet := {}
-  let mut checked := 0
+  let mut checked : Nat := 0
   let mut failures : Array String := #[]
   let mut rows : Array Json := #[]
   let expectedImports := #[
@@ -83,30 +87,27 @@ run_cmd do
       let actual := (env.header.moduleData[idx]!.imports.map (·.module)).filter (· != `Init)
       unless actual == expected do
         failures := failures.push s!"{moduleName}: unexpected direct imports {actual}"
-  for (name, info) in env.constants.toList do
-    let owner := (env.getModuleIdxFor? name).map (fun idx => env.header.moduleNames[idx.toNat]!)
-    if let some moduleName := owner then
-      if targetModules.contains moduleName then
-        checked := checked + 1
-        present := present.insert moduleName
-        if info.isUnsafe then failures := failures.push s!"{name}: unsafe declaration"
-        if info.isPartial then failures := failures.push s!"{name}: partial declaration"
-        if isNoncomputable env name then failures := failures.push s!"{name}: noncomputable declaration"
-        if (Compiler.getImplementedBy? env name).isSome then
-          failures := failures.push s!"{name}: implemented_by replacement"
-        if (getExternAttrData? env name).isSome then
-          failures := failures.push s!"{name}: extern implementation"
-        if Compiler.hasCSimpAttribute env name then
-          failures := failures.push s!"{name}: compiler-simplification replacement"
-        if let .axiomInfo _ := info then failures := failures.push s!"{name}: project axiom"
-        let axioms ← collectAxioms name
-        for axiomName in axioms do
-          unless allowedAxioms.contains axiomName do
-            failures := failures.push s!"{name}: forbidden transitive axiom {axiomName}"
-        rows := rows.push (Json.mkObj [
-          ("name",toJson name.toString), ("module",toJson moduleName.toString),
-          ("unsafe",toJson info.isUnsafe), ("partial",toJson info.isPartial),
-          ("axioms",toJson (axioms.toList.map Name.toString))])
+  for (name, info, moduleName) in targetDeclarations do
+    checked := checked + 1
+    present := present.insert moduleName
+    if info.isUnsafe then failures := failures.push s!"{name}: unsafe declaration"
+    if info.isPartial then failures := failures.push s!"{name}: partial declaration"
+    if isNoncomputable env name then failures := failures.push s!"{name}: noncomputable declaration"
+    if (Compiler.getImplementedBy? env name).isSome then
+      failures := failures.push s!"{name}: implemented_by replacement"
+    if (getExternAttrData? env name).isSome then
+      failures := failures.push s!"{name}: extern implementation"
+    if Compiler.hasCSimpAttribute env name then
+      failures := failures.push s!"{name}: compiler-simplification replacement"
+    if let .axiomInfo _ := info then failures := failures.push s!"{name}: project axiom"
+    let axioms ← collectAxioms name
+    for axiomName in axioms do
+      unless allowedAxioms.contains axiomName do
+        failures := failures.push s!"{name}: forbidden transitive axiom {axiomName}"
+    rows := rows.push (Json.mkObj [
+      ("name",toJson name.toString), ("module",toJson moduleName.toString),
+      ("unsafe",toJson info.isUnsafe), ("partial",toJson info.isPartial),
+      ("axioms",toJson (axioms.toList.map Name.toString))])
   for moduleName in targetModules do
     unless present.contains moduleName do
       failures := failures.push s!"No declarations audited for {moduleName}"

@@ -23,16 +23,22 @@ fn request() -> Request {
         public_effect: Effect::Unitary,
     };
     Request {
-        attached: interface.clone(),
-        required: interface,
         source: SourceSite {
             module: "same".into(),
             function: "choose".into(),
-            offset: 137,
         },
-        arms: vec![Arm {
-            evidence: 0,
-            controlled: 2,
+        sites: vec![Site {
+            attached: interface.clone(),
+            required: interface,
+            position: Position {
+                offset: 137,
+                start: 0,
+                count: 3,
+            },
+            arms: vec![Arm {
+                evidence: 0,
+                controlled: 2,
+            }],
         }],
     }
 }
@@ -48,7 +54,7 @@ fn changed(mut change: impl FnMut(&mut std::collections::BTreeMap<String, Value>
 #[test]
 fn complete_nominal_trees_effects_and_zero_width_positions_survive_transport() {
     let mut request = request();
-    request.attached.inputs[0].basis = vec![Atom::Enum(
+    request.sites[0].attached.inputs[0].basis = vec![Atom::Enum(
         Arc::new(Origin {
             module: "labels".into(),
             declaration: "Tri".into(),
@@ -56,14 +62,17 @@ fn complete_nominal_trees_effects_and_zero_width_positions_survive_transport() {
         }),
         vec!["A".into(), "B".into(), "C".into()],
     )];
-    request.required.outputs[1].basis = vec![Atom::Tuple(2), Atom::Unit, Atom::Bits(0)];
-    request.required.public_effect = Effect::Observe;
+    request.sites[0].required.outputs[1].basis = vec![Atom::Tuple(2), Atom::Unit, Atom::Bits(0)];
+    request.sites[0].required.public_effect = Effect::Observe;
     // Deliberately inconsistent proposed data remains data: only Lean can
     // accept semantic interfaces or prevent public-effect sharpening.
     let decoded = Request::decode(&request.encode().unwrap()).unwrap();
     assert_eq!(decoded, request);
-    assert_ne!(decoded.attached.inputs[0], decoded.attached.inputs[1]);
-    assert_eq!(decoded.required.public_effect, Effect::Observe);
+    assert_ne!(
+        decoded.sites[0].attached.inputs[0],
+        decoded.sites[0].attached.inputs[1]
+    );
+    assert_eq!(decoded.sites[0].required.public_effect, Effect::Observe);
 }
 
 #[test]
@@ -82,7 +91,9 @@ fn profile_format_version_and_required_fields_are_exact() {
         ("format", text("qleisli.carrier-request")),
         ("profile", text("finite-carrier-pure-v1")),
         ("profile", text("finite-source-qmatch-named-v1")),
+        ("profile", text("finite-source-qmatch-named-v2")),
         ("version", n(1)),
+        ("version", n(2)),
     ] {
         let bytes = changed(|fields| {
             fields.insert(key.into(), value.clone());
@@ -109,7 +120,13 @@ fn nested_source_and_arm_fields_cannot_supply_other_authority() {
     source.insert("checked".into(), Value::Bool(true));
     assert!(Request::decode(&json::encode(&value).unwrap()).is_err());
     let bytes = changed(|fields| {
-        fields.insert(
+        let Value::Array(sites) = fields.get_mut("sites").unwrap() else {
+            unreachable!()
+        };
+        let Value::Object(site) = &mut sites[0] else {
+            unreachable!()
+        };
+        site.insert(
             "arms".into(),
             Value::Array(vec![Value::object([
                 ("evidence", n(0)),
@@ -125,7 +142,13 @@ fn nested_source_and_arm_fields_cannot_supply_other_authority() {
 fn indices_are_unsigned_u32_and_arm_count_is_bounded() {
     let overflow = Value::Number(u64::from(u32::MAX) + 1);
     let bytes = changed(|fields| {
-        fields.insert(
+        let Value::Array(sites) = fields.get_mut("sites").unwrap() else {
+            unreachable!()
+        };
+        let Value::Object(site) = &mut sites[0] else {
+            unreachable!()
+        };
+        site.insert(
             "arms".into(),
             Value::Array(vec![Value::object([
                 ("evidence", overflow.clone()),
@@ -136,7 +159,7 @@ fn indices_are_unsigned_u32_and_arm_count_is_bounded() {
     assert!(Request::decode(&bytes).is_err());
     for count in [0, 65] {
         let mut request = request();
-        request.arms = vec![
+        request.sites[0].arms = vec![
             Arm {
                 evidence: 0,
                 controlled: 2
@@ -153,7 +176,7 @@ fn bounded_names_and_interfaces_refuse_before_encoder_copies() {
     value.source.function = "x".repeat(4097);
     assert!(value.encode().is_err());
     value.source.function = "choose".into();
-    value.attached.inputs = vec![owner(10); 129];
+    value.sites[0].attached.inputs = vec![owner(10); 129];
     assert!(value.encode().is_err());
 }
 
@@ -305,16 +328,22 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
     let site = SourceSite {
         module: "main".into(),
         function: "choose".into(),
-        offset: source.find("qmatch").unwrap() as u32,
     };
     let kernel =
         crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let check = |raw: &RawProgram, interface: Interface, arms: &[ArmSubject]| {
         let (artifact, request) = proposal(
             raw,
-            interface,
             site.clone(),
-            arms,
+            &[SelectionSubject {
+                interface: &interface,
+                arms,
+                position: Position {
+                    offset: source.find("qmatch").unwrap() as u32,
+                    start: 0,
+                    count: raw.operations.len() as u32,
+                },
+            }],
             &[("main".into(), source.into())],
         )
         .unwrap();
@@ -348,6 +377,117 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
         },
     }];
     assert!(check(&actual, interface.clone(), &leaking).is_err());
+
+    // The two correct intervals have the same total phase as the wrong
+    // intervals below. Every source occurrence must bind its own actual body.
+    let sequence_source = source.replace(
+        "qmatch(s,q){0=>idle,1=>phase}",
+        "let(s,q)=qmatch(s,q){0=>idle,1=>phase}; qmatch(s,q){0=>idle,1=>phase}",
+    );
+    let mut sequence_arms = subjects();
+    for arm in &mut sequence_arms {
+        let ArmBody::Physical { identity, .. } = &mut arm.body else {
+            unreachable!()
+        };
+        let RetainedIdentity::Owned(identity) = identity.as_mut() else {
+            unreachable!()
+        };
+        identity.sources[0].1 = sequence_source.clone();
+    }
+    let mut first = interface.clone();
+    for owner in first.inputs.iter_mut().chain(&mut first.outputs) {
+        if let Atom::Enum(origin, _) = &mut owner.basis[0] {
+            Arc::make_mut(origin).source = sequence_source.clone();
+        }
+    }
+    let mut second = first.clone();
+    second.inputs = first.outputs.clone();
+    second.outputs[0].port.token = TokenId(8);
+    second.outputs[1].port.token = TokenId(9);
+    let mut sequence = actual.clone();
+    sequence.operations.extend([
+        RawOp::Join {
+            left: TokenId(4),
+            right: TokenId(5),
+            output: TokenId(6),
+        },
+        RawOp::ApplyUnitary {
+            input: TokenId(6),
+            output: TokenId(7),
+            steps: vec![phase(1, true)],
+        },
+        RawOp::Split {
+            input: TokenId(7),
+            left: TokenId(8),
+            right: TokenId(9),
+            left_bits: 1,
+        },
+    ]);
+    sequence.quantum_outputs = vec![TokenId(8), TokenId(9)];
+    let positions = sequence_source
+        .match_indices("qmatch")
+        .enumerate()
+        .map(|(index, (offset, _))| Position {
+            offset: offset as u32,
+            start: 3 * index as u32,
+            count: 3,
+        })
+        .collect::<Vec<_>>();
+    let propose = |raw: &RawProgram| {
+        proposal(
+            raw,
+            site.clone(),
+            &[
+                SelectionSubject {
+                    interface: &first,
+                    position: positions[0].clone(),
+                    arms: &sequence_arms,
+                },
+                SelectionSubject {
+                    interface: &second,
+                    position: positions[1].clone(),
+                    arms: &sequence_arms,
+                },
+            ],
+            &[("main".into(), sequence_source.clone())],
+        )
+        .unwrap()
+    };
+    let (artifact, requested) = propose(&sequence);
+    kernel.check_qmatch_source(&artifact, &requested).unwrap();
+    let mut wrong_intervals = sequence.clone();
+    for (index, power) in [(1, 2), (4, 0)] {
+        let RawOp::ApplyUnitary { steps, .. } = &mut wrong_intervals.operations[index] else {
+            unreachable!()
+        };
+        *steps = vec![phase(power, true)];
+    }
+    let (wrong_artifact, wrong_request) = propose(&wrong_intervals);
+    assert!(
+        kernel
+            .check_qmatch_source(&wrong_artifact, &wrong_request)
+            .is_err()
+    );
+    let original = Request::decode(&requested).unwrap();
+    for variant in 0..6 {
+        let mut changed = original.clone();
+        match variant {
+            0 => {
+                changed.sites.pop();
+            }
+            1 => changed.sites.swap(0, 1),
+            2 => changed.sites.push(changed.sites[0].clone()),
+            3 => changed.sites[1].position.start = 0,
+            4 => changed.sites[1].position.start = 4,
+            _ => changed.sites[0].position.count = 2,
+        }
+        assert!(
+            kernel
+                .check_qmatch_source(&artifact, &changed.encode().unwrap())
+                .is_err(),
+            "sequence variant {variant}"
+        );
+    }
     let mut wrong_type = interface;
     for owner in [&mut wrong_type.inputs[1], &mut wrong_type.outputs[1]] {
         let Atom::Enum(origin, _) = &mut owner.basis[0] else {

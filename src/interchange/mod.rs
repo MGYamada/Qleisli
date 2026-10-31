@@ -941,7 +941,7 @@ fn decode_subject_with_runtime(
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
     let order = if let Some(request) = qmatch {
         let mut roots = vec![root];
-        for arm in &request.arms {
+        for arm in request.sites.iter().flat_map(|site| &site.arms) {
             let evidence = usize::try_from(arm.evidence)
                 .map_err(|_| Error::limit("qmatch evidence index overflows host capacity"))?;
             let controlled = usize::try_from(arm.controlled)
@@ -1027,16 +1027,20 @@ fn decode_subject_with_runtime(
             ordinary.map_or_else(
                 || {
                     let request = qmatch.expect("typed request");
-                    [
-                        &request.attached.inputs,
-                        &request.attached.outputs,
-                        &request.required.inputs,
-                        &request.required.outputs,
-                    ]
-                    .into_iter()
-                    .flatten()
-                    .map(|owner| owner.basis.len())
-                    .sum::<usize>()
+                    request
+                        .sites
+                        .iter()
+                        .flat_map(|site| {
+                            [
+                                &site.attached.inputs,
+                                &site.attached.outputs,
+                                &site.required.inputs,
+                                &site.required.outputs,
+                            ]
+                        })
+                        .flatten()
+                        .map(|owner| owner.basis.len())
+                        .sum::<usize>()
                 },
                 |request| {
                     request.parameters.iter().map(Vec::len).sum::<usize>() + request.basis.len()
