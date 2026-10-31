@@ -73,6 +73,8 @@ SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v03
 SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-index.json.xz"
 SECTOR_SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-first.tar.xz"
 SECTOR_SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-index.json.xz"
+SEQUENCE_TESTS_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-first.tar.xz"
+SEQUENCE_TESTS_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-tests-v3-index.json"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -120,6 +122,22 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_sequence_transport_test_migration_preserves_real_failure(self):
+        members = bounded_history(ROOT / SEQUENCE_TESTS_ARCHIVE, ROOT / SEQUENCE_TESTS_INDEX)
+        self.assertEqual(history_json(ROOT / SEQUENCE_TESTS_INDEX)['sha256'],
+                         '2277e15144bb39b3e48697278748cf2f63ead09da05428e9e7f7feb3329818d0')
+        identity = json.loads(members['hosted/identity.json.txt'])
+        self.assertEqual(hashlib.sha256(members['first/Tests.lean.before.txt']).hexdigest(),
+                         identity['original_tests_sha256'])
+        self.assertIn(b'Tests.lean:1632:82: error:', members['hosted/full-tests/stdout.txt'])
+        for label, code in [('qmatch-tests-v3-full', 1), ('qmatch-tests-v3-full-correct-path', 0)]:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], code)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['objects/' + digest]).hexdigest(), digest)
+
     def test_sequence_sector_integration_keeps_actual_inputs_and_refusals(self):
         members = bounded_history(ROOT / SECTOR_SEQUENCE_ARCHIVE, ROOT / SECTOR_SEQUENCE_INDEX)
         index = history_json(ROOT / SECTOR_SEQUENCE_INDEX)

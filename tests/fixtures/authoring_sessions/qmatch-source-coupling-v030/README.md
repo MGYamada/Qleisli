@@ -1,5 +1,15 @@
 # Original qmatch source and evidence coupling
 
+The [version3 full-test repair](sequence-tests-v3-first.tar.xz) and
+[index](sequence-tests-v3-index.json) retain the unchanged old test source,
+actual hosted failure and separate local repair. One active `Tests.lean` fixture
+still used the retired single-site version2 request after the decoder migration.
+The corrected version3 fixture preserves decoded source/interval fields and
+explicitly rejects both the old request and a mixed source shape. Full local
+Tests pass; the first incorrect working-directory invocation remains a failure.
+These are test observations using existing imports, not fresh transitive proof
+replay, a source-preservation theorem or completion of #64/#195.
+
 The [sequence sector integration history](sequence-sector-first.tar.xz) and
 bounded compressed [index](sequence-sector-index.json.xz) retain 20 actual check
 windows and all 42 distinct working-source objects. Every original occurrence

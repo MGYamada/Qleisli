@@ -13,6 +13,8 @@ development milestones from the scope of their evidence.
   cannot hide wrong local phases. Pair internal version3 requests and QDV;
   older formats refuse without fallback. Multiple named-arm selections now
   pass, including original zero-width spectators and result permutations.
+  Migrate the full Lean test root's request fixture as well, retaining explicit
+  legacy-request refusal and the exact decoded source/interval fields.
   General expressions/calls, mixed parameters, constructed/generic arms and
   the full twelve-bit profile remain pending; no issue completion or
   source/native/runtime preservation theorem follows.

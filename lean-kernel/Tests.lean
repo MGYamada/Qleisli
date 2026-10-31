@@ -1613,11 +1613,16 @@ private def interface (bits : Nat) (effect : String := "unitary") : Json := Json
   [("inputs",.arr #[owner bits]),("outputs",.arr #[owner bits]),("public_effect",.str effect)]
 
 private def request (arms : List Json) (source : Json) (extras : List (String × Json) := []) : Json :=
-  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 2),
-    ("profile",.str Qmatch.profile),("attached",interface 0),("required",interface 0),
-    ("source",source),("arms",.arr arms.toArray)] ++ extras)
+  let position := Json.mkObj [("offset",.num 137),("start",.num 0),("count",.num 1)]
+  let site := Json.mkObj [("attached",interface 0),("required",interface 0),
+    ("position",position),("arms",.arr arms.toArray)]
+  Json.mkObj ([("format",.str "qleisli.qmatch-request"),("version",.num 3),
+    ("profile",.str Qmatch.profile),("source",source),("sites",.arr #[site])] ++ extras)
 
 private def source : Json := Json.mkObj
+  [("module",.str "same"),("function",.str "choose")]
+
+private def legacySource : Json := Json.mkObj
   [("module",.str "same"),("function",.str "choose"),("offset",.num 137)]
 
 private def arm (evidence : Nat) : Json := Json.mkObj
@@ -1630,9 +1635,22 @@ example : (Carrier.readInterface (interface 0 "observe")).isOk = true := by deci
 example : (Carrier.readInterface (interface 0 "iso")).isOk = false := by decide +kernel
 
 example : ((Qmatch.decode (request [arm 0] source)).run 1000).1.isOk = true := by decide +kernel
+example : (((Qmatch.decode (request [arm 0] source)).run 1000).1.toOption.map fun decoded =>
+    (decoded.source.moduleName, decoded.source.functionName,
+      decoded.sites.map fun site => (site.position.offset,site.position.start,site.position.count))) =
+    some ("same","choose",[(137,0,1)]) := by decide +kernel
 example : ((Qmatch.decode (request [] source)).run 1000).1.isOk = false := by decide +kernel
 example : ((Qmatch.decode (request [arm 4294967296] source)).run 1000).1.isOk = false := by decide +kernel
 example : ((Qmatch.decode (request [arm 0] source [("accepted",.bool true)])).run 1000).1.isOk = false := by decide +kernel
+example : ((Qmatch.decode (request [arm 0] legacySource)).run 1000).1.isOk = false := by decide +kernel
+
+-- The retired single-site wire shape cannot regain acceptance through a fallback.
+private def legacyRequest : Json := Json.mkObj
+  [("format",.str "qleisli.qmatch-request"),("version",.num 2),
+    ("profile",.str "finite-source-qmatch-named-v2"),
+    ("attached",interface 0),("required",interface 0),
+    ("source",legacySource),("arms",.arr #[arm 0])]
+example : ((Qmatch.decode legacyRequest).run 1000).1.isOk = false := by decide +kernel
 
 private def framedInput (scope : ExecutionView.Packet.Scope) : ExecutionView.Packet.Input :=
   ⟨.e2026,scope,ByteArray.empty,ByteArray.empty,ByteArray.empty,[]⟩
