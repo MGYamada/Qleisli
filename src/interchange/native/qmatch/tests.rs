@@ -66,8 +66,9 @@ fn actual_retained_graph_and_caches_match_both_independent_exact_phase_views() {
         assert!(Arc::ptr_eq(&subject, &prepared.subject));
         let actual = qmatch::complete(prepared.graph(), &request).unwrap();
         assert_eq!(actual, expected(row));
-        assert_eq!(prepared.decoded.evidence.len(), request.arms.len());
-        assert_eq!(prepared.decoded.programs.len(), 1 + 2 * request.arms.len());
+        let arms: usize = request.sites.iter().map(|site| site.arms.len()).sum();
+        assert_eq!(prepared.decoded.evidence.len(), arms);
+        assert_eq!(prepared.decoded.programs.len(), 1 + 2 * arms);
         views.push(actual);
         count += 1;
     }
@@ -85,19 +86,28 @@ fn typed_request_and_retained_objects_participate_in_the_actual_view() {
     let original = qmatch::complete(prepared.graph(), &request).unwrap();
     let mut changes = Vec::new();
     let mut changed = request.clone();
-    changed.source.offset += 1;
+    changed.sites[0].position.offset += 1;
     changes.push(changed);
     let mut changed = request.clone();
-    changed.arms[0].controlled = 1;
+    changed.sites[0].position.start += 1;
     changes.push(changed);
     let mut changed = request.clone();
-    changed.arms[0].evidence = 1;
+    changed.sites[0].position.count += 1;
     changes.push(changed);
     let mut changed = request.clone();
-    changed.attached.inputs.swap(0, 1);
+    changed.sites.push(changed.sites[0].clone());
     changes.push(changed);
     let mut changed = request.clone();
-    changed.required.outputs[0].basis = vec![crate::interchange::carrier::Atom::Bits(0)];
+    changed.sites[0].arms[0].controlled = 1;
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.sites[0].arms[0].evidence = 1;
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.sites[0].attached.inputs.swap(0, 1);
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.sites[0].required.outputs[0].basis = vec![crate::interchange::carrier::Atom::Bits(0)];
     changes.push(changed);
     for changed in changes {
         assert_ne!(
@@ -227,7 +237,7 @@ fn full_source_frames_require_fresh_native_source_body_control_and_qdv_checks() 
         if let Ok(checked) = actual {
             assert_eq!(checked.artifact(), artifact);
             assert_eq!(checked.request_bytes(), request);
-            assert_eq!(checked.request().attached.inputs.len(), 2);
+            assert_eq!(checked.request().sites[0].attached.inputs.len(), 2);
             assert_eq!(checked.native().mode(), "--qmatch-source-check");
         }
     }

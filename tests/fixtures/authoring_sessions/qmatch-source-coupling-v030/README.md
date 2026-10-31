@@ -1,5 +1,26 @@
 # Original qmatch source and evidence coupling
 
+The [sequence sector integration history](sequence-sector-first.tar.xz) and
+bounded compressed [index](sequence-sector-index.json.xz) retain 20 actual check
+windows and all 42 distinct working-source objects. Every original occurrence
+now binds a literal Raw interval, its actual owner frame and separate exact
+arm/control/sector equations through version3 requests/QDV and the shared
+compiler. Wrong intervals reject even when their total operator agrees.
+Missing, duplicate, reordered, overlapping and gapped intervals also reject.
+The unchanged multiple-selection first program now passes the ordinary CLI;
+its output correctly keeps source-preservation verification false.
+
+The first heartbeat/type errors, missing native selection, wrong Lake target
+and oversized pretty-JSON preparation remain separate from successful repairs.
+No limit is raised. The initial cargo-1.85 observation used the PATH-selected
+Homebrew compiler and is explicitly not MSRV evidence; the later pinned
+Rust1.85 test/Clippy records retain their actual compiler version and paths.
+Fifteen new semantic controls, paired protocol regressions, normal native and
+selected-runtime tests and the standard 22,900-declaration audit pass. Canonical
+full proof replay, current-head CI/review, general expression/call/mixed frames,
+constructed/generic arms and the full twelve-bit profile remain separate.
+These informed controls do not complete #64/#195/#142 or admit a guarantee.
+
 The [sequence first history](sequence-first.tar.xz) and compressed
 [index](sequence-index.json.xz) retain seven complete informed programs, their
 untouched first CLI observations and fifteen separate component-check windows.

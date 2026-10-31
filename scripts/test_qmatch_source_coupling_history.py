@@ -71,6 +71,8 @@ PROVIDER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/
 PROVIDER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-validation.json.xz"
 SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-first.tar.xz"
 SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-index.json.xz"
+SECTOR_SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-first.tar.xz"
+SECTOR_SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-sector-index.json.xz"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -118,6 +120,34 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_sequence_sector_integration_keeps_actual_inputs_and_refusals(self):
+        members = bounded_history(ROOT / SECTOR_SEQUENCE_ARCHIVE, ROOT / SECTOR_SEQUENCE_INDEX)
+        index = history_json(ROOT / SECTOR_SEQUENCE_INDEX)
+        self.assertEqual(index['sha256'], '702430a45960dd37a1b8e745c1d998cef4874d80d1bafef79f0ff8e81f366ed4')
+        self.assertEqual(len(members), 111)
+        self.assertEqual(len(index['checks']), 20)
+        for label, code in index['checks'].items():
+            suffix = label.removeprefix('qmatch-sequence-')
+            report = json.loads(members['checks/' + suffix + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], code)
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['objects/' + digest]).hexdigest(), digest)
+        for suffix in ['msrv-185-pinned', 'msrv-clippy']:
+            report = json.loads(members['checks/' + suffix + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], 0)
+            self.assertTrue(report['rustc_version'].startswith('rustc 1.85.0 '))
+        self.assertIn(b'15 passed; 0 failed; 0 ignored', members['checks/native-interval-faults/stdout.txt'])
+        self.assertIn(b'28 passed; 0 failed; 0 ignored', members['checks/selected-runtime/stdout.txt'])
+        self.assertIn(b'22900 kernel/transport declarations', members['checks/current-audit/stdout.txt'])
+        result = json.loads(members['checks/original-cli/stdout.txt'])['result']
+        self.assertTrue(result['runtime_result_checked'])
+        self.assertFalse(result['source_preservation_verified'])
+        first = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        self.assertEqual(members['unchanged-first/main.qli.txt'], first['source-first/multiple-selections/main.qli.txt'])
+        self.assertEqual(json.loads(members['scope.json.txt'])['issues_open'], [64, 195, 142])
+
     def test_sequence_first_programs_and_actual_refusals_are_unchanged(self):
         self.assertEqual(hashlib.sha256((ROOT / SEQUENCE_INDEX).read_bytes()).hexdigest(),
                          'c992bbb6fcc5ee8a6383fc1023e2f185da68d0dc241142830926174eeddd8e00')

@@ -4,7 +4,7 @@
 use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
-use crate::interchange::qmatch::{ArmSubject, SourceSite};
+use crate::interchange::qmatch::{ArmSubject, Position, SelectionSubject, SourceSite};
 
 mod arms;
 
@@ -12,7 +12,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
     inputs: Vec<Owner>,
     start: usize,
-    selection: Option<Selection>,
+    selections: Vec<Selection>,
 }
 
 struct Selection {
@@ -20,6 +20,8 @@ struct Selection {
     arms: Vec<ArmSubject>,
     inputs: Vec<Owner>,
     outputs: Vec<Owner>,
+    start: usize,
+    count: usize,
 }
 
 fn outputs(
@@ -110,7 +112,7 @@ impl Frame {
                 .map(|arg| owner(lower, &name.0, span, arg))
                 .collect::<Result<_, _>>()?,
             start: lower.raw.operations.len(),
-            selection: None,
+            selections: Vec::new(),
         }))
     }
 
@@ -119,15 +121,11 @@ impl Frame {
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<(), CompileError> {
-        let Some(Selection {
-            span,
-            arms,
-            inputs: selected_inputs,
-            outputs: selected_outputs,
-        }) = self.selection
-        else {
+        let selections = self.selections;
+        let Some(first) = selections.first() else {
             return Ok(());
         };
+        let span = first.span;
         let name = lower
             .compiler
             .source
@@ -163,27 +161,68 @@ impl Frame {
             .iter()
             .map(|row| row.as_ref().clone())
             .collect::<Vec<_>>();
-        let offset = u32::try_from(span.start).map_err(|_| {
-            lower.error(
-                &name.0,
-                span,
-                ErrorCode::Limit,
-                "qmatch source offset exceeds u32",
-            )
-        })?;
+        let copies = selections
+            .iter()
+            .flat_map(|selected| selected.inputs.iter().chain(&selected.outputs))
+            .map(|owner| {
+                owner.port.wires.len()
+                    + owner
+                        .basis
+                        .iter()
+                        .map(|atom| {
+                            1 + match atom {
+                                crate::interchange::carrier::Atom::Enum(_, names)
+                                | crate::interchange::carrier::Atom::Record(_, names) => {
+                                    names.iter().map(|name| name.len() + 1).sum::<usize>()
+                                }
+                                _ => 0,
+                            }
+                        })
+                        .sum::<usize>()
+                    + 1
+            })
+            .sum::<usize>();
+        lower.compiler.charge(&name.0, span, copies)?;
+        let interfaces = selections
+            .iter()
+            .map(|selected| Interface {
+                inputs: selected.inputs.clone(),
+                outputs: selected.outputs.clone(),
+                public_effect: Effect::Unitary,
+            })
+            .collect::<Vec<_>>();
+        let subjects = selections
+            .iter()
+            .zip(&interfaces)
+            .map(|(selected, interface)| {
+                let number = |value| {
+                    u32::try_from(value).map_err(|_| {
+                        lower.error(
+                            &name.0,
+                            selected.span,
+                            ErrorCode::Limit,
+                            "qmatch source/interval position exceeds u32",
+                        )
+                    })
+                };
+                Ok(SelectionSubject {
+                    interface,
+                    arms: &selected.arms,
+                    position: Position {
+                        offset: number(selected.span.start)?,
+                        start: number(selected.start)?,
+                        count: number(selected.count)?,
+                    },
+                })
+            })
+            .collect::<Result<Vec<_>, CompileError>>()?;
         let proposal = crate::interchange::qmatch::proposal(
             &raw,
-            Interface {
-                inputs: selected_inputs,
-                outputs: selected_outputs,
-                public_effect: Effect::Unitary,
-            },
             SourceSite {
                 module: name.0.clone(),
                 function: name.1,
-                offset,
             },
-            &arms,
+            &subjects,
             &sources,
         )
         .and_then(|(artifact, request)| {
@@ -266,9 +305,9 @@ pub(super) fn emit(
     if lower
         .nominal_qmatch
         .as_ref()
-        .is_none_or(|frame| frame.selection.is_some())
+        .is_none_or(|frame| frame.selections.len() >= 128)
     {
-        return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch currently requires one original structural function with quantum parameters"));
+        return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires an original structural function with quantum parameters and at most 128 selections"));
     }
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
@@ -383,20 +422,24 @@ pub(super) fn emit(
         owner(lower, module, span, &selector)?,
         owner(lower, module, span, &target)?,
     ];
+    let start = lower.raw.operations.len();
     let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
     let slot = lower.quantum(module, span, &joined, false)?;
     lower.apply_circuit(slot, steps);
     let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
     let selected_outputs = outputs(lower, module, span, &result)?;
-    lower
+    let count = lower.raw.operations.len() - start;
+    let frame = lower
         .nominal_qmatch
         .as_mut()
-        .expect("checked original frame")
-        .selection = Some(Selection {
+        .expect("checked original frame");
+    frame.selections.push(Selection {
         span,
         arms,
         inputs,
         outputs: selected_outputs,
+        start: start - frame.start,
+        count,
     });
     Ok(result)
 }

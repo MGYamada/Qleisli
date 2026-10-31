@@ -23,76 +23,99 @@ pub(crate) struct ArmSubject {
     pub controlled: crate::ir::RawProgram,
 }
 
+/// Actual local interfaces and literal positions in the complete original call.
+pub(crate) struct SelectionSubject<'a> {
+    pub interface: &'a Interface,
+    pub position: Position,
+    pub arms: &'a [ArmSubject],
+}
+
 /// Pack actual source/body subjects with the shared QIRF encoder. The returned
 /// bytes are a proposal only; indices are derived from this exact graph.
 pub(crate) fn proposal(
     raw: &crate::ir::RawProgram,
-    interface: Interface,
     source: SourceSite,
-    arms: &[ArmSubject],
+    selections: &[SelectionSubject<'_>],
     sources: &[(String, String)],
 ) -> Result<(Vec<u8>, Vec<u8>)> {
-    if arms.is_empty() || arms.len() > 64 {
-        return Err(Error::limit("qmatch arm capacity"));
+    if selections.is_empty() || selections.len() > 128 {
+        return Err(Error::limit("qmatch sequence capacity"));
     }
     let mut remaining = json::MAX_BYTES;
-    interface_storage(&interface, &mut remaining)?;
+    for selection in selections {
+        interface_storage(selection.interface, &mut remaining)?;
+        interface_storage(selection.interface, &mut remaining)?;
+        if selection.arms.is_empty() || selection.arms.len() > 64 {
+            return Err(Error::limit("qmatch arm capacity"));
+        }
+    }
     let mut encoder = super::Encoder::new(super::Version::V2);
     for (name, text) in sources {
         encoder.source(name, text)?;
     }
     let (root, mut encoder) = super::prepare_proposal(raw, None, encoder)?;
-    let mut indices = Vec::with_capacity(arms.len());
-    for arm in arms {
-        let evidence = match &arm.body {
-            ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
-            ArmBody::Physical {
-                bits,
-                raw,
-                identity,
-            } => {
-                // Encode a proposal, not a FunctionEvidence constructor. The
-                // fresh source gate associates this entry with the original
-                // full target type and checks both actual encoded bodies.
-                encoder.object()?;
-                let index = encoder.entries.len();
-                encoder.entries.push(Value::Null);
-                encoder.evidence_fields(
-                    index,
-                    &crate::contract::BasisType::Bits(*bits),
+    let mut sites = Vec::with_capacity(selections.len());
+    for selection in selections {
+        let mut indices = Vec::with_capacity(selection.arms.len());
+        for arm in selection.arms {
+            let evidence = match &arm.body {
+                ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
+                ArmBody::Physical {
+                    bits,
                     raw,
-                    raw,
-                    identity.parts(),
-                    None,
-                )?;
-                index
-            }
-        };
-        indices.push(Arm {
-            evidence: evidence as u32,
-            controlled: encoder.program(&arm.controlled)? as u32,
+                    identity,
+                } => {
+                    // Encode a proposal, not a FunctionEvidence constructor. The
+                    // fresh source gate associates this entry with the original
+                    // full target type and checks both actual encoded bodies.
+                    encoder.object()?;
+                    let index = encoder.entries.len();
+                    encoder.entries.push(Value::Null);
+                    encoder.evidence_fields(
+                        index,
+                        &crate::contract::BasisType::Bits(*bits),
+                        raw,
+                        raw,
+                        identity.parts(),
+                        None,
+                    )?;
+                    index
+                }
+            };
+            indices.push(Arm {
+                evidence: evidence as u32,
+                controlled: encoder.program(&arm.controlled)? as u32,
+            });
+        }
+        sites.push(Site {
+            attached: selection.interface.clone(),
+            required: selection.interface.clone(),
+            position: selection.position.clone(),
+            arms: indices,
         });
     }
-    let request = Request {
-        required: interface.clone(),
-        attached: interface,
-        source,
-        arms: indices,
-    };
+    let request = Request { source, sites };
     Ok((
         super::finish_proposal(root, None, encoder)?,
         request.encode()?,
     ))
 }
 
-pub(crate) const PROFILE: &str = "finite-source-qmatch-named-v2";
+pub(crate) const PROFILE: &str = "finite-source-qmatch-named-v3";
 
-/// An actual original UTF-8 byte occurrence, independently read by Lean.
+/// The original containing function, independently read by Lean.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SourceSite {
     pub module: String,
     pub function: String,
+}
+
+/// Actual source occurrence and literal Raw interval; none supplies authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Position {
     pub offset: u32,
+    pub start: u32,
+    pub count: u32,
 }
 
 /// Evidence names an original QIRF entry, rather than a free implementation.
@@ -107,9 +130,15 @@ pub struct Arm {
 /// and success receipts cannot be supplied in place of independent checking.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Request {
+    pub source: SourceSite,
+    pub sites: Vec<Site>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Site {
     pub attached: Interface,
     pub required: Interface,
-    pub source: SourceSite,
+    pub position: Position,
     pub arms: Vec<Arm>,
 }
 
@@ -179,16 +208,14 @@ impl SourceSite {
         Value::object([
             ("module", text(&self.module)),
             ("function", text(&self.function)),
-            ("offset", n(self.offset)),
         ])
     }
 
     fn decode(value: &Value) -> Result<Self> {
-        value.fields(&["module", "function", "offset"])?;
+        value.fields(&["module", "function"])?;
         let source = Self {
             module: value.field("module")?.text()?.into(),
             function: value.field("function")?.text()?.into(),
-            offset: number(value.field("offset")?)?,
         };
         source.bounded()?;
         Ok(source)
@@ -216,29 +243,35 @@ impl Request {
     /// Encode bounded data only; no native dispatch or acceptance follows.
     pub fn encode(&self) -> Result<Vec<u8>> {
         self.source.bounded()?;
-        if self.arms.is_empty() || self.arms.len() > 64 {
-            return Err(Error::limit("qmatch arm capacity"));
+        if self.sites.is_empty() || self.sites.len() > 128 {
+            return Err(Error::limit("qmatch sequence capacity"));
         }
         let mut remaining = json::MAX_BYTES;
-        interface_storage(&self.attached, &mut remaining)?;
-        interface_storage(&self.required, &mut remaining)?;
+        for site in &self.sites {
+            interface_storage(&site.attached, &mut remaining)?;
+            interface_storage(&site.required, &mut remaining)?;
+            if site.arms.is_empty() || site.arms.len() > 64 {
+                return Err(Error::limit("qmatch arm capacity"));
+            }
+            charge(
+                &mut remaining,
+                site.arms.len().saturating_mul(128).saturating_add(512),
+            )?;
+        }
         charge(
             &mut remaining,
             (self.source.module.len() + self.source.function.len())
                 .saturating_mul(6)
-                .saturating_add(self.arms.len().saturating_mul(128))
                 .saturating_add(512),
         )?;
         json::encode(&Value::object([
             ("format", text("qleisli.qmatch-request")),
-            ("version", n(2)),
+            ("version", n(3)),
             ("profile", text(PROFILE)),
-            ("attached", self.attached.encode()),
-            ("required", self.required.encode()),
             ("source", self.source.encode()),
             (
-                "arms",
-                Value::Array(self.arms.iter().map(Arm::encode).collect()),
+                "sites",
+                Value::Array(self.sites.iter().map(Site::encode).collect()),
             ),
         ]))
     }
@@ -246,15 +279,48 @@ impl Request {
     /// Decode retained data, without issuing a handle or trusting source names.
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let value = json::parse(bytes)?;
-        value.fields(&[
-            "format", "version", "profile", "attached", "required", "source", "arms",
-        ])?;
+        value.fields(&["format", "version", "profile", "source", "sites"])?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
-            || value.field("version")?.number()? != 2
+            || value.field("version")?.number()? != 3
             || value.field("profile")?.text()? != PROFILE
         {
             return Err(Error::format("unsupported qmatch request profile"));
         }
+        let sites = value.field("sites")?.array()?;
+        if sites.is_empty() || sites.len() > 128 {
+            return Err(Error::limit("qmatch sequence capacity"));
+        }
+        Ok(Self {
+            source: SourceSite::decode(value.field("source")?)?,
+            sites: sites.iter().map(Site::decode).collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl Site {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("attached", self.attached.encode()),
+            ("required", self.required.encode()),
+            (
+                "position",
+                Value::object([
+                    ("offset", n(self.position.offset)),
+                    ("start", n(self.position.start)),
+                    ("count", n(self.position.count)),
+                ]),
+            ),
+            (
+                "arms",
+                Value::Array(self.arms.iter().map(Arm::encode).collect()),
+            ),
+        ])
+    }
+
+    fn decode(value: &Value) -> Result<Self> {
+        value.fields(&["attached", "required", "position", "arms"])?;
+        let position = value.field("position")?;
+        position.fields(&["offset", "start", "count"])?;
         let arms = value.field("arms")?.array()?;
         if arms.is_empty() || arms.len() > 64 {
             return Err(Error::limit("qmatch arm capacity"));
@@ -262,7 +328,11 @@ impl Request {
         Ok(Self {
             attached: Interface::decode(value.field("attached")?)?,
             required: Interface::decode(value.field("required")?)?,
-            source: SourceSite::decode(value.field("source")?)?,
+            position: Position {
+                offset: number(position.field("offset")?)?,
+                start: number(position.field("start")?)?,
+                count: number(position.field("count")?)?,
+            },
             arms: arms.iter().map(Arm::decode).collect::<Result<_>>()?,
         })
     }

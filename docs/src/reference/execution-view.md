@@ -559,25 +559,34 @@ and size limits remain; the target profile separately limits bytes and gates.
 ## Internal named-arm qmatch component
 
 The preparatory `Protocol.Qmatch` and `ExecutionView.CheckedQmatch` definitions
-use a strict internal `qleisli.qmatch-request` version 2 with profile
-`finite-source-qmatch-named-v2`. Version 1 refuses without fallback. The exact request keys are `format`, `version`,
-`profile`, `attached`, `required`, `source` and `arms`. Both interfaces use the
-existing complete carrier codec. `source` contains the original `module`,
-`function` and UTF-8 byte `offset`; each arm contains an actual original
+use a strict internal `qleisli.qmatch-request` version 3 with profile
+`finite-source-qmatch-named-v3`. Versions 1 and 2 refuse without fallback.
+The exact request keys are `format`, `version`, `profile`, `source` and `sites`.
+`source` contains the original `module` and `function`. Each of 1–128 ordered
+sites contains `attached`, `required`, `position` and `arms`. Both interfaces
+use the existing complete carrier codec. `position` contains the original
+UTF-8 byte `offset` and the literal Raw operation `start` and `count`;
+each arm contains an actual original
 function-`evidence` index and a separate `controlled` program index. Indices are
 u32, names contain 1–4096 UTF-8 bytes and the arm list contains 1–64 entries.
 The request contains no logical matrix, label list, graph roots or success flag.
 Fresh original-source reads determine labels, names, types, effects and graph
 subjects; the shared Raw/nominal equations still check the actual bodies.
-The interfaces describe the selected pair in selector/target order. The graph
+Each pair of interfaces describes its selected pair in selector/target order. The graph
 retains the complete original function's parameter and result order, including
 additional zero-width owners. Fresh original-source moves bind those two
 orders; equal widths or an arbitrary interval cannot replace that judgment.
-The outer public effect remains bound independently of the pure selected pair.
+Every original occurrence must appear exactly once in source order. Literal
+intervals must cover the complete Raw operation list in order without overlap
+or gaps. Every interval uses its actual surrounding owner frame, fresh arm and
+control evidence and exact sector equations. Cancellation between intervals
+cannot hide a wrong local operator. The outer public effect remains bound
+independently of the pure selected pairs.
 
 Its QDV record contains the tag followed by the complete fresh finite graph,
-attached interface, required interface, `["source-focus", module, function,
-offset]` and an ordered array of `["qmatch-arm", evidence, controlled]` records.
+`["source-function", module, function]` and the ordered site array. Each site
+is `["qmatch-site", attached, required, ["source-interval", offset, start, count],
+arms]`, where `arms` is an ordered array of `["qmatch-arm", evidence, controlled]`.
 The pure QLV3 definition requires execution scope and exact bytes. Inspection,
 caller and malformed frames refuse. The complete proposed graph order supplies
 no reachability permission; independent subject checking rejects unrelated nodes
@@ -591,14 +600,15 @@ the QIRF JSON encoder. Fresh success retains those same allocations in a private
 `QmatchChecked` component. It has no public ordinary-program conversion,
 inverse/control capability or receipt constructor, and performs no old-mode retry.
 
-The current source component uses named
-arms and an internal canonical selector/target frame. That frame is not a new
-language restriction: other valid source orders, general expression/call frames,
-constructed/static arms, ordinary/selected quantum nominal execution and the
-complete twelve-bit profile still require integration. The shared conformance
+The current source component uses named arms in complete structural quantum
+functions, including multiple selections, source moves and distinct zero-width
+spectators. General expression/call frames, mixed ordinary parameters,
+constructed/static/generic arms and the complete twelve-bit profile still
+require integration. These are implementation limits. The shared conformance
 vectors separately test the retained Rust walker and fresh native comparison.
 They do not establish native executable attestation, source-body lowering
-preservation, ordinary/selected execution or Issue completion.
+preservation or Issue completion. The shared ordinary/selected emitter also
+requires separate whole-root runtime acceptance after this component succeeds.
 
 ## Required production profiles
 
