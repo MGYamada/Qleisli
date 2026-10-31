@@ -9,8 +9,10 @@ import QleisliKernel.Tests.SourceQuantum
 import QleisliKernel.Tests.SourceEntries
 import QleisliKernel.Tests.QuantumMoves
 import QleisliKernel.Tests.QuantumBody
+import QleisliKernel.Tests.QuantumSequence
 import QleisliKernel.Tests.RawOwnerFlow
 import QleisliKernel.Tests.PureInterval
+import QleisliKernel.Tests.SourceSequence
 import QleisliKernel.Tests.RuntimeSignature
 import QleisliKernel.Tests.RuntimeStaticHeader
 import QleisliKernel.Tests.RuntimeStorage

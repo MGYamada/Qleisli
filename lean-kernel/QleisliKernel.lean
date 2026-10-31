@@ -19,6 +19,7 @@ import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.QuantumArms
+import QleisliKernel.SourceTypes.QuantumSequence
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function
@@ -64,6 +65,7 @@ import QleisliKernel.Qirf.Validity
 import QleisliKernel.Qirf.Sector
 import QleisliKernel.Qirf.PureInterval
 import QleisliKernel.Qirf.SourceInterval
+import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.Qirf.SourceFrameSector
 import QleisliKernel.Qirf.NominalSector
 import QleisliKernel.Qirf.SectorArm

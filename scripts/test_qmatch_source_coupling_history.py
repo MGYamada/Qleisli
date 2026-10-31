@@ -69,6 +69,8 @@ CONTEXT_V2_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-couplin
 PROVIDER_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-first.tar.xz"
 PROVIDER_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-index.json.xz"
 PROVIDER_VALIDATION = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/provider-cache-validation.json.xz"
+SEQUENCE_ARCHIVE = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-first.tar.xz"
+SEQUENCE_INDEX = "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/sequence-index.json.xz"
 FRAME_CASES = "tests/fixtures/qmatch_v030/frame-execution-cases.json"
 
 
@@ -116,6 +118,57 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_sequence_first_programs_and_actual_refusals_are_unchanged(self):
+        self.assertEqual(hashlib.sha256((ROOT / SEQUENCE_INDEX).read_bytes()).hexdigest(),
+                         'c992bbb6fcc5ee8a6383fc1023e2f185da68d0dc241142830926174eeddd8e00')
+        members = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        self.assertEqual(len(members), 111)
+        plan_bytes = members['source-first/plan.json.txt']
+        report_bytes = members['source-first/observations-first/report.json.txt']
+        self.assertEqual(hashlib.sha256(plan_bytes).hexdigest(),
+                         'dd81eed676367ba7fdb64cb0c70f64895113f5792495ef787406b35ea13b6440')
+        self.assertEqual(hashlib.sha256(report_bytes).hexdigest(),
+                         '1ba001d9b43ed9f52a2c956ab198f692bd52f395c3fa47d9aa9d6625c5e1c7be')
+        plan, report = json.loads(plan_bytes), json.loads(report_bytes)
+        self.assertTrue(report['unchanged'])
+        self.assertEqual(report['before'], report['after'])
+        self.assertEqual(plan['max_physical_bits'], 4)
+        self.assertEqual([row['exit_code'] for row in report['records']], [0, 1, 1, 1, 1, 1, 1])
+        for row in plan['cases']:
+            for name, digest in row['inputs'].items():
+                content = members['source-first/' + row['name'] + '/' + name + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), digest)
+        for row in report['records']:
+            for stream in ('stdout', 'stderr'):
+                content = members['source-first/observations-first/' + row['name'] + '.' + stream + '.txt']
+                self.assertEqual(hashlib.sha256(content).hexdigest(), row[stream + '_sha256'])
+            self.assertEqual(json.loads(members['source-first/observations-first/' + row['name'] + '.stdout.txt']),
+                             row['document'])
+        self.assertIn(b'body effect', members['source-first/observations-first/hidden-observe-negative.stdout.txt'])
+
+    def test_sequence_first_component_errors_and_separate_repairs_are_retained(self):
+        members = bounded_history(ROOT / SEQUENCE_ARCHIVE, ROOT / SEQUENCE_INDEX)
+        index = history_json(ROOT / SEQUENCE_INDEX)
+        self.assertEqual(len(index['checks']), 15)
+        failed = {'qmatch-sequence-current-source-guard', 'qmatch-sequence-interval-tests-first',
+                  'qmatch-sequence-intrinsic-event-build', 'qmatch-sequence-source-tests-first'}
+        for label in index['checks']:
+            report = json.loads(members['checks/' + label + '/report.json.txt'])
+            self.assertEqual(report['exit_code'], int(label in failed))
+            self.assertTrue(report['stable_source'])
+            self.assertEqual(report['before'], report['after'])
+            for digest in report['before'].values():
+                self.assertEqual(hashlib.sha256(members['source-objects/' + digest + '.txt']).hexdigest(), digest)
+        self.assertIn(b'failed to synthesize', members['checks/qmatch-sequence-source-tests-first/stdout.txt'])
+        self.assertIn(b'LawfulBEq Environment', members['checks/qmatch-sequence-intrinsic-event-build/stdout.txt'])
+        self.assertIn(b'unexpected identifier', members['checks/qmatch-sequence-interval-tests-first/stdout.txt'])
+        self.assertIn(b'stale source identity: lean-kernel/QleisliKernel.lean',
+                      members['checks/qmatch-sequence-current-source-guard/stderr.txt'])
+        self.assertIn(b'Audited 22705 kernel/transport declarations',
+                      members['checks/qmatch-sequence-compiled-audit-first/stdout.txt'])
+        repaired = json.loads(members['checks/qmatch-sequence-source-tests-guard/report.json.txt'])
+        self.assertLess(repaired['child_peak_rss_bytes'], 1024 * 1024 * 1024)
+
     def test_provider_profiles_keep_first_controls_and_exact_failed_sources(self):
         members = bounded_history(ROOT / PROVIDER_ARCHIVE, ROOT / PROVIDER_INDEX)
         first = json.loads(members['first-checks/observations.json.txt'])

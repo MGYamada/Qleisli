@@ -1,5 +1,36 @@
 # Original qmatch source and evidence coupling
 
+The [sequence first history](sequence-first.tar.xz) and compressed
+[index](sequence-index.json.xz) retain seven complete informed programs, their
+untouched first CLI observations and fifteen separate component-check windows.
+The structural control passes; target/spectator prefixes, a target suffix,
+multiple selections and an ordinary spectator expose current profile refusals.
+Hidden observation under a false Unitary annotation correctly refuses.
+The largest source case uses four physical bits. Later symbolic oracles are
+explicitly separate from the fixed pre-check predictions; no independent
+first-authoring evaluation is claimed. The source observer ran from stdin
+without a separately saved pre-run script, as the retained later notes disclose.
+
+Internal sequence checking subsequently reads every original occurrence and
+binds contiguous literal Raw intervals through original owner moves, including
+zero-width identities. Its structural result does not establish the arm/control
+or sector equations: a deliberately wrong pure operator still passes that
+component and must be rejected by the enclosing semantic gate. Compiler and
+versioned native/QDV integration remain pending. First equality-instance,
+record-layout and proof-carrying equality errors are retained with their separate
+repairs. Large source computations move from repeated kernel normalization to
+executable `#guard` regressions; these observations are not promoted into proofs.
+Generic owner/occurrence/token-origin facts remain kernel-checked definitions
+and proofs. The focused compiled audit uses the unchanged standard audit body;
+it does not freshly replay imported modules or establish full current coverage.
+
+All 111 records and 580,557 original member bytes remain inert. The existing
+source-identity guard correctly refuses the changed kernel root pending a
+canonical proof refresh; no expected hash is changed to bypass it. Full kernel
+Tests/replay, current native/compiler integration and hosted validation remain
+separate. Shared observer descriptions do not widen the actual saved argv and
+scope. Neither #64/#195/#142 nor a guarantee is completed by this history.
+
 The [provider cache history](provider-cache-first.tar.xz), compressed
 [index](provider-cache-index.json.xz) and [validation](provider-cache-validation.json.xz)
 retain seven informed controls, their first real refusal and separate repairs.

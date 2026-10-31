@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an internal original-body qmatch sequence reader and literal Raw-interval
+  correspondence. Retain every source occurrence, complete owner/result order
+  and zero-width identity; reject gaps, overlaps and stale tokens. Exact
+  arm/control/sector checking and native/QDV/compiler integration remain
+  required before this component can authorize execution.
 - Store four passive ADT-authoring history indices with the existing explicit
   gzip reader, preserving every decoded byte, original pin and archive member.
   Recover 576,145 bytes of fixture headroom without changing size limits or
