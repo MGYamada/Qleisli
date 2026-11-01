@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.LexicalNatural
 import QleisliKernel.SourceTypes.CallName
+import QleisliKernel.SourceTypes
 
 /-! Exact original lookup rows for actual Nat expressions and transitive
 helper dependencies. An unused/global helper scan supplies no row permission;

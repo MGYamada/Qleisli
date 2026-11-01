@@ -16,7 +16,7 @@ structure Parameter where
 
 inductive Atom where
   | fixed (atom : FiniteCarrier.Atom)
-  | parameter (parameter : Parameter)
+  | parameter (binderKey : Parameter)
   | bits (width : SourceAffine.Form)
   deriving BEq, DecidableEq, Repr
 
@@ -25,7 +25,7 @@ abbrev Parameters := Parameter → Option FiniteCarrier.Basis
 
 def Atom.evaluate (parameters : Parameters) (values : SourceAffine.Valuation) : Atom → Option FiniteCarrier.Basis
   | .fixed atom => some [atom]
-  | .parameter parameter => parameters parameter
+  | .parameter binderKey => parameters binderKey
   | .bits width =>
     let value := width.evaluate values
     if 0 ≤ value then some [.bits value.toNat] else none

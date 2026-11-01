@@ -465,6 +465,7 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
   obtain ⟨read,endRead,ran,projected⟩ := Finite.bind_success _ _ _ _ _ ok
   have projected := (Finite.pure_success _ _ _ _ projected).1
   obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ran
+  simp only [readers,typeNode,readBasisSyntax,bind_assoc,pure_bind] at body
   change ((do
     Finite.guard (rest.getLast? == some ">") .request
     let checked ← naturalWidth sources helpers moduleName rest.dropLast

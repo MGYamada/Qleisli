@@ -174,8 +174,8 @@ structure SomeRefinement (sources : Sources) where
   checked : Refinement state scope ordinal inputTokens outputTokens targetInput targetOutput
 
 def replacementParameters (bases : List (Parameter × Code)) (parameters : Parameters) (values : Valuation) : Parameters :=
-  fun parameter => do
-    let (_,code) ← bases.find? (·.1 == parameter)
+  fun binderKey => do
+    let (_,code) ← bases.find? (·.1 == binderKey)
     evaluate parameters values code
 
 structure Substituted (bases : List (Parameter × Code)) (naturals : List Form) (original : Code) where
@@ -187,8 +187,8 @@ private def substituteAtom (variables : Nat) (bases : List (Parameter × Code)) 
     (atom : Atom) : WorkM (Substituted bases naturals [atom]) := do
   match atom with
   | .fixed atom => pure ⟨[.fixed atom],by intro parameters values; rfl⟩
-  | .parameter parameter =>
-    match found : bases.find? (·.1 == parameter) with
+  | .parameter binderKey =>
+    match found : bases.find? (·.1 == binderKey) with
     | none => throw .request
     | some (_,code) => pure ⟨code,by
       intro parameters values
