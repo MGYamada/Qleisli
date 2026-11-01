@@ -61,7 +61,14 @@ private def disabled := "#![no_implicit_prelude]\n"
 #guard result (standard) "global_phase_eighth" = some
   {selection := "primitive",name := "global_phase_eighth",
     preludeSource := some "// no public export\n"}
-#guard result (standard) "phase" = none -- deliberately unsupported primitive candidate
+#guard result (standard) "phase" = some
+  {selection := "primitive",name := "phase",
+    preludeSource := some "// no public export\n"}
+#guard result (standard) "unknown_primitive" = none
+#guard result (standard) "phase" ["phase"] = some {selection := "lexical",name := "phase"}
+#guard result (standard "unitary fn phase(q:Q<Bit>)->Q<Bit>{q}") "phase" = some
+  {selection := "named",name := "phase",owner := "main",
+    source := "unitary fn phase(q:Q<Bit>)->Q<Bit>{q}",category := "fn",route := ["main"]}
 
 -- This is the retained lexical scope, not a live-owner map: consumed and
 -- wrong-category names both remain here and block every global lookup tier.

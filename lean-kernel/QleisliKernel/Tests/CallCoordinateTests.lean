@@ -75,7 +75,7 @@ def controls : List (String × Bool) := [
   ("long primitive old opening refuses",oldRefuses scalarSource scalarZero [1]),
   ("qualified name does not gain primitive fallback",!checks (single "std::h(q)") oneH [1]),
   ("constructed callee remains unsupported",!checks (single "power(h,2)(q)") twoH [2]),
-  ("static callee remains unsupported",!checks (single "phase[1,1](q)") oneH [1]),
+  ("phase action cannot be replaced with H",!checks (single "phase[1,1](q)") oneH [1]),
   ("complete context passes with callee positions",ContextSectorTests.result.toOption == some [2,2]),
   ("complete context rejects previous opening positions",
     (ContextSectorTests.failure ContextSectorTests.artifact ContextSectorTests.requests oldContextPositions).isSome)]
