@@ -79,7 +79,7 @@ private def evaluate (bound : List Nat) (external : List (Expression × Nat)) : 
   | .choose condition thenValue elseValue => do
     let condition ← evaluate bound external condition
     if condition ≥ 2 then throw "Boolean basis condition range"
-    evaluate bound external (if condition == 1 then thenValue else elseValue)
+    if condition == 1 then evaluate bound external thenValue else evaluate bound external elseValue
 
 private structure Label where
   basis : Basis
