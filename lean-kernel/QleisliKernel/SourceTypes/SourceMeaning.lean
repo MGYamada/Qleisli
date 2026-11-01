@@ -21,7 +21,7 @@ private def expect (text : String) (tokens : List LocatedToken) : Except String 
 private def pieces : Nat → Nat → List LocatedToken → List LocatedToken → List (List LocatedToken) →
     Except String (List (List LocatedToken)) :=
   Nat.rec (fun _ _ _ _ => throw "original Meaning traversal capacity")
-    (fun _ next depth prefix tokens previous => do
+    (fun _ next depth headerTokens tokens previous => do
       match tokens with
       | [] => if depth == 0 then pure previous.reverse else throw "incomplete original source body"
       | first :: rest =>
@@ -30,11 +30,11 @@ private def pieces : Nat → Nat → List LocatedToken → List LocatedToken →
         else if first.text == "meaning" then
           let (body,ending) := rest.span (·.text != ";")
           let terminator :: tail := ending | throw "missing original Meaning terminator"
-          next 0 [] tail ((prefix ++ [first] ++ body ++ [terminator]) :: previous)
+          next 0 [] tail ((headerTokens ++ [first] ++ body ++ [terminator]) :: previous)
         else if first.text == "{" then next 1 [] rest previous
         else if first.text == "}" then throw "unmatched original source body"
         else if first.text == ";" then next 0 [] rest previous
-        else next 0 (prefix ++ [first]) rest previous)
+        else next 0 (headerTokens ++ [first]) rest previous)
 
 def declarations (source : String) : Except String (List (List LocatedToken)) := do
   let tokens ← lexLocated source

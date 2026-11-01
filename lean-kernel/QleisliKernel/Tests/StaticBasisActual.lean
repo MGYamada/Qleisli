@@ -18,9 +18,9 @@ private def basis (initializer : String) (n : Nat) (requirements : String := "")
     let sources : Sources := #[("main",source)]
     let signature ← QuantumSignatureCore.prepareWithArguments sources "main" "caller" {naturals := [("n",n)]}
     let initial ← PhaseApplication.prepareWithInstantiation signature.instantiation
-    let prefix ← adapt (StaticBindings.readPrefix signature.original.occurrence.body)
-    let (naturals,scope) ← PhaseApplication.extend sources "main" prefix initial (signature.staticNames ++ ["q"])
-    let call ← adapt (CallSyntax.read prefix.suffix)
+    let preamble ← adapt (StaticBindings.readPrefix signature.original.occurrence.body)
+    let (naturals,scope) ← PhaseApplication.extend sources "main" preamble initial (signature.staticNames ++ ["q"])
+    let call ← adapt (CallSyntax.read preamble.suffix)
     let written ← adapt (CallSyntax.readStatic call.call.callee)
     let [argument] := written.call.arguments | throw .request
     let checked ← SourceTypes.StaticBasisActual.read signature.instantiation naturals.helpers.val naturals.environment scope

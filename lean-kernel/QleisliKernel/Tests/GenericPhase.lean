@@ -18,9 +18,9 @@ private def phase (sources : Sources) (arguments : StaticTypes.Arguments) : Opti
   let action : WorkM (Nat × Nat × List String) := do
     let signature ← QuantumSignature.readWithArguments sources "main" "phase_arm" arguments
     let initial ← PhaseApplication.prepareWithSignature signature
-    let prefix ← adapt (StaticBindings.readPrefix signature.original.occurrence.body)
-    let (naturals,scope) ← PhaseApplication.extend sources "main" prefix initial (signature.staticNames ++ ["q"])
-    let call ← adapt (CallSyntax.read prefix.suffix)
+    let preamble ← adapt (StaticBindings.readPrefix signature.original.occurrence.body)
+    let (naturals,scope) ← PhaseApplication.extend sources "main" preamble initial (signature.staticNames ++ ["q"])
+    let call ← adapt (CallSyntax.read preamble.suffix)
     let checked ← PhaseApplication.read sources "main" naturals scope call
     pure (checked.j.result.value,checked.k.result.value,naturals.sourceRows.map (·.1))
   (action.run 10000000).1.toOption
