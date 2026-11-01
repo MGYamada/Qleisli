@@ -180,23 +180,41 @@ private def naturalWidth (sources : Sources) (helpers : List NaturalHelpers.Entr
 -- Closed fields and original static signatures share the same type grammar.
 -- A nominal declaration's fields always use the closed declaration reader;
 -- caller static bindings must never capture names in those fields.
+inductive BasisSyntax where
+  | unit
+  | bit
+  | bits (expression : List String)
+  | tuple (parts : List (List String))
+  | named (tokens : List String)
+
+/-- Shared one-level basis grammar. Original closed, selected and symbolic
+readers use these exact delimiters and member boundaries. It supplies no type
+lookup, width value, parameter identity or acceptance by itself. -/
+def readBasisSyntax (tokens : List String) : Finite.WorkM BasisSyntax := do
+  match tokens with
+  | ["Unit"] => pure .unit
+  | ["Bit"] => pure .bit
+  | "Bits" :: "<" :: rest =>
+    Finite.guard (rest.getLast? == some ">") .request
+    pure (.bits rest.dropLast)
+  | "(" :: rest =>
+    if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then throw .request
+    let parts ← adapt (splitMembers rest.dropLast)
+    Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
+    pure (.tuple parts)
+  | _ => pure (.named tokens)
+
 private def typeNode {sources : Sources}
     (recurse width named : List String → Finite.WorkM (TypeRead sources))
     (tokens : List String) : Finite.WorkM (TypeRead sources) := do
-      match tokens with
-      | ["Unit"] => return ⟨[.unit],[]⟩
-      | ["Bit"] => return ⟨[.bit],[]⟩
-      | "Bits" :: "<" :: rest =>
-        Finite.guard (rest.getLast? == some ">") .request
-        width rest.dropLast
-      | "(" :: rest =>
-        if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then
-          throw .request
-        let parts ← adapt (splitMembers rest.dropLast)
-        Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
+      match ← readBasisSyntax tokens with
+      | .unit => return ⟨[.unit],[]⟩
+      | .bit => return ⟨[.bit],[]⟩
+      | .bits expression => width expression
+      | .tuple parts =>
         let children ← parts.foldlM (fun acc part => do combine acc (← recurse part)) ⟨[],[]⟩
         combine ⟨[if parts.length == 2 then Atom.pair else .tuple parts.length],[]⟩ children
-      | _ => named tokens
+      | .named tokens => named tokens
 
 private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
   Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
