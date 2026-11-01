@@ -242,7 +242,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     result c.output c.input c.effect ⟨c.paths.adjointable,c.paths.applicable,c.paths.controllable⟩
   | .controlled index =>
     let c ← child previous index
-    guard (c.input == c.output && c.paths.controllable) .request
+    guard (c.input == c.output) .request
     result (.pair :: .bit :: c.input) (.pair :: .bit :: c.output) .unitary
       ⟨c.paths.controllable,c.paths.controllable,c.paths.controllable⟩
   | .power index count =>

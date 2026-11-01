@@ -13,6 +13,7 @@ private def source :=
   "pub unitary fn bits(q:Q<Bits<1>>)->Q<Bits<1>>{q} " ++
   "pub observe fn observed(q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q} " ++
+  "pub unitary fn unused_pair[const V:Op<(Bit,Bit)>](q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn generic[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qmatch(s,q){0=>U,1=>U}} " ++
   "pub unitary fn no_control[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){qmatch(s,q){0=>U,1=>U}}"
 
@@ -83,5 +84,17 @@ private def accepted (description : Description) (context : SourceTypes.StaticOp
 -- formal ordinal cannot be a natural or later binder
 #guard
     accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 1) (.source "main") = false
+
+-- Forming controlled(U) is well kinded without acquiring an execution path.
+#guard
+    ((SourceTypes.StaticOperation.check sources (.source "main")
+      ((OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0).unary .controlled)).run 10000000).1.toOption.map
+      (fun checked => (checked.root.input,checked.root.output,checked.root.paths)) =
+      some ([.pair,.bit,.bit],[.pair,.bit,.bit],⟨false,false,false⟩)
+
+-- A formal with no access requirement may retain that unused description.
+#guard
+    accepted (provider "main" "unused_pair" [] [] [("V",
+      (OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0).unary .controlled)]) (.source "main") = true
 
 end QleisliKernel.Tests.StaticOperation
