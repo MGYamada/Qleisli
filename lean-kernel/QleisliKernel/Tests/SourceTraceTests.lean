@@ -116,8 +116,13 @@ private def manyCalls := single (String.join (List.replicate 129 "let q=h(q);") 
 #guard ((result manyCalls).map fun checked =>
   (checked.result.events.length,checked.result.events.filterMap Event.qmatchOffset)) = some (129,[])
 
--- Existing actual-header limitation, retained without rewriting the source.
-#guard rejected ("#![no_implicit_prelude]\n" ++ single "h(q)")
+-- Opt-out disables only derived-prelude lookup, never bare language primitives.
+-- The former reader limitation is retained in module-header-first.json and Git.
+#guard view ("#![no_implicit_prelude]\n" ++ single "h(q)") =
+  some ([⟨"h",[0],[],[0]⟩],[0])
+#guard rejected ("#![no_implicit_prelude]\n#![no_implicit_prelude]\n" ++ single "h(q)")
+#guard rejected (single "h(q)" ++ "#![no_implicit_prelude]\n")
+#guard rejected ("#![no_implicit_prelude]\nunitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)")
 
 #print axioms QleisliKernel.SourceTypes.SourceSyntax.read
 #print axioms QleisliKernel.SourceTypes.SourceTrace.read
