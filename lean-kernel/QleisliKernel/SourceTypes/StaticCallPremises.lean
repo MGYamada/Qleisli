@@ -35,6 +35,19 @@ def callerState {sources owner name original}
       state.prepared.original.envelope.declaration == original.declaration) .request
     pure state
 
+/-- Shared original symbolic validation used by Nat and Basis actuals. Closed
+callers may use their separately checked lexical constants; generic callers
+must also preserve the exact original symbolic initializer interpretation. -/
+def validateNatural {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (provided : Option (GenericLexicalNatural.SomeEnvironment sources)) (scope : List String)
+    (expression : Expr) : WorkM Unit := do
+  match instantiation with
+  | .closed _ => guard provided.isNone .request
+  | .static .. =>
+    let state ← callerState instantiation provided
+    GenericLexicalNatural.validate state owner scope expression
+
 abbrev Meaning {sources} (state : GenericLexicalNatural.SomeEnvironment sources) :=
   GenericLexicalNatural.Meaning state.prepared
 

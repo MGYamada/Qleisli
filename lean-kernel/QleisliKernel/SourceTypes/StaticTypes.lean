@@ -87,7 +87,7 @@ def prepare (sources : Sources) (owner name : String) (arguments : Arguments) :
     match formal.kind with | .operation _ => false | _ => true)) .request
   pure environment
 
-private def parameter {sources owner name arguments}
+def parameter {sources owner name arguments}
     (environment : Environment sources owner name arguments) (tokens : List String) :
     WorkM (Option (TypeRead sources)) := do
   let [name] := tokens | pure none
