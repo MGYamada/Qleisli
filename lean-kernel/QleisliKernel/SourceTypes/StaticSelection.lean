@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.QuantumSignature
 import QleisliKernel.SourceTypes.StaticApplication
+import QleisliKernel.SourceTypes.SourceOperation
 
 /-! Selection of an original generic source provider from its actual caller
 environment and checked lexical/module/prelude candidate. Every positional
@@ -21,7 +22,8 @@ structure InstanceSelected {sources caller callerName}
     (candidate : CallName.Checked sources caller scope written.callee) where
   resolution : Resolved
   selected : candidateResolution candidate = some resolution
-  actuals : StaticApplication.Checked callerSignature.instantiation entries environment scope written
+  operationReader : StaticApplication.OperationReader
+  actuals : StaticApplication.Checked callerSignature.instantiation entries environment scope operationReader written
     resolution.moduleName resolution.declaration.name
   signature : Checked sources resolution.moduleName resolution.declaration.name
   arguments : signature.staticArguments = actuals.arguments
@@ -39,9 +41,10 @@ def selectInstance {sources caller callerName}
   match selected : candidateResolution candidate with
   | none => throw .request
   | some resolution =>
+    let operationReader := SourceOperation.build callerSignature.toChecked entries environment scope 65
     let actuals ← StaticApplication.read callerSignature.instantiation entries environment scope written
-      resolution.moduleName resolution.declaration.name
-    let signature ← readWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
+      resolution.moduleName resolution.declaration.name operationReader
+    let signature ← readWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments (.source caller)
     let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
     exactWork (Exact.charge (8*(bytes+tokens.length+1)*
       (actuals.arguments.bases.length+actuals.arguments.naturals.length+1)^2))
@@ -50,7 +53,7 @@ def selectInstance {sources caller callerName}
           signature.original.declaration = resolution.declaration then
         if originalActuals : actuals.target.envelope.source = signature.original.source ∧
             actuals.target.envelope.declaration = signature.original.declaration then
-          return ⟨resolution,selected,actuals,signature,arguments,declared,originalActuals⟩
+          return ⟨resolution,selected,operationReader,actuals,signature,arguments,declared,originalActuals⟩
         else throw .request
       else throw .request
     else throw .request

@@ -15,6 +15,10 @@ open Finite Semantics.FiniteCarrier
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
+abbrev OperationReader := List LocatedToken → WorkM OperationDescription.Description
+
+def noOperations : OperationReader := fun _ => throw .request
+
 inductive Syntax (tokens : List LocatedToken) where
   | name (parsed : CallName.Name tokens)
   | application (parsed : CallSyntax.StaticChecked tokens)
@@ -60,44 +64,58 @@ def readBasis {sources owner name original}
 inductive Value {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
-    (scope : List String) (tokens : List LocatedToken) : StaticHeaders.Kind → Type where
+    (scope : List String) (operationReader : OperationReader) (tokens : List LocatedToken) : StaticHeaders.Kind → Type where
   | basis (expression : BasisExpression instantiation tokens) :
-      Value instantiation entries environment scope tokens .basis
+      Value instantiation entries environment scope operationReader tokens .basis
   | natural (expression : StaticBindings.Natural tokens)
       (checked : LexicalNatural.Checked sources owner entries environment scope expression.expression) :
-      Value instantiation entries environment scope tokens .natural
+      Value instantiation entries environment scope operationReader tokens .natural
+  | operation (description : OperationDescription.Description) (kindTokens : List String)
+      (read : ∃ before after, (operationReader tokens).run before = (.ok description,after)) :
+      Value instantiation entries environment scope operationReader tokens (.operation kindTokens)
 
 structure Actual {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
-    (scope : List String) where
+    (scope : List String) (operationReader : OperationReader) where
   formal : StaticHeaders.Formal
   argument : CallSyntax.Argument
-  value : Value instantiation entries environment scope argument.tokens formal.kind
+  value : Value instantiation entries environment scope operationReader argument.tokens formal.kind
 
-def Actual.bases {sources owner name original instantiation entries environment scope}
-    (actual : @Actual sources owner name original instantiation entries environment scope) : List (String × Basis) :=
+def Actual.bases {sources owner name original instantiation entries environment scope operationReader}
+    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × Basis) :=
   match actual.value with
   | .basis expression => [(actual.formal.name,expression.query.basis)]
   | .natural .. => []
+  | .operation .. => []
 
-def Actual.naturals {sources owner name original instantiation entries environment scope}
-    (actual : @Actual sources owner name original instantiation entries environment scope) : List (String × Nat) :=
+def Actual.naturals {sources owner name original instantiation entries environment scope operationReader}
+    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × Nat) :=
   match actual.value with
   | .basis .. => []
   | .natural _ checked => [(actual.formal.name,checked.result.value)]
+  | .operation .. => []
 
-def Actual.sourceRows {sources owner name original instantiation entries environment scope}
-    (actual : @Actual sources owner name original instantiation entries environment scope) : List (String × String) :=
+def Actual.operations {sources owner name original instantiation entries environment scope operationReader}
+    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) :
+    List (String × OperationDescription.Description) :=
+  match actual.value with
+  | .basis .. | .natural .. => []
+  | .operation description _ _ => [(actual.formal.name,description)]
+
+def Actual.sourceRows {sources owner name original instantiation entries environment scope operationReader}
+    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × String) :=
   match actual.value with
   | .basis expression => expression.query.sourceRows
   | .natural .. => []
+  | .operation .. => []
 
 private def readActual {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
-    (scope : List String) (formal : StaticHeaders.Formal) (argument : CallSyntax.Argument) :
-    WorkM (Actual instantiation entries environment scope) := do
+    (scope : List String) (operationReader : OperationReader)
+    (formal : StaticHeaders.Formal) (argument : CallSyntax.Argument) :
+    WorkM (Actual instantiation entries environment scope operationReader) := do
   match kind : formal.kind with
   | .basis =>
     let expression ← readBasis instantiation argument.tokens
@@ -106,36 +124,41 @@ private def readActual {sources owner name original}
     let expression ← adapt (StaticBindings.natural argument.tokens)
     let checked ← LexicalNatural.read sources owner entries environment scope expression.expression
     return ⟨formal,argument,by rw [kind]; exact .natural expression checked⟩
-  | .operation _ => throw .request
+  | .operation tokens =>
+    let description ← NaturalAffine.witness (operationReader argument.tokens)
+    return ⟨formal,argument,by
+      rw [kind]
+      exact .operation description.val tokens (by with_reducible exact description.property)⟩
 
 structure Checked {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
-    (scope : List String) {tokens : List LocatedToken} (written : Syntax tokens)
+    (scope : List String) (operationReader : OperationReader) {tokens : List LocatedToken} (written : Syntax tokens)
     (targetOwner targetName : String) where
   target : StaticHeaders.Original sources targetOwner targetName
-  actuals : List (Actual instantiation entries environment scope)
+  actuals : List (Actual instantiation entries environment scope operationReader)
   complete : target.header.formals.length = written.arguments.length
   ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
     target.header.formals.zip written.arguments
 
-def Checked.arguments {sources owner name original instantiation entries environment scope tokens written targetOwner targetName}
-    (checked : @Checked sources owner name original instantiation entries environment scope tokens written targetOwner targetName) :
+def Checked.arguments {sources owner name original instantiation entries environment scope operationReader tokens written targetOwner targetName}
+    (checked : @Checked sources owner name original instantiation entries environment scope operationReader tokens written targetOwner targetName) :
     StaticTypes.Arguments :=
-  {bases := checked.actuals.flatMap Actual.bases,naturals := checked.actuals.flatMap Actual.naturals}
+  {bases := checked.actuals.flatMap Actual.bases,naturals := checked.actuals.flatMap Actual.naturals,
+    operations := checked.actuals.flatMap Actual.operations}
 
 def read {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) {tokens : List LocatedToken} (written : Syntax tokens)
-    (targetOwner targetName : String) :
-    WorkM (Checked instantiation entries environment scope written targetOwner targetName) := do
+    (targetOwner targetName : String) (operationReader : OperationReader := noOperations) :
+    WorkM (Checked instantiation entries environment scope operationReader written targetOwner targetName) := do
   let target ← StaticHeaders.read sources targetOwner targetName
   guard (written.arguments.length ≤ 32) .limit
   exactWork (Exact.charge (64*(tokens.length+1)*(target.header.formals.length+1)))
   if complete : target.header.formals.length = written.arguments.length then
     let actuals ← (target.header.formals.zip written.arguments).mapM fun (formal,argument) =>
-      readActual instantiation entries environment scope formal argument
+      readActual instantiation entries environment scope operationReader formal argument
     if ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
         target.header.formals.zip written.arguments then
       return ⟨target,actuals,complete,ordered⟩
