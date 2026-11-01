@@ -13,7 +13,7 @@ abbrev Site := SelectionContract.Request
 inductive Context where
   | mk (positions : List Position) (sites : List Site)
       (calls : List (Position × Context)) (bodies : List Context)
-  deriving BEq, DecidableEq, Repr
+  deriving BEq, Repr
 
 def Context.positions : Context → List Position
   | .mk positions _ _ _ => positions
