@@ -39,8 +39,8 @@ def readFunctionSource {sources owner selector target}
     if namedDescription : arm.operation.description = SourceTypes.OperationDescription.provider
         provider.moduleName provider.declarationName provider.signature.staticArguments.bases
         provider.signature.staticArguments.naturals provider.signature.staticArguments.operations then
-      let operations ← SourceTypes.StaticOperation.checkArguments provider.signature (.source owner)
-      return ⟨provider,onlyProvider,namedDescription,⟨provider.signature,.source owner,operations⟩,rfl⟩
+      let full ← SourceTypes.QuantumSignature.fromCore provider.signature (.source owner)
+      return ⟨provider,onlyProvider,namedDescription,full.checked,full.originalCore⟩
     else throw .request
   | _ => throw .request
 

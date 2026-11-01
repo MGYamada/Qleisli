@@ -109,7 +109,7 @@ theorem primitiveRowsOriginal {sources owner}
 
 def eventRows {sources owner} : SourceTrace.Event sources owner → List (String × String)
   | .primitive event => primitiveRows event
-  | .phase event => candidateRows event.application.candidate
+  | .phase event => candidateRows event.application.candidate ++ event.naturals.sourceRows
   | .selection .. => []
   | .named event => event.signature.sourceRows ++
       ResolutionProvenance.sourceRows event.target.resolved ++
