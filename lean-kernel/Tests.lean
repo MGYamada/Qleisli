@@ -37,6 +37,7 @@ import QleisliKernel.Tests.StaticKinds
 import QleisliKernel.Tests.StaticOperation
 import QleisliKernel.Tests.SymbolicTypes
 import QleisliKernel.Tests.TypeNaturalRows
+import QleisliKernel.Tests.SourceBasisFunction
 import QleisliKernel.Tests.PrimitiveActionTests
 import QleisliKernel.Tests.RawTraceTests
 import QleisliKernel.Tests.PhaseSourceContext

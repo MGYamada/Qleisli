@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeValues
 import QleisliKernel.SourceTypes.SourceTrace
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.SourceOperationApplication
+import QleisliKernel.SourceTypes.SourceBasisFunction
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -227,6 +228,34 @@ structure PhaseEvent (sources : Sources) (caller : String) where
   held : List Semantics.SourceOwners.Owner
   remaining : Environment
 
+structure BasisEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceControlSyntax.CheckedBasis tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  input : Semantics.SourceOwners.Owner
+  ordinaryBefore : Environment
+  bodyInitial : Environment
+  bodyOrdinal : Nat
+  bodyTree : SourceSyntax.Tree written.parts.body
+  bodyValue : Value
+  inputTypes : List Semantics.FiniteCarrier.Basis
+  outputBasis : Semantics.FiniteCarrier.Basis
+  function : SourceBasisFunction.Checked input.basis outputBasis inputTypes bodyValue
+  bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore = .ok bodyInitial
+  bodyCalls : List Nat
+  originalCalls : bodyTree.calls = .ok bodyCalls
+  bodyEffect : Semantics.Raw.Effect
+  pureBody : bodyEffect = .unitary
+  bodyQuantum : Bool
+  classicalBody : bodyQuantum = false
+  output : Semantics.SourceOwners.Owner
+  held : List Semantics.SourceOwners.Owner
+  remaining : Environment
+  staticRows : List (String × String)
+
 inductive Event (sources : Sources) (caller : String) where
   | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
       (original : QuantumMatch.parse tokens = .ok (parsed,[]))
@@ -237,6 +266,7 @@ inductive Event (sources : Sources) (caller : String) where
   | phase (event : PhaseEvent sources caller)
   | named (event : NamedEvent sources caller)
   | operation (event : SourceOperationApplication.Event sources caller)
+  | basis (event : BasisEvent sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -244,6 +274,10 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .phase event => some event.call.calleeOffset
   | .named event => some event.call.calleeOffset
   | .operation event => some event.call.calleeOffset
+  | .basis _ => none
+
+def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
+  match event with | .basis event => event.bodyCalls | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
   | .selection _ parsed .. => some parsed.keyword.span.startByte
@@ -253,6 +287,7 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .primitive event => primitiveEffect event.kind
   | .named event => event.effect
   | .operation event => event.effect
+  | .basis event => event.function.effect
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
@@ -269,6 +304,7 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .phase event => event.naturals.sourceRows
   | .named event => event.canonical.staticRows
   | .operation event => event.naturals.sourceRows ++ event.operation.rows
+  | .basis event => event.staticRows
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary

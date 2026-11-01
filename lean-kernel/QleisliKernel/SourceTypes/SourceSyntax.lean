@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.StatementSyntax
 import QleisliKernel.SourceTypes.QuantumSequence
 import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.SourceBoolean
+import QleisliKernel.SourceTypes.SourceControlSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -38,6 +39,11 @@ inductive Tree : List LocatedToken → Type where
       (expression : Tree cut.leading) (rest : Tree cut.suffix) : Tree tokens
   | boolean {tokens : List LocatedToken} (written : SourceBoolean.Syntax tokens)
       (children : Children written.parts) : Tree tokens
+  | conditional {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedConditional tokens)
+      (condition : Tree written.parts.condition) (thenBody : Tree written.parts.thenBody)
+      (elseBody : Tree written.parts.elseBody) : Tree tokens
+  | basis {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedBasis tokens)
+      (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
 
 inductive Children : List (List LocatedToken) → Type where
   | nil : Children []
@@ -81,7 +87,10 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .staticBindings _ _ rest => next rest
     | .sequence _ expression rest => return (← next expression) ++ (← next rest)
     | .boolean _ children =>
-      return (← children.trees.mapM (fun child => next child.2)).flatten)
+      return (← children.trees.mapM (fun child => next child.2)).flatten
+    | .conditional _ condition thenBody elseBody =>
+      return (← next condition) ++ (← next thenBody) ++ (← next elseBody)
+    | .basis _ input body => return (← next input) ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
 refuses instead of silently truncating the coverage list. The bound comes from
@@ -118,6 +127,17 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
         let rest ← next depth true cut.suffix
         return .sequence cut expression rest
       | .error _ => pure ()
+    if tokens.head?.map (·.text) == some "if" then
+      let written ← SourceControlSyntax.readConditional tokens
+      let condition ← next (depth+1) false written.parts.condition
+      let thenBody ← next (depth+1) true written.parts.thenBody
+      let elseBody ← next (depth+1) true written.parts.elseBody
+      return .conditional written condition thenBody elseBody
+    if tokens.head?.map (·.text) == some "basis" then
+      let written ← SourceControlSyntax.readBasis tokens
+      let input ← next (depth+1) false written.parts.input
+      let body ← next (depth+1) true written.parts.body
+      return .basis written input body
     if let some written := SourceBoolean.read tokens then
       let children ← readChildren (next (depth+1) false) written.parts
       return .boolean written children

@@ -164,6 +164,54 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
             held last.remaining]),context)
+      | .basis written inputTree bodyTree =>
+        let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
+        let [.owner input] := inputResult.value | throw .request
+        let (bound,_) ← adapt (SourceBasisFunction.boundValue input.basis)
+        let ordinaryBefore := inputResult.remaining.filter (fun cell => (valueOwners cell.value).isEmpty)
+        let names ← adapt (boundNames written.parts.pattern)
+        Finite.guard (names.all fun name => !naturals.staticNames.contains name) .request
+        match bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) bound ordinaryBefore with
+        | .error _ => throw .request
+        | .ok bodyInitial =>
+          let (body,context) ← recurse naturals (held ++ owners inputResult.remaining)
+            (names ++ scope) inputResult.nextOrdinal bodyInitial bodyTree context
+          if pureBody : inferredEffect body.events = .unitary then
+            if classicalBody : body.events.any Event.quantumUse = false then
+              Finite.guard (body.allocated.isEmpty && body.consumed.isEmpty && (valueOwners body.value).isEmpty) .request
+              let some shape := Semantics.RuntimeType.shape (typeOf body.value) | throw .request
+              let some outputBasis := shape.basis | throw .request
+              let (parameters,_,_) ← adapt (seedValues signature.parameters)
+              let inputTypes := (parameters.flatMap ordinary).map Prod.fst
+              let function ← SourceBasisFunction.read input.basis outputBasis inputTypes body.value
+              Finite.exactWork (Exact.charge (8*(valueFields function.bound+valueFields bound+1)))
+              let sameBound : PLift (function.bound = bound) ←
+                if same : function.bound = bound then pure ⟨same⟩ else throw .request
+              let bodyCalls ← adapt bodyTree.calls
+              Finite.guard (body.events.flatMap Event.callOffsets == bodyCalls) .request
+              let output : Semantics.SourceOwners.Owner :=
+                if input.basis == outputBasis then input else ⟨inputResult.nextOrdinal,outputBasis⟩
+              let fresh := if input.basis == outputBasis then [] else [output]
+              let used := if input.basis == outputBasis then [] else [input]
+              let after := inputResult.nextOrdinal+fresh.length
+              -- The bound value is reconstructed independently by the finite
+              -- checker. Transport only its equality into the original pattern.
+              have seeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore = .ok bodyInitial := by
+                simpa only [sameBound.down] using bodySeeded
+              let staticRows ← SourceTrace.retainStaticRows (naturals.sourceRows ++ body.staticRows)
+              match originalCalls : bodyTree.calls with
+              | .error _ => throw .request
+              | .ok bodyCalls =>
+                let event : BasisEvent sources owner :=
+                  ⟨tokens,written,name,signature,naturals,scope,input,ordinaryBefore,bodyInitial,inputResult.nextOrdinal,bodyTree,body.value,
+                    inputTypes,outputBasis,function,seeded,bodyCalls,originalCalls,inferredEffect body.events,
+                    pureBody,body.events.any Event.quantumUse,classicalBody,output,held,inputResult.remaining,staticRows⟩
+                return (← outcome environment [.owner output] inputResult.remaining
+                  (inputResult.allocated ++ fresh) (inputResult.consumed ++ used) after
+                  (inputResult.events ++ [.basis event]) (inputResult.staticRows ++ staticRows),context)
+            else throw .request
+          else throw .request
+      | .conditional .. => throw .request
       | .call call children =>
         if SourceOperationApplication.selected signature.operationNames call.call.callee then
           let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
@@ -284,7 +332,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                       Finite.guard (decide ((QuantumSequence.originalOffsets tokens).Nodup)) .request
                       Finite.guard ((result.events.filterMap Event.qmatchOffset).length ≤ 128) .limit
                       let calls ← adapt tree.calls
-                      Finite.guard (result.events.filterMap Event.callOffset == calls) .request
+                      Finite.guard (result.events.flatMap Event.callOffsets == calls) .request
                       Finite.guard (decide calls.Nodup) .request
                       if asserted : SourceEffect.permits signature.original.parsedHeader.effect
                           (inferredEffect result.events) = true then
@@ -346,6 +394,23 @@ def readNamedSource {sources caller} (event : NamedEvent sources caller) :
     checked.summary.inferredEffect == event.canonical.inferredEffect &&
     checked.summary.quantumUse == event.canonical.quantumUse) .request
   return checked
+
+/-- Coherent body calls are source/reference dependencies, not invented runtime
+call intervals. A native basis continuation freshly recovers their original
+ordinary evaluation and source rows through this same evaluator. -/
+def readBasisSource {sources caller} (event : BasisEvent sources caller) :
+    Finite.WorkM (Outcome sources caller event.bodyInitial) := do
+  let names ← adapt (boundNames event.written.parts.pattern)
+  let (body,_) ← evalWithReader event.signature
+    (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
+      [(caller,event.callerName)] callee).summary)
+    (event.written.parts.body.length+1) event.naturals
+    (event.held ++ owners event.remaining) (names ++ event.scope) event.bodyOrdinal
+    event.bodyInitial event.bodyTree {}
+  Finite.exactWork (Exact.charge (16*(valueFields body.value+valueFields event.bodyValue+body.events.length+1)))
+  Finite.guard (body.value == event.bodyValue && inferredEffect body.events == .unitary &&
+    !(body.events.any Event.quantumUse) && body.allocated.isEmpty && body.consumed.isEmpty) .request
+  return body
 
 theorem Checked.effectAssertion {sources owner name} (checked : Checked sources owner name) :
     SourceEffect.permits checked.signature.original.parsedHeader.effect checked.summary.inferredEffect = true :=

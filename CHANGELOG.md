@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Traverse original coherent `basis` bodies through the shared ordinary source
+  evaluator. Check every finite coherent input and captured ordinary valuation
+  for injectivity, retaining exact nominal/tuple types, phase-fixed basis maps
+  and original helper bodies. Infer Unitary or Isometry from the complete map;
+  `init0` and observing `reset` retain their ordinary original implementations.
+  Native SSA, history and source/operator equation binding remains separate.
 - Add an unwired mixed-runtime continuation over the same original source syntax,
   lookup, static actuals and effect rules. Retain ordinary copying, exact tuple
   and nominal types, measurement/discard histories, Unit allocation/release and

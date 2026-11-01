@@ -85,6 +85,15 @@ private def unusedAliasRows :=
   (checked.events.isEmpty,checked.summary.staticRows.any (fun row => row.1 == "helpers"),
     checked.summary.staticRows.any (fun row => row.1 == "unused"))) = some (true,true,false)
 
+#guard view "pub unitary fn route(q:Q<Bit>)->Q<Bit>{basis q as b{b}}" = some ([0],[],.unitary)
+#guard view "pub unitary fn route(q:Q<Bit>)->Q<Bit>{basis q as b{not b}}" = some ([0],[],.unitary)
+#guard (read "pub unitary fn route(q:Q<Bit>)->Q<Bit>{basis q as b{0}}").isNone
+#guard view "pub isometry fn route()->Q<Bit>{init0()}" = some ([1],[0],.iso)
+#guard view "use std::state::reset;pub observe fn route(q:Q<Bit>)->Q<Bit>{reset(q)}" =
+  some ([2],[0,1],.observe)
+#guard (read "use std::state::reset;pub unitary fn route(q:Q<Bit>)->Q<Bit>{reset(q)}").isNone
+#guard (read "pub unitary fn route(q:Q<Bit>)->Q<Bit>{basis q as b{let u=unit(());finish(u);b}}").isNone
+
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.completeOwnerHistory
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.effectAssertion

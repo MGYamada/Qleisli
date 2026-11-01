@@ -19,6 +19,7 @@ structure Site where
 
 inductive Expression where
   | input (ordinal : Nat)
+  | basisInput (ordinal : Nat)
   | unit
   | bit (value : Bool)
   | measured (origin : Site) (calls : List Site) (owner : Owner)
@@ -26,6 +27,7 @@ inductive Expression where
   | not (value : Expression)
   | xor (first second : Expression)
   | and (first second : Expression)
+  | choose (condition thenValue elseValue : Expression)
   deriving BEq, DecidableEq, Repr
 
 inductive Atom where
@@ -168,6 +170,7 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
   | .input ordinal => do
     let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
     return actual
+  | .basisInput ordinal => pure (.basisInput ordinal)
   | .unit => pure .unit
   | .bit value => pure (.bit value)
   | .measured origin calls owner => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
@@ -181,12 +184,18 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
     let first ← expressionTransport site actuals ordinary first
     let second ← expressionTransport site actuals ordinary second
     return .and first second
+  | .choose condition thenValue elseValue => do
+    return .choose (← expressionTransport site actuals ordinary condition)
+      (← expressionTransport site actuals ordinary thenValue)
+      (← expressionTransport site actuals ordinary elseValue)
 
 /-- Size is derived from actual expression structure; the 65 source nesting
 bound cannot accidentally cap long flat helper/call chains during transport. -/
 def expressionSize : Expression → Nat
   | .project value _ | .not value => 1+expressionSize value
   | .xor first second | .and first second => 1+expressionSize first+expressionSize second
+  | .choose condition thenValue elseValue =>
+    1+expressionSize condition+expressionSize thenValue+expressionSize elseValue
   | _ => 1
 
 def siteFields (site : Site) : Nat :=
@@ -197,6 +206,8 @@ def expressionFields : Expression → Nat
     1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
   | .project value _ | .not value => 1+expressionFields value
   | .xor first second | .and first second => 1+expressionFields first+expressionFields second
+  | .choose condition thenValue elseValue =>
+    1+expressionFields condition+expressionFields thenValue+expressionFields elseValue
   | _ => 1
 
 def valueFields (value : Value) : Nat := value.foldl (fun count atom => count+match atom with
