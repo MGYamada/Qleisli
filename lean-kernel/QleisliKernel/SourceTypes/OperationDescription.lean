@@ -117,9 +117,14 @@ theorem Description.occurrences_bound (description : Description) (order : List 
     (read : description.occurrences = .ok order) : order.length ≤ 4096 := by
   unfold Description.occurrences at read
   cases expanded : description.expansion with
-  | error error => simp [expanded] at read
+  | error error =>
+    rw [expanded] at read
+    change (Except.error error : Except String (List Nat)) = .ok order at read
+    cases read
   | ok expansion =>
-    have same : expansion.order = order := by simpa [expanded] using read
+    rw [expanded] at read
+    change (Except.ok expansion.order : Except String (List Nat)) = .ok order at read
+    have same : expansion.order = order := Except.ok.inj read
     rw [← same]
     exact expansion.bounded
 
