@@ -31,6 +31,12 @@ def Checked.staticArguments {sources owner name} (checked : Checked sources owne
 def Checked.staticNames {sources owner name} (checked : Checked sources owner name) : List String :=
   checked.toChecked.staticNames
 
+def Checked.operationNames {sources owner name} (checked : Checked sources owner name) : List String :=
+  match checked.instantiation with
+  | .closed _ => []
+  | .static _ environment _ => environment.numeric.original.header.formals.filterMap fun formal =>
+      match formal.kind with | .operation _ => some formal.name | _ => none
+
 def Checked.inputs {sources owner name} (checked : Checked sources owner name) : List Basis :=
   checked.toChecked.inputs
 
