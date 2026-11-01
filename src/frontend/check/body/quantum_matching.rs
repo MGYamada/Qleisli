@@ -137,7 +137,7 @@ impl Checker<'_, '_> {
         for arm in &selection.arms {
             // Reuse qif's full type, Unitary provider and actual access path.
             // This also records every original arm's dependency/obligation.
-            let operation = self.target_operation(&arm.operation, target_basis, scope)?;
+            let operation = self.qmatch_operation(&arm.operation, target_basis, scope)?;
             access(&operation, Access::Controlled, arm.operation.span)?;
         }
         self.obligation(span, ObligationKind::TransformedMeaning, scope)?;

@@ -1882,7 +1882,7 @@ impl Parser {
                 }
             };
             self.expect(&TokenKind::FatArrow)?;
-            let operation = self.reference_name()?;
+            let operation = self.static_op()?;
             let span = label_start.cover(operation.span);
             arms.push(QuantumMatchArm {
                 label,

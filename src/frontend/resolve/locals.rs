@@ -1612,7 +1612,7 @@ where
                     } => tasks.extend([Task::Expression(input), Task::Reference(function)]),
                     ExprKind::QuantumMatch(selection) => {
                         for arm in selection.arms.iter().rev() {
-                            tasks.push(Task::Reference(&arm.operation));
+                            tasks.push(Task::Operation(&arm.operation));
                             if let QuantumLabel::Variant(label) = &arm.label {
                                 tasks.push(Task::Reference(&label.type_name));
                             }

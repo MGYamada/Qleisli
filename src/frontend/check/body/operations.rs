@@ -1140,6 +1140,42 @@ impl Checker<'_, '_> {
         self.depth -= 1;
         result
     }
+    /// Qmatch retains direct primitive names, while every constructed or
+    /// specialized arm uses the common original static-operation judgment.
+    /// Compare both exact ports even when their physical widths coincide.
+    pub(super) fn qmatch_operation(
+        &mut self,
+        operation: &StaticOp,
+        basis: &Ty,
+        scope: &Scope,
+    ) -> Result<Operation> {
+        if let StaticOpKind::Name(name) = &operation.kind {
+            return self.target_operation(name, basis, scope);
+        }
+        let checked = self.operation_with(
+            operation,
+            scope,
+            OperationMode {
+                arrows: true,
+                ..OperationMode::ENDO
+            },
+        )?;
+        normalize::expect(
+            &checked.basis,
+            basis,
+            &scope.context,
+            operation.span,
+            &self.program.budget,
+        )?;
+        normalize::expect(
+            checked.output(),
+            basis,
+            &scope.context,
+            operation.span,
+            &self.program.budget,
+        )?;
+        Ok(checked)
+    }
     fn operation_inner(&mut self, op: &StaticOp, scope: &Scope) -> Result<Operation> {
         let operation = self.operation_inner_with(op, scope, OperationMode::ENDO)?;
         if let Some(output) = &operation.codomain {

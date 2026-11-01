@@ -1238,11 +1238,14 @@ impl<'ast> Validation<'_, 'ast> {
                 .then_some(&[][..]),
             ast::ExprKind::QuantumMatch(selection) => {
                 self.budget.charge(span, selection.arms.len())?;
-                selection
-                    .arms
-                    .iter()
-                    .any(|arm| index.usage(&arm.operation) == site)
-                    .then_some(&[][..])
+                let mut found = None;
+                for arm in &selection.arms {
+                    if let Some(arguments) = self.call_in_operation(owner, &arm.operation, site, 1)? {
+                        found = Some(arguments);
+                        break;
+                    }
+                }
+                found
             }
             ast::ExprKind::QuantumIf { zero, one, .. } => {
                 (index.usage(zero) == site || index.usage(one) == site).then_some(&[][..])
@@ -1313,6 +1316,16 @@ impl<'ast> Validation<'_, 'ast> {
             | ast::ExprKind::Adjoint { operation, .. }
             | ast::ExprKind::Controlled { operation, .. } => {
                 self.operation_in_tree(owner, operation, wanted, 1)?
+            }
+            ast::ExprKind::QuantumMatch(selection) => {
+                let mut found = false;
+                for arm in &selection.arms {
+                    if self.operation_in_tree(owner, &arm.operation, wanted, 1)? {
+                        found = true;
+                        break;
+                    }
+                }
+                found
             }
             _ => false,
         };

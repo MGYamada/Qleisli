@@ -104,7 +104,6 @@ fn convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared() {
         "4294967296=>h",
         "0=>h(q)",
         "0=>{q}",
-        "0=>controlled(h)",
     ] {
         let source = format!("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{qmatch(s,q){{{arms}}}}}");
         assert!(parse_module(&source).is_err(), "{source}");
@@ -112,4 +111,32 @@ fn convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared() {
     // Existing qif syntax and its fixed 0/1 written order are unchanged.
     parse_module("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(s,q){0=>h,1=>h}}").unwrap();
     assert!(parse_module("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(s,q){1=>h,0=>h}}").is_err());
+}
+
+#[test]
+fn static_arms_retain_specializations_constructor_children_and_spans() {
+    let source = "fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qmatch(s,q){0=>then_op(keep[type(Bit), 2], adjoint(other)),1=>power(keep[type(Bit), 3], 0)}}";
+    let syntax = parse_module(source).unwrap();
+    assert_eq!(parse_bounded_module(source).unwrap(), syntax);
+    let FnBody::Quantum(body) = &syntax.decls[0].body else {
+        panic!()
+    };
+    let ExprKind::QuantumMatch(selection) = &body.result.kind else {
+        panic!()
+    };
+    let StaticOpKind::Then(left, right) = &selection.arms[0].operation.kind else {
+        panic!()
+    };
+    let StaticOpKind::Specialize { name, arguments } = &left.kind else {
+        panic!()
+    };
+    assert_eq!(name.text, "keep");
+    assert_eq!(arguments.len(), 2);
+    assert!(matches!(arguments[0].kind, StaticOpKind::Type(_)));
+    assert!(matches!(right.kind, StaticOpKind::Inverse(_)));
+    assert_eq!(
+        &source[selection.arms[0].operation.span.start..selection.arms[0].operation.span.end],
+        "then_op(keep[type(Bit), 2], adjoint(other))"
+    );
+    assert!(matches!(selection.arms[1].operation.kind, StaticOpKind::Repeat(_, _)));
 }
