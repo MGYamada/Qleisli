@@ -24,6 +24,9 @@ structure Checked (sources : Sources) (owner name : String) extends
     QuantumSignatureCore.Checked sources owner name where
   context : StaticOperation.Context
   operations : StaticOperation.ArgumentsChecked toChecked context
+  staticRows : List (String × String)
+  staticRowsRead : ∃ before after,
+    (StaticInstantiation.readRows toChecked.instantiation).run before = (.ok staticRows,after)
 
 def Checked.staticArguments {sources owner name} (checked : Checked sources owner name) : StaticTypes.Arguments :=
   checked.toChecked.staticArguments
@@ -41,13 +44,14 @@ def Checked.outputs {sources owner name} (checked : Checked sources owner name) 
   checked.toChecked.outputs
 
 def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) : List (String × String) :=
-  checked.toChecked.sourceRows ++ checked.operations.actuals.flatMap fun actual =>
+  checked.toChecked.sourceRows ++ checked.staticRows ++ checked.operations.actuals.flatMap fun actual =>
     actual.2.graph.sourceRows
 
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.read sources owner name
   let operations ← StaticOperation.checkArguments signature .external
-  return ⟨signature,.external,operations⟩
+  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
+  return ⟨signature,.external,operations,rows.val,by with_reducible exact rows.property⟩
 
 /-- The untouched header is prepared before checking every operation actual.
 Existing closed callers cannot obtain an unresolved operation formal. Source
@@ -56,7 +60,8 @@ def readWithArguments (sources : Sources) (owner name : String) (arguments : Sta
     (context : StaticOperation.Context := .external) : WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name arguments
   let operations ← StaticOperation.checkArguments signature context
-  return ⟨signature,context,operations⟩
+  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
+  return ⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩
 
 structure ResolvedSelection (sources : Sources) (resolution : Resolved) where
   signature : Checked sources resolution.moduleName resolution.declaration.name

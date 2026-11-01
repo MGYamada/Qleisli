@@ -72,7 +72,7 @@ def Operation.sourceRows {sources owner tokens} (operation : Operation sources o
     List (String × String) :=
   operation.graph.sourceRows ++ match operation.original with
     | .named selected _ => ResolutionProvenance.sourceRows selected.resolution ++ selected.signature.sourceRows
-    | .source _ signature _ _ read _ _ => signature.sourceRows ++ read.rows
+    | .source _ signature naturals _ read _ _ => signature.sourceRows ++ naturals.sourceRows ++ read.rows
     | .primitive _ candidate .. => CallName.sourceRows candidate
 
 structure BoundArm (sources : Sources) (owner : String) (selector target : Basis) where

@@ -21,10 +21,11 @@ structure Naturals (sources : Sources) where
   environment : LexicalNatural.Environment helpers.val
   staticNames : List String
   generic : Option (GenericLexicalNatural.SomeEnvironment sources)
+  sourceRows : List (String × String)
 
 def prepare (sources : Sources) : WorkM (Naturals sources) := do
   let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
-  return ⟨helpers,LexicalNatural.empty helpers.val,[],none⟩
+  return ⟨helpers,LexicalNatural.empty helpers.val,[],none,[]⟩
 
 /-- Reuse complete checked caller actuals. Static names of every kind remain
 in scope so a Basis/operation formal cannot become an unbound primitive/helper.
@@ -37,8 +38,9 @@ def prepareWithInstantiation {sources owner name original}
   | .static arguments environment _ =>
     let helpers : Witness (NaturalHelpers.prepare sources) :=
       ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+    let rows ← StaticInstantiation.readRows instantiation
     return ⟨helpers,LexicalNatural.ofBindings helpers.val arguments.naturals,instantiation.names,
-      some ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩⟩
+      some ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩,rows⟩
 
 def prepareWithSignature {sources owner name} (signature : QuantumSignature.Checked sources owner name) :
     WorkM (Naturals sources) := prepareWithInstantiation signature.instantiation
@@ -114,8 +116,9 @@ def extend (sources : Sources) (caller : String) {tokens : List LocatedToken}
       | some state => some <$> GenericLexicalNatural.bind state caller scope binding.name.text binding.natural.expression
     let bound ← LexicalNatural.bind sources caller naturals.helpers.val naturals.environment
       scope binding.name.text binding.natural.expression
+    let rows ← NaturalRows.expression sources caller naturals.helpers.val scope binding.natural.expression
     let next : Naturals sources :=
-      ⟨naturals.helpers,bound.environment,binding.name.text :: naturals.staticNames,generic⟩
+      ⟨naturals.helpers,bound.environment,binding.name.text :: naturals.staticNames,generic,naturals.sourceRows ++ rows⟩
     return (next,binding.name.text :: scope)) (initial,scope)
 
 end QleisliKernel.SourceTypes.PhaseApplication

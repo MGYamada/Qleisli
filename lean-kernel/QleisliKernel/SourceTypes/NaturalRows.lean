@@ -1,0 +1,41 @@
+import QleisliKernel.SourceTypes.LexicalNatural
+import QleisliKernel.SourceTypes.CallName
+
+/-! Exact original lookup rows for actual Nat expressions and transitive
+helper dependencies. An unused/global helper scan supplies no row permission;
+only original expression calls and their original dependencies contribute.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace QleisliKernel.SourceTypes.NaturalRows
+open Finite Semantics.SourceNatural
+
+private def route (sources : Sources) (caller : String) (path : Path) (key : NaturalCatalog.Key) :
+    WorkM (List (String × String)) := do
+  let resolution ← CallName.resolve sources caller (path.intersperse "::")
+  guard (resolution.result.moduleName == key.moduleName &&
+    resolution.result.declaration.name == key.declarationName &&
+    resolution.result.declaration.kind == "static-fn") .request
+  pure (ResolutionProvenance.sourceRows resolution.result)
+
+def bindings (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (original : List (Path × NaturalCatalog.Key)) : WorkM (List (String × String)) := do
+  let direct ← original.mapM fun (path,key) => route sources caller path key
+  let (needed,processed,rows) ← entries.foldlM (fun (needed,processed,rows) entry => do
+    let key := entry.original.key
+    exactWork (Exact.charge ((key.moduleName.utf8ByteSize+key.declarationName.utf8ByteSize+1)*
+      (needed.length+processed.length+1)))
+    if !needed.contains key then pure (needed,processed,rows) else do
+      guard (!processed.contains key) .request
+      let paths ← entry.original.calls.mapM fun (path,key) => route sources entry.original.key.moduleName path key
+      pure (entry.original.calls.map (·.2) ++ needed,key :: processed,
+        rows ++ [(entry.original.key.moduleName,entry.original.source)] ++ paths.flatten))
+    (original.map (·.2),[],direct.flatten)
+  exactWork (Exact.charge ((needed.length+1)*(processed.length+1)))
+  guard (needed.all processed.contains) .request
+  pure rows
+
+def expression (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope : List String) (original : Expr) : WorkM (List (String × String)) := do
+  let calls ← LexicalNatural.originalBindings sources caller entries scope original
+  bindings sources caller entries calls
+
+end QleisliKernel.SourceTypes.NaturalRows

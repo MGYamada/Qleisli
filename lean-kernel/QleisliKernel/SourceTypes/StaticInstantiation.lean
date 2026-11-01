@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.StaticTypes
+import QleisliKernel.SourceTypes.NaturalRows
 
 /-! Original static environments shared by signature and source-application
 readers. These are checked substitutions, not rewritten source declarations.
@@ -38,5 +39,12 @@ def readType {sources owner name original}
   match instantiation with
   | .closed _ => typeExpressionWithSources sources owner tokens
   | .static _ environment _ => StaticTypes.readType environment tokens
+
+def readRows {sources owner name original}
+    (instantiation : @Checked sources owner name original) : WorkM (List (String × String)) :=
+  match instantiation with
+  | .closed _ => pure []
+  | .static _ environment _ =>
+    NaturalRows.bindings sources owner environment.numeric.helpers environment.numeric.bindings
 
 end QleisliKernel.SourceTypes.StaticInstantiation

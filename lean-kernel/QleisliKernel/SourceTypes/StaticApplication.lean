@@ -4,6 +4,7 @@ import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.CallName
 import QleisliKernel.SourceTypes.GenericLexicalNatural
+import QleisliKernel.SourceTypes.NaturalRows
 
 /-! Complete positional actuals from original source applications. Each actual
 retains its original formal ordinal/category and its original expression. Exact
@@ -85,7 +86,10 @@ inductive Value {sources owner name original}
       (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
       (genericRead : ∃ before after,
         (validateNatural instantiation genericState scope expression.expression).run before = (.ok (),after))
-      (checked : LexicalNatural.Checked sources owner entries environment scope expression.expression) :
+      (checked : LexicalNatural.Checked sources owner entries environment scope expression.expression)
+      (rows : List (String × String))
+      (rowsRead : ∃ before after,
+        (NaturalRows.expression sources owner entries scope expression.expression).run before = (.ok rows,after)) :
       Value instantiation entries environment scope operationReader tokens .natural
   | operation (description : OperationDescription.Description) (kindTokens : List String)
       (read : ∃ before after, (operationReader tokens).run before = (.ok description,after)) :
@@ -110,7 +114,7 @@ def Value.naturals {sources owner name original instantiation entries environmen
     (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List Nat :=
   match value with
   | .basis .. => []
-  | .natural _ _ _ checked => [checked.result.value]
+  | .natural _ _ _ checked _ _ => [checked.result.value]
   | .operation .. => []
 
 def Value.operations {sources owner name original instantiation entries environment scope operationReader tokens kind}
@@ -124,7 +128,7 @@ def Value.sourceRows {sources owner name original instantiation entries environm
     (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List (String × String) :=
   match value with
   | .basis expression => expression.query.sourceRows
-  | .natural .. => []
+  | .natural _ _ _ _ rows _ => rows
   | .operation .. => []
 
 def Actual.bases {sources owner name original instantiation entries environment scope operationReader}
@@ -159,10 +163,12 @@ private def readActual {sources owner name original}
     let expression ← adapt (StaticBindings.natural argument.tokens)
     let genericRead ← NaturalAffine.witness (validateNatural instantiation genericState scope expression.expression)
     let checked ← LexicalNatural.read sources owner entries environment scope expression.expression
+    let rows ← NaturalAffine.witness (NaturalRows.expression sources owner entries scope expression.expression)
     have unit : genericRead.val = () := by cases genericRead.val; rfl
     return ⟨formal,argument,by
       rw [kind]
-      exact .natural expression genericState (by with_reducible simpa only [unit] using genericRead.property) checked⟩
+      exact .natural expression genericState (by with_reducible simpa only [unit] using genericRead.property)
+        checked rows.val (by with_reducible exact rows.property)⟩
   | .operation tokens =>
     let description ← NaturalAffine.witness (operationReader argument.tokens)
     return ⟨formal,argument,by
