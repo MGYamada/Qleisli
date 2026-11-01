@@ -98,6 +98,50 @@ def build {sources caller callerName}
     (scope : List String) : Nat → List LocatedToken → WorkM Description :=
   buildWithGeneric signature entries environment scope none
 
+def primitiveKind {sources caller scope tokens}
+    (candidate : CallName.Checked sources caller scope tokens) : Option OperationDescription.Primitive :=
+  match candidate.decision with
+  | .primitive _ _ _ _ _ _ .h _ => some .h
+  | .primitive _ _ _ _ _ _ .globalPhaseEighth _ => some .globalPhaseEighth
+  | _ => none
+
+/-- Existing direct runtime adjoint/control accepts sealed unary gates using
+the actual complete target type. Static provider arguments and nested static
+constructor leaves do not gain this contextual exception. -/
+private def runtimePrimitive (sources : Sources) (caller : String) (scope : List String)
+    (target : Semantics.FiniteCarrier.Basis) (tokens : List LocatedToken) :
+    WorkM (Option (Description × List (String × String))) := do
+  match CallSyntax.read tokens with
+  | .error _ => pure none
+  | .ok call =>
+    match call.call.callee.map (·.text),call.call.arguments with
+    | [constructor],[argument] =>
+      if constructor != "adjoint" && constructor != "controlled" then pure none else
+        match CallName.readName argument.tokens with
+        | .error _ => pure none
+        | .ok _ => do
+          let candidate ← CallName.read sources caller scope argument.tokens
+          match primitiveKind candidate with
+          | none => pure none
+          | some kind =>
+            guard (kind == .globalPhaseEighth || target == [.bit]) .request
+            let child : Description := ⟨[.primitive kind target],0⟩
+            let description := if constructor == "adjoint" then child.unary .inverse else child.unary .controlled
+            pure (some (description,CallName.sourceRows candidate))
+    | _,_ => pure none
+
+def proposalWithInstantiation {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (target : Option Semantics.FiniteCarrier.Basis) (tokens : List LocatedToken) : WorkM Description := do
+  let primitive ← match target with
+    | none => pure none
+    | some basis => runtimePrimitive sources caller scope basis tokens
+  match primitive with
+  | some (description,_) => pure description
+  | none => buildWithInstantiation instantiation entries environment scope genericState 65 tokens
+
 /-- Retain exact source lookup and type-actual routes in addition to the
 canonical descriptor. Reexports used only to select a provider or an unused
 Basis actual remain relevant; canonical names alone cannot cover those rows. -/
@@ -133,29 +177,43 @@ def readRowsWithInstantiation {sources caller callerName original}
           | _ => pure []
         return CallName.sourceRows candidate ++ actuals.actuals.flatMap StaticApplication.Actual.sourceRows ++ children.flatten)
 
+def proposalRowsWithInstantiation {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (target : Option Semantics.FiniteCarrier.Basis) (tokens : List LocatedToken) : WorkM (List (String × String)) := do
+  let primitive ← match target with
+    | none => pure none
+    | some basis => runtimePrimitive sources caller scope basis tokens
+  match primitive with
+  | some (_,rows) => pure rows
+  | none => readRowsWithInstantiation instantiation entries environment scope genericState 65 tokens
+
 structure CheckedWithInstantiation {sources caller callerName original}
     (instantiation : @StaticInstantiation.Checked sources caller callerName original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (tokens : List LocatedToken) where
   description : Description
   genericState : Option (GenericLexicalNatural.SomeEnvironment sources)
+  target : Option Semantics.FiniteCarrier.Basis
   original : ∃ before after,
-    (buildWithInstantiation instantiation entries environment scope genericState 65 tokens).run before = (.ok description,after)
+    (proposalWithInstantiation instantiation entries environment scope genericState target tokens).run before = (.ok description,after)
   graph : StaticOperation.CheckedGraph sources (.source caller) description
   rows : List (String × String)
   rowsRead : ∃ before after,
-    (readRowsWithInstantiation instantiation entries environment scope genericState 65 tokens).run before = (.ok rows,after)
+    (proposalRowsWithInstantiation instantiation entries environment scope genericState target tokens).run before = (.ok rows,after)
 
 def readWithInstantiation {sources caller callerName original}
     (instantiation : @StaticInstantiation.Checked sources caller callerName original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (tokens : List LocatedToken)
-    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none)
+    (target : Option Semantics.FiniteCarrier.Basis := none) :
     WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
-  let description ← NaturalAffine.witness (buildWithInstantiation instantiation entries environment scope genericState 65 tokens)
+  let description ← NaturalAffine.witness (proposalWithInstantiation instantiation entries environment scope genericState target tokens)
   let graph ← StaticOperation.check sources (.source caller) description.val
-  let rows ← NaturalAffine.witness (readRowsWithInstantiation instantiation entries environment scope genericState 65 tokens)
-  pure ⟨description.val,genericState,by with_reducible exact description.property,graph,rows.val,
+  let rows ← NaturalAffine.witness (proposalRowsWithInstantiation instantiation entries environment scope genericState target tokens)
+  pure ⟨description.val,genericState,target,by with_reducible exact description.property,graph,rows.val,
     by with_reducible exact rows.property⟩
 
 abbrev Checked {sources caller callerName} (signature : QuantumSignatureCore.Checked sources caller callerName)
@@ -166,8 +224,9 @@ abbrev Checked {sources caller callerName} (signature : QuantumSignatureCore.Che
 def read {sources caller callerName} (signature : QuantumSignatureCore.Checked sources caller callerName)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (tokens : List LocatedToken)
-    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none)
+    (target : Option Semantics.FiniteCarrier.Basis := none) :
     WorkM (Checked signature entries environment scope tokens) :=
-  readWithInstantiation signature.instantiation entries environment scope tokens genericState
+  readWithInstantiation signature.instantiation entries environment scope tokens genericState target
 
 end QleisliKernel.SourceTypes.SourceOperation
