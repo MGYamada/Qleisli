@@ -170,6 +170,10 @@ private def readProvider (sources : Sources) (context : Context) (description : 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
   match node with
+  | .primitive kind target =>
+    guard (context != .external) .request
+    guard (kind == .globalPhaseEighth || target == [.bit]) .request
+    result target target .unitary ⟨true,true,true⟩
   | .provider owner name bases naturals operations =>
     readProvider sources context description previous owner name bases naturals operations
   | .formal owner name bases naturals operations ordinal =>

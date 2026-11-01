@@ -35,17 +35,56 @@ def readLabel (sources : Sources) (caller : String) (selector : Basis) (tokens :
     return ⟨variants.idxOf variant.text,some ty⟩
   | _ => throw .request
 
+def primitiveKind {sources owner scope tokens}
+    (candidate : CallName.Checked sources owner scope tokens) : Option OperationDescription.Primitive :=
+  match candidate.decision with
+  | .primitive _ _ _ _ _ _ .h _ => some .h
+  | .primitive _ _ _ _ _ _ .globalPhaseEighth _ => some .globalPhaseEighth
+  | _ => none
+
+inductive OperationOrigin (sources : Sources) (owner : String) (tokens : List LocatedToken)
+    (description : OperationDescription.Description)
+    (graph : StaticOperation.CheckedGraph sources (.source owner) description) where
+  | named (selected : QuantumSignature.OperationSelection sources owner tokens)
+      (original : description = OperationDescription.provider selected.resolution.moduleName
+        selected.resolution.declaration.name selected.signature.staticArguments.bases
+        selected.signature.staticArguments.naturals selected.signature.staticArguments.operations)
+  | source (callerName : String) (signature : QuantumSignature.Checked sources owner callerName)
+      (naturals : PhaseApplication.Naturals sources) (scope : List String)
+      (read : SourceOperation.Checked signature.toChecked naturals.helpers.val naturals.environment scope tokens)
+      (sameDescription : description = read.description) (sameGraph : HEq graph read.graph)
+  | primitive (scope : List String) (candidate : CallName.Checked sources owner scope tokens)
+      (kind : OperationDescription.Primitive) (selected : primitiveKind candidate = some kind)
+      (target : Basis) (original : description = ⟨[.primitive kind target],0⟩)
+
+/-- Every original provider and constructor remains in this exact graph. A
+composed operation has no representative function name or invented signature.
+The native continuation binds each provider's actual subject separately. -/
+structure Operation (sources : Sources) (owner : String) (tokens : List LocatedToken) where
+  description : OperationDescription.Description
+  graph : StaticOperation.CheckedGraph sources (.source owner) description
+  original : OperationOrigin sources owner tokens description graph
+
+def Operation.providers {sources owner tokens} (operation : Operation sources owner tokens) :
+    List (StaticOperation.Provider sources) := operation.graph.providers
+
+def Operation.sourceRows {sources owner tokens} (operation : Operation sources owner tokens) :
+    List (String × String) :=
+  operation.graph.sourceRows ++ match operation.original with
+    | .named selected _ => ResolutionProvenance.sourceRows selected.resolution ++ selected.signature.sourceRows
+    | .source _ signature _ _ _ _ _ => signature.sourceRows
+    | .primitive .. => []
+
 structure BoundArm (sources : Sources) (owner : String) (selector target : Basis) where
   written : QuantumMatch.Arm
   label : @Label sources
   originalLabel : ∃ before after,
     (readLabel sources owner selector written.label).run before = (.ok label,after)
-  operation : QuantumSignature.OperationSelection sources owner written.operation
-  input : operation.signature.inputs = [target]
-  output : operation.signature.outputs = [target]
-  resultOwner : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true
-  declaredEffect : operation.signature.original.parsedHeader.effect = none ∨
-    operation.signature.original.parsedHeader.effect = some .unitary
+  operation : Operation sources owner written.operation
+  input : operation.graph.root.input = target
+  output : operation.graph.root.output = target
+  effect : operation.graph.root.effect = .unitary
+  controlled : operation.graph.root.paths.controllable = true
 
 /-- Header-only module resolution. The enclosing original-body gate must first
 check lexical shadowing, including consumed names; this function does not
@@ -54,13 +93,21 @@ def readArm (sources : Sources) (owner : String) (selector target : Basis) (writ
     WorkM (BoundArm sources owner selector target) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
   let selected ← QuantumSignature.select sources owner (written.operation.map (·.text))
-  let operation := QuantumSignature.OperationSelection.closed selected
-  if input : operation.signature.inputs = [target] then
-    if output : operation.signature.outputs = [target] then
-      if shape : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true then
-        if effect : operation.signature.original.parsedHeader.effect = none ∨
-            operation.signature.original.parsedHeader.effect = some .unitary then
-          return ⟨written,label.val,by with_reducible exact label.property,operation,input,output,shape,effect⟩
+  let selected := QuantumSignature.OperationSelection.closed selected
+  -- This standalone legacy metadata reader has no independent body inference.
+  -- Keep its annotation refusal; the complete source continuation below may
+  -- retain an internal inference obligation for the actual native body gate.
+  guard (selected.signature.original.parsedHeader.effect == none ||
+    selected.signature.original.parsedHeader.effect == some .unitary) .request
+  let description := OperationDescription.provider selected.resolution.moduleName selected.resolution.declaration.name
+    selected.signature.staticArguments.bases selected.signature.staticArguments.naturals selected.signature.staticArguments.operations
+  let graph ← StaticOperation.check sources (.source owner) description
+  let operation : Operation sources owner written.operation := ⟨description,graph,.named selected rfl⟩
+  if input : operation.graph.root.input = target then
+    if output : operation.graph.root.output = target then
+      if effect : operation.graph.root.effect = .unitary then
+        if controlled : operation.graph.root.paths.controllable = true then
+          return ⟨written,label.val,by with_reducible exact label.property,operation,input,output,effect,controlled⟩
         else throw .request
       else throw .request
     else throw .request
@@ -75,17 +122,26 @@ def readArmWithSignature {sources owner name}
     (selector target : Basis) (written : QuantumMatch.Arm) :
     WorkM (BoundArm sources owner selector target) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
-  let writtenCall ← adapt (StaticApplication.readSyntax written.operation)
-  let candidate ← CallName.read sources owner scope writtenCall.callee
-  let selected ← QuantumSignature.selectInstance signature naturals.helpers.val naturals.environment scope writtenCall candidate
-  let operation := QuantumSignature.OperationSelection.instantiated signature naturals.helpers.val
-    naturals.environment scope writtenCall candidate selected
-  if input : operation.signature.inputs = [target] then
-    if output : operation.signature.outputs = [target] then
-      if shape : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true then
-        if effect : operation.signature.original.parsedHeader.effect = none ∨
-            operation.signature.original.parsedHeader.effect = some .unitary then
-          return ⟨written,label.val,by with_reducible exact label.property,operation,input,output,shape,effect⟩
+  let operation : Operation sources owner written.operation ←
+    match CallName.readName written.operation with
+    | .ok _ => do
+      let candidate ← CallName.read sources owner scope written.operation
+      match selected : primitiveKind candidate with
+      | some kind =>
+        let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
+        let graph ← StaticOperation.check sources (.source owner) description
+        return ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
+      | none => do
+        let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation
+        return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+    | .error _ => do
+      let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation
+      return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+  if input : operation.graph.root.input = target then
+    if output : operation.graph.root.output = target then
+      if effect : operation.graph.root.effect = .unitary then
+        if controlled : operation.graph.root.paths.controllable = true then
+          return ⟨written,label.val,by with_reducible exact label.property,operation,input,output,effect,controlled⟩
         else throw .request
       else throw .request
     else throw .request
@@ -93,19 +149,7 @@ def readArmWithSignature {sources owner name}
 
 def BoundArm.sourceRows {sources owner selector target} (arm : BoundArm sources owner selector target) :
     List (String × String) :=
-  arm.label.sourceRows ++ ResolutionProvenance.sourceRows arm.operation.resolution ++
-    arm.operation.signature.sourceRows
-
-/-- A public observing/isometric declaration cannot be relabeled by the
-enclosing source-arm query. Private inference still requires actual body checks. -/
-theorem BoundArm.publicUnitary {sources owner selector target}
-    (arm : BoundArm sources owner selector target)
-    (isPublic : arm.operation.signature.original.declaration.isPublic = true) :
-    arm.operation.signature.original.parsedHeader.effect = some .unitary := by
-  have present := arm.operation.signature.publicEffect isPublic
-  rcases arm.declaredEffect with absent | exactEffect
-  · simp [absent] at present
-  · exact exactEffect
+  arm.label.sourceRows ++ arm.operation.sourceRows
 
 def partition {sources owner selector target} (count : Nat) (arms : List (BoundArm sources owner selector target)) : Bool :=
   let labels := arms.map (·.label.ordinal)

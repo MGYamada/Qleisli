@@ -7,7 +7,12 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.SourceTypes.OperationDescription
 open Semantics.FiniteCarrier
 
+inductive Primitive where
+  | h | globalPhaseEighth
+  deriving BEq, DecidableEq, Repr
+
 inductive Node where
+  | primitive (kind : Primitive) (target : Basis)
   | provider (moduleName declarationName : String) (bases : List (String × Basis))
       (naturals : List (String × Nat)) (operations : List (String × Nat))
   | formal (moduleName declarationName : String) (bases : List (String × Basis))
@@ -21,11 +26,13 @@ inductive Node where
   deriving BEq, DecidableEq, Repr
 
 def Node.children : Node → List Nat
+  | .primitive .. => []
   | .provider _ _ _ _ operations | .formal _ _ _ _ operations _ => operations.map (·.2)
   | .inverse child | .controlled child | .power child _ => [child]
   | .thenOp left right | .tensor left right | .conjugate left right => [left,right]
 
 def Node.remap (mapping : Nat → Nat) : Node → Node
+  | .primitive kind target => .primitive kind target
   | .provider owner name bases naturals operations =>
     .provider owner name bases naturals (operations.map fun (name,index) => (name,mapping index))
   | .formal owner name bases naturals operations ordinal =>
@@ -43,7 +50,7 @@ structure Description where
   deriving BEq, DecidableEq, Repr
 
 def Description.topological (description : Description) : Bool :=
-  !description.nodes.isEmpty && description.nodes.length ≤ 256 &&
+  !description.nodes.isEmpty && description.nodes.length ≤ 4096 &&
     description.root+1 == description.nodes.length &&
     description.nodes.zipIdx.all (fun (node,index) => node.children.all (· < index))
 

@@ -75,7 +75,7 @@ def build {sources caller callerName}
             resolution.moduleName resolution.declaration.name next
           pure (OperationDescription.provider resolution.moduleName resolution.declaration.name
             actuals.arguments.bases actuals.arguments.naturals actuals.arguments.operations)
-    guard (description.nodes.length ≤ 256) .limit
+    guard (description.nodes.length ≤ 4096) .limit
     exactWork (Exact.charge (16*(description.nodes.length+1)^2))
     guard description.complete .request
     pure description)
