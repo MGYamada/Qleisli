@@ -44,8 +44,7 @@ def Checked.outputs {sources owner name} (checked : Checked sources owner name) 
   checked.toChecked.outputs
 
 def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) : List (String × String) :=
-  checked.toChecked.sourceRows ++ checked.staticRows ++ checked.operations.actuals.flatMap fun actual =>
-    actual.2.graph.sourceRows
+  checked.toChecked.sourceRows ++ checked.staticRows ++ checked.operations.sourceRows
 
 structure WithCore {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) where
   checked : Checked sources owner name

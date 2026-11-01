@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.SourceTypes.GenericLexicalNatural
 import QleisliKernel.SourceTypes.LexicalNatural
+import QleisliKernel.SourceTypes.NaturalRows
 
 /-! Original operation-kind types resolve only preceding static formals.
 Qualified/global type and helper names are resolved normally; matching a later
@@ -35,5 +36,13 @@ def readType {sources owner name arguments}
   let read ← typeExpressionScopedWithSources sources owner natural parameter tokens
   let _ ← FiniteCarrier.read read.basis
   pure read
+
+def readRows {sources owner name arguments}
+    (environment : StaticTypes.Environment sources owner name arguments) (ordinal : Nat) (tokens : List String) :
+    WorkM (List (String × String)) := do
+  let query ← readType environment ordinal tokens
+  let names := (environment.numeric.original.header.formals.filter (·.ordinal < ordinal)).map (·.name)
+  let natural ← NaturalRows.typeTokens sources owner environment.numeric.helpers names (tokens.length+1) tokens
+  pure (query.sourceRows ++ natural)
 
 end QleisliKernel.SourceTypes.StaticKinds

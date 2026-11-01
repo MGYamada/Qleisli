@@ -18,6 +18,7 @@ private def route (sources : Sources) (caller : String) (path : Path) (key : Nat
 
 def bindings (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (original : List (Path × NaturalCatalog.Key)) : WorkM (List (String × String)) := do
+  if original.isEmpty then return []
   let direct ← original.mapM fun (path,key) => route sources caller path key
   let (needed,processed,rows) ← entries.foldlM (fun (needed,processed,rows) entry => do
     let key := entry.original.key
@@ -37,5 +38,23 @@ def expression (sources : Sources) (caller : String) (entries : List NaturalHelp
     (scope : List String) (original : Expr) : WorkM (List (String × String)) := do
   let calls ← LexicalNatural.originalBindings sources caller entries scope original
   bindings sources caller entries calls
+
+/-- Original finite type readers admit Bits widths as Nat expressions. This
+separate dependency pass retains their helper paths without changing the
+complete type tree or treating an unused global helper as a query. -/
+def typeTokens (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope : List String) : Nat → List String → WorkM (List (String × String)) :=
+  Nat.rec (fun tokens => if tokens.isEmpty then pure [] else throw .limit)
+    (fun _ next tokens => do
+      match tokens with
+      | "Bits" :: "<" :: rest =>
+        let (width,ending) := rest.span (· != ">")
+        let ">" :: tail := ending | throw .request
+        exactWork (Exact.charge (32*(width.length+1)))
+        let original ← lift ((NaturalSyntax.read width).mapError fun _ => .request)
+        let rows ← expression sources caller entries scope original
+        return rows ++ (← next tail)
+      | _ :: rest => next rest
+      | [] => pure [])
 
 end QleisliKernel.SourceTypes.NaturalRows

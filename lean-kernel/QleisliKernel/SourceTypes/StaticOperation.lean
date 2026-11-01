@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.QuantumSignatureCore
+import QleisliKernel.SourceTypes.StaticKinds
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -48,6 +49,7 @@ structure Result (sources : Sources) where
   paths : Paths
   provider : Option (Provider sources) := none
   formal : Option (Provider sources) := none
+  kindRows : List (String × String) := []
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
@@ -89,12 +91,24 @@ def formalPorts {sources owner name arguments}
     WorkM (Basis × Basis) := do
   let .operation tokens := formal.kind | throw .request
   exactWork (Exact.charge (32*(tokens.length+1)*(environment.numeric.original.header.formals.length+1)))
-  guard (!(environment.numeric.original.header.formals.any fun other =>
-    formal.ordinal ≤ other.ordinal && tokens.contains other.name)) .request
   let (input,output) ← adapt (ports tokens)
-  let input ← StaticTypes.readType environment input
-  let output ← StaticTypes.readType environment output
+  let input ← StaticKinds.readType environment formal.ordinal input
+  let output ← StaticKinds.readType environment formal.ordinal output
   return (input.basis,output.basis)
+
+def kindRowsWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original) : WorkM (List (String × String)) := do
+  match instantiation with
+  | .closed _ => pure []
+  | .static _ environment _ =>
+    let rows ← environment.numeric.original.header.formals.mapM fun formal => do
+      match formal.kind with
+      | .operation tokens =>
+        let (input,output) ← adapt (ports tokens)
+        return (← StaticKinds.readRows environment formal.ordinal input) ++
+          (← StaticKinds.readRows environment formal.ordinal output)
+      | _ => pure []
+    pure rows.flatten
 
 private def required (access : List (StaticHeaders.Access × String)) (name : String) : Paths :=
   ⟨access.contains (.applicable,name),access.contains (.adjointable,name),access.contains (.controllable,name)⟩
@@ -134,10 +148,11 @@ def bindArguments {sources owner name} (signature : QuantumSignatureCore.Checked
   bindArgumentsWithInstantiation signature.instantiation results
 
 private def result {sources : Sources} (input output : Basis) (effect : Effect) (paths : Paths)
-    (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none) : WorkM (Result sources) := do
+    (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none)
+    (kindRows : List (String × String) := []) : WorkM (Result sources) := do
   let _ ← FiniteCarrier.read input
   let _ ← FiniteCarrier.read output
-  pure ⟨input,output,effect,paths,provider,formal⟩
+  pure ⟨input,output,effect,paths,provider,formal,kindRows⟩
 
 private def child {sources : Sources} (previous : List (Result sources)) (index : Nat) : WorkM (Result sources) :=
   match previous[index]? with | none => throw .request | some result => pure result
@@ -152,6 +167,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   guard (context.visible owner signature.original.declaration.isPublic) .request
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
   bindArguments signature originalResults
+  let kindRows ← kindRowsWithInstantiation signature.instantiation
   let [input] := signature.inputs | throw .request
   let [output] := signature.outputs | throw .request
   guard (match signature.parts with | .owner _ => true | _ => false) .request
@@ -169,7 +185,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let expected := visible.getD (if endomorphic then .unitary else .iso)
   result input output expected
     ⟨true,reversible && reverseArgs,reversible && endomorphic && controlArgs⟩
-    (some ⟨owner,name,signature,expected,internal⟩)
+    (some ⟨owner,name,signature,expected,internal⟩) none kindRows
 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
@@ -187,6 +203,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
     let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
     bindArguments signature originalResults
+    let kindRows ← kindRowsWithInstantiation signature.instantiation
     match signature.instantiation with
     | .closed _ => throw .request
     | .static _ environment _ =>
@@ -196,7 +213,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
       let effect := if input == output then Effect.unitary else .iso
-      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩)
+      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩) kindRows
   | .inverse index =>
     let c ← child previous index
     guard c.paths.adjointable .request
@@ -262,7 +279,7 @@ def CheckedGraph.providers {sources context description} (graph : CheckedGraph s
 
 def CheckedGraph.sourceRows {sources context description} (graph : CheckedGraph sources context description) :
     List (String × String) := graph.results.flatMap fun result =>
-  (result.provider.toList ++ result.formal.toList).flatMap fun provider => provider.signature.sourceRows
+  result.kindRows ++ (result.provider.toList ++ result.formal.toList).flatMap fun provider => provider.signature.sourceRows
 
 structure Actual (sources : Sources) (context : Context) (argument : String × Description) where
   graph : CheckedGraph sources context argument.2
@@ -273,6 +290,9 @@ structure ArgumentsCheckedWithInstantiation {sources owner name original}
   ordered : actuals.map (·.1) = instantiation.arguments.operations
   bound : ∃ before after,
     (bindArgumentsWithInstantiation instantiation (actuals.map fun actual => (actual.1.1,actual.2.graph.root))).run before = (.ok (),after)
+  kindRows : List (String × String)
+  kindRowsRead : ∃ before after,
+    (kindRowsWithInstantiation instantiation).run before = (.ok kindRows,after)
 
 def checkArgumentsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
@@ -284,8 +304,14 @@ def checkArgumentsWithInstantiation {sources owner name original}
     let bound ← NaturalAffine.witness (bindArgumentsWithInstantiation instantiation
       (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
     have same : bound.val = () := by cases bound.val; rfl
-    return ⟨actuals,ordered,by with_reducible simpa only [same] using bound.property⟩
+    let rows ← NaturalAffine.witness (kindRowsWithInstantiation instantiation)
+    return ⟨actuals,ordered,by with_reducible simpa only [same] using bound.property,
+      rows.val,by with_reducible exact rows.property⟩
   else throw .request
+
+def ArgumentsCheckedWithInstantiation.sourceRows {sources owner name original instantiation context}
+    (checked : @ArgumentsCheckedWithInstantiation sources owner name original instantiation context) :
+    List (String × String) := checked.kindRows ++ checked.actuals.flatMap (fun actual => actual.2.graph.sourceRows)
 
 abbrev ArgumentsChecked {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) (context : Context) :=
   ArgumentsCheckedWithInstantiation signature.instantiation context
