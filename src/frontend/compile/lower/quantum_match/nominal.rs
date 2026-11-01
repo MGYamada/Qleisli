@@ -337,6 +337,37 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     Ok(())
 }
 
+/// A named event encloses only the callee expansion, after its actual argument
+/// expressions. Its child's offsets remain in that child's original module.
+pub(in crate::frontend::compile::lower) fn record_named(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    callee: &Ident,
+    start: usize,
+    body: Option<Arc<ContextSubject>>,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let Some(body) = body else {
+        if frame.requires_source_gate() {
+            return Err(lower.error(module, callee.span, ErrorCode::Unsupported,
+                "qmatch call requires its complete original lowering context"));
+        }
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| lower.error(
+        module, callee.span, ErrorCode::InvalidIr, "named call precedes its original source context"))?;
+    let count = lower.raw.operations.len().checked_sub(start).ok_or_else(|| lower.error(
+        module, callee.span, ErrorCode::InvalidIr, "named call removed its original operation prefix"))?;
+    let position = position(lower, module, callee.span, callee.span.start, relative, count)?;
+    lower.compiler.charge(module, callee.span, 8)?;
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.positions.push(position.clone());
+    frame.calls.push((position, body));
+    Ok(())
+}
+
 fn position(
     lower: &Lowerer<'_, '_>,
     module: &str,

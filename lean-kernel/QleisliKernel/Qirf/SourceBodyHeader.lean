@@ -67,6 +67,50 @@ def readArm (artifact : Artifact) {owner selector target}
   let header ← read source.val.checked request
   return ⟨owner,selector,target,bound,request,source,header⟩
 
+structure Call (artifact : Artifact) where
+  caller : String
+  event : SourceCalls.Event artifact.sources caller
+  position : SourceSequence.Position
+  request : Context
+  source : Witness (SourceTrace.readNamedSource event)
+  header : Header source.val.checked request
+
+def named {sources owner} : SourceTrace.Event sources owner → Option (SourceCalls.Event sources owner)
+  | .named event => some event
+  | _ => none
+
+def readCall (artifact : Artifact) {caller} (event : SourceCalls.Event artifact.sources caller)
+    (request : SourceSequence.Position × Context) : WorkM (Call artifact) := do
+  guard (request.1.offset == event.call.calleeOffset) .request
+  let source ← NaturalAffine.witness (SourceTrace.readNamedSource event)
+  let header ← read source.val.checked request.2
+  return ⟨caller,event,request.1,request.2,source,header⟩
+
+structure Discovery (artifact : Artifact) where
+  arms : List (Arm artifact)
+  calls : List (Call artifact)
+
+/-- Calls and arms are discovered together, before any dependency snapshot is
+accepted. Each child is derived from its parent original occurrence. -/
+def discover (artifact : Artifact) : Nat → {owner name : String} →
+    {source : SourceTrace.Checked artifact.sources owner name} → {request : Context} →
+    Header source request → WorkM (Discovery artifact)
+  | 0,_,_,source,request,header => do
+    guard (request.bodies.isEmpty && request.calls.isEmpty && (bindings header).isEmpty &&
+      (source.result.events.filterMap named).isEmpty) .limit
+    return ⟨[],[]⟩
+  | fuel+1,_,_,source,request,header => do
+    let subjects := bindings header
+    let events := source.result.events.filterMap named
+    exactWork (Exact.charge (16*(subjects.length+events.length+request.bodies.length+request.calls.length+1)))
+    guard (subjects.length == request.bodies.length && events.length == request.calls.length) .request
+    let arms ← (subjects.zip request.bodies).mapM fun (subject,body) => readArm artifact subject.bound body
+    let calls ← (events.zip request.calls).mapM fun (event,body) => readCall artifact event body
+    let armDescendants ← arms.mapM fun arm => discover artifact fuel arm.header
+    let callDescendants ← calls.mapM fun call => discover artifact fuel call.header
+    return ⟨arms ++ armDescendants.flatMap (·.arms) ++ callDescendants.flatMap (·.arms),
+      calls ++ armDescendants.flatMap (·.calls) ++ callDescendants.flatMap (·.calls)⟩
+
 /-- A request has one child for every immediate arm occurrence in source order.
 The recursion consumes the bounded request depth; repeated evidence indices
 still take this complete path with their own original signature and actuals. -/

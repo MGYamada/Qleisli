@@ -14,7 +14,7 @@ structure Headers (artifact : Artifact) (owner name : String)
   signature : Witness (QuantumSignature.readWithArguments artifact.sources owner name arguments)
   source : Witness (SourceTrace.readWithSignature signature.val)
   header : SourceBodyHeader.Header source.val.checked request
-  arms : Witness (SourceBodyHeader.descendants artifact 128 header)
+  discovery : Witness (SourceBodyHeader.discover artifact 128 header)
 
 def readHeaders (artifact : Artifact) (owner name : String)
     (arguments : StaticTypes.Arguments) (request : Context) :
@@ -22,23 +22,26 @@ def readHeaders (artifact : Artifact) (owner name : String)
   let signature ← NaturalAffine.witness (QuantumSignature.readWithArguments artifact.sources owner name arguments)
   let source ← NaturalAffine.witness (SourceTrace.readWithSignature signature.val)
   let header ← SourceBodyHeader.read source.val.checked request
-  let arms ← NaturalAffine.witness (SourceBodyHeader.descendants artifact 128 header)
-  return ⟨signature,source,header,arms⟩
+  let discovery ← NaturalAffine.witness (SourceBodyHeader.discover artifact 128 header)
+  return ⟨signature,source,header,discovery⟩
 
 def rows {artifact owner name arguments request}
     (headers : Headers artifact owner name arguments request) : List (String × String) :=
-  SourceBodyHeader.rows headers.header ++ headers.arms.val.flatMap fun arm => SourceBodyHeader.rows arm.header
+  SourceBodyHeader.rows headers.header ++
+    headers.discovery.val.arms.flatMap (fun arm => SourceBodyHeader.rows arm.header) ++
+    headers.discovery.val.calls.flatMap (fun call => SourceBodyHeader.rows call.header)
 
 def roots {artifact owner name arguments request}
     (headers : Headers artifact owner name arguments request) : List Nat :=
   (artifact.root :: SourceBodyHeader.roots headers.header ++
-    headers.arms.val.flatMap fun arm => SourceBodyHeader.roots arm.header).eraseDups
+    headers.discovery.val.arms.flatMap (fun arm => SourceBodyHeader.roots arm.header) ++
+    headers.discovery.val.calls.flatMap (fun call => SourceBodyHeader.roots call.header)).eraseDups
 
 structure Body {artifact owner name arguments request} (order : Array Nat)
     (headers : Headers artifact owner name arguments request) where
   root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
   context : SourceBodyContext.Checked headers.header root.val (SelectionContract.rootFresh root) root.val.program
-  arms : Witness (headers.arms.val.mapM fun arm => do
+  arms : Witness (headers.discovery.val.arms.mapM fun arm => do
     let body ← SourceBodyContext.checkArm root arm
     return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × SourceBodyContext.ArmChecked root arm))
 
@@ -47,11 +50,12 @@ def prepare {artifact owner name arguments request} (order : Array Nat)
   let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   let rowCount := (rows headers).length
   let rootCount := 1+(SourceBodyHeader.roots headers.header).length+
-    (headers.arms.val.map fun arm => (SourceBodyHeader.roots arm.header).length).sum
+    (headers.discovery.val.arms.map fun arm => (SourceBodyHeader.roots arm.header).length).sum+
+    (headers.discovery.val.calls.map fun call => (SourceBodyHeader.roots call.header).length).sum
   exactWork (Exact.charge (5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
   let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
   let context ← SourceBodyContext.check headers.header root.val (SelectionContract.rootFresh root) root.val.program
-  let arms ← NaturalAffine.witness (headers.arms.val.mapM fun arm => do
+  let arms ← NaturalAffine.witness (headers.discovery.val.arms.mapM fun arm => do
     let body ← SourceBodyContext.checkArm root arm
     return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × SourceBodyContext.ArmChecked root arm))
   return ⟨root,context,arms⟩

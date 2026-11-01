@@ -9,6 +9,8 @@ use super::{Error, Result};
 
 mod context;
 pub use context::{Call, Context};
+mod operations;
+pub use operations::{Description, OperationNode, StaticArguments};
 
 /// Original physical arm subjects, still untrusted until the enclosing source
 /// and carrier-sector check. A physical signature is not a nominal contract.
@@ -213,23 +215,28 @@ fn interface_storage(value: &Interface, remaining: &mut usize) -> Result<()> {
             return Err(Error::limit("carrier owner capacity"));
         }
         for owner in owners {
-            if owner.basis.len() > 128 {
-                return Err(Error::limit("carrier node capacity"));
-            }
             charge(
                 remaining,
                 128usize.saturating_add(owner.port.wires.len().saturating_mul(24)),
             )?;
-            for atom in &owner.basis {
-                charge(remaining, 64)?;
-                if let Atom::Enum(origin, names) | Atom::Record(origin, names) = atom {
-                    for value in [&origin.module, &origin.declaration, &origin.source] {
-                        charge(remaining, value.len().saturating_mul(6).saturating_add(32))?;
-                    }
-                    for name in names {
-                        charge(remaining, name.len().saturating_mul(6).saturating_add(32))?;
-                    }
-                }
+            basis_storage(&owner.basis, remaining)?;
+        }
+    }
+    Ok(())
+}
+
+fn basis_storage(basis: &[Atom], remaining: &mut usize) -> Result<()> {
+    if basis.len() > 128 {
+        return Err(Error::limit("carrier node capacity"));
+    }
+    for atom in basis {
+        charge(remaining, 64)?;
+        if let Atom::Enum(origin, names) | Atom::Record(origin, names) = atom {
+            for value in [&origin.module, &origin.declaration, &origin.source] {
+                charge(remaining, value.len().saturating_mul(6).saturating_add(32))?;
+            }
+            for name in names {
+                charge(remaining, name.len().saturating_mul(6).saturating_add(32))?;
             }
         }
     }

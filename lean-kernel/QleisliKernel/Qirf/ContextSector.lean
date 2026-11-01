@@ -38,6 +38,7 @@ def readHeaders (artifact : Artifact) (owner name : String) (requests : List Req
     WorkM (Headers artifact owner name requests) := do
   guard (0 < requests.length && requests.length ≤ 128) .limit
   let source ← SourceTypes.NaturalAffine.witness (SourceTrace.read artifact.sources owner name)
+  guard (source.val.result.events.all fun event => match event with | .named _ => false | _ => true) .request
   let events := source.val.result.events.filterMap selectionData
   exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
     64*(events.map fun event => SourceSequence.eventFields event.1).sum))
@@ -110,7 +111,9 @@ def eventRows {sources owner} : SourceTrace.Event sources owner → List (String
   | .primitive event => primitiveRows event
   | .phase event => candidateRows event.application.candidate
   | .selection .. => []
-  | .named event => event.signature.sourceRows
+  | .named event => event.signature.sourceRows ++
+      ResolutionProvenance.sourceRows event.target.resolved ++
+      event.target.selected.actuals.actuals.flatMap StaticApplication.Actual.sourceRows
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
   headers.source.val.signature.sourceRows ++ headers.source.val.result.events.flatMap eventRows ++

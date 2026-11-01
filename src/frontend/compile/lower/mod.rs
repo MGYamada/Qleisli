@@ -508,9 +508,10 @@ impl Lowerer<'_, '_> {
         let result = (|| {
             self.nominal_qmatch = quantum_match::nominal::Frame::start(self, *key, &args)?;
             let value = self.call_user_inner(key, args, site)?;
-            if let Some(frame) = self.nominal_qmatch.take() {
-                self.source_context = frame.finish(self, &value)?;
-            }
+            self.source_context = match self.nominal_qmatch.take() {
+                Some(frame) => frame.finish(self, &value)?,
+                None => None,
+            };
             Ok(value)
         })();
         self.nominal_qmatch = caller_qmatch;
@@ -1277,7 +1278,12 @@ impl Lowerer<'_, '_> {
                     module,
                     span,
                 )?;
-                self.call_instance(&key, values, Some(site), instance)
+                let start = self.raw.operations.len();
+                self.source_context = None;
+                let value = self.call_instance(&key, values, Some(site), instance)?;
+                let context = self.source_context.take();
+                quantum_match::nominal::record_named(self, module, callee, start, context)?;
+                Ok(value)
             }
             Callee::Primitive(primitive) => {
                 if !static_args.is_empty() {
