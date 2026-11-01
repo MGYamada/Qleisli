@@ -17,11 +17,41 @@ structure Read where
   code : Code
   rows : List (String × String)
 
-private def closed (variables : Nat) (basis : Semantics.FiniteCarrier.Basis) : WorkM Code :=
-  basis.mapM fun atom => do
-    match atom with
-    | .bits width => pure (.bits (← NaturalAffine.constant variables width))
-    | _ => pure (.fixed atom)
+structure Closed (basis : Semantics.FiniteCarrier.Basis) where
+  code : Code
+  correct : ∀ parameters values,evaluate parameters values code = some basis
+
+private structure ClosedAtom (original : Semantics.FiniteCarrier.Atom) where
+  atom : Atom
+  correct : ∀ parameters values,atom.evaluate parameters values = some [original]
+
+private def closedAtom (variables : Nat) (original : Semantics.FiniteCarrier.Atom) : WorkM (ClosedAtom original) := do
+  match original with
+  | .bits width =>
+    let constant ← NaturalAffine.witness (NaturalAffine.constant variables width)
+    pure ⟨.bits constant.val,by
+      intro parameters values
+      obtain ⟨before,after,ran⟩ := constant.property
+      simp only [Atom.evaluate,NaturalAffine.constant_meaning _ _ _ _ _ ran]
+      simp⟩
+  | atom => pure ⟨.fixed atom,by intro parameters values; rfl⟩
+
+private def closedLoop (variables : Nat) :
+    Nat → (basis : Semantics.FiniteCarrier.Basis) → WorkM (Closed basis) :=
+  Nat.rec (fun _ => throw .limit) (fun _ next basis => do
+    match basis with
+    | [] => pure ⟨[],by intro parameters values; rfl⟩
+    | atom :: rest =>
+      let head ← closedAtom variables atom
+      let remaining ← next rest
+      pure ⟨head.atom :: remaining.code,by
+        intro parameters values
+        simp [evaluate,head.correct,remaining.correct]⟩)
+
+/-- Lift an independently checked closed type without changing its meaning.
+No nominal origin, tuple node or zero-width field is replaced by bit width. -/
+def ofClosed (variables : Nat) (basis : Semantics.FiniteCarrier.Basis) : WorkM (Closed basis) :=
+  closedLoop variables (basis.length+1) basis
 
 def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (ordinal : Nat) : Nat → List String → WorkM Read :=
@@ -51,9 +81,9 @@ def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment 
         pure ⟨[.parameter ⟨state.owner,state.name,formal.ordinal⟩],[]⟩
       | none =>
         let query ← typeExpressionWithSources sources state.owner tokens
-        let code ← closed (StaticHeaders.frame state.prepared.original).binders.length query.basis
+        let closed ← ofClosed (StaticHeaders.frame state.prepared.original).binders.length query.basis
         let rows ← NaturalRows.typeRead sources state.owner state.prepared.helpers [] tokens query
-        pure ⟨code,rows⟩)
+        pure ⟨closed.code,rows⟩)
 
 structure Checked {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (ordinal : Nat) (tokens : List String) where
@@ -105,6 +135,43 @@ def equate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment so
       StaticCallPremises.Meaning state values → ∀ parameters,
       evaluate parameters values left = evaluate parameters values right)) :=
   equateLoop state (left.length+1) left right
+
+structure Refinement {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (ordinal : Nat) (inputTokens outputTokens : List String)
+    (targetInput targetOutput : Semantics.FiniteCarrier.Basis) where
+  input : Checked state scope ordinal inputTokens
+  output : Checked state scope ordinal outputTokens
+  inputMeaning : ∀ values,StaticCallPremises.Meaning state values → ∀ parameters,
+    evaluate parameters values input.result.code = some targetInput
+  outputMeaning : ∀ values,StaticCallPremises.Meaning state values → ∀ parameters,
+    evaluate parameters values output.result.code = some targetOutput
+
+def checkRefinement {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (ordinal : Nat) (inputTokens outputTokens : List String)
+    (targetInput targetOutput : Semantics.FiniteCarrier.Basis) :
+    WorkM (Refinement state scope ordinal inputTokens outputTokens targetInput targetOutput) := do
+  let input ← read state scope ordinal inputTokens
+  let output ← read state scope ordinal outputTokens
+  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  let targetInputCode ← ofClosed variables targetInput
+  let targetOutputCode ← ofClosed variables targetOutput
+  let inputEquality ← equate state input.result.code targetInputCode.code
+  let outputEquality ← equate state output.result.code targetOutputCode.code
+  pure ⟨input,output,by
+    intro values held parameters
+    exact (inputEquality.proof values held parameters).trans (targetInputCode.correct parameters values),by
+    intro values held parameters
+    exact (outputEquality.proof values held parameters).trans (targetOutputCode.correct parameters values)⟩
+
+structure SomeRefinement (sources : Sources) where
+  state : GenericLexicalNatural.SomeEnvironment sources
+  scope : List String
+  ordinal : Nat
+  inputTokens : List String
+  outputTokens : List String
+  targetInput : Semantics.FiniteCarrier.Basis
+  targetOutput : Semantics.FiniteCarrier.Basis
+  checked : Refinement state scope ordinal inputTokens outputTokens targetInput targetOutput
 
 def replacementParameters (bases : List (Parameter × Code)) (parameters : Parameters) (values : Valuation) : Parameters :=
   fun parameter => do

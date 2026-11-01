@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.QuantumSignatureCore
 import QleisliKernel.SourceTypes.StaticKinds
 import QleisliKernel.SourceTypes.SourceMeaning
+import QleisliKernel.SourceTypes.SymbolicTypes
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -64,6 +65,7 @@ structure FormalContract (sources : Sources) where
   input : Basis
   output : Basis
   requirement : Option (SourceMeaning.Request sources)
+  symbolic : Option (SymbolicTypes.SomeRefinement sources)
 
 /-- The Meaning query belongs to the original kind's module and preceding
 scope. Closing Basis actuals cannot replace either exact Meaning port. The
@@ -76,14 +78,19 @@ def formalContract {sources owner name arguments}
   let parsed ← adapt (OperationPorts.read tokens)
   let input ← StaticKinds.readType environment formal.ordinal parsed.input
   let output ← StaticKinds.readType environment formal.ordinal parsed.output
-  let requirement ← match parsed.meaning with
-    | none => pure none
+  let (requirement,symbolic) ← match parsed.meaning with
+    | none => pure (none,none)
     | some tokens => do
       let scope := (environment.numeric.original.header.formals.filter (·.ordinal < formal.ordinal)).map (·.name)
       let selected ← SourceMeaning.select sources owner scope tokens
+      let state : GenericLexicalNatural.SomeEnvironment sources :=
+        ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩
+      let symbolic ← SymbolicTypes.checkRefinement state scope formal.ordinal parsed.input parsed.output
+        selected.meaning.graph.input selected.meaning.graph.output
       guard (selected.meaning.graph.input == input.basis && selected.meaning.graph.output == output.basis) .request
-      pure (some selected.request)
-  return ⟨input.basis,output.basis,requirement⟩
+      pure (some selected.request,some (⟨state,scope,formal.ordinal,parsed.input,parsed.output,
+        selected.meaning.graph.input,selected.meaning.graph.output,symbolic⟩ : SymbolicTypes.SomeRefinement sources))
+  return ⟨input.basis,output.basis,requirement,symbolic⟩
 
 def formalPorts {sources owner name arguments}
     (environment : StaticTypes.Environment sources owner name arguments) (formal : StaticHeaders.Formal) :

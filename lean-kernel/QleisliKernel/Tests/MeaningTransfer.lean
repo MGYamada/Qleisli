@@ -12,7 +12,11 @@ private def source :=
   "pub unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)} " ++
   "pub unitary fn bits(q:Q<Bits<1>>)->Q<Bits<1>>{q} " ++
   "pub meaning Identity:Bit=reference(keep); " ++
+  "pub meaning BitsIdentity:Bits<1>=reference(bits); " ++
   "pub unitary fn unused[const U:Op<Bit,Identity>](q:Q<Bit>)->Q<Bit>{q} " ++
+  "pub unitary fn wrong_kind[const A:Basis,const U:Op<A,Identity>](q:Q<A>)->Q<A>{q} " ++
+  "pub unitary fn sized[const n:Nat,const U:Op<Bits<n>,BitsIdentity>](q:Q<Bits<n>>)->Q<Bits<n>> requires n==1{q} " ++
+  "pub unitary fn unguarded_size[const n:Nat,const U:Op<Bits<n>,BitsIdentity>](q:Q<Bits<n>>)->Q<Bits<n>>{q} " ++
   "pub unitary fn caller(q:Q<Bit>)->Q<Bit>{q}"
 
 private def sources : Sources := #[("main",source)]
@@ -54,6 +58,20 @@ private def requests (description : Description) : Option (List (Nat Ã— String Ã
     (fun signature => (signature.operations.rootRequirements.map fun (name,request) =>
       (name,request.moduleName,request.declarationName),signature.operations.hasMeaningRequirements)) =
     some ([("U","main","Identity")],true)
+
+-- The original kind is checked for all opaque Basis interpretations, rather
+-- than repaired by selecting A=Bit and a convenient concrete implementation.
+#guard
+  ((QuantumSignature.readWithArguments sources "main" "wrong_kind"
+    {bases := [("A",[.bit])],operations := [("U",named "keep")]}).run 10000000).1.isOk = false
+
+-- Exact symbolic width equality needs the original premise, even for n=1.
+#guard
+  ((QuantumSignature.readWithArguments sources "main" "sized"
+    {naturals := [("n",1)],operations := [("U",named "bits")]}).run 10000000).1.isOk = true
+#guard
+  ((QuantumSignature.readWithArguments sources "main" "unguarded_size"
+    {naturals := [("n",1)],operations := [("U",named "bits")]}).run 10000000).1.isOk = false
 
 private def sourceExpression (expression : String) : Bool :=
   let action : Finite.WorkM Unit := do
