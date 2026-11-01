@@ -216,6 +216,13 @@ private def typeNode {sources : Sources}
         combine ⟨[if parts.length == 2 then Atom.pair else .tuple parts.length],[]⟩ children
       | .named tokens => named tokens
 
+private theorem typeNode_bits {sources : Sources}
+    (recurse width named : List String → Finite.WorkM (TypeRead sources)) (rest : List String) :
+    typeNode recurse width named ("Bits" :: "<" :: rest) = (do
+      Finite.guard (rest.getLast? == some ">") .request
+      width rest.dropLast) := by
+  simp only [typeNode,readBasisSyntax,bind_assoc,pure_bind]
+
 private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
   Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
     (fun _ recurse => ⟨fun sources current tokens =>
@@ -465,7 +472,13 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
   obtain ⟨read,endRead,ran,projected⟩ := Finite.bind_success _ _ _ _ _ ok
   have projected := (Finite.pure_success _ _ _ _ projected).1
   obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ran
-  simp only [readers,typeNode,readBasisSyntax,bind_assoc,pure_bind] at body
+  have readerBits : (readers helpers 65).ty sources moduleName ("Bits" :: "<" :: rest) = (do
+      Finite.guard (rest.getLast? == some ">") .request
+      let checked ← naturalWidth sources helpers moduleName rest.dropLast
+      pure ⟨[.bits checked.value],[]⟩) := by
+    change typeNode _ _ _ ("Bits" :: "<" :: rest) = _
+    simpa only [typeNode_bits]
+  rw [readerBits] at body
   change ((do
     Finite.guard (rest.getLast? == some ">") .request
     let checked ← naturalWidth sources helpers moduleName rest.dropLast
