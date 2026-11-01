@@ -578,7 +578,12 @@ retains the complete original function's parameter and result order, including
 additional zero-width owners. Fresh original-source moves bind those two
 orders; equal widths or an arbitrary interval cannot replace that judgment.
 `positions` contains one literal interval for every supported source event,
-including direct `h` and `global_phase_eighth` calls and every selection.
+including direct `h`, `global_phase_eighth` and supported `phase[j,k]` calls and
+every selection. Static parameters are read from original tokens and the actual
+lexical static environment; the request supplies neither their values nor a
+success receipt. Body-local static initializers are checked even when unused
+and emit no Raw interval of their own. Each phase call retains its distinct
+literal interval after evaluation of its runtime argument.
 Arguments are traversed before their enclosing call; the call coordinate is
 the first callee token, while a selection uses its `qmatch` keyword. Grouping
 parentheses and comments do not replace either coordinate. Primitive resolution

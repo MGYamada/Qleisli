@@ -128,6 +128,30 @@ def read (tokens : List LocatedToken) : Except String (Checked tokens) := do
 theorem Checked.originalTokens {tokens : List LocatedToken} (checked : Checked tokens) :
     checked.call.render = tokens := checked.original
 
+/-- Static arguments reuse the same balanced segmenter and preserve their
+actual square tokens. Name resolution and argument meanings remain separate. -/
+structure StaticChecked (tokens : List LocatedToken) where
+  call : Call
+  original : call.render = tokens
+  hasCallee : call.callee.isEmpty = false
+  delimiters : call.opening.text = "[" ∧ call.closing.text = "]"
+
+def readStatic (tokens : List LocatedToken) : Except String (StaticChecked tokens) := do
+  let envelope ← tokens.foldlM envelopeStep {}
+  if !envelope.stack.isEmpty then throw "unclosed source static application"
+  let some (start,opening,closing,finish) := envelope.completed
+    | throw "source expression has no complete static application"
+  if finish != tokens.length || start == 0 then throw "incomplete static application"
+  let args ← arguments ((tokens.drop (start+1)).take (finish-start-2))
+  let call : Call := ⟨tokens.take start,opening,args,closing⟩
+  if original : call.render = tokens then
+    if hasCallee : call.callee.isEmpty = false then
+      if delimiters : opening.text = "[" ∧ closing.text = "]" then
+        return ⟨call,original,hasCallee,delimiters⟩
+      else throw "static application does not use square brackets"
+    else throw "static application has no callee"
+  else throw "static segmentation lost original tokens"
+
 /-- Parenthesized expressions share the exact balanced comma splitter with
 call arguments, including braces in nested qmatch expressions. -/
 structure Group where

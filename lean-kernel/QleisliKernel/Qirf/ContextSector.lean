@@ -20,6 +20,7 @@ abbrev Position := SourceSequence.Position
 def selection {sources owner} : SourceTrace.Event sources owner → Option SourceTypes.QuantumSequence.Event
   | .selection event .. => some event
   | .primitive _ => none
+  | .phase _ => none
 
 structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
   source : Witness (SourceTrace.read artifact.sources owner name)
@@ -69,29 +70,38 @@ theorem preludeRowsOriginal {sources name disabled}
 /-- Primitive resolution depends on the original caller policy and, when enabled,
 the exact prelude declaration scan. These rows are relevant even when the name
 is absent. Merely appearing elsewhere in the source table grants no relevance. -/
-def primitiveRows {sources owner} (event : SourceTrace.PrimitiveEvent sources owner) :
+def candidateRows {sources owner scope tokens} (candidate : CallName.Checked sources owner scope tokens) :
     List (String × String) :=
-  match event.candidate.decision with
+  match candidate.decision with
   | .primitive _ _ _ localMissing _ preludeMissing _ _ =>
     (owner,localMissing.lookup.source) :: preludeRows preludeMissing
   | _ => []
 
-theorem primitiveRowsOriginal {sources owner}
-    (event : SourceTrace.PrimitiveEvent sources owner) (row : String × String)
-    (member : row ∈ primitiveRows event) : row ∈ sources.toList := by
-  cases h : event.candidate.decision with
-  | lexical => simp [primitiveRows,h] at member
-  | named => simp [primitiveRows,h] at member
-  | prelude => simp [primitiveRows,h] at member
+theorem candidateRowsOriginal {sources owner scope tokens}
+    (candidate : CallName.Checked sources owner scope tokens) (row : String × String)
+    (member : row ∈ candidateRows candidate) : row ∈ sources.toList := by
+  cases h : candidate.decision with
+  | lexical => simp [candidateRows,h] at member
+  | named => simp [candidateRows,h] at member
+  | prelude => simp [candidateRows,h] at member
   | primitive name spelling unbound localMissing policy preludeMissing candidate originalName =>
-    simp only [primitiveRows,h,List.mem_cons] at member
+    simp only [candidateRows,h,List.mem_cons] at member
     rcases member with same | member
     · subst row
       exact lookupRow localMissing.lookup
     · exact preludeRowsOriginal preludeMissing row member
 
+def primitiveRows {sources owner} (event : SourceTrace.PrimitiveEvent sources owner) :
+    List (String × String) := candidateRows event.candidate
+
+theorem primitiveRowsOriginal {sources owner}
+    (event : SourceTrace.PrimitiveEvent sources owner) (row : String × String)
+    (member : row ∈ primitiveRows event) : row ∈ sources.toList :=
+  candidateRowsOriginal event.candidate row member
+
 def eventRows {sources owner} : SourceTrace.Event sources owner → List (String × String)
   | .primitive event => primitiveRows event
+  | .phase event => candidateRows event.application.candidate
   | .selection .. => []
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
@@ -154,7 +164,8 @@ def collect {sources owner name dependencies program whole events positions}
         match event with
         | .selection event held scope frame =>
           return ⟨event,held,scope,frame,position,site⟩ :: collected
-        | .primitive _ => return collected)
+        | .primitive _ => return collected
+        | .phase _ => return collected)
   traverse (events.length+1) sites
 
 def interval {artifact owner name requests order positions}

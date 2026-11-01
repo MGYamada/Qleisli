@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.SourceSyntax
 import QleisliKernel.SourceTypes.SourceContext
+import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.Raw.OwnerFlow
 
 /-! Complete original quantum-body traversal with primitive/qmatch events.
@@ -17,13 +18,22 @@ open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Semantics.SourceOwner
 private def adapt {α : Type} (value : Except String α) : Finite.WorkM α :=
   Finite.lift (value.mapError fun _ => .request)
 
+inductive PrimitiveKind where
+  | h | globalPhaseEighth
+  deriving BEq, DecidableEq, Repr
+
+def PrimitiveKind.name : PrimitiveKind → String
+  | .h => "h"
+  | .globalPhaseEighth => "global_phase_eighth"
+
 def primitiveKind {sources caller scope tokens}
-    (checked : CallName.Checked sources caller scope tokens) : Option CallName.Primitive :=
+    (checked : CallName.Checked sources caller scope tokens) : Option PrimitiveKind :=
   match checked.decision with
-  | .primitive _ _ _ _ _ _ kind _ => some kind
+  | .primitive _ _ _ _ _ _ .h _ => some .h
+  | .primitive _ _ _ _ _ _ .globalPhaseEighth _ => some .globalPhaseEighth
   | _ => none
 
-def typeMatches (kind : CallName.Primitive) (owner : Owner) : Bool :=
+def typeMatches (kind : PrimitiveKind) (owner : Owner) : Bool :=
   match kind with | .h => owner.basis == [.bit] | .globalPhaseEighth => true
 
 structure PrimitiveEvent (sources : Sources) (caller : String) where
@@ -31,10 +41,23 @@ structure PrimitiveEvent (sources : Sources) (caller : String) where
   call : CallSyntax.Checked tokens
   scope : List String
   candidate : CallName.Checked sources caller scope call.call.callee
-  kind : CallName.Primitive
+  kind : PrimitiveKind
   selected : primitiveKind candidate = some kind
   operand : Owner
   sourceType : typeMatches kind operand = true
+  held : List Owner
+  before : Environment
+  remaining : Environment
+  frame : (held ++ owners before).Perm ([operand] ++ held ++ owners remaining)
+
+structure PhaseEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  call : CallSyntax.Checked tokens
+  scope : List String
+  naturals : PhaseApplication.Naturals sources
+  application : PhaseApplication.Checked sources caller naturals scope call
+  operand : Owner
+  bit : operand.basis = [.bit]
   held : List Owner
   before : Environment
   remaining : Environment
@@ -45,14 +68,17 @@ inductive Event (sources : Sources) (caller : String) where
       (frame : (held ++ owners event.before).Perm
         ([event.selector,event.target] ++ held ++ owners event.remaining))
   | primitive (event : PrimitiveEvent sources caller)
+  | phase (event : PhaseEvent sources caller)
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
   | .selection event _ _ _ => some event.parsed.keyword.span.startByte
   | .primitive _ => none
+  | .phase _ => none
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
   | .primitive event => some event.call.calleeOffset
+  | .phase event => some event.call.calleeOffset
 
 structure Outcome (sources : Sources) (caller : String) (before : Environment) where
   value : Value
@@ -114,12 +140,13 @@ private def boundNames (pattern : List LocatedToken) : Except String (List Strin
 /-- Live bindings, persistent lexical names and held expression values remain
 separate. The actual lookup context follows evaluation left-to-right. Reuse never
 replaces the current lexical check or an original call/event occurrence. -/
-def evalCached (sources : Sources) (caller : String) : Nat → List Owner → List String →
+def evalWithNaturals (sources : Sources) (caller : String) : Nat →
+    Option (PhaseApplication.Naturals sources) → List Owner → List String →
     (environment : Environment) → {tokens : List LocatedToken} → SourceSyntax.Tree tokens →
     SourceContext.Context sources caller →
     Finite.WorkM (Outcome sources caller environment × SourceContext.Context sources caller) :=
-  Nat.rec (fun _ _ _ _ _ _ => throw .limit)
-    (fun _ next held scope environment tokens tree context => do
+  Nat.rec (fun _ _ _ _ _ _ _ => throw .limit)
+    (fun _ next naturals held scope environment tokens tree context => do
     match tree with
     | .move tokens _ _ =>
       Finite.exactWork (Exact.charge (Meter.moveWork tokens environment))
@@ -143,7 +170,7 @@ def evalCached (sources : Sources) (caller : String) : Nat → List Owner → Li
           [.selection event held scope frame],context)
       else throw .request
     | .binding statement expression rest =>
-      let (first,context) ← next held scope environment expression context
+      let (first,context) ← next naturals held scope environment expression context
       let pattern := statement.statement.pattern
       -- Bind may grow intermediate zero-owner cells before its final capacity
       -- check; include the actual pattern, value atoms and existing names now.
@@ -155,16 +182,28 @@ def evalCached (sources : Sources) (caller : String) : Nat → List Owner → Li
       Finite.guard (decide ((owners environment).Perm (owners after))) .request
       let names ← adapt (boundNames pattern)
       Finite.exactWork (Exact.charge (Meter.nameFields names+1))
-      let (last,context) ← next held (names ++ scope) after rest context
+      -- Static names and live quantum owners are separate. A runtime pattern
+      -- must not hide an earlier static binding, even when that alias is unused.
+      match naturals with
+      | some current =>
+        Finite.exactWork (Exact.charge
+          (8*(Meter.nameFields names+1)*(Meter.nameFields current.staticNames+1)))
+        Finite.guard (names.all fun name => !current.staticNames.contains name) .request
+      | none => pure ()
+      let (last,context) ← next naturals held (names ++ scope) after rest context
       Finite.exactWork (Exact.charge (first.events.length+1))
       return (← outcome environment last.value last.remaining (first.events ++ last.events),context)
+    | .staticBindings leading _ rest =>
+      let some current := naturals | throw .request
+      let (updated,scope) ← PhaseApplication.extend sources caller leading current scope
+      next (some updated) held scope environment rest context
     | .group group children =>
       let (values,remaining,events,context) ← (trees children).foldlM
           (fun (values,current,events,context) child => do
         Finite.exactWork (Exact.charge (8*(held.length+(values.map List.length).sum+
           values.length+events.length+1)))
         let holding := held ++ values.flatMap valueOwners
-        let (result,context) ← next holding scope current child.2 context
+        let (result,context) ← next naturals holding scope current child.2 context
         return (values ++ [result.value],result.remaining,events ++ result.events,context))
         (([] : List Value),environment,([] : List (Event sources caller)),context)
       Finite.exactWork (Exact.charge (8*((values.map List.length).sum+values.length+1)))
@@ -175,6 +214,26 @@ def evalCached (sources : Sources) (caller : String) : Nat → List Owner → Li
       Finite.guard (value.length ≤ 128) .limit
       return (← outcome environment value remaining events,context)
     | .call call children =>
+      if call.call.callee.getLast?.map (·.text) == some "]" then
+        let some current := naturals | throw .request
+        let application ← PhaseApplication.read sources caller current scope call
+        Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
+        let [child] := trees children | throw .request
+        let (argument,context) ← next naturals held scope environment child.2 context
+        let [.owner operand] := argument.value | throw .request
+        Finite.exactWork (Exact.charge (Raw.OwnerFlow.fields [operand]+1))
+        if bit : operand.basis = [.bit] then
+          Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners environment)
+            ([operand] ++ held ++ owners argument.remaining)))
+          if frame : (held ++ owners environment).Perm
+              ([operand] ++ held ++ owners argument.remaining) then
+            let event : PhaseEvent sources caller :=
+              ⟨tokens,call,scope,current,application,operand,bit,held,environment,argument.remaining,frame⟩
+            Finite.exactWork (Exact.charge (argument.events.length+1))
+            return (← outcome environment [.owner operand] argument.remaining
+              (argument.events ++ [.phase event]),context)
+          else throw .request
+        else throw .request
       let lookup ← SourceContext.read sources caller context scope call.call.callee
       let candidate ← Finite.lift lookup.answer.checked
       match selected : primitiveKind candidate with
@@ -182,7 +241,7 @@ def evalCached (sources : Sources) (caller : String) : Nat → List Owner → Li
       | some kind =>
         Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
         let [child] := trees children | throw .request
-        let (argument,context) ← next held scope environment child.2 lookup.context
+        let (argument,context) ← next naturals held scope environment child.2 lookup.context
         let [.owner operand] := argument.value | throw .request
         Finite.exactWork (Exact.charge (Raw.OwnerFlow.fields [operand]+1))
         if sourceType : typeMatches kind operand = true then
@@ -198,6 +257,19 @@ def evalCached (sources : Sources) (caller : String) : Nat → List Owner → Li
               (argument.events ++ [.primitive event]),context)
           else throw .request
         else throw .request)
+
+/-- Prepare static helpers once only when the original body contains static
+syntax. Plain primitive bodies retain their existing lookup/work path. Aliases
+remain local to the checked rest of the same original block. -/
+def evalCached (sources : Sources) (caller : String) (fuel : Nat) (held : List Owner)
+    (scope : List String) (environment : Environment) {tokens : List LocatedToken}
+    (tree : SourceSyntax.Tree tokens) (context : SourceContext.Context sources caller) :
+    Finite.WorkM (Outcome sources caller environment × SourceContext.Context sources caller) := do
+  let naturals : Option (PhaseApplication.Naturals sources) ←
+    if tokens.any (fun token => token.text == "static" || token.text == "[") then
+      Option.some <$> PhaseApplication.prepare sources
+    else pure none
+  evalWithNaturals sources caller fuel naturals held scope environment tree context
 
 /-- A complete original-body evaluation always starts its own empty context.
 The public outcome and the Checked.traversed witness remain the actual reader. -/

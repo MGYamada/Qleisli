@@ -104,22 +104,24 @@ def exported (binding : Option Declaration) : Bool :=
   binding.any fun declaration => declaration.isPublic && declaration.kind == "import"
 
 /-- The complete current primitive spelling set is used only to reject forbidden
-prelude reexports. Only two primitive candidates are implemented below. -/
+ prelude reexports. Candidate lookup supplies no static-argument meaning. -/
 def primitiveSpelling (name : String) : Bool :=
   ["h","phase","global_phase_eighth","unit","finish","split","join",
     "measure_z","discard","take_bit","put_bit","empty_bits","prepend_bit"].contains name
 
 inductive Primitive where
-  | h | globalPhaseEighth
+  | h | globalPhaseEighth | phase
   deriving BEq, DecidableEq, Repr
 
 def Primitive.name : Primitive → String
   | .h => "h"
   | .globalPhaseEighth => "global_phase_eighth"
+  | .phase => "phase"
 
 private def primitive (name : String) : Except String Primitive :=
   if name == "h" then .ok .h
   else if name == "global_phase_eighth" then .ok .globalPhaseEighth
+  else if name == "phase" then .ok .phase
   else .error "not a supported unbound primitive candidate"
 
 /-- Enabled lookup retains the exact canonical row even when no public export

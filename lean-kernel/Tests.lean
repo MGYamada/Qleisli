@@ -24,6 +24,8 @@ import QleisliKernel.Tests.SourceTraceTests
 import QleisliKernel.Tests.SourceTraceCacheTests
 import QleisliKernel.Tests.PrimitiveActionTests
 import QleisliKernel.Tests.RawTraceTests
+import QleisliKernel.Tests.PhaseSourceContext
+import QleisliKernel.Tests.SourceNaturalAliases
 import QleisliKernel.Tests.OwnerBoundariesTests
 import QleisliKernel.Tests.ContextSectorTests
 import QleisliKernel.Tests.ContextSectorCost

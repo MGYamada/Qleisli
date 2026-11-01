@@ -277,8 +277,18 @@ ordinary tuples can group separate owners. A two-port subject retains the exact
 original parameter/result order and distinct logical identities at zero width.
 It cannot sharpen a public observing/isometric function to Unitary. Unknown
 prefix expressions refuse instead of contributing unproved type facts.
-The complete context reader also checks direct `h` and `global_phase_eighth`
-events around named-arm selections. It traverses call arguments first, retains
+The complete context reader also checks direct `h`, `global_phase_eighth` and
+existing finite `phase[j,k]` events around named-arm selections. Closed phase
+parameters and body-local `static let` initializers use original Nat syntax and
+lexical lookup. Every ordinary caller intermediate and helper actual must fit u32,
+including unused initializers and ignored arguments; original static helper
+bodies retain their checked signed-affine rules. An alias retains the helper
+resolution and lexical environment of its initializer. Runtime patterns cannot
+shadow earlier static aliases, including unused aliases. The finite phase rule
+requires `k <= 8`, `j < 2^k` and an exact multiple of one eighth, without rounding
+or a replacement modulo-one normalization. These checks do not add generic
+caller-actual transport or constructed-arm support.
+The reader traverses runtime call arguments first, retains
 the original callee token and `qmatch` keyword through grouping/comments, and
 compares every event with its literal Raw interval. Original lexical/module/
 prelude lookup establishes primitive identity. Whole-body cancellation cannot

@@ -19,14 +19,17 @@ abbrev Event := SourceTrace.Event
 def offset {sources owner} : Event sources owner → Nat
   | .selection event .. => event.parsed.keyword.span.startByte
   | .primitive event => event.call.calleeOffset
+  | .phase event => event.call.calleeOffset
 
 def selected {sources owner} : Event sources owner → List Owner
   | .selection event .. => [event.selector,event.target]
   | .primitive event => [event.operand]
+  | .phase event => [event.operand]
 
 def frameOwners {sources owner} : Event sources owner → List Owner
   | .selection event held .. => held ++ owners event.before
   | .primitive event => event.held ++ owners event.before
+  | .phase event => event.held ++ owners event.before
 
 def leafRoles (frame : Qirf.SourceSequence.Frame) : Option (List Owner) :=
   frame.mapM fun (_,tree) => match tree with
@@ -41,7 +44,7 @@ instance (frame : Qirf.SourceSequence.Frame) (roles : List Owner) :
   unfold completeFrame
   split <;> infer_instance
 
-def primitiveKind : CallName.Primitive → PrimitiveAction.Kind
+def primitiveKind : SourceTrace.PrimitiveKind → PrimitiveAction.Kind
   | .h => .h | .globalPhaseEighth => .globalPhaseEighth
 
 /-- The selected source event determines the checked action. The selection
@@ -56,6 +59,12 @@ def Action {sources owner} (event : Event sources owner)
     match inputs,outputs with
     | [input],[output] => PrimitiveAction.Checked dependencies program
         position.start position.count input output event.operand (primitiveKind event.kind)
+    | _,_ => Empty
+  | .phase event =>
+    match inputs,outputs with
+    | [input],[output] => PrimitiveAction.Checked dependencies program
+        position.start position.count input output event.operand
+        (.phase event.application.coefficient.exponent)
     | _,_ => Empty
 
 def readAction {sources owner} (event : Event sources owner)
@@ -72,6 +81,13 @@ def readAction {sources owner} (event : Event sources owner)
     | [input],[output] =>
       PrimitiveAction.checkPrepared dependencies program prepared
         position.start position.count input output event.operand (primitiveKind event.kind)
+    | _,_ => throw .request
+  | .phase event =>
+    match inputs,outputs with
+    | [input],[output] =>
+      PrimitiveAction.checkPrepared dependencies program prepared
+        position.start position.count input output event.operand
+        (.phase event.application.coefficient.exponent)
     | _,_ => throw .request
 
 structure Site {sources owner name} (source : Source sources owner name)

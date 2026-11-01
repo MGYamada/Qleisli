@@ -15,6 +15,7 @@ open QleisliKernel QleisliKernel.Finite
 
 inductive Kind where
   | h | globalPhaseEighth
+  | phase (exponent : Nat)
   deriving BEq, DecidableEq, Repr
 
 /-- Existing Raw spellings used by the common emitter. The empty-axis
@@ -23,16 +24,19 @@ def operation (kind : Kind) (input output : Nat) : Semantics.Raw.Op :=
   match kind with
   | .h => .gate .h input output
   | .globalPhaseEighth => .applyUnitary input output [⟨[],.monomial [] [0] [1]⟩]
+  | .phase exponent => .applyUnitary input output [⟨[],.monomial [0] [0,1] [0,exponent]⟩]
 
 def typeMatches (kind : Kind) (role : Semantics.SourceOwners.Owner) : Prop :=
   match kind with
   | .h => role.basis = [.bit]
   | .globalPhaseEighth => True
+  | .phase _ => role.basis = [.bit]
 
 instance (kind : Kind) (role : Semantics.SourceOwners.Owner) : Decidable (typeMatches kind role) :=
   match kind with
   | .h => inferInstanceAs (Decidable (role.basis = [.bit]))
   | .globalPhaseEighth => inferInstanceAs (Decidable True)
+  | .phase _ => inferInstanceAs (Decidable (role.basis = [.bit]))
 
 structure Checked (dependencies : List Semantics.Finite.Dependency)
     (program : Semantics.Observation.Program) (start count input output : Nat)
