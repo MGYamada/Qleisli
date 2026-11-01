@@ -25,14 +25,23 @@ private def allowed (segments : List String) : Bool :=
     (index == 1 && segments.head? == some "std" &&
       ["basis","observe","classical"].contains name)
 
-def readName (tokens : List LocatedToken) : Except String (Name tokens) := do
-  let segments := (tokens.map (·.text)).filter (· != "::")
+structure TextName (tokens : List String) where
+  segments : List String
+  nonempty : segments ≠ []
+  original : segments.intersperse "::" = tokens
+
+def readTextName (tokens : List String) : Except String (TextName tokens) := do
+  let segments := tokens.filter (· != "::")
   if nonempty : segments ≠ [] then
     if !allowed segments then throw "unsupported original call name"
-    if original : segments.intersperse "::" = tokens.map (·.text) then
+    if original : segments.intersperse "::" = tokens then
       return ⟨segments,nonempty,original⟩
     else throw "original call name is not an exact path"
   else throw "empty original call name"
+
+def readName (tokens : List LocatedToken) : Except String (Name tokens) := do
+  let read ← readTextName (tokens.map (·.text))
+  return ⟨read.segments,read.nonempty,read.original⟩
 
 /-- Match the actual leading module header, ignoring only what lexLocated
 itself discards. Later, repeated and malformed hash directives reject. -/
@@ -192,16 +201,16 @@ private def primitiveDecision {sources caller scope tokens name}
 /-- Charge original bytes and names before lexing, catalogue scans or path
 construction. There is no new expression-count cap. Existing lexing/source and
 resolver limits remain in force; the budget is intentionally conservative. -/
-def read (sources : Sources) (caller : String) (scope : List String)
-    (tokens : List LocatedToken) : Finite.WorkM (Checked sources caller scope tokens) := do
+def readTexts (sources : Sources) (caller : String) (scope : List String)
+    (tokens : List String) : Finite.WorkM (Decision sources caller scope tokens) := do
   Finite.exactWork (Exact.charge (1 + caller.utf8ByteSize +
     (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize + 3).sum * 4 +
     (scope.map fun name => name.utf8ByteSize + 1).sum +
-    (tokens.map fun token => token.text.utf8ByteSize + 4).sum * 4))
-  let parsed ← adapt (readName tokens)
+    (tokens.map fun token => token.utf8ByteSize + 4).sum * 4))
+  let parsed ← adapt (readTextName tokens)
   let decision ← match single : parsed.segments with
     | [name] => do
-      have spelling : tokens.map (·.text) = [name] := by
+      have spelling : tokens = [name] := by
         simpa only [single,List.intersperse_singleton] using parsed.original.symm
       if bound : name ∈ scope then
         pure (.lexical name spelling bound)
@@ -209,7 +218,7 @@ def read (sources : Sources) (caller : String) (scope : List String)
         let lookup ← adapt (SourceLookup.read sources caller name)
         match present : lookup.binding with
         | some _ =>
-          pure (.named (← resolve sources caller (tokens.map (·.text))))
+          pure (.named (← resolve sources caller tokens))
         | none =>
           let localMissing : Absent sources caller name := ⟨lookup,present⟩
           let policy ← adapt (readPolicy lookup.source)
@@ -233,7 +242,16 @@ def read (sources : Sources) (caller : String) (scope : List String)
               let miss : PreludeMiss sources name policy.disabled :=
                 enabled ▸ .enabled preludeLookup missing
               primitiveDecision spelling bound localMissing policy miss
-    | _ => pure (.named (← resolve sources caller (tokens.map (·.text))))
+    | _ => pure (.named (← resolve sources caller tokens))
+  return decision
+
+/-- Located source calls and original raw header paths use the same candidate
+decision. Raw paths never receive synthetic source positions; their enclosing
+original header/call reader retains the actual occurrence and byte witness. -/
+def read (sources : Sources) (caller : String) (scope : List String)
+    (tokens : List LocatedToken) : Finite.WorkM (Checked sources caller scope tokens) := do
+  let decision ← readTexts sources caller scope (tokens.map (·.text))
+  let parsed ← adapt (readName tokens)
   return ⟨parsed,decision⟩
 
 end QleisliKernel.SourceTypes.CallName

@@ -270,4 +270,40 @@ def read (sources : Sources) (caller : Option String) (owner name : String) : Wo
   let graph ← NaturalAffine.witness (readGraph 65 sources caller owner name [])
   pure ⟨graph.val,by with_reducible exact graph.property⟩
 
+def decisionResolution {sources caller scope tokens} (decision : CallName.Decision sources caller scope tokens) : Option Resolved :=
+  match decision with
+  | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
+  | _ => none
+
+structure Selected (sources : Sources) (caller : String) (scope tokens : List String) where
+  decision : CallName.Decision sources caller scope tokens
+  resolution : Resolved
+  selected : decisionResolution decision = some resolution
+  meaning : Checked sources (some caller) resolution.moduleName resolution.declaration.name
+  queryRows : List (String × String)
+  root : Node sources
+  originalRoot : meaning.graph.nodes[meaning.graph.root]? = some root
+  original : root.owner = resolution.moduleName ∧ root.name = resolution.declaration.name ∧
+    root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration
+
+def select (sources : Sources) (caller : String) (scope tokens : List String) : WorkM (Selected sources caller scope tokens) := do
+  let decision ← CallName.readTexts sources caller scope tokens
+  match selected : decisionResolution decision with
+  | none => throw .request
+  | some resolution =>
+    guard (resolution.declaration.kind == "meaning") .request
+    let meaning ← read sources (some caller) resolution.moduleName resolution.declaration.name
+    match originalRoot : meaning.graph.nodes[meaning.graph.root]? with
+    | none => throw .request
+    | some root =>
+      if original : root.owner = resolution.moduleName ∧ root.name = resolution.declaration.name ∧
+          root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration then
+        let rows := match decision with
+          | .named resolution => ResolutionProvenance.sourceRows resolution.result
+          | .prelude _ _ _ localMissing _ _ lookup _ resolution =>
+            (caller,localMissing.lookup.source) :: ("std::prelude",lookup.source) :: ResolutionProvenance.sourceRows resolution.result
+          | _ => []
+        pure ⟨decision,resolution,selected,meaning,rows,root,originalRoot,original⟩
+      else throw .request
+
 end QleisliKernel.SourceTypes.SourceMeaning
