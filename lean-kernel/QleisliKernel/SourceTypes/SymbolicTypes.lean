@@ -130,8 +130,7 @@ private def substituteAtom (variables : Nat) (bases : List (Parameter × Code)) 
     let result ← NaturalSubstitute.substitute variables width naturals
     pure ⟨[.bits result.form],by
       intro parameters values
-      simp only [evaluate,Atom.evaluate,result.correct values]
-      split <;> rfl⟩
+      simp only [evaluate,Atom.evaluate,result.correct values]⟩
 
 private def substituteLoop (variables : Nat) (bases : List (Parameter × Code)) (naturals : List Form) :
     Nat → (original : Code) → WorkM (Substituted bases naturals original) :=
