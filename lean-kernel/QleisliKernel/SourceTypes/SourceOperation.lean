@@ -60,6 +60,7 @@ def buildWithInstantiation {sources caller callerName original}
         | "conjugate_op",[outer,middle] =>
           return Description.binary .conjugate (← next outer.tokens) (← next middle.tokens)
         | "checked_op",[child,meaning] =>
+          let _ ← adapt (CallName.readName child.tokens)
           let child ← next child.tokens
           let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
           return child.unary (fun index => .requested index selected.resolution.moduleName selected.resolution.declaration.name)
@@ -165,6 +166,7 @@ def readRowsWithInstantiation {sources caller callerName original}
       | "then_op",[left,right] | "tensor_op",[left,right] | "conjugate_op",[left,right] =>
         return (← next left.tokens) ++ (← next right.tokens)
       | "checked_op",[child,meaning] =>
+        let _ ← adapt (CallName.readName child.tokens)
         let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
         return (← next child.tokens) ++ selected.request.sourceRows
       | _,_ => throw .request
