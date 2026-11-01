@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceLookup
+import QleisliKernel.SourceTypes.ResolutionProvenance
 import QleisliKernel.SourceTypes.ModuleHeader
 
 /-! Original-call-name candidates, without standalone acceptance authority.
@@ -158,6 +159,25 @@ structure Checked (sources : Sources) (caller : String) (scope : List String)
     (tokens : List LocatedToken) where
   name : Name tokens
   decision : Decision sources caller scope (tokens.map (·.text))
+
+def PreludeMiss.sourceRows {sources name} : {disabled : Bool} →
+    PreludeMiss sources name disabled → List (String × String)
+  | _,.disabled => []
+  | _,.enabled lookup _ => [("std::prelude",lookup.source)]
+
+/-- Complete original resolution dependencies, including caller/prelude scans
+which establish absence. A named path and its reexports retain their original
+visited order; a primitive spelling alone supplies no source relevance. -/
+def sourceRows {sources caller scope tokens} (candidate : Checked sources caller scope tokens) :
+    List (String × String) :=
+  match candidate.decision with
+  | .lexical .. => []
+  | .named resolution => ResolutionProvenance.sourceRows resolution.result
+  | .prelude _ _ _ localMissing _ _ lookup _ resolution =>
+    (caller,localMissing.lookup.source) :: ("std::prelude",lookup.source) ::
+      ResolutionProvenance.sourceRows resolution.result
+  | .primitive _ _ _ localMissing _ preludeMissing _ _ =>
+    (caller,localMissing.lookup.source) :: preludeMissing.sourceRows
 
 private def primitiveDecision {sources caller scope tokens name}
     (spelling : tokens = [name]) (unbound : name ∉ scope)

@@ -25,6 +25,13 @@ def Checked.names {sources owner name original}
   | .closed _ => []
   | .static _ environment _ => environment.numeric.original.header.formals.map (·.name)
 
+def Checked.operationNames {sources owner name original}
+    (instantiation : @Checked sources owner name original) : List String :=
+  match instantiation with
+  | .closed _ => []
+  | .static _ environment _ => environment.numeric.original.header.formals.filterMap fun formal =>
+      match formal.kind with | .operation _ => some formal.name | _ => none
+
 def readType {sources owner name original}
     (instantiation : @Checked sources owner name original) (tokens : List String) :
     WorkM (TypeRead sources) :=

@@ -36,14 +36,15 @@ def selectInstance {sources caller callerName}
     (callerSignature : Checked sources caller callerName)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) {tokens : List LocatedToken} (written : StaticApplication.Syntax tokens)
-    (candidate : CallName.Checked sources caller scope written.callee) :
+    (candidate : CallName.Checked sources caller scope written.callee)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
     WorkM (InstanceSelected callerSignature entries environment scope written candidate) := do
   match selected : candidateResolution candidate with
   | none => throw .request
   | some resolution =>
-    let operationReader := SourceOperation.build callerSignature.toChecked entries environment scope 65
+    let operationReader := SourceOperation.buildWithGeneric callerSignature.toChecked entries environment scope genericState 65
     let actuals ← StaticApplication.read callerSignature.instantiation entries environment scope written
-      resolution.moduleName resolution.declaration.name operationReader
+      resolution.moduleName resolution.declaration.name operationReader genericState
     let signature ← readWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments (.source caller)
     let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
     exactWork (Exact.charge (8*(bytes+tokens.length+1)*

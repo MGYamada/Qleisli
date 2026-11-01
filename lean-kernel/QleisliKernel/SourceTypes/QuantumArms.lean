@@ -72,8 +72,8 @@ def Operation.sourceRows {sources owner tokens} (operation : Operation sources o
     List (String × String) :=
   operation.graph.sourceRows ++ match operation.original with
     | .named selected _ => ResolutionProvenance.sourceRows selected.resolution ++ selected.signature.sourceRows
-    | .source _ signature _ _ _ _ _ => signature.sourceRows
-    | .primitive .. => []
+    | .source _ signature _ _ read _ _ => signature.sourceRows ++ read.rows
+    | .primitive _ candidate .. => CallName.sourceRows candidate
 
 structure BoundArm (sources : Sources) (owner : String) (selector target : Basis) where
   written : QuantumMatch.Arm
@@ -132,10 +132,10 @@ def readArmWithSignature {sources owner name}
         let graph ← StaticOperation.check sources (.source owner) description
         return ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
       | none => do
-        let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation
+        let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
         return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
     | .error _ => do
-      let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation
+      let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
       return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then

@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.LexicalNatural
 import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.CallName
+import QleisliKernel.SourceTypes.GenericLexicalNatural
 
 /-! Complete positional actuals from original source applications. Each actual
 retains its original formal ordinal/category and its original expression. Exact
@@ -18,6 +19,19 @@ private def adapt {α : Type} (value : Except String α) : WorkM α :=
 abbrev OperationReader := List LocatedToken → WorkM OperationDescription.Description
 
 def noOperations : OperationReader := fun _ => throw .request
+
+def validateNatural {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (provided : Option (GenericLexicalNatural.SomeEnvironment sources)) (scope : List String)
+    (expression : Semantics.SourceNatural.Expr) : WorkM Unit := do
+  match instantiation with
+  | .closed _ => guard provided.isNone .request
+  | .static _ environment _ =>
+    let state := provided.getD ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩
+    guard (state.owner == owner && state.name == name &&
+      state.prepared.original.envelope.source == original.source &&
+      state.prepared.original.envelope.declaration == original.declaration) .request
+    GenericLexicalNatural.validate state owner scope expression
 
 inductive Syntax (tokens : List LocatedToken) where
   | name (parsed : CallName.Name tokens)
@@ -68,6 +82,9 @@ inductive Value {sources owner name original}
   | basis (expression : BasisExpression instantiation tokens) :
       Value instantiation entries environment scope operationReader tokens .basis
   | natural (expression : StaticBindings.Natural tokens)
+      (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+      (genericRead : ∃ before after,
+        (validateNatural instantiation genericState scope expression.expression).run before = (.ok (),after))
       (checked : LexicalNatural.Checked sources owner entries environment scope expression.expression) :
       Value instantiation entries environment scope operationReader tokens .natural
   | operation (description : OperationDescription.Description) (kindTokens : List String)
@@ -93,7 +110,7 @@ def Value.naturals {sources owner name original instantiation entries environmen
     (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List Nat :=
   match value with
   | .basis .. => []
-  | .natural _ checked => [checked.result.value]
+  | .natural _ _ _ checked => [checked.result.value]
   | .operation .. => []
 
 def Value.operations {sources owner name original instantiation entries environment scope operationReader tokens kind}
@@ -131,6 +148,7 @@ private def readActual {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (operationReader : OperationReader)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
     (formal : StaticHeaders.Formal) (argument : CallSyntax.Argument) :
     WorkM (Actual instantiation entries environment scope operationReader) := do
   match kind : formal.kind with
@@ -139,8 +157,12 @@ private def readActual {sources owner name original}
     return ⟨formal,argument,by rw [kind]; exact .basis expression⟩
   | .natural =>
     let expression ← adapt (StaticBindings.natural argument.tokens)
+    let genericRead ← NaturalAffine.witness (validateNatural instantiation genericState scope expression.expression)
     let checked ← LexicalNatural.read sources owner entries environment scope expression.expression
-    return ⟨formal,argument,by rw [kind]; exact .natural expression checked⟩
+    have unit : genericRead.val = () := by cases genericRead.val; rfl
+    return ⟨formal,argument,by
+      rw [kind]
+      exact .natural expression genericState (by with_reducible simpa only [unit] using genericRead.property) checked⟩
   | .operation tokens =>
     let description ← NaturalAffine.witness (operationReader argument.tokens)
     return ⟨formal,argument,by
@@ -168,14 +190,15 @@ def read {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) {tokens : List LocatedToken} (written : Syntax tokens)
-    (targetOwner targetName : String) (operationReader : OperationReader := noOperations) :
+    (targetOwner targetName : String) (operationReader : OperationReader := noOperations)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
     WorkM (Checked instantiation entries environment scope operationReader written targetOwner targetName) := do
   let target ← StaticHeaders.read sources targetOwner targetName
   guard (written.arguments.length ≤ 32) .limit
   exactWork (Exact.charge (64*(tokens.length+1)*(target.header.formals.length+1)))
   if complete : target.header.formals.length = written.arguments.length then
     let actuals ← (target.header.formals.zip written.arguments).mapM fun (formal,argument) =>
-      readActual instantiation entries environment scope operationReader formal argument
+      readActual instantiation entries environment scope operationReader genericState formal argument
     if ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
         target.header.formals.zip written.arguments then
       return ⟨target,actuals,complete,ordered⟩

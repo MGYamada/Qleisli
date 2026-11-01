@@ -110,13 +110,13 @@ private def namedResults {sources : Sources} (arguments : List (String × Descri
 /-- Check every original operation formal and actual, including unused ones.
 The signature core supplies original mixed-kind identities and ordered Nat
 premises; equal width cannot replace either exact operation port. -/
-def bindArguments {sources owner name}
-    (signature : QuantumSignatureCore.Checked sources owner name)
+def bindArgumentsWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
     (results : List (String × Result sources)) : WorkM Unit := do
-  let arguments := signature.staticArguments
-  exactWork (Exact.charge (32*(results.length+1)*(signature.original.occurrence.header.length+1)))
+  let arguments := instantiation.arguments
+  exactWork (Exact.charge (32*(results.length+1)*(original.occurrence.header.length+1)))
   guard (namedResults arguments.operations results) .request
-  match signature.instantiation with
+  match instantiation with
   | .closed _ => guard results.isEmpty .request
   | .static _ environment _ =>
     let formals := environment.numeric.original.header.formals.filter fun formal =>
@@ -128,6 +128,10 @@ def bindArguments {sources owner name}
       guard (actual.input == input && actual.output == output &&
         actual.effect != .observe && (input != output || actual.effect == .unitary) &&
         satisfies actual.paths (required environment.numeric.original.header.access formal.name)) .request
+
+def bindArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
+    (results : List (String × Result sources)) : WorkM Unit :=
+  bindArgumentsWithInstantiation signature.instantiation results
 
 private def result {sources : Sources} (input output : Basis) (effect : Effect) (paths : Paths)
     (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none) : WorkM (Result sources) := do
@@ -263,23 +267,31 @@ def CheckedGraph.sourceRows {sources context description} (graph : CheckedGraph 
 structure Actual (sources : Sources) (context : Context) (argument : String × Description) where
   graph : CheckedGraph sources context argument.2
 
-structure ArgumentsChecked {sources owner name}
-    (signature : QuantumSignatureCore.Checked sources owner name) (context : Context) where
+structure ArgumentsCheckedWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original) (context : Context) where
   actuals : List (Sigma (Actual sources context))
-  ordered : actuals.map (·.1) = signature.staticArguments.operations
+  ordered : actuals.map (·.1) = instantiation.arguments.operations
   bound : ∃ before after,
-    (bindArguments signature (actuals.map fun actual => (actual.1.1,actual.2.graph.root))).run before = (.ok (),after)
+    (bindArgumentsWithInstantiation instantiation (actuals.map fun actual => (actual.1.1,actual.2.graph.root))).run before = (.ok (),after)
 
-def checkArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
-    (context : Context) : WorkM (ArgumentsChecked signature context) := do
-  let actuals ← signature.staticArguments.operations.mapM fun argument => do
+def checkArgumentsWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (context : Context) : WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
+  let actuals ← instantiation.arguments.operations.mapM fun argument => do
     let graph ← check sources context argument.2
     pure (⟨argument,⟨graph⟩⟩ : Sigma (Actual sources context))
-  if ordered : actuals.map (·.1) = signature.staticArguments.operations then
-    let bound ← NaturalAffine.witness (bindArguments signature
+  if ordered : actuals.map (·.1) = instantiation.arguments.operations then
+    let bound ← NaturalAffine.witness (bindArgumentsWithInstantiation instantiation
       (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
     have same : bound.val = () := by cases bound.val; rfl
     return ⟨actuals,ordered,by with_reducible simpa only [same] using bound.property⟩
   else throw .request
+
+abbrev ArgumentsChecked {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) (context : Context) :=
+  ArgumentsCheckedWithInstantiation signature.instantiation context
+
+def checkArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
+    (context : Context) : WorkM (ArgumentsChecked signature context) :=
+  checkArgumentsWithInstantiation signature.instantiation context
 
 end QleisliKernel.SourceTypes.StaticOperation
