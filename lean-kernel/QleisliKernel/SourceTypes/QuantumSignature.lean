@@ -47,11 +47,22 @@ def Checked.sourceRows {sources owner name} (checked : Checked sources owner nam
   checked.toChecked.sourceRows ++ checked.staticRows ++ checked.operations.actuals.flatMap fun actual =>
     actual.2.graph.sourceRows
 
+structure WithCore {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) where
+  checked : Checked sources owner name
+  originalCore : checked.toChecked = signature
+
+/-- Complete a type-only original signature without rereading or substituting
+its source envelope. The native provider-body continuation receives that exact
+core plus all checked actuals and original numeric lookup dependencies. -/
+def fromCore {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
+    (context : StaticOperation.Context) : WorkM (WithCore signature) := do
+  let operations ← StaticOperation.checkArguments signature context
+  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
+  return ⟨⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩,rfl⟩
+
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.read sources owner name
-  let operations ← StaticOperation.checkArguments signature .external
-  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
-  return ⟨signature,.external,operations,rows.val,by with_reducible exact rows.property⟩
+  return (← fromCore signature .external).checked
 
 /-- The untouched header is prepared before checking every operation actual.
 Existing closed callers cannot obtain an unresolved operation formal. Source
@@ -59,9 +70,7 @@ applications pass their original module context; host selections stay external. 
 def readWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
     (context : StaticOperation.Context := .external) : WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name arguments
-  let operations ← StaticOperation.checkArguments signature context
-  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
-  return ⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩
+  return (← fromCore signature context).checked
 
 structure ResolvedSelection (sources : Sources) (resolution : Resolved) where
   signature : Checked sources resolution.moduleName resolution.declaration.name
