@@ -113,6 +113,10 @@ def compute {sources context description}
   guard (!graph.hasMeaningRequirements) .request
   let occurrences ← StaticOperation.readOccurrences description
   exactWork (Exact.charge (16*(description.nodes.length+graph.results.length+occurrences.length+providers.length+1)^2))
+  let requiredProviders := occurrences.foldl (fun count index => match description.nodes[index]? with
+    | some (.provider ..) => count+1
+    | _ => count) 0
+  guard (requiredProviders == providers.length) .request
   let (value,consumed) ← visit graph providers (occurrences.length+1) description.root 0
   guard (consumed == providers.length) .request
   return value
