@@ -69,6 +69,11 @@ private def external (effect : String) :=
 #guard ((SourceTypes.SourceRuntimeTrace.read (external "unitary") "main" "route").run 2000000000).1.toOption.isNone
 #guard ((SourceTypes.SourceRuntimeTrace.read (external "observe") "main" "route").run 2000000000).1.isOk
 
+private def externalClassical :=
+  #[ ("main","use lib::f;pub fn route(c:Bit)->Bit{f(c)}"),
+     ("lib","pub classical fn f(c:Bit)->Bit{not c}") ] ++ SourceTraceOriginals.bundled
+#guard ((SourceTypes.SourceRuntimeTrace.read externalClassical "main" "route").run 2000000000).1.isOk
+
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.completeOwnerHistory
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.effectAssertion

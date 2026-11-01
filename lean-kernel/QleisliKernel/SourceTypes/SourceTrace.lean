@@ -562,8 +562,10 @@ def readNamedSource {sources caller} (event : SourceCalls.Event sources caller) 
     Finite.WorkM (Body event.signature) := do
   let body ← readWithSignature event.signature
   Finite.exactWork (Exact.charge (8*(body.checked.result.value.length+
-    event.canonical.value.length+1)))
-  Finite.guard (body.checked.result.value == event.canonical.value) .request
+    event.canonical.value.length+body.checked.result.events.length+
+    Raw.OwnerFlow.fields (valueOwners body.checked.result.value ++ valueOwners event.canonical.value)+1)))
+  Finite.guard (body.checked.result.value == event.canonical.value &&
+    inferredEffect body.checked.result.events == event.canonical.inferredEffect) .request
   return body
 
 theorem Checked.allOriginalQmatches {sources owner name} (checked : Checked sources owner name) :

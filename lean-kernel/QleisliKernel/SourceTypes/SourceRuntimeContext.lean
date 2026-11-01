@@ -191,7 +191,8 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
 def Event.quantumUse {sources caller} : Event sources caller → Bool
   | .named event =>
     if caller != event.target.resolution.moduleName && event.target.signature.original.declaration.isPublic then
-      event.target.signature.original.parsedHeader.effect.isSome || event.canonical.quantumUse
+      (!event.target.signature.original.parsedHeader.ordinaryOnly &&
+        event.target.signature.original.parsedHeader.effect.isSome) || event.canonical.quantumUse
     else event.canonical.quantumUse
   | _ => true
 

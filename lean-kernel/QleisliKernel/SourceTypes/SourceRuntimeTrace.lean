@@ -13,13 +13,12 @@ private def adapt {α : Type} (action : Except String α) : Finite.WorkM α :=
   Finite.lift (action.mapError fun _ => .request)
 
 private def environmentCells (environment : Environment) : Nat :=
-  (environment.map fun cell => cell.name.utf8ByteSize+cell.value.length+
-    (ordinary cell.value |>.map fun (_,term) => expressionSize term).sum+2).sum
+  (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+2).sum
 
 private def outcome {sources caller} (before : Environment) (value : Value) (remaining : Environment)
     (allocated consumed : List Semantics.SourceOwners.Owner) (nextOrdinal : Nat)
     (events : List (Event sources caller)) : Finite.WorkM (Outcome sources caller before) := do
-  Finite.exactWork (Exact.charge (16*(environmentCells before+environmentCells remaining+value.length+
+  Finite.exactWork (Exact.charge (16*(environmentCells before+environmentCells remaining+valueFields value+
     events.length+1)+SourceTrace.Meter.permutationWork (owners before ++ allocated)
       (valueOwners value ++ owners remaining ++ consumed)))
   Finite.guard (value.length ≤ 3*128 && remaining.length ≤ 128) .limit
@@ -123,8 +122,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment value remaining allocated consumed ordinal events,context)
       | .boolean written children =>
         let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
-        Finite.exactWork (Exact.charge (16*((values.flatMap ordinary).map fun (_,term) =>
-          expressionSize term).sum+16))
+        Finite.exactWork (Exact.charge (16*(values.map valueFields).sum+16))
         let expressions ← adapt (values.mapM fun value => do
           let [.ordinary basis expression] := value | throw "ordinary Boolean operand"
           if basis != [.bit] then throw "ordinary Boolean operand type"
@@ -188,8 +186,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               (⟨ordinal+index,owner.basis⟩ : Semantics.SourceOwners.Owner)
             let mapping := inputOwners ++ fresh
             Finite.exactWork (Exact.charge (32*(canonical.value.length+1)*
-              ((values.flatMap ordinary |>.map fun (_,term) => expressionSize term).sum+
-                (ordinary canonical.value |>.map fun (_,term) => expressionSize term).sum+1)))
+              ((values.map valueFields).sum+valueFields canonical.value+1)))
             match transported : transport ⟨owner,name,call.calleeOffset⟩ mapping
                 (values.flatMap ordinary) canonical.value with
             | .error _ => throw .request
@@ -245,7 +242,10 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
               32*(result.allocated.length+1)+SourceTrace.Meter.tokenFields tokens+
               SourceTrace.Meter.permutationWork (owners initial ++ result.allocated)
                 (valueOwners result.value ++ result.consumed)+
-              16*(SourceTrace.Meter.tokenFields tokens+result.value.length+1)))
+              16*(SourceTrace.Meter.tokenFields tokens+valueFields result.value+
+                (signature.result.tree.map fun atom => match atom with
+                  | .quantum => 1
+                  | .finite finite => Raw.OwnerFlow.fields [⟨0,[finite]⟩]).sum+1)))
             if complete : owners result.remaining = [] then
               if balanced : (owners initial ++ result.allocated).Perm (valueOwners result.value ++ result.consumed) then
                 if typed : typeOf result.value = signature.result.tree then
@@ -307,10 +307,15 @@ caller-supplied history can stand in for that independent traversal. -/
 def readNamedSource {sources caller} (event : NamedEvent sources caller) :
     Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
   let checked ← readWithSignature event.target.signature
-  Finite.exactWork (Exact.charge (16*(checked.summary.value.length+event.canonical.value.length+1)))
+  Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
+    valueFields event.canonical.value+checked.events.length+
+    Raw.OwnerFlow.fields (checked.summary.allocated ++ checked.summary.consumed ++
+      event.canonical.allocated ++ event.canonical.consumed)+1)))
   Finite.guard (checked.summary.value == event.canonical.value &&
     checked.summary.consumed == event.canonical.consumed &&
-    checked.summary.allocated == event.canonical.allocated) .request
+    checked.summary.allocated == event.canonical.allocated &&
+    checked.summary.inferredEffect == event.canonical.inferredEffect &&
+    checked.summary.quantumUse == event.canonical.quantumUse) .request
   return checked
 
 theorem Checked.effectAssertion {sources owner name} (checked : Checked sources owner name) :

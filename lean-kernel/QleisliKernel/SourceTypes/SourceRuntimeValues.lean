@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.QuantumMoves
 import QleisliKernel.SourceTypes.RuntimeSignature
+import QleisliKernel.Raw.OwnerFlow
 
 /-! Typed symbolic runtime values for complete original-body traversal.
 Ordinary values copy; any value containing a logical quantum owner moves.
@@ -181,6 +182,21 @@ def expressionSize : Expression → Nat
   | .project value _ | .not value => 1+expressionSize value
   | .xor first second | .and first second => 1+expressionSize first+expressionSize second
   | _ => 1
+
+def siteFields (site : Site) : Nat :=
+  site.moduleName.utf8ByteSize+site.functionName.utf8ByteSize+2
+
+def expressionFields : Expression → Nat
+  | .measured origin calls owner =>
+    1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
+  | .project value _ | .not value => 1+expressionFields value
+  | .xor first second | .and first second => 1+expressionFields first+expressionFields second
+  | _ => 1
+
+def valueFields (value : Value) : Nat := value.foldl (fun count atom => count+match atom with
+  | .owner owner => Raw.OwnerFlow.fields [owner]
+  | .ordinary basis expression => Raw.OwnerFlow.fields [⟨0,basis⟩]+expressionFields expression
+  | .tuple _ => 1) 0
 
 def transport (site : Site) (actuals : List Owner) (inputs : List (Basis × Expression))
     (value : Value) : Except String Value :=
