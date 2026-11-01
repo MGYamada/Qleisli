@@ -19,6 +19,7 @@ structure Header {artifact owner name} (source : SourceTrace.Checked artifact.so
 
 def read {artifact owner name} (source : SourceTrace.Checked artifact.sources owner name)
     (request : Context) : WorkM (Header source request) := do
+  guard (source.result.events.all fun event => match event with | .operation _ => false | _ => true) .request
   guard (request.sites.length ≤ 128) .limit
   let events := source.result.events.filterMap ContextSector.selectionData
   exactWork (Exact.charge (64*(request.sites.length+events.length+1)^2+
@@ -45,7 +46,7 @@ def bindings {artifact owner name source request} (header : @Header artifact own
 
 def rows {artifact owner name source request} (header : @Header artifact owner name source request) :
     List (String × String) :=
-  source.signature.sourceRows ++ source.result.events.flatMap ContextSector.eventRows ++
+  source.signature.sourceRows ++ source.result.staticRows ++ source.result.events.flatMap ContextSector.eventRows ++
     header.sites.flatMap fun site =>
       Carrier.sourceRows site.request.attached site.request.required ++ site.rows.val
 

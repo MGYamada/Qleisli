@@ -22,6 +22,7 @@ def selection {sources owner} : SourceTrace.Event sources owner → Option Sourc
   | .primitive _ => none
   | .phase _ => none
   | .named _ => none
+  | .operation _ => none
 
 def selectionData {sources owner} : SourceTrace.Event sources owner →
     Option (SourceTypes.QuantumSequence.Event × Option (PhaseApplication.Naturals sources) × List String)
@@ -38,7 +39,7 @@ def readHeaders (artifact : Artifact) (owner name : String) (requests : List Req
     WorkM (Headers artifact owner name requests) := do
   guard (0 < requests.length && requests.length ≤ 128) .limit
   let source ← SourceTypes.NaturalAffine.witness (SourceTrace.read artifact.sources owner name)
-  guard (source.val.result.events.all fun event => match event with | .named _ => false | _ => true) .request
+  guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request
   let events := source.val.result.events.filterMap selectionData
   exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
     64*(events.map fun event => SourceSequence.eventFields event.1).sum))
@@ -114,9 +115,11 @@ def eventRows {sources owner} : SourceTrace.Event sources owner → List (String
   | .named event => event.signature.sourceRows ++
       ResolutionProvenance.sourceRows event.target.resolved ++
       event.target.selected.actuals.actuals.flatMap StaticApplication.Actual.sourceRows
+  | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
-  headers.source.val.signature.sourceRows ++ headers.source.val.result.events.flatMap eventRows ++
+  headers.source.val.signature.sourceRows ++ headers.source.val.result.staticRows ++
+    headers.source.val.result.events.flatMap eventRows ++
     headers.sites.flatMap fun header =>
     Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
 
@@ -178,7 +181,8 @@ def collect {sources owner name dependencies program whole events positions}
           return ⟨event,held,scope,frame,naturals,position,site⟩ :: collected
         | .primitive _ => return collected
         | .phase _ => return collected
-        | .named _ => return collected)
+        | .named _ => return collected
+        | .operation _ => return collected)
   traverse (events.length+1) sites
 
 def interval {artifact owner name requests order positions}

@@ -21,15 +21,18 @@ def offset {sources owner} : Event sources owner → Nat
   | .primitive event => event.call.calleeOffset
   | .phase event => event.call.calleeOffset
   | .named event => event.call.calleeOffset
+  | .operation event => event.call.calleeOffset
 
 def selected {sources owner} : Event sources owner → List Owner
   | .selection event .. => [event.selector,event.target]
   | .primitive event => [event.operand]
   | .phase event => [event.operand]
   | .named event => event.inputOwners
+  | .operation event => event.inputOwners
 
 def returned {sources owner} : Event sources owner → List Owner
   | .named event => event.outputOwners
+  | .operation event => event.outputOwners
   | event => selected event
 
 def frameOwners {sources owner} : Event sources owner → List Owner
@@ -37,6 +40,7 @@ def frameOwners {sources owner} : Event sources owner → List Owner
   | .primitive event => event.held ++ owners event.before
   | .phase event => event.held ++ owners event.before
   | .named event => event.held ++ owners event.before
+  | .operation event => event.frameOwners
 
 def leafRoles (frame : Qirf.SourceSequence.Frame) : Option (List Owner) :=
   frame.mapM fun (_,tree) => match tree with
@@ -92,6 +96,7 @@ def Action {sources owner} (event : Event sources owner)
         (.phase event.application.coefficient.exponent)
     | _,_ => Empty
   | .named event => NamedAction event dependencies program position inputs outputs
+  | .operation _ => Empty
 
 def readAction {sources owner} (event : Event sources owner)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
@@ -124,6 +129,7 @@ def readAction {sources owner} (event : Event sources owner)
       let interval ← Qirf.PureInterval.Many.checkPrepared event.inputOwners.length dependencies program prepared
         position.start position.count inputs stableOutputs event.inputOwners
       return ⟨stableOutputs,originalOrder,interval⟩
+  | .operation _ => throw .request
 
 structure Site {sources owner name} (source : Source sources owner name)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)

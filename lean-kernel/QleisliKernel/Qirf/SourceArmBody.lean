@@ -13,7 +13,7 @@ open QleisliKernel.Qirf.PureInterval
 def noSelections {sources owner} (events : List (SourceTypes.SourceTrace.Event sources owner)) : Bool :=
   events.all fun event => match event with
     | .primitive _ | .phase _ => true
-    | .selection .. | .named _ => false
+    | .selection .. | .named _ | .operation _ => false
 
 structure Checked {artifact order extra roots owner selector target}
     (root : Witness (Validity.checkRootFromRoots artifact order extra roots))

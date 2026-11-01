@@ -37,6 +37,10 @@ def readFunctionSource {sources owner selector target}
   exactWork (Exact.charge (8*(bytes+1)*(arm.operation.description.nodes.length+1)))
   match onlyProvider : arm.operation.providers with
   | [provider] =>
+    guard (provider.signature.original.parsedHeader.staticTokens.isNone &&
+      provider.signature.original.parsedHeader.requiresTokens.isNone &&
+      provider.signature.staticArguments.bases.isEmpty && provider.signature.staticArguments.naturals.isEmpty &&
+      provider.signature.staticArguments.operations.isEmpty) .request
     if namedDescription : arm.operation.description = SourceTypes.OperationDescription.provider
         provider.moduleName provider.declarationName provider.signature.staticArguments.bases
         provider.signature.staticArguments.naturals provider.signature.staticArguments.operations then
