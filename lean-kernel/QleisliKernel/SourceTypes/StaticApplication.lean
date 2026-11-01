@@ -27,7 +27,7 @@ def Syntax.arguments {tokens} : Syntax tokens → List CallSyntax.Argument
   | .name _ => []
   | .application parsed => parsed.call.arguments
 
-def syntax (tokens : List LocatedToken) : Except String (Syntax tokens) := do
+def readSyntax (tokens : List LocatedToken) : Except String (Syntax tokens) := do
   if tokens.getLast?.map (·.text) == some "]" then
     return .application (← CallSyntax.readStatic tokens)
   else return .name (← CallName.readName tokens)

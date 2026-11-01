@@ -75,11 +75,11 @@ def readArmWithSignature {sources owner name}
     (selector target : Basis) (written : QuantumMatch.Arm) :
     WorkM (BoundArm sources owner selector target) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
-  let syntax ← adapt (StaticApplication.syntax written.operation)
-  let candidate ← CallName.read sources owner scope syntax.callee
-  let selected ← QuantumSignature.selectInstance signature naturals.helpers.val naturals.environment scope syntax candidate
+  let writtenCall ← adapt (StaticApplication.readSyntax written.operation)
+  let candidate ← CallName.read sources owner scope writtenCall.callee
+  let selected ← QuantumSignature.selectInstance signature naturals.helpers.val naturals.environment scope writtenCall candidate
   let operation := QuantumSignature.OperationSelection.instantiated signature naturals.helpers.val
-    naturals.environment scope syntax candidate selected
+    naturals.environment scope writtenCall candidate selected
   if input : operation.signature.inputs = [target] then
     if output : operation.signature.outputs = [target] then
       if shape : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true then
