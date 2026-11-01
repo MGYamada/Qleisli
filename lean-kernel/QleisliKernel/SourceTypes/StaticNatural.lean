@@ -29,9 +29,15 @@ structure Prepared (sources : Sources) (owner name : String) (tokens : List Stri
     (NaturalPrepare.Meaning (StaticHeaders.frame original)
       (NaturalHelpers.interpretation helpers bindings) original.header.premises) 128 expression
 
-def prepare (sources : Sources) (owner name : String) (tokens : List String) :
-    WorkM (Prepared sources owner name tokens) := do
-  let original ← StaticHeaders.read sources owner name
+structure WithOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (tokens : List String) where
+  prepared : Prepared sources owner name tokens
+  originalHeader : prepared.original = original
+
+/-- Reuse the exact checked original header at a call boundary. No source
+lookup, token replacement or artificial closed declaration is introduced. -/
+def prepareOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (tokens : List String) : WorkM (WithOriginal original tokens) := do
   let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
   exactWork (Exact.charge ((tokens.map String.utf8ByteSize).sum+tokens.length+1))
   match parsed : NaturalSyntax.read tokens with
@@ -48,8 +54,13 @@ def prepare (sources : Sources) (owner name : String) (tokens : List String) :
     let normalized ← NaturalNormalize.normalize frame.binders.length scope.context
       ⟨NaturalFrames.readName frame calls (fun _ held => held.1),
         callReader.read scope.context (fun _ held => held.1)⟩ 128 expression
-    return ⟨original,helpers.val,by with_reducible exact helpers.property,
-      expression,parsed,bindings.val,by with_reducible exact bindings.property,scope,normalized⟩
+    return ⟨⟨original,helpers.val,by with_reducible exact helpers.property,
+      expression,parsed,bindings.val,by with_reducible exact bindings.property,scope,normalized⟩,rfl⟩
+
+def prepare (sources : Sources) (owner name : String) (tokens : List String) :
+    WorkM (Prepared sources owner name tokens) := do
+  let original ← StaticHeaders.read sources owner name
+  return (← prepareOriginal original tokens).prepared
 
 abbrev Bindings := List (String × Nat)
 
