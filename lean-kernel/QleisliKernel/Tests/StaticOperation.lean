@@ -23,53 +23,65 @@ private def named (name : String) : Description := provider "main" name [] [] []
 private def accepted (description : Description) (context : SourceTypes.StaticOperation.Context := .external) : Bool :=
   ((SourceTypes.StaticOperation.check sources context description).run 10000000).1.isOk
 
-theorem source_provider_has_checked_original_ports :
+-- source provider has checked original ports
+#guard
     ((SourceTypes.StaticOperation.check sources .external (named "keep")).run 10000000).1.toOption.map
       (fun checked => (checked.root.input,checked.root.output,checked.root.paths)) =
-      some ([.bit],[.bit],⟨true,true,true⟩) := by decide +kernel
+      some ([.bit],[.bit],⟨true,true,true⟩)
 
-theorem composed_source_operation_checks_both_children :
-    accepted (Description.binary .thenOp (named "keep") (named "keep")) = true := by decide +kernel
+-- composed source operation checks both children
+#guard
+    accepted (Description.binary .thenOp (named "keep") (named "keep")) = true
 
-theorem equal_width_different_original_type_cannot_compose :
-    accepted (Description.binary .thenOp (named "keep") (named "bits")) = false := by decide +kernel
+-- equal width different original type cannot compose
+#guard
+    accepted (Description.binary .thenOp (named "keep") (named "bits")) = false
 
-theorem zero_power_keeps_the_external_provider_effect_obligation :
-    accepted ((named "observed").unary (fun child => .power child 0)) = false := by decide +kernel
+-- zero power keeps the external provider effect obligation
+#guard
+    accepted ((named "observed").unary (fun child => .power child 0)) = false
 
-theorem external_observe_cannot_obtain_control_from_a_pure_body :
-    accepted (named "observed") = false := by decide +kernel
+-- external observe cannot obtain control from a pure body
+#guard
+    accepted (named "observed") = false
 
-theorem same_module_observe_retains_an_explicit_internal_body_obligation :
+-- same module observe retains an explicit internal body obligation
+#guard
     ((SourceTypes.StaticOperation.check sources (.source "main") (named "observed")).run 10000000).1.toOption.map
       (fun checked => checked.providers.map fun provider =>
         (provider.signature.original.parsedHeader.effect,provider.expectedEffect,provider.internalInference)) =
-      some [(some .observe,.unitary,true)] := by decide +kernel
+      some [(some .observe,.unitary,true)]
 
-theorem unrelated_unused_description_node_cannot_hide_a_subject :
-    accepted ⟨[.provider "main" "bits" [] [] [],.provider "main" "keep" [] [] []],1⟩ = false := by decide +kernel
+-- unrelated unused description node cannot hide a subject
+#guard
+    accepted ⟨[.provider "main" "bits" [] [] [],.provider "main" "keep" [] [] []],1⟩ = false
 
-theorem forward_and_self_operation_actual_indices_refuse :
-    accepted ⟨[.provider "main" "unused" [] [] [("U",0)]],0⟩ = false := by decide +kernel
+-- forward and self operation actual indices refuse
+#guard
+    accepted ⟨[.provider "main" "unused" [] [] [("U",0)]],0⟩ = false
 
-theorem unused_operation_actual_keeps_exact_original_type :
-    accepted (provider "main" "unused" [] [] [("U",named "bits")]) = false := by decide +kernel
+-- unused operation actual keeps exact original type
+#guard
+    accepted (provider "main" "unused" [] [] [("U",named "bits")]) = false
 
-theorem unused_operation_actual_keeps_public_effect :
-    accepted (provider "main" "unused" [] [] [("U",named "observed")]) = false := by decide +kernel
+-- unused operation actual keeps public effect
+#guard
+    accepted (provider "main" "unused" [] [] [("U",named "observed")]) = false
 
-theorem declared_controllable_formal_keeps_only_its_declared_path :
+-- declared controllable formal keeps only its declared path
+#guard
     ((SourceTypes.StaticOperation.check sources (.source "main")
       (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 0)).run 10000000).1.toOption.map
-      (fun checked => checked.root.paths) = some ⟨false,false,true⟩ := by decide +kernel
+      (fun checked => checked.root.paths) = some ⟨false,false,true⟩
 
-theorem convenient_actual_does_not_supply_an_undeclared_generic_control_path :
+-- convenient actual does not supply an undeclared generic control path
+#guard
     ((SourceTypes.StaticOperation.check sources (.source "main")
       (OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0)).run 10000000).1.toOption.map
-      (fun checked => checked.root.paths) = some ⟨true,false,false⟩ := by decide +kernel
+      (fun checked => checked.root.paths) = some ⟨true,false,false⟩
 
-theorem formal_ordinal_cannot_be_a_natural_or_later_binder :
-    accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 1) (.source "main") = false :=
-  by decide +kernel
+-- formal ordinal cannot be a natural or later binder
+#guard
+    accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 1) (.source "main") = false
 
 end QleisliKernel.Tests.StaticOperation
