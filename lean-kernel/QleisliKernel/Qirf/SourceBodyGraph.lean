@@ -20,6 +20,9 @@ def readHeaders (artifact : Artifact) (owner name : String)
     (arguments : StaticTypes.Arguments) (request : Context) :
     WorkM (Headers artifact owner name arguments request) := do
   let signature ← NaturalAffine.witness (QuantumSignature.readWithArguments artifact.sources owner name arguments)
+  -- This original named-body stage does not yet consume root Op/Meaning
+  -- subjects. Full v5 must replace this refusal with every actual obligation.
+  guard (!signature.val.operations.hasMeaningRequirements && signature.val.staticArguments.operations.isEmpty) .request
   let source ← NaturalAffine.witness (SourceTrace.readWithSignature signature.val)
   let header ← SourceBodyHeader.read source.val.checked request
   let discovery ← NaturalAffine.witness (SourceBodyHeader.discover artifact 128 header)

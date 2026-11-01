@@ -70,6 +70,7 @@ def readNode {sources} (metadata : StaticOperation.Result sources) (node : Node)
     (previous providers : List Matrix) (nextProvider : Nat) : WorkM (Matrix × Nat) := do
   let (value,nextProvider) ← match node with
     | .provider .. => do return (← child providers nextProvider,nextProvider+1)
+    | .requested index _ _ => do return (← child previous index,nextProvider)
     | .formal _ _ _ _ operations ordinal => do
       let index ← formalChild metadata operations ordinal
       return (← child previous index,nextProvider)
@@ -103,6 +104,9 @@ an unused formal argument. The input provider spine is consumed exactly once
 in the graph's original provider order; no selected runtime arm skips it. -/
 def compute {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (providers : List Matrix) : WorkM Matrix := do
+  -- Metadata does not discharge a Meaning equation, even for an inactive or
+  -- unused child. An enclosing checked Meaning continuation is still pending.
+  guard (!graph.hasMeaningRequirements) .request
   exactWork (Exact.charge (16*(description.nodes.length+graph.results.length+providers.length+1)^2))
   guard (providers.length == graph.providers.length && description.nodes.length == graph.results.length) .request
   let (values,consumed) ← (description.nodes.zip graph.results).foldlM

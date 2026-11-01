@@ -32,6 +32,7 @@ def FunctionSource.canonical {sources owner selector target arm}
 
 def readFunctionSource {sources owner selector target}
     (arm : SourceTypes.QuantumArms.BoundArm sources owner selector target) : WorkM (FunctionSource arm) := do
+  guard (!arm.operation.graph.hasMeaningRequirements) .request
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   exactWork (Exact.charge (8*(bytes+1)*(arm.operation.description.nodes.length+1)))
   match onlyProvider : arm.operation.providers with
@@ -40,6 +41,7 @@ def readFunctionSource {sources owner selector target}
         provider.moduleName provider.declarationName provider.signature.staticArguments.bases
         provider.signature.staticArguments.naturals provider.signature.staticArguments.operations then
       let full ← SourceTypes.QuantumSignature.fromCore provider.signature (.source owner)
+      guard (!full.checked.operations.hasMeaningRequirements && full.checked.staticArguments.operations.isEmpty) .request
       return ⟨provider,onlyProvider,namedDescription,full.checked,full.originalCore⟩
     else throw .request
   | _ => throw .request
