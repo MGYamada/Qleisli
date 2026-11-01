@@ -42,8 +42,7 @@ def readRows {sources owner name original}
     (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
     (inner : List String) : WorkM (List (String × String)) := do
   let query ← readType instantiation entries environment scope genericState inner
-  let rows ← NaturalRows.typeTokens sources owner entries scope (inner.length+1) inner
-  pure (query.sourceRows ++ rows)
+  NaturalRows.typeRead sources owner entries scope inner query
 
 structure Checked {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)

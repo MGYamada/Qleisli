@@ -42,7 +42,6 @@ def readRows {sources owner name arguments}
     WorkM (List (String × String)) := do
   let query ← readType environment ordinal tokens
   let names := (environment.numeric.original.header.formals.filter (·.ordinal < ordinal)).map (·.name)
-  let natural ← NaturalRows.typeTokens sources owner environment.numeric.helpers names (tokens.length+1) tokens
-  pure (query.sourceRows ++ natural)
+  NaturalRows.typeRead sources owner environment.numeric.helpers names tokens query
 
 end QleisliKernel.SourceTypes.StaticKinds

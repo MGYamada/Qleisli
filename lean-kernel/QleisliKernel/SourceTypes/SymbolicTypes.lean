@@ -52,7 +52,8 @@ def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment 
       | none =>
         let query ← typeExpressionWithSources sources state.owner tokens
         let code ← closed (StaticHeaders.frame state.prepared.original).binders.length query.basis
-        pure ⟨code,query.sourceRows⟩)
+        let rows ← NaturalRows.typeRead sources state.owner state.prepared.helpers [] tokens query
+        pure ⟨code,rows⟩)
 
 structure Checked {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (ordinal : Nat) (tokens : List String) where

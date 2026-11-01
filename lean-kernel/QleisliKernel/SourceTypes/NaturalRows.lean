@@ -57,4 +57,34 @@ def typeTokens (sources : Sources) (caller : String) (entries : List NaturalHelp
       | _ :: rest => next rest
       | [] => pure [])
 
+/-- Nominal fields use their own original closed scope. Exact source origins
+in an already checked type forest identify those declarations; only actual
+field-width helper calls and their dependency routes contribute rows. -/
+def nominalOrigins (sources : Sources) (entries : List NaturalHelpers.Entry)
+    (basis : Semantics.FiniteCarrier.Basis) : WorkM (List (String × String)) := do
+  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
+  let rows ← basis.mapM fun atom => do
+    let origin := match atom with
+      | .enumeration origin _ | .record origin _ => some origin
+      | _ => none
+    match origin with
+    | none => pure []
+    | some origin =>
+      exactWork (Exact.charge (32*(bytes+origin.source.utf8ByteSize+1)))
+      let (source,declaration) ← lift ((lookup sources origin.moduleName origin.declarationName).mapError fun _ => .request)
+      guard (source == origin.source) .request
+      let expected := match atom with | .record .. => "struct" | _ => "enum"
+      guard (declaration.kind == expected) .request
+      let helpers ← if expected == "struct" then
+        typeTokens sources origin.moduleName entries [] (declaration.body.length+1) declaration.body
+        else pure []
+      pure ((origin.moduleName,source) :: helpers)
+  pure rows.flatten
+
+def typeRead (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope tokens : List String) (query : TypeRead sources) : WorkM (List (String × String)) := do
+  let direct ← typeTokens sources caller entries scope (tokens.length+1) tokens
+  let fields ← nominalOrigins sources entries query.basis
+  pure (query.sourceRows ++ direct ++ fields)
+
 end QleisliKernel.SourceTypes.NaturalRows
