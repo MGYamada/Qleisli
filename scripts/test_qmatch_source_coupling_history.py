@@ -1022,6 +1022,8 @@ class OriginalCouplingHistory(unittest.TestCase):
 
 class IndependentReferenceAuthoringHistory(unittest.TestCase):
     def test_first_sources_and_real_diagnostics(self):
+        readme = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/README.md'
+        self.assertIn(b'No first source was repaired.', readme.read_bytes())
         archive = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/first.tar.xz'
         index = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/first-index.json.xz'
         self.assertEqual(hashlib.sha256(archive.read_bytes()).hexdigest(),
