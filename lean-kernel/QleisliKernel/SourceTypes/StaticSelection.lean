@@ -69,11 +69,11 @@ structure OperationSelection (sources : Sources) (caller : String) (tokens : Lis
   original :
     (∃ selected : Selected sources caller (tokens.map (·.text)),
       selected.resolution = resolution ∧ HEq selected.signature signature) ∨
-    (∃ callerName (callerSignature : Checked sources caller callerName)
-      (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
-      (scope : List String) (written : StaticApplication.Syntax tokens)
-      (candidate : CallName.Checked sources caller scope written.callee)
-      (selected : InstanceSelected callerSignature entries environment scope written candidate),
+    (∃ callerName, ∃ callerSignature : Checked sources caller callerName,
+      ∃ entries : List NaturalHelpers.Entry, ∃ environment : LexicalNatural.Environment entries,
+      ∃ scope : List String, ∃ written : StaticApplication.Syntax tokens,
+      ∃ candidate : CallName.Checked sources caller scope written.callee,
+      ∃ selected : InstanceSelected callerSignature entries environment scope written candidate,
       selected.resolution = resolution ∧ HEq selected.signature signature)
 
 def OperationSelection.closed {sources caller tokens}

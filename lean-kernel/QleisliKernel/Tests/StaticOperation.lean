@@ -24,9 +24,9 @@ private def accepted (description : Description) (context : SourceTypes.StaticOp
   ((SourceTypes.StaticOperation.check sources context description).run 10000000).1.isOk
 
 theorem source_provider_has_checked_original_ports :
-    ((SourceTypes.StaticOperation.check sources .external (named "keep")).run 10000000).1.map
+    ((SourceTypes.StaticOperation.check sources .external (named "keep")).run 10000000).1.toOption.map
       (fun checked => (checked.root.input,checked.root.output,checked.root.paths)) =
-      .ok ([.bit],[.bit],⟨true,true,true⟩) := by decide +kernel
+      some ([.bit],[.bit],⟨true,true,true⟩) := by decide +kernel
 
 theorem composed_source_operation_checks_both_children :
     accepted (Description.binary .thenOp (named "keep") (named "keep")) = true := by decide +kernel
@@ -41,10 +41,10 @@ theorem external_observe_cannot_obtain_control_from_a_pure_body :
     accepted (named "observed") = false := by decide +kernel
 
 theorem same_module_observe_retains_an_explicit_internal_body_obligation :
-    ((SourceTypes.StaticOperation.check sources (.source "main") (named "observed")).run 10000000).1.map
+    ((SourceTypes.StaticOperation.check sources (.source "main") (named "observed")).run 10000000).1.toOption.map
       (fun checked => checked.providers.map fun provider =>
         (provider.signature.original.parsedHeader.effect,provider.expectedEffect,provider.internalInference)) =
-      .ok [(some .observe,.unitary,true)] := by decide +kernel
+      some [(some .observe,.unitary,true)] := by decide +kernel
 
 theorem unrelated_unused_description_node_cannot_hide_a_subject :
     accepted ⟨[.provider "main" "bits" [] [] [],.provider "main" "keep" [] [] []],1⟩ = false := by decide +kernel
@@ -60,13 +60,13 @@ theorem unused_operation_actual_keeps_public_effect :
 
 theorem declared_controllable_formal_keeps_only_its_declared_path :
     ((SourceTypes.StaticOperation.check sources (.source "main")
-      (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 0)).run 10000000).1.map
-      (fun checked => checked.root.paths) = .ok ⟨false,false,true⟩ := by decide +kernel
+      (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 0)).run 10000000).1.toOption.map
+      (fun checked => checked.root.paths) = some ⟨false,false,true⟩ := by decide +kernel
 
 theorem convenient_actual_does_not_supply_an_undeclared_generic_control_path :
     ((SourceTypes.StaticOperation.check sources (.source "main")
-      (OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0)).run 10000000).1.map
-      (fun checked => checked.root.paths) = .ok ⟨true,false,false⟩ := by decide +kernel
+      (OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0)).run 10000000).1.toOption.map
+      (fun checked => checked.root.paths) = some ⟨true,false,false⟩ := by decide +kernel
 
 theorem formal_ordinal_cannot_be_a_natural_or_later_binder :
     accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 1) (.source "main") = false :=
