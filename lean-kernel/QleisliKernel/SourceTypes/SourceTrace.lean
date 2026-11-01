@@ -35,6 +35,12 @@ def primitiveKind {sources caller scope tokens}
   | .primitive _ _ _ _ _ _ .globalPhaseEighth _ => some .globalPhaseEighth
   | _ => none
 
+private theorem primitiveKind_transport {sources caller scope first second}
+    (same : first = second) (candidate : CallName.Checked sources caller scope first) :
+    primitiveKind (same ▸ candidate) = primitiveKind candidate := by
+  cases same
+  rfl
+
 def typeMatches (kind : PrimitiveKind) (owner : Owner) : Bool :=
   match kind with | .h => owner.basis == [.bit] | .globalPhaseEighth => true
 
@@ -320,10 +326,9 @@ def evalWithReader (sources : Sources) (caller : String)
             else throw .request
       | some kind =>
         if same : written.callee = call.call.callee then
-          let candidate : CallName.Checked sources caller scope call.call.callee := same ▸ candidate
-          have selected : primitiveKind candidate = some kind := by
-            cases same
-            exact selected
+          let fullCandidate : CallName.Checked sources caller scope call.call.callee := same ▸ candidate
+          have fullSelected : primitiveKind fullCandidate = some kind :=
+            (primitiveKind_transport same candidate).trans selected
           Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
           let [child] := trees children | throw .request
           let (argument,context) ← next naturals held scope environment child.2 lookup.context
@@ -335,7 +340,7 @@ def evalWithReader (sources : Sources) (caller : String)
             if frame : (held ++ owners environment).Perm
                 ([operand] ++ held ++ owners argument.remaining) then
               let event : PrimitiveEvent sources caller :=
-                ⟨tokens,call,scope,candidate,kind,selected,operand,sourceType,held,
+                ⟨tokens,call,scope,fullCandidate,kind,fullSelected,operand,sourceType,held,
                   environment,argument.remaining,frame⟩
               Finite.exactWork (Exact.charge (argument.events.length+1))
               return (← outcome environment [.owner operand] argument.remaining
@@ -350,10 +355,12 @@ reject cycles before they can become a fuel/work-exhaustion observation. -/
 def sourceFuel (sources : Sources) : Nat :=
   (sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1
 
-def readNested (sources : Sources) : Nat → List (String × String) →
-    {owner name : String} → (signature : QuantumSignature.Checked sources owner name) →
+def readNested (sources : Sources) (fuel : Nat) (active : List (String × String))
+    {owner name : String} (signature : QuantumSignature.Checked sources owner name) :
     Finite.WorkM (SourceCalls.Canonical signature) :=
-  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ recurse active {owner name} signature => do
+  match fuel with
+  | 0 => throw .limit
+  | fuel+1 => do
     Finite.exactWork (Exact.charge (8*(Meter.nameFields (active.flatMap fun (a,b) => [a,b])+
       owner.utf8ByteSize+name.utf8ByteSize+1)))
     Finite.guard (!(active.contains (owner,name))) .request
@@ -376,7 +383,7 @@ def readNested (sources : Sources) : Nat → List (String × String) →
             pure none
             else Option.some <$> PhaseApplication.prepareWithSignature signature
           let (result,_) ← evalWithReader sources owner
-            (fun callee => recurse ((owner,name) :: active) callee) (some ⟨name,signature⟩)
+            (fun callee => readNested sources fuel ((owner,name) :: active) callee) (some ⟨name,signature⟩)
             (tokens.length+1) naturals []
             (signature.staticNames ++ initial.map (·.name)) initial tree {}
           Finite.exactWork (Exact.charge (8*(Meter.tokenFields tokens+result.value.length+
@@ -403,7 +410,8 @@ def readNested (sources : Sources) : Nat → List (String × String) →
                 else throw .request
               else throw .request
             else throw .request
-          else throw .request)
+          else throw .request
+termination_by fuel
 
 /-- Prepare static helpers once only when the original body contains static
 syntax. Plain primitive bodies retain their existing lookup/work path. Aliases

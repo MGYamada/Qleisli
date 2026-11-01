@@ -212,9 +212,11 @@ def quantumUse {sources owner name} (signature : Signature sources owner name)
 
 /-- Recursion uses the complete source table independently of expression fuel.
 Cycles refuse by exact original declaration identity before fuel exhaustion. -/
-def readNested (sources : Sources) : Nat → List (String × String) →
-    {owner name : String} → (signature : Signature sources owner name) → Finite.WorkM (Evaluated signature) :=
-  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ recurse active {owner name} signature => do
+def readNested (sources : Sources) (fuel : Nat) (active : List (String × String))
+    {owner name : String} (signature : Signature sources owner name) : Finite.WorkM (Evaluated signature) :=
+  match fuel with
+  | 0 => throw .limit
+  | fuel+1 => do
     Finite.exactWork (Exact.charge (8*(SourceTrace.Meter.nameFields
       (active.flatMap fun (owner,name) => [owner,name])+owner.utf8ByteSize+name.utf8ByteSize+1)))
     Finite.guard (!(active.contains (owner,name))) .request
@@ -236,7 +238,7 @@ def readNested (sources : Sources) : Nat → List (String × String) →
           | .ok tree =>
             let naturals ← signature.naturals
             let (result,_) ← evalWithReader signature
-              (fun callee => do return (← recurse ((owner,name) :: active) callee).summary)
+              (fun callee => do return (← readNested sources fuel ((owner,name) :: active) callee).summary)
               (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
               nextOwner initial tree {}
             Finite.exactWork (Exact.charge (32*(result.events.length+1)^2+
@@ -275,7 +277,8 @@ def readNested (sources : Sources) : Nat → List (String × String) →
                   else throw .request
                 else throw .request
               else throw .request
-            else throw .request)
+            else throw .request
+termination_by fuel
 
 structure Checked (sources : Sources) (owner name : String) where
   signature : Signature sources owner name

@@ -156,20 +156,23 @@ def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := 
   return actual
 
 private def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) :
-    Nat → Expression → Except String Expression :=
-  Nat.rec (fun _ => throw "runtime ordinary expression transport depth")
-    (fun _ recurse expression => do
-      match expression with
-      | .input ordinal =>
-        let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
-        return actual
-      | .unit => return .unit
-      | .bit value => return .bit value
-      | .measured origin calls owner => return .measured origin (site :: calls) (← mappedOwner actuals owner)
-      | .project value ordinal => return .project (← recurse value) ordinal
-      | .not value => return .not (← recurse value)
-      | .xor first second => return .xor (← recurse first) (← recurse second)
-      | .and first second => return .and (← recurse first) (← recurse second))
+    Expression → Except String Expression
+  | .input ordinal => do
+    let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
+    return actual
+  | .unit => pure .unit
+  | .bit value => pure (.bit value)
+  | .measured origin calls owner => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
+  | .project value ordinal => do return .project (← expressionTransport site actuals ordinary value) ordinal
+  | .not value => do return .not (← expressionTransport site actuals ordinary value)
+  | .xor first second => do
+    let first ← expressionTransport site actuals ordinary first
+    let second ← expressionTransport site actuals ordinary second
+    return .xor first second
+  | .and first second => do
+    let first ← expressionTransport site actuals ordinary first
+    let second ← expressionTransport site actuals ordinary second
+    return .and first second
 
 /-- Size is derived from actual expression structure; the 65 source nesting
 bound cannot accidentally cap long flat helper/call chains during transport. -/
@@ -180,10 +183,11 @@ def expressionSize : Expression → Nat
 
 def transport (site : Site) (actuals : List Owner) (inputs : List (Basis × Expression))
     (value : Value) : Except String Value :=
-  value.mapM fun atom => match atom with
+  value.mapM fun atom => do
+    match atom with
     | .owner owner => return .owner (← mappedOwner actuals owner)
     | .ordinary basis expression =>
-      return .ordinary basis (← expressionTransport site actuals inputs (expressionSize expression+1) expression)
+      return .ordinary basis (← expressionTransport site actuals inputs expression)
     | .tuple arity => return .tuple arity
 
 end QleisliKernel.SourceTypes.SourceRuntimeValues
