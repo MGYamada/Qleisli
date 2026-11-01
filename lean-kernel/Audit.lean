@@ -26,6 +26,16 @@ import QleisliKernel.Tests.SourceTraceTests
 import QleisliKernel.Tests.SourceTraceCacheTests
 import QleisliKernel.Tests.SourceCalls
 import QleisliKernel.Tests.SourceRuntimeTrace
+import QleisliKernel.Tests.GenericPhase
+import QleisliKernel.Tests.MeaningTransfer
+import QleisliKernel.Tests.OperationAccess
+import QleisliKernel.Tests.SourceMeaning
+import QleisliKernel.Tests.StaticBasisActual
+import QleisliKernel.Tests.StaticCallPremises
+import QleisliKernel.Tests.StaticKinds
+import QleisliKernel.Tests.StaticOperation
+import QleisliKernel.Tests.SymbolicTypes
+import QleisliKernel.Tests.TypeNaturalRows
 import QleisliKernel.Tests.PrimitiveActionTests
 import QleisliKernel.Tests.RawTraceTests
 import QleisliKernel.Tests.PhaseSourceContext

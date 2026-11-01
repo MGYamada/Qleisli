@@ -20,6 +20,9 @@ import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.QuantumSequence
+import QleisliKernel.SourceTypes.OperationAccess
+import QleisliKernel.SourceTypes.SourceRuntimeContext
+import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function
@@ -75,6 +78,11 @@ import QleisliKernel.Qirf.SectorArms
 import QleisliKernel.Qirf.SourceSector
 import QleisliKernel.Qirf.ContextArmExecution
 import QleisliKernel.Qirf.SourceArmBody
+import QleisliKernel.Qirf.PureProviderSubject
+import QleisliKernel.Qirf.SourceContextRequest
+import QleisliKernel.Qirf.SourceBodyHeader
+import QleisliKernel.Qirf.SourceBodyContext
+import QleisliKernel.Qirf.SourceBodyGraph
 import QleisliKernel.Qirf.Carrier
 import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.RuntimeFamily
