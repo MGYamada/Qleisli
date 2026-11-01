@@ -168,8 +168,40 @@ def bounded_history(archive_path, index_path):
 class OriginalCouplingHistory(unittest.TestCase):
     def test_shared_history_complete_pinned_reconstruction(self):
         self.assertEqual(hashlib.sha256((ROOT / shared_history.MANIFEST).read_bytes()).hexdigest(),
-                         '9613d0539a1318096cf2daa1e051ffe46926cd680f317c4c296d2e365a54920c')
-        self.assertEqual(SHARED.audit_originals(), (63, 20))
+                         'dfdaa00d8412d852c076234e6ea5ec29d743049f114aa39a9a7c27558b658fec')
+        self.assertEqual(SHARED.audit_originals(), (108, 20))
+
+    def test_focused_production_first_sources_and_complete_diagnostics(self):
+        prefix = BODY_ROOT + '/production-context-focused/'
+        raw_index = SHARED.read(prefix + 'index.json')
+        self.assertEqual(hashlib.sha256(raw_index).hexdigest(),
+                         '026808eaccd5719ebfb53516f5c061edb8eb0690371e40eb335b1c80b2c7af3e')
+        index = json.loads(raw_index)
+        self.assertEqual(len(index['records']), 44)
+        for name, row in index['records'].items():
+            data = SHARED.read(prefix + name)
+            self.assertEqual(len(data), row['bytes'], name)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), row['sha256'], name)
+        windows = index['windows']
+        self.assertEqual(len(windows), 14)
+        self.assertEqual(sum(row['exit_code'] == 0 for row in windows), 5)
+        for window in windows:
+            for key in ('complete_stdout', 'complete_stderr'):
+                self.assertIn(window[key], index['records'])
+            for key in ('external_only_plan', 'external_only_report'):
+                self.assertNotIn(window[key]['path'], index['records'])
+        self.assertEqual(len(index['exact_first_source_bindings']), 5)
+        for row in index['exact_first_source_bindings']:
+            self.assertEqual(index['records'][row['locally_retained_original']]['sha256'],
+                             row['sha256'])
+        self.assertEqual(len(index['external_only_large_test_sources']), 8)
+        for row in index['external_only_large_test_sources']:
+            self.assertNotIn(row['path'], index['records'])
+        repairs = index['current_repair_references']
+        self.assertEqual(repairs['commit'], '53e0d4b131e014a350ec19428efe682e8de727ee')
+        self.assertEqual(len(repairs['records']), 7)
+        self.assertIn('not substitutes for earlier failed versions', repairs['scope'])
+        self.assertIn('not a self-contained full-window', index['scope'])
 
     def test_missing_retained_path_has_no_disk_fallback(self):
         path = ROOT / BODY_ROOT / 'missing-index.json'

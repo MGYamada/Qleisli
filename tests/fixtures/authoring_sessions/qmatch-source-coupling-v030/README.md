@@ -17,6 +17,14 @@ histories. The current passive consumer checks every original path/object and
 external binding; this history supplies no fresh proof replay, native acceptance,
 source-preservation guarantee or Issue completion.
 
+The focused production-context packet retains 44 exact originals, including
+first sources and complete stdout/stderr from 14 selected observations: nine
+failures and five successes. Its index identifies full plans/reports, large test
+sources and imported environments as external-only at recorded paths and hashes.
+Later Git repair references do not replace failed originals. This is not a
+self-contained replay of those windows, fresh proof, native acceptance,
+source-preservation guarantee or Issue completion.
+
 Run `python3 scripts/test_qmatch_source_coupling_history.py` for passive checking.
 `scripts/inert_qmatch_history.py` exposes an explicit `Snapshot` whose `read`
 method takes the complete original repository-relative logical path. Missing
