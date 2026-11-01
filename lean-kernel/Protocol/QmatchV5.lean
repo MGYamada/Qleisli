@@ -109,11 +109,12 @@ inductive Context where
   | mk (positions : List Qirf.SourceSequence.Position) (sites : List Site)
       (calls : List (Qirf.SourceSequence.Position × Context))
       (branches : List (Qirf.SourceSequence.Position × Context × Context)) (bodies : List Context)
-  deriving BEq, Repr
+
+-- Keep recursive transport data plain: the paired walker uses total fuel and
+-- exact byte comparison, without generated partial equality/printing helpers.
 structure Request where
   source : Source
   context : Context
-  deriving BEq
 
 private def position (value : Json) : Except String Qirf.SourceSequence.Position := do
   Carrier.fields value ["offset","start","count"]

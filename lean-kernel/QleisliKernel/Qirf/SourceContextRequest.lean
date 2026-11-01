@@ -13,7 +13,9 @@ abbrev Site := SelectionContract.Request
 inductive Context where
   | mk (positions : List Position) (sites : List Site)
       (calls : List (Position × Context)) (bodies : List Context)
-  deriving BEq, Repr
+
+-- Nested recursive deriving may generate partial helpers. All executable
+-- traversals use explicit total fuel; neither equality nor printing is needed.
 
 def Context.positions : Context → List Position
   | .mk positions _ _ _ => positions
