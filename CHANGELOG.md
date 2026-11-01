@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain two independent Reference-only qmatch first-authoring responses and all
+  ten real first checks without source repair. Six positives pass and four
+  negatives refuse; the observed scope remains typed produced IR, with source
+  preservation and independent functional-request verification unclaimed.
 - Read the existing leading `no_implicit_prelude` directive through one checked
   declaration-header projection. Preserve complete original tokens and byte
   positions; malformed, repeated and misplaced directives still reject.

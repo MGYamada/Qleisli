@@ -11,6 +11,11 @@ retains first sector/header/arm sources, the source-function substitution
 counterexample and separate evidence-entry repair. Generic kernel proofs,
 bounded runtime observations and failed full reductions keep separate scopes.
 
+The [independent qmatch authoring study](qmatch-reference-authoring-v030/README.md)
+retains two frozen five-program responses, their disclosed Reference-only context
+and ten actual first checks. Six positive and four negative observations remain
+distinct from source-preservation proofs and the external operator/corpus studies.
+
 The [ordinary-result execution history](ordinary-execution-v030/README.md)
 retains first source refusals, separate repairs and bounded syntax/storage/root
 experiments alongside 21 current CLI observations. Closed project result
