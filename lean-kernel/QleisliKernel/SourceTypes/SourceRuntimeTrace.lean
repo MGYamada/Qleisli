@@ -207,7 +207,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let mapping := inputOwners ++ fresh
             Finite.exactWork (Exact.charge (32*(canonical.value.length+1)*
               ((values.map valueFields).sum+valueFields canonical.value+1)))
-            match transported : transport ⟨owner,name,call.calleeOffset⟩ mapping
+            match transported : transport ⟨owner,target.callerName,call.calleeOffset⟩ mapping
                 (values.flatMap ordinary) canonical.value with
             | .error _ => throw .request
             | .ok value =>
@@ -354,7 +354,8 @@ theorem Checked.unitaryNoObservation {sources owner name} (checked : Checked sou
     SourceEffect.unitary_permits _ (by simpa only [annotation] using checked.summary.asserted)
   have bound := SourceEffect.member_accumulate Event.effect checked.events .unitary event member
   change SourceEffect.rank event.effect ≤ SourceEffect.rank (inferredEffect checked.events) at bound
-  rw [checked.evaluated.inferred,pureEffect] at bound
+  have inferred : inferredEffect checked.events = checked.summary.inferredEffect := checked.evaluated.inferred
+  rw [inferred,pureEffect] at bound
   intro observed
   simp [observed,SourceEffect.rank] at bound
 

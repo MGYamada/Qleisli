@@ -97,8 +97,8 @@ private def formalArms := "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}" ++
   " requires Controllable(U){qmatch(s,q){0=>U,1=>U}}" ++
   "pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[keep](s,q)}"
 #guard order formalArms = some [0,1]
-#guard (read ((formalArms.replace "choose[const U:Op<Bit>](s:" "choose[const U:Op<Bit>](U:")
-  .replace "{qmatch(s,q)" "{qmatch(U,q)")).isNone
+#guard (read ((formalArms.replace "choose[const U:Op<Bit>](s:" "choose[const U:Op<Bit>](U:").replace
+  "{qmatch(s,q)" "{qmatch(U,q)")).isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceTrace.readNamedSource
 #print axioms QleisliKernel.SourceTypes.SourceCalls.transport
