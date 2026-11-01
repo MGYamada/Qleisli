@@ -108,6 +108,19 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
     })
 }
 
+fn source(view: &mut View<'_>, value: &data::v5::Source) -> Result<()> {
+    view.record("source-function", 5, |w| {
+        w.writer.text(&value.module)?;
+        w.writer.text(&value.function)?;
+        bases(w,&value.arguments.bases)?;
+        naturals(w,&value.arguments.naturals)?;
+        w.list(&value.arguments.operations, |w, (name,value)| w.record("source-static-operation", 2, |w| {
+            w.writer.text(name)?;
+            description(w,value)
+        }))
+    })
+}
+
 pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> Result<Vec<u8>> {
     let mut writer = Writer { bytes:b"QDV1".to_vec(), limit:MAX_BYTES, depth:0 };
     writer.sized(5, 4)?;
@@ -115,17 +128,11 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     writer.text(data::v5::PROFILE)?;
     graph.write(&mut writer)?;
     let mut view = View { writer:&mut writer, dependencies:&BTreeMap::new() };
-    view.record("source-function", 5, |w| {
-        w.writer.text(&request.source.module)?;
-        w.writer.text(&request.source.function)?;
-        bases(w,&request.source.arguments.bases)?;
-        naturals(w,&request.source.arguments.naturals)?;
-        w.list(&request.source.arguments.operations, |w, (name,value)| w.record("source-static-operation", 2, |w| {
-            w.writer.text(name)?;
-            description(w,value)
-        }))
-    })?;
+    source(&mut view,&request.source)?;
     context(&mut view,&request.context)?;
     writer.depth -= 1;
     Ok(writer.bytes)
 }
+
+#[cfg(test)]
+mod tests;

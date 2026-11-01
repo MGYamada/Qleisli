@@ -74,3 +74,6 @@ impl Request {
         Ok(request)
     }
 }
+
+#[cfg(test)]
+mod tests;
