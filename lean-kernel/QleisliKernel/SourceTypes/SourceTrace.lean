@@ -305,11 +305,18 @@ structure Checked (sources : Sources) (owner name : String) where
   everyCall : result.events.filterMap Event.callOffset = callOffsets
   uniqueCalls : callOffsets.Nodup
 
+/-- Reuse the actual checked signature without replacing its declaration,
+original body, types or byte envelope. -/
+structure Body {sources owner name} (signature : QuantumSignature.Checked sources owner name) where
+  checked : Checked sources owner name
+  originalSignature : checked.signature = signature
+
 /-- Original signature/types/patterns seed all owners. Complete source traversal
 returns every owner with its exact nominal basis and result shape. Event coverage
-is separate for qmatch sites and postorder calls; no total-expression cap exists. -/
-def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sources owner name) := do
-  let signature ← QuantumSignature.read sources owner name
+is separate for qmatch sites and postorder calls; no total-expression cap exists.
+The selected-entry and arm paths share this one original-body implementation. -/
+def readWithSignature {sources owner name} (signature : QuantumSignature.Checked sources owner name) :
+    Finite.WorkM (Body signature) := do
   let tokens := signature.original.occurrence.body
   -- Original signature work is unchanged. Parsing is precharged from actual
   -- token ancestry before SourceSyntax runs; source lookup pays only on misses.
@@ -352,10 +359,10 @@ def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sourc
                       | .ok callOffsets =>
                         if everyCall : result.val.events.filterMap Event.callOffset = callOffsets then
                           if uniqueCalls : callOffsets.Nodup then
-                            return ⟨signature,patterns,parameters,initial,seeded,tree,parsed,result.val,
+                            return ⟨⟨signature,patterns,parameters,initial,seeded,tree,parsed,result.val,
                               by with_reducible exact result.property,complete,returned,shape,resultTypes,
                               everyQmatch,uniqueQmatches,boundedQmatches,
-                              callOffsets,originalCalls,everyCall,uniqueCalls⟩
+                              callOffsets,originalCalls,everyCall,uniqueCalls⟩,rfl⟩
                           else throw .request
                         else throw .request
                     else throw .limit
@@ -365,6 +372,13 @@ def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sourc
             else throw .request
           else throw .request
         else throw .request
+
+/-- Fresh entry lookup delegates to the same checked-signature continuation.
+The extra wrapper adds no work charge or acceptance condition. -/
+def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sources owner name) := do
+  let signature ← QuantumSignature.read sources owner name
+  let body ← readWithSignature signature
+  return body.checked
 
 theorem Checked.allOriginalQmatches {sources owner name} (checked : Checked sources owner name) :
     checked.result.events.filterMap Event.qmatchOffset =

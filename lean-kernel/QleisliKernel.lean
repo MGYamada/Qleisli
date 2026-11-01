@@ -74,6 +74,7 @@ import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.Qirf.SectorArms
 import QleisliKernel.Qirf.SourceSector
 import QleisliKernel.Qirf.ContextArmExecution
+import QleisliKernel.Qirf.SourceArmBody
 import QleisliKernel.Qirf.Carrier
 import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.RuntimeFamily

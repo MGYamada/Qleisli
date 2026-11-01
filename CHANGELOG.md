@@ -13,6 +13,12 @@ development milestones from the scope of their evidence.
   work without requiring unrelated dependency slots to agree. Connect these
   proofs to the ordered original arm bindings in the common context checker.
   Original source-body preservation and full qmatch integration remain pending.
+- Share the original source-body traversal with already checked arm signatures.
+  Add an unwired continuation that checks the actual realized arm IR and final
+  root dependencies through the same source/Raw gate. Small controls reject
+  coordinated phase substitutions, missing/stale intervals and hidden observing
+  bodies while retaining correct phase and empty identity bodies. General calls,
+  recursive selections and native request integration remain unfinished.
 - Check existing finite `phase[j,k]` calls and body-local static Nat aliases
   through the common qmatch source traversal and literal Raw interval gate.
   Retain original helper lookup at each alias initializer, check every ordinary

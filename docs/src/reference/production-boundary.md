@@ -292,6 +292,12 @@ in both branches even when the condition is constant. Unrelated slots may
 differ. The common context result retains this execution property in its
 ordered original arm-binding relation. This does not prove the meaning or
 lowering of the original source body.
+The unwired original-arm continuation reuses the actual checked signature and
+body through the common source traversal, then checks the realized entry's IR
+under those same final dependencies. Supported bodies inherit the common
+reader's explicit scope; selections still require their recursive arm equations.
+This continuation does not enable a native request, handle or broader source
+preservation claim.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
 The ordinary source-root wrapper retains its original main-only roots and empty
 extra source-query extension.
