@@ -16,6 +16,9 @@ inductive Context where
 def Context.visible (context : Context) (owner : String) (isPublic : Bool) : Bool :=
   isPublic || match context with | .external => false | .source caller => owner == caller
 
+def Context.internal (context : Context) (owner : String) : Bool :=
+  match context with | .external => false | .source caller => owner == caller
+
 structure Paths where
   applicable : Bool
   adjointable : Bool
@@ -35,6 +38,8 @@ structure Provider (sources : Sources) where
   moduleName : String
   declarationName : String
   signature : QuantumSignatureCore.Checked sources moduleName declarationName
+  expectedEffect : Effect
+  internalInference : Bool
 
 structure Result (sources : Sources) where
   input : Basis
@@ -98,7 +103,7 @@ private def satisfies (actual required : Paths) : Bool :=
   (!required.applicable || actual.applicable) && (!required.adjointable || actual.adjointable) &&
     (!required.controllable || actual.controllable)
 
-private def namedResults (arguments : List (String × Description))
+private def namedResults {sources : Sources} (arguments : List (String × Description))
     (results : List (String × Result sources)) : Bool :=
   arguments.map (·.1) == results.map (·.1)
 
@@ -124,13 +129,13 @@ def bindArguments {sources owner name}
         actual.effect != .observe && (input != output || actual.effect == .unitary) &&
         satisfies actual.paths (required environment.numeric.original.header.access formal.name)) .request
 
-private def result (input output : Basis) (effect : Effect) (paths : Paths)
+private def result {sources : Sources} (input output : Basis) (effect : Effect) (paths : Paths)
     (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none) : WorkM (Result sources) := do
   let _ ← FiniteCarrier.read input
   let _ ← FiniteCarrier.read output
   pure ⟨input,output,effect,paths,provider,formal⟩
 
-private def child (previous : List (Result sources)) (index : Nat) : WorkM (Result sources) :=
+private def child {sources : Sources} (previous : List (Result sources)) (index : Nat) : WorkM (Result sources) :=
   match previous[index]? with | none => throw .request | some result => pure result
 
 private def readProvider (sources : Sources) (context : Context) (description : Description)
@@ -146,16 +151,21 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let [input] := signature.inputs | throw .request
   let [output] := signature.outputs | throw .request
   guard (match signature.parts with | .owner _ => true | _ => false) .request
-  let visible := signature.original.parsedHeader.effect
+  let internal := context.internal owner
+  -- Internal purity is a deferred body obligation, not a fact inferred from
+  -- an annotation. The native body gate must prove this bound for each leaf.
+  -- External/host selection always retains the public effect unchanged.
+  let visible := if internal then none else signature.original.parsedHeader.effect
   guard (visible != some .observe) .request
   let endomorphic := input == output
   let reversible := visible == none || visible == some .unitary
   let reverseArgs := originalResults.all fun (_,actual) => actual.paths.applicable && actual.paths.adjointable
   let controlArgs := originalResults.all fun (_,actual) =>
     actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable
-  result input output (visible.getD (if endomorphic then .unitary else .iso))
+  let expected := visible.getD (if endomorphic then .unitary else .iso)
+  result input output expected
     ⟨true,reversible && reverseArgs,reversible && endomorphic && controlArgs⟩
-    (some ⟨owner,name,signature⟩)
+    (some ⟨owner,name,signature,expected,internal⟩)
 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
@@ -177,7 +187,8 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let (input,output) ← formalPorts environment formal
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
-      result input output (if input == output then .unitary else .iso) paths none (some ⟨owner,name,signature⟩)
+      let effect := if input == output then Effect.unitary else .iso
+      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩)
   | .inverse index =>
     let c ← child previous index
     guard c.paths.adjointable .request
