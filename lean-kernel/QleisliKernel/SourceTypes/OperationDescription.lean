@@ -64,6 +64,65 @@ def Description.complete (description : Description) : Bool :=
   description.topological &&
     (description.reachable description.root).length == description.nodes.length
 
+private def treeCounts (description : Description) : Except String (List Nat) := do
+  if !description.complete then throw "incomplete original operation description"
+  description.nodes.foldlM (fun counts node => do
+    let count ← node.children.foldlM (fun count index => do
+      let some child := counts[index]? | throw "operation child is not earlier"
+      if count+child > 4096 then throw "operation expanded tree exceeds existing node budget"
+      pure (count+child)) 1
+    pure (counts ++ [count])) []
+
+/-- Description occurrences count every child edge, including unused actuals
+and zero-power children. Sharing a DAG node cannot evade the tree profile. -/
+def Description.treeSize (description : Description) : Except String Nat := do
+  let counts ← treeCounts description
+  let some count := counts[description.root]? | throw "missing operation root count"
+  if count > 4096 then throw "operation expanded tree exceeds existing node budget"
+  pure count
+
+private inductive OccurrenceTask where
+  | enter (index : Nat)
+  | leave (index : Nat)
+
+private def occurrenceLoop (description : Description) :
+    Nat → List OccurrenceTask → List Nat → Except String (List Nat) :=
+  Nat.rec (fun tasks reversed => if tasks.isEmpty then pure reversed.reverse
+      else throw "operation occurrence traversal exhausted")
+    (fun _ next tasks reversed => do
+      match tasks with
+      | [] => pure reversed.reverse
+      | .enter index :: rest =>
+        let some node := description.nodes[index]? | throw "missing operation occurrence"
+        next (node.children.map OccurrenceTask.enter ++ [.leave index] ++ rest) reversed
+      | .leave index :: rest => next rest (index :: reversed))
+
+structure Expansion where
+  order : List Nat
+  bounded : order.length ≤ 4096
+
+def Description.expansion (description : Description) : Except String Expansion := do
+  let count ← description.treeSize
+  let order ← occurrenceLoop description (2*count+1) [.enter description.root] []
+  if order.length != count then throw "incomplete operation occurrence order"
+  if bounded : order.length ≤ 4096 then pure ⟨order,bounded⟩
+  else throw "operation occurrence order exceeds existing tree budget"
+
+/-- Postorder over child EDGES, preserving duplicate indices and actual order.
+This is a bounded source-description traversal, never provider evidence. -/
+def Description.occurrences (description : Description) : Except String (List Nat) := do
+  pure (← description.expansion).order
+
+theorem Description.occurrences_bound (description : Description) (order : List Nat)
+    (read : description.occurrences = .ok order) : order.length ≤ 4096 := by
+  unfold Description.occurrences at read
+  cases expanded : description.expansion with
+  | error error => simp [expanded] at read
+  | ok expansion =>
+    have same : expansion.order = order := by simpa [expanded] using read
+    rw [← same]
+    exact expansion.bounded
+
 /-- Extract an actual child closure while preserving its original node order
 and every provider argument. The graph checker independently checks the result;
 this operation carries no acceptance or source identity by itself. -/

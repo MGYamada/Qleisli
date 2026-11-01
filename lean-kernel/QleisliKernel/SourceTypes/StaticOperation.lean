@@ -289,9 +289,17 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     guard (requirement.meaning.graph.input == c.input && requirement.meaning.graph.output == c.output) .request
     result c.input c.output c.effect c.paths none none [] [(index,requirement)]
 
+def readOccurrences (description : Description) : WorkM (List Nat) := do
+  -- Reserve both capped topological scans before entering their pure readers.
+  exactWork (Exact.charge (64*(description.nodes.length+1)^2))
+  let count ← adapt description.treeSize
+  exactWork (Exact.charge (8*(count+1)^2))
+  adapt description.occurrences
+
 def readNodes (sources : Sources) (context : Context) (description : Description) :
     WorkM (List (Result sources)) := do
   guard description.complete .request
+  let _ ← readOccurrences description
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   exactWork (Exact.charge (64*(bytes+1)*(description.nodes.length+1)^2))
   description.nodes.foldlM (fun previous node => do
