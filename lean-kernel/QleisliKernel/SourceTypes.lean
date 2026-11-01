@@ -477,7 +477,7 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
       let checked ← naturalWidth sources helpers moduleName rest.dropLast
       pure ⟨[.bits checked.value],[]⟩) := by
     change typeNode _ _ _ ("Bits" :: "<" :: rest) = _
-    simpa only [typeNode_bits]
+    exact typeNode_bits _ _ _ rest
   rw [readerBits] at body
   change ((do
     Finite.guard (rest.getLast? == some ">") .request
