@@ -269,6 +269,14 @@ def readNode (sources : Sources) (context : Context) (description : Description)
         a.paths.applicable && a.paths.adjointable && b.paths.controllable⟩
   | .requested index owner name =>
     let c ← child previous index
+    let some operand := description.nodes[index]? | throw .request
+    -- checked_op accepts an original name, never an explicitly specialized
+    -- provider or a constructed operand. An original formal keeps its full
+    -- caller instance because those fields authenticate the lexical binding.
+    guard (match operand with
+      | .provider _ _ bases naturals operations => bases.isEmpty && naturals.isEmpty && operations.isEmpty
+      | .formal .. => true
+      | _ => false) .request
     let caller := match context with | .external => none | .source caller => some caller
     let requirement ← SourceMeaning.request sources caller owner name
     guard (requirement.meaning.graph.input == c.input && requirement.meaning.graph.output == c.output) .request

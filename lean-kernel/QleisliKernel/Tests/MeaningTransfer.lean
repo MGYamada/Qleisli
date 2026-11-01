@@ -39,6 +39,10 @@ private def requests (description : Description) : Option (List (Nat Ã— String Ã
 -- Metadata retains a false-phase request; equality still needs the native gate.
 #guard requests (requested "sign") = some [(0,"main","Identity")]
 
+-- Raw descriptors obey the same identifier-only requested-operand profile.
+#guard requests ((Description.binary .thenOp (named "keep") (named "keep")).unary
+  (fun child => .requested child "main" "Identity")) = none
+
 -- The original unused formal's refinement binds to its exact argument node.
 #guard
   requests (provider "main" "unused" [] [] [("U",named "keep")]) = some [(0,"main","Identity")]
