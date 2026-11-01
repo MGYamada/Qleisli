@@ -140,7 +140,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let [.owner selector] := first.value | throw .request
         let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining target context
         let [.owner target] := last.value | throw .request
-        Finite.guard (selector.ordinal != target.ordinal && QuantumSequence.armsUnshadowed scope parsed.arms) .request
+        Finite.guard (selector.ordinal != target.ordinal &&
+          QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
@@ -150,12 +151,31 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let [.owner selector] := first.value | throw .request
         let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining targetTree context
         let [.owner target] := last.value | throw .request
-        Finite.guard (selector.ordinal != target.ordinal && QuantumSequence.armsUnshadowed scope parsed.arms) .request
+        Finite.guard (selector.ordinal != target.ordinal &&
+          QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
             held last.remaining]),context)
       | .call call children =>
+        if SourceOperationApplication.selected signature.operationNames call.call.callee then
+          let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
+          let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
+          let application ← SourceOperation.readWithInstantiation signature.instantiation naturals.helpers.val
+            naturals.environment scope call.call.callee naturals.generic (some targetBasis)
+          if applicable : application.graph.root.paths.applicable = true then
+            Finite.exactWork (Exact.charge (16*((values.map valueFields).sum+
+              Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))
+            match applied : SourceOperationApplication.apply application.graph.root.input application.graph.root.output
+                (SourceOperationApplication.controlled call.call.callee) values ordinal with
+            | .error _ => throw .request
+            | .ok (value,new,used,after) =>
+              let event : SourceOperationApplication.Event sources owner :=
+                ⟨tokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
+                  values,ordinal,value,new,used,after,applied,held,owners remaining⟩
+              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
+                (events ++ [.operation event]),context)
+          else throw .request
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let lookup ← SourceContext.read sources owner context scope written.callee
         let candidate ← Finite.lift lookup.answer.checked
@@ -230,6 +250,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
         match seeded : seed patterns parameterValues with
         | .error _ => throw .request
         | .ok initial =>
+          Finite.guard (initial.all fun cell => !signature.staticNames.contains cell.name) .request
           match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
           | .error _ => throw .request
           | .ok tree =>

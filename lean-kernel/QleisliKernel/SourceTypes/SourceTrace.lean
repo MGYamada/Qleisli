@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.SourceSyntax
 import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.SourceTypes.SourceCalls
+import QleisliKernel.SourceTypes.SourceOperationApplication
 import QleisliKernel.Raw.OwnerFlow
 
 /-! Complete original quantum-body traversal with primitive/qmatch events.
@@ -79,21 +80,25 @@ inductive Event (sources : Sources) (caller : String) where
   | primitive (event : PrimitiveEvent sources caller)
   | phase (event : PhaseEvent sources caller)
   | named (event : SourceCalls.Event sources caller)
+  | operation (event : SourceOperationApplication.Event sources caller)
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
   | .selection event .. => some event.parsed.keyword.span.startByte
   | .primitive _ => none
   | .phase _ => none
   | .named _ => none
+  | .operation _ => none
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
   | .primitive event => some event.call.calleeOffset
   | .phase event => some event.call.calleeOffset
   | .named event => some event.call.calleeOffset
+  | .operation event => some event.call.calleeOffset
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .named event => event.effect
+  | .operation event => event.effect
   | _ => .unitary
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
@@ -183,7 +188,8 @@ def evalWithReader (sources : Sources) (caller : String)
         Meter.moveWork tokens environment+
         8*(Meter.nameFields scope+Meter.tokenFields tokens+1)*(parsed.arms.length+1)+
         Meter.permutationWork (owners environment) (owners environment)))
-      let selected ← adapt (QuantumSequence.expression tokens environment scope)
+      let operationNames := callerSignature.map (fun signature => signature.2.operationNames) |>.getD []
+      let selected ← adapt (QuantumSequence.expression tokens environment scope operationNames)
       let [event] := selected.events | throw .request
       Finite.guard (event.parsed == parsed) .request
       Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners event.before)
@@ -205,13 +211,14 @@ def evalWithReader (sources : Sources) (caller : String)
         Meter.permutationWork (held ++ owners environment)
           ([selector,target] ++ held ++ owners targeted.remaining)+
         selected.events.length+targeted.events.length+1))
-      if unshadowed : QuantumSequence.armsUnshadowed scope parsed.arms = true then
+      let operationNames := callerSignature.map (fun signature => signature.2.operationNames) |>.getD []
+      if unshadowed : QuantumSequence.armsAllowed scope operationNames parsed.arms = true then
         if distinct : selector.ordinal ≠ target.ordinal then
           if partition : (owners environment).Perm ([selector,target] ++ owners targeted.remaining) then
             if frame : (held ++ owners environment).Perm
                 ([selector,target] ++ held ++ owners targeted.remaining) then
               let event : QuantumSequence.Event :=
-                ⟨parsed,scope,unshadowed,environment,selector,target,targeted.remaining,distinct,partition⟩
+                ⟨parsed,scope,operationNames,unshadowed,environment,selector,target,targeted.remaining,distinct,partition⟩
               return (← outcome environment [.tuple 2,.owner selector,.owner target] targeted.remaining
                 (selected.events ++ targeted.events ++ [.selection event held scope frame naturals]),context)
             else throw .request
@@ -269,6 +276,37 @@ def evalWithReader (sources : Sources) (caller : String)
       Finite.guard (value.length ≤ 128) .limit
       return (← outcome environment value remaining events,context)
     | .call call children =>
+      let operationNames := callerSignature.map (fun signature => signature.2.operationNames) |>.getD []
+      if SourceOperationApplication.selected operationNames call.call.callee then
+        let some callerInfo := callerSignature | throw .request
+        let current ← match naturals with
+          | some current => pure current
+          | none => PhaseApplication.prepareWithSignature callerInfo.2
+        let (values,remaining,events,context) ← (trees children).foldlM
+            (fun (values,current,events,context) child => do
+          let (argument,context) ← next naturals (held ++ values.flatMap valueOwners)
+            scope current child.2 context
+          return (values ++ [argument.value],argument.remaining,events ++ argument.events,context))
+          (([] : List Value),environment,([] : List (Event sources caller)),context)
+        let arguments := values.map SourceOperationApplication.ofQuantum
+        let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee arguments)
+        let application ← SourceOperation.readWithInstantiation callerInfo.2.instantiation current.helpers.val
+          current.environment scope call.call.callee current.generic (some targetBasis)
+        if applicable : application.graph.root.paths.applicable = true then
+          Finite.exactWork (Exact.charge (16*(Raw.OwnerFlow.fields (values.flatMap valueOwners)+
+            Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))
+          match applied : SourceOperationApplication.apply application.graph.root.input application.graph.root.output
+              (SourceOperationApplication.controlled call.call.callee) arguments callerInfo.2.inputs.length with
+          | .error _ => throw .request
+          | .ok (value,allocated,consumed,after) =>
+            Finite.guard (allocated.isEmpty && consumed.isEmpty) .request
+            let event : SourceOperationApplication.Event sources caller :=
+              ⟨tokens,call,callerInfo.1,callerInfo.2.original,callerInfo.2.instantiation,current,scope,
+                application,applicable,arguments,callerInfo.2.inputs.length,value,allocated,consumed,after,
+                applied,held,owners remaining⟩
+            let returned ← adapt (SourceOperationApplication.toQuantum value)
+            return (← outcome environment returned remaining (events ++ [.operation event]),context)
+        else throw .request
       let written ← adapt (StaticApplication.readSyntax call.call.callee)
       let lookup ← SourceContext.read sources caller context scope written.callee
       let candidate ← Finite.lift lookup.answer.checked
@@ -375,6 +413,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
       match seeded : QuantumOperands.seed signature patterns with
       | .error _ => throw .request
       | .ok initial =>
+        Finite.guard (initial.all fun cell => !signature.staticNames.contains cell.name) .request
         match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
         | .error _ => throw .request
         | .ok tree =>
@@ -502,6 +541,7 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
     match seeded : QuantumOperands.seed signature patterns with
     | .error _ => throw .request
     | .ok initial =>
+      Finite.guard (initial.all fun cell => !signature.staticNames.contains cell.name) .request
       match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
       | .error _ => throw .request
       | .ok tree =>

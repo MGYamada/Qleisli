@@ -43,6 +43,7 @@ private def nested :=
   | .primitive primitive => (primitive.kind.name,primitive.held.map (·.ordinal))
   | .phase phase => ("phase",phase.held.map (·.ordinal))
   | .named named => (named.functionName,named.held.map (·.ordinal))
+  | .operation operation => ("operation",operation.held.map (·.ordinal))
   | .selection .. => ("qmatch",[])) = some [("h",[0]),("phase",[0,1]),("exchange",[0])]
 
 -- Caller expression depth cannot cap the complete original callee body.
@@ -79,6 +80,25 @@ private def generic := "unitary fn id[const A:Basis,const n:Nat](q:Q<A>)->Q<A>{q
   single "id[type(Bit),3](q)"
 #guard order generic = some [0]
 #guard (read (generic.replace "type(Bit),3" "type(Bit)")).isNone
+
+private def formal := "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}" ++
+  "unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}" ++
+  single "apply[keep](q)"
+#guard order formal = some [0]
+#guard (read (formal.replace " requires Applicable(U)" "")).isNone
+#guard order (single "adjoint(h)(q)") = some [0]
+#guard order ("pub unitary fn route(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){controlled(h)(c,q)}") = some [0,1]
+#guard order "pub unitary fn route(u:Q<Unit>)->Q<Unit>{adjoint(global_phase_eighth)(u)}" = some [0]
+#guard (read "pub unitary fn route(u:Q<Unit>)->Q<Unit>{adjoint(h)(u)}").isNone
+#guard (read (single "power(h,2)(q)")).isNone
+
+private def formalArms := "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}" ++
+  "unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)" ++
+  " requires Controllable(U){qmatch(s,q){0=>U,1=>U}}" ++
+  "pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[keep](s,q)}"
+#guard order formalArms = some [0,1]
+#guard (read ((formalArms.replace "choose[const U:Op<Bit>](s:" "choose[const U:Op<Bit>](U:")
+  .replace "{qmatch(s,q)" "{qmatch(U,q)")).isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceTrace.readNamedSource
 #print axioms QleisliKernel.SourceTypes.SourceCalls.transport

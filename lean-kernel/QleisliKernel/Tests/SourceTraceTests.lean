@@ -29,6 +29,8 @@ private def eventView {sources caller} : Event sources caller → EventView
   | .named event =>
     ⟨event.functionName,ordinals event.inputOwners,ordinals event.held,
       sorted (event.held ++ owners event.before)⟩
+  | .operation event =>
+    ⟨"operation",ordinals event.inputOwners,ordinals event.held,sorted event.frameOwners⟩
 
 private def sources (source : String) : Sources := #[ ("main",source) ] ++ bundled
 private def result (source : String) :=
@@ -118,7 +120,8 @@ private def shadowedArm :=
   | .selection original _ scope .. => scope.contains "turn" && original.scope == scope
   | .primitive _ => false
   | .phase _ => false
-  | .named _ => false) = some true
+  | .named _ => false
+  | .operation _ => false) = some true
 
 -- One-qubit sequential call count is deliberately beyond 128. The historical
 -- qmatch-site limit must not become a total-expression or total-call limit.

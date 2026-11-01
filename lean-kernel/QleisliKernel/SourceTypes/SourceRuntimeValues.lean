@@ -144,13 +144,19 @@ private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
 
 def bind (pattern : List String) (value : Value) (environment : Environment) : Except String Environment := do
   let term ← QuantumMoves.parse 65 pattern
+  let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
+  if !decide names.Nodup then throw "duplicate binding in one runtime pattern"
   let (term,value,result) ← bindNode 65 term value environment
   if !term.isEmpty || !value.isEmpty || result.length > 128 then throw "incomplete runtime source binding"
   return result
 
 def seed (patterns : List (List String)) (values : List Value) : Except String Environment := do
   if patterns.length != values.length then throw "runtime source parameter count"
-  (patterns.zip values).foldlM (fun environment (pattern,value) => bind pattern value environment) []
+  (patterns.zip values).foldlM (fun environment (pattern,value) => do
+    let term ← QuantumMoves.parse 65 pattern
+    let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
+    if names.any (fun name => environment.any (·.name == name)) then throw "duplicate runtime parameter binding"
+    bind pattern value environment) []
 
 def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := do
   let some actual := actuals[owner.ordinal]? | throw "runtime call owner ordinal"

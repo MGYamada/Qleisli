@@ -73,6 +73,9 @@ private def externalClassical :=
   #[ ("main","use lib::f;pub fn route(c:Bit)->Bit{f(c)}"),
      ("lib","pub classical fn f(c:Bit)->Bit{not c}") ] ++ SourceTraceOriginals.bundled
 #guard ((SourceTypes.SourceRuntimeTrace.read externalClassical "main" "route").run 2000000000).1.isOk
+#guard (read "pub fn route(c:Bit,c:Bit)->Bit{c}").isNone
+#guard (read "pub fn route()->Bit{let(c,c)=(0,1);c}").isNone
+#guard view "pub fn route(c:Bit)->Bit{let c=not c;c}" = some ([],[],.unitary)
 
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.completeOwnerHistory

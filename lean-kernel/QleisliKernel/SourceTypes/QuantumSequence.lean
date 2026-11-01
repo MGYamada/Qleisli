@@ -17,6 +17,13 @@ def armsUnshadowed (scope : List String) (arms : List QuantumMatch.Arm) : Bool :
     | [name] => !scope.contains name.text
     | _ => true
 
+/-- The enclosing original-signature reader supplies only authenticated static
+operation formals. Ordinary/runtime and Nat/Basis names still block lookup. -/
+def armsAllowed (scope operationNames : List String) (arms : List QuantumMatch.Arm) : Bool :=
+  arms.all fun arm => match arm.operation with
+    | [name] => !scope.contains name.text || operationNames.contains name.text
+    | _ => true
+
 private def boundNames (pattern : List LocatedToken) : Except String (List String) := do
   let term ← QuantumMoves.parse 65 (pattern.map (·.text))
   return term.filterMap fun atom => match atom with | .name name => some name | _ => none
@@ -24,7 +31,8 @@ private def boundNames (pattern : List LocatedToken) : Except String (List Strin
 structure Event where
   parsed : QuantumMatch.Parsed
   scope : List String
-  unshadowed : armsUnshadowed scope parsed.arms = true
+  operationNames : List String
+  unshadowed : armsAllowed scope operationNames parsed.arms = true
   before : Environment
   selector : Owner
   target : Owner
@@ -45,11 +53,11 @@ structure Outcome where
 /-- A source selection returns both actual operands in their fixed order.
 The arm table remains intact for the enclosing independent arm/sector gate. -/
 def expression (tokens : List LocatedToken) (environment : Environment)
-    (scope : List String := environment.map (·.name)) : Except String Outcome := do
+    (scope : List String := environment.map (·.name)) (operationNames : List String := []) : Except String Outcome := do
   if tokens.head?.map (·.text) == some "qmatch" then
     let (parsed,suffix) ← QuantumMatch.parse tokens
     if !suffix.isEmpty then throw "tokens remain after the original qmatch expression"
-    if unshadowed : armsUnshadowed scope parsed.arms = true then
+    if unshadowed : armsAllowed scope operationNames parsed.arms = true then
       let ([.owner selector],afterSelector) ← QuantumMoves.eval (parsed.selector.map (·.text)) environment
         | throw "qmatch selector is not one original owner"
       let ([.owner target],remaining) ← QuantumMoves.eval (parsed.target.map (·.text)) afterSelector
@@ -57,7 +65,7 @@ def expression (tokens : List LocatedToken) (environment : Environment)
       if distinct : selector.ordinal ≠ target.ordinal then
         if partition : (owners environment).Perm ([selector,target] ++ owners remaining) then
           return ⟨[.tuple 2,.owner selector,.owner target],remaining,
-            [⟨parsed,scope,unshadowed,environment,selector,target,remaining,distinct,partition⟩]⟩
+            [⟨parsed,scope,operationNames,unshadowed,environment,selector,target,remaining,distinct,partition⟩]⟩
         else throw "qmatch changes the complete source owner frame"
       else throw "qmatch aliases its source operands"
     else throw "qmatch arm is shadowed by an original local binding"
