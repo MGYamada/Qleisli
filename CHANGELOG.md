@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Extend the common original quantum-body traversal to named calls and computed
+  qmatch operands. Compute each original callee's exact returned owner order
+  before transporting it to caller arguments, retaining nested tuple shape,
+  zero-width owners, static actuals and original caller/callee identities.
+  Infer body effects independently, check annotations afterward and retain
+  conservative public effects across original module boundaries. Source/Raw
+  native continuation, ordinary/observing contexts and full qmatch validation
+  remain separate work; this component adds no preservation or completion claim.
 - Prove that freshly checked named-arm IR executes with the final qmatch root's
   actual dependencies. Recover each entry's historical checked snapshot from
   that same graph run and retain every referenced slot, including both branches.

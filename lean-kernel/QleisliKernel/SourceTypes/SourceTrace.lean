@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceSyntax
 import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.PhaseApplication
+import QleisliKernel.SourceTypes.SourceCalls
 import QleisliKernel.Raw.OwnerFlow
 
 /-! Complete original quantum-body traversal with primitive/qmatch events.
@@ -9,8 +10,9 @@ operand rule and retains its arm table without validating arm implementations.
 This source traversal alone
 does not check qmatch arm implementations, actual Raw intervals, body semantics
 or public-effect containment, and issues no execution handle or effect label.
-Ordinary-value contexts and named/constructed/generic calls remain unsupported;
-they must extend the same source traversal with their own checked rules.
+Named calls reuse this traversal on each complete original callee before exact
+owner transport. Ordinary/observing runtime contexts have their separate typed
+value/history rule; constructed operation access remains an independent check.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceTrace
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Semantics.SourceOwners
@@ -67,18 +69,29 @@ inductive Event (sources : Sources) (caller : String) where
   | selection (event : QuantumSequence.Event) (held : List Owner) (scope : List String)
       (frame : (held ++ owners event.before).Perm
         ([event.selector,event.target] ++ held ++ owners event.remaining))
+      (naturals : Option (PhaseApplication.Naturals sources))
   | primitive (event : PrimitiveEvent sources caller)
   | phase (event : PhaseEvent sources caller)
+  | named (event : SourceCalls.Event sources caller)
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
-  | .selection event _ _ _ => some event.parsed.keyword.span.startByte
+  | .selection event .. => some event.parsed.keyword.span.startByte
   | .primitive _ => none
   | .phase _ => none
+  | .named _ => none
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
   | .primitive event => some event.call.calleeOffset
   | .phase event => some event.call.calleeOffset
+  | .named event => some event.call.calleeOffset
+
+def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
+  | .named event => event.effect
+  | _ => .unitary
+
+def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
+  events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
 
 structure Outcome (sources : Sources) (caller : String) (before : Environment) where
   value : Value
@@ -140,7 +153,10 @@ private def boundNames (pattern : List LocatedToken) : Except String (List Strin
 /-- Live bindings, persistent lexical names and held expression values remain
 separate. The actual lookup context follows evaluation left-to-right. Reuse never
 replaces the current lexical check or an original call/event occurrence. -/
-def evalWithNaturals (sources : Sources) (caller : String) : Nat →
+def evalWithReader (sources : Sources) (caller : String)
+    (readCallee : {owner name : String} → (signature : QuantumSignature.Checked sources owner name) →
+      Finite.WorkM (SourceCalls.Canonical signature))
+    (callerSignature : Option (Sigma (QuantumSignature.Checked sources caller))) : Nat →
     Option (PhaseApplication.Naturals sources) → List Owner → List String →
     (environment : Environment) → {tokens : List LocatedToken} → SourceSyntax.Tree tokens →
     SourceContext.Context sources caller →
@@ -167,7 +183,32 @@ def evalWithNaturals (sources : Sources) (caller : String) : Nat →
       if frame : (held ++ owners event.before).Perm
           ([event.selector,event.target] ++ held ++ owners event.remaining) then
         return (← outcome environment selected.value selected.remaining
-          [.selection event held scope frame],context)
+          [.selection event held scope frame naturals],context)
+      else throw .request
+    | .selectionExpression tokens parsed _ selectorTree targetTree =>
+      Finite.exactWork (Exact.charge (Meter.syntaxWork tokens+Meter.moveWork tokens environment+
+        8*(Meter.nameFields scope+Meter.tokenFields tokens+1)*(parsed.arms.length+1)))
+      let (selected,context) ← next naturals held scope environment selectorTree context
+      let [.owner selector] := selected.value | throw .request
+      let (targeted,context) ← next naturals (held ++ [selector]) scope selected.remaining targetTree context
+      let [.owner target] := targeted.value | throw .request
+      Finite.exactWork (Exact.charge (Meter.permutationWork (owners environment)
+        ([selector,target] ++ owners targeted.remaining)+
+        Meter.permutationWork (held ++ owners environment)
+          ([selector,target] ++ held ++ owners targeted.remaining)+
+        selected.events.length+targeted.events.length+1))
+      if unshadowed : QuantumSequence.armsUnshadowed scope parsed.arms = true then
+        if distinct : selector.ordinal ≠ target.ordinal then
+          if partition : (owners environment).Perm ([selector,target] ++ owners targeted.remaining) then
+            if frame : (held ++ owners environment).Perm
+                ([selector,target] ++ held ++ owners targeted.remaining) then
+              let event : QuantumSequence.Event :=
+                ⟨parsed,scope,unshadowed,environment,selector,target,targeted.remaining,distinct,partition⟩
+              return (← outcome environment [.tuple 2,.owner selector,.owner target] targeted.remaining
+                (selected.events ++ targeted.events ++ [.selection event held scope frame naturals]),context)
+            else throw .request
+          else throw .request
+        else throw .request
       else throw .request
     | .binding statement expression rest =>
       let (first,context) ← next naturals held scope environment expression context
@@ -214,12 +255,15 @@ def evalWithNaturals (sources : Sources) (caller : String) : Nat →
       Finite.guard (value.length ≤ 128) .limit
       return (← outcome environment value remaining events,context)
     | .call call children =>
-      if call.call.callee.getLast?.map (·.text) == some "]" then
+      let written ← adapt (StaticApplication.syntax call.call.callee)
+      let lookup ← SourceContext.read sources caller context scope written.callee
+      let candidate ← Finite.lift lookup.answer.checked
+      if PhaseApplication.selected candidate then
         let some current := naturals | throw .request
         let application ← PhaseApplication.read sources caller current scope call
         Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
         let [child] := trees children | throw .request
-        let (argument,context) ← next naturals held scope environment child.2 context
+        let (argument,context) ← next naturals held scope environment child.2 lookup.context
         let [.owner operand] := argument.value | throw .request
         Finite.exactWork (Exact.charge (Raw.OwnerFlow.fields [operand]+1))
         if bit : operand.basis = [.bit] then
@@ -234,29 +278,124 @@ def evalWithNaturals (sources : Sources) (caller : String) : Nat →
               (argument.events ++ [.phase event]),context)
           else throw .request
         else throw .request
-      let lookup ← SourceContext.read sources caller context scope call.call.callee
-      let candidate ← Finite.lift lookup.answer.checked
       match selected : primitiveKind candidate with
-      | none => throw .request
+      | none =>
+        let some callerInfo := callerSignature | throw .request
+        let current ← match naturals with
+          | some current => pure current
+          | none => PhaseApplication.prepareWithSignature callerInfo.2
+        let target ← SourceCalls.readTarget callerInfo.2 current written candidate
+        let (values,remaining,events,context) ← (trees children).foldlM
+            (fun (values,current,events,context) child => do
+          Finite.exactWork (Exact.charge (8*(held.length+(values.map List.length).sum+
+            values.length+events.length+1)))
+          let holding := held ++ values.flatMap valueOwners
+          let (argument,context) ← next naturals holding scope current child.2 context
+          return (values ++ [argument.value],argument.remaining,events ++ argument.events,context))
+            (([] : List Value),environment,([] : List (Event sources caller)),lookup.context)
+        Finite.exactWork (Exact.charge (8*(Meter.environmentCells environment+
+          (values.map List.length).sum+Raw.OwnerFlow.fields (values.flatMap valueOwners)+1)))
+        match matched : SourceCalls.argumentOwners target.signature.inputs values with
+        | .error _ => throw .request
+        | .ok inputs =>
+          let canonical ← readCallee target.signature
+          match transported : SourceCalls.transport inputs canonical.value with
+          | .error _ => throw .request
+          | .ok value =>
+            Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners environment)
+              (inputs ++ held ++ owners remaining)))
+            if frame : (held ++ owners environment).Perm (inputs ++ held ++ owners remaining) then
+              let event : SourceCalls.Event sources caller :=
+                ⟨tokens,call,scope,target,canonical,values,inputs,matched,value,transported,
+                  held,environment,remaining,frame⟩
+              return (← outcome environment value remaining (events ++ [.named event]),context)
+            else throw .request
       | some kind =>
-        Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
-        let [child] := trees children | throw .request
-        let (argument,context) ← next naturals held scope environment child.2 lookup.context
-        let [.owner operand] := argument.value | throw .request
-        Finite.exactWork (Exact.charge (Raw.OwnerFlow.fields [operand]+1))
-        if sourceType : typeMatches kind operand = true then
-          Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners environment)
-            ([operand] ++ held ++ owners argument.remaining)))
-          if frame : (held ++ owners environment).Perm
-              ([operand] ++ held ++ owners argument.remaining) then
-            let event : PrimitiveEvent sources caller :=
-              ⟨tokens,call,scope,candidate,kind,selected,operand,sourceType,held,
-                environment,argument.remaining,frame⟩
-            Finite.exactWork (Exact.charge (argument.events.length+1))
-            return (← outcome environment [.owner operand] argument.remaining
-              (argument.events ++ [.primitive event]),context)
+        if same : written.callee = call.call.callee then
+          let candidate : CallName.Checked sources caller scope call.call.callee := same ▸ candidate
+          have selected : primitiveKind candidate = some kind := by
+            cases same
+            exact selected
+          Finite.exactWork (Exact.charge (8*(call.call.arguments.length+1)))
+          let [child] := trees children | throw .request
+          let (argument,context) ← next naturals held scope environment child.2 lookup.context
+          let [.owner operand] := argument.value | throw .request
+          Finite.exactWork (Exact.charge (Raw.OwnerFlow.fields [operand]+1))
+          if sourceType : typeMatches kind operand = true then
+            Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners environment)
+              ([operand] ++ held ++ owners argument.remaining)))
+            if frame : (held ++ owners environment).Perm
+                ([operand] ++ held ++ owners argument.remaining) then
+              let event : PrimitiveEvent sources caller :=
+                ⟨tokens,call,scope,candidate,kind,selected,operand,sourceType,held,
+                  environment,argument.remaining,frame⟩
+              Finite.exactWork (Exact.charge (argument.events.length+1))
+              return (← outcome environment [.owner operand] argument.remaining
+                (argument.events ++ [.primitive event]),context)
+            else throw .request
           else throw .request
         else throw .request)
+
+/-- Independent call-chain fuel comes from the complete original source table,
+not the token count of a small caller expression. Active declaration identities
+reject cycles before they can become a fuel/work-exhaustion observation. -/
+def sourceFuel (sources : Sources) : Nat :=
+  (sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1
+
+def readNested (sources : Sources) : Nat → List (String × String) →
+    {owner name : String} → (signature : QuantumSignature.Checked sources owner name) →
+    Finite.WorkM (SourceCalls.Canonical signature) :=
+  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ recurse active {owner name} signature => do
+    Finite.exactWork (Exact.charge (8*(Meter.nameFields (active.flatMap fun (a,b) => [a,b])+
+      owner.utf8ByteSize+name.utf8ByteSize+1)))
+    Finite.guard (!(active.contains (owner,name))) .request
+    let tokens := signature.original.occurrence.body
+    let roles := signature.inputs.zipIdx.map fun (basis,ordinal) => (⟨ordinal,basis⟩ : Owner)
+    Finite.exactWork (Exact.charge (Meter.syntaxWork tokens+
+      Meter.syntaxWork signature.original.occurrence.header+
+      8*(Raw.OwnerFlow.fields roles+1)*(roles.length+1)))
+    match parameters : QuantumOperands.parameterPatterns signature.original with
+    | .error _ => throw .request
+    | .ok patterns =>
+      match seeded : QuantumOperands.seed signature patterns with
+      | .error _ => throw .request
+      | .ok initial =>
+        match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
+        | .error _ => throw .request
+        | .ok tree =>
+          let naturals ← if signature.staticNames.isEmpty &&
+              !(tokens.any fun token => token.text == "static" || token.text == "[") then
+            pure none
+            else Option.some <$> PhaseApplication.prepareWithSignature signature
+          let (result,_) ← evalWithReader sources owner
+            (fun callee => recurse ((owner,name) :: active) callee) (some ⟨name,signature⟩)
+            (tokens.length+1) naturals []
+            (signature.staticNames ++ initial.map (·.name)) initial tree {}
+          Finite.exactWork (Exact.charge (8*(Meter.tokenFields tokens+result.value.length+
+            Meter.environmentCells result.remaining+1)+
+            Meter.permutationWork (owners initial) (valueOwners result.value)+
+            8*(Raw.OwnerFlow.fields (valueOwners result.value)+Raw.OwnerFlow.fields roles+1)+
+            16*(result.events.length+1)^2))
+          if complete : owners result.remaining = [] then
+            if returned : (owners initial).Perm (valueOwners result.value) then
+              if shape : QuantumBody.resultShape signature.parts result.value = true then
+                if types : (valueOwners result.value).map (·.basis) = signature.outputs then
+                  Finite.guard (result.events.filterMap Event.qmatchOffset ==
+                    QuantumSequence.originalOffsets tokens) .request
+                  Finite.guard (decide ((QuantumSequence.originalOffsets tokens).Nodup)) .request
+                  Finite.guard ((result.events.filterMap Event.qmatchOffset).length ≤ 128) .limit
+                  let offsets ← adapt tree.calls
+                  Finite.guard (result.events.filterMap Event.callOffset == offsets) .request
+                  Finite.guard (decide offsets.Nodup) .request
+                  if asserted : SourceEffect.permits signature.original.parsedHeader.effect
+                      (inferredEffect result.events) = true then
+                    return ⟨patterns,parameters,initial,seeded,tree,parsed,result.value,result.remaining,
+                      complete,returned,shape,types,inferredEffect result.events,asserted⟩
+                  else throw .request
+                else throw .request
+              else throw .request
+            else throw .request
+          else throw .request)
 
 /-- Prepare static helpers once only when the original body contains static
 syntax. Plain primitive bodies retain their existing lookup/work path. Aliases
@@ -269,7 +408,23 @@ def evalCached (sources : Sources) (caller : String) (fuel : Nat) (held : List O
     if tokens.any (fun token => token.text == "static" || token.text == "[") then
       Option.some <$> PhaseApplication.prepare sources
     else pure none
-  evalWithNaturals sources caller fuel naturals held scope environment tree context
+  evalWithReader sources caller (fun signature => readNested sources (sourceFuel sources) [] signature)
+    none fuel naturals held scope environment tree context
+
+/-- Generic entry actuals seed the same lexical arithmetic used at every phase
+and named call site. Plain nongeneric bodies keep the existing zero-setup path. -/
+def evalSignature {sources owner name} (signature : QuantumSignature.Checked sources owner name)
+    (initial : Environment) (tree : SourceSyntax.Tree signature.original.occurrence.body) :
+    Finite.WorkM (Outcome sources owner initial) := do
+  let tokens := signature.original.occurrence.body
+  let naturals ← if signature.staticNames.isEmpty &&
+      !(tokens.any fun token => token.text == "static" || token.text == "[") then pure none
+    else Option.some <$> PhaseApplication.prepareWithSignature signature
+  let (result,_) ← evalWithReader sources owner
+    (fun callee => readNested sources (sourceFuel sources) [(owner,name)] callee)
+    (some ⟨name,signature⟩) (tokens.length+1) naturals []
+    (signature.staticNames ++ initial.map (·.name)) initial tree {}
+  return result
 
 /-- A complete original-body evaluation always starts its own empty context.
 The public outcome and the Checked.traversed witness remain the actual reader. -/
@@ -290,8 +445,7 @@ structure Checked (sources : Sources) (owner name : String) where
     signature.original.occurrence.body = .ok tree
   result : Outcome sources owner initial
   traversed : ∃ before after,
-    (eval sources owner (signature.original.occurrence.body.length+1) []
-      (initial.map (·.name)) initial tree).run before = (.ok result,after)
+    (evalSignature signature initial tree).run before = (.ok result,after)
   complete : owners result.remaining = []
   returned : (owners initial).Perm (valueOwners result.value)
   shape : QuantumBody.resultShape signature.parts result.value = true
@@ -304,6 +458,8 @@ structure Checked (sources : Sources) (owner name : String) where
   originalCalls : tree.calls = .ok callOffsets
   everyCall : result.events.filterMap Event.callOffset = callOffsets
   uniqueCalls : callOffsets.Nodup
+  asserted : SourceEffect.permits signature.original.parsedHeader.effect
+    (inferredEffect result.events) = true
 
 /-- Reuse the actual checked signature without replacing its declaration,
 original body, types or byte envelope. -/
@@ -334,7 +490,7 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
       | .error _ => throw .request
       | .ok tree =>
         let result ← NaturalAffine.witness
-          (eval sources owner (tokens.length+1) [] (initial.map (·.name)) initial tree)
+          (evalSignature signature initial tree)
         -- Complete filtering/traversal and ordered nominal result comparisons.
         -- Both uniqueness checks use a pairwise decider; no call-count cap is
         -- substituted for their actual quadratic work.
@@ -359,10 +515,13 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
                       | .ok callOffsets =>
                         if everyCall : result.val.events.filterMap Event.callOffset = callOffsets then
                           if uniqueCalls : callOffsets.Nodup then
-                            return ⟨⟨signature,patterns,parameters,initial,seeded,tree,parsed,result.val,
-                              by with_reducible exact result.property,complete,returned,shape,resultTypes,
-                              everyQmatch,uniqueQmatches,boundedQmatches,
-                              callOffsets,originalCalls,everyCall,uniqueCalls⟩,rfl⟩
+                            if asserted : SourceEffect.permits signature.original.parsedHeader.effect
+                                (inferredEffect result.val.events) = true then
+                              return ⟨⟨signature,patterns,parameters,initial,seeded,tree,parsed,result.val,
+                                by with_reducible exact result.property,complete,returned,shape,resultTypes,
+                                everyQmatch,uniqueQmatches,boundedQmatches,
+                                callOffsets,originalCalls,everyCall,uniqueCalls,asserted⟩,rfl⟩
+                            else throw .request
                           else throw .request
                         else throw .request
                     else throw .limit
@@ -379,6 +538,17 @@ def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sourc
   let signature ← QuantumSignature.read sources owner name
   let body ← readWithSignature signature
   return body.checked
+
+/-- Native call intervals re-enter the same original-body reader. The fresh
+computed return is compared with the canonical result used for caller transport;
+the event's summary cannot supply acceptance for an unchecked callee. -/
+def readNamedSource {sources caller} (event : SourceCalls.Event sources caller) :
+    Finite.WorkM (Body event.signature) := do
+  let body ← readWithSignature event.signature
+  Finite.exactWork (Exact.charge (8*(body.checked.result.value.length+
+    event.canonical.value.length+1)))
+  Finite.guard (body.checked.result.value == event.canonical.value) .request
+  return body
 
 theorem Checked.allOriginalQmatches {sources owner name} (checked : Checked sources owner name) :
     checked.result.events.filterMap Event.qmatchOffset =

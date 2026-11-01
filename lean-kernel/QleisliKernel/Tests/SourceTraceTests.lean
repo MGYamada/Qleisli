@@ -20,12 +20,15 @@ private def ordinals (owners : List Owner) : List Nat := owners.map (·.ordinal)
 private def sorted (owners : List Owner) : List Nat := (ordinals owners).mergeSort (· ≤ ·)
 
 private def eventView {sources caller} : Event sources caller → EventView
-  | .selection event held _ _ =>
+  | .selection event held .. =>
     ⟨"qmatch",[event.selector.ordinal,event.target.ordinal],ordinals held,sorted (held ++ owners event.before)⟩
   | .primitive event =>
     ⟨event.kind.name,[event.operand.ordinal],ordinals event.held,sorted (event.held ++ owners event.before)⟩
   | .phase event =>
     ⟨"phase",[event.operand.ordinal],ordinals event.held,sorted (event.held ++ owners event.before)⟩
+  | .named event =>
+    ⟨event.functionName,ordinals event.inputOwners,ordinals event.held,
+      sorted (event.held ++ owners event.before)⟩
 
 private def sources (source : String) : Sources := #[ ("main",source) ] ++ bundled
 private def result (source : String) :=
@@ -77,8 +80,10 @@ private def zeroSpectator (body : String) : String :=
 -- Lexical scope outlives owner consumption and takes precedence over primitives.
 #guard rejected "pub unitary fn route(h:Q<Unit>,q:Q<Bit>)->(Q<Unit>,Q<Bit>){let u=h;(u,h(q))}"
 #guard rejected (single "let h=q;h(h)")
-#guard rejected ("unitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)")
-#guard rejected ("unitary fn f(q:Q<Bit>)->Q<Bit>{q}" ++ single "f(q)")
+#guard view ("unitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)") =
+  some ([⟨"h",[0],[],[0]⟩],[0])
+#guard view ("unitary fn f(q:Q<Bit>)->Q<Bit>{q}" ++ single "f(q)") =
+  some ([⟨"f",[0],[],[0]⟩],[0])
 #guard rejected (single "power(h,2)(q)")
 #guard view (single "phase[1,1](q)") = some ([⟨"phase",[0],[],[0]⟩],[0])
 #guard rejected (single "h(q);q")
@@ -97,8 +102,9 @@ private def nestedQmatch :=
   "pub unitary fn route(u:Q<Unit>,s:Q<Tag>,q:Q<Bit>)->(Q<Unit>,Q<Tag>,Q<Bit>){" ++
   "let (u,(s,q))=(u,qmatch(s,q){Tag::B=>keep,Tag::A=>keep});(u,s,q)}"
 #guard view nestedQmatch = some ([⟨"qmatch",[1,2],[0],[0,1,2]⟩],[0,1,2])
-#guard rejected
-  "pub enum Tag{A,B} unitary fn keep(q:Q<Bit>)->Q<Bit>{q} pub unitary fn route(s:Q<Tag>,q:Q<Bit>)->(Q<Tag>,Q<Bit>){qmatch(s,h(q)){Tag::A=>keep,Tag::B=>keep}}"
+#guard view
+  "pub enum Tag{A,B} unitary fn keep(q:Q<Bit>)->Q<Bit>{q} pub unitary fn route(s:Q<Tag>,q:Q<Bit>)->(Q<Tag>,Q<Bit>){qmatch(s,h(q)){Tag::A=>keep,Tag::B=>keep}}" =
+    some ([⟨"h",[1],[0],[0,1]⟩,⟨"qmatch",[0,1],[],[0,1]⟩],[0,1])
 
 -- Arm bodies are not validated here. Persistent lexical names do prevent
 -- a consumed local from being resolved as a global function in an arm.
@@ -109,9 +115,10 @@ private def shadowedArm :=
 #guard rejected shadowedArm
 #guard ((result (shadowedArm.replace "=>turn" "=>main::turn")).map fun checked =>
   checked.result.events.all fun event => match event with
-  | .selection original _ scope _ => scope.contains "turn" && original.scope == scope
+  | .selection original _ scope .. => scope.contains "turn" && original.scope == scope
   | .primitive _ => false
-  | .phase _ => false) = some true
+  | .phase _ => false
+  | .named _ => false) = some true
 
 -- One-qubit sequential call count is deliberately beyond 128. The historical
 -- qmatch-site limit must not become a total-expression or total-call limit.
@@ -125,7 +132,8 @@ private def manyCalls := single (String.join (List.replicate 129 "let q=h(q);") 
   some ([⟨"h",[0],[],[0]⟩],[0])
 #guard rejected ("#![no_implicit_prelude]\n#![no_implicit_prelude]\n" ++ single "h(q)")
 #guard rejected (single "h(q)" ++ "#![no_implicit_prelude]\n")
-#guard rejected ("#![no_implicit_prelude]\nunitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)")
+#guard view ("#![no_implicit_prelude]\nunitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)") =
+  some ([⟨"h",[0],[],[0]⟩],[0])
 
 #print axioms QleisliKernel.SourceTypes.SourceSyntax.read
 #print axioms QleisliKernel.SourceTypes.SourceTrace.read

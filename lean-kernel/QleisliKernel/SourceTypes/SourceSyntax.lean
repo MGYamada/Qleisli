@@ -5,8 +5,8 @@ import QleisliKernel.SourceTypes.StaticBindings
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
-complete arm table; its operands still require the existing structural rule,
-so calls inside qmatch operands refuse during evaluation. Typed operation rules and all
+complete arm table; computed operands retain their own original child trees and
+left-to-right calls. Typed operation rules and all
 body/IR preservation obligations remain separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceSyntax
@@ -18,6 +18,9 @@ inductive Tree : List LocatedToken → Type where
       (parsed : QuantumMoves.parse 65 (tokens.map (·.text)) = .ok term) : Tree tokens
   | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
       (original : QuantumMatch.parse tokens = .ok (parsed,[])) : Tree tokens
+  | selectionExpression (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
+      (original : QuantumMatch.parse tokens = .ok (parsed,[]))
+      (selector : Tree parsed.selector) (target : Tree parsed.target) : Tree tokens
   | group {tokens : List LocatedToken} (parsed : CallSyntax.CheckedGroup tokens)
       (children : Children (parsed.group.arguments.map (·.tokens))) : Tree tokens
   | call {tokens : List LocatedToken} (parsed : CallSyntax.Checked tokens)
@@ -59,6 +62,8 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     match tree with
     | .move .. => return []
     | .selection .. => return []
+    | .selectionExpression _ _ _ selector target =>
+      return (← next selector) ++ (← next target)
     | .group _ children =>
       return (← children.trees.mapM (fun child => next child.2)).flatten
     | .call parsed children =>
@@ -93,7 +98,13 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       return .binding statement expression rest
     if tokens.head?.map (·.text) == some "qmatch" then
       match original : QuantumMatch.parse tokens with
-      | .ok (parsed,[]) => return .selection tokens parsed original
+      | .ok (parsed,[]) =>
+        if (QuantumMoves.parse 65 (parsed.selector.map (·.text))).isOk &&
+            (QuantumMoves.parse 65 (parsed.target.map (·.text))).isOk then
+          return .selection tokens parsed original
+        let selector ← next (depth+1) false parsed.selector
+        let target ← next (depth+1) false parsed.target
+        return .selectionExpression tokens parsed original selector target
       | _ => throw "qmatch does not consume the complete original expression"
     if tokens.head?.map (·.text) == some "(" then
       let group ← CallSyntax.readGroup tokens
