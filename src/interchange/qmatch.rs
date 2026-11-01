@@ -7,6 +7,9 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
+mod context;
+pub use context::{Call, Context};
+
 /// Original physical arm subjects, still untrusted until the enclosing source
 /// and carrier-sector check. A physical signature is not a nominal contract.
 pub(crate) enum ArmBody {
@@ -21,6 +24,32 @@ pub(crate) enum ArmBody {
 pub(crate) struct ArmSubject {
     pub body: ArmBody,
     pub controlled: crate::ir::RawProgram,
+    pub context: std::sync::Arc<ContextSubject>,
+}
+
+/// Original lowering coordinates retained alongside the exact prepared body.
+/// Encoding derives all graph indices afresh from these actual arm subjects.
+#[derive(Default)]
+pub(crate) struct ContextSubject {
+    pub positions: Vec<Position>,
+    pub selections: Vec<SelectionBody>,
+    pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
+}
+
+pub(crate) struct SelectionBody {
+    pub interface: Interface,
+    pub position: Position,
+    pub arms: Vec<ArmSubject>,
+}
+
+impl std::fmt::Debug for ContextSubject {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ContextSubject")
+            .field("positions", &self.positions)
+            .field("selections", &self.selections.len())
+            .field("calls", &self.calls.len())
+            .finish()
+    }
 }
 
 /// Actual local interfaces and literal positions in the complete original call.

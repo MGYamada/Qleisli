@@ -20,16 +20,19 @@ def offset {sources owner} : Event sources owner → Nat
   | .selection event .. => event.parsed.keyword.span.startByte
   | .primitive event => event.call.calleeOffset
   | .phase event => event.call.calleeOffset
+  | .named event => event.call.calleeOffset
 
 def selected {sources owner} : Event sources owner → List Owner
   | .selection event .. => [event.selector,event.target]
   | .primitive event => [event.operand]
   | .phase event => [event.operand]
+  | .named event => event.inputOwners
 
 def frameOwners {sources owner} : Event sources owner → List Owner
   | .selection event held .. => held ++ owners event.before
   | .primitive event => event.held ++ owners event.before
   | .phase event => event.held ++ owners event.before
+  | .named event => event.held ++ owners event.before
 
 def leafRoles (frame : Qirf.SourceSequence.Frame) : Option (List Owner) :=
   frame.mapM fun (_,tree) => match tree with
@@ -66,6 +69,7 @@ def Action {sources owner} (event : Event sources owner)
         position.start position.count input output event.operand
         (.phase event.application.coefficient.exponent)
     | _,_ => Empty
+  | .named _ => Empty
 
 def readAction {sources owner} (event : Event sources owner)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
@@ -89,6 +93,7 @@ def readAction {sources owner} (event : Event sources owner)
         position.start position.count input output event.operand
         (.phase event.application.coefficient.exponent)
     | _,_ => throw .request
+  | .named _ => throw .request
 
 structure Site {sources owner name} (source : Source sources owner name)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)

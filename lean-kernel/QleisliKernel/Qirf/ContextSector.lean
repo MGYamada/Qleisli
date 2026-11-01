@@ -21,6 +21,12 @@ def selection {sources owner} : SourceTrace.Event sources owner → Option Sourc
   | .selection event .. => some event
   | .primitive _ => none
   | .phase _ => none
+  | .named _ => none
+
+def selectionData {sources owner} : SourceTrace.Event sources owner →
+    Option (SourceTypes.QuantumSequence.Event × Option (PhaseApplication.Naturals sources) × List String)
+  | .selection event _ scope _ naturals => some (event,naturals,scope)
+  | _ => none
 
 structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
   source : Witness (SourceTrace.read artifact.sources owner name)
@@ -32,11 +38,12 @@ def readHeaders (artifact : Artifact) (owner name : String) (requests : List Req
     WorkM (Headers artifact owner name requests) := do
   guard (0 < requests.length && requests.length ≤ 128) .limit
   let source ← SourceTypes.NaturalAffine.witness (SourceTrace.read artifact.sources owner name)
-  let events := source.val.result.events.filterMap selection
+  let events := source.val.result.events.filterMap selectionData
   exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
-    64*(events.map SourceSequence.eventFields).sum))
+    64*(events.map fun event => SourceSequence.eventFields event.1).sum))
   guard (events.length == requests.length) .request
-  let sites ← (events.zip requests).mapM (SelectionCore.readHeader artifact source.val.signature)
+  let sites ← (events.zip requests).mapM fun (event,request) =>
+    SelectionCore.readHeader artifact source.val.signature (event.1,request) event.2.1 event.2.2
   if everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection then
     if everyRequest : sites.map (·.request) = requests then
       return ⟨source,sites,everyEvent,everyRequest⟩
@@ -103,6 +110,7 @@ def eventRows {sources owner} : SourceTrace.Event sources owner → List (String
   | .primitive event => primitiveRows event
   | .phase event => candidateRows event.application.candidate
   | .selection .. => []
+  | .named event => event.signature.sourceRows
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
   headers.source.val.signature.sourceRows ++ headers.source.val.result.events.flatMap eventRows ++
@@ -144,8 +152,9 @@ structure SelectionSite {sources owner name} (source : Source sources owner name
   scope : List String
   frame : (held ++ owners event.before).Perm
     ([event.selector,event.target] ++ held ++ owners event.remaining)
+  naturals : Option (PhaseApplication.Naturals sources)
   position : Position
-  site : RawTrace.Site source dependencies program whole (.selection event held scope frame) position
+  site : RawTrace.Site source dependencies program whole (.selection event held scope frame naturals) position
 
 def collect {sources owner name dependencies program whole events positions}
     {source : Source sources owner name}
@@ -162,10 +171,11 @@ def collect {sources owner name dependencies program whole events positions}
       | .cons (event := event) (position := position) site rest =>
         let collected ← next rest
         match event with
-        | .selection event held scope frame =>
-          return ⟨event,held,scope,frame,position,site⟩ :: collected
+        | .selection event held scope frame naturals =>
+          return ⟨event,held,scope,frame,naturals,position,site⟩ :: collected
         | .primitive _ => return collected
-        | .phase _ => return collected)
+        | .phase _ => return collected
+        | .named _ => return collected)
   traverse (events.length+1) sites
 
 def interval {artifact owner name requests order positions}

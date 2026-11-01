@@ -67,6 +67,7 @@ fn lowerer<'c, 'p>(compiler: &'c mut Compiler<'p>) -> Lowerer<'c, 'p> {
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
+            source_context: None,
         tuple_binding_origins: vec![BTreeMap::new()],
         access_updates: vec![BTreeSet::new()],
         effect: Effect::Unitary,

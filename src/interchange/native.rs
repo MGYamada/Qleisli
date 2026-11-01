@@ -150,6 +150,7 @@ impl Prepared {
                 source_instrument_calls: Arc::from([]),
                 source_pure_equations: Arc::from([]),
                 source_computed_normalizations: Arc::from([]),
+                source_context: None,
                 ordinary_result: None,
                 runtime_result: None,
             },
@@ -574,12 +575,25 @@ pub struct AcceptedProgram {
     // to protected diagonal use. Native decisions precede attachment; this is
     // neither execution input nor a whole-source preservation certificate.
     source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
+    // Actual source lowering coordinates stay with the same prepared Raw body.
+    // They are untrusted proposals consumed only by the enclosing qmatch gate.
+    source_context: Option<Arc<super::qmatch::ContextSubject>>,
     // Actual typed objects compared with Lean's fresh decoding, retained by all
     // clones and execution. This is not an arbitrary source-meaning contract.
     ordinary_result: Option<Arc<super::ordinary_root::Request>>,
     runtime_result: Option<Arc<super::runtime_root::Request>>,
 }
 impl AcceptedProgram {
+    pub(crate) fn source_context(&self) -> Option<&Arc<super::qmatch::ContextSubject>> {
+        self.source_context.as_ref()
+    }
+    pub(crate) fn retain_source_context(
+        mut self,
+        context: Option<Arc<super::qmatch::ContextSubject>>,
+    ) -> Self {
+        self.source_context = context;
+        self
+    }
     pub fn ordinary_result(&self) -> Option<&super::ordinary_root::Request> {
         self.ordinary_result.as_deref()
     }

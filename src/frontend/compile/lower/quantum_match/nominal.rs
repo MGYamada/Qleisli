@@ -4,7 +4,7 @@
 use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
-use crate::interchange::qmatch::{ArmSubject, Position, SelectionSubject, SourceSite};
+use crate::interchange::qmatch::{ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite};
 
 mod arms;
 
@@ -15,6 +15,8 @@ pub(in crate::frontend::compile::lower) struct Frame {
     positions: Vec<Position>,
     primitive_prelude: bool,
     selections: Vec<Selection>,
+    calls: Vec<(Position, Arc<ContextSubject>)>,
+    source_gate: bool,
 }
 
 struct Selection {
@@ -91,15 +93,13 @@ impl Frame {
         key: Key,
         args: &[Value],
     ) -> Result<Option<Self>, CompileError> {
-        if args.len() < 2 || !args.iter().all(|arg| matches!(arg, Value::Quantum(..))) {
+        if !args.iter().all(|arg| matches!(arg, Value::Quantum(..))) {
             return Ok(None);
         }
-        if !args.iter().any(|arg| match arg {
+        let source_gate = args.iter().any(|arg| match arg {
             Value::Quantum(slot, _) => lower.raw.registers[slot].basis.basis_bits().is_none(),
             _ => false,
-        }) {
-            return Ok(None);
-        }
+        });
         let name = lower
             .compiler
             .source
@@ -118,19 +118,29 @@ impl Frame {
             positions: Vec::new(),
             primitive_prelude: false,
             selections: Vec::new(),
+            calls: Vec::new(),
+            source_gate,
         }))
+    }
+
+    pub(in crate::frontend::compile::lower) fn requires_source_gate(&self) -> bool {
+        self.source_gate
     }
 
     pub(in crate::frontend::compile::lower) fn finish(
         self,
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
-    ) -> Result<(), CompileError> {
+    ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
         let selections = self.selections;
-        let Some(first) = selections.first() else {
-            return Ok(());
-        };
-        let span = first.span;
+        if selections.is_empty() {
+            return Ok(Some(Arc::new(ContextSubject {
+                positions: self.positions,
+                selections: Vec::new(),
+                calls: self.calls,
+            })));
+        }
+        let span = selections.first().map_or(lower.compiler.declarations[&self.key].span, |first| first.span);
         let name = lower
             .compiler
             .source
@@ -226,6 +236,7 @@ impl Frame {
                 })
             })
             .collect::<Result<Vec<_>, CompileError>>()?;
+        if !selections.is_empty() && self.source_gate {
         let proposal = crate::interchange::qmatch::proposal(
             &raw,
             SourceSite {
@@ -258,7 +269,15 @@ impl Frame {
             .exact_work
             .charge(checked.native().exact_work())
             .map_err(|e| lower.compiler.op_error(&name.0, span, e.into()))?;
-        Ok(())
+        }
+        let selections = selections.into_iter().zip(interfaces).map(|(selected,interface)| {
+            Ok(SelectionBody {
+                interface,
+                position: position(lower, &name.0, selected.span, selected.offset, selected.start, selected.count)?,
+                arms: selected.arms,
+            })
+        }).collect::<Result<Vec<_>, CompileError>>()?;
+        Ok(Some(Arc::new(ContextSubject { positions: self.positions, selections, calls: self.calls })))
     }
 }
 
@@ -401,6 +420,7 @@ pub(super) fn emit(
     {
         return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires an original structural function with quantum parameters and at most 128 selections"));
     }
+    lower.nominal_qmatch.as_mut().expect("original context").source_gate = true;
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
         Kind::Nominal(nominal) => match &nominal.body {
@@ -472,7 +492,7 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        let (subject, mut body) = arms::prepare(
+        let (subject, context, mut body) = arms::prepare(
             lower,
             module,
             &arm.operation,
@@ -489,6 +509,7 @@ pub(super) fn emit(
         arms.push(ArmSubject {
             body: subject,
             controlled: controlled(body.clone(), target_bits),
+            context,
         });
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
             .map_err(|e| lower.compiler.op_error(module, arm.span, e))?;

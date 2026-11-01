@@ -158,7 +158,7 @@ impl Lowerer<'_, '_> {
         let target = self.expr(module, &selection.target, env)?;
         let target_slot = self.quantum(module, selection.target.span, &target, false)?;
         let selector_basis = &self.raw.registers[&selector_slot].basis;
-        if self.nominal_qmatch.is_some()
+        if self.nominal_qmatch.as_ref().is_some_and(nominal::Frame::requires_source_gate)
             || selector_basis.basis_bits().is_none()
             || self.raw.registers[&target_slot]
                 .basis
@@ -232,20 +232,27 @@ impl Lowerer<'_, '_> {
                     "qmatch ordinal is duplicated or outside the selector domain",
                 ));
             }
-            let operation = self.operation_steps(
-                module,
-                &arm.operation,
-                &target_basis,
-                env,
-                Access::Controlled,
-            )?;
-            let already_controlled = operation.is_some();
-            let mut body = match operation {
-                Some(body) => body,
-                None => self.static_steps(module, &arm.operation, &target_basis, env)?,
+            let (mut body, already_controlled, expected) = match &arm.operation.kind {
+                StaticOpKind::Name(name) => {
+                    let operation = self.operation_steps(module, name, &target_basis, env, Access::Controlled)?;
+                    let controlled = operation.is_some();
+                    let body = match operation {
+                        Some(body) => body,
+                        None => self.static_steps(module, name, &target_basis, env)?,
+                    };
+                    (body, controlled, self.target_meaning(module, name, &target_basis)?)
+                }
+                _ => {
+                    let operation = self.operation(module, &arm.operation, env)?;
+                    if operation.basis != target_basis || operation.codomain != target_basis || operation.effect != Effect::Unitary {
+                        return Err(self.error(module, arm.span, ErrorCode::TypeMismatch,
+                            "qmatch arm requires the exact Unitary target interface"));
+                    }
+                    let body = operation.steps(module, arm.span, Access::Controlled, self.compiler)?;
+                    (body, true, operation.meaning.clone())
+                }
             };
-            let expected = self
-                .target_meaning(module, &arm.operation, &target_basis)?
+            let expected = expected
                 .ok_or_else(|| {
                     self.error(
                         module,

@@ -457,6 +457,7 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
                     declared_effect: Effect::Unitary,
                 };
                 ArmSubject {
+                    context: Arc::new(ContextSubject::default()),
                     body: ArmBody::Physical {
                         bits: 2,
                         raw,

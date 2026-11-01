@@ -126,6 +126,7 @@ struct Lowerer<'c, 'p> {
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     nominal_qmatch: Option<quantum_match::nominal::Frame>,
+    source_context: Option<Arc<crate::interchange::qmatch::ContextSubject>>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
@@ -508,7 +509,7 @@ impl Lowerer<'_, '_> {
             self.nominal_qmatch = quantum_match::nominal::Frame::start(self, *key, &args)?;
             let value = self.call_user_inner(key, args, site)?;
             if let Some(frame) = self.nominal_qmatch.take() {
-                frame.finish(self, &value)?;
+                self.source_context = frame.finish(self, &value)?;
             }
             Ok(value)
         })();
@@ -1738,6 +1739,7 @@ impl Lowerer<'_, '_> {
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
             nominal_qmatch: None,
+            source_context: None,
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
@@ -2046,6 +2048,7 @@ fn lower_function_in_context(
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
+            source_context: None,
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,
@@ -2180,7 +2183,7 @@ fn lower_function_in_context(
             .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
     };
     accepted
-        .map(|program| program.retain_instrument_calls(lower.instrument_calls))
+        .map(|program| program.retain_source_context(lower.source_context).retain_instrument_calls(lower.instrument_calls))
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(

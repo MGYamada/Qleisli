@@ -10,21 +10,20 @@ use crate::interchange::qmatch::ArmBody;
 pub(super) fn prepare(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
-    name: &Ident,
+    expression: &StaticOp,
     target: &Ty,
     bits: usize,
     env: &Env,
-) -> Result<(ArmBody, Vec<CircuitStep>), CompileError> {
-    lower.static_name(module, name, env)?;
+) -> Result<(ArmBody, Arc<ContextSubject>, Vec<CircuitStep>), CompileError> {
     if target.basis_bits().is_some() {
-        let operation = lower.compiler.provider(module, name, None)?;
+        let operation = lower.operation(module, expression, env)?;
         if operation.basis != *target
             || operation.codomain != *target
             || operation.effect != Effect::Unitary
         {
             return Err(lower.error(
                 module,
-                name.span,
+                expression.span,
                 ErrorCode::TypeMismatch,
                 "qmatch arm requires the exact Unitary target interface",
             ));
@@ -32,14 +31,24 @@ pub(super) fn prepare(
         let operations::Node::Provider(evidence) = operation.node.as_ref() else {
             return Err(lower.error(
                 module,
-                name.span,
+                expression.span,
                 ErrorCode::Unsupported,
                 "qmatch requires an original named function-evidence entry",
             ));
         };
-        let steps = operation.steps(module, name.span, Access::Controlled, lower.compiler)?;
-        return Ok((ArmBody::Evidence(Arc::clone(evidence)), steps));
+        let context = evidence.source_context().cloned().ok_or_else(|| {
+            lower.error(module, expression.span, ErrorCode::InvalidIr,
+                "qmatch arm lacks its actual original lowering context")
+        })?;
+        let steps = operation.steps(module, expression.span, Access::Controlled, lower.compiler)?;
+        return Ok((ArmBody::Evidence(Arc::clone(evidence)), context, steps));
     }
+
+    let StaticOpKind::Name(name) = &expression.kind else {
+        return Err(lower.error(module, expression.span, ErrorCode::Unsupported,
+            "nominal operation constructors require their independently checked original operation tree"));
+    };
+    lower.static_name(module, name, env)?;
 
     let Callee::User(key) = lower.compiler.resolve(module, name)? else {
         return Err(lower.error(
@@ -94,6 +103,10 @@ pub(super) fn prepare(
         ));
     }
     let mut steps = circuit::flatten(lower.compiler, module, name.span, &program)?;
+    let context = program.source_context().cloned().ok_or_else(|| {
+        lower.error(module, name.span, ErrorCode::InvalidIr,
+            "qmatch arm lacks its actual original lowering context")
+    })?;
     lower.compiler.charge(
         module,
         name.span,
@@ -131,6 +144,7 @@ pub(super) fn prepare(
             raw: raw.clone(),
             identity: Box::new(RetainedIdentity::interned(path.clone(), path, sources)),
         },
+        context,
         steps,
     ))
 }

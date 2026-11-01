@@ -24,15 +24,19 @@ structure Header (artifact : Artifact) {owner name} (signature : SourceTypes.Qua
   interface : request.attached = request.required
   types : NominalSector.sameTypes request.required ports = true
   roles : ports.selectorIn.basis = event.selector.basis ∧ ports.targetIn.basis = event.target.basis
-  table : Witness (SourceTypes.QuantumArms.readArms signature.original request.position.offset
-    ports.selectorIn.basis ports.targetIn.basis)
+  naturals : Option (SourceTypes.PhaseApplication.Naturals artifact.sources)
+  scope : List String
+  table : Witness (SourceTypes.QuantumArms.readArmsWithSignature signature request.position.offset
+    ports.selectorIn.basis ports.targetIn.basis naturals scope)
   original : table.val.site.original.source = signature.original.source ∧ table.val.site.parsed = event.parsed
   bindings : Witness (SourceArm.readAll artifact table.val.arms request.programs)
   roots : Witness (SourceArm.readRoots artifact bindings.val)
   rows : Witness (SourceSector.readRowsWithSignature table.val signature)
 
 def readHeader (artifact : Artifact) {owner name} (signature : SourceTypes.QuantumSignature.Checked artifact.sources owner name)
-    (pair : Event × Request) : WorkM (Header artifact signature) := do
+    (pair : Event × Request)
+    (naturals : Option (SourceTypes.PhaseApplication.Naturals artifact.sources) := none)
+    (scope : List String := []) : WorkM (Header artifact signature) := do
   let event := pair.1
   let request := pair.2
   guard (NominalSector.shape request.attached request.required) .request
@@ -44,14 +48,14 @@ def readHeader (artifact : Artifact) {owner name} (signature : SourceTypes.Quant
     if interface : request.attached = request.required then
       if types : NominalSector.sameTypes request.required ports = true then
         if roles : ports.selectorIn.basis = event.selector.basis ∧ ports.targetIn.basis = event.target.basis then
-          let table ← SourceTypes.NaturalAffine.witness (SourceTypes.QuantumArms.readArms signature.original
-            request.position.offset ports.selectorIn.basis ports.targetIn.basis)
+          let table ← SourceTypes.NaturalAffine.witness (SourceTypes.QuantumArms.readArmsWithSignature signature
+            request.position.offset ports.selectorIn.basis ports.targetIn.basis naturals scope)
           if original : table.val.site.original.source = signature.original.source ∧
               table.val.site.parsed = event.parsed then
             let bindings ← SourceTypes.NaturalAffine.witness (SourceArm.readAll artifact table.val.arms request.programs)
             let roots ← SourceTypes.NaturalAffine.witness (SourceArm.readRoots artifact bindings.val)
             let rows ← SourceTypes.NaturalAffine.witness (SourceSector.readRowsWithSignature table.val signature)
-            return ⟨event,request,ports,portsRead,interface,types,roles,table,original,bindings,roots,rows⟩
+            return ⟨event,request,ports,portsRead,interface,types,roles,naturals,scope,table,original,bindings,roots,rows⟩
           else throw .request
         else throw .request
       else throw .request
@@ -62,8 +66,9 @@ structure Prepared {artifact owner name}
     (header : Header artifact signature) (root : Validity.Root)
     {nodes : List Nat}
     (fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts)
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    (interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    (interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]) where
   inputPorts : interval.selected = header.request.attached.inputs.map (·.port)
@@ -80,8 +85,9 @@ def prepare {artifact owner name}
     (header : Header artifact signature) (root : Validity.Root)
     {nodes : List Nat}
     (fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts)
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    (interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    (interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]) :
     WorkM (Prepared header root fresh interval) := do
@@ -106,8 +112,9 @@ structure Equations {artifact owner name}
     {header : Header artifact signature} {root : Validity.Root}
     {nodes : List Nat}
     {fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts}
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    {interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    {interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]}
     (prepared : Prepared header root fresh interval) where
@@ -125,8 +132,9 @@ def finish {artifact owner name}
     {header : Header artifact signature} {root : Validity.Root}
     {nodes : List Nat}
     {fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts}
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    {interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    {interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]}
     (prepared : Prepared header root fresh interval) : WorkM (Equations prepared) := do
@@ -145,8 +153,9 @@ structure Checked {artifact owner name}
     (header : Header artifact signature) (root : Validity.Root)
     {nodes : List Nat}
     (fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts)
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    (interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    (interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]) where
   prepared : Prepared header root fresh interval
@@ -160,8 +169,9 @@ def check {artifact owner name}
     (header : Header artifact signature) (root : Validity.Root)
     {nodes : List Nat}
     (fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts)
+    {program : Semantics.Observation.Program}
     {inputs outputs : List Nat}
-    (interval : PureInterval.Many.Checked 2 root.dependencies root.program
+    (interval : PureInterval.Many.Checked 2 root.dependencies program
       header.request.position.start header.request.position.count inputs outputs
       [header.event.selector,header.event.target]) :
     WorkM (Checked header root fresh interval) := do
