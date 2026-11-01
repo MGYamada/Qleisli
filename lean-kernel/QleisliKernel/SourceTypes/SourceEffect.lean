@@ -26,7 +26,7 @@ theorem rank_accumulate {α : Type} (effect : α → Effect) (events : List α) 
   induction events generalizing initial with
   | nil => exact Nat.le_refl _
   | cons first rest ih =>
-    exact (rank_join_left initial (effect first)).trans (ih (join initial (effect first)))
+    exact Nat.le_trans (rank_join_left initial (effect first)) (ih (join initial (effect first)))
 
 theorem member_accumulate {α : Type} (effect : α → Effect) (events : List α) (initial : Effect)
     (event : α) (member : event ∈ events) :
@@ -36,7 +36,7 @@ theorem member_accumulate {α : Type} (effect : α → Effect) (events : List α
   | cons first rest ih =>
     rcases List.mem_cons.mp member with same | later
     · subst event
-      exact (rank_join_right initial (effect first)).trans
+      exact Nat.le_trans (rank_join_right initial (effect first))
         (rank_accumulate effect rest (join initial (effect first)))
     · exact ih (join initial (effect first)) later
 

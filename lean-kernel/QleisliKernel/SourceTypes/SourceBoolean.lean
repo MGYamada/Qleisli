@@ -49,7 +49,7 @@ def read (tokens : List LocatedToken) : Option (Syntax tokens) := do
   else
     let keyword :: rest := tokens | none
     if original : tokens = keyword :: rest ∧ keyword.text = "not" then
-      return ⟨.not,keyword,[rest],original⟩
+      return ⟨.not,keyword,[rest],⟨rfl,original.2⟩⟩
     else none
 
 end QleisliKernel.SourceTypes.SourceBoolean

@@ -113,7 +113,8 @@ private def seedNode : Nat → Semantics.RuntimeType.Tree → Nat → Nat →
         let (basis,tail) ← finiteSpan (tree.length+1) 1 tree []
         return ([.ordinary basis (.input nextOrdinary)],tail,nextOwner,nextOrdinary+1))
 
-def seedValues (parameters : List (RuntimeSignature.Part sources)) : Except String (List Value × Nat × Nat) := do
+def seedValues {sources : Sources} (parameters : List (RuntimeSignature.Part sources)) :
+    Except String (List Value × Nat × Nat) := do
   parameters.foldlM (fun (values,owner,ordinary) parameter => do
     let (value,rest,owner,ordinary) ← seedNode 65 parameter.tree owner ordinary
     if !rest.isEmpty then throw "runtime source parameter has trailing type nodes"
