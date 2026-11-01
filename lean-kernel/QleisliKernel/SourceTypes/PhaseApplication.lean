@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.CallName
 import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.LexicalNatural
 import QleisliKernel.SourceTypes.PhaseCoefficient
+import QleisliKernel.SourceTypes.QuantumSignature
 
 /-! Original phase parameters in the actual lexical static environment.
 These witnesses supply no quantum action, effect label or execution handle;
@@ -22,6 +23,15 @@ structure Naturals (sources : Sources) where
 def prepare (sources : Sources) : WorkM (Naturals sources) := do
   let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
   return ⟨helpers,LexicalNatural.empty helpers.val,[]⟩
+
+/-- Reuse complete checked caller actuals. Static names of every kind remain
+in scope so a Basis/operation formal cannot become an unbound primitive/helper.
+Only original Nat binders receive arithmetic values. -/
+def prepareWithSignature {sources owner name} (signature : QuantumSignature.Checked sources owner name) :
+    WorkM (Naturals sources) := do
+  let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
+  return ⟨helpers,LexicalNatural.ofBindings helpers.val signature.staticArguments.naturals,
+    signature.staticNames⟩
 
 structure Syntax {tokens : List LocatedToken} (call : CallSyntax.Checked tokens) where
   staticCall : CallSyntax.StaticChecked call.call.callee

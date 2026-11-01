@@ -1,4 +1,5 @@
-import QleisliKernel.SourceTypes.OrdinarySignature
+import QleisliKernel.SourceTypes.StaticInstantiation
+import QleisliKernel.SourceTypes.CallName
 
 /-! Original quantum parameter/result forests and public effect metadata.
 This informed component does not prove body lowering, create control access or
@@ -12,9 +13,24 @@ inductive ResultParts where
   | tuple (parts : List (List String))
   deriving BEq, DecidableEq, Repr
 
+private def flattenClauses : Nat → List String → List (List String) :=
+  Nat.rec (fun tokens => [tokens]) (fun _ next tokens =>
+    if tokens.head? == some "Q" then [tokens]
+    else match tokens with
+    | "(" :: rest =>
+      if rest.getLast? == some ")" then
+        match splitMembers rest.dropLast with
+        | .ok parts => if parts.length ≥ 2 then parts.flatMap next else [tokens]
+        | .error _ => [tokens]
+      else [tokens]
+    | _ => [tokens])
+
+/-- Flatten only the owner forest; `parts` keeps the original outer/nested
+tuple clauses for the independent exact result-shape judgment. Malformed
+children remain attempted owner clauses and cannot silently disappear. -/
 def ResultParts.clauses : ResultParts → List (List String)
   | .owner tokens => [tokens]
-  | .tuple parts => parts
+  | .tuple parts => parts.flatMap (flattenClauses 65)
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
@@ -44,8 +60,40 @@ def readTypes (sources : Sources) (owner : String) (tokens : List (List String))
   guard ((result.map fun ty => ty.basis.length).sum ≤ 128) .limit
   return result
 
+/-- A closed header and an instantiated original header have different read
+obligations. Neither alternative replaces the original declaration or tokens. -/
+abbrev Instantiation {sources owner name}
+    (original : OrdinarySignature.Original sources owner name) := StaticInstantiation.Checked original
+
+def Instantiation.arguments {sources owner name original}
+    (instance : @Instantiation sources owner name original) : StaticTypes.Arguments :=
+  StaticInstantiation.Checked.arguments instance
+
+def Instantiation.names {sources owner name original}
+    (instance : @Instantiation sources owner name original) : List String :=
+  StaticInstantiation.Checked.names instance
+
+def readTypeWith {sources owner name original}
+    (instance : @Instantiation sources owner name original) (tokens : List String) :
+    WorkM (TypeRead sources) :=
+  StaticInstantiation.readType instance tokens
+
+def readQuantumTypes {sources owner name original}
+    (instance : @Instantiation sources owner name original) (tokens : List (List String)) :
+    WorkM (List (TypeRead sources)) :=
+  match instance with
+  | .closed _ => readTypes sources owner tokens
+  | .static _ environment _ => do
+    guard (tokens.length ≤ 64) .limit
+    let result ← tokens.mapM fun tokens => do
+      let inner ← adapt (quantumTokens tokens)
+      StaticTypes.readType environment inner
+    guard ((result.map fun ty => ty.basis.length).sum ≤ 128) .limit
+    pure result
+
 structure Checked (sources : Sources) (owner name : String) where
   original : OrdinarySignature.Original sources owner name
+  instantiation : Instantiation original
   parts : ResultParts
   parameterReads : List (TypeRead sources)
   resultReads : List (TypeRead sources)
@@ -53,9 +101,15 @@ structure Checked (sources : Sources) (owner name : String) where
   publicEffect : original.declaration.isPublic = true → original.parsedHeader.effect.isSome = true
   resultPartsRead : resultParts (original.parsedHeader.resultTokens.map (·.text)) = .ok parts
   inputsRead : ∃ before after,
-    (readTypes sources owner original.parsedHeader.parameterTypes).run before = (.ok parameterReads,after)
+    (readQuantumTypes instantiation original.parsedHeader.parameterTypes).run before = (.ok parameterReads,after)
   outputsRead : ∃ before after,
-    (readTypes sources owner parts.clauses).run before = (.ok resultReads,after)
+    (readQuantumTypes instantiation parts.clauses).run before = (.ok resultReads,after)
+
+def Checked.staticArguments {sources owner name} (checked : Checked sources owner name) :
+    StaticTypes.Arguments := checked.instantiation.arguments
+
+def Checked.staticNames {sources owner name} (checked : Checked sources owner name) : List String :=
+  checked.instantiation.names
 
 def Checked.inputs {sources owner name} (checked : Checked sources owner name) : List Basis :=
   checked.parameterReads.map (·.basis)
@@ -66,22 +120,67 @@ def Checked.outputs {sources owner name} (checked : Checked sources owner name) 
 /-- Type queries retain exact recursive import/reexport routes. The function
 row is justified separately by the original declaration lookup and envelope. -/
 def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) : List (String × String) :=
+  let actualRows := checked.staticArguments.bases.flatMap fun argument => argument.2.filterMap fun atom =>
+    match atom with
+    | .enumeration origin _ | .record origin _ => some (origin.moduleName,origin.source)
+    | _ => none
   (owner,checked.original.source) ::
-    (checked.parameterReads ++ checked.resultReads).flatMap TypeRead.sourceRows
+    actualRows ++ (checked.parameterReads ++ checked.resultReads).flatMap TypeRead.sourceRows
 
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
   let original ← OrdinarySignature.readOriginal sources owner name
+  let instance ← if noStatics : original.parsedHeader.staticTokens.isNone &&
+      original.parsedHeader.requiresTokens.isNone = true then
+    pure (StaticInstantiation.Checked.closed noStatics)
+    else throw .request
   if ordinary : original.parsedHeader.ordinaryOnly = false then
     if effect : original.declaration.isPublic = true → original.parsedHeader.effect.isSome = true then
       let tokens := original.parsedHeader.resultTokens.map (·.text)
       match parsed : resultParts tokens with
       | .error _ => throw .request
       | .ok parts =>
-        let inputs ← NaturalAffine.witness (readTypes sources owner original.parsedHeader.parameterTypes)
-        let outputs ← NaturalAffine.witness (readTypes sources owner parts.clauses)
-        return ⟨original,parts,inputs.val,outputs.val,ordinary,effect,parsed,
+        let inputs ← NaturalAffine.witness (readQuantumTypes instance original.parsedHeader.parameterTypes)
+        let outputs ← NaturalAffine.witness (readQuantumTypes instance parts.clauses)
+        return ⟨original,instance,parts,inputs.val,outputs.val,ordinary,effect,parsed,
           by with_reducible exact inputs.property,by with_reducible exact outputs.property⟩
     else throw .request
+  else throw .request
+
+/-- Complete checked actuals close types on the untouched source envelope.
+Unused actuals and the original ordered numeric premises are checked by the
+shared StaticTypes environment before any parameter or result read. -/
+def readWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments) :
+    WorkM (Checked sources owner name) := do
+  let environment ← StaticTypes.prepare sources owner name arguments
+  let original := environment.numeric.original.envelope
+  let instance := StaticInstantiation.Checked.static arguments environment rfl
+  if ordinary : original.parsedHeader.ordinaryOnly = false then
+    if effect : original.declaration.isPublic = true → original.parsedHeader.effect.isSome = true then
+      match parsed : resultParts (original.parsedHeader.resultTokens.map (·.text)) with
+      | .error _ => throw .request
+      | .ok parts =>
+        let inputs ← NaturalAffine.witness (readQuantumTypes instance original.parsedHeader.parameterTypes)
+        let outputs ← NaturalAffine.witness (readQuantumTypes instance parts.clauses)
+        return ⟨original,instance,parts,inputs.val,outputs.val,ordinary,effect,parsed,
+          by with_reducible exact inputs.property,by with_reducible exact outputs.property⟩
+    else throw .request
+  else throw .request
+
+structure ResolvedSelection (sources : Sources) (resolution : Resolved) where
+  signature : Checked sources resolution.moduleName resolution.declaration.name
+  declared : signature.original.source = resolution.source ∧
+    signature.original.declaration = resolution.declaration
+
+/-- Reuse a checked lexical/module/prelude candidate instead of resolving a
+new spelling after static specialization. Candidate lookup still grants no
+body effect, access path, source interval or execution authority. -/
+def fromResolution {sources caller tokens}
+    (resolution : CallName.Resolution sources caller tokens) (arguments : StaticTypes.Arguments) :
+    WorkM (ResolvedSelection sources resolution.result) := do
+  let signature ← readWithArguments sources resolution.result.moduleName resolution.result.declaration.name arguments
+  if declared : signature.original.source = resolution.result.source ∧
+      signature.original.declaration = resolution.result.declaration then
+    return ⟨signature,declared⟩
   else throw .request
 
 structure Selected (sources : Sources) (caller : String) (tokens : List String) where
