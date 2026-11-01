@@ -184,6 +184,8 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
   bindArguments signature originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
+  let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
+  let kindRows := kindRows ++ staticRows
   let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
   let [input] := signature.inputs | throw .request
   let [output] := signature.outputs | throw .request
@@ -221,6 +223,8 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
     bindArguments signature originalResults
     let kindRows ← kindRowsWithInstantiation signature.instantiation
+    let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
+    let kindRows := kindRows ++ staticRows
     let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
     match signature.instantiation with
     | .closed _ => throw .request

@@ -120,7 +120,7 @@ structure QuantumReference (sources : Sources) where
   internalInference : Bool
   staticRows : List (String × String)
   rowsRead : ∃ before after,
-    (StaticInstantiation.readRows signature.instantiation).run before = (.ok staticRows,after)
+    (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)).run before = (.ok staticRows,after)
 
 structure ClassicalReference (sources : Sources) where
   caller : String
@@ -132,7 +132,7 @@ structure ClassicalReference (sources : Sources) where
   instantiation : StaticInstantiation.Checked signature.original
   staticRows : List (String × String)
   rowsRead : ∃ before after,
-    (StaticInstantiation.readRows instantiation).run before = (.ok staticRows,after)
+    (StaticInstantiation.readRowsWithTypes instantiation (signature.inputs ++ [signature.basis])).run before = (.ok staticRows,after)
 
 inductive Action (sources : Sources) where
   | reference (function : QuantumReference sources)
@@ -188,7 +188,7 @@ private def quantum (sources : Sources) (caller : String) (tokens : List Located
   guard (internal || (signature.original.parsedHeader.effect == some .unitary ||
     (effect == .iso && signature.original.parsedHeader.effect == some .iso))) .request
   if original : signature.original.source = resolution.result.source ∧ signature.original.declaration = resolution.result.declaration then
-    let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
+    let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs))
     pure ⟨caller,tokens,resolution,signature,original,effect,internal,rows.val,
       by with_reducible exact rows.property⟩
   else throw .request
@@ -208,7 +208,7 @@ private def classical (sources : Sources) (caller : String) (tokens : List Locat
   if original : signature.original.source = resolution.result.source ∧ signature.original.declaration = resolution.result.declaration then
     if classical : signature.original.parsedHeader.ordinaryOnly = true then
       let instantiation : StaticInstantiation.Checked signature.original := .static {} environment rfl
-      let rows ← NaturalAffine.witness (StaticInstantiation.readRows instantiation)
+      let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes instantiation (signature.inputs ++ [signature.basis]))
       pure ⟨caller,tokens,resolution,signature,original,classical,instantiation,rows.val,
         by with_reducible exact rows.property⟩
     else throw .request

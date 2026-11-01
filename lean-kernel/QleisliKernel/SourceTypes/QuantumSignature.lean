@@ -26,7 +26,7 @@ structure Checked (sources : Sources) (owner name : String) extends
   operations : StaticOperation.ArgumentsChecked toChecked context
   staticRows : List (String × String)
   staticRowsRead : ∃ before after,
-    (StaticInstantiation.readRows toChecked.instantiation).run before = (.ok staticRows,after)
+    (StaticInstantiation.readRowsWithTypes toChecked.instantiation (toChecked.inputs ++ toChecked.outputs)).run before = (.ok staticRows,after)
 
 def Checked.staticArguments {sources owner name} (checked : Checked sources owner name) : StaticTypes.Arguments :=
   checked.toChecked.staticArguments
@@ -56,7 +56,7 @@ core plus all checked actuals and original numeric lookup dependencies. -/
 def fromCore {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
     (context : StaticOperation.Context) : WorkM (WithCore signature) := do
   let operations ← StaticOperation.checkArguments signature context
-  let rows ← NaturalAffine.witness (StaticInstantiation.readRows signature.instantiation)
+  let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs))
   return ⟨⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩,rfl⟩
 
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
