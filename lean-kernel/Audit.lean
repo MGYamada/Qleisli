@@ -29,6 +29,7 @@ import QleisliKernel.Tests.SourceRuntimeTrace
 import QleisliKernel.Tests.GenericPhase
 import QleisliKernel.Tests.MeaningTransfer
 import QleisliKernel.Tests.OperationAccess
+import QleisliKernel.Tests.OperationIRMeaning
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises

@@ -79,6 +79,9 @@ import QleisliKernel.Qirf.SourceSector
 import QleisliKernel.Qirf.ContextArmExecution
 import QleisliKernel.Qirf.SourceArmBody
 import QleisliKernel.Qirf.PureProviderSubject
+import QleisliKernel.Qirf.SourceProviderSubject
+import QleisliKernel.Qirf.SourceProviderBinding
+import QleisliKernel.Qirf.OperationIRMeaning
 import QleisliKernel.Qirf.SourceContextRequest
 import QleisliKernel.Qirf.SourceBodyHeader
 import QleisliKernel.Qirf.SourceBodyContext
