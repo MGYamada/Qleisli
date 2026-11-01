@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceRuntimeValues
 import QleisliKernel.SourceTypes.SourceTrace
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
+import QleisliKernel.SourceTypes.SourceOperationApplication
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -13,6 +14,9 @@ open SourceRuntimeValues
 structure Signature (sources : Sources) (owner name : String) where
   arguments : StaticTypes.Arguments
   checked : StaticRuntimeSignature.Checked sources owner name arguments
+  context : StaticOperation.Context
+  operations : StaticOperation.ArgumentsCheckedWithInstantiation
+    (.static arguments checked.environment rfl) context
 
 def Signature.original {sources owner name} (signature : Signature sources owner name) :=
   signature.checked.original
@@ -31,13 +35,19 @@ def Signature.instantiation {sources owner name} (signature : Signature sources 
   .static signature.arguments signature.checked.environment rfl
 
 def Signature.naturals {sources owner name} (signature : Signature sources owner name) :
-    Finite.WorkM (PhaseApplication.Naturals sources) := do
-  let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
-  return ⟨helpers,LexicalNatural.ofBindings helpers.val signature.arguments.naturals,signature.staticNames⟩
+    Finite.WorkM (PhaseApplication.Naturals sources) :=
+  PhaseApplication.prepareWithInstantiation signature.instantiation
 
-def readSignature (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments) :
+def Signature.operationNames {sources owner name} (signature : Signature sources owner name) : List String :=
+  signature.instantiation.operationNames
+
+def readSignature (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
+    (context : StaticOperation.Context := .external) :
     Finite.WorkM (Signature sources owner name) := do
-  return ⟨arguments,← StaticRuntimeSignature.read sources owner name arguments⟩
+  let checked ← StaticRuntimeSignature.read sources owner name arguments
+  let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
+  let operations ← StaticOperation.checkArgumentsWithInstantiation instantiation context
+  return ⟨arguments,checked,context,operations⟩
 
 structure Target (sources : Sources) (caller : String) (scope : List String)
     (tokens : List LocatedToken) where
@@ -48,8 +58,9 @@ structure Target (sources : Sources) (caller : String) (scope : List String)
   candidate : CallName.Checked sources caller scope written.callee
   resolution : Resolved
   selected : QuantumSignature.candidateResolution candidate = some resolution
+  operationReader : StaticApplication.OperationReader
   actuals : StaticApplication.Checked callerSignature.instantiation naturals.helpers.val
-    naturals.environment scope written resolution.moduleName resolution.declaration.name
+    naturals.environment scope operationReader written resolution.moduleName resolution.declaration.name
   signature : Signature sources resolution.moduleName resolution.declaration.name
   arguments : signature.arguments = actuals.arguments
   original : signature.original.source = resolution.source ∧
@@ -63,14 +74,16 @@ def readTarget {sources caller callerName scope tokens}
   match selected : QuantumSignature.candidateResolution candidate with
   | none => throw .request
   | some resolution =>
+    let operationReader := SourceOperation.buildWithInstantiation callerSignature.instantiation
+      naturals.helpers.val naturals.environment scope naturals.generic 65
     let actuals ← StaticApplication.read callerSignature.instantiation naturals.helpers.val
-      naturals.environment scope written resolution.moduleName resolution.declaration.name
-    let signature ← readSignature sources resolution.moduleName resolution.declaration.name actuals.arguments
+      naturals.environment scope written resolution.moduleName resolution.declaration.name operationReader naturals.generic
+    let signature ← readSignature sources resolution.moduleName resolution.declaration.name actuals.arguments (.source caller)
     if arguments : signature.arguments = actuals.arguments then
       if original : signature.original.source = resolution.source ∧
           signature.original.declaration = resolution.declaration then
         return ⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
-          actuals,signature,arguments,original⟩
+          operationReader,actuals,signature,arguments,original⟩
       else throw .request
     else throw .request
 
@@ -172,12 +185,14 @@ inductive Event (sources : Sources) (caller : String) where
   | primitive (event : PrimitiveEvent sources caller)
   | phase (event : PhaseEvent sources caller)
   | named (event : NamedEvent sources caller)
+  | operation (event : SourceOperationApplication.Event sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
   | .primitive event => some event.call.calleeOffset
   | .phase event => some event.call.calleeOffset
   | .named event => some event.call.calleeOffset
+  | .operation event => some event.call.calleeOffset
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
   | .selection _ parsed .. => some parsed.keyword.span.startByte
@@ -186,6 +201,7 @@ def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
   | .named event => event.effect
+  | .operation event => event.effect
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool

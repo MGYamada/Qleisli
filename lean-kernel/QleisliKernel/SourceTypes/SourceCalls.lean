@@ -42,7 +42,7 @@ def readTarget {sources caller callerName scope tokens}
     (candidate : CallName.Checked sources caller scope written.callee) :
     Finite.WorkM (Target sources caller scope tokens) := do
   let selected ← QuantumSignature.selectInstance callerSignature naturals.helpers.val
-    naturals.environment scope written candidate
+    naturals.environment scope written candidate naturals.generic
   return ⟨callerName,callerSignature,naturals,written,candidate,selected⟩
 
 def argumentOwners (inputs : List Semantics.FiniteCarrier.Basis) (arguments : List Value) :
