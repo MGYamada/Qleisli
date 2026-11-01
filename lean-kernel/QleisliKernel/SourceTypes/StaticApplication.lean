@@ -5,6 +5,7 @@ import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.CallName
 import QleisliKernel.SourceTypes.GenericLexicalNatural
 import QleisliKernel.SourceTypes.NaturalRows
+import QleisliKernel.SourceTypes.StaticBasisActual
 
 /-! Complete positional actuals from original source applications. Each actual
 retains its original formal ordinal/category and its original expression. Exact
@@ -24,15 +25,8 @@ def noOperations : OperationReader := fun _ => throw .request
 def validateNatural {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (provided : Option (GenericLexicalNatural.SomeEnvironment sources)) (scope : List String)
-    (expression : Semantics.SourceNatural.Expr) : WorkM Unit := do
-  match instantiation with
-  | .closed _ => guard provided.isNone .request
-  | .static _ environment _ =>
-    let state := provided.getD ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩
-    guard (state.owner == owner && state.name == name &&
-      state.prepared.original.envelope.source == original.source &&
-      state.prepared.original.envelope.declaration == original.declaration) .request
-    GenericLexicalNatural.validate state owner scope expression
+    (expression : Semantics.SourceNatural.Expr) : WorkM Unit :=
+  StaticCallPremises.validateNatural instantiation provided scope expression
 
 inductive Syntax (tokens : List LocatedToken) where
   | name (parsed : CallName.Name tokens)
@@ -54,9 +48,7 @@ def readSyntax (tokens : List LocatedToken) : Except String (Syntax tokens) := d
 private def basisSyntax {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (tokens : List LocatedToken) (inner : List String) : Bool :=
-  tokens.map (·.text) == ["type","("] ++ inner ++ [")"] ||
-    (inner.length == 1 && tokens.map (·.text) == inner &&
-      instantiation.arguments.bases.any (fun argument => inner == [argument.1]))
+  StaticBasisActual.expressionSyntax instantiation tokens inner
 
 structure BasisExpression {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) (tokens : List LocatedToken) where
@@ -80,7 +72,7 @@ inductive Value {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (operationReader : OperationReader) (tokens : List LocatedToken) : StaticHeaders.Kind → Type where
-  | basis (expression : BasisExpression instantiation tokens) :
+  | basis (expression : StaticBasisActual.Checked instantiation entries environment scope tokens) :
       Value instantiation entries environment scope operationReader tokens .basis
   | natural (expression : StaticBindings.Natural tokens)
       (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
@@ -127,7 +119,7 @@ def Value.operations {sources owner name original instantiation entries environm
 def Value.sourceRows {sources owner name original instantiation entries environment scope operationReader tokens kind}
     (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List (String × String) :=
   match value with
-  | .basis expression => expression.query.sourceRows
+  | .basis expression => expression.rows
   | .natural _ _ _ _ rows _ => rows
   | .operation .. => []
 
@@ -157,7 +149,7 @@ private def readActual {sources owner name original}
     WorkM (Actual instantiation entries environment scope operationReader) := do
   match kind : formal.kind with
   | .basis =>
-    let expression ← readBasis instantiation argument.tokens
+    let expression ← StaticBasisActual.read instantiation entries environment scope genericState argument.tokens
     return ⟨formal,argument,by rw [kind]; exact .basis expression⟩
   | .natural =>
     let expression ← adapt (StaticBindings.natural argument.tokens)
@@ -185,6 +177,8 @@ structure Checked {sources owner name original}
   complete : target.header.formals.length = written.arguments.length
   ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
     target.header.formals.zip written.arguments
+  genericState : Option (GenericLexicalNatural.SomeEnvironment sources)
+  premises : StaticCallPremises.Checked instantiation genericState scope target written.arguments
 
 def Checked.arguments {sources owner name original instantiation entries environment scope operationReader tokens written targetOwner targetName}
     (checked : @Checked sources owner name original instantiation entries environment scope operationReader tokens written targetOwner targetName) :
@@ -207,7 +201,8 @@ def read {sources owner name original}
       readActual instantiation entries environment scope operationReader genericState formal argument
     if ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
         target.header.formals.zip written.arguments then
-      return ⟨target,actuals,complete,ordered⟩
+      let premises ← StaticCallPremises.read instantiation genericState scope target written.arguments
+      return ⟨target,actuals,complete,ordered,genericState,premises⟩
     else throw .request
   else throw .request
 
