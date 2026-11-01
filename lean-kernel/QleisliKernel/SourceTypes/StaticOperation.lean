@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.QuantumSignatureCore
 import QleisliKernel.SourceTypes.StaticKinds
+import QleisliKernel.SourceTypes.SourceMeaning
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -50,51 +51,65 @@ structure Result (sources : Sources) where
   provider : Option (Provider sources) := none
   formal : Option (Provider sources) := none
   kindRows : List (String × String) := []
+  requirements : List (Nat × SourceMeaning.Request sources) := []
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
-private structure Ports where
-  input : List String := []
-  output : List String := []
-  stack : List String := []
-  arrow : Bool := false
-  afterArrow : Bool := false
-
-private def portToken (state : Ports) (token : String) : Except String Ports := do
-  if state.arrow then
-    if token != ">" then throw "incomplete original operation arrow"
-    return {state with arrow := false,afterArrow := true}
-  if state.stack.isEmpty && token == "," then
-    throw "operation Meaning refinement requires its separate original equality gate"
-  if state.stack.isEmpty && token == "-" then
-    if state.afterArrow then throw "multiple original operation arrows"
-    return {state with arrow := true}
-  let stack ← if ["(","<","["].contains token then
-      pure ((if token == "(" then ")" else if token == "<" then ">" else "]") :: state.stack)
-    else if [")",">","]"].contains token then do
-      let expected :: rest := state.stack | throw "unmatched operation kind delimiter"
-      if token != expected then throw "mismatched operation kind delimiter"
-      pure rest
-    else pure state.stack
-  return if state.afterArrow then {state with stack,output := state.output ++ [token]}
-    else {state with stack,input := state.input ++ [token]}
-
 def ports (tokens : List String) : Except String (List String × List String) := do
-  let state ← tokens.foldlM portToken {}
-  if state.input.isEmpty || !state.stack.isEmpty || state.arrow then throw "incomplete original operation kind"
-  if state.afterArrow && state.output.isEmpty then throw "missing original operation codomain"
-  return (state.input,if state.afterArrow then state.output else state.input)
+  let parsed ← OperationPorts.read tokens
+  return (parsed.input,parsed.output)
+
+structure FormalContract (sources : Sources) where
+  input : Basis
+  output : Basis
+  requirement : Option (SourceMeaning.Request sources)
+
+/-- The Meaning query belongs to the original kind's module and preceding
+scope. Closing Basis actuals cannot replace either exact Meaning port. The
+returned request still needs an independent equation against the actual body. -/
+def formalContract {sources owner name arguments}
+    (environment : StaticTypes.Environment sources owner name arguments) (formal : StaticHeaders.Formal) :
+    WorkM (FormalContract sources) := do
+  let .operation tokens := formal.kind | throw .request
+  exactWork (Exact.charge (32*(tokens.length+1)*(environment.numeric.original.header.formals.length+1)))
+  let parsed ← adapt (OperationPorts.read tokens)
+  let input ← StaticKinds.readType environment formal.ordinal parsed.input
+  let output ← StaticKinds.readType environment formal.ordinal parsed.output
+  let requirement ← match parsed.meaning with
+    | none => pure none
+    | some tokens => do
+      let scope := (environment.numeric.original.header.formals.filter (·.ordinal < formal.ordinal)).map (·.name)
+      let selected ← SourceMeaning.select sources owner scope tokens
+      guard (selected.meaning.graph.input == input.basis && selected.meaning.graph.output == output.basis) .request
+      pure (some selected.request)
+  return ⟨input.basis,output.basis,requirement⟩
 
 def formalPorts {sources owner name arguments}
     (environment : StaticTypes.Environment sources owner name arguments) (formal : StaticHeaders.Formal) :
     WorkM (Basis × Basis) := do
-  let .operation tokens := formal.kind | throw .request
-  exactWork (Exact.charge (32*(tokens.length+1)*(environment.numeric.original.header.formals.length+1)))
-  let (input,output) ← adapt (ports tokens)
-  let input ← StaticKinds.readType environment formal.ordinal input
-  let output ← StaticKinds.readType environment formal.ordinal output
-  return (input.basis,output.basis)
+  let contract ← formalContract environment formal
+  return (contract.input,contract.output)
+
+def requirementsWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original) :
+    WorkM (List (String × SourceMeaning.Request sources)) := do
+  match instantiation with
+  | .closed _ => pure []
+  | .static _ environment _ =>
+    let rows ← environment.numeric.original.header.formals.mapM fun formal => do
+      match formal.kind with
+      | .operation _ =>
+        let contract ← formalContract environment formal
+        pure (contract.requirement.toList.map fun request => (formal.name,request))
+      | _ => pure []
+    pure rows.flatten
+
+private def indexedRequirements {sources : Sources} (operations : List (String × Nat))
+    (requirements : List (String × SourceMeaning.Request sources)) :
+    WorkM (List (Nat × SourceMeaning.Request sources)) := requirements.mapM fun (name,request) => do
+  let some (_,index) := operations.find? (·.1 == name) | throw .request
+  pure (index,request)
 
 def kindRowsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) : WorkM (List (String × String)) := do
@@ -149,10 +164,11 @@ def bindArguments {sources owner name} (signature : QuantumSignatureCore.Checked
 
 private def result {sources : Sources} (input output : Basis) (effect : Effect) (paths : Paths)
     (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none)
-    (kindRows : List (String × String) := []) : WorkM (Result sources) := do
+    (kindRows : List (String × String) := [])
+    (requirements : List (Nat × SourceMeaning.Request sources) := []) : WorkM (Result sources) := do
   let _ ← FiniteCarrier.read input
   let _ ← FiniteCarrier.read output
-  pure ⟨input,output,effect,paths,provider,formal,kindRows⟩
+  pure ⟨input,output,effect,paths,provider,formal,kindRows,requirements⟩
 
 private def child {sources : Sources} (previous : List (Result sources)) (index : Nat) : WorkM (Result sources) :=
   match previous[index]? with | none => throw .request | some result => pure result
@@ -168,6 +184,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
   bindArguments signature originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
+  let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
   let [input] := signature.inputs | throw .request
   let [output] := signature.outputs | throw .request
   guard (match signature.parts with | .owner _ => true | _ => false) .request
@@ -185,7 +202,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let expected := visible.getD (if endomorphic then .unitary else .iso)
   result input output expected
     ⟨true,reversible && reverseArgs,reversible && endomorphic && controlArgs⟩
-    (some ⟨owner,name,signature,expected,internal⟩) none kindRows
+    (some ⟨owner,name,signature,expected,internal⟩) none kindRows requirements
 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
@@ -204,6 +221,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
     bindArguments signature originalResults
     let kindRows ← kindRowsWithInstantiation signature.instantiation
+    let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
     match signature.instantiation with
     | .closed _ => throw .request
     | .static _ environment _ =>
@@ -213,7 +231,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
       let effect := if input == output then Effect.unitary else .iso
-      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩) kindRows
+      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩) kindRows requirements
   | .inverse index =>
     let c ← child previous index
     guard c.paths.adjointable .request
@@ -245,6 +263,12 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       ⟨a.paths.applicable && a.paths.adjointable && b.paths.applicable,
         a.paths.applicable && a.paths.adjointable && b.paths.adjointable,
         a.paths.applicable && a.paths.adjointable && b.paths.controllable⟩
+  | .requested index owner name =>
+    let c ← child previous index
+    let caller := match context with | .external => none | .source caller => some caller
+    let requirement ← SourceMeaning.request sources caller owner name
+    guard (requirement.meaning.graph.input == c.input && requirement.meaning.graph.output == c.output) .request
+    result c.input c.output c.effect c.paths none none [] [(index,requirement)]
 
 def readNodes (sources : Sources) (context : Context) (description : Description) :
     WorkM (List (Result sources)) := do
@@ -279,7 +303,16 @@ def CheckedGraph.providers {sources context description} (graph : CheckedGraph s
 
 def CheckedGraph.sourceRows {sources context description} (graph : CheckedGraph sources context description) :
     List (String × String) := graph.results.flatMap fun result =>
-  result.kindRows ++ (result.provider.toList ++ result.formal.toList).flatMap fun provider => provider.signature.sourceRows
+  result.kindRows ++ ((result.provider.toList ++ result.formal.toList).flatMap fun provider => provider.signature.sourceRows) ++
+    (result.requirements.flatMap fun (_,request) => request.sourceRows)
+
+/-- Local requests in original node order. Descendant requests remain separate
+under inverses, controls and zero powers; no ancestor copies or erases them. -/
+def CheckedGraph.requirements {sources context description} (graph : CheckedGraph sources context description) :
+    List (Nat × SourceMeaning.Request sources) := graph.results.flatMap (·.requirements)
+
+def CheckedGraph.hasMeaningRequirements {sources context description} (graph : CheckedGraph sources context description) : Bool :=
+  !graph.requirements.isEmpty
 
 structure Actual (sources : Sources) (context : Context) (argument : String × Description) where
   graph : CheckedGraph sources context argument.2
@@ -293,6 +326,9 @@ structure ArgumentsCheckedWithInstantiation {sources owner name original}
   kindRows : List (String × String)
   kindRowsRead : ∃ before after,
     (kindRowsWithInstantiation instantiation).run before = (.ok kindRows,after)
+  rootRequirements : List (String × SourceMeaning.Request sources)
+  rootRequirementsRead : ∃ before after,
+    (requirementsWithInstantiation instantiation).run before = (.ok rootRequirements,after)
 
 def checkArgumentsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
@@ -305,13 +341,19 @@ def checkArgumentsWithInstantiation {sources owner name original}
       (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
     have same : bound.val = () := by cases bound.val; rfl
     let rows ← NaturalAffine.witness (kindRowsWithInstantiation instantiation)
+    let requirements ← NaturalAffine.witness (requirementsWithInstantiation instantiation)
     return ⟨actuals,ordered,by with_reducible simpa only [same] using bound.property,
-      rows.val,by with_reducible exact rows.property⟩
+      rows.val,by with_reducible exact rows.property,requirements.val,by with_reducible exact requirements.property⟩
   else throw .request
 
 def ArgumentsCheckedWithInstantiation.sourceRows {sources owner name original instantiation context}
     (checked : @ArgumentsCheckedWithInstantiation sources owner name original instantiation context) :
-    List (String × String) := checked.kindRows ++ checked.actuals.flatMap (fun actual => actual.2.graph.sourceRows)
+    List (String × String) := checked.kindRows ++ checked.actuals.flatMap (fun actual => actual.2.graph.sourceRows) ++
+      checked.rootRequirements.flatMap (fun (_,request) => request.sourceRows)
+
+def ArgumentsCheckedWithInstantiation.hasMeaningRequirements {sources owner name original instantiation context}
+    (checked : @ArgumentsCheckedWithInstantiation sources owner name original instantiation context) : Bool :=
+  !checked.rootRequirements.isEmpty || checked.actuals.any (fun actual => actual.2.graph.hasMeaningRequirements)
 
 abbrev ArgumentsChecked {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) (context : Context) :=
   ArgumentsCheckedWithInstantiation signature.instantiation context

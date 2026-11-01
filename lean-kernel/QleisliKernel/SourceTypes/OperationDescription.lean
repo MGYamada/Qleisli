@@ -23,12 +23,13 @@ inductive Node where
   | controlled (child : Nat)
   | power (child count : Nat)
   | conjugate (outer middle : Nat)
+  | requested (child : Nat) (moduleName declarationName : String)
   deriving BEq, DecidableEq, Repr
 
 def Node.children : Node → List Nat
   | .primitive .. => []
   | .provider _ _ _ _ operations | .formal _ _ _ _ operations _ => operations.map (·.2)
-  | .inverse child | .controlled child | .power child _ => [child]
+  | .inverse child | .controlled child | .power child _ | .requested child _ _ => [child]
   | .thenOp left right | .tensor left right | .conjugate left right => [left,right]
 
 def Node.remap (mapping : Nat → Nat) : Node → Node
@@ -43,6 +44,7 @@ def Node.remap (mapping : Nat → Nat) : Node → Node
   | .thenOp left right => .thenOp (mapping left) (mapping right)
   | .tensor left right => .tensor (mapping left) (mapping right)
   | .conjugate left right => .conjugate (mapping left) (mapping right)
+  | .requested child owner name => .requested (mapping child) owner name
 
 structure Description where
   nodes : List Node

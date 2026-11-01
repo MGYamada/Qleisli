@@ -59,6 +59,10 @@ def buildWithInstantiation {sources caller callerName original}
         | "tensor_op",[left,right] => return Description.binary .tensor (← next left.tokens) (← next right.tokens)
         | "conjugate_op",[outer,middle] =>
           return Description.binary .conjugate (← next outer.tokens) (← next middle.tokens)
+        | "checked_op",[child,meaning] =>
+          let child ← next child.tokens
+          let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
+          return child.unary (fun index => .requested index selected.resolution.moduleName selected.resolution.declaration.name)
         | _,_ => throw .request
       else do
         let written ← adapt (StaticApplication.readSyntax tokens)
@@ -160,6 +164,9 @@ def readRowsWithInstantiation {sources caller callerName original}
       | "adjoint",[child] | "controlled",[child] | "power",[child,_] => next child.tokens
       | "then_op",[left,right] | "tensor_op",[left,right] | "conjugate_op",[left,right] =>
         return (← next left.tokens) ++ (← next right.tokens)
+      | "checked_op",[child,meaning] =>
+        let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
+        return (← next child.tokens) ++ selected.request.sourceRows
       | _,_ => throw .request
     else
       let written ← adapt (StaticApplication.readSyntax tokens)
