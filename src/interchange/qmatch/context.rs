@@ -3,10 +3,31 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextSite {
+    pub attached: Interface,
+    pub required: Interface,
+    pub position: Position,
+    pub arms: Vec<ContextArm>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextArm {
+    pub implementation: u32,
+    pub controlled: u32,
+    pub providers: Vec<ProviderSubject>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ProviderSubject {
+    Function { evidence: u32 },
+    Pure { program: u32 },
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Context {
     pub positions: Vec<Position>,
-    pub sites: Vec<Site>,
+    pub sites: Vec<ContextSite>,
     pub calls: Vec<Call>,
     pub bodies: Vec<Context>,
 }
@@ -32,6 +53,12 @@ impl Context {
                 return Err(Error::limit("qmatch arm capacity"));
             }
             charge(remaining, site.arms.len().saturating_mul(128).saturating_add(512))?;
+            for arm in &site.arms {
+                if arm.providers.len() > 4096 {
+                    return Err(Error::limit("qmatch provider occurrence capacity"));
+                }
+                charge(remaining, arm.providers.len().saturating_mul(64))?;
+            }
         }
         for call in &self.calls {
             call.body.bounded(depth + 1, remaining)?;
@@ -45,14 +72,14 @@ impl Context {
     pub(super) fn fields(&self) -> [(String, Value); 4] {
         [
             ("positions".into(), Value::Array(self.positions.iter().map(Position::encode).collect())),
-            ("sites".into(), Value::Array(self.sites.iter().map(Site::encode).collect())),
+            ("sites".into(), Value::Array(self.sites.iter().map(ContextSite::encode).collect())),
             ("calls".into(), Value::Array(self.calls.iter().map(Call::encode).collect())),
             ("bodies".into(), Value::Array(self.bodies.iter().map(Self::encode).collect())),
         ]
     }
 
     pub(super) fn encode(&self) -> Value {
-        Value::Object(self.fields().into())
+        Value::object(self.fields())
     }
 
     pub(super) fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
@@ -77,9 +104,68 @@ impl Context {
         charge(remaining, bodies.len().saturating_mul(64))?;
         Ok(Self {
             positions: positions.iter().map(Position::decode).collect::<Result<_>>()?,
-            sites: sites.iter().map(Site::decode).collect::<Result<_>>()?,
+            sites: sites.iter().map(ContextSite::decode).collect::<Result<_>>()?,
             calls: calls.iter().map(|call| Call::decode(call, depth + 1, remaining)).collect::<Result<_>>()?,
             bodies: bodies.iter().map(|body| Self::decode(body, depth + 1, remaining)).collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl ContextSite {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("attached", self.attached.encode()), ("required", self.required.encode()),
+            ("position", self.position.encode()),
+            ("arms", Value::Array(self.arms.iter().map(ContextArm::encode).collect())),
+        ])
+    }
+    fn decode(value: &Value) -> Result<Self> {
+        value.fields(&["attached", "required", "position", "arms"])?;
+        let arms = value.field("arms")?.array()?;
+        if arms.is_empty() || arms.len() > 64 {
+            return Err(Error::limit("qmatch arm capacity"));
+        }
+        Ok(Self {
+            attached: Interface::decode(value.field("attached")?)?,
+            required: Interface::decode(value.field("required")?)?,
+            position: Position::decode(value.field("position")?)?,
+            arms: arms.iter().map(ContextArm::decode).collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl ContextArm {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("implementation", n(self.implementation)), ("controlled", n(self.controlled)),
+            ("providers", Value::Array(self.providers.iter().map(ProviderSubject::encode).collect())),
+        ])
+    }
+    fn decode(value: &Value) -> Result<Self> {
+        value.fields(&["implementation", "controlled", "providers"])?;
+        let providers = value.field("providers")?.array()?;
+        if providers.len() > 4096 {
+            return Err(Error::limit("qmatch provider occurrence capacity"));
+        }
+        Ok(Self {
+            implementation: number(value.field("implementation")?)?, controlled: number(value.field("controlled")?)?,
+            providers: providers.iter().map(ProviderSubject::decode).collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl ProviderSubject {
+    fn encode(&self) -> Value {
+        match self {
+            Self::Function { evidence } => Value::object([("kind", text("function")), ("evidence", n(*evidence))]),
+            Self::Pure { program } => Value::object([("kind", text("pure")), ("program", n(*program))]),
+        }
+    }
+    fn decode(value: &Value) -> Result<Self> {
+        Ok(match value.field("kind")?.text()? {
+            "function" => { value.fields(&["kind", "evidence"])?; Self::Function { evidence: number(value.field("evidence")?)? } }
+            "pure" => { value.fields(&["kind", "program"])?; Self::Pure { program: number(value.field("program")?)? } }
+            _ => return Err(Error::format("unknown qmatch provider subject")),
         })
     }
 }

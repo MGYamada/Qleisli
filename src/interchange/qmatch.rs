@@ -8,9 +8,10 @@ use super::json::{self, Value};
 use super::{Error, Result};
 
 mod context;
-pub use context::{Call, Context};
+pub use context::{Call, Context, ContextArm, ContextSite, ProviderSubject};
 mod operations;
-pub use operations::{Description, OperationNode, StaticArguments};
+pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};
+pub mod v5;
 
 /// Original physical arm subjects, still untrusted until the enclosing source
 /// and carrier-sector check. A physical signature is not a nominal contract.

@@ -653,6 +653,7 @@ pub(in crate::interchange) mod engineering_pure;
 pub(in crate::interchange) mod engineering_pure_tensor;
 pub(in crate::interchange) mod ordinary_root;
 pub(in crate::interchange) mod qmatch;
+pub(in crate::interchange) mod qmatch_v5;
 pub(in crate::interchange) mod runtime_root;
 
 /// Reuse the one bounded QDV1 writer and exact-matrix vocabulary for a view

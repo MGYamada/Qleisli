@@ -16,8 +16,21 @@ pub struct Description {
     pub root: u32,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OperationPrimitive {
+    H,
+    GlobalPhaseEighth,
+}
+
+impl OperationPrimitive {
+    pub(crate) fn name(self) -> &'static str {
+        match self { Self::H => "h", Self::GlobalPhaseEighth => "global_phase_eighth" }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperationNode {
+    Primitive { kind: OperationPrimitive, target: Vec<Atom> },
     Provider {
         module: String,
         function: String,
@@ -139,6 +152,7 @@ impl Description {
         }
         charge(remaining, self.nodes.len().saturating_mul(128))?;
         for node in &self.nodes {
+            if let OperationNode::Primitive { target,.. } = node { basis_storage(target, remaining)?; }
             if let OperationNode::Provider { module,function,bases,naturals,operations }
                 | OperationNode::Formal { module,function,bases,naturals,operations,.. } = node {
                 name_storage(module, remaining)?;
@@ -167,6 +181,10 @@ impl Description {
 impl OperationNode {
     fn encode(&self) -> Value {
         match self {
+            Self::Primitive { kind,target } => Value::object([
+                ("tag", text("primitive")), ("kind", text(kind.name())),
+                ("target", Value::Array(target.iter().map(Atom::encode).collect())),
+            ]),
             Self::Provider { module,function,bases,naturals,operations } => Value::object([
                 ("tag", text("provider")), ("module", text(module)), ("function", text(function)),
                 ("static_bases", encode_bases(bases)), ("static_naturals", encode_naturals(naturals)),
@@ -193,6 +211,15 @@ impl OperationNode {
     fn decode(value: &Value) -> Result<Self> {
         let get = |field| number(value.field(field)?);
         Ok(match value.field("tag")?.text()? {
+            "primitive" => {
+                value.fields(&["tag", "kind", "target"])?;
+                let kind = match value.field("kind")?.text()? {
+                    "h" => OperationPrimitive::H,
+                    "global_phase_eighth" => OperationPrimitive::GlobalPhaseEighth,
+                    _ => return Err(Error::format("unknown qmatch operation primitive")),
+                };
+                Self::Primitive { kind, target:basis(value.field("target")?)? }
+            }
             tag @ ("provider" | "formal") => {
                 if tag == "formal" {
                     value.fields(&["tag", "module", "function", "static_bases", "static_naturals", "static_operations", "ordinal"])?;
