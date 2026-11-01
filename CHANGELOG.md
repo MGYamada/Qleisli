@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that freshly checked named-arm IR executes with the final qmatch root's
+  actual dependencies. Recover each entry's historical checked snapshot from
+  that same graph run and retain every referenced slot, including both branches.
+  Preserve exact operators, hidden histories, failures and remaining checker
+  work without requiring unrelated dependency slots to agree. Connect these
+  proofs to the ordered original arm bindings in the common context checker.
+  Original source-body preservation and full qmatch integration remain pending.
 - Check existing finite `phase[j,k]` calls and body-local static Nat aliases
   through the common qmatch source traversal and literal Raw interval gate.
   Retain original helper lookup at each alias initializer, check every ordinary

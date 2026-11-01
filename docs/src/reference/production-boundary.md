@@ -284,6 +284,14 @@ call without gaps or overlaps. Each retains its actual owner frame and passes
 its own exact equations. Original source reads
 determine the canonical labels, types, owners, public effects and source rows;
 actual receipt inputs and dependency snapshots bind the named arm bodies.
+The structural execution proof recovers each entry's historical snapshot from
+the same successful graph run and preserves every dependency it references in
+the final root. It transports the original IR execution with identical exact
+operators, hidden histories, failures and remaining work; it covers references
+in both branches even when the condition is constant. Unrelated slots may
+differ. The common context result retains this execution property in its
+ordered original arm-binding relation. This does not prove the meaning or
+lowering of the original source body.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
 The ordinary source-root wrapper retains its original main-only roots and empty
 extra source-query extension.
