@@ -1,6 +1,7 @@
 import Protocol.Carrier
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
+import QleisliKernel.Qirf.SourceProviderSubject
 
 /-! Strict v5 data preparation, paired with the retained Rust request.
 This module issues no handle and has no production dispatcher. The complete
@@ -60,6 +61,9 @@ private def node (value : Json) : Except String OperationDescription.Node := do
       | "global_phase_eighth" => pure .globalPhaseEighth
       | _ => throw "unknown qmatch primitive"
     return .primitive kind (← basis (← get "target"))
+  | "requested" =>
+    Carrier.fields value ["tag","child","module","function"]
+    return .requested (← number (← get "child")) (← text (← get "module")) (← text (← get "function"))
   | "inverse" => Carrier.fields value ["tag","child"]; return .inverse (← number (← get "child"))
   | "controlled" => Carrier.fields value ["tag","child"]; return .controlled (← number (← get "child"))
   | "then" => Carrier.fields value ["tag","left","right"]; return .thenOp (← number (← get "left")) (← number (← get "right"))
@@ -90,14 +94,10 @@ private def source (value : Json) : Except String Source := do
   return ⟨← text (← field value "module"),← text (← field value "function"),
     ⟨← bases b,← naturals n,operations⟩⟩
 
-inductive Provider where
-  | function (evidence : Nat)
-  | pure (program : Nat)
-  deriving BEq, DecidableEq, Repr
+abbrev Provider := Qirf.SourceProviderSubject.Subject
 structure Arm where
   implementation : Nat
   controlled : Nat
-  providers : List Provider
   deriving BEq, DecidableEq, Repr
 structure Site where
   attached : Interface
@@ -108,7 +108,7 @@ structure Site where
 inductive Context where
   | mk (positions : List Qirf.SourceSequence.Position) (sites : List Site)
       (calls : List (Qirf.SourceSequence.Position × Context))
-      (branches : List (Qirf.SourceSequence.Position × Context × Context)) (bodies : List Context)
+      (branches : List (Qirf.SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context))
 
 -- Keep recursive transport data plain: the paired walker uses total fuel and
 -- exact byte comparison, without generated partial equality/printing helpers.
@@ -125,10 +125,8 @@ private def provider (value : Json) : Except String Provider := do
   | "pure" => Carrier.fields value ["kind","program"]; return .pure (← number (← field value "program"))
   | _ => throw "unknown qmatch provider subject"
 private def arm (value : Json) : Except String Arm := do
-  Carrier.fields value ["implementation","controlled","providers"]
-  let providers ← (← field value "providers").getArr?
-  if providers.size > 4096 then throw "qmatch provider occurrence capacity"
-  return ⟨← number (← field value "implementation"),← number (← field value "controlled"),← providers.toList.mapM provider⟩
+  Carrier.fields value ["implementation","controlled"]
+  return ⟨← number (← field value "implementation"),← number (← field value "controlled")⟩
 private def site (value : Json) : WorkM Site := do
   adapt (Carrier.fields value ["attached","required","position","arms"])
   let attached ← adapt (Carrier.readInterface (← adapt (field value "attached")))
@@ -165,8 +163,11 @@ private def context : Nat → Json → WorkM Context
       adapt (Carrier.fields whenFalse ["positions","sites","calls","branches","bodies"])
       return (location,← context fuel whenTrue,← context fuel whenFalse)
     let bodies ← bodies.toList.mapM fun value => do
-      adapt (Carrier.fields value ["positions","sites","calls","branches","bodies"])
-      context fuel value
+      adapt (Carrier.fields value ["subject","body"])
+      let subject ← adapt (provider (← adapt (field value "subject")))
+      let body ← adapt (field value "body")
+      adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
+      return (subject,← context fuel body)
     return .mk positions sites calls branches bodies
 
 def decode (value : Json) : WorkM Request := do

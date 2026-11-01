@@ -23,6 +23,7 @@ def node : OperationDescription.Node → Value
       [.text owner,.text name,bases b,naturals n,references o,.natural ordinal]
   | .primitive kind target => record "source-operation-primitive"
       [.text (match kind with | .h => "h" | .globalPhaseEighth => "global_phase_eighth"),basis target]
+  | .requested child owner name => record "source-operation-requested" [.natural child,.text owner,.text name]
   | .inverse child => record "source-operation-inverse" [.natural child]
   | .controlled child => record "source-operation-controlled" [.natural child]
   | .thenOp left right => record "source-operation-then" [.natural left,.natural right]
@@ -45,7 +46,7 @@ def provider : Protocol.QmatchV5.Provider → Value
   | .pure program => record "qmatch-pure-provider" [.natural program]
 
 def arm (value : Protocol.QmatchV5.Arm) : Value :=
-  record "qmatch-arm" [.natural value.implementation,.natural value.controlled,.array (value.providers.map provider)]
+  record "qmatch-arm" [.natural value.implementation,.natural value.controlled]
 
 def site (value : Protocol.QmatchV5.Site) : Value := record "qmatch-site"
   [CheckedCarrier.typedInterface value.attached,CheckedCarrier.typedInterface value.required,
@@ -59,7 +60,7 @@ def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value
       return record "source-call" [position location,← context fuel body]
     let branches ← branches.mapM fun (location,whenTrue,whenFalse) => do
       return record "source-branch" [position location,← context fuel whenTrue,← context fuel whenFalse]
-    let bodies ← bodies.mapM (context fuel)
+    let bodies ← bodies.mapM fun (subject,body) => do return record "source-body" [provider subject,← context fuel body]
     return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies]
 
 def description (artifact : Qirf.Artifact) (root : Qirf.Validity.Root) (request : Protocol.QmatchV5.Request) :

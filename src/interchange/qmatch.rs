@@ -8,7 +8,7 @@ use super::json::{self, Value};
 use super::{Error, Result};
 
 mod context;
-pub use context::{Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
+pub use context::{BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
 mod operations;
 pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};
 pub mod v5;

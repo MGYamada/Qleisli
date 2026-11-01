@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.FreshEntries
 import QleisliKernel.Qirf.PureProviderSubject
+import QleisliKernel.Qirf.SourceProviderSubject
 
 /-! Original provider occurrences bound to actual graph subjects.
 Function evidence is limited to an exact endomorphic source interface; distinct
@@ -9,10 +10,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.SourceProviderBinding
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Qirf Finite
 
-inductive Subject where
-  | function (evidence : Nat)
-  | pure (program : Nat)
-  deriving BEq, DecidableEq, Repr
+abbrev Subject := SourceProviderSubject.Subject
 
 def canonical {sources} (provider : StaticOperation.Provider sources) : String :=
   provider.moduleName ++ "::" ++ provider.declarationName

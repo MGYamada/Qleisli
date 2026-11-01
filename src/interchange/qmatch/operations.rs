@@ -30,6 +30,7 @@ impl OperationPrimitive {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperationNode {
+    Requested { child: u32, module: String, function: String },
     Primitive { kind: OperationPrimitive, target: Vec<Atom> },
     Provider {
         module: String,
@@ -153,6 +154,10 @@ impl Description {
         charge(remaining, self.nodes.len().saturating_mul(128))?;
         for node in &self.nodes {
             if let OperationNode::Primitive { target,.. } = node { basis_storage(target, remaining)?; }
+            if let OperationNode::Requested { module,function,.. } = node {
+                name_storage(module, remaining)?;
+                name_storage(function, remaining)?;
+            }
             if let OperationNode::Provider { module,function,bases,naturals,operations }
                 | OperationNode::Formal { module,function,bases,naturals,operations,.. } = node {
                 name_storage(module, remaining)?;
@@ -181,6 +186,9 @@ impl Description {
 impl OperationNode {
     fn encode(&self) -> Value {
         match self {
+            Self::Requested { child,module,function } => Value::object([
+                ("tag", text("requested")), ("child", n(*child)), ("module", text(module)), ("function", text(function)),
+            ]),
             Self::Primitive { kind,target } => Value::object([
                 ("tag", text("primitive")), ("kind", text(kind.name())),
                 ("target", Value::Array(target.iter().map(Atom::encode).collect())),
@@ -211,6 +219,10 @@ impl OperationNode {
     fn decode(value: &Value) -> Result<Self> {
         let get = |field| number(value.field(field)?);
         Ok(match value.field("tag")?.text()? {
+            "requested" => {
+                value.fields(&["tag", "child", "module", "function"])?;
+                Self::Requested { child:get("child")?, module:value.field("module")?.text()?.into(), function:value.field("function")?.text()?.into() }
+            }
             "primitive" => {
                 value.fields(&["tag", "kind", "target"])?;
                 let kind = match value.field("kind")?.text()? {

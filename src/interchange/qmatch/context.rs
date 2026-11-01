@@ -15,7 +15,6 @@ pub struct ContextSite {
 pub struct ContextArm {
     pub implementation: u32,
     pub controlled: u32,
-    pub providers: Vec<ProviderSubject>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -30,7 +29,7 @@ pub struct Context {
     pub sites: Vec<ContextSite>,
     pub calls: Vec<Call>,
     pub branches: Vec<Branch>,
-    pub bodies: Vec<Context>,
+    pub bodies: Vec<BodyRequest>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -44,6 +43,12 @@ pub struct Branch {
     pub position: Position,
     pub then_body: Context,
     pub else_body: Context,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BodyRequest {
+    pub subject: ProviderSubject,
+    pub body: Context,
 }
 
 impl Context {
@@ -62,12 +67,6 @@ impl Context {
                 return Err(Error::limit("qmatch arm capacity"));
             }
             charge(remaining, site.arms.len().saturating_mul(128).saturating_add(512))?;
-            for arm in &site.arms {
-                if arm.providers.len() > 4096 {
-                    return Err(Error::limit("qmatch provider occurrence capacity"));
-                }
-                charge(remaining, arm.providers.len().saturating_mul(64))?;
-            }
         }
         for call in &self.calls {
             call.body.bounded(depth + 1, remaining)?;
@@ -77,7 +76,7 @@ impl Context {
             branch.else_body.bounded(depth + 1, remaining)?;
         }
         for body in &self.bodies {
-            body.bounded(depth + 1, remaining)?;
+            body.body.bounded(depth + 1, remaining)?;
         }
         Ok(())
     }
@@ -88,7 +87,7 @@ impl Context {
             ("sites".into(), Value::Array(self.sites.iter().map(ContextSite::encode).collect())),
             ("calls".into(), Value::Array(self.calls.iter().map(Call::encode).collect())),
             ("branches".into(), Value::Array(self.branches.iter().map(Branch::encode).collect())),
-            ("bodies".into(), Value::Array(self.bodies.iter().map(Self::encode).collect())),
+            ("bodies".into(), Value::Array(self.bodies.iter().map(BodyRequest::encode).collect())),
         ]
     }
 
@@ -123,7 +122,7 @@ impl Context {
             sites: sites.iter().map(ContextSite::decode).collect::<Result<_>>()?,
             calls: calls.iter().map(|call| Call::decode(call, depth + 1, remaining)).collect::<Result<_>>()?,
             branches: branches.iter().map(|branch| Branch::decode(branch, depth + 1, remaining)).collect::<Result<_>>()?,
-            bodies: bodies.iter().map(|body| Self::decode(body, depth + 1, remaining)).collect::<Result<_>>()?,
+            bodies: bodies.iter().map(|body| BodyRequest::decode(body, depth + 1, remaining)).collect::<Result<_>>()?,
         })
     }
 }
@@ -155,18 +154,25 @@ impl ContextArm {
     fn encode(&self) -> Value {
         Value::object([
             ("implementation", n(self.implementation)), ("controlled", n(self.controlled)),
-            ("providers", Value::Array(self.providers.iter().map(ProviderSubject::encode).collect())),
         ])
     }
     fn decode(value: &Value) -> Result<Self> {
-        value.fields(&["implementation", "controlled", "providers"])?;
-        let providers = value.field("providers")?.array()?;
-        if providers.len() > 4096 {
-            return Err(Error::limit("qmatch provider occurrence capacity"));
-        }
+        value.fields(&["implementation", "controlled"])?;
         Ok(Self {
             implementation: number(value.field("implementation")?)?, controlled: number(value.field("controlled")?)?,
-            providers: providers.iter().map(ProviderSubject::decode).collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl BodyRequest {
+    fn encode(&self) -> Value {
+        Value::object([("subject", self.subject.encode()), ("body", self.body.encode())])
+    }
+    fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
+        value.fields(&["subject", "body"])?;
+        Ok(Self {
+            subject: ProviderSubject::decode(value.field("subject")?)?,
+            body: Context::decode(value.field("body")?, depth, remaining)?,
         })
     }
 }

@@ -29,6 +29,11 @@ fn references(view: &mut View<'_>, values: &[(String,u32)]) -> Result<()> {
 fn node(view: &mut View<'_>, value: &data::OperationNode) -> Result<()> {
     use data::OperationNode::*;
     match value {
+        Requested { child,module,function } => view.record("source-operation-requested", 3, |w| {
+            w.n(*child as usize)?;
+            w.writer.text(module)?;
+            w.writer.text(function)
+        }),
         Primitive { kind,target } => view.record("source-operation-primitive", 2, |w| {
             w.writer.text(kind.name())?;
             w.list(target, carrier::atom)
@@ -79,13 +84,9 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
             carrier::interface(w,&site.attached)?;
             carrier::interface(w,&site.required)?;
             position(w,&site.position)?;
-            w.list(&site.arms, |w, arm| w.record("qmatch-arm", 3, |w| {
+            w.list(&site.arms, |w, arm| w.record("qmatch-arm", 2, |w| {
                 w.n(arm.implementation as usize)?;
-                w.n(arm.controlled as usize)?;
-                w.list(&arm.providers, |w, provider| match provider {
-                    data::ProviderSubject::Function { evidence } => w.record("qmatch-function-provider", 1, |w| w.n(*evidence as usize)),
-                    data::ProviderSubject::Pure { program } => w.record("qmatch-pure-provider", 1, |w| w.n(*program as usize)),
-                })
+                w.n(arm.controlled as usize)
             }))
         }))?;
         w.list(&value.calls, |w, call| w.record("source-call", 2, |w| {
@@ -97,7 +98,13 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
             context(w,&branch.then_body)?;
             context(w,&branch.else_body)
         }))?;
-        w.list(&value.bodies, context)
+        w.list(&value.bodies, |w, body| w.record("source-body", 2, |w| {
+            match &body.subject {
+                data::ProviderSubject::Function { evidence } => w.record("qmatch-function-provider", 1, |w| w.n(*evidence as usize)),
+                data::ProviderSubject::Pure { program } => w.record("qmatch-pure-provider", 1, |w| w.n(*program as usize)),
+            }?;
+            context(w,&body.body)
+        }))
     })
 }
 
