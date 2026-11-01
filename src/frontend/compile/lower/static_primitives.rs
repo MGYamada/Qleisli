@@ -150,7 +150,12 @@ impl Lowerer<'_, '_> {
             };
             naturals.push(value);
         }
-        self.primitive_naturals(module, source.span, primitive, &naturals, args)
+        let start = self.raw.operations.len();
+        let value = self.primitive_naturals(module, source.span, primitive, &naturals, args)?;
+        if primitive == Primitive::Phase {
+            super::quantum_match::nominal::record_primitive(self, module, supplied_callee, start)?;
+        }
+        Ok(value)
     }
 
     pub(super) fn primitive_refusal(

@@ -19,13 +19,17 @@ fn kernel() -> Kernel {
 }
 
 fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram {
+    selected_at(source, "main::keep")
+}
+
+fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram {
     ParsedProgram::parse(
         Edition::E2026,
         BTreeMap::from([("main".into(), source.into())]),
     )
     .unwrap()
     .instantiate_runtime_with_types(
-        "main::keep",
+        entry,
         Default::default(),
         Default::default(),
         Default::default(),
@@ -33,6 +37,56 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
     .unwrap()
     .compile_runtime_with_kernel(&kernel())
     .unwrap_or_else(|error| panic!("{error:?}\nOriginal test source:\n{source}"))
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_context_checks_original_phase_parameters_and_aliases() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, Circuit};
+    for parameters in [
+        "let target=phase[1,3](h(target));",
+        "static let numerator=1;static let denominator=3;let target=phase[numerator,denominator](h(target));",
+    ] {
+        let source = format!(
+            "#![no_implicit_prelude]\n
+            pub enum Selector{{Zero,One}}
+            unitary fn idle(q:Q<Bit>)->Q<Bit>{{q}}
+            unitary fn marked(q:Q<Bit>)->Q<Bit>{{phase[1,3](q)}}
+            pub unitary fn select(selector:Q<Selector>,target:Q<Bit>)->(Q<Selector>,Q<Bit>){{
+                {parameters}
+                let(selector,target)=qmatch(selector,target){{Selector::Zero=>idle,Selector::One=>marked}};
+                (selector,phase[7,3](target))}}"
+        );
+        let accepted = selected_at(&source, "main::select");
+        let raw = accepted.program().raw();
+        assert_eq!(raw.operations.len(), 6);
+        for (index, exponent) in [(1, 1), (5, 7)] {
+            let qleisli::ir::RawOp::ApplyUnitary { steps, .. } = &raw.operations[index] else {
+                panic!("original phase must retain its own Raw interval");
+            };
+            let actual = Circuit::new(BasisType::Bit, steps.clone())
+                .unwrap()
+                .matrix(&mut Budget::new(10_000))
+                .unwrap();
+            let expected = Matrix::new(
+                2,
+                2,
+                vec![
+                    Exact::one(),
+                    Exact::zero(),
+                    Exact::zero(),
+                    Exact::phase(exponent),
+                ],
+            )
+            .unwrap();
+            assert_eq!(actual, expected);
+        }
+        kernel().check_program(accepted.program()).unwrap();
+    }
 }
 
 #[test]

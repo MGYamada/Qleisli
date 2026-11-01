@@ -24,6 +24,8 @@ private def eventView {sources caller} : Event sources caller → EventView
     ⟨"qmatch",[event.selector.ordinal,event.target.ordinal],ordinals held,sorted (held ++ owners event.before)⟩
   | .primitive event =>
     ⟨event.kind.name,[event.operand.ordinal],ordinals event.held,sorted (event.held ++ owners event.before)⟩
+  | .phase event =>
+    ⟨"phase",[event.operand.ordinal],ordinals event.held,sorted (event.held ++ owners event.before)⟩
 
 private def sources (source : String) : Sources := #[ ("main",source) ] ++ bundled
 private def result (source : String) :=
@@ -78,7 +80,7 @@ private def zeroSpectator (body : String) : String :=
 #guard rejected ("unitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)")
 #guard rejected ("unitary fn f(q:Q<Bit>)->Q<Bit>{q}" ++ single "f(q)")
 #guard rejected (single "power(h,2)(q)")
-#guard rejected (single "phase[1,1](q)")
+#guard view (single "phase[1,1](q)") = some ([⟨"phase",[0],[],[0]⟩],[0])
 #guard rejected (single "h(q);q")
 #guard rejected (single "h(q);f(q)")
 #guard rejected (single "measure_z(q)")
@@ -108,7 +110,8 @@ private def shadowedArm :=
 #guard ((result (shadowedArm.replace "=>turn" "=>main::turn")).map fun checked =>
   checked.result.events.all fun event => match event with
   | .selection original _ scope _ => scope.contains "turn" && original.scope == scope
-  | .primitive _ => false) = some true
+  | .primitive _ => false
+  | .phase _ => false) = some true
 
 -- One-qubit sequential call count is deliberately beyond 128. The historical
 -- qmatch-site limit must not become a total-expression or total-call limit.

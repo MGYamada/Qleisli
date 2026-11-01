@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.StatementSyntax
 import QleisliKernel.SourceTypes.QuantumSequence
+import QleisliKernel.SourceTypes.StaticBindings
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -24,6 +25,8 @@ inductive Tree : List LocatedToken → Type where
   | binding {tokens : List LocatedToken} (parsed : StatementSyntax.Checked tokens)
       (expression : Tree parsed.statement.expression)
       (rest : Tree parsed.statement.rest) : Tree tokens
+  | staticBindings {tokens : List LocatedToken} (leading : StaticBindings.Prefix tokens)
+      (nonempty : leading.bindings ≠ []) (rest : Tree leading.suffix) : Tree tokens
 
 inductive Children : List (List LocatedToken) → Type where
   | nil : Children []
@@ -60,7 +63,8 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
       return (← children.trees.mapM (fun child => next child.2)).flatten
     | .call parsed children =>
       return (← children.trees.mapM (fun child => next child.2)).flatten ++ [parsed.calleeOffset]
-    | .binding _ expression rest => return (← next expression) ++ (← next rest))
+    | .binding _ expression rest => return (← next expression) ++ (← next rest)
+    | .staticBindings _ _ rest => next rest)
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
 refuses instead of silently truncating the coverage list. The bound comes from
@@ -74,6 +78,13 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
     Nat → Nat → Bool → (tokens : List LocatedToken) → Except String (Tree tokens) :=
   Nat.rec (fun _ _ _ => throw "source syntax traversal fuel") (fun _ next depth body tokens => do
     if depth ≥ 65 then throw "source expression nesting capacity"
+    if tokens.head?.map (·.text) == some "static" then
+      if !body then throw "static let requires the enclosing original function body"
+      let leading ← StaticBindings.readPrefix tokens
+      if nonempty : leading.bindings ≠ [] then
+        let rest ← next depth true leading.suffix
+        return .staticBindings leading nonempty rest
+      else throw "static leading has no binding"
     if tokens.head?.map (·.text) == some "let" then
       if !body then throw "let requires the enclosing original function body"
       let statement ← StatementSyntax.readPrepared statements tokens

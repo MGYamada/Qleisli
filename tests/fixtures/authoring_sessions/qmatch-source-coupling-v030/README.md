@@ -1,5 +1,11 @@
 # Original qmatch source and evidence coupling
 
+The [phase/static first history](phase-static-first.json.xz) retains eight
+source/manifest files and sixteen complete observations. Original valid sources
+change from refusal to success; unused overflow still refuses. The 21-alias
+model benchmark still refuses in the full native path after a separate reader
+repair. Full windows remain external-only; source preservation is not proved.
+
 Historical archives and indexes are retained as logical files in the
 [shared history manifest](shared-history.json). Its three bounded object
 containers deduplicate identical original bytes. The passive reader reconstructs

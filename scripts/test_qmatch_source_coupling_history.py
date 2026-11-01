@@ -166,6 +166,44 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_phase_static_first_sources_and_real_diagnostics(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/phase-static-first.json.xz'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '54b29cc1953b6871fc510c431371f310f2f34a4e4e1e195bdf4f93b53f2c433c')
+        record = history_json(path)
+        self.assertEqual(record['maximum_quantum_bits'], 2)
+        self.assertEqual(len(record['sources']), 8)
+        for row in record['sources'].values():
+            data = row['text'].encode('utf-8')
+            self.assertEqual(len(data), row['bytes'])
+            self.assertEqual(hashlib.sha256(data).hexdigest(), row['sha256'])
+        windows = record['windows']
+        self.assertEqual(sum(len(w['observations']) for w in windows.values()), 16)
+        for window in windows.values():
+            self.assertTrue(window['inputs_stable'])
+            for name, digest in window['original_sources'].items():
+                self.assertEqual(record['sources'][name]['sha256'], digest)
+            for row in window['observations']:
+                self.assertTrue(row['child_reaped'])
+                self.assertIsNone(row['host_stop'])
+        first = {r['name']: r for r in windows['checks-first']['observations']}
+        after = {r['name']: r for r in windows['checks-after-native']['observations']}
+        self.assertEqual({r['exit_code'] for r in first.values()}, {1})
+        for name, row in after.items():
+            if name.startswith('unused-overflow'):
+                self.assertEqual(row['exit_code'], 1)
+                self.assertEqual(row['stdout'], first[name]['stdout'])
+            else:
+                self.assertEqual(row['exit_code'], 0)
+                if name.endswith('-selected'):
+                    result = json.loads(row['stdout'])['result']
+                    self.assertFalse(result['source_preservation_verified'])
+                    self.assertFalse(result['verification']['source_meaning_verified'])
+        for name in ('checks-alias-work-first', 'checks-alias-work-cached'):
+            self.assertEqual([r['exit_code'] for r in windows[name]['observations']], [1, 1])
+        self.assertIn('external-only', record['scope'])
+        self.assertIn('rejection cause remains undiagnosed', record['scope'])
+
     def test_module_header_first_diagnostic_is_retained(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/module-header-first.json'
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),

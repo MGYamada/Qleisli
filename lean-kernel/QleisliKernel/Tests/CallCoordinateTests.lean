@@ -27,6 +27,7 @@ def oldOffsets (text : String) : Option (List Nat) :=
   ((SourceTrace.read (sources text) "main" "route").run 10000000).1.toOption.map
     fun checked => checked.result.events.map fun event => match event with
       | .primitive event => event.call.call.opening.span.startByte
+      | .phase event => event.call.call.opening.span.startByte
       | .selection event .. => event.parsed.keyword.span.startByte
 
 def checksOffsets (text : String) (program : Observation.Program) (counts offsets : List Nat) : Bool :=
