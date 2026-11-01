@@ -10,7 +10,6 @@ remain additional enclosing obligations; this component issues no handle.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.PureProviderSubject
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes Finite
-open PureInterval (Witness)
 open Semantics.Exact Semantics.CarrierInterface
 
 def logical (physical inputCode outputCode : Matrix) : WorkM Matrix := do
@@ -19,11 +18,11 @@ def logical (physical inputCode outputCode : Matrix) : WorkM Matrix := do
   exactWork (Exact.Matrix.composeWork outputAdjoint restricted)
 
 structure Checked {artifact order rows roots}
-    (root : Witness (Validity.checkRootFromRoots artifact order rows roots))
+    (root : QleisliKernel.Qirf.PureInterval.Witness (Validity.checkRootFromRoots artifact order rows roots))
     (provider : StaticOperation.Provider artifact.sources) (index : Nat) where
   program : Semantics.Observation.Program
   original : artifact.programs[index]? = some program
-  verified : Witness (Raw.Observation.verify root.val.dependencies program)
+  verified : QleisliKernel.Qirf.PureInterval.Witness (Raw.Observation.verify root.val.dependencies program)
   domain : Semantics.FiniteCarrier.Basis
   codomain : Semantics.FiniteCarrier.Basis
   sourceInputs : provider.signature.inputs = [domain]
@@ -38,23 +37,23 @@ structure Checked {artifact order rows roots}
   publicBoundary : provider.internalInference = true ∨
     program.effect = .unitary ∨ program.effect = .iso
   pureExpected : provider.expectedEffect ≠ .observe
-  inputCode : Witness (Carrier.ownerCode [⟨input,domain⟩])
-  outputCode : Witness (Carrier.ownerCode [⟨output,codomain⟩])
-  physical : Witness (Raw.BranchFunction.reconstruct root.val.dependencies program)
+  inputCode : QleisliKernel.Qirf.PureInterval.Witness (Carrier.ownerCode [⟨input,domain⟩])
+  outputCode : QleisliKernel.Qirf.PureInterval.Witness (Carrier.ownerCode [⟨output,codomain⟩])
+  physical : QleisliKernel.Qirf.PureInterval.Witness (Raw.BranchFunction.reconstruct root.val.dependencies program)
   physicalShape : physical.val.cols = inputCode.val.rows ∧ physical.val.rows = outputCode.val.rows
-  action : Witness (logical physical.val inputCode.val outputCode.val)
-  isometry : Witness (exactWork (Exact.Matrix.isometryWork action.val))
+  action : QleisliKernel.Qirf.PureInterval.Witness (logical physical.val inputCode.val outputCode.val)
+  isometry : QleisliKernel.Qirf.PureInterval.Witness (exactWork (Exact.Matrix.isometryWork action.val))
   gram : isometry.val = true
   unitaryShape : provider.expectedEffect = .unitary → action.val.rows = action.val.cols
-  actual : Witness (exactWork (Exact.Matrix.composeWork physical.val inputCode.val))
-  specified : Witness (exactWork (Exact.Matrix.composeWork outputCode.val action.val))
+  actual : QleisliKernel.Qirf.PureInterval.Witness (exactWork (Exact.Matrix.composeWork physical.val inputCode.val))
+  specified : QleisliKernel.Qirf.PureInterval.Witness (exactWork (Exact.Matrix.composeWork outputCode.val action.val))
   noLeak : actual.val = specified.val
 
 /-- The enclosing graph must list this actual program as a subject. Repeating
 the Raw decision under the final dependencies is not a new graph/root decision,
 and a historical matrix/cache cannot provide any field of this result. -/
 def check {artifact order rows roots}
-    (root : Witness (Validity.checkRootFromRoots artifact order rows roots))
+    (root : QleisliKernel.Qirf.PureInterval.Witness (Validity.checkRootFromRoots artifact order rows roots))
     (provider : StaticOperation.Provider artifact.sources) (index : Nat) :
     WorkM (Checked root provider index) := do
   match original : artifact.programs[index]? with
@@ -100,11 +99,11 @@ def check {artifact order rows roots}
     | _,_,_,_ => throw .request
 
 theorem Checked.originalProgram {artifact order rows roots provider index}
-    {root : Witness (Validity.checkRootFromRoots artifact order rows roots)}
+    {root : QleisliKernel.Qirf.PureInterval.Witness (Validity.checkRootFromRoots artifact order rows roots)}
     (checked : Checked root provider index) : artifact.programs[index]? = some checked.program := checked.original
 
 theorem Checked.noHiddenObservation {artifact order rows roots provider index}
-    {root : Witness (Validity.checkRootFromRoots artifact order rows roots)}
+    {root : QleisliKernel.Qirf.PureInterval.Witness (Validity.checkRootFromRoots artifact order rows roots)}
     (checked : Checked root provider index) : checked.verified.val.state.observe = false := checked.noObservation
 
 end QleisliKernel.Qirf.PureProviderSubject
