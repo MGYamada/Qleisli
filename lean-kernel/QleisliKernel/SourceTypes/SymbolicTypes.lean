@@ -72,12 +72,13 @@ def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment 
       exactWork (Exact.charge (code.length+(children.flatMap (·.rows)).length+1))
       pure ⟨code,children.flatMap (·.rows)⟩
     | .named tokens =>
-      let formal := match tokens with
-        | [name] => state.prepared.original.header.formals.find? (fun formal => formal.name == name && formal.ordinal < ordinal)
+      let formal : Option StaticHeaders.Formal := match tokens with
+        | [name] => state.prepared.original.header.formals.find?
+          (fun (formal : StaticHeaders.Formal) => formal.name == name && formal.ordinal < ordinal)
         | _ => none
       match formal with
       | some formal =>
-        guard (formal.kind == .basis) .request
+        guard (formal.kind == StaticHeaders.Kind.basis) .request
         pure ⟨[.parameter ⟨state.owner,state.name,formal.ordinal⟩],[]⟩
       | none =>
         let query ← typeExpressionWithSources sources state.owner tokens
@@ -221,26 +222,26 @@ def substitute (variables : Nat) (bases : List (Parameter × Code)) (naturals : 
     (original : Code) : WorkM (Substituted bases naturals original) :=
   substituteLoop variables bases naturals (original.length+1) original
 
+def readQuantumTypes {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (clauses : List (List String)) : WorkM (List Read) :=
+  clauses.mapM fun tokens => do
+    let inner ← adapt (QuantumSignatureCore.quantumTokens tokens)
+    readCode state scope scope.length 65 inner
+
 structure Signature {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) where
   state : GenericLexicalNatural.SomeEnvironment sources
   stateRead : ∃ before after,(StaticCallPremises.callerState signature.instantiation none).run before = (.ok state,after)
   inputs : List Read
   outputs : List Read
-  inputRead : ∃ before after,((signature.original.parsedHeader.parameterTypes).mapM fun tokens => do
-    let inner ← adapt (QuantumSignatureCore.quantumTokens tokens)
-    readCode state signature.staticNames signature.staticNames.length 65 inner).run before = (.ok inputs,after)
-  outputRead : ∃ before after,(signature.parts.clauses.mapM fun tokens => do
-    let inner ← adapt (QuantumSignatureCore.quantumTokens tokens)
-    readCode state signature.staticNames signature.staticNames.length 65 inner).run before = (.ok outputs,after)
+  inputRead : ∃ before after,
+    (readQuantumTypes state signature.staticNames signature.original.parsedHeader.parameterTypes).run before = (.ok inputs,after)
+  outputRead : ∃ before after,
+    (readQuantumTypes state signature.staticNames signature.parts.clauses).run before = (.ok outputs,after)
 
 def readSignature {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name) : WorkM (Signature signature) := do
   let state ← NaturalAffine.witness (StaticCallPremises.callerState signature.instantiation none)
-  let inputs ← NaturalAffine.witness (signature.original.parsedHeader.parameterTypes.mapM fun tokens => do
-    let inner ← adapt (QuantumSignatureCore.quantumTokens tokens)
-    readCode state.val signature.staticNames signature.staticNames.length 65 inner)
-  let outputs ← NaturalAffine.witness (signature.parts.clauses.mapM fun tokens => do
-    let inner ← adapt (QuantumSignatureCore.quantumTokens tokens)
-    readCode state.val signature.staticNames signature.staticNames.length 65 inner)
+  let inputs ← NaturalAffine.witness (readQuantumTypes state.val signature.staticNames signature.original.parsedHeader.parameterTypes)
+  let outputs ← NaturalAffine.witness (readQuantumTypes state.val signature.staticNames signature.parts.clauses)
   pure ⟨state.val,by with_reducible exact state.property,inputs.val,outputs.val,
     by with_reducible exact inputs.property,by with_reducible exact outputs.property⟩
 
