@@ -29,6 +29,9 @@ def idle : Node := .provider "m" "idle" [] [] []
 #guard run ⟨[spin,.power 0 0],1⟩ [scalar 1] == .ok (scalar 0)
 -- The inactive power still requires its original provider occurrence.
 #guard run ⟨[spin,.power 0 0],1⟩ [] == .error .request
+-- A shared DAG node is two source occurrences, with two body/map slots.
+#guard run ⟨[spin,.thenOp 0 0],1⟩ [scalar 1,scalar 1] == .ok (scalar 2)
+#guard run ⟨[spin,.thenOp 0 0],1⟩ [scalar 1] == .error .request
 
 def h : Node := .primitive .h [.bit]
 #guard run ⟨[h,h,.thenOp 0 1],2⟩ [] == .ok identity

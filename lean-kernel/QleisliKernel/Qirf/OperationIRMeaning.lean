@@ -51,9 +51,7 @@ def primitive (kind : Primitive) (target : Semantics.FiniteCarrier.Basis) : Work
       if index / dimension == index % dimension then Exact.Scalar.phase 1 else Scalar.zero
     lift (arithmetic (Exact.Matrix.make dimension dimension entries))
 
-private def child (values : List Matrix) (index : Nat) : WorkM Matrix := lift (readOption values[index]?)
-
-private def formalChild {sources} (metadata : StaticOperation.Result sources)
+private def formalPosition {sources} (metadata : StaticOperation.Result sources)
     (operations : List (String × Nat)) (ordinal : Nat) : WorkM Nat := do
   let provider ← lift (readOption metadata.formal)
   match provider.signature.instantiation with
@@ -61,59 +59,62 @@ private def formalChild {sources} (metadata : StaticOperation.Result sources)
   | .static _ environment _ =>
     let formal ← lift (readOption environment.numeric.original.header.formals[ordinal]?)
     guard (formal.ordinal == ordinal) .request
-    let (_,index) ← lift (readOption (operations.find? fun pair => pair.1 == formal.name))
-    return index
+    let position := (operations.map (·.1)).idxOf formal.name
+    guard (position < operations.length) .request
+    return position
 
-/-- Tensor places the left owner's axes first (least significant). Conjugation
-uses the existing source operation law A B A† and retains distinct A/B ports. -/
+/-- Child values are occurrence values in the node's exact child order.
+Repeated node indices never select a globally memoized provider value. -/
 def readNode {sources} (metadata : StaticOperation.Result sources) (node : Node)
-    (previous providers : List Matrix) (nextProvider : Nat) : WorkM (Matrix × Nat) := do
-  let (value,nextProvider) ← match node with
-    | .provider .. => do return (← child providers nextProvider,nextProvider+1)
-    | .requested index _ _ => do return (← child previous index,nextProvider)
-    | .formal _ _ _ _ operations ordinal => do
-      let index ← formalChild metadata operations ordinal
-      return (← child previous index,nextProvider)
-    | .primitive kind target => do return (← primitive kind target,nextProvider)
-    | .inverse index => do
-      let value ← child previous index
-      return (← exactWork (Exact.Matrix.adjointWork value),nextProvider)
-    | .controlled index => do return (← controlled (← child previous index),nextProvider)
-    | .power index count => do return (← power (← child previous index) count,nextProvider)
-    | .thenOp left right => do
-      let first ← child previous left
-      let second ← child previous right
+    (children providers : List Matrix) (nextProvider : Nat) : WorkM (Matrix × Nat) := do
+  let (value,nextProvider) ← match node,children with
+    | .provider ..,_ => do
+      return (← lift (readOption providers[nextProvider]?),nextProvider+1)
+    | .formal _ _ _ _ operations ordinal,_ => do
+      let position ← formalPosition metadata operations ordinal
+      return (← lift (readOption children[position]?),nextProvider)
+    | .primitive kind target,[] => do return (← primitive kind target,nextProvider)
+    | .requested _ _ _,[value] => pure (value,nextProvider)
+    | .inverse _,[value] => do return (← exactWork (Exact.Matrix.adjointWork value),nextProvider)
+    | .controlled _,[value] => do return (← controlled value,nextProvider)
+    | .power _ count,[value] => do return (← power value count,nextProvider)
+    | .thenOp _ _,[first,second] => do
       return (← exactWork (Exact.Matrix.composeWork second first),nextProvider)
-    | .tensor left right => do
-      let first ← child previous left
-      let second ← child previous right
+    | .tensor _ _,[first,second] => do
       return (← exactWork (Exact.Matrix.tensorWork first second),nextProvider)
-    | .conjugate outer middle => do
-      let outer ← child previous outer
-      let middle ← child previous middle
+    | .conjugate _ _,[outer,middle] => do
       let adjoint ← exactWork (Exact.Matrix.adjointWork outer)
       let inner ← exactWork (Exact.Matrix.composeWork middle adjoint)
       return (← exactWork (Exact.Matrix.composeWork outer inner),nextProvider)
+    | _,_ => throw .request
   let input ← FiniteCarrier.read metadata.input
   let output ← FiniteCarrier.read metadata.output
   guard (value.cols == input.labels.length && value.rows == output.labels.length) .request
   return (value,nextProvider)
 
-/-- Every original node is visited, including providers in a zero power or
-an unused formal argument. The input provider spine is consumed exactly once
-in the graph's original provider order; no selected runtime arm skips it. -/
+private def visit {sources context description}
+    (graph : StaticOperation.CheckedGraph sources context description) (providers : List Matrix) :
+    Nat → Nat → Nat → WorkM (Matrix × Nat)
+  | 0,_,_ => throw .limit
+  | fuel+1,index,nextProvider => do
+    let node ← lift (readOption description.nodes[index]?)
+    let metadata ← lift (readOption graph.results[index]?)
+    let (children,nextProvider) ← node.children.foldlM (fun (children,nextProvider) child => do
+      let (value,nextProvider) ← visit graph providers fuel child nextProvider
+      return (children ++ [value],nextProvider)) ([],nextProvider)
+    readNode metadata node children providers nextProvider
+
+/-- Every child edge is visited, including shared DAG children, providers in a
+zero power and every unused formal actual. The existing 4096-node TREE profile
+is checked before expansion, so a compact DAG cannot evade that profile. -/
 def compute {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (providers : List Matrix) : WorkM Matrix := do
-  -- Metadata does not discharge a Meaning equation, even for an inactive or
-  -- unused child. An enclosing checked Meaning continuation is still pending.
+  -- Metadata alone does not discharge any Meaning equation.
   guard (!graph.hasMeaningRequirements) .request
-  exactWork (Exact.charge (16*(description.nodes.length+graph.results.length+providers.length+1)^2))
-  guard (providers.length == graph.providers.length && description.nodes.length == graph.results.length) .request
-  let (values,consumed) ← (description.nodes.zip graph.results).foldlM
-    (fun (values,consumed) (node,metadata) => do
-      let (value,consumed) ← readNode metadata node values providers consumed
-      return (values ++ [value],consumed)) ([],0)
+  let occurrences ← StaticOperation.readOccurrences description
+  exactWork (Exact.charge (16*(description.nodes.length+graph.results.length+occurrences.length+providers.length+1)^2))
+  let (value,consumed) ← visit graph providers (occurrences.length+1) description.root 0
   guard (consumed == providers.length) .request
-  child values description.root
+  return value
 
 end QleisliKernel.Qirf.OperationIRMeaning
