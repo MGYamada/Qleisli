@@ -15,6 +15,31 @@ def join (first second : Effect) : Effect :=
 def permits (declared : Option Effect) (inferred : Effect) : Bool :=
   declared.all fun bound => rank inferred ≤ rank bound
 
+theorem rank_join_left (first second : Effect) : rank first ≤ rank (join first second) := by
+  cases first <;> cases second <;> decide
+
+theorem rank_join_right (first second : Effect) : rank second ≤ rank (join first second) := by
+  cases first <;> cases second <;> decide
+
+theorem rank_accumulate {α : Type} (effect : α → Effect) (events : List α) (initial : Effect) :
+    rank initial ≤ rank (events.foldl (fun current event => join current (effect event)) initial) := by
+  induction events generalizing initial with
+  | nil => exact Nat.le_refl _
+  | cons first rest ih =>
+    exact (rank_join_left initial (effect first)).trans (ih (join initial (effect first)))
+
+theorem member_accumulate {α : Type} (effect : α → Effect) (events : List α) (initial : Effect)
+    (event : α) (member : event ∈ events) :
+    rank (effect event) ≤ rank (events.foldl (fun current item => join current (effect item)) initial) := by
+  induction events generalizing initial with
+  | nil => simp at member
+  | cons first rest ih =>
+    rcases List.mem_cons.mp member with same | later
+    · subst event
+      exact (rank_join_right initial (effect first)).trans
+        (rank_accumulate effect rest (join initial (effect first)))
+    · exact ih (join initial (effect first)) later
+
 /-- Aliases, inlining and specialization do not change original module identity.
 Private and same-module calls retain checked internal inference. -/
 def visible (caller callee : String) (isPublic : Bool)

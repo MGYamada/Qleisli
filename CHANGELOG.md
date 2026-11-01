@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an unwired mixed-runtime continuation over the same original source syntax,
+  lookup, static actuals and effect rules. Retain ordinary copying, exact tuple
+  and nominal types, measurement/discard histories, Unit allocation/release and
+  explicit pair split/join through named calls. Keep nested callee origins and
+  caller paths separate, and prove that a checked Unitary annotation cannot
+  contain an observing event. Native ordinary SSA/history binding, basis/reset
+  forms and general ordinary branches remain unfinished; no execution authority,
+  source-preservation theorem or qmatch completion follows from this component.
 - Extend the common original quantum-body traversal to named calls and computed
   qmatch operands. Compute each original callee's exact returned owner order
   before transporting it to caller arguments, retaining nested tuple shape,

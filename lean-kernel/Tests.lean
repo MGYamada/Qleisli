@@ -25,6 +25,7 @@ import QleisliKernel.Tests.SourceContextTests
 import QleisliKernel.Tests.SourceTraceTests
 import QleisliKernel.Tests.SourceTraceCacheTests
 import QleisliKernel.Tests.SourceCalls
+import QleisliKernel.Tests.SourceRuntimeTrace
 import QleisliKernel.Tests.PrimitiveActionTests
 import QleisliKernel.Tests.RawTraceTests
 import QleisliKernel.Tests.PhaseSourceContext

@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.StatementSyntax
 import QleisliKernel.SourceTypes.QuantumSequence
 import QleisliKernel.SourceTypes.StaticBindings
+import QleisliKernel.SourceTypes.SourceBoolean
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -14,6 +15,9 @@ open QleisliKernel.SourceTypes
 
 mutual
 inductive Tree : List LocatedToken → Type where
+  | empty (tokens : List LocatedToken) (original : tokens = []) : Tree tokens
+  | literal (tokens : List LocatedToken) (value : Bool)
+      (spelling : tokens.map (·.text) = [if value then "1" else "0"]) : Tree tokens
   | move (tokens : List LocatedToken) (term : QuantumMoves.Term)
       (parsed : QuantumMoves.parse 65 (tokens.map (·.text)) = .ok term) : Tree tokens
   | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
@@ -30,6 +34,10 @@ inductive Tree : List LocatedToken → Type where
       (rest : Tree parsed.statement.rest) : Tree tokens
   | staticBindings {tokens : List LocatedToken} (leading : StaticBindings.Prefix tokens)
       (nonempty : leading.bindings ≠ []) (rest : Tree leading.suffix) : Tree tokens
+  | sequence {tokens : List LocatedToken} (cut : StatementSyntax.Cut ";" tokens)
+      (expression : Tree cut.leading) (rest : Tree cut.suffix) : Tree tokens
+  | boolean {tokens : List LocatedToken} (written : SourceBoolean.Syntax tokens)
+      (children : Children written.parts) : Tree tokens
 
 inductive Children : List (List LocatedToken) → Type where
   | nil : Children []
@@ -60,6 +68,7 @@ def Children.trees {parts} (children : Children parts) : List (Sigma Tree) :=
 private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens → Except String (List Nat) :=
   Nat.rec (fun {_} _ => throw "original call traversal exhausted") (fun _ next {_} tree => do
     match tree with
+    | .empty .. | .literal .. => return []
     | .move .. => return []
     | .selection .. => return []
     | .selectionExpression _ _ _ selector target =>
@@ -69,7 +78,10 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .call parsed children =>
       return (← children.trees.mapM (fun child => next child.2)).flatten ++ [parsed.calleeOffset]
     | .binding _ expression rest => return (← next expression) ++ (← next rest)
-    | .staticBindings _ _ rest => next rest)
+    | .staticBindings _ _ rest => next rest
+    | .sequence _ expression rest => return (← next expression) ++ (← next rest)
+    | .boolean _ children =>
+      return (← children.trees.mapM (fun child => next child.2)).flatten)
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
 refuses instead of silently truncating the coverage list. The bound comes from
@@ -83,6 +95,9 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
     Nat → Nat → Bool → (tokens : List LocatedToken) → Except String (Tree tokens) :=
   Nat.rec (fun _ _ _ => throw "source syntax traversal fuel") (fun _ next depth body tokens => do
     if depth ≥ 65 then throw "source expression nesting capacity"
+    if original : tokens = [] then return .empty tokens original
+    if spelling : tokens.map (·.text) = ["0"] then return .literal tokens false spelling
+    if spelling : tokens.map (·.text) = ["1"] then return .literal tokens true spelling
     if tokens.head?.map (·.text) == some "static" then
       if !body then throw "static let requires the enclosing original function body"
       let leading ← StaticBindings.readPrefix tokens
@@ -96,6 +111,16 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       let expression ← next (depth+1) false statement.statement.expression
       let rest ← next depth true statement.statement.rest
       return .binding statement expression rest
+    if body then
+      match StatementSyntax.cutPrepared statements ";" tokens with
+      | .ok cut =>
+        let expression ← next (depth+1) false cut.leading
+        let rest ← next depth true cut.suffix
+        return .sequence cut expression rest
+      | .error _ => pure ()
+    if let some written := SourceBoolean.read tokens then
+      let children ← readChildren (next (depth+1) false) written.parts
+      return .boolean written children
     if tokens.head?.map (·.text) == some "qmatch" then
       match original : QuantumMatch.parse tokens with
       | .ok (parsed,[]) =>

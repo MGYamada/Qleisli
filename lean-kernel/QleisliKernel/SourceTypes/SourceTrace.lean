@@ -164,6 +164,8 @@ def evalWithReader (sources : Sources) (caller : String)
   Nat.rec (fun _ _ _ _ _ _ _ => throw .limit)
     (fun _ next naturals held scope environment tokens tree context => do
     match tree with
+    | .empty .. => return (← outcome environment [.tuple 0] environment [],context)
+    | .literal .. | .boolean .. => throw .request
     | .move tokens _ _ =>
       Finite.exactWork (Exact.charge (Meter.moveWork tokens environment))
       let (value,remaining) ← adapt (QuantumMoves.eval (tokens.map (·.text)) environment)
@@ -234,6 +236,12 @@ def evalWithReader (sources : Sources) (caller : String)
       let (last,context) ← next naturals held (names ++ scope) after rest context
       Finite.exactWork (Exact.charge (first.events.length+1))
       return (← outcome environment last.value last.remaining (first.events ++ last.events),context)
+    | .sequence _ expression rest =>
+      let (first,context) ← next naturals held scope environment expression context
+      Finite.guard (valueOwners first.value == []) .request
+      let (last,context) ← next naturals held scope first.remaining rest context
+      Finite.exactWork (Exact.charge (first.events.length+1))
+      return (← outcome environment last.value last.remaining (first.events ++ last.events),context)
     | .staticBindings leading _ rest =>
       let some current := naturals | throw .request
       let (updated,scope) ← PhaseApplication.extend sources caller leading current scope
@@ -255,7 +263,7 @@ def evalWithReader (sources : Sources) (caller : String)
       Finite.guard (value.length ≤ 128) .limit
       return (← outcome environment value remaining events,context)
     | .call call children =>
-      let written ← adapt (StaticApplication.syntax call.call.callee)
+      let written ← adapt (StaticApplication.readSyntax call.call.callee)
       let lookup ← SourceContext.read sources caller context scope written.callee
       let candidate ← Finite.lift lookup.answer.checked
       if PhaseApplication.selected candidate then
@@ -559,6 +567,16 @@ theorem Checked.allOriginalCalls {sources owner name} (checked : Checked sources
 
 theorem Checked.completeOwnerReturn {sources owner name} (checked : Checked sources owner name) :
     (owners checked.initial).Perm (valueOwners checked.result.value) := checked.returned
+
+theorem Checked.unitaryNoObservation {sources owner name} (checked : Checked sources owner name)
+    (annotation : checked.signature.original.parsedHeader.effect = some .unitary)
+    (event : Event sources owner) (member : event ∈ checked.result.events) : event.effect ≠ .observe := by
+  have pureEffect : inferredEffect checked.result.events = .unitary :=
+    SourceEffect.unitary_permits _ (by simpa only [annotation] using checked.asserted)
+  have bound := SourceEffect.member_accumulate Event.effect checked.result.events .unitary event member
+  change SourceEffect.rank event.effect ≤ SourceEffect.rank (inferredEffect checked.result.events) at bound
+  intro observed
+  simp [observed,pureEffect,SourceEffect.rank] at bound
 
 theorem PrimitiveEvent.originalTokens {sources caller} (event : PrimitiveEvent sources caller) :
     event.call.call.render = event.tokens := event.call.original
