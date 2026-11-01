@@ -32,9 +32,10 @@ private def typeRowCount {sources} (read : SourceTypes.TypeRead sources) : Nat :
 private def armRowCount {sources owner selector target}
     (arm : SourceTypes.QuantumArms.BoundArm sources owner selector target) : Nat :=
   (match arm.label.typeQuery with | none => 0 | some query => typeRowCount query) +
-    arm.operation.resolution.visited.length + 1 +
-    arm.operation.signature.parameterReads.foldl (fun count ty => count+typeRowCount ty) 0 +
-    arm.operation.signature.resultReads.foldl (fun count ty => count+typeRowCount ty) 0
+    arm.operation.sourceRows.length + 1 +
+    arm.operation.providers.foldl (fun count provider => count +
+      provider.signature.parameterReads.foldl (fun count ty => count+typeRowCount ty) 0 +
+      provider.signature.resultReads.foldl (fun count ty => count+typeRowCount ty) 0) 0
 
 structure CanonicalOperands {sources owner name offset}
     (site : SourceTypes.QuantumMatch.Site sources owner name offset)

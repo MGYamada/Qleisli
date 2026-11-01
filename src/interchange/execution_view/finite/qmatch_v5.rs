@@ -73,7 +73,7 @@ fn position(view: &mut View<'_>, value: &data::Position) -> Result<()> {
 }
 
 fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
-    view.record("source-context", 4, |w| {
+    view.record("source-context", 5, |w| {
         w.list(&value.positions, position)?;
         w.list(&value.sites, |w, site| w.record("qmatch-site", 4, |w| {
             carrier::interface(w,&site.attached)?;
@@ -91,6 +91,11 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
         w.list(&value.calls, |w, call| w.record("source-call", 2, |w| {
             position(w,&call.position)?;
             context(w,&call.body)
+        }))?;
+        w.list(&value.branches, |w, branch| w.record("source-branch", 3, |w| {
+            position(w,&branch.position)?;
+            context(w,&branch.then_body)?;
+            context(w,&branch.else_body)
         }))?;
         w.list(&value.bodies, context)
     })

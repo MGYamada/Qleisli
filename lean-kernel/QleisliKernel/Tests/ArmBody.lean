@@ -39,7 +39,7 @@ def bodyChecked (exponent index : Nat) (missing : Bool := false) (delta : Nat :=
   let checked ← ContextSector.check (artifact exponent source) order "main" "route" (positions source) (requests source)
   let some site := checked.locals.head? | throw .request
   let some arm := site.checked.prepared.entries.val[index]? | throw .request
-  let tokens := arm.bound.source.operation.signature.original.occurrence.body
+  let tokens := arm.bound.signature.original.occurrence.body
   let phaseOffset := ((tokens.find? (·.text == "phase")).map (·.span.startByte)).getD 0
   let placed := if index == 0 && !missing then [⟨phaseOffset+delta,0,1⟩] else []
   let body ← SourceArmBody.check checked.body.root arm.bound arm.checked placed

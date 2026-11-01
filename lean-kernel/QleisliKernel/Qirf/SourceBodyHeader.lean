@@ -58,12 +58,12 @@ structure Arm (artifact : Artifact) where
   target : Semantics.FiniteCarrier.Basis
   bound : SourceArm.Bound artifact owner selector target
   request : Context
-  source : Witness (SourceTrace.readWithSignature bound.source.operation.signature)
+  source : Witness (SourceTrace.readWithSignature bound.signature)
   header : Header source.val.checked request
 
 def readArm (artifact : Artifact) {owner selector target}
     (bound : SourceArm.Bound artifact owner selector target) (request : Context) : WorkM (Arm artifact) := do
-  let source ← NaturalAffine.witness (SourceTrace.readWithSignature bound.source.operation.signature)
+  let source ← NaturalAffine.witness (SourceTrace.readWithSignature bound.signature)
   let header ← read source.val.checked request
   return ⟨owner,selector,target,bound,request,source,header⟩
 

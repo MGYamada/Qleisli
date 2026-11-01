@@ -20,7 +20,7 @@ structure Checked {artifact order extra roots owner selector target}
     (bound : SourceArm.Bound artifact owner selector target)
     (realized : SourceArm.Realized artifact root.val.receipts bound)
     (positions : List SourceSequence.Position) where
-  source : Witness (SourceTypes.SourceTrace.readWithSignature bound.source.operation.signature)
+  source : Witness (SourceTypes.SourceTrace.readWithSignature bound.signature)
   completeActions : noSelections source.val.checked.result.events = true
   body : Witness (RawTrace.check source.val.checked root.val.dependencies
     realized.receipt.input.implementation positions)
@@ -34,7 +34,7 @@ def check {artifact order extra roots owner selector target}
     (realized : SourceArm.Realized artifact root.val.receipts bound)
     (positions : List SourceSequence.Position) : WorkM (Checked root bound realized positions) := do
   let source ← SourceTypes.NaturalAffine.witness
-    (SourceTypes.SourceTrace.readWithSignature bound.source.operation.signature)
+    (SourceTypes.SourceTrace.readWithSignature bound.signature)
   exactWork (Exact.charge (source.val.checked.result.events.length+1))
   if completeActions : noSelections source.val.checked.result.events = true then
     let body ← SourceTypes.NaturalAffine.witness (RawTrace.check source.val.checked
@@ -47,7 +47,7 @@ theorem Checked.originalSignature {artifact order extra roots owner selector tar
     {bound : SourceArm.Bound artifact owner selector target}
     {realized : SourceArm.Realized artifact root.val.receipts bound} {positions}
     (checked : Checked root bound realized positions) :
-    checked.source.val.checked.signature = bound.source.operation.signature :=
+    checked.source.val.checked.signature = bound.signature :=
   checked.source.val.originalSignature
 
 end QleisliKernel.Qirf.SourceArmBody

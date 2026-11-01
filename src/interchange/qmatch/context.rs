@@ -29,6 +29,7 @@ pub struct Context {
     pub positions: Vec<Position>,
     pub sites: Vec<ContextSite>,
     pub calls: Vec<Call>,
+    pub branches: Vec<Branch>,
     pub bodies: Vec<Context>,
 }
 
@@ -38,6 +39,13 @@ pub struct Call {
     pub body: Context,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Branch {
+    pub position: Position,
+    pub then_body: Context,
+    pub else_body: Context,
+}
+
 impl Context {
     pub(super) fn bounded(&self, depth: usize, remaining: &mut usize) -> Result<()> {
         if depth > 128 || self.sites.len() > 128 {
@@ -45,6 +53,7 @@ impl Context {
         }
         positions_storage(self.positions.len(), remaining)?;
         charge(remaining, self.calls.len().saturating_mul(160))?;
+        charge(remaining, self.branches.len().saturating_mul(192))?;
         charge(remaining, self.bodies.len().saturating_mul(64))?;
         for site in &self.sites {
             interface_storage(&site.attached, remaining)?;
@@ -63,17 +72,22 @@ impl Context {
         for call in &self.calls {
             call.body.bounded(depth + 1, remaining)?;
         }
+        for branch in &self.branches {
+            branch.then_body.bounded(depth + 1, remaining)?;
+            branch.else_body.bounded(depth + 1, remaining)?;
+        }
         for body in &self.bodies {
             body.bounded(depth + 1, remaining)?;
         }
         Ok(())
     }
 
-    pub(super) fn fields(&self) -> [(String, Value); 4] {
+    pub(super) fn fields(&self) -> [(String, Value); 5] {
         [
             ("positions".into(), Value::Array(self.positions.iter().map(Position::encode).collect())),
             ("sites".into(), Value::Array(self.sites.iter().map(ContextSite::encode).collect())),
             ("calls".into(), Value::Array(self.calls.iter().map(Call::encode).collect())),
+            ("branches".into(), Value::Array(self.branches.iter().map(Branch::encode).collect())),
             ("bodies".into(), Value::Array(self.bodies.iter().map(Self::encode).collect())),
         ]
     }
@@ -83,7 +97,7 @@ impl Context {
     }
 
     pub(super) fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
-        value.fields(&["positions", "sites", "calls", "bodies"])?;
+        value.fields(&["positions", "sites", "calls", "branches", "bodies"])?;
         Self::decode_fields(value, depth, remaining)
     }
 
@@ -94,6 +108,7 @@ impl Context {
         let positions = value.field("positions")?.array()?;
         let sites = value.field("sites")?.array()?;
         let calls = value.field("calls")?.array()?;
+        let branches = value.field("branches")?.array()?;
         let bodies = value.field("bodies")?.array()?;
         if sites.len() > 128 {
             return Err(Error::limit("qmatch sequence capacity"));
@@ -101,11 +116,13 @@ impl Context {
         positions_storage(positions.len(), remaining)?;
         charge(remaining, sites.len().saturating_mul(512))?;
         charge(remaining, calls.len().saturating_mul(160))?;
+        charge(remaining, branches.len().saturating_mul(192))?;
         charge(remaining, bodies.len().saturating_mul(64))?;
         Ok(Self {
             positions: positions.iter().map(Position::decode).collect::<Result<_>>()?,
             sites: sites.iter().map(ContextSite::decode).collect::<Result<_>>()?,
             calls: calls.iter().map(|call| Call::decode(call, depth + 1, remaining)).collect::<Result<_>>()?,
+            branches: branches.iter().map(|branch| Branch::decode(branch, depth + 1, remaining)).collect::<Result<_>>()?,
             bodies: bodies.iter().map(|body| Self::decode(body, depth + 1, remaining)).collect::<Result<_>>()?,
         })
     }
@@ -180,6 +197,22 @@ impl Call {
         Ok(Self {
             position: Position::decode(value.field("position")?)?,
             body: Context::decode(value.field("body")?, depth, remaining)?,
+        })
+    }
+}
+
+impl Branch {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("position", self.position.encode()), ("then", self.then_body.encode()), ("else", self.else_body.encode()),
+        ])
+    }
+    fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
+        value.fields(&["position", "then", "else"])?;
+        Ok(Self {
+            position: Position::decode(value.field("position")?)?,
+            then_body: Context::decode(value.field("then")?, depth, remaining)?,
+            else_body: Context::decode(value.field("else")?, depth, remaining)?,
         })
     }
 }

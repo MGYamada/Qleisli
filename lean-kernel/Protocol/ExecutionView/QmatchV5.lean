@@ -53,12 +53,14 @@ def site (value : Protocol.QmatchV5.Site) : Value := record "qmatch-site"
 
 def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value
   | 0,_ => throw .limit
-  | fuel+1,.mk positions sites calls bodies => do
-    Finite.exactWork (Exact.charge (16*(positions.length+sites.length+calls.length+bodies.length+1)))
+  | fuel+1,.mk positions sites calls branches bodies => do
+    Finite.exactWork (Exact.charge (16*(positions.length+sites.length+calls.length+branches.length+bodies.length+1)))
     let calls ← calls.mapM fun (location,body) => do
       return record "source-call" [position location,← context fuel body]
+    let branches ← branches.mapM fun (location,whenTrue,whenFalse) => do
+      return record "source-branch" [position location,← context fuel whenTrue,← context fuel whenFalse]
     let bodies ← bodies.mapM (context fuel)
-    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array bodies]
+    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies]
 
 def description (artifact : Qirf.Artifact) (root : Qirf.Validity.Root) (request : Protocol.QmatchV5.Request) :
     Finite.WorkM Value := do

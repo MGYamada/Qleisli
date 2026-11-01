@@ -14,18 +14,45 @@ structure Programs where
   controlled : Nat
   deriving BEq, DecidableEq, Repr
 
-def canonical {sources owner selector target}
-    (arm : SourceTypes.QuantumArms.BoundArm sources owner selector target) : String :=
-  arm.operation.resolution.moduleName ++ "::" ++ arm.operation.resolution.declaration.name
+/-- Existing entry/receipt proofs concern one actual named function leaf.
+The complete operation tree has no representative function signature. -/
+structure FunctionSource {sources owner selector target}
+    (arm : SourceTypes.QuantumArms.BoundArm sources owner selector target) where
+  provider : SourceTypes.StaticOperation.Provider sources
+  onlyProvider : arm.operation.providers = [provider]
+  namedDescription : arm.operation.description = SourceTypes.OperationDescription.provider
+    provider.moduleName provider.declarationName provider.signature.staticArguments.bases
+    provider.signature.staticArguments.naturals provider.signature.staticArguments.operations
+  signature : SourceTypes.QuantumSignature.Checked sources provider.moduleName provider.declarationName
+  originalCore : signature.toChecked = provider.signature
+
+def FunctionSource.canonical {sources owner selector target arm}
+    (source : @FunctionSource sources owner selector target arm) : String :=
+  source.provider.moduleName ++ "::" ++ source.provider.declarationName
+
+def readFunctionSource {sources owner selector target}
+    (arm : SourceTypes.QuantumArms.BoundArm sources owner selector target) : WorkM (FunctionSource arm) := do
+  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
+  exactWork (Exact.charge (8*(bytes+1)*(arm.operation.description.nodes.length+1)))
+  match onlyProvider : arm.operation.providers with
+  | [provider] =>
+    if namedDescription : arm.operation.description = SourceTypes.OperationDescription.provider
+        provider.moduleName provider.declarationName provider.signature.staticArguments.bases
+        provider.signature.staticArguments.naturals provider.signature.staticArguments.operations then
+      let operations ← SourceTypes.StaticOperation.checkArguments provider.signature (.source owner)
+      return ⟨provider,onlyProvider,namedDescription,⟨provider.signature,.source owner,operations⟩,rfl⟩
+    else throw .request
+  | _ => throw .request
 
 structure Binding (artifact : Artifact) {owner selector target}
     (arm : SourceTypes.QuantumArms.BoundArm artifact.sources owner selector target)
     (programs : Programs) where
+  function : FunctionSource arm
   entry : Entry
   identity : Semantics.Function.Identity
   original : artifact.entries[programs.evidence]? = some entry
-  named : entry.implementationName = canonical arm
-  row : (arm.operation.resolution.moduleName,arm.operation.signature.original.source) ∈ identity.sources
+  named : entry.implementationName = function.canonical
+  row : (function.provider.moduleName,function.signature.original.source) ∈ identity.sources
   identityRead : ∃ before after, (Qirf.identity artifact entry).run before = (.ok identity,after)
 
 /-- The entry supplies the implementation index. Names and original bytes bind
@@ -37,6 +64,11 @@ def read (artifact : Artifact) {owner selector target}
   guard (artifact.sources.size ≤ 128) .limit
   let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
+  let function ← readFunctionSource arm
+  -- Preserve the old named-only admission profile. The complete v5 tree
+  -- continuation must discharge precise internal inference from actual bodies.
+  guard (function.signature.original.parsedHeader.effect == none ||
+    function.signature.original.parsedHeader.effect == some .unitary) .request
   match original : artifact.entries[programs.evidence]? with
   | none => throw .request
   | some entry =>
@@ -44,9 +76,9 @@ def read (artifact : Artifact) {owner selector target}
     guard (entry.sources.length ≤ 128) .limit
     exactWork (Exact.charge (8*(bytes+4097)*(entry.sources.length+1)))
     let identity ← SourceTypes.NaturalAffine.witness (Qirf.identity artifact entry)
-    if named : entry.implementationName = canonical arm then
-      if row : (arm.operation.resolution.moduleName,arm.operation.signature.original.source) ∈ identity.val.sources then
-        return ⟨entry,identity.val,original,named,row,by with_reducible exact identity.property⟩
+    if named : entry.implementationName = function.canonical then
+      if row : (function.provider.moduleName,function.signature.original.source) ∈ identity.val.sources then
+        return ⟨function,entry,identity.val,original,named,row,by with_reducible exact identity.property⟩
       else throw .request
     else throw .request
 
@@ -54,6 +86,9 @@ structure Bound (artifact : Artifact) (owner : String) (selector target : Semant
   source : SourceTypes.QuantumArms.BoundArm artifact.sources owner selector target
   programs : Programs
   binding : Binding artifact source programs
+
+def Bound.signature {artifact owner selector target} (bound : Bound artifact owner selector target) :=
+  bound.binding.function.signature
 
 def Bound.reference {artifact owner selector target} (bound : Bound artifact owner selector target) : SectorArm.Reference :=
   ⟨bound.source.label.ordinal,target,.unitary,bound.binding.entry.implementation,bound.programs.controlled⟩
@@ -152,7 +187,7 @@ theorem Realized.inputBinding {artifact slots owner selector target}
 
 theorem Realized.sourceRow {artifact slots owner selector target}
     {bound : Bound artifact owner selector target} (checked : Realized artifact slots bound) :
-    (bound.source.operation.resolution.moduleName,bound.source.operation.signature.original.source) ∈
+    (bound.binding.function.provider.moduleName,bound.signature.original.source) ∈
       checked.receipt.input.identity.sources := by
   rw [checked.inputBinding.1]
   exact bound.binding.row
@@ -182,7 +217,7 @@ source tables and all full target trees, independently of concrete examples. -/
 theorem Bound.sameEvidence_name {artifact other owner otherOwner selector target otherSelector otherTarget}
     (first : Bound artifact owner selector target) (second : Bound other otherOwner otherSelector otherTarget)
     (table : artifact.entries = other.entries) (index : first.programs.evidence = second.programs.evidence) :
-    canonical first.source = canonical second.source := by
+    first.binding.function.canonical = second.binding.function.canonical := by
   have found := first.binding.original
   rw [table,index] at found
   have same : first.binding.entry = second.binding.entry :=

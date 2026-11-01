@@ -18,7 +18,7 @@ theorem Local.arm_executions {artifact owner name requests order positions}
       result.bound = bound ∧
       artifact.programs[bound.binding.entry.implementation]? =
         some result.checked.receipt.input.implementation ∧
-      (bound.source.operation.resolution.moduleName,bound.source.operation.signature.original.source) ∈
+      (bound.binding.function.provider.moduleName,bound.signature.original.source) ∈
         result.checked.receipt.input.identity.sources ∧
       ReceiptTransport.Executes body.root.val.dependencies result.checked.receipt.input.implementation
         result.checked.receipt.meaning ∧

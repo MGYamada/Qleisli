@@ -26,7 +26,7 @@ theorem realized_execution {artifact order extra roots owner selector target}
     (bound : SourceArm.Bound artifact owner selector target)
     (checked : SourceArm.Realized artifact root.val.receipts bound) :
     artifact.programs[bound.binding.entry.implementation]? = some checked.receipt.input.implementation ∧
-    (bound.source.operation.resolution.moduleName,bound.source.operation.signature.original.source) ∈
+    (bound.binding.function.provider.moduleName,bound.signature.original.source) ∈
       checked.receipt.input.identity.sources ∧
     Executes root.val.dependencies checked.receipt.input.implementation checked.receipt.meaning ∧
     Executes root.val.dependencies checked.receipt.input.specification checked.receipt.meaning := by

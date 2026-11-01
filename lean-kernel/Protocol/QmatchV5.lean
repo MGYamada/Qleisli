@@ -107,7 +107,8 @@ structure Site where
   deriving BEq, DecidableEq, Repr
 inductive Context where
   | mk (positions : List Qirf.SourceSequence.Position) (sites : List Site)
-      (calls : List (Qirf.SourceSequence.Position × Context)) (bodies : List Context)
+      (calls : List (Qirf.SourceSequence.Position × Context))
+      (branches : List (Qirf.SourceSequence.Position × Context × Context)) (bodies : List Context)
   deriving BEq, DecidableEq, Repr
 structure Request where
   source : Source
@@ -142,24 +143,33 @@ private def context : Nat → Json → WorkM Context
     let positions ← adapt ((← adapt (field value "positions")).getArr?)
     let sites ← adapt ((← adapt (field value "sites")).getArr?)
     let calls ← adapt ((← adapt (field value "calls")).getArr?)
+    let branches ← adapt ((← adapt (field value "branches")).getArr?)
     let bodies ← adapt ((← adapt (field value "bodies")).getArr?)
     guard (sites.size ≤ 128) .limit
-    exactWork (Exact.charge (16*(positions.size+sites.size+calls.size+bodies.size+1)))
+    exactWork (Exact.charge (16*(positions.size+sites.size+calls.size+branches.size+bodies.size+1)))
     let positions ← adapt (positions.toList.mapM position)
     let sites ← sites.toList.mapM site
     let calls ← calls.toList.mapM fun value => do
       adapt (Carrier.fields value ["position","body"])
       let position ← adapt (position (← adapt (field value "position")))
       let body ← adapt (field value "body")
-      adapt (Carrier.fields body ["positions","sites","calls","bodies"])
+      adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
       return (position,← context fuel body)
+    let branches ← branches.toList.mapM fun value => do
+      adapt (Carrier.fields value ["position","then","else"])
+      let location ← adapt (position (← adapt (field value "position")))
+      let whenTrue ← adapt (field value "then")
+      let whenFalse ← adapt (field value "else")
+      adapt (Carrier.fields whenTrue ["positions","sites","calls","branches","bodies"])
+      adapt (Carrier.fields whenFalse ["positions","sites","calls","branches","bodies"])
+      return (location,← context fuel whenTrue,← context fuel whenFalse)
     let bodies ← bodies.toList.mapM fun value => do
-      adapt (Carrier.fields value ["positions","sites","calls","bodies"])
+      adapt (Carrier.fields value ["positions","sites","calls","branches","bodies"])
       context fuel value
-    return .mk positions sites calls bodies
+    return .mk positions sites calls branches bodies
 
 def decode (value : Json) : WorkM Request := do
-  adapt (Carrier.fields value ["format","version","profile","source","positions","sites","calls","bodies"])
+  adapt (Carrier.fields value ["format","version","profile","source","positions","sites","calls","branches","bodies"])
   guard (← adapt (do return (← (← field value "format").getStr?) == "qleisli.qmatch-request" &&
     (← number (← field value "version")) == 5 && (← (← field value "profile").getStr?) == profile)) .request
   let source ← adapt (source (← adapt (field value "source")))
