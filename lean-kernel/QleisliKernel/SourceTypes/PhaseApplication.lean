@@ -17,10 +17,11 @@ abbrev Witness {α : Type} (action : WorkM α) :=
 structure Naturals (sources : Sources) where
   helpers : Witness (NaturalHelpers.prepare sources)
   environment : LexicalNatural.Environment helpers.val
+  staticNames : List String
 
 def prepare (sources : Sources) : WorkM (Naturals sources) := do
   let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
-  return ⟨helpers,LexicalNatural.empty helpers.val⟩
+  return ⟨helpers,LexicalNatural.empty helpers.val,[]⟩
 
 structure Syntax {tokens : List LocatedToken} (call : CallSyntax.Checked tokens) where
   staticCall : CallSyntax.StaticChecked call.call.callee
@@ -74,7 +75,8 @@ def extend (sources : Sources) (caller : String) {tokens : List LocatedToken}
   leading.bindings.foldlM (fun (naturals,scope) binding => do
     let bound ← LexicalNatural.bind sources caller naturals.helpers.val naturals.environment
       scope binding.name.text binding.natural.expression
-    let next : Naturals sources := ⟨naturals.helpers,bound.environment⟩
+    let next : Naturals sources :=
+      ⟨naturals.helpers,bound.environment,binding.name.text :: naturals.staticNames⟩
     return (next,binding.name.text :: scope)) (initial,scope)
 
 end QleisliKernel.SourceTypes.PhaseApplication

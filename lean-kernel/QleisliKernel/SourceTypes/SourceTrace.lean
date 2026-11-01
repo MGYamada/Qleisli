@@ -182,6 +182,14 @@ def evalWithNaturals (sources : Sources) (caller : String) : Nat →
       Finite.guard (decide ((owners environment).Perm (owners after))) .request
       let names ← adapt (boundNames pattern)
       Finite.exactWork (Exact.charge (Meter.nameFields names+1))
+      -- Static names and live quantum owners are separate. A runtime pattern
+      -- must not hide an earlier static binding, even when that alias is unused.
+      match naturals with
+      | some current =>
+        Finite.exactWork (Exact.charge
+          (8*(Meter.nameFields names+1)*(Meter.nameFields current.staticNames+1)))
+        Finite.guard (names.all fun name => !current.staticNames.contains name) .request
+      | none => pure ()
       let (last,context) ← next naturals held (names ++ scope) after rest context
       Finite.exactWork (Exact.charge (first.events.length+1))
       return (← outcome environment last.value last.remaining (first.events ++ last.events),context)

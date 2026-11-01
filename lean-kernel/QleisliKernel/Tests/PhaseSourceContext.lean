@@ -37,6 +37,18 @@ def controls : List (String × Bool) := [
     (single "let j=();let ()=j;static let j=1;phase[j,3](q)") (one 1) [1]),
   ("a runtime value cannot supply a static natural",!checks
     (single "let j=();phase[j,3](q)") (one 1) [1]),
+  ("runtime owner cannot shadow an earlier static alias",!checks
+    (single "static let j=1;let j=q;phase[j,3](j)") (one 1) [1]),
+  ("unused static alias still blocks runtime shadowing",!checks
+    (single "static let j=1;let j=q;phase[1,3](j)") (one 1) [1]),
+  ("runtime tuple pattern cannot shadow a static alias",!checks
+    (single "static let j=1;let(j,)=(q,);phase[j,3](j)") (one 1) [1]),
+  ("ordinary Unit binder cannot shadow a static alias",!checks
+    (single "static let j=1;let j=();phase[j,3](q)") (one 1) [1]),
+  ("an event-free body cannot hide runtime shadowing",!checks
+    (single "static let j=1;let j=q;j") {one 1 with operations := [],outputs := [10]} []),
+  ("runtime owner rebinding preserves unrelated static aliases",checks
+    (single "static let j=1;let q=h(q);phase[j,3](q)") (nested 1) [1,1]),
   ("lexical phase shadow cannot fall back to a primitive",!checks
     (single "static let phase=1;phase[1,3](q)") (one 1) [1]),
   ("a named phase function is not a primitive",!checks

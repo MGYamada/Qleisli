@@ -166,6 +166,20 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_static_runtime_shadow_first_counterexample(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/runtime-static-shadow-first.json.xz'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '0ae5abeed2cc8bc9967f20d37e5a114b814e3f640bcac82466e11c35d9dd10a1')
+        record = history_json(path)
+        self.assertEqual(hashlib.sha256(record['source'].encode()).hexdigest(), record['source_sha256'])
+        self.assertIn('static let j=1;let j=q;phase[j,3](j)', record['source'])
+        self.assertEqual(record['first_cli_exit_code'], 1)
+        self.assertIn('shadows a static parameter/index', record['first_cli_stdout'])
+        self.assertEqual(record['first_cli_stderr'], '')
+        self.assertEqual(record['before_source_raw_stdout'].strip(), 'source/Raw admitted: true')
+        self.assertEqual(record['after_source_raw_stdout'].strip(), 'source/Raw admitted: false')
+        self.assertIn('external-only', record['scope'])
+
     def test_phase_static_first_sources_and_real_diagnostics(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/phase-static-first.json.xz'
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),

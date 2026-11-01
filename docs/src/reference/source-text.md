@@ -283,7 +283,8 @@ parameters and body-local `static let` initializers use original Nat syntax and
 lexical lookup. Every ordinary caller intermediate and helper actual must fit u32,
 including unused initializers and ignored arguments; original static helper
 bodies retain their checked signed-affine rules. An alias retains the helper
-resolution and lexical environment of its initializer. The finite phase rule
+resolution and lexical environment of its initializer. Runtime patterns cannot
+shadow earlier static aliases, including unused aliases. The finite phase rule
 requires `k <= 8`, `j < 2^k` and an exact multiple of one eighth, without rounding
 or a replacement modulo-one normalization. These checks do not add generic
 caller-actual transport or constructed-arm support.

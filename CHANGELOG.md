@@ -9,7 +9,8 @@ development milestones from the scope of their evidence.
 - Check existing finite `phase[j,k]` calls and body-local static Nat aliases
   through the common qmatch source traversal and literal Raw interval gate.
   Retain original helper lookup at each alias initializer, check every ordinary
-  caller intermediate and unused initializer, and preserve exact phase and call order.
+  caller intermediate and unused initializer, reject runtime shadowing of static
+  aliases, and preserve exact phase and call order.
   Generic caller bindings, general calls/arms and the full twelve-bit profile
   remain unfinished; no source-preservation or issue-completion claim follows.
 - Retain two independent Reference-only qmatch first-authoring responses and all
