@@ -143,8 +143,11 @@ def read {sources owner name original targetOwner targetName}
           rw [substitution] at numeric
           have natural := NaturalFrames.argumentValues_natural (StaticHeaders.frame callee.prepared.original) (numbers forms.val values)
           have predicates := (callee.prepared.scope.correct _ natural).mp numeric
-          rw [← callee.originalHeader]
-          exact predicates⟩)
+          have frameSame := congrArg
+            (fun (header : StaticHeaders.Original sources targetOwner targetName) => StaticHeaders.frame header) callee.originalHeader
+          have premisesSame := congrArg
+            (fun (header : StaticHeaders.Original sources targetOwner targetName) => header.header.premises) callee.originalHeader
+          simpa only [frameSame,premisesSame] using predicates⟩)
     else throw .request
 
 end QleisliKernel.SourceTypes.StaticCallPremises
