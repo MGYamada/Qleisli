@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceLookup
+import QleisliKernel.SourceTypes.ModuleHeader
 
 /-! Original-call-name candidates, without standalone acceptance authority.
 The supplied lexical scope must retain consumed bindings; authenticating that
@@ -34,11 +35,8 @@ def readName (tokens : List LocatedToken) : Except String (Name tokens) := do
 
 /-- Match the actual leading module header, ignoring only what lexLocated
 itself discards. Later, repeated and malformed hash directives reject. -/
-def policyTokens (tokens : List String) : Except String Bool := do
-  let disabled := tokens.take 5 == ["#","!","[","no_implicit_prelude","]"]
-  let rest := if disabled then tokens.drop 5 else tokens
-  if rest.contains "#" then throw "misplaced or malformed module header"
-  return disabled
+def policyTokens (tokens : List String) : Except String Bool :=
+  ModuleHeader.policyTokens tokens
 
 structure Policy (source : String) where
   tokens : List LocatedToken

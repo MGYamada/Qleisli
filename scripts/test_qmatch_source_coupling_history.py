@@ -166,9 +166,28 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_module_header_first_diagnostic_is_retained(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/module-header-first.json'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '8cb9bc5a1857f691faf8842fd2b116a3e548b661ac5dbf6c8290d89841d47c1a')
+        observed = json.loads(path.read_bytes())
+        self.assertEqual(observed['first_source'], '#![no_implicit_prelude]\n' + observed['control_source'])
+        first = observed['observations']['header-diagnostic-first']
+        self.assertEqual(first['exit_code'], 0)
+        self.assertIn('Except.error (QleisliKernel.Finite.Error.request)', first['stdout'])
+        self.assertIn('(Except.ok ["pub", "unitary", "fn", "sign"', first['stdout'])
+        for name in ('module-header-first', 'helper-call-first'):
+            self.assertNotEqual(observed['observations'][name]['exit_code'], 0)
+        for name in ('module-header-repair', 'header-conformance', 'helper-call-repair'):
+            self.assertEqual(observed['observations'][name]['exit_code'], 0)
+        for row in observed['observations'].values():
+            self.assertTrue(row['stable_source'])
+            self.assertTrue(row['child_reaped'])
+            self.assertIsNone(row['host_stop'])
+
     def test_shared_history_complete_pinned_reconstruction(self):
         self.assertEqual(hashlib.sha256((ROOT / shared_history.MANIFEST).read_bytes()).hexdigest(),
-                         'dfdaa00d8412d852c076234e6ea5ec29d743049f114aa39a9a7c27558b658fec')
+                         'c1ad2909cc92e362563895f5f1a7ffd7d28bdb89d898685d4c6cefa7d26db35d')
         self.assertEqual(SHARED.audit_originals(), (108, 20))
 
     def test_focused_production_first_sources_and_complete_diagnostics(self):
@@ -999,6 +1018,57 @@ class OriginalCouplingHistory(unittest.TestCase):
         current = json.loads(history_text(ROOT / NOMINAL_VALIDATION))
         self.assertFalse(current["compiled_native_validated"])
         self.assertEqual(current["issue195"], "OPEN")
+
+
+class IndependentReferenceAuthoringHistory(unittest.TestCase):
+    def test_first_sources_and_real_diagnostics(self):
+        readme = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/README.md'
+        self.assertIn(b'No first source was repaired.', readme.read_bytes())
+        archive = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/first.tar.xz'
+        index = ROOT / 'tests/fixtures/authoring_sessions/qmatch-reference-authoring-v030/first-index.json.xz'
+        self.assertEqual(hashlib.sha256(archive.read_bytes()).hexdigest(),
+                         'b4f24ec5d70b1ee27d28f8ee2941e18f7cba55a22e0d6a85bf6604e75d3ab297')
+        self.assertEqual(hashlib.sha256(index.read_bytes()).hexdigest(),
+                         '38e40184f782407153fe7ecc5e28d622e812d1fce972ba7bb234079baf19535c')
+        members = bounded_history(archive, index)
+        self.assertEqual(len(members), 47)
+        observed = json.loads(members['checks-first/focused-observations.json'])
+        self.assertTrue(observed['inputs_stable'])
+        self.assertTrue(observed['all_observations_completed'])
+        self.assertEqual(observed['participant_inputs_before'], observed['participant_inputs_after'])
+        self.assertEqual(len(observed['participant_inputs_before']), 23)
+        for name, digest in observed['participant_inputs_before'].items():
+            self.assertEqual(hashlib.sha256(members[name]).hexdigest(), digest)
+        self.assertEqual(len(observed['results']), 10)
+        for row in observed['results']:
+            case = row['name']
+            for stream in ('stdout', 'stderr'):
+                self.assertEqual(hashlib.sha256(members[f'checks-first/{case}/{stream}']).hexdigest(),
+                                 row[stream + '_sha256'])
+            reply = json.loads(members[f'checks-first/{case}/stdout'])
+            self.assertTrue(row['child_reaped'])
+            self.assertIsNone(row['host_stop'])
+            self.assertIsNone(row['observer_error'])
+            if case.endswith('-negative'):
+                self.assertNotEqual(row['exit_code'], 0)
+                self.assertEqual(reply['outcome'], 'error')
+                expected = 'live Q<T> cannot be inspected' if 'classical-match' in case else 'duplicate qmatch ordinal 1'
+                self.assertIn(expected, reply['diagnostics'][0]['message'])
+            else:
+                self.assertEqual(row['exit_code'], 0)
+                self.assertEqual(reply['outcome'], 'ok')
+                result = reply['result']
+                self.assertTrue(result['runtime_result_checked'])
+                self.assertFalse(result['source_preservation_verified'])
+                self.assertFalse(result['verification']['source_steps_checked'])
+                self.assertFalse(result['verification']['source_meaning_verified'])
+                self.assertEqual(result['verification']['request_origin'], 'producer')
+                self.assertEqual(result['execution_authority'], 'checked-produced-ir')
+        checkpoint = json.loads(members['results-checkpoint.json'])
+        self.assertEqual(checkpoint['first_authoring']['source_repairs'], 0)
+        self.assertEqual(checkpoint['accounting_credit'], 0)
+        self.assertTrue(all(not case['independent_native_operator_request_checked']
+                            for case in checkpoint['operator_observation']['records']))
 
 
 if __name__ == "__main__":

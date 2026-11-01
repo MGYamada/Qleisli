@@ -18,6 +18,7 @@ import QleisliKernel.Tests.CallSyntaxTests
 import QleisliKernel.Tests.StatementSyntaxTests
 import QleisliKernel.Tests.SourceLookupTests
 import QleisliKernel.Tests.CallNameTests
+import QleisliKernel.Tests.ModuleHeaderTests
 import QleisliKernel.Tests.SourceContextTests
 import QleisliKernel.Tests.SourceTraceTests
 import QleisliKernel.Tests.SourceTraceCacheTests

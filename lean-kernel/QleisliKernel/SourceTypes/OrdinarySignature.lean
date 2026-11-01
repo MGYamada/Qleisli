@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes
 import QleisliKernel.SourceTypes.LocatedFacts
+import QleisliKernel.SourceTypes.ModuleHeader
 import QleisliKernel.Semantics.Raw
 
 /-! Original ordinary parameter/result headers. This component binds the
@@ -58,11 +59,12 @@ private def parameterTypes (tokens : List LocatedToken) : Except String (List (L
     if pattern.isEmpty || ty.isEmpty then throw "empty parameter pattern or type"
     return ty
 
-private def header (occurrence : BodyOccurrence) : Except String Header := do
+private def header (source : String) (occurrence : BodyOccurrence) : Except String Header := do
+  let declarationTokens := (← ModuleHeader.project source occurrence.header).tokens
   let tokens ← if occurrence.declaration.isPublic then do
-      let (_,rest) ← expect "pub" occurrence.header
+      let (_,rest) ← expect "pub" declarationTokens
       pure rest
-    else pure occurrence.header
+    else pure declarationTokens
   let (effect,ordinaryOnly,tokens) := match tokens with
     | effect :: rest => match effect.text with
       | "unitary" => (some Effect.unitary,false,rest)
@@ -102,7 +104,7 @@ structure Original (sources : Sources) (owner name : String) where
   function : declaration.kind = "fn"
   catalogue : ∃ scanned, sourceCatalogue source = .ok scanned ∧ occurrence ∈ scanned.bodies
   sameDeclaration : occurrence.declaration = declaration
-  parsed : header occurrence = .ok parsedHeader
+  parsed : header source occurrence = .ok parsedHeader
   bytes : LocatedFacts.OrderedSlices source.toUTF8 0 (envelope occurrence)
 
 private def original (sources : Sources) (owner name : String) :
@@ -121,7 +123,7 @@ private def original (sources : Sources) (owner name : String) :
           have found := (List.mem_filter.mp membership).1
           have sameDeclaration : occurrence.declaration = declaration :=
             beq_iff_eq.mp (List.mem_filter.mp membership).2
-          match parsed : header occurrence with
+          match parsed : header source occurrence with
           | .error message => throw message
           | .ok parsedHeader =>
             if bytes : LocatedFacts.checkOrdered source.toUTF8 0 (envelope occurrence) = true then

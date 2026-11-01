@@ -378,3 +378,12 @@ native acceptance rule changes. General bodies/arms, the full twelve-bit
 profile, source preservation, full CI/review and #64/#195 completion remain
 pending. These are implementation observations, not an independent initial
 authoring study or new admitted guarantee.
+# Module-header first observation
+
+The focused [first diagnostic](module-header-first.json) retains the unchanged
+opt-out source, its plain-header control, the actual declaration-reader refusal,
+and separate implementation failures and successful conformance builds.
+Complete original headers retain the directive and byte positions. This is an
+informed reader study; it supplies no native execution or source-preservation
+claim. External implementation snapshots and full observer maps are disclosed
+as external, with their original identities.
