@@ -100,6 +100,14 @@ private def formalArms := "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}" ++
 #guard (read ((formalArms.replace "choose[const U:Op<Bit>](s:" "choose[const U:Op<Bit>](U:").replace
   "{qmatch(s,q)" "{qmatch(U,q)")).isNone
 
+private def unusedAliasRows :=
+  #[ ("main","use helpers::next;pub unitary fn route(q:Q<Bit>)->Q<Bit>{static let ignored=next[1]();q}"),
+     ("helpers","pub static fn next[const n:Nat]()->Nat{n+1}"),
+     ("unused","pub static fn spare[const n:Nat]()->Nat{n}") ] ++ SourceTraceOriginals.bundled
+#guard (((SourceTrace.read unusedAliasRows "main" "route").run 2000000000).1.toOption.map fun checked =>
+  (checked.result.events.isEmpty,checked.result.staticRows.any (fun row => row.1 == "helpers"),
+    checked.result.staticRows.any (fun row => row.1 == "unused"))) = some (true,true,false)
+
 #print axioms QleisliKernel.SourceTypes.SourceTrace.readNamedSource
 #print axioms QleisliKernel.SourceTypes.SourceCalls.transport
 #print axioms QleisliKernel.SourceTypes.SourceEffect.unitary_permits

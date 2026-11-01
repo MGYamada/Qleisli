@@ -104,11 +104,19 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
 
+def Event.staticRows {sources caller} : Event sources caller → List (String × String)
+  | .selection _ _ _ _ naturals => naturals.map (·.sourceRows) |>.getD []
+  | .primitive _ => []
+  | .phase event => event.naturals.sourceRows
+  | .named event => event.canonical.staticRows
+  | .operation event => event.naturals.sourceRows ++ event.operation.rows
+
 structure Outcome (sources : Sources) (caller : String) (before : Environment) where
   value : Value
   remaining : Environment
   events : List (Event sources caller)
   conserved : (owners before).Perm (valueOwners value ++ owners remaining)
+  staticRows : List (String × String)
 
 namespace Meter
 
@@ -144,14 +152,23 @@ def moveWork (tokens : List LocatedToken) (environment : Environment) : Nat :=
 
 end Meter
 
+/-- Aggregate only already authenticated source rows. Charge full byte-sensitive
+comparisons before deduplication so wrapper depth cannot duplicate row forests. -/
+def retainStaticRows (rows : List (String × String)) : Finite.WorkM (List (String × String)) := do
+  if rows.isEmpty then return []
+  let fields := (rows.map fun (owner,source) => owner.utf8ByteSize+source.utf8ByteSize+1).sum
+  Finite.exactWork (Exact.charge (8*(rows.length+1)*(fields+1)))
+  return rows.eraseDups
+
 private def outcome {sources caller} (before : Environment) (value : Value)
-    (remaining : Environment) (events : List (Event sources caller)) :
+    (remaining : Environment) (events : List (Event sources caller)) (rows : List (String × String) := []) :
     Finite.WorkM (Outcome sources caller before) := do
+  let staticRows ← retainStaticRows (rows ++ events.flatMap Event.staticRows)
   Finite.exactWork (Exact.charge (8*(Meter.environmentCells before+
     Meter.environmentCells remaining+value.length+1)+
     Meter.permutationWork (owners before) (valueOwners value ++ owners remaining)))
   if conserved : (owners before).Perm (valueOwners value ++ owners remaining) then
-    return ⟨value,remaining,events,conserved⟩
+    return ⟨value,remaining,events,conserved,staticRows⟩
   else throw .request
 
 private def trees {parts} (children : SourceSyntax.Children parts) : List (Sigma SourceSyntax.Tree) :=
@@ -248,17 +265,21 @@ def evalWithReader (sources : Sources) (caller : String)
       | none => pure ()
       let (last,context) ← next naturals held (names ++ scope) after rest context
       Finite.exactWork (Exact.charge (first.events.length+1))
-      return (← outcome environment last.value last.remaining (first.events ++ last.events),context)
+      return (← outcome environment last.value last.remaining (first.events ++ last.events)
+        (first.staticRows ++ last.staticRows),context)
     | .sequence _ expression rest =>
       let (first,context) ← next naturals held scope environment expression context
       Finite.guard (valueOwners first.value == []) .request
       let (last,context) ← next naturals held scope first.remaining rest context
       Finite.exactWork (Exact.charge (first.events.length+1))
-      return (← outcome environment last.value last.remaining (first.events ++ last.events),context)
+      return (← outcome environment last.value last.remaining (first.events ++ last.events)
+        (first.staticRows ++ last.staticRows),context)
     | .staticBindings leading _ rest =>
       let some current := naturals | throw .request
       let (updated,scope) ← PhaseApplication.extend sources caller leading current scope
-      next (some updated) held scope environment rest context
+      let (result,context) ← next (some updated) held scope environment rest context
+      let staticRows ← retainStaticRows (updated.sourceRows ++ result.staticRows)
+      return ({result with staticRows := staticRows},context)
     | .group group children =>
       let (values,remaining,events,context) ← (trees children).foldlM
           (fun (values,current,events,context) child => do
@@ -444,7 +465,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                   if asserted : SourceEffect.permits signature.original.parsedHeader.effect
                       (inferredEffect result.events) = true then
                     return ⟨patterns,parameters,initial,seeded,tree,parsed,result.value,result.remaining,
-                      complete,returned,shape,types,inferredEffect result.events,asserted⟩
+                      complete,returned,shape,types,inferredEffect result.events,asserted,result.staticRows⟩
                   else throw .request
                 else throw .request
               else throw .request

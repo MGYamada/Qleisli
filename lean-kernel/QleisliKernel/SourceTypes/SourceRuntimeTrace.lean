@@ -17,14 +17,17 @@ private def environmentCells (environment : Environment) : Nat :=
 
 private def outcome {sources caller} (before : Environment) (value : Value) (remaining : Environment)
     (allocated consumed : List Semantics.SourceOwners.Owner) (nextOrdinal : Nat)
-    (events : List (Event sources caller)) : Finite.WorkM (Outcome sources caller before) := do
+    (events : List (Event sources caller)) (rows : List (String × String) := []) :
+    Finite.WorkM (Outcome sources caller before) := do
+  let staticRows ← SourceTrace.retainStaticRows (rows ++ events.flatMap Event.staticRows)
   Finite.exactWork (Exact.charge (16*(environmentCells before+environmentCells remaining+valueFields value+
-    events.length+1)+SourceTrace.Meter.permutationWork (owners before ++ allocated)
+    events.length+1)+
+    SourceTrace.Meter.permutationWork (owners before ++ allocated)
       (valueOwners value ++ owners remaining ++ consumed)))
   Finite.guard (value.length ≤ 3*128 && remaining.length ≤ 128) .limit
   if balanced : (owners before ++ allocated).Perm
       (valueOwners value ++ owners remaining ++ consumed) then
-    return ⟨value,remaining,allocated,consumed,nextOrdinal,events,balanced⟩
+    return ⟨value,remaining,allocated,consumed,nextOrdinal,events,balanced,staticRows⟩
   else throw .request
 
 private def boundNames (pattern : List LocatedToken) : Except String (List String) := do
@@ -104,16 +107,20 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let after ← adapt (SourceRuntimeValues.bind (pattern.map (·.text)) first.value first.remaining)
         let (last,context) ← recurse naturals held (names ++ scope) first.nextOrdinal after rest context
         return (← outcome environment last.value last.remaining (first.allocated ++ last.allocated)
-          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events),context)
+          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events)
+          (first.staticRows ++ last.staticRows),context)
       | .sequence _ expression rest =>
         let (first,context) ← recurse naturals held scope nextOrdinal environment expression context
         Finite.guard (valueOwners first.value == []) .request
         let (last,context) ← recurse naturals held scope first.nextOrdinal first.remaining rest context
         return (← outcome environment last.value last.remaining (first.allocated ++ last.allocated)
-          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events),context)
+          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events)
+          (first.staticRows ++ last.staticRows),context)
       | .staticBindings leading _ rest =>
         let (naturals,scope) ← PhaseApplication.extend sources owner leading naturals scope
-        recurse naturals held scope nextOrdinal environment rest context
+        let (result,context) ← recurse naturals held scope nextOrdinal environment rest context
+        let staticRows ← SourceTrace.retainStaticRows (naturals.sourceRows ++ result.staticRows)
+        return ({result with staticRows := staticRows},context)
       | .group group children =>
         let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
         let value := if values.isEmpty then [.ordinary [.unit] .unit]
@@ -290,7 +297,8 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                             ⟨patterns,parameters,parameterValues,nextOwner,nextOrdinary,valuesRead,
                             initial,seeded,tree,parsed,result.value,result.remaining,result.allocated,
                             result.consumed,result.nextOrdinal,issued,ordinalCount,complete,balanced,typed,
-                            inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum⟩
+                            inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum,
+                            result.staticRows⟩
                           return ⟨summary,result.events,rfl⟩
                         else throw .request
                       else throw .request

@@ -44,10 +44,60 @@ def Signature.operationNames {sources owner name} (signature : Signature sources
 def readSignature (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
     (context : StaticOperation.Context := .external) :
     Finite.WorkM (Signature sources owner name) := do
-  let checked ← StaticRuntimeSignature.read sources owner name arguments
+  let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name arguments
   let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
   let operations ← StaticOperation.checkArgumentsWithInstantiation instantiation context
   return ⟨arguments,checked,context,operations⟩
+
+def Signature.sourceRows {sources owner name} (signature : Signature sources owner name) :
+    List (String × String) := signature.checked.sourceRows ++ signature.operations.sourceRows
+
+/-- The supply context comes from the original source/host selection. It is
+never replaced by the provider's module merely to recheck its body. -/
+structure CoreBinding {sources owner name} (core : QuantumSignatureCore.Checked sources owner name)
+    (context : StaticOperation.Context)
+    (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) where
+  signature : Signature sources owner name
+  source : signature.original.source = core.original.source
+  declaration : signature.original.declaration = core.original.declaration
+  header : signature.original.occurrence.header = core.original.occurrence.header
+  body : signature.original.occurrence.body = core.original.occurrence.body
+  opening : signature.original.occurrence.openBrace = core.original.occurrence.openBrace
+  closing : signature.original.occurrence.closeBrace = core.original.occurrence.closeBrace
+  bases : signature.arguments.bases = core.staticArguments.bases
+  naturals : signature.arguments.naturals = core.staticArguments.naturals
+  operations : signature.arguments.operations = core.staticArguments.operations
+  inputTrees : signature.parameters.map (·.tree) = core.inputs.map Semantics.RuntimeType.owner
+  outputOwners : Semantics.RuntimeType.ownerBases signature.result.tree = some core.outputs
+  sameContext : signature.context = context
+
+def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked sources owner name)
+    (context : StaticOperation.Context)
+    (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) :
+    Finite.WorkM (CoreBinding core context supply) := do
+  let signature ← readSignature sources owner name core.staticArguments context
+  Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+
+    signature.original.source.utf8ByteSize+
+    SourceTrace.Meter.tokenFields core.original.occurrence.header+
+    SourceTrace.Meter.tokenFields core.original.occurrence.body+
+    Raw.OwnerFlow.fields (core.inputs.zipIdx.map fun (basis,index) => ⟨index,basis⟩)+
+    Raw.OwnerFlow.fields (core.outputs.zipIdx.map fun (basis,index) => ⟨index,basis⟩)+1)))
+  if same : signature.original.source = core.original.source ∧
+      signature.original.declaration = core.original.declaration ∧
+      signature.original.occurrence.header = core.original.occurrence.header ∧
+      signature.original.occurrence.body = core.original.occurrence.body ∧
+      signature.original.occurrence.openBrace = core.original.occurrence.openBrace ∧
+      signature.original.occurrence.closeBrace = core.original.occurrence.closeBrace ∧
+      signature.arguments.bases = core.staticArguments.bases ∧
+      signature.arguments.naturals = core.staticArguments.naturals ∧
+      signature.arguments.operations = core.staticArguments.operations ∧
+      signature.parameters.map (·.tree) = core.inputs.map Semantics.RuntimeType.owner ∧
+      Semantics.RuntimeType.ownerBases signature.result.tree = some core.outputs ∧
+      signature.context = context then
+    let ⟨source,declaration,header,body,opening,closing,bases,naturals,operations,inputTrees,outputOwners,sameContext⟩ := same
+    return ⟨signature,source,declaration,header,body,opening,closing,bases,naturals,operations,
+      inputTrees,outputOwners,sameContext⟩
+  else throw .request
 
 structure Target (sources : Sources) (caller : String) (scope : List String)
     (tokens : List LocatedToken) where
@@ -114,6 +164,7 @@ structure Summary {sources owner name} (signature : Signature sources owner name
   quantumUse : Bool
   publicQuantum : signature.original.declaration.isPublic = true → quantumUse = true →
     signature.original.parsedHeader.effect.isSome = true
+  staticRows : List (String × String)
 
 structure NamedEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
@@ -212,6 +263,13 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
     else event.canonical.quantumUse
   | _ => true
 
+def Event.staticRows {sources caller} : Event sources caller → List (String × String)
+  | .selection _ _ _ _ _ _ naturals .. => naturals.sourceRows
+  | .primitive _ => []
+  | .phase event => event.naturals.sourceRows
+  | .named event => event.canonical.staticRows
+  | .operation event => event.naturals.sourceRows ++ event.operation.rows
+
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
 
@@ -223,6 +281,7 @@ structure Outcome (sources : Sources) (caller : String) (before : Environment) w
   nextOrdinal : Nat
   events : List (Event sources caller)
   balanced : (owners before ++ allocated).Perm (valueOwners value ++ owners remaining ++ consumed)
+  staticRows : List (String × String)
 
 structure Evaluated {sources owner name} (signature : Signature sources owner name) where
   summary : Summary signature

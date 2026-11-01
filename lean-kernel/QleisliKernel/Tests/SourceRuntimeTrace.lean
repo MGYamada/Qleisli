@@ -77,6 +77,14 @@ private def externalClassical :=
 #guard (read "pub fn route()->Bit{let(c,c)=(0,1);c}").isNone
 #guard view "pub fn route(c:Bit)->Bit{let c=not c;c}" = some ([],[],.unitary)
 
+private def unusedAliasRows :=
+  #[ ("main","use helpers::next;pub fn route(c:Bit)->Bit{static let ignored=next[1]();c}"),
+     ("helpers","pub static fn next[const n:Nat]()->Nat{n+1}"),
+     ("unused","pub static fn spare[const n:Nat]()->Nat{n}") ] ++ SourceTraceOriginals.bundled
+#guard (((SourceTypes.SourceRuntimeTrace.read unusedAliasRows "main" "route").run 2000000000).1.toOption.map fun checked =>
+  (checked.events.isEmpty,checked.summary.staticRows.any (fun row => row.1 == "helpers"),
+    checked.summary.staticRows.any (fun row => row.1 == "unused"))) = some (true,true,false)
+
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.completeOwnerHistory
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.effectAssertion

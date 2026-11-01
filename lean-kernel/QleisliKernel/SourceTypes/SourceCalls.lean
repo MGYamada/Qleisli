@@ -80,6 +80,7 @@ structure Canonical {sources owner name}
   resultTypes : (valueOwners value).map (·.basis) = signature.outputs
   inferredEffect : Semantics.Raw.Effect
   asserted : SourceEffect.permits signature.original.parsedHeader.effect inferredEffect = true
+  staticRows : List (String × String)
 
 structure Event (sources : Sources) (caller : String) where
   tokens : List LocatedToken
