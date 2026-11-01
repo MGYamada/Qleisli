@@ -82,33 +82,50 @@ structure Actual {sources owner name original}
   argument : CallSyntax.Argument
   value : Value instantiation entries environment scope operationReader argument.tokens formal.kind
 
-def Actual.bases {sources owner name original instantiation entries environment scope operationReader}
-    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × Basis) :=
-  match actual.value with
-  | .basis expression => [(actual.formal.name,expression.query.basis)]
+def Value.bases {sources owner name original instantiation entries environment scope operationReader tokens kind}
+    (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List Basis :=
+  match value with
+  | .basis expression => [expression.query.basis]
   | .natural .. => []
   | .operation .. => []
 
+def Value.naturals {sources owner name original instantiation entries environment scope operationReader tokens kind}
+    (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List Nat :=
+  match value with
+  | .basis .. => []
+  | .natural _ checked => [checked.result.value]
+  | .operation .. => []
+
+def Value.operations {sources owner name original instantiation entries environment scope operationReader tokens kind}
+    (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) :
+    List OperationDescription.Description :=
+  match value with
+  | .basis .. | .natural .. => []
+  | .operation description _ _ => [description]
+
+def Value.sourceRows {sources owner name original instantiation entries environment scope operationReader tokens kind}
+    (value : @Value sources owner name original instantiation entries environment scope operationReader tokens kind) : List (String × String) :=
+  match value with
+  | .basis expression => expression.query.sourceRows
+  | .natural .. => []
+  | .operation .. => []
+
+def Actual.bases {sources owner name original instantiation entries environment scope operationReader}
+    (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × Basis) :=
+  actual.value.bases.map (actual.formal.name,·)
+
 def Actual.naturals {sources owner name original instantiation entries environment scope operationReader}
     (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × Nat) :=
-  match actual.value with
-  | .basis .. => []
-  | .natural _ checked => [(actual.formal.name,checked.result.value)]
-  | .operation .. => []
+  actual.value.naturals.map (actual.formal.name,·)
 
 def Actual.operations {sources owner name original instantiation entries environment scope operationReader}
     (actual : @Actual sources owner name original instantiation entries environment scope operationReader) :
     List (String × OperationDescription.Description) :=
-  match actual.value with
-  | .basis .. | .natural .. => []
-  | .operation description _ _ => [(actual.formal.name,description)]
+  actual.value.operations.map (actual.formal.name,·)
 
 def Actual.sourceRows {sources owner name original instantiation entries environment scope operationReader}
     (actual : @Actual sources owner name original instantiation entries environment scope operationReader) : List (String × String) :=
-  match actual.value with
-  | .basis expression => expression.query.sourceRows
-  | .natural .. => []
-  | .operation .. => []
+  actual.value.sourceRows
 
 private def readActual {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
