@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes
 import QleisliKernel.SourceTypes.LocatedFacts
+import QleisliKernel.SourceTypes.ModuleHeader
 
 /-! Candidate: original nominal-member syntax with exact byte locations.
 The existing lexical, declaration, member splitting and carrier readers are
@@ -68,15 +69,9 @@ private def readSyntax (source : String) (occurrence : BodyOccurrence) : Except 
   let decl := occurrence.declaration
   if decl.kind != "enum" && decl.kind != "struct" then throw "not a nominal declaration"
   let expected := (if decl.isPublic then ["pub"] else []) ++ [decl.kind,decl.name]
-  if occurrence.header.map LocatedToken.text != expected then
-    let directive := ["#","!","[","no_implicit_prelude","]"]
-    if occurrence.header.map LocatedToken.text != directive ++ expected then
-      throw "unsupported original nominal header"
-    -- Permit exactly the real initial module directive, not a matching prefix
-    -- copied from another site or arbitrary skipped tokens. Reuse this lexer.
-    let initial ← lexLocated source
-    if initial.take directive.length != occurrence.header.take directive.length then
-      throw "nominal header directive is not initial"
+  let projection ← ModuleHeader.project source occurrence.header
+  if projection.tokens.map LocatedToken.text != expected then
+    throw "unsupported original nominal header"
   if occurrence.body.map LocatedToken.text != decl.body then
     throw "original nominal body mismatch"
   let parts ← locateParts occurrence.body

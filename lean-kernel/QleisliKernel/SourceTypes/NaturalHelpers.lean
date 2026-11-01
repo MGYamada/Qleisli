@@ -53,54 +53,64 @@ private def premiseLoop {meaning : Valuation → Prop} (context : Context meanin
           exact proved.proof values held
         · exact remaining.proof values held other tail⟩)
 
-/-- The reader is constructed from previously checked original definitions and
-the current original source's resolved call table, including aliases. -/
+/-- The original helper-call checker is independent of how the caller's
+Nat names are interpreted. Checked aliases may provide their own original-name
+meaning; every actual expression still carries its computation proof. -/
+def readCall (variables : Nat) (names : Valuation → Names) (entries : List Entry)
+    (bindings : List (Path × NaturalCatalog.Key)) {meaning : Valuation → Prop}
+    (context : Context meaning) (fuel : Nat) (path : Path) (arguments : List Expr)
+    (args : NaturalNormalize.Arguments names (interpretation entries bindings) meaning fuel arguments) :
+    WorkM (NaturalNormalize.Result names (interpretation entries bindings) meaning
+      (fuel+1) (.call path arguments)) := do
+  Finite.exactWork (Exact.charge ((bindings.map (fun binding =>
+    (binding.1.map String.utf8ByteSize).sum+binding.2.moduleName.utf8ByteSize+
+    binding.2.declarationName.utf8ByteSize+1)).sum+entries.length+1))
+  match bound : bindings.find? (fun binding => binding.1 == path) with
+  | none => throw .request
+  | some binding =>
+    match selected : entries.find? (fun entry => entry.original.key == binding.2) with
+    | none => throw .request
+    | some entry =>
+      if arity : args.forms.length = entry.original.helper.parameters.length then
+        Finite.exactWork (Exact.charge (entry.frame.binders.length*(args.forms.length+1)+1))
+        let replacements := NaturalFrames.replacements entry.frame args.forms
+        let premises ← premiseLoop context variables replacements
+          (entry.prepared.scope.numeric.length+1) entry.prepared.scope.numeric
+        let result ← NaturalSubstitute.substitute variables entry.prepared.body.form replacements
+        return ⟨result.form,by
+          intro values held
+          obtain ⟨numbers,argumentExpressions,argumentForms⟩ := args.correct values held
+          let actual := NaturalFrames.argumentValues entry.frame numbers
+          have substitution := NaturalFrames.replacements_meaning entry.frame args.forms numbers values argumentForms
+          have numeric := premises.proof values held
+          change NumericsTruth entry.prepared.scope.numeric
+            (NaturalSubstitute.replacementValues (NaturalFrames.replacements entry.frame args.forms) values) at numeric
+          rw [substitution] at numeric
+          have natural := NaturalFrames.argumentValues_natural entry.frame numbers
+          have originalPremises := (entry.prepared.scope.correct actual natural).mp numeric
+          obtain ⟨n,body,same⟩ := entry.prepared.body.correct actual ⟨natural,originalPremises⟩
+          have count : numbers.length = entry.reference.arity := by
+            have related := argumentForms.length_eq
+            exact related.symm.trans arity
+          have invoked : entry.invoke numbers = some n :=
+            Definition.execute_of_body entry.reference entry.calls numbers n count originalPremises body
+          have call : interpretation entries bindings path numbers = some n := by
+            simp only [interpretation,bound]
+            change (do
+              let chosen ← entries.find? (fun item => item.original.key == binding.2)
+              chosen.invoke numbers) = some n
+            rw [selected]
+            exact invoked
+          refine ⟨n,evaluate_call _ _ _ _ _ _ _ argumentExpressions call,?_⟩
+          rw [result.correct values,substitution]
+          exact same⟩
+      else throw .request
+
+/-- Existing original-formal callers use exactly the same helper computation. -/
 def reader (frame : NaturalFrames.Frame) (entries : List Entry)
     (bindings : List (Path × NaturalCatalog.Key)) : CallsReader frame (interpretation entries bindings) :=
-  ⟨fun {meaning} context _natural fuel path arguments args => do
-    Finite.exactWork (Exact.charge ((bindings.map (fun binding =>
-      (binding.1.map String.utf8ByteSize).sum+binding.2.moduleName.utf8ByteSize+
-      binding.2.declarationName.utf8ByteSize+1)).sum+entries.length+1))
-    match bound : bindings.find? (fun binding => binding.1 == path) with
-    | none => throw .request
-    | some binding =>
-      match selected : entries.find? (fun entry => entry.original.key == binding.2) with
-      | none => throw .request
-      | some entry =>
-        if arity : args.forms.length = entry.original.helper.parameters.length then
-          Finite.exactWork (Exact.charge (entry.frame.binders.length*(args.forms.length+1)+1))
-          let replacements := NaturalFrames.replacements entry.frame args.forms
-          let premises ← premiseLoop context frame.binders.length replacements
-            (entry.prepared.scope.numeric.length+1) entry.prepared.scope.numeric
-          let result ← NaturalSubstitute.substitute frame.binders.length entry.prepared.body.form replacements
-          return ⟨result.form,by
-            intro values held
-            obtain ⟨numbers,argumentExpressions,argumentForms⟩ := args.correct values held
-            let actual := NaturalFrames.argumentValues entry.frame numbers
-            have substitution := NaturalFrames.replacements_meaning entry.frame args.forms numbers values argumentForms
-            have numeric := premises.proof values held
-            change NumericsTruth entry.prepared.scope.numeric
-              (NaturalSubstitute.replacementValues (NaturalFrames.replacements entry.frame args.forms) values) at numeric
-            rw [substitution] at numeric
-            have natural := NaturalFrames.argumentValues_natural entry.frame numbers
-            have originalPremises := (entry.prepared.scope.correct actual natural).mp numeric
-            obtain ⟨n,body,same⟩ := entry.prepared.body.correct actual ⟨natural,originalPremises⟩
-            have count : numbers.length = entry.reference.arity := by
-              have related := argumentForms.length_eq
-              exact related.symm.trans arity
-            have invoked : entry.invoke numbers = some n :=
-              Definition.execute_of_body entry.reference entry.calls numbers n count originalPremises body
-            have call : interpretation entries bindings path numbers = some n := by
-              simp only [interpretation,bound]
-              change (do
-                let chosen ← entries.find? (fun item => item.original.key == binding.2)
-                chosen.invoke numbers) = some n
-              rw [selected]
-              exact invoked
-            refine ⟨n,evaluate_call _ _ _ _ _ _ _ argumentExpressions call,?_⟩
-            rw [result.correct values,substitution]
-            exact same⟩
-        else throw .request⟩
+  ⟨fun context _natural fuel path arguments args =>
+    readCall frame.binders.length (NaturalFrames.names frame) entries bindings context fuel path arguments args⟩
 
 /-- Validate every original helper, including disconnected/private definitions,
 in original dependency order before exposing any call interpretation. -/

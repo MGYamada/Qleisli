@@ -6,6 +6,15 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Read the existing leading `no_implicit_prelude` directive through one checked
+  declaration-header projection. Preserve complete original tokens and byte
+  positions; malformed, repeated and misplaced directives still reject.
+  Share the existing original Nat-helper call checker across caller name
+  interpretations without changing helper bodies, premises or formal binding.
+  Phase/static-alias and general qmatch integration remain unfinished.
+- Recompress two existing physical qmatch history containers, retaining every
+  decoded object, logical archive recipe, original byte and mode. Recover
+  25,076 stored bytes within the unchanged retention and decoder limits.
 - Consolidate passive qmatch histories in one bounded object store, preserving
   exact original archive/index bytes, member modes, hashes and first failures.
   Retain the new source-context experiments within unchanged fixture limits.

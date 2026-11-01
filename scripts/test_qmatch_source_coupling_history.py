@@ -166,9 +166,28 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_module_header_first_diagnostic_is_retained(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/module-header-first.json'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '8cb9bc5a1857f691faf8842fd2b116a3e548b661ac5dbf6c8290d89841d47c1a')
+        observed = json.loads(path.read_bytes())
+        self.assertEqual(observed['first_source'], '#![no_implicit_prelude]\n' + observed['control_source'])
+        first = observed['observations']['header-diagnostic-first']
+        self.assertEqual(first['exit_code'], 0)
+        self.assertIn('Except.error (QleisliKernel.Finite.Error.request)', first['stdout'])
+        self.assertIn('(Except.ok ["pub", "unitary", "fn", "sign"', first['stdout'])
+        for name in ('module-header-first', 'helper-call-first'):
+            self.assertNotEqual(observed['observations'][name]['exit_code'], 0)
+        for name in ('module-header-repair', 'header-conformance', 'helper-call-repair'):
+            self.assertEqual(observed['observations'][name]['exit_code'], 0)
+        for row in observed['observations'].values():
+            self.assertTrue(row['stable_source'])
+            self.assertTrue(row['child_reaped'])
+            self.assertIsNone(row['host_stop'])
+
     def test_shared_history_complete_pinned_reconstruction(self):
         self.assertEqual(hashlib.sha256((ROOT / shared_history.MANIFEST).read_bytes()).hexdigest(),
-                         'dfdaa00d8412d852c076234e6ea5ec29d743049f114aa39a9a7c27558b658fec')
+                         'c1ad2909cc92e362563895f5f1a7ffd7d28bdb89d898685d4c6cefa7d26db35d')
         self.assertEqual(SHARED.audit_originals(), (108, 20))
 
     def test_focused_production_first_sources_and_complete_diagnostics(self):
