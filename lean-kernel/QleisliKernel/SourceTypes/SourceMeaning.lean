@@ -306,4 +306,23 @@ def select (sources : Sources) (caller : String) (scope tokens : List String) : 
         pure ⟨decision,resolution,selected,meaning,rows,root,originalRoot,original⟩
       else throw .request
 
+/-- An independently reconstructed original requirement, with its original
+query routes. This is a request for equality, never evidence of that equality. -/
+structure Request (sources : Sources) where
+  caller : Option String
+  moduleName : String
+  declarationName : String
+  meaning : Checked sources caller moduleName declarationName
+  queryRows : List (String × String)
+
+def Request.sourceRows {sources} (request : Request sources) : List (String × String) :=
+  request.queryRows ++ request.meaning.graph.sourceRows
+
+def Selected.request {sources caller scope tokens} (selected : Selected sources caller scope tokens) : Request sources :=
+  ⟨some caller,selected.resolution.moduleName,selected.resolution.declaration.name,selected.meaning,selected.queryRows⟩
+
+def request (sources : Sources) (caller : Option String) (owner name : String) : WorkM (Request sources) := do
+  let meaning ← read sources caller owner name
+  pure ⟨caller,owner,name,meaning,[]⟩
+
 end QleisliKernel.SourceTypes.SourceMeaning
