@@ -66,22 +66,22 @@ abbrev Instantiation {sources owner name}
     (original : OrdinarySignature.Original sources owner name) := StaticInstantiation.Checked original
 
 def Instantiation.arguments {sources owner name original}
-    (instance : @Instantiation sources owner name original) : StaticTypes.Arguments :=
-  StaticInstantiation.Checked.arguments instance
+    (instantiation : @Instantiation sources owner name original) : StaticTypes.Arguments :=
+  StaticInstantiation.Checked.arguments instantiation
 
 def Instantiation.names {sources owner name original}
-    (instance : @Instantiation sources owner name original) : List String :=
-  StaticInstantiation.Checked.names instance
+    (instantiation : @Instantiation sources owner name original) : List String :=
+  StaticInstantiation.Checked.names instantiation
 
 def readTypeWith {sources owner name original}
-    (instance : @Instantiation sources owner name original) (tokens : List String) :
+    (instantiation : @Instantiation sources owner name original) (tokens : List String) :
     WorkM (TypeRead sources) :=
-  StaticInstantiation.readType instance tokens
+  StaticInstantiation.readType instantiation tokens
 
 def readQuantumTypes {sources owner name original}
-    (instance : @Instantiation sources owner name original) (tokens : List (List String)) :
+    (instantiation : @Instantiation sources owner name original) (tokens : List (List String)) :
     WorkM (List (TypeRead sources)) :=
-  match instance with
+  match instantiation with
   | .closed _ => readTypes sources owner tokens
   | .static _ environment _ => do
     guard (tokens.length ≤ 64) .limit
@@ -129,7 +129,7 @@ def Checked.sourceRows {sources owner name} (checked : Checked sources owner nam
 
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
   let original ← OrdinarySignature.readOriginal sources owner name
-  let instance ← if noStatics : original.parsedHeader.staticTokens.isNone &&
+  let instantiation ← if noStatics : original.parsedHeader.staticTokens.isNone &&
       original.parsedHeader.requiresTokens.isNone = true then
     pure (StaticInstantiation.Checked.closed noStatics)
     else throw .request
@@ -139,9 +139,9 @@ def read (sources : Sources) (owner name : String) : WorkM (Checked sources owne
       match parsed : resultParts tokens with
       | .error _ => throw .request
       | .ok parts =>
-        let inputs ← NaturalAffine.witness (readQuantumTypes instance original.parsedHeader.parameterTypes)
-        let outputs ← NaturalAffine.witness (readQuantumTypes instance parts.clauses)
-        return ⟨original,instance,parts,inputs.val,outputs.val,ordinary,effect,parsed,
+        let inputs ← NaturalAffine.witness (readQuantumTypes instantiation original.parsedHeader.parameterTypes)
+        let outputs ← NaturalAffine.witness (readQuantumTypes instantiation parts.clauses)
+        return ⟨original,instantiation,parts,inputs.val,outputs.val,ordinary,effect,parsed,
           by with_reducible exact inputs.property,by with_reducible exact outputs.property⟩
     else throw .request
   else throw .request
@@ -153,15 +153,15 @@ def readWithArguments (sources : Sources) (owner name : String) (arguments : Sta
     WorkM (Checked sources owner name) := do
   let environment ← StaticTypes.prepare sources owner name arguments
   let original := environment.numeric.original.envelope
-  let instance := StaticInstantiation.Checked.static arguments environment rfl
+  let instantiation := StaticInstantiation.Checked.static arguments environment rfl
   if ordinary : original.parsedHeader.ordinaryOnly = false then
     if effect : original.declaration.isPublic = true → original.parsedHeader.effect.isSome = true then
       match parsed : resultParts (original.parsedHeader.resultTokens.map (·.text)) with
       | .error _ => throw .request
       | .ok parts =>
-        let inputs ← NaturalAffine.witness (readQuantumTypes instance original.parsedHeader.parameterTypes)
-        let outputs ← NaturalAffine.witness (readQuantumTypes instance parts.clauses)
-        return ⟨original,instance,parts,inputs.val,outputs.val,ordinary,effect,parsed,
+        let inputs ← NaturalAffine.witness (readQuantumTypes instantiation original.parsedHeader.parameterTypes)
+        let outputs ← NaturalAffine.witness (readQuantumTypes instantiation parts.clauses)
+        return ⟨original,instantiation,parts,inputs.val,outputs.val,ordinary,effect,parsed,
           by with_reducible exact inputs.property,by with_reducible exact outputs.property⟩
     else throw .request
   else throw .request

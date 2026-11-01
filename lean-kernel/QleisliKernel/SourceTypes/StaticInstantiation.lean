@@ -16,19 +16,19 @@ inductive Checked {sources owner name}
       (sameOriginal : environment.numeric.original.envelope = original)
 
 def Checked.arguments {sources owner name original}
-    (instance : @Checked sources owner name original) : StaticTypes.Arguments :=
-  match instance with | .closed _ => {} | .static arguments _ _ => arguments
+    (instantiation : @Checked sources owner name original) : StaticTypes.Arguments :=
+  match instantiation with | .closed _ => {} | .static arguments _ _ => arguments
 
 def Checked.names {sources owner name original}
-    (instance : @Checked sources owner name original) : List String :=
-  match instance with
+    (instantiation : @Checked sources owner name original) : List String :=
+  match instantiation with
   | .closed _ => []
   | .static _ environment _ => environment.numeric.original.header.formals.map (·.name)
 
 def readType {sources owner name original}
-    (instance : @Checked sources owner name original) (tokens : List String) :
+    (instantiation : @Checked sources owner name original) (tokens : List String) :
     WorkM (TypeRead sources) :=
-  match instance with
+  match instantiation with
   | .closed _ => typeExpressionWithSources sources owner tokens
   | .static _ environment _ => StaticTypes.readType environment tokens
 
