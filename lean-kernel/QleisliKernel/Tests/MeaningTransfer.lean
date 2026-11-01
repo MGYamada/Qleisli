@@ -51,4 +51,24 @@ private def requests (description : Description) : Option (List (Nat × String �
       (name,request.moduleName,request.declarationName),signature.operations.hasMeaningRequirements)) =
     some ([("U","main","Identity")],true)
 
+private def sourceExpression (expression : String) : Bool :=
+  let action : Finite.WorkM Unit := do
+    let sources : Sources := #[("main",source ++
+      " pub unitary fn probe(q:Q<Bit>)->Q<Bit>{apply[" ++ expression ++ "](q)}")]
+    let signature ← QuantumSignatureCore.read sources "main" "probe"
+    let helpers ← NaturalHelpers.prepare sources
+    let call ← Finite.lift ((CallSyntax.read signature.original.occurrence.body).mapError fun _ => .request)
+    let written ← Finite.lift ((CallSyntax.readStatic call.call.callee).mapError fun _ => .request)
+    let [argument] := written.call.arguments | throw .request
+    let checked ← SourceOperation.read signature helpers (LexicalNatural.empty helpers) ["q"] argument.tokens
+    Finite.guard checked.graph.hasMeaningRequirements .request
+  (action.run 10000000).1.isOk
+
+-- The original checked_op grammar admits names only, even when a broader
+-- static description could have the same full ports and mathematical matrix.
+#guard sourceExpression "checked_op(keep,Identity)" = true
+#guard sourceExpression "checked_op(then_op(keep,keep),Identity)" = false
+#guard sourceExpression "checked_op(keep[type(Bit)],Identity)" = false
+#guard sourceExpression "checked_op(h,Identity)" = false
+
 end QleisliKernel.Tests.MeaningTransfer
