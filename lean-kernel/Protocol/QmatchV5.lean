@@ -78,7 +78,7 @@ structure Source where
   moduleName : String
   functionName : String
   arguments : StaticTypes.Arguments
-  deriving BEq, DecidableEq, Repr
+  deriving BEq, DecidableEq
 
 private def source (value : Json) : Except String Source := do
   Carrier.fields value ["module","function","static_bases","static_naturals","static_operations"]
@@ -113,7 +113,7 @@ inductive Context where
 structure Request where
   source : Source
   context : Context
-  deriving BEq, Repr
+  deriving BEq
 
 private def position (value : Json) : Except String Qirf.SourceSequence.Position := do
   Carrier.fields value ["offset","start","count"]
