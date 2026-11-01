@@ -1,4 +1,6 @@
 import QleisliKernel.SourceTypes.QuantumMatch
+import QleisliKernel.SourceTypes.StaticSelection
+import QleisliKernel.SourceTypes.PhaseApplication
 
 /-! Original exact-label qmatch table and source-function arm headers.
 Actual arm/control bodies, source/runtime preservation and native/QDV binding
@@ -38,7 +40,7 @@ structure BoundArm (sources : Sources) (owner : String) (selector target : Basis
   label : @Label sources
   originalLabel : ∃ before after,
     (readLabel sources owner selector written.label).run before = (.ok label,after)
-  operation : QuantumSignature.Selected sources owner (written.operation.map (·.text))
+  operation : QuantumSignature.OperationSelection sources owner written.operation
   input : operation.signature.inputs = [target]
   output : operation.signature.outputs = [target]
   resultOwner : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true
@@ -51,7 +53,33 @@ authorize a source occurrence or replace that persistent-scope check. -/
 def readArm (sources : Sources) (owner : String) (selector target : Basis) (written : QuantumMatch.Arm) :
     WorkM (BoundArm sources owner selector target) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
-  let operation ← QuantumSignature.select sources owner (written.operation.map (·.text))
+  let selected ← QuantumSignature.select sources owner (written.operation.map (·.text))
+  let operation := QuantumSignature.OperationSelection.closed selected
+  if input : operation.signature.inputs = [target] then
+    if output : operation.signature.outputs = [target] then
+      if shape : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true then
+        if effect : operation.signature.original.parsedHeader.effect = none ∨
+            operation.signature.original.parsedHeader.effect = some .unitary then
+          return ⟨written,label.val,by with_reducible exact label.property,operation,input,output,shape,effect⟩
+        else throw .request
+      else throw .request
+    else throw .request
+  else throw .request
+
+/-- Resolve original positional specializations in their actual caller static
+environment. The body traversal supplies persistent lexical names, including
+consumed runtime binders and body-local Nat aliases. -/
+def readArmWithSignature {sources owner name}
+    (signature : QuantumSignature.Checked sources owner name)
+    (naturals : PhaseApplication.Naturals sources) (scope : List String)
+    (selector target : Basis) (written : QuantumMatch.Arm) :
+    WorkM (BoundArm sources owner selector target) := do
+  let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
+  let syntax ← adapt (StaticApplication.syntax written.operation)
+  let candidate ← CallName.read sources owner scope syntax.callee
+  let selected ← QuantumSignature.selectInstance signature naturals.helpers.val naturals.environment scope syntax candidate
+  let operation := QuantumSignature.OperationSelection.instantiated signature naturals.helpers.val
+    naturals.environment scope syntax candidate selected
   if input : operation.signature.inputs = [target] then
     if output : operation.signature.outputs = [target] then
       if shape : (match operation.signature.parts with | .owner _ => true | .tuple _ => false) = true then
@@ -118,5 +146,31 @@ def read (sources : Sources) (owner name : String) (offset : Nat) (selector targ
     WorkM (Table sources owner name offset selector target) := do
   let original ← OrdinarySignature.readOriginal sources owner name
   readArms original offset selector target
+
+/-- Read the unchanged original site using the same checked caller instance as
+its complete source trace. Supplying no event environment seeds the original
+header actuals; complete source traversal supplies local aliases when present. -/
+def readArmsWithSignature {sources owner name}
+    (signature : QuantumSignature.Checked sources owner name)
+    (offset : Nat) (selector target : Basis)
+    (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
+    (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
+  let site ← QuantumMatch.readSite signature.original offset
+  let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
+  let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
+  let naturals ← match eventNaturals with
+    | some naturals => pure naturals
+    | none => PhaseApplication.prepareWithSignature signature
+  let scope := signature.staticNames ++ eventScope
+  let arms ← site.parsed.arms.mapM (readArmWithSignature signature naturals scope selector target)
+  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
+  if same : arms.map (·.written) = site.parsed.arms then
+    if complete : partition layout.val.labels.length arms = true then
+      return ⟨site,layout.val,by with_reducible exact original.property,
+        by obtain ⟨before,after,ran⟩ := layout.property
+           exact FiniteCarrier.read_reference _ _ _ _ ran,
+        arms,same,complete⟩
+    else throw .request
+  else throw .request
 
 end QleisliKernel.SourceTypes.QuantumArms

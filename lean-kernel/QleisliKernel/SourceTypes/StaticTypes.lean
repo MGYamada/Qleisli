@@ -12,6 +12,7 @@ open Finite Semantics.FiniteCarrier
 structure Arguments where
   bases : List (String × Basis) := []
   naturals : StaticNatural.Bindings := []
+  deriving DecidableEq
 
 def namesMatch {sources owner name} (original : StaticHeaders.Original sources owner name)
     (arguments : Arguments) : Bool :=
