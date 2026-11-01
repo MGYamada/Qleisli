@@ -1,5 +1,5 @@
 //! Propose actual call fragments to the existing original-source qmatch gate.
-//! The source reader checks the complete structural body, not a synthetic site.
+//! The source reader checks all supported original events and their literal IR.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::frontend::types::nominal::Body;
@@ -12,11 +12,14 @@ pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
     inputs: Vec<Owner>,
     start: usize,
+    positions: Vec<Position>,
+    primitive_prelude: bool,
     selections: Vec<Selection>,
 }
 
 struct Selection {
     span: Span,
+    offset: usize,
     arms: Vec<ArmSubject>,
     inputs: Vec<Owner>,
     outputs: Vec<Owner>,
@@ -112,6 +115,8 @@ impl Frame {
                 .map(|arg| owner(lower, &name.0, span, arg))
                 .collect::<Result<_, _>>()?,
             start: lower.raw.operations.len(),
+            positions: Vec::new(),
+            primitive_prelude: false,
             selections: Vec::new(),
         }))
     }
@@ -149,9 +154,21 @@ impl Frame {
                 .asserted()
                 .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred()),
         };
-        let rows = lower
+        let mut rows = lower
             .compiler
             .retained_ordinary_type_sources(self.key, &name.0, span)?;
+        if self.primitive_prelude {
+            lower
+                .compiler
+                .charge(&name.0, span, rows.iter().map(|row| row.0.len() + 1).sum())?;
+            let mut modules = rows.iter().map(|row| row.0.clone()).collect::<Vec<_>>();
+            modules.push("std::prelude".to_owned());
+            modules.sort_unstable();
+            modules.dedup();
+            rows = lower
+                .compiler
+                .retain_source_modules(&name.0, span, modules)?;
+        }
         lower.compiler.charge(
             &name.0,
             span,
@@ -195,24 +212,17 @@ impl Frame {
             .iter()
             .zip(&interfaces)
             .map(|(selected, interface)| {
-                let number = |value| {
-                    u32::try_from(value).map_err(|_| {
-                        lower.error(
-                            &name.0,
-                            selected.span,
-                            ErrorCode::Limit,
-                            "qmatch source/interval position exceeds u32",
-                        )
-                    })
-                };
                 Ok(SelectionSubject {
                     interface,
                     arms: &selected.arms,
-                    position: Position {
-                        offset: number(selected.span.start)?,
-                        start: number(selected.start)?,
-                        count: number(selected.count)?,
-                    },
+                    position: position(
+                        lower,
+                        &name.0,
+                        selected.span,
+                        selected.offset,
+                        selected.start,
+                        selected.count,
+                    )?,
                 })
             })
             .collect::<Result<Vec<_>, CompileError>>()?;
@@ -222,6 +232,7 @@ impl Frame {
                 module: name.0.clone(),
                 function: name.1,
             },
+            &self.positions,
             &subjects,
             &sources,
         )
@@ -249,6 +260,87 @@ impl Frame {
             .map_err(|e| lower.compiler.op_error(&name.0, span, e.into()))?;
         Ok(())
     }
+}
+
+/// Record only a real source dispatch, after its argument expressions have run.
+/// Synthetic primitive calls made while lowering qmatch are not source events.
+pub(in crate::frontend::compile::lower) fn record_primitive(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    callee: &Ident,
+    start: usize,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            callee.span,
+            ErrorCode::InvalidIr,
+            "primitive precedes its original qmatch context",
+        )
+    })?;
+    let count = lower
+        .raw
+        .operations
+        .len()
+        .checked_sub(start)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                callee.span,
+                ErrorCode::InvalidIr,
+                "primitive removed its original operation prefix",
+            )
+        })?;
+    let original = lower.compiler.originals.module(module).ok_or_else(|| {
+        lower.error(
+            module,
+            callee.span,
+            ErrorCode::InvalidIr,
+            "qmatch primitive context lacks its original source module",
+        )
+    })?;
+    let prelude = !original.ast.no_implicit_prelude;
+    let position = position(
+        lower,
+        module,
+        callee.span,
+        callee.span.start,
+        relative,
+        count,
+    )?;
+    lower.compiler.charge(module, callee.span, 4)?;
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.positions.push(position);
+    frame.primitive_prelude |= prelude;
+    Ok(())
+}
+
+fn position(
+    lower: &Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    offset: usize,
+    start: usize,
+    count: usize,
+) -> Result<Position, CompileError> {
+    let number = |value| {
+        u32::try_from(value).map_err(|_| {
+            lower.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "qmatch source/interval position exceeds u32",
+            )
+        })
+    };
+    Ok(Position {
+        offset: number(offset)?,
+        start: number(start)?,
+        count: number(count)?,
+    })
 }
 
 fn controlled(steps: Vec<CircuitStep>, bits: usize) -> RawProgram {
@@ -429,17 +521,34 @@ pub(super) fn emit(
     let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
     let selected_outputs = outputs(lower, module, span, &result)?;
     let count = lower.raw.operations.len() - start;
+    let relative = start
+        - lower
+            .nominal_qmatch
+            .as_ref()
+            .expect("checked original frame")
+            .start;
+    let position = position(
+        lower,
+        module,
+        span,
+        selection.keyword.start,
+        relative,
+        count,
+    )?;
+    lower.compiler.charge(module, span, 4)?;
     let frame = lower
         .nominal_qmatch
         .as_mut()
         .expect("checked original frame");
     frame.selections.push(Selection {
         span,
+        offset: selection.keyword.start,
         arms,
         inputs,
         outputs: selected_outputs,
-        start: start - frame.start,
+        start: relative,
         count,
     });
+    frame.positions.push(position);
     Ok(result)
 }

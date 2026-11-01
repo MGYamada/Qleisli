@@ -3,6 +3,30 @@
 use super::*;
 
 #[test]
+fn grouped_quantum_match_retains_the_keyword_token_separately() {
+    let source =
+        "fn f(s:Q<E>,q:Q<Bit>)->(Q<E>,Q<Bit>){((/* λ */ qmatch(s,q){E::A=>keep,E::B=>keep}))}";
+    let syntax = parse_module(source).unwrap();
+    assert_eq!(parse_bounded_module(source).unwrap(), syntax);
+    let FnBody::Quantum(body) = &syntax.decls[0].body else {
+        panic!()
+    };
+    let ExprKind::QuantumMatch(selection) = &body.result.kind else {
+        panic!()
+    };
+    assert_eq!(selection.keyword.start, source.find("qmatch").unwrap());
+    assert_eq!(
+        &source[selection.keyword.start..selection.keyword.end],
+        "qmatch"
+    );
+    assert!(body.result.span.start < selection.keyword.start);
+    assert_eq!(
+        &source[body.result.span.start..body.result.span.start + 2],
+        "(("
+    );
+}
+
+#[test]
 fn quantum_match_preserves_written_labels_operations_and_original_spans() {
     let source = "// λ\nfn f(s:Q<E>,q:Q<Bit>)->(Q<E>,Q<Bit>){qmatch(s,q){alias /* original */ :: E :: C=>keep,E::A=>h,E::B=>global_phase_eighth,}}";
     let syntax = parse_module(source).unwrap();

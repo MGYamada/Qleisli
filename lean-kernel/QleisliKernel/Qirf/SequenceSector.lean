@@ -1,66 +1,25 @@
-import QleisliKernel.Qirf.SourceSequence
-import QleisliKernel.Qirf.SourceFrameSector
+import QleisliKernel.Qirf.SelectionCore
 
-/-! Check every original selection against its actual interval in one fresh
-graph. Reuse original arm/evidence bindings, code checks, independent controls
-and exact sector equations. Structural correspondence alone never grants this
-result. Native/QDV dispatch and ordinary compiler integration remain separate.
+/-! Every original structural selection uses the shared header and exact
+arm/control/sector equations. SourceSequence still checks the complete literal
+sequence. Reusing the already-read original caller removes duplicate parsing;
+this intended work-accounting change does not waive any acceptance check.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SequenceSector
 open Finite Semantics.Exact Semantics.CarrierInterface
 open PureInterval (Witness)
 abbrev Computed {α : Type} (action : WorkM α) (value : α) : Prop :=
-  ∃ work left, action.run work = (.ok value,left)
+  SelectionContract.Computed action value
 abbrev Source := SourceTypes.QuantumSequence.Checked
 abbrev Event := SourceTypes.QuantumSequence.Event
+abbrev Request := SelectionContract.Request
 
-structure Request where
-  attached : Interface
-  required : Interface
-  position : SourceSequence.Position
-  programs : List SourceArm.Programs
-  deriving BEq, DecidableEq, Repr
-
-structure Header (artifact : Artifact) {owner name} (source : Source artifact.sources owner name) where
-  event : Event
-  request : Request
-  ports : NominalSector.Ports
-  portsRead : NominalSector.ports request.required = some ports
-  interface : request.attached = request.required
-  types : NominalSector.sameTypes request.required ports = true
-  roles : ports.selectorIn.basis = event.selector.basis ∧ ports.targetIn.basis = event.target.basis
-  table : Witness (SourceTypes.QuantumArms.read artifact.sources owner name request.position.offset
-    ports.selectorIn.basis ports.targetIn.basis)
-  original : table.val.site.original.source = source.signature.original.source ∧ table.val.site.parsed = event.parsed
-  bindings : Witness (SourceArm.readAll artifact table.val.arms request.programs)
-  roots : Witness (SourceArm.readRoots artifact bindings.val)
-  rows : Witness (SourceSector.readRowsWithSignature table.val source.signature)
+abbrev Header (artifact : Artifact) {owner name} (source : Source artifact.sources owner name) :=
+  SelectionCore.Header artifact source.signature
 
 def readHeader (artifact : Artifact) {owner name} (source : Source artifact.sources owner name)
-    (pair : Event × Request) : WorkM (Header artifact source) := do
-  let event := pair.1
-  let request := pair.2
-  guard (NominalSector.shape request.attached request.required) .request
-  SourceTypes.checkMany artifact.sources (NominalSector.forests request.attached request.required)
-  exactWork (Exact.charge (16*(SourceSequence.eventFields event+source.signature.original.source.utf8ByteSize+1)))
-  match portsRead : NominalSector.ports request.required with
-  | none => throw .request
-  | some ports =>
-    if interface : request.attached = request.required then
-      if types : NominalSector.sameTypes request.required ports = true then
-        if roles : ports.selectorIn.basis = event.selector.basis ∧ ports.targetIn.basis = event.target.basis then
-          let table ← SourceTypes.NaturalAffine.witness (SourceTypes.QuantumArms.read artifact.sources owner name
-            request.position.offset ports.selectorIn.basis ports.targetIn.basis)
-          if original : table.val.site.original.source = source.signature.original.source ∧
-              table.val.site.parsed = event.parsed then
-            let bindings ← SourceTypes.NaturalAffine.witness (SourceArm.readAll artifact table.val.arms request.programs)
-            let roots ← SourceTypes.NaturalAffine.witness (SourceArm.readRoots artifact bindings.val)
-            let rows ← SourceTypes.NaturalAffine.witness (SourceSector.readRowsWithSignature table.val source.signature)
-            return ⟨event,request,ports,portsRead,interface,types,roles,table,original,bindings,roots,rows⟩
-          else throw .request
-        else throw .request
-      else throw .request
-    else throw .request
+    (pair : Event × Request) : WorkM (Header artifact source) :=
+  SelectionCore.readHeader artifact source.signature pair
 
 structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
   source : Witness (SourceTypes.QuantumSequence.read artifact.sources owner name)
@@ -91,9 +50,8 @@ def roots {artifact owner name requests} (headers : Headers artifact owner name 
 
 theorem rootFresh {artifact order rows roots}
     (root : Witness (Validity.checkRootFromRoots artifact order rows roots)) :
-    CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList root.val.receipts := by
-  obtain ⟨work,left,ran⟩ := root.property
-  exact (Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ ran).fresh
+    CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList root.val.receipts :=
+  SelectionContract.rootFresh root
 
 structure Body {artifact owner name requests} (order : Array Nat) (headers : Headers artifact owner name requests) where
   root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
@@ -116,73 +74,45 @@ def prepare {artifact owner name requests} (order : Array Nat) (headers : Header
     root.val.program (requests.map (·.position)))
   return ⟨root,context⟩
 
-structure SiteBody {artifact owner name requests order} {headers : Headers artifact owner name requests}
+/-- Bind the shared selection checker to the exact event/interval already
+retained by the complete structural traversal. -/
+def interval {artifact owner name requests order} {headers : Headers artifact owner name requests}
     (body : Body order headers) (header : Header artifact headers.source.val)
-    (bound : SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole) where
-  event : header.event = bound.event
-  position : header.request.position = bound.position
-  inputs : bound.site.interval.selected = header.request.attached.inputs.map (·.port)
-  outputs : bound.site.interval.returned = header.request.attached.outputs.map (·.port)
-  codes : SourceFrameSector.Codes header.ports
-  restriction : Witness (QleisliKernel.Raw.Sector.read body.root.val.dependencies
-    [.bits codes.selectorLayout.val.bits] [.bits codes.targetLayout.val.bits]
-    (PureInterval.fragment bound.site.interval.selected bound.site.interval.slice bound.site.outputs))
-  entries : Witness (header.bindings.val.mapM fun binding =>
-    SourceSector.readEntry artifact body.root.val.receipts binding (rootFresh body.root))
-
-def prepareSite {artifact owner name requests order} {headers : Headers artifact owner name requests}
-    (body : Body order headers) (header : Header artifact headers.source.val)
-    (bound : SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole) :
-    WorkM (SiteBody body header bound) := do
-  exactWork (Exact.charge (64*(SourceSequence.eventFields header.event+SourceSequence.eventFields bound.event+1)))
-  if event : header.event = bound.event then
-    if position : header.request.position = bound.position then
-      if inputs : bound.site.interval.selected = header.request.attached.inputs.map (·.port) then
-        if outputs : bound.site.interval.returned = header.request.attached.outputs.map (·.port) then
-          let codes ← SourceFrameSector.readCodes header.ports
-          let restriction ← SourceTypes.NaturalAffine.witness (QleisliKernel.Raw.Sector.read body.root.val.dependencies
-            [.bits codes.selectorLayout.val.bits] [.bits codes.targetLayout.val.bits]
-            (PureInterval.fragment bound.site.interval.selected bound.site.interval.slice bound.site.outputs))
-          let entries ← SourceTypes.NaturalAffine.witness (header.bindings.val.mapM fun binding =>
-            SourceSector.readEntry artifact body.root.val.receipts binding (rootFresh body.root))
-          return ⟨event,position,inputs,outputs,codes,restriction,entries⟩
-        else throw .request
-      else throw .request
-    else throw .request
-  else throw .request
+    (bound : SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole)
+    (event : header.event = bound.event) (position : header.request.position = bound.position) :
+    PureInterval.Many.Checked 2 body.root.val.dependencies body.root.val.program
+      header.request.position.start header.request.position.count bound.site.inputs bound.site.outputs
+      [header.event.selector,header.event.target] := by
+  simpa only [event,position] using bound.site.interval.toMany
 
 structure Local {artifact owner name requests order} {headers : Headers artifact owner name requests}
     (body : Body order headers) where
   header : Header artifact headers.source.val
   bound : SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole
-  prepared : SiteBody body header bound
-  arms : List SectorArms.BoundArm
-  armsRead : Computed (SectorArms.readAll artifact body.root.val.dependencies header.ports.targetIn.basis
-    prepared.codes.targetLayout.val.bits prepared.codes.targetIn.val prepared.codes.targetOut.val
-    prepared.codes.selectorLayout.val.labels.length (header.bindings.val.map (·.reference))) arms
-  logical : List Matrix
-  logicalRead : Computed (NominalSector.checkLogicals prepared.codes.targetIn.val prepared.codes.targetOut.val
-    prepared.restriction.val.sectors prepared.codes.selectorLayout.val.labels (arms.map (·.checked.logical))) logical
+  event : header.event = bound.event
+  position : header.request.position = bound.position
+  checked : SelectionCore.Checked header body.root.val (SelectionContract.rootFresh body.root)
+    (interval body header bound event position)
 
-def finishSite {artifact owner name requests order} {headers : Headers artifact owner name requests}
-    (body : Body order headers) (header : Header artifact headers.source.val)
-    (bound : SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole)
-    (prepared : SiteBody body header bound) : WorkM (Local body) := do
-  let arms ← SourceTypes.NaturalAffine.witness (SectorArms.readAll artifact body.root.val.dependencies
-    header.ports.targetIn.basis prepared.codes.targetLayout.val.bits prepared.codes.targetIn.val prepared.codes.targetOut.val
-    prepared.codes.selectorLayout.val.labels.length (header.bindings.val.map (·.reference)))
-  let logical ← SourceTypes.NaturalAffine.witness (NominalSector.checkLogicals prepared.codes.targetIn.val
-    prepared.codes.targetOut.val prepared.restriction.val.sectors prepared.codes.selectorLayout.val.labels
-    (arms.val.map (·.checked.logical)))
-  return ⟨header,bound,prepared,arms.val,by with_reducible exact arms.property,
-    logical.val,by with_reducible exact logical.property⟩
+/-- Retain the established observation field through the common equation result. -/
+def Local.logical {artifact owner name requests order} {headers : Headers artifact owner name requests}
+    {body : Body order headers} (checked : Local body) : List Matrix :=
+  checked.checked.equations.logical
 
 def readLocal {artifact owner name requests order} {headers : Headers artifact owner name requests}
     (body : Body order headers) (pair : Header artifact headers.source.val ×
       SourceSequence.Bound headers.source.val body.root.val.dependencies body.root.val.program body.context.val.whole) :
     WorkM (Local body) := do
-  let prepared ← prepareSite body pair.1 pair.2
-  finishSite body pair.1 pair.2 prepared
+  let header := pair.1
+  let bound := pair.2
+  exactWork (Exact.charge (64*(SourceSequence.eventFields header.event+SourceSequence.eventFields bound.event+1)))
+  if event : header.event = bound.event then
+    if position : header.request.position = bound.position then
+      let checked ← SelectionCore.check header body.root.val (SelectionContract.rootFresh body.root)
+        (interval body header bound event position)
+      return ⟨header,bound,event,position,checked⟩
+    else throw .request
+  else throw .request
 
 structure Checked (artifact : Artifact) (order : Array Nat) (owner name : String) (requests : List Request) where
   headers : Headers artifact owner name requests

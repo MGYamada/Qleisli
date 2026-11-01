@@ -27,6 +27,11 @@ fn request() -> Request {
             module: "same".into(),
             function: "choose".into(),
         },
+        positions: vec![Position {
+            offset: 137,
+            start: 0,
+            count: 3,
+        }],
         sites: vec![Site {
             attached: interface.clone(),
             required: interface,
@@ -92,20 +97,196 @@ fn profile_format_version_and_required_fields_are_exact() {
         ("profile", text("finite-carrier-pure-v1")),
         ("profile", text("finite-source-qmatch-named-v1")),
         ("profile", text("finite-source-qmatch-named-v2")),
+        ("profile", text("finite-source-qmatch-named-v3")),
         ("version", n(1)),
         ("version", n(2)),
+        ("version", n(3)),
     ] {
         let bytes = changed(|fields| {
             fields.insert(key.into(), value.clone());
         });
         assert!(Request::decode(&bytes).is_err());
     }
+    for required in ["source", "positions"] {
+        assert!(
+            Request::decode(&changed(|fields| {
+                fields.remove(required);
+            }))
+            .is_err()
+        );
+    }
+}
+
+#[test]
+fn all_event_positions_retain_postorder_without_inventing_arm_requests() {
+    let mut proposed = request();
+    proposed.positions = (0..130)
+        .map(|index| Position {
+            offset: 300 - index,
+            start: index,
+            count: 1,
+        })
+        .collect();
+    let decoded = Request::decode(&proposed.encode().unwrap()).unwrap();
+    assert_eq!(decoded.positions, proposed.positions);
+    assert_eq!(decoded.sites, proposed.sites);
+    assert_eq!(decoded.sites.len(), 1);
+    // Coverage is a native source judgment, including the empty proposal.
+    proposed.positions.clear();
     assert!(
-        Request::decode(&changed(|fields| {
-            fields.remove("source");
-        }))
-        .is_err()
+        Request::decode(&proposed.encode().unwrap())
+            .unwrap()
+            .positions
+            .is_empty()
     );
+}
+
+#[test]
+fn every_context_position_field_is_unsigned_u32_and_has_no_extra_authority() {
+    let mut proposed = request();
+    proposed.positions[0] = Position {
+        offset: u32::MAX,
+        start: u32::MAX,
+        count: u32::MAX,
+    };
+    assert_eq!(
+        Request::decode(&proposed.encode().unwrap()).unwrap(),
+        proposed
+    );
+    for field in ["offset", "start", "count"] {
+        for invalid in [Value::Number(u64::from(u32::MAX) + 1), text("-1")] {
+            let bytes = changed(|fields| {
+                fields.insert(
+                    "positions".into(),
+                    Value::Array(vec![Value::object([
+                        ("offset", n(1)),
+                        ("start", n(0)),
+                        ("count", n(1)),
+                        (field, invalid.clone()),
+                    ])]),
+                );
+            });
+            assert!(Request::decode(&bytes).is_err(), "position {field}");
+        }
+        let bytes = changed(|fields| {
+            let mut position = std::collections::BTreeMap::from([
+                ("offset".into(), n(1)),
+                ("start".into(), n(0)),
+                ("count".into(), n(1)),
+            ]);
+            position.remove(field);
+            fields.insert(
+                "positions".into(),
+                Value::Array(vec![Value::Object(position)]),
+            );
+        });
+        assert!(Request::decode(&bytes).is_err(), "missing position {field}");
+    }
+    for field in ["kind", "owners", "effect", "accepted", "roots"] {
+        let bytes = changed(|fields| {
+            fields.insert(
+                "positions".into(),
+                Value::Array(vec![Value::object([
+                    ("offset", n(1)),
+                    ("start", n(0)),
+                    ("count", n(1)),
+                    (field, Value::Bool(true)),
+                ])]),
+            );
+        });
+        assert!(
+            Request::decode(&bytes).is_err(),
+            "position authority {field}"
+        );
+    }
+}
+
+#[test]
+fn event_positions_share_the_existing_request_allocation_budget() {
+    let count = json::MAX_BYTES / 128 - 1;
+    let mut proposed = request();
+    proposed.positions = vec![proposed.positions[0].clone(); count];
+    let error = proposed.encode().unwrap_err();
+    assert_eq!(error.code, "limit");
+    assert!(error.message.contains("allocation capacity"));
+
+    // This valid JSON fits the wire budget. Its positions plus the retained
+    // interfaces exceed the same allocation budget used by the encoder.
+    let template = String::from_utf8(changed(|fields| {
+        fields.insert("positions".into(), Value::Null);
+    }))
+    .unwrap();
+    let mut positions = String::from("[");
+    positions.push_str(&"{\"offset\":1,\"start\":0,\"count\":1},".repeat(count - 1));
+    positions.push_str("{\"offset\":1,\"start\":0,\"count\":1}]");
+    let wire = template.replace("\"positions\":null", &format!("\"positions\":{positions}"));
+    assert!(wire.len() < json::MAX_BYTES);
+    let error = Request::decode(wire.as_bytes()).unwrap_err();
+    assert_eq!(error.code, "limit");
+    assert!(error.message.contains("allocation capacity"));
+}
+
+#[test]
+fn actual_retained_view_binds_all_positions_even_when_selection_requests_match() {
+    use crate::interchange::execution_view::finite::{self, Graph};
+    use crate::ir::RawProgram;
+    let raw = Arc::new(RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    });
+    let graph = crate::interchange::DecodedGraph {
+        programs: vec![Arc::clone(&raw)],
+        evidence: vec![],
+        root: 0,
+        interface: None,
+        sources: vec![],
+    };
+    let view = |request: &Request| {
+        finite::qmatch::complete(
+            Graph {
+                graph: &graph,
+                root: &raw,
+                interface: None,
+                effect: Effect::Unitary,
+                outputs: &[],
+            },
+            request,
+        )
+        .unwrap()
+    };
+    let mut original = request();
+    original.positions.insert(
+        0,
+        Position {
+            offset: 201,
+            start: 0,
+            count: 1,
+        },
+    );
+    let expected = view(&original);
+    for variant in 0..6 {
+        let mut changed = original.clone();
+        match variant {
+            0 => changed.positions[0].offset += 1,
+            1 => changed.positions[0].start += 1,
+            2 => changed.positions[0].count += 1,
+            3 => changed.positions.swap(0, 1),
+            4 => {
+                changed.positions.pop();
+            }
+            _ => changed.positions.push(changed.positions[0].clone()),
+        }
+        assert_eq!(changed.sites, original.sites);
+        assert_ne!(
+            view(&changed),
+            expected,
+            "context position variant {variant}"
+        );
+    }
 }
 
 #[test]
@@ -332,17 +513,19 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
     let kernel =
         crate::interchange::native::Kernel::selected(crate::edition::Edition::E2026).unwrap();
     let check = |raw: &RawProgram, interface: Interface, arms: &[ArmSubject]| {
+        let position = Position {
+            offset: source.find("qmatch").unwrap() as u32,
+            start: 0,
+            count: raw.operations.len() as u32,
+        };
         let (artifact, request) = proposal(
             raw,
             site.clone(),
+            std::slice::from_ref(&position),
             &[SelectionSubject {
                 interface: &interface,
                 arms,
-                position: Position {
-                    offset: source.find("qmatch").unwrap() as u32,
-                    start: 0,
-                    count: raw.operations.len() as u32,
-                },
+                position: position.clone(),
             }],
             &[("main".into(), source.into())],
         )
@@ -437,6 +620,7 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
         proposal(
             raw,
             site.clone(),
+            &positions,
             &[
                 SelectionSubject {
                     interface: &first,

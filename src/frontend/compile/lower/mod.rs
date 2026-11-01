@@ -1284,7 +1284,10 @@ impl Lowerer<'_, '_> {
                         module, source, callee, primitive, values, args,
                     );
                 }
-                self.primitive_with_source(module, span, primitive, values, args)
+                let start = self.raw.operations.len();
+                let value = self.primitive_with_source(module, span, primitive, values, args)?;
+                quantum_match::nominal::record_primitive(self, module, callee, start)?;
+                Ok(value)
             }
         }
     }

@@ -247,6 +247,8 @@ pub struct QuantumMatchArm {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct QuantumMatch {
+    /// Original keyword token, independent of any enclosing grouping span.
+    pub keyword: Span,
     pub selector: Box<Expr>,
     pub target: Box<Expr>,
     /// Written order, independent of canonical enum declaration order.

@@ -86,6 +86,18 @@ fn typed_request_and_retained_objects_participate_in_the_actual_view() {
     let original = qmatch::complete(prepared.graph(), &request).unwrap();
     let mut changes = Vec::new();
     let mut changed = request.clone();
+    changed.positions[0].offset += 1;
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.positions[0].start += 1;
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.positions[0].count += 1;
+    changes.push(changed);
+    let mut changed = request.clone();
+    changed.positions.clear();
+    changes.push(changed);
+    let mut changed = request.clone();
     changed.sites[0].position.offset += 1;
     changes.push(changed);
     let mut changed = request.clone();

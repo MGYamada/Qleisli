@@ -559,9 +559,10 @@ and size limits remain; the target profile separately limits bytes and gates.
 ## Internal named-arm qmatch component
 
 The preparatory `Protocol.Qmatch` and `ExecutionView.CheckedQmatch` definitions
-use a strict internal `qleisli.qmatch-request` version 3 with profile
-`finite-source-qmatch-named-v3`. Versions 1 and 2 refuse without fallback.
-The exact request keys are `format`, `version`, `profile`, `source` and `sites`.
+use a strict internal `qleisli.qmatch-request` version 4 with profile
+`finite-source-qmatch-context-v4`. Versions 1–3 refuse without fallback.
+The exact request keys are `format`, `version`, `profile`, `source`, `positions`
+and `sites`.
 `source` contains the original `module` and `function`. Each of 1–128 ordered
 sites contains `attached`, `required`, `position` and `arms`. Both interfaces
 use the existing complete carrier codec. `position` contains the original
@@ -576,15 +577,26 @@ Each pair of interfaces describes its selected pair in selector/target order. Th
 retains the complete original function's parameter and result order, including
 additional zero-width owners. Fresh original-source moves bind those two
 orders; equal widths or an arbitrary interval cannot replace that judgment.
-Every original occurrence must appear exactly once in source order. Literal
-intervals must cover the complete Raw operation list in order without overlap
-or gaps. Every interval uses its actual surrounding owner frame, fresh arm and
-control evidence and exact sector equations. Cancellation between intervals
-cannot hide a wrong local operator. The outer public effect remains bound
-independently of the pure selected pairs.
+`positions` contains one literal interval for every supported source event,
+including direct `h` and `global_phase_eighth` calls and every selection.
+Arguments are traversed before their enclosing call; the call coordinate is
+the first callee token, while a selection uses its `qmatch` keyword. Grouping
+parentheses and comments do not replace either coordinate. Primitive resolution
+checks original lexical/module bindings and, when enabled, the original
+`std::prelude` row; a producer-supplied primitive name is insufficient.
+There is no separate 128-event cap on this array. Existing byte and work limits
+still apply, and the selection count remains bounded by 128.
+Every original event must appear exactly once in evaluation order. Literal
+intervals cover the complete Raw operation list without overlap or gaps. Each
+uses its actual surrounding owner frame. Primitive intervals check the exact
+specified action; selections use fresh arm/control evidence and exact sector
+equations. Cancellation between intervals cannot hide a wrong local operator.
+The outer public effect remains bound independently of the pure selected pairs.
 
 Its QDV record contains the tag followed by the complete fresh finite graph,
-`["source-function", module, function]` and the ordered site array. Each site
+`["source-function", module, function]`, the ordered event-position array, and
+the ordered site array. Each event position is
+`["source-interval", offset, start, count]`. Each site
 is `["qmatch-site", attached, required, ["source-interval", offset, start, count],
 arms]`, where `arms` is an ordered array of `["qmatch-arm", evidence, controlled]`.
 The pure QLV3 definition requires execution scope and exact bytes. Inspection,
@@ -601,8 +613,11 @@ the QIRF JSON encoder. Fresh success retains those same allocations in a private
 inverse/control capability or receipt constructor, and performs no old-mode retry.
 
 The current source component uses named arms in complete structural quantum
-functions, including multiple selections, source moves and distinct zero-width
-spectators. General expression/call frames, mixed ordinary parameters,
+functions, including multiple selections, grouped/nested direct supported
+primitive calls, source moves and distinct zero-width spectators. The shared
+compiler records built-in selected pairs too when a nominal owner activates
+this function context; direct primitive arms still require named wrappers in
+that context. General expression/call frames, mixed ordinary parameters,
 constructed/static/generic arms and the complete twelve-bit profile still
 require integration. These are implementation limits. The shared conformance
 vectors separately test the retained Rust walker and fresh native comparison.

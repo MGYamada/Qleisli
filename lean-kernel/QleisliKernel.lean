@@ -68,6 +68,7 @@ import QleisliKernel.Qirf.SourceInterval
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.Qirf.SourceFrameSector
 import QleisliKernel.Qirf.SequenceSector
+import QleisliKernel.Qirf.ContextSector
 import QleisliKernel.Qirf.NominalSector
 import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.Qirf.SectorArms

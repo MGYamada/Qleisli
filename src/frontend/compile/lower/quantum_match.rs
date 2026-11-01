@@ -158,7 +158,8 @@ impl Lowerer<'_, '_> {
         let target = self.expr(module, &selection.target, env)?;
         let target_slot = self.quantum(module, selection.target.span, &target, false)?;
         let selector_basis = &self.raw.registers[&selector_slot].basis;
-        if selector_basis.basis_bits().is_none()
+        if self.nominal_qmatch.is_some()
+            || selector_basis.basis_bits().is_none()
             || self.raw.registers[&target_slot]
                 .basis
                 .basis_bits()

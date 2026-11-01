@@ -1,7 +1,38 @@
 # Original qmatch source and evidence coupling
 
-The [lexical-shadow counterexample](lexical-shadow-first.tar.xz) and compressed
-[index](lexical-shadow-index.json.xz) preserve 79 original records. A consumed
+Historical archives and indexes are retained as logical files in the
+[shared history manifest](shared-history.json). Its three bounded object
+containers deduplicate identical original bytes. The passive reader reconstructs
+all 20 original compressed archives byte for byte, including their old hashes,
+TAR headers, member modes and indexes; it never executes saved commands. Archive
+and index links below lead to that manifest. Current validation files remain
+ordinary files. The complete earlier README is also retained under its original
+logical path.
+
+The context prototype packet retains 941 original paths, including all 133
+completed helper windows (85 successes and 48 failures), first sources, actual
+diagnostics, source-object closure and the separate interval/work refinements.
+Its 68 shared objects refer to the exact pinned sequence and lexical-shadow
+histories. The current passive consumer checks every original path/object and
+external binding; this history supplies no fresh proof replay, native acceptance,
+source-preservation guarantee or Issue completion.
+
+The focused production-context packet retains 44 exact originals, including
+first sources and complete stdout/stderr from 14 selected observations: nine
+failures and five successes. Its index identifies full plans/reports, large test
+sources and imported environments as external-only at recorded paths and hashes.
+Later Git repair references do not replace failed originals. This is not a
+self-contained replay of those windows, fresh proof, native acceptance,
+source-preservation guarantee or Issue completion.
+
+Run `python3 scripts/test_qmatch_source_coupling_history.py` for passive checking.
+`scripts/inert_qmatch_history.py` exposes an explicit `Snapshot` whose `read`
+method takes the complete original repository-relative logical path. Missing
+logical paths reject. The snapshot checks its captured physical inputs again
+at the end of the test suite. It does not extract files or run historical code.
+
+The [lexical-shadow counterexample](shared-history.json) and compressed
+[index](shared-history.json) preserve 79 original records. A consumed
 local parameter shadows a bare arm name: the Rust frontend rejects it, while
 the original native packet incorrectly selected the global function. The scalar
 packet uses zero physical bits and two logical owners. Baseline, qualified and
@@ -12,8 +43,8 @@ and evaluates each RHS before introducing its pattern. Full native replay,
 canonical proof maintenance and final CI/review are separate from this history.
 No issue completion or guarantee admission is claimed.
 
-The [version3 full-test repair](sequence-tests-v3-first.tar.xz) and
-[index](sequence-tests-v3-index.json) retain the unchanged old test source,
+The [version3 full-test repair](shared-history.json) and
+[index](shared-history.json) retain the unchanged old test source,
 actual hosted failure and separate local repair. One active `Tests.lean` fixture
 still used the retired single-site version2 request after the decoder migration.
 The corrected version3 fixture preserves decoded source/interval fields and
@@ -22,8 +53,8 @@ Tests pass; the first incorrect working-directory invocation remains a failure.
 These are test observations using existing imports, not fresh transitive proof
 replay, a source-preservation theorem or completion of #64/#195.
 
-The [sequence sector integration history](sequence-sector-first.tar.xz) and
-bounded compressed [index](sequence-sector-index.json.xz) retain 20 actual check
+The [sequence sector integration history](shared-history.json) and
+bounded compressed [index](shared-history.json) retain 20 actual check
 windows and all 42 distinct working-source objects. Every original occurrence
 now binds a literal Raw interval, its actual owner frame and separate exact
 arm/control/sector equations through version3 requests/QDV and the shared
@@ -43,8 +74,8 @@ full proof replay, current-head CI/review, general expression/call/mixed frames,
 constructed/generic arms and the full twelve-bit profile remain separate.
 These informed controls do not complete #64/#195/#142 or admit a guarantee.
 
-The [sequence first history](sequence-first.tar.xz) and compressed
-[index](sequence-index.json.xz) retain seven complete informed programs, their
+The [sequence first history](shared-history.json) and compressed
+[index](shared-history.json) retain seven complete informed programs, their
 untouched first CLI observations and fifteen separate component-check windows.
 The structural control passes; target/spectator prefixes, a target suffix,
 multiple selections and an ordinary spectator expose current profile refusals.
@@ -74,16 +105,16 @@ Tests/replay, current native/compiler integration and hosted validation remain
 separate. Shared observer descriptions do not widen the actual saved argv and
 scope. Neither #64/#195/#142 nor a guarantee is completed by this history.
 
-The [provider cache history](provider-cache-first.tar.xz), compressed
-[index](provider-cache-index.json.xz) and [validation](provider-cache-validation.json.xz)
+The [provider cache history](shared-history.json), compressed
+[index](shared-history.json) and [validation](provider-cache-validation.json.xz)
 retain seven informed controls, their first real refusal and separate repairs.
 The unchanged four-way permutation passes after Raw/typed cache separation;
 normal/MSRV checks retain corrupt-cache refusals. Original source variants use
 immutable Git bases and inert patches. Duplicate plan fields remain in complete
 reports. This is not independent initial authoring or issue completion.
 
-The separate [v2 integration history](context-v2-first.tar.xz),
-[index](context-v2-index.json) and [validation](context-v2-validation.json)
+The separate [v2 integration history](shared-history.json),
+[index](shared-history.json) and [validation](context-v2-validation.json)
 retain fresh native/QDV and compiler observations for the structural context.
 All eleven first programs remain unchanged; additional zero-width owners and
 reordered parameters now pass. Normal/MSRV selected and native-unit tests have
@@ -93,7 +124,7 @@ or execute saved commands. General calls, ordinary arguments, multiple
 selections, canonical proof maintenance and hosted CI/review remain separate;
 neither issue is completed by these bounded observations.
 
-The [context history](context-first.tar.xz), [index](context-index.json) and
+The [context history](shared-history.json), [index](shared-history.json) and
 [validation scope](context-validation.json) retain eleven original projects,
 literal-IR and source-mapping studies, the first malformed Raw effect token,
 all elaboration refusals and separate repairs. The shared component observations
@@ -106,7 +137,7 @@ structural source qmatch; at that earlier component checkpoint, paired native/QD
 dispatch, ordinary compiler integration and full validation were pending. No archived
 command is executed and neither #64 nor #195 is completed by this component.
 
-The inert [archive](first.tar.xz) and [index](index.json) preserve original
+The inert [archive](shared-history.json) and [index](shared-history.json) preserve original
 sources, actual diagnostics, separate repairs, exact source/import byte maps
 and observers as text. The archive includes the preceding finite/Raw/nominal
 sector and quantum-header studies; it neither extracts nor executes history.
@@ -148,8 +179,8 @@ Selector/target expression typing, general/selected quantum nominal execution,
 the twelve-bit qmatch profile and #64/#195 remain unfinished. The two protected
 QLV1 scopes and all pending QS/PR/RS/EXACT obligations remain unchanged.
 
-The separate [operand history](operands-first.tar.xz),
-[index](operands-index.json) and [current checks](operands-validation.json)
+The separate [operand history](shared-history.json),
+[index](shared-history.json) and [current checks](operands-validation.json)
 retain seven source-name/frame counterexamples, the equal-type zero-width owner
 substitution and the public Observe sharpening counterexample. All arise in
 unexposed components. Correct direct and tuple-aliased sources stay separate
@@ -166,7 +197,7 @@ separate scopes from the generic proofs and complete kernel Tests.
 Arbitrary calls, allocation, control flow, full source-to-Raw mapping and native
 execution remain unfinished; no component or barrier closes #64/#195.
 
-The [transport history](transport-first.tar.xz), [index](transport-index.json)
+The [transport history](shared-history.json), [index](shared-history.json)
 and [current validation](transport-validation.json) retain the first named-arm
 request, original Unit-owner source, graph packet and 112 inert records. The
 old executable's first observation is a legacy IO/artifact error: it did not
@@ -190,8 +221,8 @@ authored literal expectations. These run the actual pure QLV3 definitions and
 do not establish Rust retained-view integration, native-mode dispatch, source
 body lowering, ordinary/selected quantum execution or Issue completion.
 
-The [native-binding first history](native-binding-first.tar.xz),
-[index](native-binding-index.json) and [local validation](native-binding-validation.json)
+The [native-binding first history](shared-history.json),
+[index](shared-history.json) and [local validation](native-binding-validation.json)
 retain 167 records of actual Rust retained-graph/QDV materialization and paired
 context dispatch. The first build misses three private ordinary-test adapter
 arguments; all original source objects and compiler diagnostics remain separate
@@ -208,8 +239,8 @@ The component has no public ordinary-program conversion or inverse/control
 access. Canonical hosted proof maintenance, actual native execution, complete
 ordinary/selected source integration and #64/#195 remain unfinished.
 
-The [first hosted build](ci-typecheck-first.tar.xz),
-[index](ci-typecheck-index.json) and [separate repair](ci-typecheck-validation.json)
+The [first hosted build](shared-history.json),
+[index](shared-history.json) and [separate repair](ci-typecheck-validation.json)
 retain the actual failed kernel compiler streams at commit `c6615d53` and both
 versions of `Coordinates.lean`. Strict package compilation rejects undeclared
 type parameters with `autoImplicit = false`; the later `sorry` diagnostics are
@@ -222,7 +253,7 @@ The technical inventory records the bounded component and its remaining gaps.
 Canonical both-package proof maintenance, native execution and required CI
 remain separate from these component observations; neither Issue is closed.
 
-The [nominal first history](nominal-first.tar.xz), [index](nominal-index.json)
+The [nominal first history](shared-history.json), [index](shared-history.json)
 and [current checks](nominal-validation.json) retain informed three/four-label
 sources and independently authored exact phase/QDV expectations. Their two-bit
 selectors retain a distinct zero-width Unit target and reordered written arms.
@@ -245,7 +276,7 @@ Two conditional compiled-native Rust tests remain unexecuted locally. This
 does not establish ordinary project/selected quantum execution, a source-body
 preservation theorem, the full twelve-bit profile or Issue completion.
 
-The [complete-body first history](body-first.tar.xz), [index](body-index.json)
+The [complete-body first history](shared-history.json), [index](shared-history.json)
 and [local validation](body-validation.json) retain both original project groups,
 actual common CLI diagnostics and the original private component's acceptance
 of an observing suffix. That component supplied no ordinary source handle or
@@ -267,8 +298,8 @@ native checks, guarded canonical proof maintenance, full CI/review, matching
 reordered Raw implementations and general source/arm execution remain pending.
 #64 keeps all eight criteria unchecked and #195 remains open.
 
-The [Raw owner first history](owner-flow-first.tar.xz),
-[index](owner-flow-index.json) and [validation](owner-flow-validation.json)
+The [Raw owner first history](shared-history.json),
+[index](shared-history.json) and [validation](owner-flow-validation.json)
 retain the zero-width Raw-return substitution against the earlier complete-body
 candidate. Its first QDV mutation changes the wrong program field and reaches
 the actual decoded-view refusal. A separate correct mutation supplies a complete
@@ -292,8 +323,8 @@ These observations complete neither #64/#195 nor broader source preservation.
 
 ## Original compiler routing observations
 
-The separate [compiler archive](compiler-first.tar.xz),
-[index](compiler-index.json) and [validation](compiler-validation.json) retain
+The separate [compiler archive](shared-history.json),
+[index](shared-history.json) and [validation](compiler-validation.json) retain
 six informed first projects and actual prior-CLI observations. Bit qmatch hits
 the legacy selected projection; nominal selectors reach their explicit native
 transport refusal, and ordinary matching of a live owner reaches its type error.
@@ -309,8 +340,8 @@ source-preservation theorem, guarantee admission or #64/#195 completion.
 
 ## Nominal compiler integration observations
 
-The [nominal compiler archive](nominal-compiler-first.tar.xz),
-[index](nominal-compiler-index.json) and
+The [nominal compiler archive](shared-history.json),
+[index](shared-history.json) and
 [validation](nominal-compiler-validation.json) preserve 73 inert records.
 They bind the actual complete call fragments, first test API errors and
 separate repairs to stable source windows. The six original projects above
@@ -328,8 +359,8 @@ source preservation, full CI/review and #64/#195 completion pending.
 
 ## Nominal target observations
 
-The [target archive](nominal-target-first.tar.xz),
-[index](nominal-target-index.json) and [validation](nominal-target-validation.json)
+The [target archive](shared-history.json),
+[index](shared-history.json) and [validation](nominal-target-validation.json)
 retain six informed first programs and their real prior-CLI refusals. Later
 commands use those unchanged source files: enum, record, empty-record and
 built-in-selector cases pass; foreign target types and public Observe arms

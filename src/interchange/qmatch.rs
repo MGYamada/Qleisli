@@ -1,4 +1,4 @@
-//! Version-paired data for the internal original named-arm qmatch component.
+//! Version-paired data for original primitive and named-arm qmatch contexts.
 //! The shared carrier codec retains complete interfaces. These constructors
 //! and readers confer no semantic acceptance, execution handle or capability.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
@@ -35,13 +35,16 @@ pub(crate) struct SelectionSubject<'a> {
 pub(crate) fn proposal(
     raw: &crate::ir::RawProgram,
     source: SourceSite,
+    positions: &[Position],
     selections: &[SelectionSubject<'_>],
     sources: &[(String, String)],
 ) -> Result<(Vec<u8>, Vec<u8>)> {
+    source.bounded()?;
     if selections.is_empty() || selections.len() > 128 {
         return Err(Error::limit("qmatch sequence capacity"));
     }
     let mut remaining = json::MAX_BYTES;
+    positions_storage(positions.len(), &mut remaining)?;
     for selection in selections {
         interface_storage(selection.interface, &mut remaining)?;
         interface_storage(selection.interface, &mut remaining)?;
@@ -94,14 +97,18 @@ pub(crate) fn proposal(
             arms: indices,
         });
     }
-    let request = Request { source, sites };
+    let request = Request {
+        source,
+        positions: positions.to_vec(),
+        sites,
+    };
     Ok((
         super::finish_proposal(root, None, encoder)?,
         request.encode()?,
     ))
 }
 
-pub(crate) const PROFILE: &str = "finite-source-qmatch-named-v3";
+pub(crate) const PROFILE: &str = "finite-source-qmatch-context-v4";
 
 /// The original containing function, independently read by Lean.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -110,7 +117,8 @@ pub struct SourceSite {
     pub function: String,
 }
 
-/// Actual source occurrence and literal Raw interval; none supplies authority.
+/// Original callee-token or qmatch-keyword byte and literal Raw interval.
+/// Positions retain evaluation order and supply no acceptance authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Position {
     pub offset: u32,
@@ -131,6 +139,9 @@ pub struct Arm {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Request {
     pub source: SourceSite,
+    /// Every original primitive/qmatch event, in actual evaluation order.
+    pub positions: Vec<Position>,
+    /// Arm requests belong only to qmatch selections.
     pub sites: Vec<Site>,
 }
 
@@ -159,6 +170,10 @@ fn charge(remaining: &mut usize, amount: usize) -> Result<()> {
         .checked_sub(amount)
         .ok_or_else(|| Error::limit("qmatch request allocation capacity"))?;
     Ok(())
+}
+
+fn positions_storage(count: usize, remaining: &mut usize) -> Result<()> {
+    charge(remaining, count.saturating_mul(128).saturating_add(32))
 }
 
 // Bound all interface string/object copies before constructing a JSON tree.
@@ -239,14 +254,33 @@ impl Arm {
     }
 }
 
+impl Position {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("offset", n(self.offset)),
+            ("start", n(self.start)),
+            ("count", n(self.count)),
+        ])
+    }
+
+    fn decode(value: &Value) -> Result<Self> {
+        value.fields(&["offset", "start", "count"])?;
+        Ok(Self {
+            offset: number(value.field("offset")?)?,
+            start: number(value.field("start")?)?,
+            count: number(value.field("count")?)?,
+        })
+    }
+}
+
 impl Request {
-    /// Encode bounded data only; no native dispatch or acceptance follows.
-    pub fn encode(&self) -> Result<Vec<u8>> {
+    fn bounded(&self) -> Result<()> {
         self.source.bounded()?;
         if self.sites.is_empty() || self.sites.len() > 128 {
             return Err(Error::limit("qmatch sequence capacity"));
         }
         let mut remaining = json::MAX_BYTES;
+        positions_storage(self.positions.len(), &mut remaining)?;
         for site in &self.sites {
             interface_storage(&site.attached, &mut remaining)?;
             interface_storage(&site.required, &mut remaining)?;
@@ -263,12 +297,21 @@ impl Request {
             (self.source.module.len() + self.source.function.len())
                 .saturating_mul(6)
                 .saturating_add(512),
-        )?;
+        )
+    }
+
+    /// Encode bounded data only; no native dispatch or acceptance follows.
+    pub fn encode(&self) -> Result<Vec<u8>> {
+        self.bounded()?;
         json::encode(&Value::object([
             ("format", text("qleisli.qmatch-request")),
-            ("version", n(3)),
+            ("version", n(4)),
             ("profile", text(PROFILE)),
             ("source", self.source.encode()),
+            (
+                "positions",
+                Value::Array(self.positions.iter().map(Position::encode).collect()),
+            ),
             (
                 "sites",
                 Value::Array(self.sites.iter().map(Site::encode).collect()),
@@ -279,9 +322,16 @@ impl Request {
     /// Decode retained data, without issuing a handle or trusting source names.
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let value = json::parse(bytes)?;
-        value.fields(&["format", "version", "profile", "source", "sites"])?;
+        value.fields(&[
+            "format",
+            "version",
+            "profile",
+            "source",
+            "positions",
+            "sites",
+        ])?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
-            || value.field("version")?.number()? != 3
+            || value.field("version")?.number()? != 4
             || value.field("profile")?.text()? != PROFILE
         {
             return Err(Error::format("unsupported qmatch request profile"));
@@ -290,10 +340,21 @@ impl Request {
         if sites.is_empty() || sites.len() > 128 {
             return Err(Error::limit("qmatch sequence capacity"));
         }
-        Ok(Self {
+        let positions = value.field("positions")?.array()?;
+        // Reserve the full event vector before copying it; its bound is the
+        // existing packet allocation budget, not the qmatch selection count.
+        let mut remaining = json::MAX_BYTES;
+        positions_storage(positions.len(), &mut remaining)?;
+        let request = Self {
             source: SourceSite::decode(value.field("source")?)?,
+            positions: positions
+                .iter()
+                .map(Position::decode)
+                .collect::<Result<_>>()?,
             sites: sites.iter().map(Site::decode).collect::<Result<_>>()?,
-        })
+        };
+        request.bounded()?;
+        Ok(request)
     }
 }
 
@@ -302,14 +363,7 @@ impl Site {
         Value::object([
             ("attached", self.attached.encode()),
             ("required", self.required.encode()),
-            (
-                "position",
-                Value::object([
-                    ("offset", n(self.position.offset)),
-                    ("start", n(self.position.start)),
-                    ("count", n(self.position.count)),
-                ]),
-            ),
+            ("position", self.position.encode()),
             (
                 "arms",
                 Value::Array(self.arms.iter().map(Arm::encode).collect()),
@@ -319,8 +373,6 @@ impl Site {
 
     fn decode(value: &Value) -> Result<Self> {
         value.fields(&["attached", "required", "position", "arms"])?;
-        let position = value.field("position")?;
-        position.fields(&["offset", "start", "count"])?;
         let arms = value.field("arms")?.array()?;
         if arms.is_empty() || arms.len() > 64 {
             return Err(Error::limit("qmatch arm capacity"));
@@ -328,11 +380,7 @@ impl Site {
         Ok(Self {
             attached: Interface::decode(value.field("attached")?)?,
             required: Interface::decode(value.field("required")?)?,
-            position: Position {
-                offset: number(position.field("offset")?)?,
-                start: number(position.field("start")?)?,
-                count: number(position.field("count")?)?,
-            },
+            position: Position::decode(value.field("position")?)?,
             arms: arms.iter().map(Arm::decode).collect::<Result<_>>()?,
         })
     }
