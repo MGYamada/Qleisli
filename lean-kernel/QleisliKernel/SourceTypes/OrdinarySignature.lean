@@ -158,9 +158,10 @@ private theorem knownBinding {sources owner} (known : KnownModule sources owner)
       | throw "missing/ambiguous original type declaration"
     pure (known.source,decl)) = .ok (known.source,declaration)
   rw [readDeclarations]
-  change (match known.catalogue.declarations.filter (fun decl => decl.name == declaration.name) with
+  change ((match known.catalogue.declarations.filter (fun decl => decl.name == declaration.name) with
     | [decl] => .ok (known.source,decl)
-    | _ => .error "missing/ambiguous original type declaration") = .ok (known.source,declaration)
+    | _ => .error "missing/ambiguous original type declaration") : Except String (String × Declaration)) =
+      .ok (known.source,declaration)
   rw [selected]
 
 structure PackedOriginal (sources : Sources) where
