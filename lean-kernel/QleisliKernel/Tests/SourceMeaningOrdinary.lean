@@ -63,6 +63,37 @@ private def sign : String :=
 
 #guard view sign "Sign" = some ([0,4],[Scalar.one,Scalar.zero,Scalar.zero,Semantics.PrimitiveOperator.phase 4],[0])
 
+private def booleans : String :=
+  "#![no_implicit_prelude]\nclassical fn phase_bits((a,b):(Bit,Bit))->(Bit,(Bit,Bit)){" ++
+  "(a and b,(a xor b,not a))}meaning Both:(Bit,Bit)=phase_by(phase_bits);"
+
+#guard (view booleans "Both").map (fun (targets,_,keys) => (targets,keys)) = some ([4,2,6,1],[0,1])
+
+private def conditional : String :=
+  "#![no_implicit_prelude]\nclassical fn flip(b:Bit)->Bit{if b{0}else{1}}meaning Flip:Bit=permutation_by(flip);"
+
+#guard view conditional "Flip" = some ([1,0],[Scalar.zero,Scalar.one,Scalar.one,Scalar.zero],[0])
+
+private def nominalMatch : String :=
+  "#![no_implicit_prelude]\nenum Tag{A,B,C}" ++
+  "classical fn cycle(tag:Tag)->Tag{match tag{Tag::C=>Tag::A,Tag::A=>Tag::B,Tag::B=>Tag::C}}" ++
+  "meaning Cycle:Tag=permutation_by(cycle);"
+
+#guard (view nominalMatch "Cycle").map (fun (targets,_,keys) => (targets,keys)) = some ([1,2,0],[0])
+
+private def recordFlip : String :=
+  "#![no_implicit_prelude]\nstruct Packet{bit:Bit,zero:Unit}" ++
+  "classical fn flip(p:Packet)->Packet{Packet{zero:p.zero,bit:not p.bit}}" ++
+  "meaning Flip:Packet=permutation_by(flip);"
+
+#guard view recordFlip "Flip" = some ([1,0],[Scalar.zero,Scalar.one,Scalar.one,Scalar.zero],[0])
+
+private def tupleField : String :=
+  "#![no_implicit_prelude]\nstruct Box{field:(Bit,Unit)}" ++
+  "classical fn keep(b:Box)->Box{Box{field:b.field}}meaning Keep:Box=permutation_by(keep);"
+
+#guard view tupleField "Keep" = some ([0,1],[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one],[0])
+
 private def scalar : String :=
   "#![no_implicit_prelude]\nstruct Empty{}" ++
   "classical fn quarter(x:Empty)->(Bit,(Bit,Bit)){(1,(0,0))}" ++
@@ -70,6 +101,12 @@ private def scalar : String :=
 
 -- A zero-width nominal input still has its source key and scalar phase.
 #guard view scalar "Quarter" = some ([1],[Semantics.PrimitiveOperator.phase 1],[0])
+
+private def emptyBits : String :=
+  "#![no_implicit_prelude]\nclassical fn keep(b:Bits<0>)->Bits<0>{empty_bits()}" ++
+  "meaning Keep:Bits<0>=permutation_by(keep);"
+
+#guard view emptyBits "Keep" = some ([0],[Scalar.one],[0])
 
 private def constant : String :=
   "#![no_implicit_prelude]\nclassical fn constant(b:Bit)->Bit{0}meaning Bad:Bit=permutation_by(constant);"
@@ -118,5 +155,14 @@ private def outside : String :=
   "meaning Bad:Bit=permutation_by(through);"
 
 #guard ((inspect #[("main",outside),("helper",broad)] "Bad").run 10000000).1.isOk = false
+
+-- Independent evaluator control only: a nonselected call is not evaluated.
+-- This hand-built data is never an original-source preparation or a handle;
+-- actual source checking still rejects an unresolved call in either arm.
+private def selectedOnly : List Semantics.SourceClassical.Function :=
+  [⟨[],[.bit],[],[.bit false,.bit true,.call 7 [],.conditional 0 2 1],3⟩]
+
+#guard (Semantics.SourceClassical.evaluate selectedOnly 2 0 []).toOption =
+  some [Semantics.SourceOrdinary.ResultAtom.ordinary [.bit] 1]
 
 end QleisliKernel.Tests.SourceMeaningOrdinary
