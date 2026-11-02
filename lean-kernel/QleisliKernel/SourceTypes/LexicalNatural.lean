@@ -108,21 +108,31 @@ structure PredicateChecked (sources : Sources) (caller : String) (entries : List
   selectedTruth : (predicate.forBranch value).Truth 128 environment.names
     (NaturalHelpers.interpretation entries bindings.val)
 
+private def predicateOfOperands {sources caller entries environment scope predicate}
+    (bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
+      [predicate.left,predicate.right]))
+    (left : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.left)
+    (right : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.right) :
+    PredicateChecked sources caller entries environment scope predicate :=
+  @PredicateChecked.mk sources caller entries environment scope predicate bindings left right
+    (predicate.comparison.test (left.value : Int) (right.value : Int))
+    (Predicate.evaluate_of_values 128 environment.names (NaturalHelpers.interpretation entries bindings.val)
+      predicate left.value right.value left.computed right.computed)
+    (Predicate.branch_truth_of_values 128 environment.names (NaturalHelpers.interpretation entries bindings.val)
+      predicate left.value right.value left.computed right.computed)
+
 def readPredicate (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (predicate : Predicate) :
     WorkM (PredicateChecked sources caller entries environment scope predicate) := do
-  let bindings ← NaturalAffine.witness
+  let bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
+      [predicate.left,predicate.right]) ← NaturalAffine.witness
     (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
       [predicate.left,predicate.right])
   let left ← NaturalClosed.read environment.names entries bindings.val
     (environment.reader bindings.val) predicate.left
   let right ← NaturalClosed.read environment.names entries bindings.val
     (environment.reader bindings.val) predicate.right
-  let value := predicate.comparison.test (left.value : Int) (right.value : Int)
-  pure ⟨bindings,left,right,value,by
-    simp only [Predicate.evaluate,left.computed,right.computed,Option.pure_def]
-    rfl,
-    Predicate.branch_truth_of_values _ _ _ _ _ _ left.computed right.computed⟩
+  pure (predicateOfOperands bindings left right)
 
 structure Bound (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (name : String) (expression : Expr) where

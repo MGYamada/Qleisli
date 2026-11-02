@@ -210,6 +210,14 @@ def Predicate.evaluate (fuel : Nat) (names : Names) (calls : Calls) (predicate :
   let b ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right
   pure (predicate.comparison.test (a : Int) (b : Int))
 
+theorem Predicate.evaluate_of_values (fuel : Nat) (names : Names) (calls : Calls)
+    (predicate : Predicate) (a b : Nat)
+    (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
+    (right : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right = some b) :
+    predicate.evaluate fuel names calls = some (predicate.comparison.test (a : Int) (b : Int)) := by
+  simp only [Predicate.evaluate,left,right,Option.pure_def]
+  rfl
+
 theorem Predicate.branch_truth_of_values (fuel : Nat) (names : Names) (calls : Calls)
     (predicate : Predicate) (a b : Nat)
     (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
