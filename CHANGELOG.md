@@ -6,6 +6,21 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect original pure body intervals to their literal Raw operation partition
+  and complete final owner order. Check explicit join/split and zero-width
+  allocation/release against the actual source owner history, Raw transition
+  and independent code coordinates. These components retain arbitrary reference
+  coefficients; complete code/action composition and native admission remain
+  unfinished.
+- Bind ordinary branch conditions and simultaneous phi operands to both original
+  source arm snapshots and actual SSA values. The lazy instrument companion uses
+  the actual history merge and preserves hidden paths, coefficient computations,
+  failures and remaining work. Complete source traversal, measurement/input
+  binding and public execution integration remain required.
+- Reuse exact, already checked source-row sets in operation trees while retaining
+  every original dependency occurrence and source query. Keep source-byte work
+  charges and capacities unchanged; this cache grants no relevance to an unused
+  source row and supplies no source-preservation theorem.
 - Check both original ordinary `if` arms and retain explicit, fully typed owner
   phis, including differing valid return permutations and zero-width owners.
   Authenticate lexical binder origins so an identically named local cannot
