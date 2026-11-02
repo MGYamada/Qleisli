@@ -46,6 +46,15 @@ import QleisliKernel.Tests.RuntimeOwnerPhis
 import QleisliKernel.Tests.RuntimeSourceBoundary
 import QleisliKernel.Tests.RuntimePrimitiveAction
 import QleisliKernel.Tests.RuntimeObservationAction
+import QleisliKernel.Tests.GenericTypeTrace
+import QleisliKernel.Tests.GenericBasisInstance
+import QleisliKernel.Tests.SourceCallStack
+import QleisliKernel.Tests.SourceMatchSyntax
+import QleisliKernel.Tests.SourceRuntimeBasisBindings
+import QleisliKernel.Tests.SourceRuntimeNominal
+import QleisliKernel.Tests.SourceRuntimeOrdinary
+import QleisliKernel.Tests.RuntimeStructuredRoot
+import QleisliKernel.Tests.RuntimeMaterialization
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises

@@ -28,6 +28,12 @@ import QleisliKernel.SourceTypes.SourceEffectClosure
 import QleisliKernel.SourceTypes.SourceNominal
 import QleisliKernel.SourceTypes.SourceRuntimeNominalValue
 import QleisliKernel.SourceTypes.SourceStaticSelection
+import QleisliKernel.SourceTypes.SourceCallStack
+import QleisliKernel.SourceTypes.GenericTypeTrace
+import QleisliKernel.SourceTypes.GenericBasisInstance
+import QleisliKernel.SourceTypes.SourceBasisBindings
+import QleisliKernel.SourceTypes.SourceMatchSyntax
+import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.Semantics.PrimitiveOperator
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Sector
@@ -96,6 +102,11 @@ import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeObservationAction
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
+import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.Qirf.RuntimeStructuredRoot
+import QleisliKernel.Qirf.RuntimeMaterialization
+import QleisliKernel.Qirf.RuntimeProviderPaths
+import QleisliKernel.Qirf.RuntimeOperationPaths
 import QleisliKernel.Qirf.OperationIRMeaning
 import QleisliKernel.Qirf.SourceContextRequest
 import QleisliKernel.Qirf.SourceBodyHeader
