@@ -800,8 +800,13 @@ def readBody (sources : Sources) (owner name : String)
 def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : List (BodyRecord sources))
     (helpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none) : WorkM (List (BodyRecord sources)) :=
-  (Nat.rec (fun pending visited => if pending.isEmpty then pure visited else throw .limit)
-    (fun _ next pending visited => do
+  (Nat.rec
+    (motive := fun _ => List DefId → List (BodyRecord sources) → WorkM (List (BodyRecord sources)))
+    (fun (pending : List DefId) (visited : List (BodyRecord sources)) =>
+      if pending.isEmpty then pure visited else throw .limit)
+    (fun (_ : Nat)
+        (next : List DefId → List (BodyRecord sources) → WorkM (List (BodyRecord sources)))
+        (pending : List DefId) (visited : List (BodyRecord sources)) => do
       exactWork (Exact.charge (16*((pending.map fun (owner,name) => owner.utf8ByteSize+name.utf8ByteSize+1).sum+
         (visited.map fun body => body.owner.utf8ByteSize+body.name.utf8ByteSize+1).sum+1)))
       match pending with
