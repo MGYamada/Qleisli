@@ -36,7 +36,8 @@ def prepare (artifact : Artifact) (order : Array Nat) (owner name : String)
   let fresh ← RuntimeBodyDiscovery.prepare order headers
   let rootBody ← RuntimeInterval.prepare fresh.root.dependencies fresh.root.program
   let inputs ← RuntimeSourceBoundary.readInputs headers.source.body rootBody runtime.inputStorage
-  let derivation ← RuntimePureBody.check artifact fresh.root headers.source.body fresh.root.program request inputs.owners.bindings
+  let derivation ← RuntimePureBody.checkPrepared artifact fresh.root headers.source.body fresh.root.program request
+    inputs.owners.bindings rootBody
   let structural ← RuntimePureComposition.prepare artifact fresh.root headers.source.body request inputs.owners.bindings derivation
   let boundary ← RuntimeStructuredRoot.readBoundary headers.source.body fresh.root rootBody derivation.result.bindings runtime
   return ⟨headers,fresh,rootBody,inputs,derivation,structural,boundary⟩

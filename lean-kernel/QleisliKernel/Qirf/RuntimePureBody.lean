@@ -128,16 +128,16 @@ ordinary branches and demanded source transformations remain incomplete. -/
 def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary → {owner name : String} →
     {signature : SourceRuntimeContext.Signature artifact.sources owner name} →
     SourceRuntimeTrace.Body signature → (program : Semantics.Observation.Program) → Context → Map →
+    RuntimeInterval.Prepared root.dependencies program →
     WorkM (Result root.dependencies program) :=
-  Nat.rec (fun _ {_ _ _} _ _ _ _ => throw .limit)
-    (fun _ next outputBoundary {_ _ _} body program request initial => do
+  Nat.rec (fun _ {_ _ _} _ _ _ _ _ => throw .limit)
+    (fun _ next outputBoundary {_ _ _} body program request initial prepared => do
       let source := body.checked
       let dependencies := root.dependencies
       guard (request.branches.isEmpty && !source.signature.operations.hasMeaningRequirements) .request
       guard (source.summary.inferredEffect == .unitary &&
         singletonOrdinary source.summary.value && source.summary.parameterValues.all singletonOrdinary &&
         program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty) .request
-      let prepared ← RuntimeInterval.prepare dependencies program
       guard (!prepared.whole.state.observe) .request
       let _ ← lift (readOption (Sector.pureOps program.operations))
       let roles := source.summary.parameterValues.flatMap valueOwners
@@ -154,7 +154,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
           let owner := (⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩ :
             Semantics.CarrierInterface.Owner)
           let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
-          let checked ← next .rootOrder body native.ir.original.program headerRequest.2 bindings
+          let prepared ← RuntimeInterval.prepare dependencies native.ir.original.program
+          let checked ← next .rootOrder body native.ir.original.program headerRequest.2 bindings prepared
           pure checked.islands
         let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
         pure (logical,children.flatten)
@@ -230,7 +231,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
             let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
               (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
             let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
-            let nested ← next .localScope original frame.program child childInitial
+            let nested ← next .localScope original frame.program child childInitial frame.prepared
             let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
             return (boundary.after,retired ++ event.consumed,actions ++
               [.named event frame original (by with_reducible exact originalRead.property)
@@ -312,14 +313,23 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
 structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) where
+  prepared : RuntimeInterval.Prepared root.dependencies program
   result : Result root.dependencies program
-  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body program request initial) result
+  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body program request initial prepared) result
+
+def checkPrepared (artifact : Artifact) (root : Validity.Root) {owner name signature}
+    (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
+    (program : Semantics.Observation.Program) (request : Context) (initial : Map)
+    (prepared : RuntimeInterval.Prepared root.dependencies program) :
+    WorkM (Checked artifact root body program request initial) := do
+  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body program request initial prepared)
+  return ⟨prepared,checked.val,by with_reducible exact checked.property⟩
 
 def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) :
     WorkM (Checked artifact root body program request initial) := do
-  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body program request initial)
-  return ⟨checked.val,by with_reducible exact checked.property⟩
+  let prepared ← RuntimeInterval.prepare root.dependencies program
+  checkPrepared artifact root body program request initial prepared
 
 end QleisliKernel.Qirf.RuntimePureBody
