@@ -557,6 +557,18 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               (events ++ [.phase phase]) rows,context)
           else throw .request
         | some kind =>
+          if SourceRegisterApplication.selected kind then
+            let application ← SourceRegisterApplication.read sources owner naturals scope written kind
+            Finite.exactWork (Exact.charge (64*((values.map valueFields).sum+
+              (application.arguments.map (·.value)).sum+1)))
+            match applied : SourceRegisterApplication.apply kind (application.arguments.map (·.value)) values ordinal with
+            | .error _ => throw .request
+            | .ok (value,new,used,after) =>
+              let event : RegisterEvent sources owner :=
+                ⟨tokens,call,scope,naturals,written,candidate,kind,selected,application,values,ordinal,
+                  value,new,used,after,applied,held,remaining⟩
+              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
+                after (events ++ [.registerPrimitive event]) rows,context)
           Finite.guard written.arguments.isEmpty .request
           let (value,new,used,after) ← adapt (primitiveAction kind ⟨owner,name,call.calleeOffset⟩ values ordinal)
           let event : PrimitiveEvent sources owner :=

@@ -11,6 +11,7 @@ import QleisliKernel.SourceTypes.SourceMatchLabels
 import QleisliKernel.SourceTypes.SourceRuntimeMatching
 import QleisliKernel.SourceTypes.SourceRuntimeComputed
 import QleisliKernel.SourceTypes.SourceComputedBindings
+import QleisliKernel.SourceTypes.SourceRegisterApplication
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -287,6 +288,27 @@ structure PrimitiveEvent (sources : Sources) (caller : String) where
   held : List Semantics.SourceOwners.Owner
   remaining : Environment
 
+structure RegisterEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  call : CallSyntax.Checked tokens
+  scope : List String
+  naturals : PhaseApplication.Naturals sources
+  written : StaticApplication.Syntax call.call.callee
+  candidate : CallName.Checked sources caller scope written.callee
+  kind : CallName.Primitive
+  selected : primitive candidate = some kind
+  application : SourceRegisterApplication.Checked sources caller naturals scope written kind
+  arguments : List Value
+  nextOrdinal : Nat
+  value : Value
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  afterOrdinal : Nat
+  applied : SourceRegisterApplication.apply kind (application.arguments.map (·.value)) arguments nextOrdinal =
+    .ok (value,allocated,consumed,afterOrdinal)
+  held : List Semantics.SourceOwners.Owner
+  remaining : Environment
+
 structure PhaseEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
   call : CallSyntax.Checked tokens
@@ -526,6 +548,7 @@ inductive Event (sources : Sources) (caller : String) where
   | staticConditional (event : StaticEvent sources caller) (events : List (Event sources caller))
   | matching (event : MatchEvent sources caller) (arms : List (List (Event sources caller)))
   | computed (event : ComputedEvent sources caller) (body : List (Event sources caller))
+  | registerPrimitive (event : RegisterEvent sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -539,6 +562,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .staticConditional .. => none
   | .matching .. => none
   | .computed .. => none
+  | .registerPrimitive event => some event.call.calleeOffset
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
@@ -590,6 +614,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .staticConditional event .. => event.written.parts.keyword.span.startByte
   | .matching event .. => event.written.parts.keyword.span.startByte
   | .computed event .. => SourceRuntimeComputed.offset event.written
+  | .registerPrimitive event => event.call.calleeOffset
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
@@ -601,10 +626,12 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .staticConditional event .. => event.selected.2.inferredEffect
   | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
   | .computed _ _ => .unitary
+  | .registerPrimitive _ => .unitary
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
   | .primitive event => event.kind != .emptyBits && event.kind != .prependBit
+  | .registerPrimitive event => event.kind != .prependBit
   | .named event =>
     if caller != event.target.resolution.moduleName && event.target.signature.original.declaration.isPublic then
       (!event.target.signature.original.parsedHeader.ordinaryOnly &&
@@ -629,6 +656,8 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
   | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
       event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
+  | .registerPrimitive event => event.naturals.sourceRows ++ CallName.sourceRows event.candidate ++
+      event.application.arguments.flatMap (·.rows)
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
