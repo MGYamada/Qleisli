@@ -97,4 +97,24 @@ private def accepted (description : Description) (context : SourceTypes.StaticOp
     accepted (provider "main" "unused_pair" [] [] [("V",
       (OperationDescription.formal "main" "no_control" [] [] [("U",named "keep")] 0).unary .controlled)]) (.source "main") = true
 
+private def originalArrowEffect (access : String) : Option Semantics.Raw.Effect :=
+  let action : Finite.WorkM Semantics.Raw.Effect := do
+    let source := "#![no_implicit_prelude] pub unitary fn keep(q:Q<Bit>)->Q<Bit>{q} " ++
+      "pub unitary fn unused[const A:Basis,const B:Basis,const U:Op<A->B>](q:Q<Bit>)->Q<Bit> " ++
+      access ++ "{q}"
+    let sources : Sources := #[("main",source)]
+    let core ← QuantumSignatureCore.prepareWithArguments sources "main" "unused"
+      {bases := [("A",[.bit]),("B",[.bit])],operations := [("U",named "keep")]}
+    match core.instantiation with
+    | .closed _ => throw .request
+    | .static _ environment _ =>
+      let some formal := environment.numeric.original.header.formals[2]? | throw .request
+      pure (← SourceTypes.StaticOperation.formalContract environment formal).effect
+  (action.run 10000000).1.toOption
+
+-- Coinciding selected actuals do not equate two ORIGINAL opaque Basis binders.
+#guard originalArrowEffect "" = some .iso
+#guard originalArrowEffect "requires Adjointable(U)" = some .unitary
+#guard originalArrowEffect "requires Controllable(U)" = none
+
 end QleisliKernel.Tests.StaticOperation

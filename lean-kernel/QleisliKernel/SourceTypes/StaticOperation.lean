@@ -64,6 +64,8 @@ def ports (tokens : List String) : Except String (List String × List String) :=
 structure FormalContract (sources : Sources) where
   input : Basis
   output : Basis
+  originalPorts : SymbolicTypes.Ports sources
+  effect : Effect
   requirement : Option (SourceMeaning.Request sources)
   symbolic : Option (SymbolicTypes.SomeRefinement sources)
 
@@ -78,19 +80,24 @@ def formalContract {sources owner name arguments}
   let parsed ← adapt (OperationPorts.read tokens)
   let input ← StaticKinds.readType environment formal.ordinal parsed.input
   let output ← StaticKinds.readType environment formal.ordinal parsed.output
+  let scope := (environment.numeric.original.header.formals.filter (·.ordinal < formal.ordinal)).map (·.name)
+  let state : GenericLexicalNatural.SomeEnvironment sources :=
+    ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩
+  let originalPorts ← SymbolicTypes.readPorts state scope formal.ordinal parsed.input parsed.output
+  let adjointable := environment.numeric.original.header.access.contains (.adjointable,formal.name)
+  let controllable := environment.numeric.original.header.access.contains (.controllable,formal.name)
+  guard (!controllable || originalPorts.same.isSome) .request
+  let effect := if originalPorts.same.isSome || adjointable || controllable then Effect.unitary else .iso
   let (requirement,symbolic) ← match parsed.meaning with
     | none => pure (none,none)
     | some tokens => do
-      let scope := (environment.numeric.original.header.formals.filter (·.ordinal < formal.ordinal)).map (·.name)
       let selected ← SourceMeaning.select sources owner scope tokens
-      let state : GenericLexicalNatural.SomeEnvironment sources :=
-        ⟨owner,name,environment.numeric,GenericLexicalNatural.initial environment.numeric⟩
       let symbolic ← SymbolicTypes.checkRefinement state scope formal.ordinal parsed.input parsed.output
         selected.meaning.graph.input selected.meaning.graph.output
       guard (selected.meaning.graph.input == input.basis && selected.meaning.graph.output == output.basis) .request
       pure (some selected.request,some (⟨state,scope,formal.ordinal,parsed.input,parsed.output,
         selected.meaning.graph.input,selected.meaning.graph.output,symbolic⟩ : SymbolicTypes.SomeRefinement sources))
-  return ⟨input.basis,output.basis,requirement,symbolic⟩
+  return ⟨input.basis,output.basis,originalPorts,effect,requirement,symbolic⟩
 
 def formalPorts {sources owner name arguments}
     (environment : StaticTypes.Environment sources owner name arguments) (formal : StaticHeaders.Formal) :
@@ -170,7 +177,7 @@ def bindArgumentsWithContracts {sources owner name original}
       let some (_,actual) := results.find? (·.1 == formal.name) | throw .request
       let contract ← formalContract environment formal
       guard (actual.input == contract.input && actual.output == contract.output &&
-        actual.effect != .observe && (contract.input != contract.output || actual.effect == .unitary) &&
+        actual.effect != .observe && (contract.effect != .unitary || actual.effect == .unitary) &&
         satisfies actual.paths (required environment.numeric.original.header.access formal.name)) .request
       pure (formal.name,contract)
     pure ⟨contracts⟩
@@ -269,7 +276,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let output := contract.output
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
-      let effect := if input == output then Effect.unitary else .iso
+      let effect := contract.effect
       result input output effect paths none (some ⟨owner,name,signature,effect,false⟩) kindRows requirements
   | .inverse index =>
     let c ← child previous index

@@ -137,6 +137,38 @@ def equate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment so
       evaluate parameters values left = evaluate parameters values right)) :=
   equateLoop state (left.length+1) left right
 
+/-- Failure to prove exact original equality leaves two ports. Limits and
+arithmetic failures are never turned into a successful comparison result. -/
+def optionalEquality {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (left right : Code) : WorkM (Option (NaturalPredicates.Established (∀ values,
+      StaticCallPremises.Meaning state values → ∀ parameters,
+      evaluate parameters values left = evaluate parameters values right))) := do
+  try
+    pure (some (← equate state left right))
+  catch error =>
+    match error with
+    | .request => pure none
+    | error => throw error
+
+structure Ports (sources : Sources) where
+  state : GenericLexicalNatural.SomeEnvironment sources
+  scope : List String
+  ordinal : Nat
+  inputTokens : List String
+  outputTokens : List String
+  input : Checked state scope ordinal inputTokens
+  output : Checked state scope ordinal outputTokens
+  same : Option (NaturalPredicates.Established (∀ values,
+    StaticCallPremises.Meaning state values → ∀ parameters,
+    evaluate parameters values input.result.code = evaluate parameters values output.result.code))
+
+def readPorts {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (ordinal : Nat) (inputTokens outputTokens : List String) : WorkM (Ports sources) := do
+  let input ← read state scope ordinal inputTokens
+  let output ← read state scope ordinal outputTokens
+  let same ← optionalEquality state input.result.code output.result.code
+  pure ⟨state,scope,ordinal,inputTokens,outputTokens,input,output,same⟩
+
 structure Refinement {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (ordinal : Nat) (inputTokens outputTokens : List String)
     (targetInput targetOutput : Semantics.FiniteCarrier.Basis) where
