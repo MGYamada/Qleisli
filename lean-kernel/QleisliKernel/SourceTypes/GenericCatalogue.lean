@@ -127,7 +127,7 @@ inductive Auxiliary (sources : Sources) where
       (read : ∃ before after,(resolveReference sources owner [name]).run before = (.ok resolved,after))
 
 def Auxiliary.meanings {sources} : Auxiliary sources → List (SourceMeaning.Graph sources)
-  | .meaning _ _ meaning => [meaning.graph]
+  | .meaning _ _ specification => [specification.graph]
   | _ => []
 
 def readAuxiliary (sources : Sources) (helpers : NaturalHelpers.Checked sources)
