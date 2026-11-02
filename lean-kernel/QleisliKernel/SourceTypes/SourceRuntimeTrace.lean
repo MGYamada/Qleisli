@@ -82,12 +82,13 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
     (fun _ recurse naturals held scope nextOrdinal environment tokens tree context => do
       let evaluateChildren (children : List (Sigma SourceSyntax.Tree))
           (startContext : SourceContext.Context sources owner) := children.foldlM
-        (fun (values,current,allocated,consumed,ordinal,events,context) child => do
+        (fun (values,current,allocated,consumed,ordinal,events,rows,context) child => do
           let holding := held ++ values.flatMap valueOwners
           let (result,context) ← recurse naturals holding scope ordinal current child.2 context
           return (values ++ [result.value],result.remaining,allocated ++ result.allocated,
-            consumed ++ result.consumed,result.nextOrdinal,events ++ result.events,context))
-        (([] : List Value),environment,[],[],nextOrdinal,([] : List (Event sources owner)),startContext)
+            consumed ++ result.consumed,result.nextOrdinal,events ++ result.events,rows ++ result.staticRows,context))
+        (([] : List Value),environment,[],[],nextOrdinal,([] : List (Event sources owner)),
+          ([] : List (String × String)),startContext)
       match tree with
       | .empty .. =>
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
@@ -124,13 +125,13 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let staticRows ← SourceTrace.retainStaticRows (naturals.sourceRows ++ result.staticRows)
         return ({result with staticRows := staticRows},context)
       | .group group children =>
-        let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees context
         let value := if values.isEmpty then [.ordinary [.unit] .unit]
           else if values.length == 1 && (group.group.arguments.head?.bind (·.followingComma)).isNone then
             values.flatten else .tuple values.length :: values.flatten
-        return (← outcome environment value remaining allocated consumed ordinal events,context)
+        return (← outcome environment value remaining allocated consumed ordinal events rows,context)
       | .boolean written children =>
-        let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees context
         Finite.exactWork (Exact.charge (16*(values.map valueFields).sum+16))
         let expressions ← adapt (values.mapM fun value => do
           let [.ordinary basis expression] := value | throw "ordinary Boolean operand"
@@ -141,7 +142,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           | .xor,[first,second] => pure (.xor first second)
           | .and,[first,second] => pure (.and first second)
           | _,_ => throw "ordinary Boolean arity")
-        return (← outcome environment [.ordinary [.bit] expression] remaining allocated consumed ordinal events,context)
+        return (← outcome environment [.ordinary [.bit] expression] remaining allocated consumed ordinal events rows,context)
       | .selection tokens parsed original =>
         let selector ← adapt (SourceSyntax.read (parsed.selector.length+1) 0 false parsed.selector)
         let target ← adapt (SourceSyntax.read (parsed.target.length+1) 0 false parsed.target)
@@ -154,7 +155,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
-            held last.remaining]),context)
+            held last.remaining]) (first.staticRows ++ last.staticRows),context)
       | .selectionExpression tokens parsed original selectorTree targetTree =>
         let (first,context) ← recurse naturals held scope nextOrdinal environment selectorTree context
         let [.owner selector] := first.value | throw .request
@@ -165,7 +166,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
-            held last.remaining]),context)
+            held last.remaining]) (first.staticRows ++ last.staticRows),context)
       | .basis written inputTree bodyTree =>
         let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
         let [.owner input] := inputResult.value | throw .request
@@ -276,7 +277,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let sameBase : PLift (target.written = written.base.2) ←
               if same : target.written = written.base.2 then
                 pure (⟨same⟩ : PLift (target.written = written.base.2)) else throw .request
-            let (values,remaining,allocated,consumed,ordinal,events,context) ←
+            let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
               evaluateChildren children.trees lookup.context
             -- The child is checked even when one of the original powers is
             -- zero. No selected-body effect is inferred from the prefix.
@@ -315,12 +316,12 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                             visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
                             values,ordinal,value,new,used,after,applied,held,remaining⟩
                         return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                          after (events ++ [.transform event]),context)
+                          after (events ++ [.transform event]) rows,context)
                   else throw .request
               else throw .request
             else throw .request
         if SourceOperationApplication.selected signature.operationNames call.call.callee then
-          let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
+          let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees context
           let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
           let application ← SourceOperation.readWithInstantiation signature.instantiation naturals.helpers.val
             naturals.environment scope call.call.callee naturals.generic (some targetBasis) (some signature.supply)
@@ -335,12 +336,12 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 ⟨tokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
                   values,ordinal,value,new,used,after,applied,held,owners remaining⟩
               return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-                (events ++ [.operation event]),context)
+                (events ++ [.operation event]) rows,context)
           else throw .request
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let lookup ← SourceContext.read sources owner context scope written.callee
         let candidate ← Finite.lift lookup.answer.checked
-        let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees lookup.context
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees lookup.context
         match selected : primitive candidate with
         | some .phase =>
           let application ← PhaseApplication.read sources owner naturals scope call
@@ -349,7 +350,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let phase : PhaseEvent sources owner :=
               ⟨tokens,call,scope,naturals,application,operand,bit,held,remaining⟩
             return (← outcome environment [.owner operand] remaining allocated consumed ordinal
-              (events ++ [.phase phase]),context)
+              (events ++ [.phase phase]) rows,context)
           else throw .request
         | some kind =>
           Finite.guard written.arguments.isEmpty .request
@@ -357,7 +358,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           let event : PrimitiveEvent sources owner :=
             ⟨tokens,call,scope,written,candidate,kind,selected,values,value,new,used,after,held,remaining⟩
           return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-            (events ++ [.primitive event]),context)
+            (events ++ [.primitive event]) rows,context)
         | none =>
           let target ← readTarget signature naturals written candidate
           if matched : values.map typeOf = target.signature.parameters.map (·.tree) then
@@ -379,7 +380,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   ⟨tokens,call,scope,target,canonical,values,matched,inputOwners,rfl,fresh,mapping,rfl,
                     value,transported,used,consumedRead,held,remaining⟩
                 return (← outcome environment value remaining (allocated ++ fresh) (consumed ++ used)
-                  (ordinal+fresh.length) (events ++ [.named event]),context)
+                  (ordinal+fresh.length) (events ++ [.named event]) rows,context)
           else throw .request)
 
 def quantumUse {sources owner name} (signature : Signature sources owner name)
