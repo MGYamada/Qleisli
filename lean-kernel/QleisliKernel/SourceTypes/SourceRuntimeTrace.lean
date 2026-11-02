@@ -124,8 +124,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         if originalBodies : arms.map (·.1) = written.parts.arms.map (·.body.tokens) then
           let some first := arms.head? | throw .request
           let remaining ← adapt (SourceRuntimeBranches.outer selected.remaining first.2.remaining)
-          if projected : arms.all (fun arm => decide
-              (SourceRuntimeBranches.outer selected.remaining arm.2.remaining = .ok remaining)) = true then
+          if projected : arms.all (fun arm =>
+              SourceRuntimeBranches.exits selected.remaining arm.2.remaining remaining) = true then
             Finite.exactWork (Exact.charge (64*((arms.map fun arm => valueFields arm.2.value+
               environmentCells arm.2.remaining).sum+environmentCells remaining+1)))
             match merged : SourceRuntimeMatching.merge condition labels.labels.ordinals (arms.map (·.2.value)) ordinal with
@@ -133,7 +133,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             | .ok (value,phis) =>
               have exits : ∀ arm ∈ arms,SourceRuntimeBranches.outer selected.remaining arm.2.remaining = .ok remaining := by
                 intro arm member
-                exact of_decide_eq_true ((List.all_eq_true.mp projected) arm member)
+                exact SourceRuntimeBranches.exits_sound _ _ _ ((List.all_eq_true.mp projected) arm member)
               let event : MatchEvent sources owner :=
                 ⟨tokens,written,name,signature,generic,naturals,scope,basis,condition,labels,
                   selected.remaining,selected.nextOrdinal,arms,originalBodies,remaining,exits,ordinal,value,phis,merged,held⟩

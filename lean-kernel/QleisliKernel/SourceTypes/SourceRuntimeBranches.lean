@@ -24,6 +24,19 @@ def outer (before after : Environment) : Except String Environment := do
       if current.value != original.value then throw "branch changes an outer binding without an explicit result"
       return result ++ [original]) []
 
+def exits (before after remaining : Environment) : Bool :=
+  match outer before after with
+  | .error _ => false
+  | .ok actual => decide (actual = remaining)
+
+theorem exits_sound (before after remaining : Environment)
+    (allowed : exits before after remaining = true) : outer before after = .ok remaining := by
+  cases found : outer before after with
+  | error message => simp only [exits,found,Bool.false_eq_true] at allowed
+  | ok actual =>
+    have same : actual = remaining := of_decide_eq_true (by simpa only [exits,found] using allowed)
+    simpa only [same] using found
+
 structure Phi where
   output : Semantics.SourceOwners.Owner
   thenOwner : Semantics.SourceOwners.Owner
