@@ -153,4 +153,19 @@ private def computedCount : Option Nat :=
 #guard summary (program ("pub enum E{A,B} pub classical fn root(e:E)->Bit{" ++
     "match e {E::A=>{0},E::B=>1}}")) = none
 
+#guard summary (program "pub classical fn root(():Unit)->Unit{()}") = some (.unitary,false,0,0)
+#guard summary (program "pub unitary fn root(q:Q<Unit>)->Q<Unit>{let ()=();q}") = some (.unitary,true,0,0)
+#guard summary (program "pub unitary fn root(q:Q<Unit>)->Unit{let ()=q;()}") = none
+#guard summary (program "pub fn root[const A:Basis](x:A)->Unit{let ()=x;()}")
+    {bases := [("A",[.unit])]} = none
+#guard summary (program "pub fn root(x:Bits<0>)->Unit{let ()=x;()}") = none
+#guard summary (program "pub struct R{} pub fn root(x:R)->Unit{let ()=x;()}") = none
+#guard summary (program "pub fn root()->Unit{let (x)=();x}") = none
+
+#guard summary (program ("pub unitary fn root[const Q:Nat,const Op:Nat,const Unit:Nat,const Bit:Nat,const CBit:Nat]" ++
+    "(q:Q<Bit>)->Q<Bit>{phase[Q+Op+Unit+Bit+CBit,3](q)}"))
+    {naturals := [("Q",1),("Op",0),("Unit",0),("Bit",0),("CBit",0)]} = some (.unitary,true,0,0)
+#guard summary (program "pub unitary fn root[const Bit:Basis](q:Q<Bit>)->Q<Bit>{q}")
+    {bases := [("Bit",[.bit])]} = none
+
 end QleisliKernel.Tests.GenericTypeTrace

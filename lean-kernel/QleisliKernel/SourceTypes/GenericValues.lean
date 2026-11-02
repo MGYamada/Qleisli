@@ -128,13 +128,16 @@ private def bindNode (binding : Nat) : Nat → QuantumMoves.Term → Value → E
       let (selected,tail) ← splitValue value
       if hasOwner selected then throw "implicit symbolic owner discard"
       pure (rest,tail,environment)
+    | .tuple 0 =>
+      let .ordinary [.fixed .unit] :: tail := value | throw "unit pattern requires the exact ordinary Unit type"
+      pure (rest,tail,environment)
     | .tuple count =>
       let .tuple arity :: tail := value | throw "tuple pattern on an opaque owner/value"
       if arity != count then throw "symbolic tuple pattern arity"
       (List.range count).foldlM (fun (term,value,current) _ => next term value current) (rest,tail,environment))
 
 def bind (tokens : List String) (value : Value) (environment : Environment) (binding : Nat := 0) : Except String Environment := do
-  let term ← QuantumMoves.parse 65 tokens
+  let term ← QuantumMoves.parsePattern 65 tokens
   let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
   if !decide names.Nodup then throw "duplicate symbolic binding"
   let (rest,value,environment) ← bindNode binding (term.length+1) term value environment
@@ -144,7 +147,7 @@ def bind (tokens : List String) (value : Value) (environment : Environment) (bin
 def seed (patterns : List (List String)) (values : List Value) : Except String Environment := do
   if patterns.length != values.length then throw "symbolic parameter count"
   (patterns.zip values).foldlM (fun environment (pattern,value) => do
-    let term ← QuantumMoves.parse 65 pattern
+    let term ← QuantumMoves.parsePattern 65 pattern
     let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
     if names.any (fun name => environment.any (·.name == name)) then throw "duplicate symbolic parameter binding"
     bind pattern value environment) []

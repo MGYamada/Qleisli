@@ -689,7 +689,7 @@ private def runtimeTransform {sources} (state : GenericLexicalNatural.SomeEnviro
       rows := CallName.sourceRows candidate ++ rows.flatten ++ application.rows}
 
 private def bindingNames (tokens : List LocatedToken) : WorkM (List String) := do
-  let pattern ← adapt (QuantumMoves.parse 65 (tokens.map (·.text)))
+  let pattern ← adapt (QuantumMoves.parsePattern 65 (tokens.map (·.text)))
   pure (pattern.filterMap fun atom => match atom with | .name name => some name | _ => none)
 
 private def typedNominal {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
