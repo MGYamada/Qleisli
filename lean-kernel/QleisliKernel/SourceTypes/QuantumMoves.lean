@@ -36,6 +36,29 @@ def parse : Nat → List String → Except String Term :=
         return .tuple children.length :: children.flatten
     | _ => throw "structural owner expression requires its original checked rule")
 
+private def patternShape : Nat → List String → Except String Unit :=
+  Nat.rec (fun _ => throw "source pattern nesting capacity") (fun _ next tokens => do
+    match tokens with
+    | [name] =>
+      if name == "_" || identifier name then pure () else throw "source binding pattern name"
+    | "(" :: rest =>
+      if rest.getLast? != some ")" then throw "unclosed source binding tuple"
+      let inner := rest.dropLast
+      if inner.isEmpty then pure () else do
+        let parts ← splitMembers inner
+        if parts.length < 2 || parts.length > 64 || inner.getLast? == some "," then
+          throw "source binding tuples require two through sixty-four fields"
+        let _ ← parts.mapM next
+        pure ()
+    | _ => throw "source binding requires an original name, wildcard or tuple pattern")
+
+/-- Expressions may be parenthesized; a binding pattern instead follows the
+original parser's name/wildcard/Unit/product grammar. It never reclassifies a
+quantum owner, singleton enum, empty record or Bits<0> as ordinary Unit. -/
+def parsePattern (fuel : Nat) (tokens : List String) : Except String Term := do
+  patternShape fuel tokens
+  parse fuel tokens
+
 private def takeScan (name : String) (environment : Environment) :
     Environment × Except String (Value × Environment) :=
   environment.foldr (fun cell (rest,result) =>
@@ -114,7 +137,7 @@ private def bindNode : Nat → Term → Value → Environment → Except String 
         (rest,tail,environment))
 
 def bind (tokens : List String) (value : Value) (environment : Environment) : Except String Environment := do
-  let term ← parse 65 tokens
+  let term ← parsePattern 65 tokens
   let (patterns,values,result) ← bindNode 65 term value environment
   if !patterns.isEmpty || !values.isEmpty || result.length > 128 then throw "incomplete source pattern binding"
   return result

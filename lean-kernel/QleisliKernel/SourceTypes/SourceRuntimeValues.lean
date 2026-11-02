@@ -151,6 +151,10 @@ private def bindNode (origin : BindingOrigin) : Nat → QuantumMoves.Term → Va
         if !(valueOwners selected).isEmpty then throw "implicit runtime quantum discard"
         return (rest,tail,environment)
       | .tuple count =>
+        if count == 0 then
+          match value with
+          | .ordinary [.unit] _ :: tail => return (rest,tail,environment)
+          | _ => throw "Unit binding pattern requires exact ordinary Unit"
         let .tuple arity :: tail := value | throw "runtime tuple pattern on an atomic owner/value"
         if arity != count then throw "runtime source pattern tuple shape"
         (List.range count).foldlM (fun (term,value,current) _ => recurse term value current)
@@ -158,7 +162,7 @@ private def bindNode (origin : BindingOrigin) : Nat → QuantumMoves.Term → Va
 
 def bind (pattern : List String) (value : Value) (environment : Environment)
     (origin : BindingOrigin := .letBinding 0) : Except String Environment := do
-  let term ← QuantumMoves.parse 65 pattern
+  let term ← QuantumMoves.parsePattern 65 pattern
   let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
   if !decide names.Nodup then throw "duplicate binding in one runtime pattern"
   let (term,value,result) ← bindNode origin 65 term value environment
@@ -168,7 +172,7 @@ def bind (pattern : List String) (value : Value) (environment : Environment)
 def seed (patterns : List (List String)) (values : List Value) : Except String Environment := do
   if patterns.length != values.length then throw "runtime source parameter count"
   ((patterns.zip values).zipIdx).foldlM (fun environment ((pattern,value),index) => do
-    let term ← QuantumMoves.parse 65 pattern
+    let term ← QuantumMoves.parsePattern 65 pattern
     let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
     if names.any (fun name => environment.any (·.name == name)) then throw "duplicate runtime parameter binding"
     bind pattern value environment (.parameter index)) []

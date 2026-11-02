@@ -37,7 +37,7 @@ private def outcome {sources caller} (before : Environment) (value : Value) (rem
   else throw .request
 
 private def boundNames (pattern : List LocatedToken) : Except String (List String) := do
-  let term ← QuantumMoves.parse 65 (pattern.map (·.text))
+  let term ← QuantumMoves.parsePattern 65 (pattern.map (·.text))
   return term.filterMap fun atom => match atom with | .name name => some name | _ => none
 
 private def move (tokens : List LocatedToken) (environment : Environment) :

@@ -178,7 +178,7 @@ private def trees {parts} (children : SourceSyntax.Children parts) : List (Sigma
   children.trees
 
 private def boundNames (pattern : List LocatedToken) : Except String (List String) := do
-  let term ← QuantumMoves.parse 65 (pattern.map (·.text))
+  let term ← QuantumMoves.parsePattern 65 (pattern.map (·.text))
   return term.filterMap fun atom => match atom with | .name name => some name | _ => none
 
 /-- Live bindings, persistent lexical names and held expression values remain
