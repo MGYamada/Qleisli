@@ -103,6 +103,6 @@ theorem Role.sameType {source spectators left right index output}
   cases role with
   | selected index phi original thenOwner elseOwner =>
     exact ⟨thenOwner ▸ phi.thenType,elseOwner ▸ phi.elseType⟩
-  | spectator same retained => exact ⟨rfl,congrArg Owner.basis same.symm⟩
+  | spectator same retained => exact ⟨rfl,congrArg Semantics.SourceOwners.Owner.basis same.symm⟩
 
 end QleisliKernel.Qirf.RuntimeOwnerPhis

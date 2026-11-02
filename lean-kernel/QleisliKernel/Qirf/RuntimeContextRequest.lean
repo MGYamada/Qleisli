@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.Qirf.SourceProviderSubject
+import QleisliKernel.Semantics.CarrierInterface
 
 /-! Plain untrusted request data for complete original runtime body contexts.
 The paired transport reader and common native continuations share these exact
