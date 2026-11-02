@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prepare classical Meaning candidates from complete canonical inputs and
+  compare every row with an independent interpreter of the original source
+  trees and callees. Retain exact nominal types, tuple order and scalar phase;
+  native implementation equations and Meaning admission remain unfinished.
+- Expand original operation duties in source order through checked call-chain
+  substitutions. Keep written assertions distinct, share exact callee-header
+  requirement identities and retain unresolved recursive coverage explicitly.
+  These source records do not discharge native Meaning or access obligations.
 - Relate sparse complete owner-forest coordinates to the original finite code,
   retaining exact nominal trees, wire order, zero-width owners and actual
   primitive/structural equations. Add reference-indexed lazy coefficient

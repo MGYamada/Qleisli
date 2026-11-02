@@ -108,6 +108,8 @@ import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Qirf.RuntimeForestCode
 import QleisliKernel.Qirf.RuntimeCoefficientTransport
 import QleisliKernel.Semantics.SourceClassical
+import QleisliKernel.Qirf.SourceClassicalTree
+import QleisliKernel.Qirf.SourceMeaningOrdinary
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
 import QleisliKernel.SourceTypes.GenericDutyQueue
 import QleisliKernel.Qirf.RuntimePureComposition
