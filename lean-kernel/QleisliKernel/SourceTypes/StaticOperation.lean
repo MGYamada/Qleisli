@@ -572,21 +572,27 @@ def checkArgumentsWithInstantiation {sources owner name original}
 /-- Rebind checked actual graphs without rereading a provider under a different
 module. This repeats the original formal/actual obligations, including unused
 actuals and refinements, while retaining every graph receipt. -/
-def checkArgumentsFrom {sources owner name original}
+def checkArgumentsFromWithActuals {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (context : Context) (actuals : List (Sigma (Actual sources context))) :
-    WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
+    WorkM {checked : ArgumentsCheckedWithInstantiation instantiation context // checked.actuals = actuals} := do
   if ordered : actuals.map (·.1) = instantiation.arguments.operations then
     let bindings ← NaturalAffine.witness (bindArgumentsWithContracts instantiation
       (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
     let rows ← NaturalAffine.witness (kindRowsWithInstantiation instantiation)
-    pure ⟨actuals,ordered,by
+    pure ⟨⟨actuals,ordered,by
       obtain ⟨before,after,ran⟩ := bindings.property
       exact ⟨before,after,bindingProjection _ (fun _ => ()) _ _ _ ran⟩,
       rows.val,by with_reducible exact rows.property,bindings.val.requirements,by
         obtain ⟨before,after,ran⟩ := bindings.property
-        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩
+        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩,rfl⟩
   else throw .request
+
+def checkArgumentsFrom {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (context : Context) (actuals : List (Sigma (Actual sources context))) :
+    WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
+  pure (← checkArgumentsFromWithActuals instantiation context actuals).val
 
 structure Supply {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) where
