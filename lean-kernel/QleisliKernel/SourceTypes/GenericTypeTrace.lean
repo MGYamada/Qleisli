@@ -1059,7 +1059,7 @@ def inferAll {sources} (records : List (BodyRecord sources))
     (pending : List (BodyRecord sources)) : WorkM (AllInferred records pending) := do
   match pending with
   | [] => pure .nil
-  | _ :: _ => inferAllPrepared records (← SourceEffectClosure.prepare (effectEntries records)) pending
+  | first :: rest => inferAllPrepared records (← SourceEffectClosure.prepare (effectEntries records)) (first :: rest)
 
 def AllInferred.get {sources} {records : List (BodyRecord sources)} :
     {pending : List (BodyRecord sources)} → AllInferred records pending → (index : Fin pending.length) →
