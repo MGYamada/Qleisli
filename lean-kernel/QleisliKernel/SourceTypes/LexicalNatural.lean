@@ -95,10 +95,13 @@ def read (sources : Sources) (caller : String) (entries : List NaturalHelpers.En
 /-- Complete closed comparison of the original operands under one original
 helper-binding table. The Bool only selects a branch; the independently
 computed predicate and both u32-checked operands remain in the receipt. -/
+def predicateBindings (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope : List String) (predicate : Predicate) : WorkM (List (Path × NaturalCatalog.Key)) :=
+  NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope [predicate.left,predicate.right]
+
 structure PredicateChecked (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (predicate : Predicate) where
-  bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
-    [predicate.left,predicate.right])
+  bindings : Witness (predicateBindings sources caller entries scope predicate)
   left : NaturalClosed.Checked environment.names
     (NaturalHelpers.interpretation entries bindings.val) predicate.left
   right : NaturalClosed.Checked environment.names
@@ -110,8 +113,7 @@ structure PredicateChecked (sources : Sources) (caller : String) (entries : List
 
 private def predicateOfOperands {sources : Sources} {caller : String} {entries : List NaturalHelpers.Entry}
     {environment : Environment entries} {scope : List String} {predicate : Predicate}
-    (bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
-      [predicate.left,predicate.right]))
+    (bindings : Witness (predicateBindings sources caller entries scope predicate))
     (left : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.left)
     (right : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.right) :
     PredicateChecked sources caller entries environment scope predicate :=
@@ -125,10 +127,7 @@ private def predicateOfOperands {sources : Sources} {caller : String} {entries :
 def readPredicate (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (predicate : Predicate) :
     WorkM (PredicateChecked sources caller entries environment scope predicate) := do
-  let bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
-      [predicate.left,predicate.right]) ← NaturalAffine.witness
-    (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
-      [predicate.left,predicate.right])
+  let bindings ← NaturalAffine.witness (predicateBindings sources caller entries scope predicate)
   let left ← NaturalClosed.read environment.names entries bindings.val
     (environment.reader bindings.val) predicate.left
   let right ← NaturalClosed.read environment.names entries bindings.val
