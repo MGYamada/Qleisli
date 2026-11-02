@@ -999,38 +999,67 @@ def checkNeeds {sources} (records : List (BodyRecord sources)) (needs : List Nee
     let (effect,quantum) ← formulaEffect records need.effect
     guard (SourceEffect.rank effect ≤ SourceEffect.rank need.ceiling && (!need.classical || !quantum)) .request
 
+private def formulaEffectPrepared {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (formula : Formula) :
+    WorkM (Semantics.Raw.Effect × Bool) := do
+  formula.dependencies.foldlM (fun (effect,quantum) id => do
+    let inferred ← SourceEffectClosure.readPrepared prepared id
+    pure (SourceEffect.join effect inferred.inferred,quantum || inferred.quantumUse (directQuantum records)))
+    (formula.direct,false)
+
+private def checkNeedsPrepared {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (needs : List Need) : WorkM Unit := do
+  for need in needs do
+    let (effect,quantum) ← formulaEffectPrepared records prepared need.effect
+    guard (SourceEffect.rank effect ≤ SourceEffect.rank need.ceiling && (!need.classical || !quantum)) .request
+
 structure Inferred {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) where
+  prepared : SourceEffectClosure.Prepared (effectEntries records)
   closure : SourceEffectClosure.Checked (effectEntries records) body.id
   effectBound : SourceEffect.permits body.definition.original.envelope.parsedHeader.effect closure.inferred = true
   classical : body.definition.original.envelope.parsedHeader.ordinaryOnly = true →
     closure.quantumUse (directQuantum records) = false
   publicPermission : body.definition.original.envelope.declaration.isPublic = true →
     closure.quantumUse (directQuantum records) = true → body.definition.original.envelope.parsedHeader.effect.isSome = true
-  needs : ∃ before after,(checkNeeds records body.outcome.needs).run before = (.ok (),after)
+  needs : ∃ before after,(checkNeedsPrepared records prepared body.outcome.needs).run before = (.ok (),after)
 
-def infer {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) : WorkM (Inferred records body) := do
-  let closure ← SourceEffectClosure.read (effectEntries records) body.id
+private def inferPrepared {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (body : BodyRecord sources) :
+    WorkM (Inferred records body) := do
+  let closure ← SourceEffectClosure.readPrepared prepared body.id
   if effectBound : SourceEffect.permits body.definition.original.envelope.parsedHeader.effect closure.inferred = true then
     if classical : body.definition.original.envelope.parsedHeader.ordinaryOnly = true →
         closure.quantumUse (directQuantum records) = false then
       if publicPermission : body.definition.original.envelope.declaration.isPublic = true →
           closure.quantumUse (directQuantum records) = true → body.definition.original.envelope.parsedHeader.effect.isSome = true then
-        let needs ← NaturalAffine.witness (checkNeeds records body.outcome.needs)
+        let needs ← NaturalAffine.witness (checkNeedsPrepared records prepared body.outcome.needs)
         have unit : needs.val = () := by cases needs.val; rfl
-        pure ⟨closure,effectBound,classical,publicPermission,
+        pure ⟨prepared,closure,effectBound,classical,publicPermission,
           by with_reducible simpa only [unit] using needs.property⟩
       else throw .request
     else throw .request
   else throw .request
 
+def infer {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) : WorkM (Inferred records body) := do
+  inferPrepared records (← SourceEffectClosure.prepare (effectEntries records)) body
+
 inductive AllInferred {sources} (records : List (BodyRecord sources)) : List (BodyRecord sources) → Type where
   | nil : AllInferred records []
   | cons {body rest} (head : Inferred records body) (tail : AllInferred records rest) : AllInferred records (body :: rest)
 
-def inferAll {sources} (records : List (BodyRecord sources)) :
+private def inferAllPrepared {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) :
     (pending : List (BodyRecord sources)) → WorkM (AllInferred records pending)
   | [] => pure .nil
-  | body :: rest => do pure (.cons (← infer records body) (← inferAll records rest))
+  | body :: rest => do pure (.cons (← inferPrepared records prepared body) (← inferAllPrepared records prepared rest))
+
+/-- Share the actual same entry-table setup across all original bodies and
+their separately checked effect/classical needs. Each root walk still runs. -/
+def inferAll {sources} (records : List (BodyRecord sources))
+    (pending : List (BodyRecord sources)) : WorkM (AllInferred records pending) := do
+  match pending with
+  | [] => pure .nil
+  | _ :: _ => inferAllPrepared records (← SourceEffectClosure.prepare (effectEntries records)) pending
 
 def AllInferred.get {sources} {records : List (BodyRecord sources)} :
     {pending : List (BodyRecord sources)} → AllInferred records pending → (index : Fin pending.length) →
@@ -1125,8 +1154,9 @@ def readOriginalWithTree {sources owner name}
     let records ← NaturalAffine.witness (discover sources ((sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1)
       root.outcome.references [root.record] (some helpers) originals)
     checkCycles records.val
-    let all ← inferAll records.val records.val
-    let inferred ← infer records.val root.record
+    let prepared ← SourceEffectClosure.prepare (effectEntries records.val)
+    let all ← inferAllPrepared records.val prepared records.val
+    let inferred ← inferPrepared records.val prepared root.record
     pure ⟨tree,root,helpers,originals,records.val,by with_reducible exact records.property,all,inferred⟩
 
 def readWithTree {sources owner name original}

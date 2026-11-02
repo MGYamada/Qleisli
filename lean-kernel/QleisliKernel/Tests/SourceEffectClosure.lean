@@ -34,6 +34,25 @@ private def result (entries : List Entry) :=
 #guard (result [⟨root,⟨.unitary,[]⟩⟩,⟨unrelated,⟨.unitary,[]⟩⟩]).map
   (fun checked => checked.quantumUse (fun id => id == unrelated)) = some false
 
+private def shared (entries : List Entry) (roots : List DefId) :
+    Option (List (Semantics.Raw.Effect × List DefId × Bool)) :=
+  let action : Finite.WorkM (List (Semantics.Raw.Effect × List DefId × Bool)) := do
+    let prepared ← SourceEffectClosure.prepare entries
+    roots.mapM fun selected => do
+      let checked ← SourceEffectClosure.readPrepared prepared selected
+      pure (checked.inferred,checked.ids,checked.quantumUse (fun id => id == helper))
+  (action.run 10000000).1.toOption
+
+-- One exact setup serves several independently walked roots. Unreachable
+-- observation remains separate, while actual reachable quantum use survives.
+#guard shared [⟨root,⟨.unitary,[helper]⟩⟩,⟨helper,⟨.iso,[]⟩⟩,⟨unrelated,⟨.observe,[]⟩⟩]
+    [root,helper,unrelated] =
+  some [(.iso,[root,helper],true),(.iso,[helper],true),(.observe,[unrelated],false)]
+#guard shared [⟨root,⟨.unitary,[helper]⟩⟩] [root] = none
+#guard shared [⟨root,⟨.unitary,[]⟩⟩,⟨root,⟨.observe,[]⟩⟩] [root] = none
+#guard shared [⟨root,⟨.unitary,[("external","pure")]⟩⟩,
+    ⟨("external","pure"),⟨.unitary,[]⟩⟩] [root] = none
+
 -- This is a classical effect graph only, not a maximum quantum instance. The
 -- source call count is not capped by the short root name/token list.
 private def chain : List Entry := (List.range 140).map fun index =>
@@ -44,6 +63,7 @@ private def chain : List Entry := (List.range 140).map fun index =>
   (checked.ids.length,checked.inferred)) = some (140,.observe)
 
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.read
+#print axioms QleisliKernel.SourceTypes.SourceEffectClosure.readPrepared
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.direct_bound
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.least
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.internal_bound

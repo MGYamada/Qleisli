@@ -82,11 +82,14 @@ same runtime reachability. Unit allocation/release cannot disappear by effect. -
 def Checked.quantumUse {entries root} (checked : Checked entries root) (direct : DefId → Bool) : Bool :=
   checked.ids.any direct
 
-/-- Every queued edge is processed, including recursive SCC edges. The bound
-comes from the complete original graph rather than a caller token count. An
-unknown dependency, external edge or duplicate identity refuses independently.
-Effect SCC closure grants no recursive call or termination permission. -/
-def read (entries : List Entry) (root : DefId) : WorkM (Checked entries root) := do
+structure Setup (entries : List Entry) where
+  unique : (entries.map (·.id)).Nodup
+  internalModules : entries.all (fun entry => entry.formula.dependencies.all
+    (fun dependency => dependency.1 == entry.id.1)) = true
+
+/-- Reserve and check the complete same original entry table once. This
+contains no selected root or inferred effect and grants no call permission. -/
+def checkSetup (entries : List Entry) : WorkM (Setup entries) := do
   exactWork (Exact.charge (16*(entries.length+1)*((entries.map entryFields).sum+1)))
   if unique : (entries.map (·.id)).Nodup then
     let internalModules : PLift (entries.all (fun entry => entry.formula.dependencies.all
@@ -96,16 +99,38 @@ def read (entries : List Entry) (root : DefId) : WorkM (Checked entries root) :=
         pure (⟨checked⟩ : PLift (entries.all (fun entry => entry.formula.dependencies.all
           (fun dependency => dependency.1 == entry.id.1)) = true))
       else throw .request
-    let fuel := entries.length+(entries.map fun entry => entry.formula.dependencies.length).sum+1
-    let nodes ← walk entries root fuel [⟨root,.root⟩] []
-    exactWork (Exact.charge (16*(nodes.length+1)*((nodes.map fun node => entryFields node.entry).sum+1)))
-    if rootPresent : root ∈ nodes.map (·.entry.id) then
-      if closed : nodes.all (fun node => node.entry.formula.dependencies.all
-          (fun dependency => (nodes.map (·.entry.id)).contains dependency)) = true then
-        return ⟨unique,internalModules.down,nodes,rootPresent,closed⟩
-      else throw .request
+    return ⟨unique,internalModules.down⟩
+  else throw .request
+
+structure Prepared (entries : List Entry) where
+  setup : Setup entries
+  original : ∃ before after,(checkSetup entries).run before = (.ok setup,after)
+
+/-- Retain this actual setup invocation. Another entry table cannot reuse the
+receipt merely because its names or selected effect happen to coincide. -/
+def prepare (entries : List Entry) : WorkM (Prepared entries) := fun before =>
+  match ran : (checkSetup entries).run before with
+  | (.error error,after) => (.error error,after)
+  | (.ok setup,after) => (.ok ⟨setup,⟨before,after,ran⟩⟩,after)
+
+/-- Every queued edge is still processed, including recursive SCC edges. The
+shared setup changes no root walk, closure check, charge or semantic judgment.
+Unknown dependencies refuse; effect closure grants no recursion permission. -/
+def readPrepared {entries : List Entry} (prepared : Prepared entries) (root : DefId) :
+    WorkM (Checked entries root) := do
+  let fuel := entries.length+(entries.map fun entry => entry.formula.dependencies.length).sum+1
+  let nodes ← walk entries root fuel [⟨root,.root⟩] []
+  exactWork (Exact.charge (16*(nodes.length+1)*((nodes.map fun node => entryFields node.entry).sum+1)))
+  if rootPresent : root ∈ nodes.map (·.entry.id) then
+    if closed : nodes.all (fun node => node.entry.formula.dependencies.all
+        (fun dependency => (nodes.map (·.entry.id)).contains dependency)) = true then
+      return ⟨prepared.setup.unique,prepared.setup.internalModules,nodes,rootPresent,closed⟩
     else throw .request
   else throw .request
+
+/-- Standalone callers perform the same complete setup before their root. -/
+def read (entries : List Entry) (root : DefId) : WorkM (Checked entries root) := do
+  readPrepared (← prepare entries) root
 
 private theorem entry_unique (entries : List Entry) : (entries.map (·.id)).Nodup →
     {first second : Entry} → first ∈ entries → second ∈ entries → first.id = second.id → first = second := by
