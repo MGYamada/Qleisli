@@ -60,35 +60,50 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
   | ordinal ordinal => cases transported; rfl
   | measured origin calls owner =>
     cases found : SourceRuntimeValues.mappedOwner owners owner with
-    | error error => simp [SourceRuntimeValues.expressionTransport,found,Except.map] at transported
+    | error error =>
+      simp only [SourceRuntimeValues.expressionTransport,found] at transported
+      change (Except.error error : Except String Expression) = .ok result at transported
+      cases transported
     | ok actual =>
       simp only [SourceRuntimeValues.expressionTransport,found] at transported
       cases transported
       simp only [evaluate,calledValuation,found]
   | project value ordinal _ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
-    | error error => simp [SourceRuntimeValues.expressionTransport,read,Except.map] at transported
+    | error error =>
+      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      change (Except.error error : Except String Expression) = .ok result at transported
+      cases transported
     | ok actual =>
       simp only [SourceRuntimeValues.expressionTransport,read] at transported
       cases transported
       rfl
   | field stride dimension value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
-    | error error => simp [SourceRuntimeValues.expressionTransport,read,Except.map] at transported
+    | error error =>
+      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      change (Except.error error : Except String Expression) = .ok result at transported
+      cases transported
     | ok actual =>
       simp only [SourceRuntimeValues.expressionTransport,read] at transported
       cases transported
       simp only [evaluate,ih actual read]
   | equalsOrdinal ordinal value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
-    | error error => simp [SourceRuntimeValues.expressionTransport,read,Except.map] at transported
+    | error error =>
+      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      change (Except.error error : Except String Expression) = .ok result at transported
+      cases transported
     | ok actual =>
       simp only [SourceRuntimeValues.expressionTransport,read] at transported
       cases transported
       simp only [evaluate,ih actual read]
   | not value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
-    | error error => simp [SourceRuntimeValues.expressionTransport,read,Except.map] at transported
+    | error error =>
+      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      change (Except.error error : Except String Expression) = .ok result at transported
+      cases transported
     | ok actual =>
       simp only [SourceRuntimeValues.expressionTransport,read] at transported
       cases transported
@@ -98,7 +113,7 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
     | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind,Except.map] at transported
+      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
         simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
         cases transported
@@ -108,7 +123,7 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
     | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind,Except.map] at transported
+      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
         simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
         cases transported
@@ -118,7 +133,7 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
     | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind,Except.map] at transported
+      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
         simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
         cases transported
@@ -131,7 +146,7 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
       | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,bind,Except.bind] at transported
       | ok a =>
         cases elseRead : SourceRuntimeValues.expressionTransport site owners inputs elseValue with
-        | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,elseRead,bind,Except.bind,Except.map] at transported
+        | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,elseRead,bind,Except.bind] at transported
         | ok b =>
           simp only [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,elseRead] at transported
           cases transported
