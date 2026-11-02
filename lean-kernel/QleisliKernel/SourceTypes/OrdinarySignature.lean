@@ -106,6 +106,8 @@ structure Original (sources : Sources) (owner name : String) where
   bound : originalBinding sources owner name = .ok (source,declaration)
   function : declaration.kind = "fn"
   catalogue : ∃ scanned, sourceCatalogue source = .ok scanned ∧ occurrence ∈ scanned.bodies
+  singleBody : ∃ scanned, sourceCatalogue source = .ok scanned ∧
+    scanned.bodies.filter (fun body => body.declaration == declaration) = [occurrence]
   sameDeclaration : occurrence.declaration = declaration
   parsed : header source occurrence = .ok parsedHeader
   bytes : LocatedFacts.OrderedSlices source.toUTF8 0 (envelope occurrence)
@@ -117,15 +119,35 @@ theorem Original.sameEnvelope {sources owner name} (first second : Original sour
     (source : first.source = second.source) (declaration : first.declaration = second.declaration)
     (occurrence : first.occurrence = second.occurrence) : first = second := by
   cases first with
-  | mk sourceA declarationA occurrenceA headerA boundA functionA catalogueA sameA parsedA bytesA =>
+  | mk sourceA declarationA occurrenceA headerA boundA functionA catalogueA singleA sameA parsedA bytesA =>
     cases second with
-    | mk sourceB declarationB occurrenceB headerB boundB functionB catalogueB sameB parsedB bytesB =>
+    | mk sourceB declarationB occurrenceB headerB boundB functionB catalogueB singleB sameB parsedB bytesB =>
       cases source
       cases declaration
       cases occurrence
       have sameHeader : headerA = headerB := Except.ok.inj (parsedA.symm.trans parsedB)
       cases sameHeader
       rfl
+
+/-- Successful original readers already enforce one canonical binding and
+one body occurrence. Those equations identify the complete original value at
+this immutable Sources/owner/name, without a second byte/envelope comparison.
+This grants no visibility, instantiation, body meaning or native authority. -/
+theorem Original.sameSource {sources owner name} (first second : Original sources owner name) : first = second := by
+  have pair : (first.source,first.declaration) = (second.source,second.declaration) :=
+    Except.ok.inj (first.bound.symm.trans second.bound)
+  have source : first.source = second.source := congrArg Prod.fst pair
+  have declaration : first.declaration = second.declaration := congrArg Prod.snd pair
+  rcases first.singleBody with ⟨firstScan,firstRead,firstSingle⟩
+  rcases second.singleBody with ⟨secondScan,secondRead,secondSingle⟩
+  have secondReadHere : sourceCatalogue first.source = .ok secondScan := by
+    rw [source]
+    exact secondRead
+  have scan : firstScan = secondScan := Except.ok.inj (firstRead.symm.trans secondReadHere)
+  have bodies : [first.occurrence] = [second.occurrence] := by
+    rw [← firstSingle,scan,declaration]
+    exact secondSingle
+  exact first.sameEnvelope second source declaration (List.cons.inj bodies).1
 
 /-- Shared original source data, not a producer header table. Canonical source
 binding, actual lexer/declaration results and original UTF-8 bytes are retained
@@ -200,7 +222,8 @@ def readKnownOccurrence {sources owner} (known : KnownModule sources owner)
                 exact LocatedFacts.checkOrdered_sound _ _ _ bytes
               let original : Original sources owner declaration.name :=
                 ⟨known.source,declaration,occurrence,parsedHeader,knownBinding known declaration selected,function,
-                  ⟨known.catalogue,known.scanned,located.property⟩,rfl,parsedOriginal,originalBytes⟩
+                  ⟨known.catalogue,known.scanned,located.property⟩,
+                  ⟨known.catalogue,known.scanned,unique⟩,rfl,parsedOriginal,originalBytes⟩
               pure ⟨owner,declaration.name,original⟩
             else throw .request
       else throw .request
@@ -248,7 +271,7 @@ private def original (sources : Sources) (owner name : String) :
           | .ok parsedHeader =>
             if bytes : LocatedFacts.checkOrdered source.toUTF8 0 (envelope occurrence) = true then
               return ⟨source,declaration,occurrence,parsedHeader,bound,function,
-                ⟨scanned,scannedOk,found⟩,sameDeclaration,parsed,
+                ⟨scanned,scannedOk,found⟩,⟨scanned,scannedOk,selected⟩,sameDeclaration,parsed,
                 LocatedFacts.checkOrdered_sound _ _ _ bytes⟩
             else throw "original entry byte envelope mismatch"
         | _ => throw "original entry body multiplicity"

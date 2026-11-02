@@ -229,18 +229,19 @@ def Entry.inferred {sources catalogue owner name original} (entry : @Entry sourc
 
 def lookup {sources owner name} (catalogue : RuntimeChecked sources)
     (original : OrdinarySignature.Original sources owner name) : WorkM (Entry catalogue original) := do
-  exactWork (Exact.charge (32*(catalogue.records.length+original.source.utf8ByteSize+1)))
+  -- Both originals already retain the actual canonical binding and singleton
+  -- body equations. Only the record/key search executes here; proof-backed
+  -- identity reuse performs no source snapshot or body-token comparison.
+  let keys := (catalogue.records.map fun body => body.owner.utf8ByteSize+body.name.utf8ByteSize+1).sum
+  exactWork (Exact.charge (32*(keys+(catalogue.records.length+1)*(owner.utf8ByteSize+name.utf8ByteSize+1)+1)))
   let index := catalogue.records.findIdx fun body => body.owner == owner && body.name == name
   if bounded : index < catalogue.records.length then
     let body := catalogue.records[index]'bounded
     if sameOwner : body.owner = owner then
       if sameName : body.name = name then
         let selected := bodyOriginal body sameOwner sameName
-        if envelope : selected.source = original.source ∧ selected.declaration = original.declaration ∧
-            selected.occurrence = original.occurrence then
-          have same := OrdinarySignature.Original.sameEnvelope selected original envelope.1 envelope.2.1 envelope.2.2
-          pure ⟨⟨index,bounded⟩,(bodyOriginal_heq body sameOwner sameName).trans (heq_of_eq same)⟩
-        else throw .request
+        have same := OrdinarySignature.Original.sameSource selected original
+        pure ⟨⟨index,bounded⟩,(bodyOriginal_heq body sameOwner sameName).trans (heq_of_eq same)⟩
       else throw .request
     else throw .request
   else throw .request
