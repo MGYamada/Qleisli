@@ -7,7 +7,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.ContextSource
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 
-private def sources (header : String) : Sources :=
+private def sources (header : String) : SourceTypes.Sources :=
   #[("main","#![no_implicit_prelude]\npub unitary fn main" ++ header ++ "{h(q)}")]
 
 private def read (header : String) : WorkM Bool := do
