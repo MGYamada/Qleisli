@@ -88,7 +88,8 @@ private def parameterTypes (patterns : List Semantics.SourceClassical.Pattern) (
 private def tupleBasis (fields : List Basis) : Basis :=
   (if fields.length == 2 then Atom.pair else .tuple fields.length) :: fields.flatten
 
-private def readTerm {sources catalogue} (environment : List (String × Basis)) :
+private def readTerm {sources : Sources} {catalogue : GenericCatalogue.Checked sources}
+    (environment : List (String × Basis)) :
     Nat → QuantumMoves.Term → Accumulator catalogue →
       WorkM (QuantumMoves.Term × Accumulator catalogue × Nat × Basis) :=
   Nat.rec (fun _ _ => throw .limit) (fun _ next term accumulator => do
