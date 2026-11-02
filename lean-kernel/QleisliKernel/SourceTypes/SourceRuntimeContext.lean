@@ -64,19 +64,21 @@ structure WithPrepared {sources owner name arguments}
 Their per-occurrence supply authority is never reconstructed in the callee. -/
 def fromPreparedWithArguments {sources owner name arguments}
     (checked : StaticRuntimeSignature.Checked sources owner name arguments) (context : StaticOperation.Context)
-    (actuals : List (Sigma (StaticOperation.Actual sources context))) :
+    (actuals : List (Sigma (StaticOperation.Actual sources context)))
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     Finite.WorkM (WithPrepared checked context actuals) := do
   let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
-  let operations ← StaticOperation.checkArgumentsFromWithActuals instantiation context actuals
+  let operations ← StaticOperation.checkArgumentsFromWithActuals instantiation context actuals catalogue
   let signature : Signature sources owner name := ⟨arguments,checked,context,operations.val⟩
   return ⟨signature,rfl,HEq.rfl,rfl,heq_of_eq operations.property⟩
 
 def readSignature (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
-    (context : StaticOperation.Context := .external) :
+    (context : StaticOperation.Context := .external)
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     Finite.WorkM (Signature sources owner name) := do
   let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name arguments
   let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
-  let operations ← StaticOperation.checkArgumentsWithInstantiation instantiation context
+  let operations ← StaticOperation.checkArgumentsWithInstantiation instantiation context catalogue
   return ⟨arguments,checked,context,operations⟩
 
 def Signature.sourceRows {sources owner name} (signature : Signature sources owner name) :
@@ -107,7 +109,7 @@ def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked so
     (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) :
     Finite.WorkM (CoreBinding core context supply) := do
   let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name core.staticArguments
-  let prepared ← fromPreparedWithArguments checked context supply.actuals
+  let prepared ← fromPreparedWithArguments checked context supply.actuals supply.catalogue
   let signature := prepared.signature
   Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+
     signature.original.source.utf8ByteSize+
@@ -170,7 +172,7 @@ def readTargetWithWritten {sources caller callerName scope tokens}
       naturals.environment scope written resolution.moduleName resolution.declaration.name operationReader naturals.generic
     let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
     let checked ← StaticRuntimeSignature.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
-    let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals
+    let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals callerSignature.operations.catalogue
     let signature := prepared.signature
     if arguments : signature.arguments = actuals.arguments then
       if original : signature.original.source = resolution.source ∧
