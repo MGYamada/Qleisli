@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceRuntimeValues
 import QleisliKernel.SourceTypes.SourceOperation
 import QleisliKernel.SourceTypes.PhaseApplication
+import QleisliKernel.SourceTypes.SourceOperationSyntax
 
 /-! Original operation-expression application, including genuine Op formals.
 The typed operation graph and exact runtime owner ports are retained together.
@@ -9,14 +10,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.SourceTypes.SourceOperationApplication
 open QleisliKernel QleisliKernel.SourceTypes SourceRuntimeValues
 
-def controlled (tokens : List LocatedToken) : Bool :=
-  match CallSyntax.read tokens with
-  | .ok call => call.call.callee.map (·.text) == ["controlled"]
-  | .error _ => false
+abbrev controlled := SourceOperationSyntax.controlled
 
-def selected (operationNames : List String) (tokens : List LocatedToken) : Bool :=
-  tokens.getLast?.map (·.text) == some ")" ||
-    match tokens.map (·.text) with | [name] => operationNames.contains name | _ => false
+abbrev selected := SourceOperationSyntax.selected
 
 def targetBasis (tokens : List LocatedToken) (arguments : List Value) :
     Except String Semantics.FiniteCarrier.Basis :=

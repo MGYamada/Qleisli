@@ -97,7 +97,42 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
-      | .staticConditional .. | .matching .. => throw .request
+      | .matching .. => throw .request
+      | .staticConditional written thenTree elseTree =>
+        let selection ← SourceStaticSelection.read sources owner naturals scope written
+        let selected : Sigma SourceSyntax.Tree := if selection.selected then
+          ⟨written.parts.thenBody,thenTree⟩ else ⟨written.parts.elseBody,elseTree⟩
+        have selectedTokens : selected.1 = if selection.selected then written.parts.thenBody else written.parts.elseBody := by
+          dsimp only [selected]
+          split <;> rfl
+        let (result,context) ← recurse selection.naturals held scope nextOrdinal environment selected.2 context
+        Finite.exactWork (Exact.charge (32*(environmentCells environment+environmentCells result.remaining+
+          valueFields result.value+1)))
+        match projected : SourceRuntimeBranches.outer environment result.remaining with
+        | .error _ => throw .request
+        | .ok remaining =>
+          match thenCallsRead : thenTree.calls with
+          | .error _ => throw .request
+          | .ok thenCalls =>
+            match elseCallsRead : elseTree.calls with
+            | .error _ => throw .request
+            | .ok elseCalls =>
+              match callsRead : selected.2.calls with
+              | .error _ => throw .request
+              | .ok calls =>
+                Finite.guard (result.events.flatMap Event.callOffsets == calls &&
+                  result.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets selected.1) .request
+                let arm : Arm sources owner environment selected.1 :=
+                  ⟨selected.2,result.value,result.remaining,result.allocated,result.consumed,result.nextOrdinal,
+                    result.balanced,inferredEffect result.events,result.events.any Event.quantumUse,
+                    result.staticRows,calls,callsRead,result.events.flatMap Event.basisOffsets⟩
+                let event : StaticEvent sources owner :=
+                  ⟨tokens,written,name,signature,generic,naturals,scope,selection,thenTree,elseTree,
+                    thenCalls,thenCallsRead,elseCalls,elseCallsRead,environment,nextOrdinal,⟨selected.1,arm⟩,
+                    selectedTokens,remaining,projected,held⟩
+                return (← outcome environment result.value remaining result.allocated result.consumed
+                  result.nextOrdinal [.staticConditional event result.events]
+                  (selection.naturals.sourceRows ++ result.staticRows),context)
       | .variant written =>
         let reference ← SourceNominal.readVariant sources owner scope written
         let rows ← NaturalRows.typeRead sources owner naturals.helpers.val scope
@@ -455,6 +490,9 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
           | .error _ => throw .request
           | .ok tree =>
             let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+            Finite.guard (!signature.original.parsedHeader.ordinaryOnly || !generic.val.quantumUse) .request
+            Finite.guard (!signature.original.declaration.isPublic || !generic.val.quantumUse ||
+              signature.original.parsedHeader.effect.isSome) .request
             let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
               if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
                 pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
@@ -662,6 +700,42 @@ def readBranchSource {sources caller} (event : BranchEvent sources caller) :
       elseAllocated,thenConsumed,elseConsumed,thenOrdinal,elseOrdinal,thenBasis,elseBasis⟩ := checked
     return ⟨left,right,thenValue,elseValue,thenEffect,elseEffect,thenRemaining,elseRemaining,
       thenAllocated,elseAllocated,thenConsumed,elseConsumed,thenOrdinal,elseOrdinal,thenBasis,elseBasis⟩
+  else throw .request
+
+structure StaticBody {sources caller} (event : StaticEvent sources caller) where
+  result : Outcome sources caller event.before
+  value : result.value = event.selected.2.value
+  remaining : result.remaining = event.selected.2.remaining
+  allocated : result.allocated = event.selected.2.allocated
+  consumed : result.consumed = event.selected.2.consumed
+  nextOrdinal : result.nextOrdinal = event.selected.2.nextOrdinal
+  effect : inferredEffect result.events = event.selected.2.inferredEffect
+  quantumUse : result.events.any Event.quantumUse = event.selected.2.quantumUse
+  basis : result.events.flatMap Event.basisOffsets = event.selected.2.basisOffsets
+
+/-- Static selection contributes no runtime condition or phi. Its selected
+original child is freshly traversed in the containing block, while the retained
+whole original generic judgment checks both source arms independently. -/
+def readStaticSource {sources caller} (event : StaticEvent sources caller) :
+    Finite.WorkM (StaticBody event) := do
+  let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
+  let (result,_) ← evalWithReader event.signature event.generic basis
+    (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
+      [(caller,event.callerName)] callee).summary)
+    (event.selected.1.length+1) event.selection.naturals event.held event.scope event.nextOrdinal
+    event.before event.selected.2.tree {}
+  Finite.exactWork (Exact.charge (32*(valueFields result.value+valueFields event.selected.2.value+
+    environmentCells result.remaining+environmentCells event.selected.2.remaining+
+    result.events.length+Raw.OwnerFlow.fields (result.allocated ++ result.consumed ++
+      event.selected.2.allocated ++ event.selected.2.consumed)+1)))
+  if checked : result.value = event.selected.2.value ∧ result.remaining = event.selected.2.remaining ∧
+      result.allocated = event.selected.2.allocated ∧ result.consumed = event.selected.2.consumed ∧
+      result.nextOrdinal = event.selected.2.nextOrdinal ∧
+      inferredEffect result.events = event.selected.2.inferredEffect ∧
+      result.events.any Event.quantumUse = event.selected.2.quantumUse ∧
+      result.events.flatMap Event.basisOffsets = event.selected.2.basisOffsets then
+    let ⟨value,remaining,allocated,consumed,nextOrdinal,effect,quantumUse,basis⟩ := checked
+    return ⟨result,value,remaining,allocated,consumed,nextOrdinal,effect,quantumUse,basis⟩
   else throw .request
 
 theorem Checked.effectAssertion {sources owner name} (checked : Checked sources owner name) :
