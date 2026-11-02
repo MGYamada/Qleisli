@@ -164,7 +164,7 @@ private def readInactive {sources catalogue record invocation}
     if previous.isSome then return previous
     match ← readFalseGuard (candidates[index.val]'index.isLt) with
     | none => return none
-    | some guard => return some ⟨dependency,index,guard⟩) none
+    | some blocked => return some ⟨dependency,index,blocked⟩) none
 
 inductive DemandStatus {sources catalogue record invocation}
     (demand : @Demand sources catalogue record invocation) where
@@ -195,7 +195,9 @@ def Assessment {sources catalogue} : @Item sources catalogue → Type
 private def inspect {sources catalogue} (item : @Item sources catalogue) : WorkM (Assessment item) := do
   match item with
   | .demand _ demand => inspectDemand demand
-  | _ => return ()
+  | .header .. => return ()
+  | .call .. => return ()
+  | .pendingRecursion .. => return ()
 
 def unconsumed {sources catalogue} (item : @Item sources catalogue) : Assessment item → Bool :=
   match item with
@@ -212,7 +214,8 @@ structure Entry {sources catalogue} (queue : @GenericDutyQueue.Checked sources c
     (inspect (queue.items[index.val]'index.isLt)).run before = (.ok assessment,after)
 
 def Entry.unconsumed {sources catalogue queue} (entry : @Entry sources catalogue queue) : Bool :=
-  unconsumed (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.unconsumed
+    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
 
 def conditionalKeys {sources catalogue} (item : @Item sources catalogue) : Assessment item → List Key :=
   match item with
@@ -222,7 +225,8 @@ def conditionalKeys {sources catalogue} (item : @Item sources catalogue) : Asses
   | _ => fun _ => []
 
 def Entry.conditionalKeys {sources catalogue queue} (entry : @Entry sources catalogue queue) : List Key :=
-  conditionalKeys (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.conditionalKeys
+    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
 
 def inactive {sources catalogue} (item : @Item sources catalogue) : Assessment item → Bool :=
   match item with
@@ -231,7 +235,8 @@ def inactive {sources catalogue} (item : @Item sources catalogue) : Assessment i
   | _ => fun _ => false
 
 def Entry.inactive {sources catalogue queue} (entry : @Entry sources catalogue queue) : Bool :=
-  inactive (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.inactive
+    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
 
 structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) where
   queue : GenericDutyQueue.Checked catalogue
