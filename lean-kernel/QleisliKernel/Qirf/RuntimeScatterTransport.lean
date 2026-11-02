@@ -205,4 +205,124 @@ theorem gather_mapped (base value : Nat) (selected : List Nat) (unique : selecte
   simp only [Function.comp_def,List.getElem?_eq_getElem bound,Option.getD_some]
   rw [scatter_at base value selected unique pair.1 bound]
 
+def pull (base : Nat) (selected : List Nat) (values : Raw.Coefficient.State) : Raw.Coefficient.State :=
+  fun value => values (scatter base selected value)
+
+theorem enabled_selected (base value : Nat) (selected : List Nat) (unique : selected.Nodup)
+    (controls : List Control) (bounded : ∀ control ∈ controls,control.index < selected.length) :
+    enabled (controls.map fun control =>
+      ⟨(selected[control.index]?).getD 0,control.whenOne⟩) (scatter base selected value) = enabled controls value := by
+  induction controls with
+  | nil => rfl
+  | cons first rest ih =>
+    have firstBound := bounded first (List.mem_cons_self)
+    have remaining : ∀ control ∈ rest,control.index < selected.length :=
+      fun control member => bounded control (List.mem_cons_of_mem _ member)
+    change (((bit (scatter base selected value) ((selected[first.index]?).getD 0) == 1) == first.whenOne) &&
+      enabled (rest.map fun control => ⟨(selected[control.index]?).getD 0,control.whenOne⟩)
+        (scatter base selected value)) = (((bit value first.index == 1) == first.whenOne) && enabled rest value)
+    rw [List.getElem?_eq_getElem firstBound,Option.getD_some,
+      scatter_at base value selected unique first.index firstBound,ih remaining]
+
+theorem hadamard_selected (base value : Nat) (selected : List Nat) (unique : selected.Nodup)
+    (index : Nat) (bound : index < selected.length) (values : Raw.Coefficient.State) :
+    Raw.ProtectedEvaluation.gate .h ((selected[index]?).getD 0) values (scatter base selected value) =
+      Raw.ProtectedEvaluation.gate .h index (pull base selected values) value := by
+  have low := scatter_write base value selected unique index bound 0 (by decide)
+  have high := scatter_write base value selected unique index bound 1 (by decide)
+  simp only [write,Nat.zero_mul,Nat.add_zero,Nat.one_mul] at low high
+  rw [scatter_at base value selected unique index bound] at low high
+  rw [low] at high
+  simp only [Raw.ProtectedEvaluation.gate,List.getElem?_eq_getElem bound,Option.getD_some,
+    scatter_at base value selected unique index bound]
+  rw [low,high]
+  rfl
+
+/-- Actual Raw localization commutes with the actual lazy step. All selected
+axes may be reversed/noncontiguous. The SAME local-input sum and scalar/query
+order appears on both sides, so phase, failures and remaining work coincide. -/
+theorem step_selected (dependencies : List Dependency) (base value : Nat)
+    (selected : List Nat) (unique : selected.Nodup) (step : Step)
+    (controls : ∀ control ∈ step.controls,control.index < selected.length)
+    (targets : ∀ axis ∈ Finite.targets step.action,axis < selected.length)
+    (values : Raw.Coefficient.State) :
+    Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected step) values (scatter base selected value) =
+      Raw.Coefficient.step dependencies step (pull base selected values) value := by
+  rcases step with ⟨controlList,action⟩
+  cases action with
+  | hadamard axis =>
+    have bound := targets axis (List.mem_singleton_self axis)
+    simp only [Raw.Coefficient.step,Semantics.RawTrace.localize,
+      enabled_selected base value selected unique controlList controls,
+      hadamard_selected base value selected unique axis bound values,pull]
+  | monomial axes permutation phases =>
+    simp only [Raw.Coefficient.step,Semantics.RawTrace.localize,
+      enabled_selected base value selected unique controlList controls,
+      gather_mapped base value selected unique axes targets,
+      scatter_mapped base value _ selected unique axes targets,pull]
+  | contract axes dependency adjoint =>
+    simp only [Raw.Coefficient.step,Semantics.RawTrace.localize,
+      enabled_selected base value selected unique controlList controls,
+      gather_mapped base value selected unique axes targets,
+      scatter_mapped base value _ selected unique axes targets,pull]
+
+theorem circuit_selected (dependencies : List Dependency) (base : Nat)
+    (selected : List Nat) (unique : selected.Nodup) (steps : List Step)
+    (controls : ∀ step ∈ steps,∀ control ∈ step.controls,control.index < selected.length)
+    (targets : ∀ step ∈ steps,∀ axis ∈ Finite.targets step.action,axis < selected.length)
+    (values : Raw.Coefficient.State) :
+    pull base selected (Raw.Coefficient.circuit dependencies (steps.map (Semantics.RawTrace.localize selected)) values) =
+      Raw.Coefficient.circuit dependencies steps (pull base selected values) := by
+  induction steps generalizing values with
+  | nil => rfl
+  | cons first rest ih =>
+    have restControls : ∀ step ∈ rest,∀ control ∈ step.controls,control.index < selected.length :=
+      fun step member => controls step (List.mem_cons_of_mem _ member)
+    have restTargets : ∀ step ∈ rest,∀ axis ∈ Finite.targets step.action,axis < selected.length :=
+      fun step member => targets step (List.mem_cons_of_mem _ member)
+    change pull base selected (Raw.Coefficient.circuit dependencies (rest.map (Semantics.RawTrace.localize selected))
+      (Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected first) values)) =
+      Raw.Coefficient.circuit dependencies rest (Raw.Coefficient.step dependencies first (pull base selected values))
+    have tail : pull base selected (Raw.Coefficient.circuit dependencies (rest.map (Semantics.RawTrace.localize selected))
+        (Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected first) values)) =
+        Raw.Coefficient.circuit dependencies rest
+          (pull base selected (Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected first) values)) := by
+      apply ih <;> assumption
+    rw [tail]
+    have head : pull base selected (Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected first) values) =
+        Raw.Coefficient.step dependencies first (pull base selected values) := by
+      funext value
+      exact step_selected dependencies base value selected unique first
+        (controls first (List.mem_cons_self)) (targets first (List.mem_cons_self)) values
+    rw [head]
+
+/-- Original source identities and the same complete caller frame remain part
+of the selected forest. Only literal axis distinctness is required; no order,
+contiguity, type-width equivalence, producer table or commutation flag is used. -/
+structure Selection {roles state} (complete : RuntimeOwnerMap.Checked roles state) where
+  selectedRoles : List Semantics.SourceOwners.Owner
+  selected : RuntimeOwnerMap.Map
+  selectedRead : RuntimeInterval.Computed (RuntimeOwnerMap.order selectedRoles complete.bindings) selected
+  distinct : (RuntimeForestCode.forestAxes state.quantum.frame selected).Nodup
+
+theorem Selection.untouched {roles state complete} (selection : @Selection roles state complete)
+    (base value query : Nat) (outside : query ∉ RuntimeForestCode.forestAxes state.quantum.frame selection.selected) :
+    bit (scatter base (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) value) query = bit base query :=
+  scatter_outside base value query _ outside
+
+theorem Selection.stepReferences {Reference : Type} {roles state complete}
+    (selection : @Selection roles state complete) (dependencies : List Dependency) (step : Step)
+    (controls : ∀ control ∈ step.controls,
+      control.index < (RuntimeForestCode.forestAxes state.quantum.frame selection.selected).length)
+    (targets : ∀ axis ∈ Finite.targets step.action,
+      axis < (RuntimeForestCode.forestAxes state.quantum.frame selection.selected).length)
+    (base : Reference → Nat) (values : Reference → Raw.Coefficient.State) :
+    (fun reference value => Raw.Coefficient.step dependencies
+      (Semantics.RawTrace.localize (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) step)
+      (values reference) (scatter (base reference) (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) value)) =
+    (fun reference value => Raw.Coefficient.step dependencies step
+      (pull (base reference) (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) (values reference)) value) := by
+  funext reference value
+  exact step_selected dependencies (base reference) value _ selection.distinct step controls targets (values reference)
+
 end QleisliKernel.Qirf.RuntimeScatterTransport
