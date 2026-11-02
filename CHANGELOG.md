@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Share the small contextual regression's source/IR data with its stage-cost
+  observer. Preserve the first incomplete prelude proposal as a refusal case,
+  retain every original semantic control and use a separately identified actual
+  empty prelude for the isolated primitive environment. Require all stages to
+  finish within the same unchanged work cap; exact historical remainders remain
+  observations rather than implementation-independent contract assertions.
 - Connect original pure body intervals to their literal Raw operation partition
   and complete final owner order. Check explicit join/split and zero-width
   allocation/release against the actual source owner history, Raw transition
