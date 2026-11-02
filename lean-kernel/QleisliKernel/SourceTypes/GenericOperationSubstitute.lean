@@ -35,7 +35,7 @@ def operationKeys {sources} (application : ApplicationSource sources) : List Par
 
 /-- These equalities authenticate mixed-kind positions and canonical Nat
 replacement order. They select no convenient value for an original formal. -/
-structure Context {sources} (application : ApplicationSource sources) where
+structure Context {sources} (application : ApplicationSource sources) : Type where
   bases : application.basisActuals.map (·.1) = basisKeys application
   operations : application.operationActuals.map (·.original) = operationKeys application
   naturals : application.naturalActuals =
