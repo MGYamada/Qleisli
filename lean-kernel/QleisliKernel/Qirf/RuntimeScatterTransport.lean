@@ -205,6 +205,53 @@ theorem gather_mapped (base value : Nat) (selected : List Nat) (unique : selecte
   simp only [Function.comp_def,List.getElem?_eq_getElem bound,Option.getD_some]
   rw [scatter_at base value selected unique pair.1 bound]
 
+private theorem shifted_weights (label : Nat) (pairs : List (Nat × Nat)) :
+    (pairs.map fun pair => bit label pair.1*2^(pair.2+1)).sum =
+      2*(pairs.map fun pair => bit label pair.1*2^pair.2).sum := by
+  induction pairs with
+  | nil => rfl
+  | cons first rest ih =>
+    simp only [List.map_cons,List.sum_cons,Nat.pow_succ,ih,Nat.mul_add]
+    ac_rfl
+
+private theorem gather_cons (label first : Nat) (rest : List Nat) :
+    gather label (first::rest) = bit label first+2*gather label rest := by
+  unfold gather
+  simp only [List.zipIdx_cons,List.map_cons,List.sum_cons,Nat.pow_zero,Nat.mul_one]
+  rw [List.zipIdx_succ]
+  simp only [List.map_map,Function.comp_def]
+  rw [shifted_weights]
+
+theorem gather_at (label : Nat) (axes : List Nat) (index : Nat) (bound : index < axes.length) :
+    bit (gather label axes) index = bit label (axes[index]'bound) := by
+  induction axes generalizing index with
+  | nil => exact False.elim (Nat.not_lt_zero _ bound)
+  | cons first rest ih =>
+    cases index with
+    | zero =>
+      rw [gather_cons]
+      simpa only [pack,Nat.pow_one,if_pos rfl] using
+        bit_pack_one (bit label first) (gather label rest) 0 (bit_lt _ _)
+    | succ index =>
+      have tailBound : index < rest.length := Nat.lt_of_succ_lt_succ bound
+      rw [gather_cons]
+      have head := bit_pack_one (bit label first) (gather label rest) (index+1) (bit_lt _ _)
+      simp only [pack,Nat.pow_one,Nat.add_one_ne_zero,if_false,Nat.add_sub_cancel] at head
+      rw [head]
+      exact ih index tailBound
+
+/-- Every caller output has this exact selected/spectator decomposition.
+No global output labels or maximum quantum vectors are enumerated. -/
+theorem scatter_gather (label : Nat) (axes : List Nat) (unique : axes.Nodup) :
+    scatter label axes (gather label axes) = label := by
+  apply bit_ext
+  intro query
+  by_cases selected : query ∈ axes
+  · obtain ⟨index,bound,same⟩ := List.getElem_of_mem selected
+    subst query
+    rw [scatter_at label (gather label axes) axes unique index bound,gather_at label axes index bound]
+  · exact scatter_outside label (gather label axes) query axes selected
+
 def pull (base : Nat) (selected : List Nat) (values : Raw.Coefficient.State) : Raw.Coefficient.State :=
   fun value => values (scatter base selected value)
 
@@ -296,6 +343,30 @@ theorem circuit_selected (dependencies : List Dependency) (base : Nat)
         (controls first (List.mem_cons_self)) (targets first (List.mem_cons_self)) values
     rw [head]
 
+/-- The actual coefficient at any full caller output equals the same literal
+local step on its selected-wire slice. Spectator amplitudes are read from the
+original joint state; this is not a tensor-factorization assumption. -/
+theorem step_output (dependencies : List Dependency) (output : Nat)
+    (selected : List Nat) (unique : selected.Nodup) (step : Step)
+    (controls : ∀ control ∈ step.controls,control.index < selected.length)
+    (targets : ∀ axis ∈ Finite.targets step.action,axis < selected.length)
+    (values : Raw.Coefficient.State) :
+    Raw.Coefficient.step dependencies (Semantics.RawTrace.localize selected step) values output =
+      Raw.Coefficient.step dependencies step (pull output selected values) (gather output selected) := by
+  simpa only [scatter_gather output selected unique] using
+    step_selected dependencies output (gather output selected) selected unique step controls targets values
+
+theorem circuit_output (dependencies : List Dependency) (output : Nat)
+    (selected : List Nat) (unique : selected.Nodup) (steps : List Step)
+    (controls : ∀ step ∈ steps,∀ control ∈ step.controls,control.index < selected.length)
+    (targets : ∀ step ∈ steps,∀ axis ∈ Finite.targets step.action,axis < selected.length)
+    (values : Raw.Coefficient.State) :
+    Raw.Coefficient.circuit dependencies (steps.map (Semantics.RawTrace.localize selected)) values output =
+      Raw.Coefficient.circuit dependencies steps (pull output selected values) (gather output selected) := by
+  have point := congrFun (circuit_selected dependencies output selected unique steps controls targets values)
+    (gather output selected)
+  simpa only [pull,scatter_gather output selected unique] using point
+
 /-- Original source identities and the same complete caller frame remain part
 of the selected forest. Only literal axis distinctness is required; no order,
 contiguity, type-width equivalence, producer table or commutation flag is used. -/
@@ -324,5 +395,21 @@ theorem Selection.stepReferences {Reference : Type} {roles state complete}
       (pull (base reference) (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) (values reference)) value) := by
   funext reference value
   exact step_selected dependencies (base reference) value _ selection.distinct step controls targets (values reference)
+
+theorem Selection.outputReferences {Reference : Type} {roles state complete}
+    (selection : @Selection roles state complete) (dependencies : List Dependency) (steps : List Step)
+    (controls : ∀ step ∈ steps,∀ control ∈ step.controls,
+      control.index < (RuntimeForestCode.forestAxes state.quantum.frame selection.selected).length)
+    (targets : ∀ step ∈ steps,∀ axis ∈ Finite.targets step.action,
+      axis < (RuntimeForestCode.forestAxes state.quantum.frame selection.selected).length)
+    (values : Reference → Raw.Coefficient.State) :
+    (fun reference output => Raw.Coefficient.circuit dependencies
+      (steps.map (Semantics.RawTrace.localize (RuntimeForestCode.forestAxes state.quantum.frame selection.selected)))
+      (values reference) output) =
+    (fun reference output => Raw.Coefficient.circuit dependencies steps
+      (pull output (RuntimeForestCode.forestAxes state.quantum.frame selection.selected) (values reference))
+      (gather output (RuntimeForestCode.forestAxes state.quantum.frame selection.selected))) := by
+  funext reference output
+  exact circuit_output dependencies output _ selection.distinct steps controls targets (values reference)
 
 end QleisliKernel.Qirf.RuntimeScatterTransport
