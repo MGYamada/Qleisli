@@ -4,13 +4,16 @@ import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.OrdinaryDomain
 import QleisliKernel.Semantics.PrimitiveOperator
 
-/-! Complete ordinary evaluation for original permutation/phase Meaning leaves.
+/-! Prepare ordinary candidates for original permutation/phase Meaning leaves.
 The actual original body is freshly traversed; only its symbolic value is
 interpreted by the independent ordinary reference. Every canonical input is
 retained, with complete nominal/tuple types and original dependency queries.
 No producer table, quantum subject, generic-audit outcome or runtime execution
-defines this request. Quantum/reference equations and source/native preservation
-remain separate obligations; this component issues no accepted handle.
+supplies these rows. The original source-tree/callee semantics correspondence
+to the freshly computed symbolic value remains unproved. Accordingly this is
+preparation only: its candidate cannot discharge a Meaning assertion. Actual
+source correspondence, quantum/reference equations and source/native preservation
+remain required; this component issues no accepted handle or admitted map.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SourceMeaningOrdinary
 open QleisliKernel Finite SourceTypes
@@ -91,7 +94,6 @@ private def readField (value : Basis × Semantics.SourceOrdinary.Expression) : W
 all of its zero-width leaves without introducing a new argument-count limit.
 The original six-bit/64-label ordinary domain bounds the Cartesian code. -/
 def readFieldCode (fields : List Field) : WorkM Layout := do
-  guard (fields.length ≤ 128) .limit
   exactWork (Exact.charge (16*(fields.length+1)))
   let (_,dimension) ← fields.foldlM (fun (width,dimension) field => do
     let width := width+field.code.bits
@@ -248,13 +250,13 @@ theorem Rows.every {sources catalogue reference original basis inputs labels}
     · subst label; exact ⟨head⟩
     · exact ih later
 
-theorem Row.reference {sources catalogue reference original basis inputs label}
+theorem Row.expression_evaluates {sources catalogue reference original basis inputs label}
     (row : @Row sources catalogue reference original basis inputs label) :
     Semantics.SourceOrdinary.Evaluates (valuation row.arguments)
       original.body.checked.summary.value row.result :=
   SourceRuntimeOrdinary.extract_sound _ _ _ row.evaluated
 
-def matrix (kind : Kind) (targets : List Nat) : Except Exact.Error Semantics.Exact.Matrix := do
+def candidateMatrix (kind : Kind) (targets : List Nat) : Except Exact.Error Semantics.Exact.Matrix := do
   let dimension := targets.length
   let entries ← (List.range (dimension*dimension)).mapM fun index => do
     let row := index / dimension
@@ -265,7 +267,7 @@ def matrix (kind : Kind) (targets : List Nat) : Except Exact.Error Semantics.Exa
       | .phase => if row == column then Semantics.PrimitiveOperator.phase target else .zero)
   Exact.Matrix.make dimension dimension entries
 
-structure Checked {sources} (catalogue : GenericCatalogue.Checked sources)
+structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources)
     (reference : SourceMeaning.ClassicalReference sources) (kind : Kind) (basis : Basis) where
   original : Original catalogue reference
   ports : reference.signature.basis = outputBasis kind basis
@@ -274,15 +276,18 @@ structure Checked {sources} (catalogue : GenericCatalogue.Checked sources)
   targetBounds : rows.targets.all (fun target => decide (target < match kind with
     | .permutation => inputs.domain.code.labels.length | .phase => 8)) = true
   permutation : kind = .permutation → rows.targets.Nodup
-  action : Semantics.Exact.Matrix
-  computed : matrix kind rows.targets = .ok action
+  candidate : Semantics.Exact.Matrix
+  candidateComputed : candidateMatrix kind rows.targets = .ok candidate
 
 /-- Fresh original source, canonical complete inputs and independent ordinary
-evaluation form this request. No Raw program or caller table is accepted here;
-an enclosing native gate must separately prove the actual Meaning equality. -/
-def read {sources} (catalogue : GenericCatalogue.Checked sources)
+EXPRESSION evaluation prepare a candidate. No theorem here connects the
+original source tree/callees to that expression, so every Meaning assertion
+remains unconsumed. A future native gate must retain that genuine source
+correspondence before it may compare an actual implementation with a Meaning.
+No Raw program, caller table or execution authority is accepted here. -/
+def prepare {sources} (catalogue : GenericCatalogue.Checked sources)
     (reference : SourceMeaning.ClassicalReference sources) (kind : Kind) (basis : Basis) :
-    WorkM (Checked catalogue reference kind basis) := do
+    WorkM (Prepared catalogue reference kind basis) := do
   let original ← readOriginal catalogue reference
   if ports : reference.signature.basis = outputBasis kind basis then
     let inputs ← readInputs original basis
@@ -296,7 +301,7 @@ def read {sources} (catalogue : GenericCatalogue.Checked sources)
     if targetBounds : rows.targets.all (fun target => decide (target < match kind with
         | .permutation => inputs.domain.code.labels.length | .phase => 8)) = true then
       if permutation : kind = .permutation → rows.targets.Nodup then
-        match computed : matrix kind rows.targets with
+        match computed : candidateMatrix kind rows.targets with
         | .error error => throw (.arithmetic error)
         | .ok action => pure ⟨original,ports,inputs,rows,targetBounds,permutation,action,computed⟩
       else throw .notIsometric

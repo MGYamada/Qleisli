@@ -1,8 +1,9 @@
 import QleisliKernel.Qirf.SourceMeaningOrdinary
 
-/-! Small complete original ordinary Meaning leaves. These controls build no
-quantum program or accepted handle. Native provider/reference equality and
-catalogue-duty consumption remain separate integration obligations.
+/-! Small ordinary expression candidates from freshly traversed source bodies.
+These controls build no quantum program, admitted Meaning or accepted handle.
+Original source-semantics correspondence, native provider/reference equality
+and catalogue-duty consumption remain separate integration obligations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.SourceMeaningOrdinary
 open QleisliKernel Finite SourceTypes Qirf
@@ -16,11 +17,11 @@ private def inspect (sources : Sources) (name : String) : WorkM Snapshot := do
   let [node] := meaning.graph.nodes | throw .request
   match node.action with
   | .permutation reference =>
-    let checked ← Qirf.SourceMeaningOrdinary.read catalogue reference .permutation node.input.basis
-    return (checked.rows.targets,checked.action.entries,checked.inputs.fields.map (·.ordinal))
+    let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .permutation node.input.basis
+    return (prepared.rows.targets,prepared.candidate.entries,prepared.inputs.fields.map (·.ordinal))
   | .phase reference =>
-    let checked ← Qirf.SourceMeaningOrdinary.read catalogue reference .phase node.input.basis
-    return (checked.rows.targets,checked.action.entries,checked.inputs.fields.map (·.ordinal))
+    let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .phase node.input.basis
+    return (prepared.rows.targets,prepared.candidate.entries,prepared.inputs.fields.map (·.ordinal))
   | _ => throw .request
 
 private def view (text name : String) : Option Snapshot :=
@@ -82,8 +83,8 @@ private def helperRows : Option Bool :=
     let meaning ← SourceMeaning.read sources (some "main") "main" "Flip"
     let [node] := meaning.graph.nodes | throw .request
     let .permutation reference := node.action | throw .request
-    let checked ← Qirf.SourceMeaningOrdinary.read catalogue reference .permutation node.input.basis
-    return checked.original.sourceRows.contains ("helper",helper) : WorkM Bool).run 10000000).1.toOption
+    let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .permutation node.input.basis
+    return prepared.original.sourceRows.contains ("helper",helper) : WorkM Bool).run 10000000).1.toOption
 
 #guard helperRows = some true
 
