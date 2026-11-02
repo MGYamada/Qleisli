@@ -98,6 +98,7 @@ impl Compiler<'_> {
                 inverse,
             })),
             source_origin: Some(self.provider_origin(key, meaning, body, module, span)?),
+            source_formal: None,
             nodes: 1,
             depth: 1,
         };

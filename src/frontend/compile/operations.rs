@@ -31,6 +31,9 @@ pub(super) struct Operation {
     /// Untrusted original provider occurrence, retained for paired source/body
     /// transport. Native receipts and whole-source equations remain separate.
     pub(super) source_origin: Option<Arc<ProviderOrigin>>,
+    /// A real original Op-formal reference keeps its declaration instance and
+    /// mixed-kind ordinal. The actual provider never substitutes for this gate.
+    pub(super) source_formal: Option<Arc<FormalOrigin>>,
     depth: usize,
     nodes: usize,
 }
@@ -59,6 +62,26 @@ impl std::fmt::Debug for ProviderOrigin {
                 "instance",
                 &self.instance.as_ref().map(|instance| instance.record),
             )
+            .finish_non_exhaustive()
+    }
+}
+
+#[derive(Clone)]
+pub(super) struct FormalOrigin {
+    pub(super) definition: Key,
+    pub(super) table: Arc<crate::frontend::resolve::locals::Table>,
+    // Nonconcrete dormant probes retain the original formal but have no actual
+    // instance. A v5 encoder must refuse those incomplete producer objects.
+    pub(super) instance: Option<Arc<super::instances::ClosedInstance>>,
+    pub(super) ordinal: usize,
+}
+
+impl std::fmt::Debug for FormalOrigin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FormalOrigin")
+            .field("definition", &self.definition)
+            .field("ordinal", &self.ordinal)
+            .field("concrete", &self.instance.is_some())
             .finish_non_exhaustive()
     }
 }
@@ -854,6 +877,7 @@ impl Compiler<'_> {
             effect,
             node: Arc::new(Node::Provider(evidence)),
             source_origin: Some(self.provider_origin(key, meaning, program, module, span)?),
+            source_formal: None,
             depth: 1,
             nodes: 1,
         };
@@ -883,6 +907,31 @@ impl Compiler<'_> {
             meaning,
             body: body.clone(),
         }))
+    }
+
+    pub(super) fn retain_source_formal(
+        &mut self,
+        mut operation: Operation,
+        owner: Key,
+        key: &BinderKey,
+        module: &str,
+        span: Span,
+    ) -> Result<Operation, CompileError> {
+        self.charge(module, span, key.name.len().saturating_mul(
+            self.source.interfaces[&owner].statics.len() + 1).saturating_add(8))?;
+        let ordinal = self.source.interfaces[&owner].statics.iter()
+            .position(|formal| formal.key == *key && matches!(formal.kind, StaticKind::Operation { .. }))
+            .ok_or_else(|| self.error(module, span, ErrorCode::InvalidIr,
+                "Op reference lost its original mixed-kind formal ordinal"))?;
+        let instance = self.concrete_context.current.as_ref()
+            .filter(|instance| instance.definition == owner).cloned();
+        operation.source_formal = Some(Arc::new(FormalOrigin {
+            definition: owner,
+            table: Arc::clone(&self.source.lexical[&owner]),
+            instance,
+            ordinal,
+        }));
+        Ok(operation)
     }
     pub(super) fn construct_closed(
         &mut self,
@@ -1011,6 +1060,7 @@ impl Compiler<'_> {
             effect,
             node: Arc::new(node),
             source_origin: None,
+            source_formal: None,
             depth,
             nodes,
         })
@@ -1073,6 +1123,7 @@ impl Compiler<'_> {
             nodes: operation.nodes + 1,
             node: Arc::new(Node::Requested(meaning, operation)),
             source_origin: None,
+            source_formal: None,
         })
     }
 }
@@ -1188,6 +1239,23 @@ impl Operation {
             (None, None) | (Some(_), Some(_)) => {}
             _ => return Ok(false),
         }
+        match (&self.source_formal, &other.source_formal) {
+            (Some(left), Some(right)) => {
+                charge(4)?;
+                if left.definition != right.definition || left.ordinal != right.ordinal
+                    || !Arc::ptr_eq(&left.table, &right.table)
+                    || match (&left.instance, &right.instance) {
+                        (Some(left), Some(right)) => !Arc::ptr_eq(left, right),
+                        (None, None) => false,
+                        _ => true,
+                    }
+                {
+                    return Ok(false);
+                }
+            }
+            (None, None) => {}
+            _ => return Ok(false),
+        }
         if !same_port_budgeted(&self.basis, &other.basis, charge)?
             || !same_port_budgeted(&self.codomain, &other.codomain, charge)?
             || !same_meaning_budgeted(self.meaning.as_ref(), other.meaning.as_ref(), charge)?
@@ -1244,7 +1312,7 @@ impl Operation {
         port_nodes(&self.basis)
             + port_nodes(&self.codomain)
             + self.meaning.as_ref().map_or(0, |m| m.entries().len())
-            + 2
+            + 3
     }
     pub(super) fn require(
         &self,
