@@ -290,3 +290,54 @@ impl Compiler<'_> {
         Ok(OperationSubject { description: Description { nodes, root: *root }, bodies })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::frontend::project::{ModuleOrigin, ProjectEdition, SourceModule};
+
+    #[cfg_attr(not(qleisli_native_tests), ignore = "native-kernel gate: requires QLEISLI_KERNEL")]
+    #[test]
+    fn direct_formal_call_retains_unused_duplicate_suppliers_and_mixed_ordinal() {
+        let source = "unitary fn phase(q:Q<Unit>)->Q<Unit>{global_phase_eighth(q)}\n\
+            unitary fn run[const n:Nat,const U:Op<Unit>,const V:Op<Unit>](q:Q<Unit>)->Q<Unit>\
+            requires Applicable(U){U(q)}\n\
+            pub unitary fn main(q:Q<Unit>)->Q<Unit>{run[3,phase,phase](q)}";
+        let project = Project {
+            edition_context: ProjectEdition::Explicit(crate::edition::Edition::E2026),
+            root: PathBuf::from("main.qli"),
+            modules: BTreeMap::from([("main".into(), SourceModule {
+                name: "main".into(), path: PathBuf::from("main.qli"), source: source.into(),
+                ast: crate::frontend::parser::parse_module(source).unwrap(),
+                imports: BTreeMap::new(), origin: ModuleOrigin::Local,
+            })]),
+        };
+        let mut compiler = crate::frontend::compile::snapshot_tests::compiler(&project);
+        let main = compiler.source.resolution.qualified("main::main").unwrap();
+        let body = crate::frontend::compile::lower::lower_function(&mut compiler, &main).unwrap();
+        let context = body.source_context().unwrap();
+        let (position, run) = &context.calls[0];
+        assert_eq!((position.start, position.count), (0, 1));
+        let (position, application) = &run.calls[0];
+        assert_eq!((position.start, position.count), (0, 1));
+        assert!(application.positions.is_empty() && application.selections.is_empty()
+            && application.calls.is_empty() && application.branches.is_empty());
+        let actual = application.operation.as_ref().unwrap();
+        assert_eq!(actual.bodies.len(), 2);
+        assert_eq!(actual.description.root, 2);
+        assert!(matches!(&actual.description.nodes[2], OperationNode::Formal {
+            module, function, naturals, operations, ordinal: 1, ..
+        } if module == "main" && function == "run" && naturals == &[("n".into(), 3)]
+            && operations == &[("U".into(), 0), ("V".into(), 1)]));
+        for index in [0, 1] {
+            assert!(matches!(&actual.description.nodes[index], OperationNode::Provider {
+                module, function, bases, naturals, operations
+            } if module == "main" && function == "phase"
+                && bases.is_empty() && naturals.is_empty() && operations.is_empty()));
+        }
+        // Equal retained evidence never erases the unused V occurrence.
+        assert!(matches!((&actual.bodies[0], &actual.bodies[1]),
+            (OriginalBody::Function { evidence: left, .. }, OriginalBody::Function { evidence: right, .. })
+                if Arc::ptr_eq(left, right)));
+    }
+}
