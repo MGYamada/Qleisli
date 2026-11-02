@@ -23,6 +23,7 @@ def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.
   let ordered ← RuntimeOwnerMap.order roles bindings
   return ordered.map (·.port)
 
+mutual
 inductive Node (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
   | primitive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
@@ -39,7 +40,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (finalBindings : Map) (returned : List Semantics.Raw.Port)
       (returnRead : RuntimeInterval.Computed (rolePorts (valueOwners source.summary.value) finalBindings) returned)
       (returnOrder : returned.map (·.token) = child.outputs)
-      (children : List (Node dependencies child childBlock)) : Node dependencies program block
+      (children : Nodes dependencies child childBlock) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -61,6 +62,16 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (expected logical : List Semantics.Exact.Matrix)
       (equations : RuntimeInterval.Computed
         (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical) : Node dependencies program block
+
+inductive Nodes (dependencies : List Semantics.Finite.Dependency) :
+    (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
+  | nil {program block} : Nodes dependencies program block
+  | cons {program block} (first : Node dependencies program block)
+      (rest : Nodes dependencies program block) : Nodes dependencies program block
+end
+
+def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
+    Nodes dependencies program block := nodes.foldr Nodes.cons Nodes.nil
 
 abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
   (program : Semantics.Observation.Program) ×
@@ -204,7 +215,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             if returnOrder : childOutputs.val.map (·.token) = actualOutputs.map (·.token) then
               return (after,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
                 nested.prepared.block nested.bindings childOutputs.val
-                (by with_reducible exact childOutputs.property) returnOrder nested.actions],
+                (by with_reducible exact childOutputs.property) returnOrder (Nodes.ofList nested.actions)],
                 obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
             else throw .request
           | .operation event =>
