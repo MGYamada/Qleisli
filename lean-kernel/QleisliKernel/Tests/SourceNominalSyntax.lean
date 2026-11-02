@@ -14,8 +14,8 @@ private def record (source : String) := do
 #guard (record "Box{second:f(q),first:(),}").toOption.map (fun checked =>
   checked.2.initializers.map (·.name.text)) = some ["second","first"]
 #guard (record "Empty{}").toOption.map (fun checked => checked.2.initializers.length) = some 0
-#guard (record "Box{first,second:()}").isError
-#guard (record "Box{first:()}extra").isError
+#guard (record "Box{first,second:()}").toOption.isNone
+#guard (record "Box{first:()}extra").toOption.isNone
 
 private def tree (source : String) := do
   let tokens ← lexLocated source

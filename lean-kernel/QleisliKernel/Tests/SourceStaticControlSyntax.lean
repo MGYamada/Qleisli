@@ -13,9 +13,9 @@ private def read (source : String) := do
 
 #guard (read "if static n==0{q}else{f[n-1](q)}").isOk
 #guard (read "if static n+1>=next[n](){h(q)}else{q}").isOk
-#guard (read "if n==0{q}else{q}").isError
-#guard (read "if static n{q}else{q}").isError
-#guard (read "if static n==0{q}else{q}q").isError
+#guard (read "if n==0{q}else{q}").toOption.isNone
+#guard (read "if static n{q}else{q}").toOption.isNone
+#guard (read "if static n==0{q}else{q}q").toOption.isNone
 #guard (read "if static n==0{q}else{q}").toOption.map (fun checked =>
   (checked.2.parts.condition.map (·.text),checked.2.parts.thenBody.map (·.text),
     checked.2.parts.elseBody.map (·.text))) = some (["n","=","=","0"],["q"],["q"])

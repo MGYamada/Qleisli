@@ -20,8 +20,8 @@ private def prepare (source : String) (n : Nat) := do
 private def body := "pub unitary fn route[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0{phase[1,n](q)}else{q}}"
 #guard ((prepare body 0).run 2000000000).1.toOption = some (false,false)
 #guard ((prepare body 2).run 2000000000).1.toOption = some (true,false)
-#guard ((prepare (body.replace "n>0" "n*n>0") 2).run 2000000000).1.isError
-#guard ((prepare (body.replace "n>0" "q==0") 0).run 2000000000).1.isError
+#guard ((prepare (body.replace "n>0" "n*n>0") 2).run 2000000000).1.toOption.isNone
+#guard ((prepare (body.replace "n>0" "q==0") 0).run 2000000000).1.toOption.isNone
 
 private def helper := "static fn next[const k:Nat]()->Nat{k+1}" ++
   "pub unitary fn route[const n:Nat](q:Q<Bit>)->Q<Bit>{if static next[n]()>1{q}else{q}}"

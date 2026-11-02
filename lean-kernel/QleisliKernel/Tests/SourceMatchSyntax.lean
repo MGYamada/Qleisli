@@ -15,10 +15,10 @@ private def read (source : String) := do
   (checked.2.parts.arms.map (·.label.member.text),checked.2.parts.arms.map (·.body.opening.isSome))) =
   some (["Off","On"],[true,false])
 #guard (read "match (Box{field:Tag::Off}).field{Tag::Off=>(),Tag::On=>()}").isOk
-#guard (read "match c{_=>q}").isError
-#guard (read "match c{Tag::Off= >q}").isError
-#guard (read "match c{Tag::Off=>q}extra").isError
-#guard (read "match c{}").isError
+#guard (read "match c{_=>q}").toOption.isNone
+#guard (read "match c{Tag::Off= >q}").toOption.isNone
+#guard (read "match c{Tag::Off=>q}extra").toOption.isNone
+#guard (read "match c{}").toOption.isNone
 
 private def tree := do
   let tokens ← lexLocated "match f(q){Tag::Off=>{g(q)},Tag::On=>h(q)}"

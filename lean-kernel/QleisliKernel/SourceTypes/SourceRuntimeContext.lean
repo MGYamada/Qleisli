@@ -148,11 +148,15 @@ structure Target (sources : Sources) (caller : String) (scope : List String)
   originalActuals : actuals.target.envelope.source = signature.original.source ∧
     actuals.target.envelope.declaration = signature.original.declaration
 
-def readTarget {sources caller callerName scope tokens}
+structure WithWritten {sources caller scope tokens} (written : StaticApplication.Syntax tokens) where
+  target : Target sources caller scope tokens
+  originalWritten : target.written = written
+
+def readTargetWithWritten {sources caller callerName scope tokens}
     (callerSignature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
     (written : StaticApplication.Syntax tokens)
     (candidate : CallName.Checked sources caller scope written.callee) :
-    Finite.WorkM (Target sources caller scope tokens) := do
+    Finite.WorkM (WithWritten (sources := sources) (caller := caller) (scope := scope) written) := do
   match selected : QuantumSignature.candidateResolution candidate with
   | none => throw .request
   | some resolution =>
@@ -169,11 +173,18 @@ def readTarget {sources caller callerName scope tokens}
           signature.original.declaration = resolution.declaration then
         if originalActuals : actuals.target.envelope.source = signature.original.source ∧
             actuals.target.envelope.declaration = signature.original.declaration then
-          return ⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
-            operationReader,actuals,operationActuals,signature,arguments,original,originalActuals⟩
+          return ⟨⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
+            operationReader,actuals,operationActuals,signature,arguments,original,originalActuals⟩,rfl⟩
         else throw .request
       else throw .request
     else throw .request
+
+def readTarget {sources caller callerName scope tokens}
+    (callerSignature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
+    (written : StaticApplication.Syntax tokens)
+    (candidate : CallName.Checked sources caller scope written.callee) :
+    Finite.WorkM (Target sources caller scope tokens) := do
+  return (← readTargetWithWritten callerSignature naturals written candidate).target
 
 def Target.sourceRows {sources caller scope tokens} (target : Target sources caller scope tokens) :
     List (String × String) :=

@@ -273,10 +273,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           -- Classification uses the original resolved name. Primitive and
           -- opaque-formal applications retain their separate unary Op rule.
           if (QuantumSignature.candidateResolution candidate).isSome then
-            let target ← readTarget signature naturals written.base.2 candidate
-            let sameBase : PLift (target.written = written.base.2) ←
-              if same : target.written = written.base.2 then
-                pure (⟨same⟩ : PLift (target.written = written.base.2)) else throw .request
+            let bound ← readTargetWithWritten signature naturals written.base.2 candidate
+            let target := bound.target
             let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
               evaluateChildren children.trees lookup.context
             -- The child is checked even when one of the original powers is
@@ -312,7 +310,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                       | .error _ => throw .request
                       | .ok (value,new,used,after) =>
                         let event : TransformEvent sources owner :=
-                          ⟨tokens,call,name,signature,naturals,scope,written,target,sameBase.down,forward,
+                          ⟨tokens,call,name,signature,naturals,scope,written,target,bound.originalWritten,forward,
                             visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
                             values,ordinal,value,new,used,after,applied,held,remaining⟩
                         return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)

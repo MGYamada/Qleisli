@@ -18,10 +18,10 @@ private def sources (actual : String := "local") : Sources :=
 
 #guard ((SourceTrace.read (sources) "main" "route").run 2000000000).1.isOk
 #guard ((SourceRuntimeTrace.read (sources) "main" "route").run 2000000000).1.isOk
-#guard ((SourceTrace.read (sources "foreign::hidden") "main" "route").run 2000000000).1.isError
-#guard ((SourceRuntimeTrace.read (sources "foreign::hidden") "main" "route").run 2000000000).1.isError
-#guard ((SourceTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.isError
-#guard ((SourceRuntimeTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.isError
+#guard ((SourceTrace.read (sources "foreign::hidden") "main" "route").run 2000000000).1.toOption.isNone
+#guard ((SourceRuntimeTrace.read (sources "foreign::hidden") "main" "route").run 2000000000).1.toOption.isNone
+#guard ((SourceTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.toOption.isNone
+#guard ((SourceRuntimeTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.toOption.isNone
 
 private def spectator : Sources :=
   #[("main","use lib::copy;unitary fn local(q:Q<Bit>)->Q<Bit>{h(q)}pub fn route(c:Bit)->Bit{copy[local](c)}"),

@@ -18,10 +18,10 @@ private def recordView (caller text : String) (scope : List String := []) := do
 
 #guard ((recordView "main" "Open{last:(),first:1}").run 10000000).1.toOption = some ["last","first"]
 #guard ((recordView "lib" "Box{hidden:(),shown:1}").run 10000000).1.toOption = some ["hidden","shown"]
-#guard ((recordView "main" "Box{hidden:(),shown:1}").run 10000000).1.isError
-#guard ((recordView "main" "Open{first:1,first:0}").run 10000000).1.isError
-#guard ((recordView "main" "Open{first:1}").run 10000000).1.isError
-#guard ((recordView "main" "Open{last:(),first:1}" ["Open"]).run 10000000).1.isError
+#guard ((recordView "main" "Box{hidden:(),shown:1}").run 10000000).1.toOption.isNone
+#guard ((recordView "main" "Open{first:1,first:0}").run 10000000).1.toOption.isNone
+#guard ((recordView "main" "Open{first:1}").run 10000000).1.toOption.isNone
+#guard ((recordView "main" "Open{last:(),first:1}" ["Open"]).run 10000000).1.toOption.isNone
 
 private def variantView (text : String) := do
   let tokens ← Finite.lift ((lexLocated text).mapError fun _ => .request)
@@ -29,7 +29,7 @@ private def variantView (text : String) := do
   let reference ← SourceNominal.readVariant sources "main" [] written
   return (reference.origin.moduleName,reference.origin.declarationName,reference.ordinal)
 #guard ((variantView "Tag::On").run 10000000).1.toOption = some ("lib","Tag",1)
-#guard ((variantView "Tag::Missing").run 10000000).1.isError
+#guard ((variantView "Tag::Missing").run 10000000).1.toOption.isNone
 
 private def projectionView (caller text : String) (alterOrigin : Bool := false) := do
   let query ← typeExpressionWithSources sources "main" ["Box"]
@@ -42,8 +42,8 @@ private def projectionView (caller text : String) (alterOrigin : Bool := false) 
   return reference.field.basis
 #guard ((projectionView "main" "value.shown").run 10000000).1.toOption = some [.bit]
 #guard ((projectionView "lib" "value.hidden").run 10000000).1.toOption = some [.unit]
-#guard ((projectionView "main" "value.hidden").run 10000000).1.isError
-#guard ((projectionView "main" "value.shown" true).run 10000000).1.isError
+#guard ((projectionView "main" "value.hidden").run 10000000).1.toOption.isNone
+#guard ((projectionView "main" "value.shown" true).run 10000000).1.toOption.isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceNominal.readVariant
 #print axioms QleisliKernel.SourceTypes.SourceNominal.readRecord
