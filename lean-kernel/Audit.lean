@@ -55,6 +55,13 @@ import QleisliKernel.Tests.SourceRuntimeNominal
 import QleisliKernel.Tests.SourceRuntimeOrdinary
 import QleisliKernel.Tests.RuntimeStructuredRoot
 import QleisliKernel.Tests.RuntimeMaterialization
+import QleisliKernel.Tests.RuntimePureBody
+import QleisliKernel.Tests.GenericCatalogue
+import QleisliKernel.Tests.SourceComputedSyntax
+import QleisliKernel.Tests.SourceRuntimeMatch
+import QleisliKernel.Tests.SourceRuntimeRecursion
+import QleisliKernel.Tests.SourceRuntimeStatic
+import QleisliKernel.Tests.ContextSectorStages
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises

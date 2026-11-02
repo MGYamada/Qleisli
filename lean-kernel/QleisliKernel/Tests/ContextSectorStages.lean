@@ -1,8 +1,8 @@
 import QleisliKernel.Tests.ContextSectorData
 
-/-! Diagnostic stages for the preserved small contextual regression.
-All observations use the unchanged ten-million-work budget. This executable
-probe records actual errors/work; it changes no expected result or limit.
+/-! Diagnostic data for the preserved small contextual regression.
+All observations use the unchanged ten-million-work budget. External observers
+may evaluate these definitions; this module changes no expected result or limit.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.ContextSectorStages
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite QleisliKernel.SourceTypes
@@ -34,12 +34,7 @@ def outcomes := mutations.map fun (label,data) =>
   (label,snapshot (ContextSector.check data order "main" "route" positions requests)
     (fun checked => checked.locals.length))
 
-#eval source
-#eval (positions.length,offsets.length)
-#eval headers
-#eval graph
-#eval complete
-#eval outcomes
-#eval controls.filter (fun control => !control.2) |>.map (·.1)
+def counts := (positions.length,offsets.length)
+def failingControls := controls.filter (fun control => !control.2) |>.map (·.1)
 
 end QleisliKernel.Tests.ContextSectorStages

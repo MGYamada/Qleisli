@@ -103,6 +103,8 @@ import QleisliKernel.Qirf.RuntimeObservationAction
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.Qirf.RuntimePureBody
+import QleisliKernel.SourceTypes.SourceComputedSyntax
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeMaterialization
 import QleisliKernel.Qirf.RuntimeProviderPaths
