@@ -63,10 +63,14 @@ private def fields (table : Table) : Nat :=
 
 def read (table : Table) (id : Nat) : WorkM (Read table id) := do
   exactWork (Exact.charge (16*(fields table+1)))
-  let some expression := lookup table id | throw .request
-  if original : lookup table id = some expression ∧ (id,expression) ∈ table then
-    return ⟨expression,original.1,original.2⟩
-  else throw .request
+  match found : table.find? (fun binding => binding.1 == id) with
+  | none => throw .request
+  | some (actual,expression) =>
+    have same : actual = id := beq_iff_eq.mp
+      (List.find?_some (p := fun binding : Nat × Expression => binding.1 == id) found)
+    have member : (id,expression) ∈ table := by
+      simpa only [same] using (List.mem_of_find?_eq_some found)
+    return ⟨expression,by simp only [lookup,found,Option.map_some],member⟩
 
 inductive Definition (table : Table) : RawExpression → Expression → Type where
   | constant (value : Bool) : Definition table (.constant value) (.bit value)
