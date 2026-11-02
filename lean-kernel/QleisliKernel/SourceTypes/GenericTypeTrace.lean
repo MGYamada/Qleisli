@@ -93,7 +93,7 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
   let subject := GenericOperation.Description.singleton (StaticHeaders.frame state.prepared.original)
     (.formal ⟨state.owner,state.name,formal.ordinal⟩)
   let duties := meanings.map fun request =>
-    (⟨origin,subject,.meaning request,[],[(0,origin)]⟩ : GenericOperation.Duty sources)
+    (⟨origin,subject,.meaning request,[],[(0,origin)],none⟩ : GenericOperation.Duty sources)
   pure ⟨ports.input.result.code,ports.output.result.code,direct effect,access,[],[],meanings,
     rows,subject,origin,duties,[(0,origin)],[]⟩
 
@@ -255,9 +255,9 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
     let inherited := actual.duties.map fun duty => {duty with bindings := duty.bindings ++ [binding]}
     let some (_,required) := definition.operations.find? (·.1 == formalName) | throw .request
     let meanings := required.meanings.map fun request =>
-      (⟨required.origin,actual.subject,.meaning request,[binding],actual.suppliers⟩ : GenericOperation.Duty sources)
+      (⟨required.origin,actual.subject,.meaning request,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)
     let access := if required.paths.applicable || required.paths.adjointable || required.paths.controllable then
-      [(⟨required.origin,actual.subject,.access required.paths,[binding],actual.suppliers⟩ : GenericOperation.Duty sources)]
+      [(⟨required.origin,actual.subject,.access required.paths,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)]
       else []
     pure (inherited ++ meanings ++ access)
   let basisArguments ← target.header.formals.foldlM (fun arguments formal => do
@@ -330,7 +330,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
           effect := direct .unitary,paths := ⟨child.paths.adjointable,child.paths.applicable,child.paths.controllable⟩,
           needs := child.needs ++ [⟨child.effect,.unitary,false⟩],
           subject := child.subject.unary .inverse,origin := {origin with rows := child.rows},
-          duties := child.duties ++ [⟨origin,child.subject,.access ⟨false,true,false⟩,[],child.suppliers⟩]}
+          duties := child.duties ++ [⟨origin,child.subject,.access ⟨false,true,false⟩,[],child.suppliers,none⟩]}
       | ["controlled"],[child] =>
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
@@ -344,7 +344,8 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
         let (count,rows) ← operationCount state scope count.tokens
-        pure {child with rows := child.rows ++ rows,subject := child.subject.unary (fun index => .power index count),
+        pure {child with
+          rows := child.rows ++ rows,subject := child.subject.unary (fun index => .power index count),
           origin := {origin with rows := child.rows ++ rows}}
       | ["then_op"],[left,right] =>
         let left ← next none left.tokens
@@ -378,10 +379,11 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         let _ ← SymbolicTypes.equate state child.input input.code
         let _ ← SymbolicTypes.equate state child.output output.code
         let origin := {origin with rows := child.rows ++ selected.request.sourceRows}
-        pure {child with meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows,
+        pure {child with
+          meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows,
           subject := child.subject.unary (fun index =>
             .requested index selected.request.moduleName selected.request.declarationName),origin,
-          duties := child.duties ++ [⟨origin,child.subject,.meaning selected.request,[],child.suppliers⟩]}
+          duties := child.duties ++ [⟨origin,child.subject,.meaning selected.request,[],child.suppliers,none⟩]}
       | _,_ => throw .request
     else
       let written ← adapt (StaticApplication.readSyntax tokens)
@@ -615,7 +617,7 @@ private def selection {sources} (modules : Option (SourceModules.Prepared source
     needs := arms.flatMap (fun (_,operation) => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
     meanings := arms.flatMap (·.2.meanings),
     duties := arms.flatMap (fun (_,operation) => operation.duties ++
-      [⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,[],operation.suppliers⟩]),
+      [⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,[],operation.suppliers,none⟩]),
     applications := arms.flatMap (·.2.applications),
     rows := arms.flatMap (fun (label,operation) => label.sourceRows ++ operation.rows)}
 
@@ -739,7 +741,7 @@ private def applyOperation {sources} (modules : Option (SourceModules.Prepared s
   pure {
     value,remaining,effect := op.effect,quantumUse := true,references := op.references,
     needs := op.needs,meanings := op.meanings,rows := op.rows,
-    duties := op.duties ++ [⟨op.origin,op.subject,.access ⟨true,false,false⟩,[],op.suppliers⟩],
+    duties := op.duties ++ [⟨op.origin,op.subject,.access ⟨true,false,false⟩,[],op.suppliers,none⟩],
     applications := op.applications}
 
 private def quantumGroup (value : Value) : Bool :=
@@ -973,7 +975,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           logical.toList.flatMap (fun operation => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
         meanings := region.meanings ++ logical.toList.flatMap (·.meanings),
         duties := region.duties ++ logical.toList.flatMap (fun operation => operation.duties ++
-          [⟨operation.origin,operation.subject,.access ⟨true,false,false⟩,[],operation.suppliers⟩]),
+          [⟨operation.origin,operation.subject,.access ⟨true,false,false⟩,[],operation.suppliers,none⟩]),
         applications := region.applications ++ logical.toList.flatMap (·.applications),
         computedObligations := region.computedObligations ++ [obligation],
         rows := predicate.rows ++ logical.toList.flatMap (·.rows) ++ region.rows}
