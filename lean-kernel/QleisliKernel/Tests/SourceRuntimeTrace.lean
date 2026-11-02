@@ -94,8 +94,29 @@ private def unusedAliasRows :=
 #guard (read "use std::state::reset;pub unitary fn route(q:Q<Bit>)->Q<Bit>{reset(q)}").isNone
 #guard (read "pub unitary fn route(q:Q<Bit>)->Q<Bit>{basis q as b{let u=unit(());finish(u);b}}").isNone
 
+private def branchPermutation :=
+  "pub unitary fn route(c:Bit,a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){if c{(a,h(b))}else{(b,h(a))}}"
+#guard view branchPermutation = some ([2,3],[1,0],.unitary)
+#guard ((read branchPermutation).map fun checked => checked.events.all fun event => match event with
+  | .conditional branch left right =>
+    branch.phis.map (fun phi => (phi.output.ordinal,phi.thenOwner.ordinal,phi.elseOwner.ordinal)) ==
+      [(2,0,1),(3,1,0)] && left.length == 1 && right.length == 1
+  | _ => false) = some true
+#guard view "pub unitary fn route(q:Q<Bit>)->Q<Bit>{if 1{h(q)}else{q}}" = some ([1],[0],.unitary)
+#guard (read "use std::state::reset;pub unitary fn route(q:Q<Bit>)->Q<Bit>{if 1{q}else{reset(q)}}").isNone
+#guard (read "pub observe fn route(c:Bit,q:Q<Bit>)->(Bit,Q<Bit>){let b=if c{let q=h(q);0}else{0};(b,q)}").isNone
+#guard (read "pub unitary fn route(c:Bit,a:Q<Bit>,b:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){if c{(a,b)}else{(b,a)}}").isNone
+#guard (read "pub unitary fn route(c:Bit,a:Q<Unit>,b:Q<Bits<0>>)->(Q<Unit>,Q<Bits<0>>){if c{(a,b)}else{(b,a)}}").isNone
+#guard view "pub fn route(c:Bit)->(Bit,Bit){let b=if c{let c=not c;c}else{c};(b,c)}" = some ([],[],.unitary)
+#guard ((read "pub fn route(c:Bit)->(Bit,Bit){let b=if c{let c=not c;c}else{c};(b,c)}").map fun checked =>
+  (ordinary checked.summary.value).map Prod.snd) = some
+    [.choose (.input 0) (.not (.input 0)) (.input 0),.input 0]
+#guard view "pub unitary fn route(c:Bit,q:Q<Bit>)->Q<Bit>{basis q as b{if c{b}else{not b}}}" =
+  some ([0],[],.unitary)
+
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.completeOwnerHistory
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.effectAssertion
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.Checked.unitaryNoObservation
+#print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.readBranchSource
 end QleisliKernel.Tests.SourceRuntimeTrace

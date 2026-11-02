@@ -38,9 +38,16 @@ inductive Atom where
 
 abbrev Value := List Atom
 
+inductive BindingOrigin where
+  | parameter (ordinal : Nat)
+  | letBinding (offset : Nat)
+  | basis (offset : Nat)
+  deriving BEq, DecidableEq, Repr
+
 structure Cell where
   name : String
   value : Value
+  origin : BindingOrigin
   deriving BEq, DecidableEq, Repr
 
 abbrev Environment := List Cell
@@ -123,7 +130,7 @@ def seedValues {sources : Sources} (parameters : List (RuntimeSignature.Part sou
     if !rest.isEmpty then throw "runtime source parameter has trailing type nodes"
     return (values ++ [value],owner,ordinary)) ([],0,0)
 
-private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
+private def bindNode (origin : BindingOrigin) : Nat → QuantumMoves.Term → Value → Environment →
     Except String (QuantumMoves.Term × Value × Environment) :=
   Nat.rec (fun _ _ _ => throw "runtime source pattern nesting")
     (fun _ recurse term value environment => do
@@ -133,7 +140,7 @@ private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
         let (selected,tail) ← splitValue value
         if environment.any (fun cell => cell.name == name && !(valueOwners cell.value).isEmpty) then
           throw "shadowing a live runtime quantum binding"
-        return (rest,tail,⟨name,selected⟩ :: environment.filter (·.name != name))
+        return (rest,tail,⟨name,selected,origin⟩ :: environment.filter (·.name != name))
       | .wildcard =>
         let (selected,tail) ← splitValue value
         if !(valueOwners selected).isEmpty then throw "implicit runtime quantum discard"
@@ -144,21 +151,22 @@ private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
         (List.range count).foldlM (fun (term,value,current) _ => recurse term value current)
           (rest,tail,environment))
 
-def bind (pattern : List String) (value : Value) (environment : Environment) : Except String Environment := do
+def bind (pattern : List String) (value : Value) (environment : Environment)
+    (origin : BindingOrigin := .letBinding 0) : Except String Environment := do
   let term ← QuantumMoves.parse 65 pattern
   let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
   if !decide names.Nodup then throw "duplicate binding in one runtime pattern"
-  let (term,value,result) ← bindNode 65 term value environment
+  let (term,value,result) ← bindNode origin 65 term value environment
   if !term.isEmpty || !value.isEmpty || result.length > 128 then throw "incomplete runtime source binding"
   return result
 
 def seed (patterns : List (List String)) (values : List Value) : Except String Environment := do
   if patterns.length != values.length then throw "runtime source parameter count"
-  (patterns.zip values).foldlM (fun environment (pattern,value) => do
+  ((patterns.zip values).zipIdx).foldlM (fun environment ((pattern,value),index) => do
     let term ← QuantumMoves.parse 65 pattern
     let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
     if names.any (fun name => environment.any (·.name == name)) then throw "duplicate runtime parameter binding"
-    bind pattern value environment) []
+    bind pattern value environment (.parameter index)) []
 
 def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := do
   let some actual := actuals[owner.ordinal]? | throw "runtime call owner ordinal"

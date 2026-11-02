@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.SourceTrace
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.SourceOperationApplication
 import QleisliKernel.SourceTypes.SourceBasisFunction
+import QleisliKernel.SourceTypes.SourceRuntimeBranches
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -244,7 +245,8 @@ structure BasisEvent (sources : Sources) (caller : String) where
   inputTypes : List Semantics.FiniteCarrier.Basis
   outputBasis : Semantics.FiniteCarrier.Basis
   function : SourceBasisFunction.Checked input.basis outputBasis inputTypes bodyValue
-  bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore = .ok bodyInitial
+  bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore
+    (.basis written.parts.keyword.span.startByte) = .ok bodyInitial
   bodyCalls : List Nat
   originalCalls : bodyTree.calls = .ok bodyCalls
   bodyEffect : Semantics.Raw.Effect
@@ -255,6 +257,40 @@ structure BasisEvent (sources : Sources) (caller : String) where
   held : List Semantics.SourceOwners.Owner
   remaining : Environment
   staticRows : List (String × String)
+
+structure Arm (sources : Sources) (caller : String) (before : Environment) (tokens : List LocatedToken) where
+  tree : SourceSyntax.Tree tokens
+  value : Value
+  remaining : Environment
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  nextOrdinal : Nat
+  balanced : (owners before ++ allocated).Perm (valueOwners value ++ owners remaining ++ consumed)
+  inferredEffect : Semantics.Raw.Effect
+  quantumUse : Bool
+  staticRows : List (String × String)
+  calls : List Nat
+  originalCalls : tree.calls = .ok calls
+
+structure BranchEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceControlSyntax.CheckedConditional tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  condition : Expression
+  before : Environment
+  nextOrdinal : Nat
+  thenArm : Arm sources caller before written.parts.thenBody
+  elseArm : Arm sources caller before written.parts.elseBody
+  remaining : Environment
+  thenOuter : SourceRuntimeBranches.outer before thenArm.remaining = .ok remaining
+  elseOuter : SourceRuntimeBranches.outer before elseArm.remaining = .ok remaining
+  value : Value
+  phis : List SourceRuntimeBranches.Phi
+  merged : SourceRuntimeBranches.merge condition thenArm.value elseArm.value elseArm.nextOrdinal = .ok (value,phis)
+  held : List Semantics.SourceOwners.Owner
 
 inductive Event (sources : Sources) (caller : String) where
   | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
@@ -267,6 +303,7 @@ inductive Event (sources : Sources) (caller : String) where
   | named (event : NamedEvent sources caller)
   | operation (event : SourceOperationApplication.Event sources caller)
   | basis (event : BasisEvent sources caller)
+  | conditional (event : BranchEvent sources caller) (thenEvents elseEvents : List (Event sources caller))
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -275,19 +312,39 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .named event => some event.call.calleeOffset
   | .operation event => some event.call.calleeOffset
   | .basis _ => none
+  | .conditional .. => none
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
-  match event with | .basis event => event.bodyCalls | _ => event.callOffset.toList
+  match event with
+  | .basis event => event.bodyCalls
+  | .conditional event .. => event.thenArm.calls ++ event.elseArm.calls
+  | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
   | .selection _ parsed .. => some parsed.keyword.span.startByte
   | _ => none
+
+def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List Nat :=
+  match event with
+  | .conditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
+      QuantumSequence.originalOffsets event.written.parts.elseBody
+  | _ => event.qmatchOffset.toList
+
+def Event.offset {sources caller} : Event sources caller → Nat
+  | .selection _ parsed .. => parsed.keyword.span.startByte
+  | .primitive event => event.call.calleeOffset
+  | .phase event => event.call.calleeOffset
+  | .named event => event.call.calleeOffset
+  | .operation event => event.call.calleeOffset
+  | .basis event => event.written.parts.keyword.span.startByte
+  | .conditional event .. => event.written.parts.keyword.span.startByte
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
   | .named event => event.effect
   | .operation event => event.effect
   | .basis event => event.function.effect
+  | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
@@ -296,6 +353,7 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
       (!event.target.signature.original.parsedHeader.ordinaryOnly &&
         event.target.signature.original.parsedHeader.effect.isSome) || event.canonical.quantumUse
     else event.canonical.quantumUse
+  | .conditional event .. => event.thenArm.quantumUse || event.elseArm.quantumUse
   | _ => true
 
 def Event.staticRows {sources caller} : Event sources caller → List (String × String)
@@ -305,6 +363,7 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .named event => event.canonical.staticRows
   | .operation event => event.naturals.sourceRows ++ event.operation.rows
   | .basis event => event.staticRows
+  | .conditional event .. => event.naturals.sourceRows ++ event.thenArm.staticRows ++ event.elseArm.staticRows
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary

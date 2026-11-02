@@ -104,7 +104,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           16*(environmentCells first.remaining+first.value.length+1)*(pattern.length+1)))
         let names ← adapt (boundNames pattern)
         Finite.guard (names.all fun name => !naturals.staticNames.contains name) .request
-        let after ← adapt (SourceRuntimeValues.bind (pattern.map (·.text)) first.value first.remaining)
+        let after ← adapt (SourceRuntimeValues.bind (pattern.map (·.text)) first.value first.remaining
+          (.letBinding statement.statement.keyword.span.startByte))
         let (last,context) ← recurse naturals held (names ++ scope) first.nextOrdinal after rest context
         return (← outcome environment last.value last.remaining (first.allocated ++ last.allocated)
           (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events)
@@ -171,7 +172,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let ordinaryBefore := inputResult.remaining.filter (fun cell => (valueOwners cell.value).isEmpty)
         let names ← adapt (boundNames written.parts.pattern)
         Finite.guard (names.all fun name => !naturals.staticNames.contains name) .request
-        match bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) bound ordinaryBefore with
+        match bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) bound ordinaryBefore
+            (.basis written.parts.keyword.span.startByte) with
         | .error _ => throw .request
         | .ok bodyInitial =>
           let (body,context) ← recurse naturals (held ++ owners inputResult.remaining)
@@ -196,7 +198,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               let after := inputResult.nextOrdinal+fresh.length
               -- The bound value is reconstructed independently by the finite
               -- checker. Transport only its equality into the original pattern.
-              have seeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore = .ok bodyInitial := by
+              have seeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore
+                  (.basis written.parts.keyword.span.startByte) = .ok bodyInitial := by
                 simpa only [sameBound.down] using bodySeeded
               let staticRows ← SourceTrace.retainStaticRows (naturals.sourceRows ++ body.staticRows)
               match originalCalls : bodyTree.calls with
@@ -211,7 +214,55 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   (inputResult.events ++ [.basis event]) (inputResult.staticRows ++ staticRows),context)
             else throw .request
           else throw .request
-      | .conditional .. => throw .request
+      | .conditional written conditionTree thenTree elseTree =>
+        let (condition,context) ← recurse naturals held scope nextOrdinal environment conditionTree context
+        let [.ordinary conditionType conditionValue] := condition.value | throw .request
+        Finite.guard (conditionType == [.bit]) .request
+        let (left,context) ← recurse naturals held scope condition.nextOrdinal condition.remaining thenTree context
+        let (right,context) ← recurse naturals held scope left.nextOrdinal condition.remaining elseTree context
+        let cells := condition.remaining.length+left.remaining.length+right.remaining.length+
+          left.value.length+right.value.length
+        Finite.exactWork (Exact.charge (32*(cells+1)*(environmentCells condition.remaining+
+          environmentCells left.remaining+environmentCells right.remaining+valueFields left.value+
+          valueFields right.value+1)))
+        match thenOuter : SourceRuntimeBranches.outer condition.remaining left.remaining with
+        | .error _ => throw .request
+        | .ok remaining =>
+          match elseOuter : SourceRuntimeBranches.outer condition.remaining right.remaining with
+          | .error _ => throw .request
+          | .ok other =>
+            let same : PLift (other = remaining) ← if same : other = remaining then pure ⟨same⟩ else throw .request
+            have elseOuter : SourceRuntimeBranches.outer condition.remaining right.remaining = .ok remaining := by
+              simpa only [same.down] using elseOuter
+            match merged : SourceRuntimeBranches.merge conditionValue left.value right.value right.nextOrdinal with
+            | .error _ => throw .request
+            | .ok (value,phis) =>
+              match thenCalls : thenTree.calls with
+              | .error _ => throw .request
+              | .ok leftCalls =>
+                match elseCalls : elseTree.calls with
+                | .error _ => throw .request
+                | .ok rightCalls =>
+                  Finite.guard (left.events.flatMap Event.callOffsets == leftCalls &&
+                    right.events.flatMap Event.callOffsets == rightCalls &&
+                    left.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets written.parts.thenBody &&
+                    right.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets written.parts.elseBody) .request
+                  let leftArm : Arm sources owner condition.remaining written.parts.thenBody :=
+                    ⟨thenTree,left.value,left.remaining,left.allocated,left.consumed,left.nextOrdinal,left.balanced,
+                      inferredEffect left.events,left.events.any Event.quantumUse,left.staticRows,leftCalls,thenCalls⟩
+                  let rightArm : Arm sources owner condition.remaining written.parts.elseBody :=
+                    ⟨elseTree,right.value,right.remaining,right.allocated,right.consumed,right.nextOrdinal,right.balanced,
+                      inferredEffect right.events,right.events.any Event.quantumUse,right.staticRows,rightCalls,elseCalls⟩
+                  let event : BranchEvent sources owner :=
+                    ⟨tokens,written,name,signature,naturals,scope,conditionValue,condition.remaining,condition.nextOrdinal,
+                      leftArm,rightArm,remaining,thenOuter,elseOuter,value,phis,merged,held⟩
+                  let introduced := left.allocated ++ right.allocated ++ phis.map (·.output)
+                  let retired := SourceRuntimeBranches.retired condition.remaining remaining ++
+                    left.allocated ++ right.allocated
+                  return (← outcome environment value remaining (condition.allocated ++ introduced)
+                    (condition.consumed ++ retired) (right.nextOrdinal+phis.length)
+                    (condition.events ++ [.conditional event left.events right.events])
+                    (condition.staticRows ++ left.staticRows ++ right.staticRows),context)
       | .call call children =>
         if SourceOperationApplication.selected signature.operationNames call.call.callee then
           let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
@@ -328,9 +379,9 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                   if issued : result.allocated.map (·.ordinal) =
                       (List.range result.allocated.length).map (nextOwner+·) then
                     if ordinalCount : result.nextOrdinal = nextOwner+result.allocated.length then
-                      Finite.guard (result.events.filterMap Event.qmatchOffset == QuantumSequence.originalOffsets tokens) .request
+                      Finite.guard (result.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets tokens) .request
                       Finite.guard (decide ((QuantumSequence.originalOffsets tokens).Nodup)) .request
-                      Finite.guard ((result.events.filterMap Event.qmatchOffset).length ≤ 128) .limit
+                      Finite.guard ((result.events.flatMap Event.qmatchOffsets).length ≤ 128) .limit
                       let calls ← adapt tree.calls
                       Finite.guard (result.events.flatMap Event.callOffsets == calls) .request
                       Finite.guard (decide calls.Nodup) .request
@@ -411,6 +462,54 @@ def readBasisSource {sources caller} (event : BasisEvent sources caller) :
   Finite.guard (body.value == event.bodyValue && inferredEffect body.events == .unitary &&
     !(body.events.any Event.quantumUse) && body.allocated.isEmpty && body.consumed.isEmpty) .request
   return body
+
+structure BranchBodies {sources caller} (event : BranchEvent sources caller) where
+  thenResult : Outcome sources caller event.before
+  elseResult : Outcome sources caller event.before
+  thenValue : thenResult.value = event.thenArm.value
+  elseValue : elseResult.value = event.elseArm.value
+  thenEffect : inferredEffect thenResult.events = event.thenArm.inferredEffect
+  elseEffect : inferredEffect elseResult.events = event.elseArm.inferredEffect
+  thenRemaining : thenResult.remaining = event.thenArm.remaining
+  elseRemaining : elseResult.remaining = event.elseArm.remaining
+  thenAllocated : thenResult.allocated = event.thenArm.allocated
+  elseAllocated : elseResult.allocated = event.elseArm.allocated
+  thenConsumed : thenResult.consumed = event.thenArm.consumed
+  elseConsumed : elseResult.consumed = event.elseArm.consumed
+  thenOrdinal : thenResult.nextOrdinal = event.thenArm.nextOrdinal
+  elseOrdinal : elseResult.nextOrdinal = event.elseArm.nextOrdinal
+
+/-- Both original branches are recovered under the same original environment.
+The second branch uses a disjoint issued-identity interval; no condition value
+selects or suppresses an original effect, type check or owner obligation. -/
+def readBranchSource {sources caller} (event : BranchEvent sources caller) :
+    Finite.WorkM (BranchBodies event) := do
+  let readCallee := fun {owner name} (callee : Signature sources owner name) => do
+    return (← readNested sources (SourceTrace.sourceFuel sources) [(caller,event.callerName)] callee).summary
+  let (left,_) ← evalWithReader event.signature readCallee
+    (event.written.parts.thenBody.length+1) event.naturals event.held event.scope event.nextOrdinal
+    event.before event.thenArm.tree {}
+  let (right,_) ← evalWithReader event.signature readCallee
+    (event.written.parts.elseBody.length+1) event.naturals event.held event.scope left.nextOrdinal
+    event.before event.elseArm.tree {}
+  Finite.exactWork (Exact.charge (32*(valueFields left.value+valueFields right.value+
+    valueFields event.thenArm.value+valueFields event.elseArm.value+left.events.length+right.events.length+
+    environmentCells left.remaining+environmentCells right.remaining+
+    environmentCells event.thenArm.remaining+environmentCells event.elseArm.remaining+
+    Raw.OwnerFlow.fields (left.allocated ++ right.allocated ++ left.consumed ++ right.consumed ++
+      event.thenArm.allocated ++ event.elseArm.allocated ++ event.thenArm.consumed ++ event.elseArm.consumed)+1)))
+  if checked : left.value = event.thenArm.value ∧ right.value = event.elseArm.value ∧
+      inferredEffect left.events = event.thenArm.inferredEffect ∧
+      inferredEffect right.events = event.elseArm.inferredEffect ∧
+      left.remaining = event.thenArm.remaining ∧ right.remaining = event.elseArm.remaining ∧
+      left.allocated = event.thenArm.allocated ∧ right.allocated = event.elseArm.allocated ∧
+      left.consumed = event.thenArm.consumed ∧ right.consumed = event.elseArm.consumed ∧
+      left.nextOrdinal = event.thenArm.nextOrdinal ∧ right.nextOrdinal = event.elseArm.nextOrdinal then
+    let ⟨thenValue,elseValue,thenEffect,elseEffect,thenRemaining,elseRemaining,thenAllocated,
+      elseAllocated,thenConsumed,elseConsumed,thenOrdinal,elseOrdinal⟩ := checked
+    return ⟨left,right,thenValue,elseValue,thenEffect,elseEffect,thenRemaining,elseRemaining,
+      thenAllocated,elseAllocated,thenConsumed,elseConsumed,thenOrdinal,elseOrdinal⟩
+  else throw .request
 
 theorem Checked.effectAssertion {sources owner name} (checked : Checked sources owner name) :
     SourceEffect.permits checked.signature.original.parsedHeader.effect checked.summary.inferredEffect = true :=

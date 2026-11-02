@@ -143,7 +143,8 @@ def read (input output : Basis) (inputTypes : List Basis) (value : Value) : Fini
   match seeded : boundValue input with
   | .error _ => throw .request
   | .ok (bound,boundTypes) =>
-    Finite.exactWork (Exact.charge (32*(valueFields value+1)^2))
+    let nodes := value.length+((ordinary value).map fun (_,term) => expressionSize term).sum
+    Finite.exactWork (Exact.charge (32*(nodes+1)*(valueFields value+1)))
     match variablesRead : variables inputTypes boundTypes value with
     | .error _ => throw .request
     | .ok variables =>

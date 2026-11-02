@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check both original ordinary `if` arms and retain explicit, fully typed owner
+  phis, including differing valid return permutations and zero-width owners.
+  Authenticate lexical binder origins so an identically named local cannot
+  restore a moved outer owner. Join both effects, preserve ordinary block scope
+  and retain every nested source call/selection. Native condition, SSA/history
+  and actual branch/phi correspondence remain separate required continuations.
 - Traverse original coherent `basis` bodies through the shared ordinary source
   evaluator. Check every finite coherent input and captured ordinary valuation
   for injectivity, retaining exact nominal/tuple types, phase-fixed basis maps
