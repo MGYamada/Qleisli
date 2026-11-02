@@ -54,6 +54,9 @@ structure Boundary {sources owner name signature}
     (OrdinaryFamily.storageIds ((RuntimeFamily.outputValues request).map (·.2))) root.program.classicalOutputs
   annotation : RuntimeFamily.annotationAllowed signature.original.parsedHeader.effect
     signature.original.declaration.isPublic (RuntimeSourceBoundary.summary body).quantumUse request.publicEffect = true
+  originalEffect : SourceEffect.rank (RuntimeSourceBoundary.summary body).generic.inferredEffect ≤
+    SourceEffect.rank request.publicEffect
+  actualEffect : SourceEffect.rank root.program.effect ≤ SourceEffect.rank request.publicEffect
   domain : OrdinaryDomain.Checked ((RuntimeFamily.inputValues request).map (·.1))
   inputRows : request.inputRows = OrdinaryDomain.assignments domain
 
@@ -98,13 +101,18 @@ def readBoundary {sources owner name signature}
                     if annotation : RuntimeFamily.annotationAllowed signature.original.parsedHeader.effect
                         signature.original.declaration.isPublic (RuntimeSourceBoundary.summary body).quantumUse
                         request.publicEffect = true then
-                      let domain ← OrdinaryDomain.read ((RuntimeFamily.inputValues request).map (·.1))
-                      if inputRows : request.inputRows = OrdinaryDomain.assignments domain then
-                        return ⟨moduleName,declarationName,externalActuals,arguments,selection,
-                          parameterTypes,resultType,inputs,owners,outputs,
-                          by simpa only [inputIds] using ordinaryInputs.property,
-                          by simpa only [outputIds] using ordinaryOutputs.property,
-                          annotation,domain,inputRows⟩
+                      if originalEffect : SourceEffect.rank (RuntimeSourceBoundary.summary body).generic.inferredEffect ≤
+                          SourceEffect.rank request.publicEffect then
+                        if actualEffect : SourceEffect.rank root.program.effect ≤ SourceEffect.rank request.publicEffect then
+                          let domain ← OrdinaryDomain.read ((RuntimeFamily.inputValues request).map (·.1))
+                          if inputRows : request.inputRows = OrdinaryDomain.assignments domain then
+                            return ⟨moduleName,declarationName,externalActuals,arguments,selection,
+                              parameterTypes,resultType,inputs,owners,outputs,
+                              by simpa only [inputIds] using ordinaryInputs.property,
+                              by simpa only [outputIds] using ordinaryOutputs.property,
+                              annotation,originalEffect,actualEffect,domain,inputRows⟩
+                          else throw .request
+                        else throw .request
                       else throw .request
                     else throw .request
                   else throw .request
