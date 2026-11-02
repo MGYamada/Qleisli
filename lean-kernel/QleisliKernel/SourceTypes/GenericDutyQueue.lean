@@ -180,6 +180,70 @@ private def originalDuties {sources} (catalogue : GenericCatalogue.Checked sourc
     | .application _ => none
     | .duty original => some ⟨index,original,selected⟩
 
+private def headerDuties {sources} (catalogue : GenericCatalogue.Checked sources)
+    (record : RecordIndex catalogue) : List (DutyAt catalogue record) :=
+  (originalDuties catalogue record).filter fun candidate =>
+    candidate.original.kind.formal?.isSome && candidate.original.bindings.isEmpty
+
+/-- Only original occurrence resolution and original header projections are
+shared. No instance substitution, closed status or native proof is cached. -/
+structure PreparedApplication {sources} (catalogue : GenericCatalogue.Checked sources)
+    (record : RecordIndex catalogue) where
+  application : ApplicationAt catalogue record
+  target : Target application
+  headers : List (DutyAt catalogue target.entry.index)
+  originalHeaders : headers = headerDuties catalogue target.entry.index
+
+structure PreparedRecord {sources} (catalogue : GenericCatalogue.Checked sources)
+    (record : RecordIndex catalogue) where
+  calls : List (PreparedApplication catalogue record)
+  every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index)
+
+private def prepareRecord {sources} (catalogue : GenericCatalogue.Checked sources)
+    (record : RecordIndex catalogue) : WorkM (PreparedRecord catalogue record) := do
+  reserveActivities (activities catalogue record)
+  let calls ← (originalApplications catalogue record).mapM fun application => do
+    let target ← readTarget application
+    reserveActivities (activities catalogue target.entry.index)
+    return (⟨application,target,headerDuties catalogue target.entry.index,rfl⟩ :
+      PreparedApplication catalogue record)
+  if every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index) then
+    return ⟨calls,every⟩
+  else throw .request
+
+structure PreparedRow {sources} (catalogue : GenericCatalogue.Checked sources) where
+  record : RecordIndex catalogue
+  value : PreparedRecord catalogue record
+  computed : ∃ before after,(prepareRecord catalogue record).run before = (.ok value,after)
+
+structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) where
+  records : List (PreparedRow catalogue)
+  every : records.map (·.record) = List.finRange catalogue.records.length
+
+private def prepare {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Prepared catalogue) := do
+  exactWork (Exact.charge (16*(catalogue.records.length+1)^2))
+  let records ← (List.finRange catalogue.records.length).mapM fun record => do
+    let value ← NaturalAffine.witness (prepareRecord catalogue record)
+    return (⟨record,value.val,by with_reducible exact value.property⟩ : PreparedRow catalogue)
+  if every : records.map (·.record) = List.finRange catalogue.records.length then
+    return ⟨records,every⟩
+  else throw .request
+
+private def preparedRecord {sources catalogue} (prepared : @Prepared sources catalogue)
+    (record : RecordIndex catalogue) : WorkM (PreparedRecord catalogue record) := do
+  exactWork (Exact.charge (8*(prepared.records.length+1)))
+  let some selected := prepared.records[record.val]? | throw .request
+  if same : selected.record = record then
+    return same ▸ selected.value
+  else throw .request
+
+private def preparedCall {sources catalogue record} (prepared : @PreparedRecord sources catalogue record)
+    (index : Fin (activities catalogue record).length) :
+    WorkM {selected : PreparedApplication catalogue record // selected.application.index = index} := do
+  exactWork (Exact.charge (8*(prepared.calls.length+1)))
+  let some selected := prepared.calls.find? (·.application.index.val == index.val) | throw .request
+  if same : selected.application.index = index then return ⟨selected,same⟩ else throw .request
+
 /-- This is a reference to the one instance-bound callee-header demand. The
 caller-side premise occurrence remains retained, including its original actual
 binding, while the header's transformed subject is read exactly once there. -/
@@ -203,22 +267,27 @@ def HeaderReference.id {sources catalogue record invocation}
     .header reference.header.original.kind⟩
 
 private def readHeaderReference {sources catalogue record}
-    (invocation : @Invocation sources catalogue record) (source : DutyAt catalogue record) :
-    WorkM (HeaderReference invocation) := do
-  reserveActivities (activities catalogue record)
+    (invocation : @Invocation sources catalogue record) (source : DutyAt catalogue record)
+    (prepared : PreparedRecord catalogue record) : WorkM (HeaderReference invocation) := do
+  exactWork (Exact.charge (16*(source.original.bindings.length+1)*
+    (activityFields (.duty source.original)+1)))
   match supplied : source.original.bindings.find? (bindingMatches source.original.kind) with
   | none => throw .request
   | some binding =>
     match bound : binding.application with
     | none => throw .request
     | some application =>
-      let matching := (originalApplications catalogue record).filter fun candidate =>
-        decide (SameOccurrence candidate.original application)
-      let [occurrence] := matching | throw .request
+      let fields := (prepared.calls.map fun candidate => applicationFields candidate.application.original).sum
+      exactWork (Exact.charge (16*(fields+prepared.calls.length*(applicationFields application+1)+1)))
+      let matching := prepared.calls.filter fun candidate =>
+        decide (SameOccurrence candidate.application.original application)
+      let [selected] := matching | throw .request
+      let occurrence := selected.application
+      let target := selected.target
       if same : SameOccurrence occurrence.original application then
-        let target ← readTarget occurrence
-        reserveActivities (activities catalogue target.entry.index)
-        let matching := (originalDuties catalogue target.entry.index).filter fun candidate =>
+        let fields := (selected.headers.map fun candidate => activityFields (.duty candidate.original)).sum
+        exactWork (Exact.charge (16*(fields+selected.headers.length*(activityFields (.duty source.original)+1)+1)))
+        let matching := selected.headers.filter fun candidate =>
           candidate.original.kind == source.original.kind && candidate.original.bindings.isEmpty
         let [header] := matching | throw .request
         if originalKind : header.original.kind = source.original.kind then
@@ -247,10 +316,11 @@ def Item.unresolved {sources catalogue} : @Item sources catalogue → Bool
   | .pendingRecursion .. => true
   | _ => false
 
-private def expand {sources} (catalogue : GenericCatalogue.Checked sources) :
+private def expand {sources} (catalogue : GenericCatalogue.Checked sources) (prepared : Prepared catalogue) :
     Nat → (record : RecordIndex catalogue) → Invocation catalogue record → WorkM (List (Item catalogue)) :=
   Nat.rec (fun _ _ => throw .limit) (fun _ next record invocation => do
     let stream := activities catalogue record
+    let originalRecord ← preparedRecord prepared record
     reserveActivities stream
     -- Forming/reversing retained call paths, ancestor checks and eventual
     -- source IDs traverse the depth. The quadratic allowance also covers
@@ -262,13 +332,14 @@ private def expand {sources} (catalogue : GenericCatalogue.Checked sources) :
       | .duty original =>
         let source : DutyAt catalogue record := ⟨index,original,selected⟩
         if (original.bindings.find? (bindingMatches original.kind)).isSome then
-          return [Item.header invocation (← readHeaderReference invocation source)]
+          return [Item.header invocation (← readHeaderReference invocation source originalRecord)]
         else
           let transported ← readTransport invocation.applications.reverse ⟨original.subject,original.suppliers⟩
           return [Item.demand invocation ⟨source,transported⟩]
-      | .application original =>
-        let application : ApplicationAt catalogue record := ⟨index,original,selected⟩
-        let target ← readTarget application
+      | .application _original =>
+        let cached ← preparedCall originalRecord index
+        let application := cached.val.application
+        let target := cached.val.target
         if repeated : target.entry.index.val ∈ invocation.records then
           return [Item.call invocation application target,Item.pendingRecursion invocation application target repeated]
         else
@@ -276,14 +347,16 @@ private def expand {sources} (catalogue : GenericCatalogue.Checked sources) :
           return Item.call invocation application target :: nested
     return entries.flatten)
 
-structure Root {sources} (catalogue : GenericCatalogue.Checked sources) where
+structure Root {sources catalogue} (prepared : @Prepared sources catalogue) where
   record : RecordIndex catalogue
   items : List (Item catalogue)
   traversed : ∃ before after,
-    (expand catalogue (catalogue.records.length+1) record (.root record)).run before = (.ok items,after)
+    (expand catalogue prepared (catalogue.records.length+1) record (.root record)).run before = (.ok items,after)
 
 structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) where
-  roots : List (Root catalogue)
+  prepared : Prepared catalogue
+  preparation : ∃ before after,(prepare catalogue).run before = (.ok prepared,after)
+  roots : List (Root prepared)
   every : roots.map (·.record) = List.finRange catalogue.records.length
 
 def Checked.items {sources catalogue} (checked : @Checked sources catalogue) : List (Item catalogue) :=
@@ -298,13 +371,14 @@ back-edge obligation rather than a chosen Nat, unrolling or successful prefix.
 A consumer must reject incomplete coverage and discharge all resulting duties;
 this reader intentionally does not close guard-dependent numeric obligations. -/
 def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Checked catalogue) := do
+  let prepared ← NaturalAffine.witness (prepare catalogue)
   exactWork (Exact.charge (16*(catalogue.records.length+1)^2))
   let roots ← (List.finRange catalogue.records.length).mapM fun record => do
     let items ← NaturalAffine.witness
-      (expand catalogue (catalogue.records.length+1) record (.root record))
-    return (⟨record,items.val,by with_reducible exact items.property⟩ : Root catalogue)
+      (expand catalogue prepared.val (catalogue.records.length+1) record (.root record))
+    return (⟨record,items.val,by with_reducible exact items.property⟩ : Root prepared.val)
   if every : roots.map (·.record) = List.finRange catalogue.records.length then
-    return ⟨roots,every⟩
+    return ⟨prepared.val,by with_reducible exact prepared.property,roots,every⟩
   else throw .request
 
 end QleisliKernel.SourceTypes.GenericDutyQueue
