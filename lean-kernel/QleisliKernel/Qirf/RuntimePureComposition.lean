@@ -48,6 +48,22 @@ inductive Covers {dependencies program} {block : RuntimeInterval.Block dependenc
   | cons {cursor finish node nodes} (atCursor : (region node).start = cursor)
       (rest : Covers (cursor+(region node).count) nodes finish) : Covers cursor (node::nodes) finish
 
+theorem Covers.literalRemaining {dependencies program block cursor nodes finish}
+    (cover : @Covers dependencies program block cursor nodes finish) :
+    (nodes.flatMap operations).map Semantics.Observation.Op.pure ++ block.operations.drop finish =
+      block.operations.drop cursor := by
+  induction cover with
+  | nil cursor => rfl
+  | @cons cursor finish node nodes atCursor rest ih =>
+    simp only [List.flatMap_cons,List.map_append,List.append_assoc,ih]
+    rw [← (region node).frame.literal,atCursor]
+    simpa only [List.drop_drop] using List.take_append_drop (region node).count (block.operations.drop cursor)
+
+theorem Covers.literal {dependencies program block nodes}
+    (cover : @Covers dependencies program block 0 nodes block.operations.length) :
+    (nodes.flatMap operations).map Semantics.Observation.Op.pure = block.operations := by
+  simpa only [List.drop_length,List.append_nil,List.drop_zero] using cover.literalRemaining
+
 private def readCover {dependencies program block} :
     (nodes : List (Node dependencies program block)) → (cursor : Nat) →
     WorkM (PLift (Covers cursor nodes block.operations.length))
@@ -62,7 +78,7 @@ private def readCover {dependencies program block} :
     else throw .request
 
 structure Partition {dependencies program} (block : RuntimeInterval.Block dependencies program)
-    (nodes : List (Node dependencies program block)) where
+    (nodes : List (Node dependencies program block)) : Type where
   cover : Covers 0 nodes block.operations.length
   literal : (nodes.flatMap operations).map Semantics.Observation.Op.pure = block.operations
 
@@ -74,9 +90,7 @@ def readPartition {dependencies program block} (nodes : List (Node dependencies 
     (nodes.map fun node => Raw.rawFields
       (RuntimePureInterval.fragment (region node).frame.selected (operations node) (region node).outputs)).sum))
   let cover ← readCover nodes 0
-  if literal : (nodes.flatMap operations).map Semantics.Observation.Op.pure = block.operations then
-    return ⟨cover.down,literal⟩
-  else throw .request
+  return ⟨cover.down,cover.down.literal⟩
 
 /-- Grouping the same operations into source intervals preserves the complete
 independent trace, its ordered frame and the first missing-operand failure. -/
@@ -149,16 +163,16 @@ theorem Prepared.orderedExecution {artifact root owner name signature body reque
     (prepared : @Prepared artifact root owner name signature body request initial checked)
     (state : Semantics.RawTrace.Prepared) :
     prepared.raw.operations.foldlM Semantics.RawTrace.advance state =
-      (checked.result.actions.map operations).foldlM
+      (checked.result.actions.map RuntimePureComposition.operations).foldlM
         (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state) state := by
   rw [prepared.operations]
-  exact executeChunks (checked.result.actions.map operations) state
+  exact executeChunks (checked.result.actions.map RuntimePureComposition.operations) state
 
 theorem Prepared.orderedRootTrace {artifact root owner name signature body request initial checked}
     (prepared : @Prepared artifact root owner name signature body request initial checked) :
     Semantics.RawTrace.run prepared.raw = (do
       let state := Semantics.RawTrace.initial prepared.raw.inputs
-      let final ← (checked.result.actions.map operations).foldlM
+      let final ← (checked.result.actions.map RuntimePureComposition.operations).foldlM
         (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state)
         ⟨state,[],state.frame.length⟩
       pure (Semantics.RawTrace.finish prepared.raw final)) := by
@@ -204,6 +218,7 @@ theorem commutes_compose {Logical Physical : Type} {input middle output : Logica
     Commutes input output (fun value => (first value).bind second)
       (fun value => (requiredFirst value).bind requiredSecond) := by
   intro value
+  change (first (input value)).bind second = ((requiredFirst value).bind requiredSecond).map output
   rw [left value]
   cases ran : requiredFirst value with
   | error error => rfl
@@ -242,7 +257,8 @@ theorem Chain.commutes {Logical Physical input output actuals requirements}
 theorem Chain.references {Reference Logical Physical input output actuals requirements}
     (chain : Chain Logical Physical input actuals requirements output) (values : Reference → Logical) :
     (fun reference => runActions actuals (input (values reference))) =
-      (fun reference => (runActions requirements (values reference)).map output) :=
-  commutes_references chain.commutes values
+      (fun reference => (runActions requirements (values reference)).map output) := by
+  funext reference
+  exact chain.commutes (values reference)
 
 end QleisliKernel.Qirf.RuntimePureComposition
