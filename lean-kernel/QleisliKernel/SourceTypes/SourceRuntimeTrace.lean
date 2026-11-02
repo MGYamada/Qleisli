@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceRuntimeContext
+import QleisliKernel.SourceTypes.SourceRuntimeNominalValue
 
 /-! Complete typed mixed-runtime traversal for the shared source syntax.
 Ordinary copying, explicit owner discharge and allocation remain visible across
@@ -94,7 +95,33 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
-      | .staticConditional .. | .variant .. | .record .. | .projection .. | .matching .. => throw .request
+      | .staticConditional .. | .matching .. => throw .request
+      | .variant written =>
+        let reference ← SourceNominal.readVariant sources owner scope written
+        let rows ← NaturalRows.typeRead sources owner naturals.helpers.val scope
+          (written.typeTokens.map (·.text)) reference.nominal.query
+        return (← outcome environment [.ordinary reference.nominal.query.basis (.ordinal reference.ordinal)]
+          environment [] [] nextOrdinal [] rows,context)
+      | .record written children =>
+        let reference ← SourceNominal.readRecord sources owner scope written
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
+          evaluateChildren children.trees context
+        Finite.exactWork (Exact.charge (32*((values.map valueFields).sum+
+          Raw.OwnerFlow.fields [⟨0,reference.nominal.query.basis⟩]+1)*(reference.fields.length+1)))
+        let value ← adapt (SourceRuntimeNominalValue.construct reference values)
+        let typeRows ← NaturalRows.typeRead sources owner naturals.helpers.val scope
+          (written.typeTokens.map (·.text)) reference.nominal.query
+        return (← outcome environment value remaining allocated consumed ordinal events (rows ++ typeRows),context)
+      | .projection written receiver =>
+        let (result,context) ← recurse naturals held scope nextOrdinal environment receiver context
+        let [.ordinary basis expression] := result.value | throw .request
+        let reference ← SourceNominal.readProjection sources owner basis written
+        Finite.exactWork (Exact.charge (32*(valueFields result.value+
+          Raw.OwnerFlow.fields [⟨0,reference.field.basis⟩]+1)*(reference.definition.fields.length+1)))
+        let value ← adapt (SourceRuntimeNominalValue.project reference expression)
+        let typeRows ← NaturalRows.nominalOrigins sources naturals.helpers.val basis
+        return (← outcome environment value result.remaining result.allocated result.consumed
+          result.nextOrdinal result.events (result.staticRows ++ typeRows),context)
       | .move tokens _ _ =>
         Finite.exactWork (Exact.charge (SourceTrace.Meter.moveWork tokens []+16*environmentCells environment))
         let (value,remaining) ← adapt (move tokens environment)
