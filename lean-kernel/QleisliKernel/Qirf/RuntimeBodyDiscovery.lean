@@ -156,7 +156,10 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
             return (discovery.append ⟨CallName.sourceRows event.candidate,[]⟩,sites,calls,branches,bodies)
           | .phase event =>
             return (discovery.append ⟨CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows,[]⟩,
-              sites,calls,branches,bodies)) (initial,request.sites,request.calls,request.branches,bodies)
+              sites,calls,branches,bodies)
+          -- Neither form is an original ordinary-if request. Their inactive
+          -- native obligations/context layout must be connected explicitly.
+          | .staticConditional .. | .matching .. => throw .request) (initial,request.sites,request.calls,request.branches,bodies)
       guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty) .request
       return discovery)
 
