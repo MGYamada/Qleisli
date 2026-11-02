@@ -17,7 +17,10 @@ private def owners :=
   "enum Tag{A,B,C}pub unitary fn route(tag:Tag,a:Q<Bit>,b:Q<Unit>)->(Q<Bit>,Q<Unit>){" ++
   "match tag{Tag::C=>(h(a),b),Tag::A=>(a,b),Tag::B=>(a,b)}}"
 #guard (read owners).map (fun checked => ((valueOwners checked.summary.value).map (·.ordinal),
-  checked.summary.consumed.map (·.ordinal))) = some ([2,3],[0,1])
+  checked.summary.consumed.map (·.ordinal))) = some ([2,3],[1,0])
+-- Retired owners follow the actual lexical environment (b then a); returned
+-- phi order remains the original result forest (a then b). The first failed
+-- expectation and the root's independent actual probe remain in the run record.
 #guard (read owners).map (fun checked => checked.events.map (fun event => match event with
   | .matching event arms => (event.labels.labels.ordinals,arms.length,event.phis.map (·.inputs.length))
   | _ => ([],0,[]))) = some [([2,0,1],3,[3,3])]
