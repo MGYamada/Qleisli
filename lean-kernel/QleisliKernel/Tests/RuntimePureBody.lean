@@ -89,7 +89,7 @@ private def splitJoin (wrongBoundary wrongOrder : Bool) := structural
 -- The original owner 0 is replaced by 1,2,3. The same literal intervals retain
 -- that complete history while H acts only on the original Bit component.
 #guard (splitJoin false false).run 10000000 |>.1.toOption == some ([0,1,2,3],[0,1,2],[3])
-#guard (match (splitJoin true false).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard (match (splitJoin true false).run 10000000 with | (.error .invalid,_) => true | _ => false)
 #guard (match (splitJoin false true).run 10000000 with | (.error .request,_) => true | _ => false)
 
 -- Releasing a zero-width owner does not undo its scalar phase or issued ID.

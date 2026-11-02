@@ -37,10 +37,19 @@ def controlled (phase : Nat) : Observation.Program :=
 def prelude : String :=
   ((SourceTraceOriginals.bundled.toList.find? fun row => row.1 == "std::prelude").map (·.2)).getD ""
 
-def artifact : Qirf.Artifact :=
+/-- Retain the first incomplete table verbatim. The real prelude imports
+modules absent from this proposal; the complete original-source audit refuses
+it before any phase equation. It remains an explicit negative below. -/
+def incompletePreludeArtifact : Qirf.Artifact :=
   ⟨#[main,arm 0,controlled 0,arm 4,controlled 4],
     #[⟨[.bit],1,.phase8 [0,0],"main::keep","independent::identity",[0]⟩,
       ⟨[.bit],3,.phase8 [0,4],"main::sign","independent::z",[0]⟩],#[("main",text),("std::prelude",prelude)],0,none⟩
+
+/-- Isolated primitive-name controls use this actual empty prelude. Main text,
+IR, positions and requests retain their original definitions. The bundled
+standard-library catalogue is checked separately, not by this environment. -/
+def artifact : Qirf.Artifact :=
+  {incompletePreludeArtifact with sources := #[("main",text),("std::prelude","")]}
 def order : Array Nat := #[1,2,3,4,5,6,0]
 
 def interface (second : Bool) : Interface :=
@@ -121,6 +130,8 @@ def controls : List (String × Bool) := [
   ("insufficient work refuses without fallback",budgetFailure 1 == some (.arithmetic .workLimit)),
   ("missing enabled prelude row refuses",
     (failure {artifact with sources := #[("main",text)]}).isSome),
+  ("incomplete original prelude table refuses before semantic checks",
+    failure incompletePreludeArtifact == some .request),
   ("forbidden primitive reexport cannot grant H",
     (failure {artifact with sources := #[("main",text),("std::prelude","pub use fake::h;")]}).isSome)]
 
