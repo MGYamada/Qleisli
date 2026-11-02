@@ -126,6 +126,7 @@ private theorem bit_ext (left right : Nat) (same : ∀ query,bit left query = bi
   apply Nat.eq_of_testBit_eq
   intro query
   have bits := same query
+  simp only [bit] at bits
   rw [← Nat.toNat_testBit left query,← Nat.toNat_testBit right query] at bits
   cases left.testBit query <;> cases right.testBit query <;> simp_all
 
