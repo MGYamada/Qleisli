@@ -64,6 +64,9 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
     | .matching event children => event.generic.sourceRows ++ event.naturals.sourceRows ++
         event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows) ++
         children.flatMap (fun arm => arm.flatMap (eventRows fuel))
+    | .computed event children => event.generic.sourceRows ++
+        (SourceRuntimeContext.Event.computed event children).staticRows ++ children.flatMap (eventRows fuel)
+    | .registerPrimitive event => (SourceRuntimeContext.Event.registerPrimitive event).staticRows
 
 def Header.rows {artifact context description graph index request}
     (header : @Header artifact context description graph index request) : List (String × String) :=

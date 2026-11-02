@@ -162,7 +162,8 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
               sites,calls,branches,bodies)
           -- Neither form is an original ordinary-if request. Their inactive
           -- native obligations/context layout must be connected explicitly.
-          | .staticConditional .. | .matching .. => throw .request) (initial,request.sites,request.calls,request.branches,bodies)
+          | .staticConditional .. | .matching .. | .computed .. | .registerPrimitive .. =>
+            throw .request) (initial,request.sites,request.calls,request.branches,bodies)
       guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty) .request
       return discovery)
 
