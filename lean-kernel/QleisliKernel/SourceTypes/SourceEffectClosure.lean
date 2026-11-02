@@ -92,7 +92,10 @@ def read (entries : List Entry) (root : DefId) : WorkM (Checked entries root) :=
     let internalModules : PLift (entries.all (fun entry => entry.formula.dependencies.all
         (fun dependency => dependency.1 == entry.id.1)) = true) ←
       if checked : entries.all (fun entry => entry.formula.dependencies.all
-          (fun dependency => dependency.1 == entry.id.1)) = true then pure ⟨checked⟩ else throw .request
+          (fun dependency => dependency.1 == entry.id.1)) = true then
+        pure (⟨checked⟩ : PLift (entries.all (fun entry => entry.formula.dependencies.all
+          (fun dependency => dependency.1 == entry.id.1)) = true))
+      else throw .request
     let fuel := entries.length+(entries.map fun entry => entry.formula.dependencies.length).sum+1
     let nodes ← walk entries root fuel [⟨root,.root⟩] []
     exactWork (Exact.charge (16*(nodes.length+1)*((nodes.map fun node => entryFields node.entry).sum+1)))

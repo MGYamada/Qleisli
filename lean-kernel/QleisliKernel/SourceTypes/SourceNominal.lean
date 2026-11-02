@@ -98,12 +98,13 @@ def readRecord (sources : Sources) (caller : String) (scope : List String)
               if accessible : fields.all (fun field => field.member.isPublic || caller == origin.moduleName) = true then
                 have originals : ∀ field ∈ fields,field ∈ definition.val.fields := by
                   intro field member
-                  exact of_decide_eq_true ((List.all_eq_true.mp selected) field member)
+                  have selectedField := (List.all_eq_true.mp selected) field member
+                  simpa only [decide_eq_true_eq] using selectedField
                 have permissions : ∀ field ∈ fields,MemberFields.VisibleFrom caller origin field.member := by
                   intro field member
                   have allowed := (List.all_eq_true.mp accessible) field member
-                  rcases Bool.or_eq_true.mp allowed with public | same
-                  · exact Or.inl public
+                  rcases Bool.or_eq_true.mp allowed with exported | same
+                  · exact Or.inl exported
                   · exact Or.inr (beq_iff_eq.mp same)
                 return ⟨nominal,origin,names,tail,record,definition.val,by with_reducible exact definition.property,
                   exactType,fields,ordered,originals,complete,unique,permissions⟩

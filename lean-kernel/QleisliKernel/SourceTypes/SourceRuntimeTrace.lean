@@ -189,7 +189,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               let function ← SourceBasisFunction.read input.basis outputBasis inputTypes body.value
               Finite.exactWork (Exact.charge (8*(valueFields function.bound+valueFields bound+1)))
               let sameBound : PLift (function.bound = bound) ←
-                if same : function.bound = bound then pure ⟨same⟩ else throw .request
+                if same : function.bound = bound then pure (⟨same⟩ : PLift (function.bound = bound)) else throw .request
               let bodyCalls ← adapt bodyTree.calls
               Finite.guard (body.events.flatMap Event.callOffsets == bodyCalls) .request
               let output : Semantics.SourceOwners.Owner :=
@@ -232,7 +232,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           match elseOuter : SourceRuntimeBranches.outer condition.remaining right.remaining with
           | .error _ => throw .request
           | .ok other =>
-            let same : PLift (other = remaining) ← if same : other = remaining then pure ⟨same⟩ else throw .request
+            let same : PLift (other = remaining) ←
+              if same : other = remaining then pure (⟨same⟩ : PLift (other = remaining)) else throw .request
             have elseOuter : SourceRuntimeBranches.outer condition.remaining right.remaining = .ok remaining := by
               simpa only [same.down] using elseOuter
             match merged : SourceRuntimeBranches.merge conditionValue left.value right.value right.nextOrdinal with
@@ -273,7 +274,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           if (QuantumSignature.candidateResolution candidate).isSome then
             let target ← readTarget signature naturals written.base.2 candidate
             let sameBase : PLift (target.written = written.base.2) ←
-              if same : target.written = written.base.2 then pure ⟨same⟩ else throw .request
+              if same : target.written = written.base.2 then
+                pure (⟨same⟩ : PLift (target.written = written.base.2)) else throw .request
             let (values,remaining,allocated,consumed,ordinal,events,context) ←
               evaluateChildren children.trees lookup.context
             -- The child is checked even when one of the original powers is
