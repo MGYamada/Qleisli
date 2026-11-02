@@ -19,9 +19,10 @@ development milestones from the scope of their evidence.
 - Relate sparse complete owner-forest coordinates to the original finite code,
   retaining exact nominal trees, wire order, zero-width owners and actual
   primitive/structural equations. Add reference-indexed lazy coefficient
-  transport for an exact contiguous frame placement without changing sum,
-  failure or work order. Arbitrary-axis transport and complete source/code/Gram
-  composition remain required before the full qmatch profile can be admitted.
+  transport for arbitrary ordered frame axes without changing sum, failure or
+  work order. Bind circuit-event boundaries to their actual original intervals.
+  Complete source/code/Gram composition remains required before the full qmatch
+  profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the
   complete source traversal. Preserve original declaration bodies, public
   effects, import/reexport checks and query-specific source rows. Complete
@@ -30,7 +31,7 @@ development milestones from the scope of their evidence.
   and per-child access demands with each pending Meaning assertion. Withhold
   unconsumed concrete Meaning duties before legacy or unfinished runtime source
   selection, including unused generic and zero-power occurrences. Complete
-  callee substitution and native Meaning/access consumption remain required.
+  recursive-family coverage and native Meaning/access consumption remain required.
 - Bind mixed named calls to their literal Raw fragment, all visible ordinary
   inputs and the complete caller spectator frame. Keep the original callee's
   nested steps, owner history and final SSA values; small observing-result and

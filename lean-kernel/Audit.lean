@@ -64,6 +64,8 @@ import QleisliKernel.Tests.GenericActivities
 import QleisliKernel.Tests.GenericOperationSubstitute
 import QleisliKernel.Tests.GenericDutyQueue
 import QleisliKernel.Tests.SourceMeaningOrdinary
+import QleisliKernel.Tests.SourceMeaningPrepared
+import QleisliKernel.Tests.SourceClassicalExecution
 import QleisliKernel.Tests.SourcePendingMeaning
 import QleisliKernel.Tests.GenericCatalogueOriginals
 import QleisliKernel.Tests.SourceComputedSyntax
