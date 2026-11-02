@@ -35,25 +35,46 @@ fn outputs(
     span: Span,
     value: &Value,
 ) -> Result<Vec<Owner>, CompileError> {
-    // The native structural rule reads an atomic Q owner or a flat tuple of
-    // such owners. Preserve source order and every zero-width owner.
+    // Project actual owner leaves without rewriting the retained runtime tree.
+    // Ordinary values and every level of grouping stay in Value/runtime storage.
     match value {
         Value::Quantum(..) => Ok(vec![owner(lower, module, span, value)?]),
-        Value::Pair(left, right) => Ok(vec![
-            owner(lower, module, span, left)?,
-            owner(lower, module, span, right)?,
-        ]),
-        Value::Tuple(fields) => fields
-            .iter()
-            .map(|field| owner(lower, module, span, field))
-            .collect(),
-        _ => Err(lower.error(
-            module,
-            span,
-            ErrorCode::Unsupported,
-            "qmatch source context currently requires a flat quantum-owner result",
-        )),
+        Value::Pair(left, right) => {
+            let mut result = outputs(lower, module, span, left)?;
+            result.extend(outputs(lower, module, span, right)?);
+            Ok(result)
+        }
+        Value::Tuple(fields) | Value::Record(_, fields) => {
+            let mut result = Vec::new();
+            for field in fields {
+                result.extend(outputs(lower, module, span, field)?);
+            }
+            Ok(result)
+        }
+        _ => Ok(Vec::new()),
     }
+}
+
+/// Inert metadata must not impose the separate six-bit carrier acceptance
+/// profile on an existing built-in Raw owner. Native consumers retain their
+/// own type/code limits; describing a tree grants no validity or capability.
+pub(super) fn builtin_basis_description(ty: &Ty) -> Vec<crate::interchange::carrier::Atom> {
+    use crate::interchange::carrier::Atom;
+    let mut result = Vec::new();
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        result.push(match &ty.kind {
+            Kind::Unit => Atom::Unit,
+            Kind::Bit => Atom::Bit,
+            Kind::Bits(width) => Atom::Bits(*width),
+            Kind::Tuple(fields) => {
+                pending.extend(fields.iter().rev());
+                if fields.len() == 2 { Atom::Pair } else { Atom::Tuple(fields.len() as u32) }
+            }
+            _ => unreachable!("built-in basis was checked before description"),
+        });
+    }
+    result
 }
 
 fn owner(
@@ -72,9 +93,12 @@ fn owner(
             ));
     lower.compiler.charge(module, span, cost)?;
     let register = lower.raw.registers[&slot].clone();
-    let basis = lower
-        .compiler
-        .carrier_description(module, span, &register.basis)?;
+    let basis = if register.basis.basis_bits().is_some() {
+        lower.compiler.charge(module, span, 2 * register.basis.tree_size().nodes)?;
+        builtin_basis_description(&register.basis)
+    } else {
+        lower.compiler.carrier_description(module, span, &register.basis)?
+    };
     Ok(Owner {
         port: QuantumPort {
             token: register.token,
@@ -93,13 +117,6 @@ impl Frame {
         key: Key,
         args: &[Value],
     ) -> Result<Option<Self>, CompileError> {
-        if !args.iter().all(|arg| matches!(arg, Value::Quantum(..))) {
-            return Ok(None);
-        }
-        let source_gate = args.iter().any(|arg| match arg {
-            Value::Quantum(slot, _) => lower.raw.registers[slot].basis.basis_bits().is_none(),
-            _ => false,
-        });
         let name = lower
             .compiler
             .source
@@ -108,12 +125,17 @@ impl Frame {
             .name
             .clone();
         let span = lower.compiler.declarations[&key].span;
+        lower.compiler.charge(&name.0, span, total_size(args.iter().map(|arg| arg.tree_size().nodes)))?;
+        let mut inputs = Vec::new();
+        for arg in args {
+            inputs.extend(outputs(lower, &name.0, span, arg)?);
+        }
+        let source_gate = inputs.iter().any(|owner| owner.basis.iter().any(|atom|
+            matches!(atom, crate::interchange::carrier::Atom::Enum(..) |
+                crate::interchange::carrier::Atom::Record(..))));
         Ok(Some(Self {
             key,
-            inputs: args
-                .iter()
-                .map(|arg| owner(lower, &name.0, span, arg))
-                .collect::<Result<_, _>>()?,
+            inputs,
             start: lower.raw.operations.len(),
             positions: Vec::new(),
             primitive_prelude: false,
