@@ -525,6 +525,53 @@ private def primitive {sources} (state : GenericLexicalNatural.SomeEnvironment s
     | _,_ => throw .request
   pure {value := outcome.1,remaining,effect := direct outcome.2,quantumUse := true}
 
+private def primitiveNatural {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (argument : CallSyntax.Argument) : WorkM (Form × List (String × String)) := do
+  let expression ← adapt (StaticBindings.natural argument.tokens)
+  let checked ← GenericLexicalNatural.read state.prepared state.environment scope expression.expression
+  let rows ← NaturalRows.expression sources state.owner state.prepared.helpers scope expression.expression
+  pure (checked.normalized.form,rows)
+
+private def primitiveApplication {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (kind : CallName.Primitive) (actuals : List CallSyntax.Argument)
+    (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
+  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  match kind with
+  | .emptyBits =>
+    guard (actuals.isEmpty && arguments.isEmpty) .request
+    let zero ← NaturalAffine.constant variables 0
+    pure {value := [.ordinary [.bits zero]],remaining}
+  | .prependBit =>
+    let [amount] := actuals | throw .request
+    let [head,tail] := arguments | throw .request
+    let (width,rows) ← primitiveNatural state scope amount
+    GenericValues.expect state head [.ordinary [.fixed .bit]]
+    GenericValues.expect state tail [.ordinary [.bits width]]
+    let one ← NaturalAffine.constant variables 1
+    let output ← NaturalAffine.add width one
+    pure {value := [.ordinary [.bits output]],remaining,rows}
+  | .takeBit | .putBit =>
+    let [amount,index] := actuals | throw .request
+    let (width,widthRows) ← primitiveNatural state scope amount
+    let (index,indexRows) ← primitiveNatural state scope index
+    let one ← NaturalAffine.constant variables 1
+    let _ ← NaturalPredicates.implies state.environment.context one .le width
+    let _ ← NaturalPredicates.implies state.environment.context index .lt width
+    let shortened ← NaturalAffine.sub width one
+    let value ← if kind == .takeBit then do
+        let [input] := arguments | throw .request
+        GenericValues.expect state input [.owner [.bits width]]
+        pure [.tuple 2,.owner [.fixed .bit],.owner [.bits shortened]]
+      else do
+        let [head,tail] := arguments | throw .request
+        GenericValues.expect state head [.owner [.fixed .bit]]
+        GenericValues.expect state tail [.owner [.bits shortened]]
+        pure [.owner [.bits width]]
+    pure {value,remaining,quantumUse := true,rows := widthRows ++ indexRows}
+  | _ =>
+    guard actuals.isEmpty .request
+    primitive state kind arguments remaining
+
 private def applyOperation {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) (tokens : List LocatedToken)
     (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
@@ -821,8 +868,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
             value,remaining := arguments.remaining,quantumUse := true,
             rows := CallName.sourceRows candidate ++ rows.flatten})
         | .primitive _ _ _ _ _ _ kind _ =>
-          guard written.arguments.isEmpty .request
-          let result ← primitive state kind values arguments.remaining
+          let result ← primitiveApplication state scope kind written.arguments values arguments.remaining
           pure (append arguments {result with rows := CallName.sourceRows candidate ++ result.rows})
         | _ =>
           let some resolution := CallName.candidateResolution candidate | throw .request

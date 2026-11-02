@@ -115,4 +115,16 @@ private def computedCount : Option Nat :=
 
 #guard computedCount = some 1
 
+#guard summary (program "pub fn root()->Bits<0>{empty_bits()}") = some (.unitary,false,0,0)
+#guard summary (program "pub fn root[const n:Nat](b:Bit,x:Bits<n>)->Bits<n+1>{prepend_bit[n](b,x)}")
+    {naturals := [("n",0)]} = some (.unitary,false,0,0)
+#guard summary (program ("pub unitary fn root[const n:Nat,const k:Nat](q:Q<Bits<n>>)->(Q<Bit>,Q<Bits<n-1>>) " ++
+    "requires n>0,k<n {take_bit[n,k](q)}")) {naturals := [("n",1),("k",0)]} = some (.unitary,true,0,0)
+#guard summary (program ("pub unitary fn root[const n:Nat,const k:Nat](a:Q<Bit>,q:Q<Bits<n-1>>)->Q<Bits<n>> " ++
+    "requires n>0,k<n {put_bit[n,k](a,q)}")) {naturals := [("n",1),("k",0)]} = some (.unitary,true,0,0)
+#guard summary (program ("pub unitary fn root[const n:Nat,const k:Nat](q:Q<Bits<n>>)->(Q<Bit>,Q<Bits<n-1>>) " ++
+    "requires n>0 {take_bit[n,k](q)}")) {naturals := [("n",1),("k",0)]} = none
+#guard summary (program ("pub unitary fn root[const A:Basis](q:Q<A>)->(Q<Bit>,Q<Bits<0>>){take_bit[1,0](q)}"))
+    {bases := [("A",[.bits 1])]} = none
+
 end QleisliKernel.Tests.GenericTypeTrace
