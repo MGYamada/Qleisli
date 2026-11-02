@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Tests.ArmBody
 
 /-! Fresh original named bodies against actual local Raw fragments.
@@ -27,7 +28,8 @@ private def checked (wrongRole wrongReturn : Bool) : WorkM Nat := do
     [⟨call.offset,0,1⟩] [] [(⟨call.offset,0,1⟩,.mk [⟨action.offset,0,1⟩] [] [] [] [])] [] []
   let initial : RuntimeOwnerMap.Map := [⟨⟨0,[.bit]⟩,⟨0,[0],1⟩⟩,⟨⟨1,[.bit]⟩,⟨1,[1],1⟩⟩]
   let root ← Validity.checkRootFromRoots artifact #[0] [("main",text)] [0]
-  let result ← Qirf.RuntimePureBody.check artifact root body (program wrongRole wrongReturn) context initial
+  let result ← Qirf.RuntimePureBody.check artifact root body root.program context initial
+  let _ ← RuntimePureComposition.prepare artifact root body context initial result
   return result.result.actions.length
 
 #guard (checked false false).run 10000000 |>.1.toOption == some 1
@@ -53,6 +55,7 @@ private def selected (exponent : Nat) : WorkM Nat := do
   let inputs ← RuntimeSourceBoundary.readInputs actualBody prepared
     ((ArmBody.interface).inputs.map fun owner => [.quantum owner])
   let actual ← Qirf.RuntimePureBody.check artifact fresh.root actualBody fresh.root.program context inputs.owners.bindings
+  let _ ← RuntimePureComposition.prepare artifact fresh.root actualBody context inputs.owners.bindings actual
   return actual.result.actions.length
 
 #guard (selected 4).run 10000000 |>.1.toOption == some 1

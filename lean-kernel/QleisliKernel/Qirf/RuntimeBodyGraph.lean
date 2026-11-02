@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
 import QleisliKernel.Qirf.RuntimePureBody
+import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 
 /-! Connect original discovery, local body checks and the same typed root.
@@ -19,6 +20,7 @@ structure Prepared (artifact : Artifact) (order : Array Nat) (owner name : Strin
   rootBody : RuntimeInterval.Prepared fresh.root.dependencies fresh.root.program
   inputs : RuntimeSourceBoundary.Inputs headers.source.body rootBody runtime.inputStorage
   derivation : RuntimePureBody.Checked artifact fresh.root headers.source.body fresh.root.program request inputs.owners.bindings
+  structural : RuntimePureComposition.Prepared artifact fresh.root headers.source.body request inputs.owners.bindings derivation
   boundary : RuntimeStructuredRoot.Boundary headers.source.body fresh.root rootBody runtime
 
 /-- Forward-only pure contexts use the same actual typed runtime request.
@@ -35,8 +37,9 @@ def prepare (artifact : Artifact) (order : Array Nat) (owner name : String)
   let rootBody ← RuntimeInterval.prepare fresh.root.dependencies fresh.root.program
   let inputs ← RuntimeSourceBoundary.readInputs headers.source.body rootBody runtime.inputStorage
   let derivation ← RuntimePureBody.check artifact fresh.root headers.source.body fresh.root.program request inputs.owners.bindings
+  let structural ← RuntimePureComposition.prepare artifact fresh.root headers.source.body request inputs.owners.bindings derivation
   let boundary ← RuntimeStructuredRoot.readBoundary headers.source.body fresh.root rootBody derivation.result.bindings runtime
-  return ⟨headers,fresh,rootBody,inputs,derivation,boundary⟩
+  return ⟨headers,fresh,rootBody,inputs,derivation,structural,boundary⟩
 
 theorem Prepared.oneFreshRoot {artifact order owner name arguments request runtime}
     (prepared : Prepared artifact order owner name arguments request runtime) :
