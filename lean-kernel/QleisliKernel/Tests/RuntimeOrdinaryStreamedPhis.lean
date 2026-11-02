@@ -22,8 +22,13 @@ private def coefficient (choice : Bool) : WorkM Semantics.Exact.Scalar := do
   result.operator 0 0
 
 -- The merge never evaluates, replaces or catches the coefficient function.
-#guard (coefficient true).run 1000000 = (.error .equation,1000000)
-#guard (coefficient false).run 1000000 = (.error .equation,1000000)
+private def coefficientFailure (choice : Bool) : Bool :=
+  match (coefficient choice).run 1000000 with
+  | (.error .equation,left) => left == 1000000
+  | _ => false
+
+#guard coefficientFailure true
+#guard coefficientFailure false
 #guard ((Raw.StreamedInstrument.merge true [⟨1,2,5⟩,⟨5,5,6⟩] history).run 1000000).1.toOption.isNone
 
 private def zeroHistory : Raw.StreamedInstrument.History :=
