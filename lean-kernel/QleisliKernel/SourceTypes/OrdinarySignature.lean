@@ -107,6 +107,23 @@ structure Original (sources : Sources) (owner name : String) where
   parsed : header source occurrence = .ok parsedHeader
   bytes : LocatedFacts.OrderedSlices source.toUTF8 0 (envelope occurrence)
 
+/-- Exact retained data identify the original read. The parsed header is
+determined by its actual source/envelope computation; proof fields supply no
+extra identity, and no source text or type clause is substituted. -/
+theorem Original.sameEnvelope {sources owner name} (first second : Original sources owner name)
+    (source : first.source = second.source) (declaration : first.declaration = second.declaration)
+    (occurrence : first.occurrence = second.occurrence) : first = second := by
+  cases first with
+  | mk sourceA declarationA occurrenceA headerA boundA functionA catalogueA sameA parsedA bytesA =>
+    cases second with
+    | mk sourceB declarationB occurrenceB headerB boundB functionB catalogueB sameB parsedB bytesB =>
+      cases source
+      cases declaration
+      cases occurrence
+      have sameHeader : headerA = headerB := Except.ok.inj (parsedA.symm.trans parsedB)
+      cases sameHeader
+      rfl
+
 private def original (sources : Sources) (owner name : String) :
     Except String (Original sources owner name) := do
   match bound : originalBinding sources owner name with

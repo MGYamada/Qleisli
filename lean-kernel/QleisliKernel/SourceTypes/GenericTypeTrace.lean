@@ -850,6 +850,19 @@ def inferAll {sources} (records : List (BodyRecord sources)) :
   | [] => pure .nil
   | body :: rest => do pure (.cons (← infer records body) (← inferAll records rest))
 
+def AllInferred.get {sources} {records : List (BodyRecord sources)} :
+    {pending : List (BodyRecord sources)} → AllInferred records pending → (index : Fin pending.length) →
+      Inferred records (pending[index.val]'index.isLt)
+  | [],.nil,index => False.elim (Nat.not_lt_zero index.val index.isLt)
+  | _ :: _,.cons head _,⟨0,_⟩ => head
+  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,by omega⟩
+
+def Inferred.inferredEffect {sources records body} (inferred : @Inferred sources records body) : Semantics.Raw.Effect :=
+  inferred.closure.inferred
+
+def Inferred.quantumUse {sources records body} (inferred : @Inferred sources records body) : Bool :=
+  inferred.closure.quantumUse (directQuantum records)
+
 private def rejectCycleFrom {sources} (records : List (BodyRecord sources)) (root : DefId) :
     Nat → List DefId → List DefId → WorkM Unit :=
   Nat.rec (fun pending _ => if pending.isEmpty then pure () else throw .limit)
@@ -908,8 +921,8 @@ def Checked.recursiveCalls {sources owner name original} (checked : @Checked sou
 def Checked.sourceRows {sources owner name original} (checked : @Checked sources owner name original) : List (String × String) :=
   checked.records.flatMap fun body => body.definition.rows ++ body.outcome.rows
 
-def readWithTree {sources owner name original}
-    (_instantiation : @StaticInstantiation.Checked sources owner name original)
+def readOriginalWithTree {sources owner name}
+    (original : OrdinarySignature.Original sources owner name)
     (tree : SourceSyntax.Tree original.occurrence.body) : WorkM (Checked original) := do
   match parsed : StaticHeaders.parse original.parsedHeader with
   | .error _ => throw .request
@@ -925,6 +938,16 @@ def readWithTree {sources owner name original}
     let all ← inferAll records.val records.val
     let inferred ← infer records.val root.record
     pure ⟨tree,root,records.val,by with_reducible exact records.property,all,inferred⟩
+
+def readWithTree {sources owner name original}
+    (_instantiation : @StaticInstantiation.Checked sources owner name original)
+    (tree : SourceSyntax.Tree original.occurrence.body) : WorkM (Checked original) :=
+  readOriginalWithTree original tree
+
+def readOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name) : WorkM (Checked original) := do
+  let tokens := original.occurrence.body
+  let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
+  readOriginalWithTree original tree
 
 def readWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) : WorkM (Checked original) := do
