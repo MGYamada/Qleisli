@@ -186,8 +186,10 @@ def readModules (sources : Sources) (modules : List Module) : WorkM (SourceModul
 def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources)
     (originals : OrdinarySignature.Originals sources) (ids : List DefId)
     (modules : Option (SourceModules.Prepared sources) := none)
-    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (List (BodyRecord sources)) :=
-  ids.mapM fun (owner,name) => readBody sources owner name (some helpers) (some originals) modules meanings
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (List (BodyRecord sources)) := do
+  let context : DefinitionContext sources := ⟨helpers,some originals,modules,meanings⟩
+  let prepared ← prepareDefinitions context
+  ids.mapM fun (owner,name) => readBodyPrepared prepared owner name
 
 structure RuntimeChecked (sources : Sources) where
   modules : List Module
@@ -212,7 +214,7 @@ structure RuntimeChecked (sources : Sources) where
 
 def bodyOriginal {sources owner name} (body : BodyRecord sources)
     (sameOwner : body.owner = owner) (sameName : body.name = name) : OrdinarySignature.Original sources owner name := by
-  rcases body with ⟨bodyOwner,bodyName,definition,tree,outcome,checked⟩
+  rcases body with ⟨bodyOwner,bodyName,definition,prepared,tree,outcome,checked⟩
   cases sameOwner
   cases sameName
   exact definition.original.envelope
@@ -220,7 +222,7 @@ def bodyOriginal {sources owner name} (body : BodyRecord sources)
 theorem bodyOriginal_heq {sources owner name} (body : BodyRecord sources)
     (sameOwner : body.owner = owner) (sameName : body.name = name) :
     HEq body.definition.original.envelope (bodyOriginal body sameOwner sameName) := by
-  rcases body with ⟨bodyOwner,bodyName,definition,tree,outcome,checked⟩
+  rcases body with ⟨bodyOwner,bodyName,definition,prepared,tree,outcome,checked⟩
   cases sameOwner
   cases sameName
   rfl
