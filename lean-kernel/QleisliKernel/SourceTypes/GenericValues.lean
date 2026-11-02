@@ -40,6 +40,7 @@ def valueFields (value : Value) : Nat := value.foldl (fun size atom => size+matc
   | .tuple _ => 1) 0
 
 private def children : Semantics.SymbolicBasis.Atom → Option Nat
+  | .fixed .unit | .fixed .bit | .fixed (.bits _) | .fixed (.enumeration ..) => some 0
   | .fixed atom => Semantics.FiniteCarrier.children atom
   | _ => some 0
 

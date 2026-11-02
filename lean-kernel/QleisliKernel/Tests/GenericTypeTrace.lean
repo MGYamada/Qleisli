@@ -21,6 +21,13 @@ private def program (source : String) : Sources := #[("main","#![no_implicit_pre
 
 private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
 
+-- FiniteCarrier.children returns none for scalar LEAVES, not an invalid
+-- prefix. Original ordinary values must retain those exact scalar codes.
+#guard (GenericValues.ordinaryValue [.fixed .bit]).toOption = some [.ordinary [.fixed .bit]]
+#guard (GenericValues.ordinaryValue [.fixed .unit]).toOption = some [.ordinary [.fixed .unit]]
+#guard (GenericValues.ordinaryValue [.fixed .pair,.fixed .unit,.fixed .bit]).toOption =
+    some [.tuple 2,.ordinary [.fixed .unit],.ordinary [.fixed .bit]]
+
 #guard summary (program "pub unitary fn root[const A:Basis](q:Q<A>)->Q<A>{q}") chosenBit = some (.unitary,true,0,0)
 #guard summary (program "pub unitary fn root[const A:Basis](q:Q<A>)->Q<A>{h(q)}") chosenBit = none
 #guard summary (program "pub unitary fn root[const A:Basis](q:Q<A>)->(Q<Bit>,Q<Bit>){split(q)}")
