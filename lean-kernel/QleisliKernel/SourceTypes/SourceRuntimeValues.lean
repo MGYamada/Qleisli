@@ -176,7 +176,7 @@ def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := 
   if actual.basis != owner.basis then throw "runtime call owner nominal type"
   return actual
 
-private def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) :
+def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) :
     Expression → Except String Expression
   | .input ordinal => do
     let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
