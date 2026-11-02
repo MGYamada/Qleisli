@@ -18,7 +18,7 @@ open RuntimeOwnerMap (Binding Map Owner)
 structure Sparse where
   bits : Nat
   dimension : Nat
-  at : Nat → Option Nat
+  coordinate : Nat → Option Nat
 
 def Sparse.ofLayout (layout : Layout) : Sparse :=
   ⟨layout.bits,layout.labels.length,fun index => layout.labels[index]?⟩
@@ -27,15 +27,15 @@ def Sparse.singleton : Sparse := .ofLayout Semantics.FiniteCarrier.singleton
 
 def Sparse.tensor (first second : Sparse) : Sparse :=
   ⟨first.bits+second.bits,first.dimension*second.dimension,fun index => do
-    let low ← first.at (index % first.dimension)
-    let high ← second.at (index / first.dimension)
+    let low ← first.coordinate (index % first.dimension)
+    let high ← second.coordinate (index / first.dimension)
     pure (low+2^first.bits*high)⟩
 
 /-- The complete label relation, rather than physical-width equality. -/
 structure Agrees (sparse : Sparse) (layout : Layout) : Prop where
   bits : sparse.bits = layout.bits
   dimension : sparse.dimension = layout.labels.length
-  labels : ∀ index,sparse.at index = layout.labels[index]?
+  labels : ∀ index,sparse.coordinate index = layout.labels[index]?
 
 theorem ofLayout_agrees (layout : Layout) : Agrees (.ofLayout layout) layout := ⟨rfl,rfl,fun _ => rfl⟩
 
@@ -57,7 +57,14 @@ private theorem product_get (low high : List Nat) (scale index : Nat) :
       pure (lower+scale*upper)) := by
   by_cases empty : low = []
   · subst low
-    simp
+    have noLabels : (high.flatMap fun upper => ([] : List Nat).map
+        (fun lower => lower+scale*upper)) = [] := by
+      induction high with
+      | nil => rfl
+      | cons upper rest ih =>
+        simpa only [List.flatMap_cons,List.map_nil,List.nil_append] using ih
+    rw [noLabels]
+    rfl
   · have positive : 0 < low.length := List.length_pos_iff.mpr empty
     induction high generalizing index with
     | nil =>
@@ -83,8 +90,8 @@ theorem tensor_agrees {first second : Sparse} {left right : Layout}
     exact (product_length left.labels right.labels (2^left.bits)).symm
   · intro index
     change (do
-      let low ← first.at (index % first.dimension)
-      let high ← second.at (index / first.dimension)
+      let low ← first.coordinate (index % first.dimension)
+      let high ← second.coordinate (index / first.dimension)
       pure (low+2^first.bits*high)) = _
     rw [a.dimension,a.bits,a.labels,b.labels]
     exact (product_get left.labels right.labels (2^left.bits) index).symm
@@ -162,7 +169,7 @@ private theorem step_agrees (atom : Atom) (left : Option (List Sparse)) (right :
         | none => simp [sparseStep,Semantics.FiniteCarrier.layoutStep,arities,leaves,StackAgrees]
         | some leaf =>
           simpa only [sparseStep,Semantics.FiniteCarrier.layoutStep,arities,leaves,bind,Option.bind,
-            pure,Option.pure,StackAgrees,Exact.ListRel] using And.intro (ofLayout_agrees leaf) related
+            pure,StackAgrees,Exact.ListRel] using And.intro (ofLayout_agrees leaf) related
       | some arity =>
         by_cases bounded : arity > left.length
         · simp [sparseStep,Semantics.FiniteCarrier.layoutStep,arities,bounded,lengths,StackAgrees]
@@ -194,7 +201,7 @@ theorem sparseLayout_reference (basis : Basis) (sparse : Sparse)
       | cons second rest => simp [left] at read
       | nil =>
         have same : first = sparse := by
-          simpa only [left,bind,Option.bind,pure,Option.pure,Option.some.injEq] using read
+          simpa only [left,bind,Option.bind,pure,Option.some.injEq] using read
         subst first
         cases right : basis.foldr Semantics.FiniteCarrier.layoutStep (some []) with
         | none => simp [left,right,StackAgrees] at related
@@ -219,7 +226,7 @@ def forestAxes (frame : List Nat) (bindings : Map) : List Nat :=
 
 /-- One entry of an encoding, with no allocation of its matrix. -/
 def sparseEntry (sparse : Sparse) (physical logical : Nat) : Scalar :=
-  if sparse.at logical == some physical then Scalar.one else Scalar.zero
+  if sparse.coordinate logical == some physical then Scalar.one else Scalar.zero
 
 private theorem encoding_entry (layout : Layout) (row col : Nat)
     (rowBound : row < 2^layout.bits) (colBound : col < layout.labels.length) :
