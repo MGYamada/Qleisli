@@ -17,6 +17,9 @@ pub mod v5;
 /// and carrier-sector check. A physical signature is not a nominal contract.
 pub(crate) enum ArmBody {
     Evidence(std::sync::Arc<crate::contract::FunctionEvidence>),
+    /// A direct language primitive is a concrete program, not a source
+    /// function provider. Its original operation tree has no body slots.
+    Primitive(crate::ir::RawProgram),
     Physical {
         bits: u32,
         raw: crate::ir::RawProgram,
@@ -123,6 +126,8 @@ pub(crate) fn proposal(
         for arm in selection.arms {
             let evidence = match &arm.body {
                 ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
+                ArmBody::Primitive(_) => return Err(Error::new("unsupported",
+                    "direct primitive qmatch arms require the complete v5 source gate")),
                 ArmBody::Physical {
                     bits,
                     raw,
