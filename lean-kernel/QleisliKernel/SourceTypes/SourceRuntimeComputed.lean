@@ -7,7 +7,7 @@ Those exact native obligations remain mandatory for either source form.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceRuntimeComputed
 open QleisliKernel QleisliKernel.SourceTypes SourceRuntimeValues
-open Semantics.SourceOwners
+open Semantics.SourceOwners (Owner)
 
 def offset {tokens} (written : SourceComputedSyntax.Checked tokens) : Nat :=
   written.parts.header.calleeOffset

@@ -21,12 +21,16 @@ def prepare {sources owner name original}
     (obligations : List (GenericTypeTrace.ComputedObligation sources)) : WorkM (Checked instantiation obligations) :=
   SourceBasisBindings.prepare instantiation (obligations.map port)
 
-def originalIndex {sources owner name original instantiation obligations offset}
+def originalIndex {sources owner name original}
+    {instantiation : @StaticInstantiation.Checked sources owner name original}
+    {obligations : List (GenericTypeTrace.ComputedObligation sources)} {offset : Nat}
     (active : @SourceBasisBindings.ActiveAt sources owner name original instantiation
       (obligations.map port) offset) : Fin obligations.length :=
   ⟨active.index.val,by simpa only [List.length_map] using active.index.isLt⟩
 
-theorem originalMember {sources owner name original instantiation obligations offset}
+theorem originalMember {sources owner name original}
+    {instantiation : @StaticInstantiation.Checked sources owner name original}
+    {obligations : List (GenericTypeTrace.ComputedObligation sources)} {offset : Nat}
     (active : @SourceBasisBindings.ActiveAt sources owner name original instantiation
       (obligations.map port) offset) :
     obligations[originalIndex active] ∈ obligations := List.getElem_mem (originalIndex active).isLt
