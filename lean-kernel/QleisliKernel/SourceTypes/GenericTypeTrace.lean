@@ -335,6 +335,42 @@ structure BasisObligation (sources : Sources) where
   input : Code
   output : Code
 
+/-- Total classical declarations and basis expressions keep their existing
+restricted expression grammar. Quantum-use inference alone cannot authorize a
+normal runtime call, statements, static specialization or scoped construction.
+This traverses the same original tree before its independent typed traversal. -/
+private def checkClassicalTree {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) : Nat → {tokens : List LocatedToken} → SourceSyntax.Tree tokens → WorkM Unit :=
+  Nat.rec (fun {_} _ => throw .limit) (fun _ next {tokens} tree => do
+    exactWork (Exact.charge (8*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
+    let children (trees : List (Sigma SourceSyntax.Tree)) : WorkM Unit := do
+      for child in trees do next child.2
+    match tree with
+    | .literal .. | .move .. | .variant _ => pure ()
+    | .group _ trees => children trees.trees
+    | .boolean _ trees => children trees.trees
+    | .record _ trees => children trees.trees
+    | .projection _ receiver => next receiver
+    | .conditional _ condition thenBody elseBody => do
+      next condition
+      next thenBody
+      next elseBody
+    | .matching written scrutinee trees => do
+      guard (written.parts.arms.all fun arm => arm.body.opening.isNone && arm.body.closing.isNone) .request
+      next scrutinee
+      children trees.trees
+    | .call call trees => do
+      let .name _ ← adapt (StaticApplication.readSyntax call.call.callee) | throw .request
+      let candidate ← CallName.read sources state.owner scope call.call.callee
+      match candidate.decision with
+      | .primitive _ _ _ _ _ _ .emptyBits _ => guard call.call.arguments.isEmpty .request
+      | _ =>
+        let some resolution := CallName.candidateResolution candidate | throw .request
+        let original ← StaticHeaders.read sources resolution.moduleName resolution.declaration.name state.prepared.originals
+        guard original.envelope.parsedHeader.ordinaryOnly .request
+      children trees.trees
+    | _ => throw .request)
+
 structure ComputedPredicate (sources : Sources) where
   resolution : Resolved
   definition : Definition sources resolution.moduleName resolution.declaration.name
@@ -763,6 +799,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       guard (names.all fun name => !staticNames.contains name) .request
       let initial ← adapt (GenericValues.bind (written.parts.pattern.map (·.text)) bound ordinary
         (written.parts.keyword.span.startByte+1))
+      checkClassicalTree state (names ++ scope) (written.parts.body.length+1) body
       let body ← next state (names ++ scope) initial body
       guard (!body.quantumUse && !hasOwner body.value) .request
       let outputBasis ← ordinaryCode body.value
@@ -892,6 +929,9 @@ def checkTree {sources owner name} (definition : Definition sources owner name)
   let initial ← adapt (GenericValues.seed patterns definition.parameters)
   let staticNames := definition.original.header.formals.map (·.name)
   guard (initial.all fun cell => !staticNames.contains cell.name) .request
+  if definition.original.envelope.parsedHeader.ordinaryOnly then
+    checkClassicalTree definition.state (staticNames ++ initial.map (·.name))
+      (definition.original.envelope.occurrence.body.length+1) tree
   let result ← evaluator definition (definition.original.envelope.occurrence.body.length+1)
     definition.state (staticNames ++ initial.map (·.name)) initial tree
   guard (result.remaining.all fun cell => !hasOwner cell.value) .request

@@ -127,4 +127,30 @@ private def computedCount : Option Nat :=
 #guard summary (program ("pub unitary fn root[const A:Basis](q:Q<A>)->(Q<Bit>,Q<Bits<0>>){take_bit[1,0](q)}"))
     {bases := [("A",[.bits 1])]} = none
 
+-- Cardinality-one ports may infer Unit while retaining their distinct full
+-- types and pending injection. Neither rectangular child gains Controlled.
+#guard summary (program "pub unitary fn root(q:Q<Unit>)->Q<Bits<0>>{basis q as _ {empty_bits()}}") =
+    some (.unitary,true,1,0)
+#guard summary (program ("unitary fn expand(q:Q<Unit>)->Q<Bits<0>>{basis q as _ {empty_bits()}} " ++
+    "pub unitary fn root(q:Q<Unit>)->Q<Bits<0>>{expand(q)}")) = some (.unitary,true,0,0)
+#guard summary (program ("unitary fn expand(q:Q<Unit>)->Q<Bits<0>>{basis q as _ {empty_bits()}} " ++
+    "pub unitary fn root(q:Q<Bits<0>>)->Q<Unit>{adjoint(expand)(q)}")) = some (.unitary,true,0,0)
+#guard summary (program ("unitary fn expand(q:Q<Unit>)->Q<Bits<0>>{basis q as _ {empty_bits()}} " ++
+    "unitary fn shrink(q:Q<Bits<0>>)->Q<Unit>{basis q as _ {()}} " ++
+    "pub unitary fn root(s:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>){qmatch(s,q){0=>then_op(expand,shrink),1=>then_op(expand,shrink)}}")) = none
+
+#guard summary (program "pub classical fn root(x:Bit)->Bit{not x}") = some (.unitary,false,0,0)
+#guard summary (program "pub classical fn root()->Bits<0>{empty_bits()}") = some (.unitary,false,0,0)
+#guard summary (program "pub classical fn root()->Bits<1>{prepend_bit[0](0,empty_bits())}") = none
+#guard summary (program "pub classical fn root()->Bit{let x=0;x}") = none
+#guard summary (program "pub classical fn root()->Unit{}") = none
+#guard summary (program "fn ordinary(x:Bit)->Bit{x} pub classical fn root(x:Bit)->Bit{ordinary(x)}") = none
+#guard summary (program "classical fn ordinary(x:Bit)->Bit{x} pub classical fn root(x:Bit)->Bit{ordinary(x)}") =
+    some (.unitary,false,0,0)
+#guard summary (program ("fn ordinary()->Bit{0} " ++
+    "pub isometry fn root(q:Q<Unit>)->Q<Bit>{basis q as _ {ordinary()}}")) = none
+#guard summary (program ("pub isometry fn root(q:Q<Unit>)->Q<Bit>{basis q as _ {let x=0;x}}")) = none
+#guard summary (program ("pub enum E{A,B} pub classical fn root(e:E)->Bit{" ++
+    "match e {E::A=>{0},E::B=>1}}")) = none
+
 end QleisliKernel.Tests.GenericTypeTrace
