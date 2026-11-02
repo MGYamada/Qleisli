@@ -921,8 +921,10 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       pure (append selected result)
     | .staticConditional written thenBody elseBody =>
       let condition ← GenericLexicalNatural.readPredicate state.prepared state.environment scope written.predicate
-      let leftEnvironment ← GenericLexicalNatural.underPredicate condition true
-      let rightEnvironment ← GenericLexicalNatural.underPredicate condition false
+      let guardOrigin : GenericLexicalNatural.GuardOrigin written.predicate :=
+        ⟨written.parts.keyword,written.written.marker,written.parts.condition,written.predicateRead⟩
+      let leftEnvironment ← GenericLexicalNatural.underPredicate condition true (some guardOrigin)
+      let rightEnvironment ← GenericLexicalNatural.underPredicate condition false (some guardOrigin)
       let leftState := {state with environment := leftEnvironment}
       let rightState := {state with environment := rightEnvironment}
       let left ← next leftState scope environment thenBody

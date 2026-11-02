@@ -12,6 +12,27 @@ abbrev Meaning {sources owner name tokens} (prepared : StaticNatural.Prepared so
   NaturalPrepare.Meaning (StaticHeaders.frame prepared.original)
     (NaturalHelpers.interpretation prepared.helpers prepared.bindings) prepared.original.header.premises
 
+/-- Exact source branch provenance is optional for algebraic callers. Only
+an original source conditional supplies it; selected actuals never create it. -/
+structure GuardOrigin (predicate : Predicate) where
+  keyword : LocatedToken
+  marker : LocatedToken
+  tokens : List LocatedToken
+  original : NaturalHeaders.predicate (tokens.map (·.text)) = .ok predicate
+
+structure Guard where
+  predicate : Predicate
+  branch : Bool
+  left : Form
+  right : Form
+  scope : List String
+  bindings : List (Path × NaturalCatalog.Key)
+  origin : Option (GuardOrigin predicate)
+
+def Guard.Holds (guard : Guard) (values : Valuation) : Prop :=
+  (guard.predicate.forBranch guard.branch).comparison.Relation
+    (guard.left.evaluate values) (guard.right.evaluate values)
+
 structure Environment {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) where
   meaning : Valuation → Prop
@@ -21,13 +42,16 @@ structure Environment {sources owner name tokens}
   reader : ∀ bindings fuel path,
     WorkM (NaturalNormalize.Result names (NaturalHelpers.interpretation prepared.helpers bindings)
       meaning (fuel+1) (.name path))
+  guards : List Guard
+  guardsHeld : ∀ values,meaning values → ∀ guard ∈ guards,guard.Holds values
 
 def initial {sources owner name tokens} (prepared : StaticNatural.Prepared sources owner name tokens) :
     Environment prepared :=
   ⟨Meaning prepared,prepared.scope.context,fun _ held => held,
     NaturalFrames.names (StaticHeaders.frame prepared.original),fun bindings =>
     NaturalFrames.readName (StaticHeaders.frame prepared.original)
-      (NaturalHelpers.interpretation prepared.helpers bindings) (fun _ held => held.1)⟩
+      (NaturalHelpers.interpretation prepared.helpers bindings) (fun _ held => held.1),
+    [],by intro values held guard member; cases member⟩
 
 structure Checked {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
@@ -66,7 +90,7 @@ def extend {sources owner name tokens prepared environment scope expression}
     (fun values path => if path = [aliasName] then
       evaluate 128 (environment.names values) (NaturalHelpers.interpretation prepared.helpers checked.bindings) expression
     else environment.names values path),
-    fun laterBindings _fuel path => do
+    (fun laterBindings _fuel path => do
       exactWork (Exact.charge (aliasName.utf8ByteSize+(path.map String.utf8ByteSize).sum+1))
       if same : path = [aliasName] then
         return ⟨checked.normalized.form,by
@@ -84,7 +108,8 @@ def extend {sources owner name tokens prepared environment scope expression}
           refine ⟨value,?_,meaning⟩
           change (if path = [aliasName] then _ else _) = some value
           rw [if_neg same]
-          exact computed⟩⟩
+          exact computed⟩),
+    environment.guards,environment.guardsHeld⟩
 
 structure PredicateChecked {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
@@ -126,7 +151,7 @@ cannot justify a subtraction in its own condition. No feasibility test removes
 an original branch or grants evidence about opaque Basis parameters. -/
 def underPredicate {sources owner name tokens prepared environment scope predicate}
     (checked : @PredicateChecked sources owner name tokens prepared environment scope predicate)
-    (branch : Bool) : WorkM (Environment prepared) := do
+    (branch : Bool) (origin : Option (GuardOrigin predicate) := none) : WorkM (Environment prepared) := do
   let compared ← NaturalPredicates.comparison checked.left.form
     (predicate.forBranch branch).comparison checked.right.form
   let joined ← NaturalPredicates.conjunction environment.context compared
@@ -141,10 +166,19 @@ def underPredicate {sources owner name tokens prepared environment scope predica
       exact ⟨held,(checked.branchMeaning branch values held).mpr related⟩
     · rintro ⟨held,truth⟩
       exact ⟨held,(checked.branchMeaning branch values held).mp truth⟩⟩
+  let guard : Guard := ⟨predicate,branch,checked.left.form,checked.right.form,scope,checked.bindings,origin⟩
+  exactWork (Exact.charge (8*(environment.guards.length+scope.length+checked.bindings.length+1)))
   pure ⟨guardedMeaning,context,fun values held => environment.original values held.1,
-    environment.names,fun bindings fuel path => do
+    environment.names,(fun bindings fuel path => do
       let previous ← environment.reader bindings fuel path
-      pure ⟨previous.form,fun values held => previous.correct values held.1⟩⟩
+      pure ⟨previous.form,fun values held => previous.correct values held.1⟩),
+    environment.guards ++ [guard],by
+      intro values held selected member
+      rcases List.mem_append.mp member with earlier | current
+      · exact environment.guardsHeld values held.1 selected earlier
+      · have same : selected = guard := by simpa only [List.mem_singleton] using current
+        subst selected
+        exact (checked.branchMeaning branch values held.1).mp held.2⟩
 
 structure SomeEnvironment (sources : Sources) where
   owner : String
