@@ -109,7 +109,7 @@ private def equateAtom {sources : Sources} (state : GenericLexicalNatural.SomeEn
     if same : a = b then pure ⟨by intro values held parameters; simp [Atom.evaluate,same]⟩
     else throw .request
   | .bits a,.bits b =>
-    let proved ← NaturalPredicates.implies state.prepared.scope.context a .eq b
+    let proved ← NaturalPredicates.implies state.environment.context a .eq b
     pure ⟨by
       intro values held parameters
       have same : a.evaluate values = b.evaluate values := proved.proof values held

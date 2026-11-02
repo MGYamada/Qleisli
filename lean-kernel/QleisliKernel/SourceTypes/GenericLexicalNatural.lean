@@ -14,14 +14,18 @@ abbrev Meaning {sources owner name tokens} (prepared : StaticNatural.Prepared so
 
 structure Environment {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) where
+  meaning : Valuation → Prop
+  context : NaturalPredicates.Context meaning
+  original : ∀ values,meaning values → Meaning prepared values
   names : Valuation → Names
   reader : ∀ bindings fuel path,
     WorkM (NaturalNormalize.Result names (NaturalHelpers.interpretation prepared.helpers bindings)
-      (Meaning prepared) (fuel+1) (.name path))
+      meaning (fuel+1) (.name path))
 
 def initial {sources owner name tokens} (prepared : StaticNatural.Prepared sources owner name tokens) :
     Environment prepared :=
-  ⟨NaturalFrames.names (StaticHeaders.frame prepared.original),fun bindings =>
+  ⟨Meaning prepared,prepared.scope.context,fun _ held => held,
+    NaturalFrames.names (StaticHeaders.frame prepared.original),fun bindings =>
     NaturalFrames.readName (StaticHeaders.frame prepared.original)
       (NaturalHelpers.interpretation prepared.helpers bindings) (fun _ held => held.1)⟩
 
@@ -33,25 +37,33 @@ structure Checked {sources owner name tokens}
     (NaturalCatalog.scopedExpressionBindings sources (prepared.helpers.map (·.original)) owner scope [expression]).run before =
       (.ok bindings,after)
   normalized : NaturalNormalize.Result environment.names (NaturalHelpers.interpretation prepared.helpers bindings)
-    (Meaning prepared) 128 expression
+    environment.meaning 128 expression
+
+private def normalize {sources owner name tokens}
+    (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
+    (bindings : List (Path × NaturalCatalog.Key)) (expression : Expr) :
+    WorkM (NaturalNormalize.Result environment.names (NaturalHelpers.interpretation prepared.helpers bindings)
+      environment.meaning 128 expression) :=
+  NaturalNormalize.normalize (StaticHeaders.frame prepared.original).binders.length
+    environment.context
+    ⟨environment.reader bindings,
+      fun fuel path arguments args => NaturalHelpers.readCall
+        (StaticHeaders.frame prepared.original).binders.length environment.names
+        prepared.helpers bindings environment.context fuel path arguments args⟩ 128 expression
 
 def read {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
     (scope : List String) (expression : Expr) : WorkM (Checked prepared environment scope expression) := do
   let bindings ← NaturalAffine.witness
     (NaturalCatalog.scopedExpressionBindings sources (prepared.helpers.map (·.original)) owner scope [expression])
-  let normalized ← NaturalNormalize.normalize (StaticHeaders.frame prepared.original).binders.length
-    prepared.scope.context
-    ⟨environment.reader bindings.val,
-      fun fuel path arguments args => NaturalHelpers.readCall
-        (StaticHeaders.frame prepared.original).binders.length environment.names
-        prepared.helpers bindings.val prepared.scope.context fuel path arguments args⟩ 128 expression
+  let normalized ← normalize prepared environment bindings.val expression
   return ⟨bindings.val,by with_reducible exact bindings.property,normalized⟩
 
 def extend {sources owner name tokens prepared environment scope expression}
     (checked : @Checked sources owner name tokens prepared environment scope expression)
     (aliasName : String) : Environment prepared :=
-  ⟨(fun values path => if path = [aliasName] then
+  ⟨environment.meaning,environment.context,environment.original,
+    (fun values path => if path = [aliasName] then
       evaluate 128 (environment.names values) (NaturalHelpers.interpretation prepared.helpers checked.bindings) expression
     else environment.names values path),
     fun laterBindings _fuel path => do
@@ -74,6 +86,66 @@ def extend {sources owner name tokens prepared environment scope expression}
           rw [if_neg same]
           exact computed⟩⟩
 
+structure PredicateChecked {sources owner name tokens}
+    (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
+    (scope : List String) (predicate : Predicate) where
+  bindings : List (Path × NaturalCatalog.Key)
+  resolved : ∃ before after,
+    (NaturalCatalog.scopedExpressionBindings sources (prepared.helpers.map (·.original)) owner scope
+      [predicate.left,predicate.right]).run before = (.ok bindings,after)
+  left : NaturalNormalize.Result environment.names (NaturalHelpers.interpretation prepared.helpers bindings)
+    environment.meaning 128 predicate.left
+  right : NaturalNormalize.Result environment.names (NaturalHelpers.interpretation prepared.helpers bindings)
+    environment.meaning 128 predicate.right
+
+def readPredicate {sources owner name tokens}
+    (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
+    (scope : List String) (predicate : Predicate) : WorkM (PredicateChecked prepared environment scope predicate) := do
+  let bindings ← NaturalAffine.witness
+    (NaturalCatalog.scopedExpressionBindings sources (prepared.helpers.map (·.original)) owner scope
+      [predicate.left,predicate.right])
+  let left ← normalize prepared environment bindings.val predicate.left
+  let right ← normalize prepared environment bindings.val predicate.right
+  pure ⟨bindings.val,by with_reducible exact bindings.property,left,right⟩
+
+theorem PredicateChecked.branchMeaning {sources owner name tokens prepared environment scope predicate}
+    (checked : @PredicateChecked sources owner name tokens prepared environment scope predicate)
+    (branch : Bool) (values : Valuation) (held : environment.meaning values) :
+    (predicate.forBranch branch).Truth 128 (environment.names values)
+      (NaturalHelpers.interpretation prepared.helpers checked.bindings) ↔
+      (predicate.forBranch branch).comparison.Relation
+        (checked.left.form.evaluate values) (checked.right.form.evaluate values) := by
+  obtain ⟨a,left,sameLeft⟩ := checked.left.correct values held
+  obtain ⟨b,right,sameRight⟩ := checked.right.correct values held
+  rw [sameLeft,sameRight]
+  exact Predicate.truth_iff_of_values _ _ _ _ _ _ left right
+
+/-- Strengthen the exact lexical interpretation by an original branch guard.
+Both operands have already been normalized in the preceding context; a guard
+cannot justify a subtraction in its own condition. No feasibility test removes
+an original branch or grants evidence about opaque Basis parameters. -/
+def underPredicate {sources owner name tokens prepared environment scope predicate}
+    (checked : @PredicateChecked sources owner name tokens prepared environment scope predicate)
+    (branch : Bool) : WorkM (Environment prepared) := do
+  let compared ← NaturalPredicates.comparison checked.left.form
+    (predicate.forBranch branch).comparison checked.right.form
+  let joined ← NaturalPredicates.conjunction environment.context compared
+  let guardedMeaning := fun values => environment.meaning values ∧
+    (predicate.forBranch branch).Truth 128 (environment.names values)
+      (NaturalHelpers.interpretation prepared.helpers checked.bindings)
+  let context : NaturalPredicates.Context guardedMeaning := ⟨joined.alternatives,by
+    intro values
+    rw [joined.correct]
+    constructor
+    · rintro ⟨held,related⟩
+      exact ⟨held,(checked.branchMeaning branch values held).mpr related⟩
+    · rintro ⟨held,truth⟩
+      exact ⟨held,(checked.branchMeaning branch values held).mp truth⟩⟩
+  pure ⟨guardedMeaning,context,fun values held => environment.original values held.1,
+    environment.names,fun bindings fuel path => do
+      let previous ← environment.reader bindings fuel path
+      pure ⟨previous.form,fun values held => previous.correct values held.1⟩⟩
+
 structure SomeEnvironment (sources : Sources) where
   owner : String
   name : String
@@ -91,5 +163,12 @@ def bind {sources : Sources} (state : SomeEnvironment sources) (caller : String)
   guard (state.owner == caller && !scope.contains name) .request
   let checked ← read state.prepared state.environment scope expression
   pure ⟨state.owner,state.name,state.prepared,extend checked name⟩
+
+def assume {sources : Sources} (state : SomeEnvironment sources) (caller : String) (scope : List String)
+    (predicate : Predicate) (branch : Bool) : WorkM (SomeEnvironment sources) := do
+  guard (state.owner == caller) .request
+  let checked ← readPredicate state.prepared state.environment scope predicate
+  let environment ← underPredicate checked branch
+  pure ⟨state.owner,state.name,state.prepared,environment⟩
 
 end QleisliKernel.SourceTypes.GenericLexicalNatural

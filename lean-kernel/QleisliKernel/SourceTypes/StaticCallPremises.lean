@@ -49,7 +49,7 @@ def validateNatural {sources owner name original}
     GenericLexicalNatural.validate state owner scope expression
 
 abbrev Meaning {sources} (state : GenericLexicalNatural.SomeEnvironment sources) :=
-  GenericLexicalNatural.Meaning state.prepared
+  state.environment.meaning
 
 structure Known {sources} (state : GenericLexicalNatural.SomeEnvironment sources) where
   form : Form
@@ -135,7 +135,7 @@ def readInState {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
   let forms ← NaturalAffine.witness (readForms state scope target.header.formals arguments)
   if count : forms.val.length = target.header.formals.length then
     let replacements := NaturalFrames.replacements (StaticHeaders.frame callee.prepared.original) (forms.val.map (·.form))
-    let premises ← NaturalHelpers.implyPremises state.prepared.scope.context
+    let premises ← NaturalHelpers.implyPremises state.environment.context
       (StaticHeaders.frame state.prepared.original).binders.length replacements callee.prepared.scope.numeric
     pure ⟨callee.prepared,callee.originalHeader,forms.val,by with_reducible exact forms.property,count,by
       intro values held

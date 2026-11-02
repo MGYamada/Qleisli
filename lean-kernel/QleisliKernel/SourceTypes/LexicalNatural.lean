@@ -92,6 +92,38 @@ def read (sources : Sources) (caller : String) (entries : List NaturalHelpers.En
     (environment.reader bindings.val) expression
   return @Checked.mk sources caller entries environment scope expression bindings result
 
+/-- Complete closed comparison of the original operands under one original
+helper-binding table. The Bool only selects a branch; the independently
+computed predicate and both u32-checked operands remain in the receipt. -/
+structure PredicateChecked (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (environment : Environment entries) (scope : List String) (predicate : Predicate) where
+  bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
+    [predicate.left,predicate.right])
+  left : NaturalClosed.Checked environment.names
+    (NaturalHelpers.interpretation entries bindings.val) predicate.left
+  right : NaturalClosed.Checked environment.names
+    (NaturalHelpers.interpretation entries bindings.val) predicate.right
+  value : Bool
+  computed : predicate.evaluate 128 environment.names (NaturalHelpers.interpretation entries bindings.val) = some value
+  selectedTruth : (predicate.forBranch value).Truth 128 environment.names
+    (NaturalHelpers.interpretation entries bindings.val)
+
+def readPredicate (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (environment : Environment entries) (scope : List String) (predicate : Predicate) :
+    WorkM (PredicateChecked sources caller entries environment scope predicate) := do
+  let bindings ← NaturalAffine.witness
+    (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
+      [predicate.left,predicate.right])
+  let left ← NaturalClosed.read environment.names entries bindings.val
+    (environment.reader bindings.val) predicate.left
+  let right ← NaturalClosed.read environment.names entries bindings.val
+    (environment.reader bindings.val) predicate.right
+  let value := predicate.comparison.test (left.value : Int) (right.value : Int)
+  pure ⟨bindings,left,right,value,by
+    simp only [Predicate.evaluate,left.computed,right.computed,Option.pure_def]
+    rfl,
+    Predicate.branch_truth_of_values _ _ _ _ _ _ left.computed right.computed⟩
+
 structure Bound (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (name : String) (expression : Expr) where
   unbound : name ∉ scope
