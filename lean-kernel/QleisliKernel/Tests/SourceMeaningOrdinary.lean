@@ -81,6 +81,15 @@ private def nominalMatch : String :=
 
 #guard (view nominalMatch "Cycle").map (fun (targets,_,keys) => (targets,keys)) = some ([1,2,0],[0])
 
+private def paddedPair : String :=
+  "#![no_implicit_prelude]\nenum Tag{A,B,C}" ++
+  "classical fn keep(value:(Tag,Bit))->(Tag,Bit){value}" ++
+  "meaning Keep:(Tag,Bit)=permutation_by(keep);"
+
+-- Physical labels 0,1,2,4,5,6 expand as six dense logical input ordinals.
+#guard (view paddedPair "Keep").map (fun (targets,_,keys) => (targets,keys)) =
+  some ([0,1,2,3,4,5],[0,1])
+
 private def recordFlip : String :=
   "#![no_implicit_prelude]\nstruct Packet{bit:Bit,zero:Unit}" ++
   "classical fn flip(p:Packet)->Packet{Packet{zero:p.zero,bit:not p.bit}}" ++
@@ -155,6 +164,18 @@ private def outside : String :=
   "meaning Bad:Bit=permutation_by(through);"
 
 #guard ((inspect #[("main",outside),("helper",broad)] "Bad").run 10000000).1.isOk = false
+
+private def privateHelper : String :=
+  "#![no_implicit_prelude]\nclassical fn keep(b:Bit)->Bit{b}"
+private def privateCaller : String :=
+  "#![no_implicit_prelude]\nuse helper::keep;classical fn through(b:Bit)->Bit{keep(b)}" ++
+  "meaning Bad:Bit=permutation_by(through);"
+
+#guard ((inspect #[("main",privateCaller),("helper",privateHelper)] "Bad").run 10000000).1.isOk = false
+#guard (view ("#![no_implicit_prelude]\nclassical fn helper(b:Bit)->Bit{b}" ++
+  "classical fn through(helper:Bit)->Bit{helper(helper)}meaning Bad:Bit=permutation_by(through);") "Bad").isNone
+#guard (view ("#![no_implicit_prelude]\nclassical fn through(b:Bit)->Bit{if 0{missing(b)}else{b}}" ++
+  "meaning Bad:Bit=permutation_by(through);") "Bad").isNone
 
 -- Independent evaluator control only: a nonselected call is not evaluated.
 -- This hand-built data is never an original-source preparation or a handle;

@@ -122,7 +122,7 @@ def readTree {sources owner name} (catalogue : GenericCatalogue.Checked sources)
     (fun _ next naturals environment {tokens} tree accumulator => do
       exactWork (Exact.charge (16*((tokens.map fun token => token.text.utf8ByteSize+4).sum+
         (environment.map fun (name,basis) => name.utf8ByteSize+basis.length).sum+1)))
-      let scope := signature.staticNames ++ environment.map (·.1)
+      let scope := signature.staticNames ++ naturals.staticNames ++ environment.map (·.1)
       let children (trees : List (Sigma SourceSyntax.Tree)) (accumulator : Accumulator catalogue) :=
         trees.foldlM (fun (accumulator,indices,bases) child => do
           let (accumulator,index,basis) ← next naturals environment child.2 accumulator
@@ -172,8 +172,12 @@ def readTree {sources owner name} (catalogue : GenericCatalogue.Checked sources)
         add accumulator (.conditional condition left right) leftType
       | .staticConditional written left right =>
         let selected ← SourceStaticSelection.read sources owner naturals scope written
-        let (accumulator,left,leftType) ← next selected.naturals environment left accumulator
-        let (accumulator,right,rightType) ← next selected.naturals environment right accumulator
+        let leftGeneric ← SourceStaticSelection.assumeSelected owner naturals scope written.predicate true
+        let rightGeneric ← SourceStaticSelection.assumeSelected owner naturals scope written.predicate false
+        let leftNaturals := {naturals with generic := leftGeneric}
+        let rightNaturals := {naturals with generic := rightGeneric}
+        let (accumulator,left,leftType) ← next leftNaturals environment left accumulator
+        let (accumulator,right,rightType) ← next rightNaturals environment right accumulator
         guard (leftType == rightType) .request
         let accumulator := {accumulator with rows := accumulator.rows ++ selected.naturals.sourceRows}
         add accumulator (.staticConditional selected.selected left right) leftType
