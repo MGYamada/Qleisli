@@ -203,47 +203,47 @@ def readNode {functions} (metadata : Metadata functions) (nodes : List Node)
             exact (nodeAt nodes callee fuel environment index _ present).trans
               ((bindResult value (fun value => do
                 let value ← bitValue value
-                pure [.ordinary [.bit] (1-value)])).trans result.property)⟩
-        | .xor first second =>
-          let first ← child first
+                Except.ok (([.ordinary [.bit] (1-value)] : Value)))).trans result.property)⟩
+        | .xor firstIndex secondIndex =>
+          let first ← child firstIndex
           let a ← runPure (bitValue first.val)
-          let second ← child second
+          let second ← child secondIndex
           let b ← runPure (bitValue second.val)
           return ⟨[.ordinary [.bit] (if a.val == b.val then 0 else 1)],by
             exact (nodeAt nodes callee fuel environment index _ present).trans
               ((bindResult first (fun first => do
                 let a ← bitValue first
-                let second ← reference _
+                let second ← reference secondIndex
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a == b then 0 else 1)])).trans
+                Except.ok (([.ordinary [.bit] (if a == b then 0 else 1)] : Value)))).trans
               ((bindResult a (fun a => do
-                let second ← reference _
+                let second ← reference secondIndex
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a == b then 0 else 1)])).trans
+                Except.ok (([.ordinary [.bit] (if a == b then 0 else 1)] : Value)))).trans
               ((bindResult second (fun second => do
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a.val == b then 0 else 1)])).trans
-                (bindResult b (fun b => .ok [.ordinary [.bit] (if a.val == b then 0 else 1)])))))⟩
-        | .and first second =>
-          let first ← child first
+                Except.ok (([.ordinary [.bit] (if a.val == b then 0 else 1)] : Value)))).trans
+                (bindResult b (fun b => Except.ok (([.ordinary [.bit] (if a.val == b then 0 else 1)] : Value)))))))⟩
+        | .and firstIndex secondIndex =>
+          let first ← child firstIndex
           let a ← runPure (bitValue first.val)
-          let second ← child second
+          let second ← child secondIndex
           let b ← runPure (bitValue second.val)
           return ⟨[.ordinary [.bit] (if a.val == 1 && b.val == 1 then 1 else 0)],by
             exact (nodeAt nodes callee fuel environment index _ present).trans
               ((bindResult first (fun first => do
                 let a ← bitValue first
-                let second ← reference _
+                let second ← reference secondIndex
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)])).trans
+                Except.ok (([.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)] : Value)))).trans
               ((bindResult a (fun a => do
-                let second ← reference _
+                let second ← reference secondIndex
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)])).trans
+                Except.ok (([.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)] : Value)))).trans
               ((bindResult second (fun second => do
                 let b ← bitValue second
-                pure [.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)])).trans
-                (bindResult b (fun b => .ok [.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)])))))⟩
+                Except.ok (([.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)] : Value)))).trans
+                (bindResult b (fun b => Except.ok (([.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)] : Value)))))))⟩
         | .conditional condition left right =>
           let condition ← child condition
           let selected ← runPure (bitValue condition.val)
