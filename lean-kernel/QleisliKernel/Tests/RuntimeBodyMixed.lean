@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimePureBody
+import QleisliKernel.Qirf.RuntimeBodyGraph
 
 /-! The single body loop consumes actual classical gaps and observations.
 Initial SSA always comes from the same typed source/runtime input gate. These
@@ -62,5 +63,24 @@ private def gap (extraQuantum : Bool) : WorkM (List Nat × List Nat × Nat) := d
 -- A source-silent interval must be entirely classical. A scalar phase on the
 -- zero-width owner is a real missing source action, even though Raw accepts it.
 #guard (match (gap true).run 10000000 with | (.error .request,_) => true | _ => false)
+
+private def completeGraph (wrong : Bool) : WorkM Nat := do
+  let text := "#![no_implicit_prelude]\npub unitary fn route(c:Bit,u:Q<Unit>)->(Bit,Q<Unit>){(not c,u)}"
+  let unit : Semantics.Raw.Port := ⟨7,[],0⟩
+  let program : Semantics.Observation.Program :=
+    ⟨[unit],[2],[if wrong then .constant false 3 else .not 2 3],[7],[3],.unitary⟩
+  let artifact : Qirf.Artifact := ⟨#[program],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",signature.parameters.map (·.tree),
+      [[.ordinary [.bit] (.bit 2)],[.quantum ⟨unit,[.unit]⟩]],[[false],[true]],signature.result.tree,
+      [.tuple 2,.ordinary [.bit] (.bit 3),.quantum ⟨unit,[.unit]⟩],.unitary,{}⟩
+  let checked ← RuntimeBodyGraph.prepareRuntime artifact #[0] "main" "route" {} (.mk [] [] [] [] []) runtime
+  return checked.derivation.result.steps.length
+
+-- The common loop, typed root and all-canonical-row final ordinary gate share
+-- one fresh graph. A constant-zero mutation agrees at one input but not both.
+#guard (completeGraph false).run 10000000 |>.1.toOption == some 1
+#guard (match (completeGraph true).run 10000000 with | (.error .equation,_) => true | _ => false)
 
 end QleisliKernel.Tests.RuntimeBodyMixed
