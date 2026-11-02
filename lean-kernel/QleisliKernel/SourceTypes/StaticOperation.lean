@@ -479,7 +479,8 @@ inductive GraphReadProof (sources : Sources) : GraphData sources → Type where
       (read : ∃ before after,(readNodes sources context data.description).run before = (.ok data.results,after))
       (contexts : data.contexts = List.replicate data.results.length context) : GraphReadProof sources data
   | inherited (supply : SupplyData sources)
-      (actuals : ∀ actual ∈ supply.actuals,GraphReadProof sources actual.2)
+      (actuals : ∀ index : Fin supply.actuals.length,
+        GraphReadProof sources (supply.actuals[index.val]'index.isLt).2)
       (data : GraphData sources)
       (read : ∃ before after,(readSuppliedData supply data.description).run before = (.ok data,after)) :
       GraphReadProof sources data
@@ -513,7 +514,10 @@ def check (sources : Sources) (context : Context) (description : Description) :
       | some root =>
         let contexts := List.replicate results.val.length context
         let data : GraphData sources :=
-          ⟨description,results.val,contexts,count,by simp only [List.length_replicate,count],complete,root,selected⟩
+          ⟨description,results.val,contexts,count,by
+            change (List.replicate results.val.length context).length = description.nodes.length
+            rw [List.length_replicate]
+            exact count,complete,root,selected⟩
         pure (ofData context data (.fresh data context (by with_reducible exact results.property) rfl))
     else throw .request
   else throw .request
@@ -615,20 +619,25 @@ def Supply.data {sources owner name original instantiation}
 
 def Supply.valid {sources owner name original instantiation}
     (supply : @Supply sources owner name original instantiation) :
-    ∀ actual ∈ supply.data.actuals,GraphReadProof sources actual.2 := by
-  intro actual member
-  obtain ⟨packed,_member,same⟩ := List.mem_map.mp member
-  subst actual
-  exact packed.2.graph.read
+    ∀ index : Fin supply.data.actuals.length,
+      GraphReadProof sources (supply.data.actuals[index.val]'index.isLt).2 := by
+  intro index
+  have bound : index.val < supply.arguments.actuals.length := by
+    simpa only [Supply.data,List.length_map] using index.isLt
+  let packed := supply.arguments.actuals[index.val]'bound
+  simpa only [Supply.data,List.getElem_map] using packed.2.graph.read
 
 def checkWithSupply {sources owner name original instantiation}
     (supply : @Supply sources owner name original instantiation) (description : Description) :
     WorkM (CheckedGraph sources (.source owner) description) := do
   let data ← NaturalAffine.witness (readSuppliedData supply.data description)
   if same : data.val.description = description then
+    have read : ∃ before after,(readSuppliedData supply.data data.val.description).run before = (.ok data.val,after) := by
+      rw [same]
+      with_reducible exact data.property
     let checked := ofData (.source owner) data.val
-      (.inherited supply.data supply.valid data.val (by with_reducible exact data.property))
-    exact same ▸ checked
+      (.inherited supply.data supply.valid data.val read)
+    pure (same ▸ checked)
   else throw .request
 
 structure ProviderInstance {sources siteContext description}
