@@ -24,7 +24,7 @@ def Context.internal (context : Context) (owner : String) : Bool :=
   match context with | .external => false | .source caller => owner == caller
 
 abbrev Paths := OperationPaths.Paths
-abbrev Paths.meet := OperationPaths.Paths.meet
+def Paths.meet (left right : Paths) : Paths := OperationPaths.Paths.meet left right
 
 private def joinEffect : Effect → Effect → Effect
   | .observe,_ | _,.observe => .observe
