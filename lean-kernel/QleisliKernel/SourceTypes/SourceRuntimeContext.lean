@@ -218,7 +218,8 @@ structure Summary {sources owner name} (signature : Signature sources owner name
   generic : GenericTypeTrace.Checked signature.original
   genericRead : ∃ before after,
     (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))).run before = (.ok generic,after)
+      (signature.operations.catalogue.map (·.modulesContext))
+      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
   computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations

@@ -634,7 +634,8 @@ def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.F
           | .error _ => throw .request
           | .ok tree =>
             let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-              (signature.operations.catalogue.map (·.modulesContext)))
+              (signature.operations.catalogue.map (·.modulesContext))
+              (signature.operations.catalogue.map (·.meaningsContext)))
             Finite.guard (!signature.original.parsedHeader.ordinaryOnly || !generic.val.quantumUse) .request
             Finite.guard (!signature.original.parsedHeader.ordinaryOnly || generic.val.recursiveCalls.isEmpty) .request
             Finite.guard (!signature.original.declaration.isPublic || !generic.val.quantumUse ||

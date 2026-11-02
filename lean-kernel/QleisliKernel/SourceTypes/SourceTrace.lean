@@ -443,7 +443,8 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
         | .error _ => throw .request
         | .ok tree =>
           let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-            (signature.operations.catalogue.map (·.modulesContext)))
+            (signature.operations.catalogue.map (·.modulesContext))
+            (signature.operations.catalogue.map (·.meaningsContext)))
           let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
             if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
               pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
@@ -534,7 +535,8 @@ structure Checked (sources : Sources) (owner name : String) where
   generic : GenericTypeTrace.Checked signature.original
   genericRead : ∃ before after,
     (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))).run before = (.ok generic,after)
+      (signature.operations.catalogue.map (·.modulesContext))
+      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   result : Outcome sources owner initial
   traversed : ∃ before after,
@@ -584,7 +586,8 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
       | .error _ => throw .request
       | .ok tree =>
         let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-          (signature.operations.catalogue.map (·.modulesContext)))
+          (signature.operations.catalogue.map (·.modulesContext))
+          (signature.operations.catalogue.map (·.meaningsContext)))
         let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
           if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
             pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
