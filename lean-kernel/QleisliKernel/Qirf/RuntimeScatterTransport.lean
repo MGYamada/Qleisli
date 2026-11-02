@@ -128,7 +128,7 @@ private theorem bit_ext (left right : Nat) (same : ∀ query,bit left query = bi
   have bits := same query
   simp only [bit] at bits
   rw [← Nat.toNat_testBit left query,← Nat.toNat_testBit right query] at bits
-  cases left.testBit query <;> cases right.testBit query <;> simp_all
+  cases leftBit : left.testBit query <;> cases rightBit : right.testBit query <;> simp_all
 
 /-- A local overwrite and its literal selected-wire overwrite agree at every
 physical bit. Reversed and noncontiguous axes require no special case. -/
