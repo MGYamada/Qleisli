@@ -84,4 +84,35 @@ private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
 #guard summary (program "pub struct R{pub a:Bit,pub z:Unit} pub fn root(r:R)->Bit{r.a}") =
     some (.unitary,false,0,0)
 
+private def predicate : String := "classical fn predicate(b:Bit)->Bit{b} "
+
+#guard summary (program (predicate ++
+    "pub unitary fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|global_phase_eighth(a)}}")) =
+    some (.unitary,true,0,0)
+#guard summary (program (predicate ++
+    "pub unitary fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate,h){|data,a|(h(data),a)}}")) =
+    some (.unitary,true,0,0)
+#guard summary (program (predicate ++
+    "pub unitary fn root(q:Q<Bit>,x:Bit)->Q<Bit>{with_computed(q,predicate){|a|if x {h(a)} else {a}}}")) =
+    some (.unitary,true,0,0)
+#guard summary (program (predicate ++
+    "pub unitary fn root(q:Q<Bit>,x:Bit)->Q<Bit>{with_computed(q,predicate,h){|data,a|(if x {h(data)} else {data},a)}}")) = none
+#guard summary (program (predicate ++
+    "pub unitary fn root[const A:Basis](q:Q<A>)->Q<A>{with_computed(q,predicate){|a|a}}")) chosenBit = none
+#guard summary (program (predicate ++
+    "pub unitary fn root(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=with_computed(q,predicate){|a|let r=h(r);a};(q,r)}")) = none
+#guard summary (program (predicate ++
+    "pub observe fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|let m=measure_z(a);let u=unit(());basis u as _ {m}}}")) = none
+
+private def computedCount : Option Nat :=
+  let sources := program (predicate ++
+    "pub unitary fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|a}}")
+  let action : WorkM Nat := do
+    let signature ← StaticRuntimeSignature.prepareWithArguments sources "main" "root" {}
+    let instantiation : StaticInstantiation.Checked signature.original := .static {} signature.environment rfl
+    pure (← SourceTypes.GenericTypeTrace.readWithInstantiation instantiation).computedObligations.length
+  (action.run 10000000).1.toOption
+
+#guard computedCount = some 1
+
 end QleisliKernel.Tests.GenericTypeTrace

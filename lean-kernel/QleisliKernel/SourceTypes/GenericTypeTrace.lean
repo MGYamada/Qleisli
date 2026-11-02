@@ -8,6 +8,7 @@ import QleisliKernel.SourceTypes.ParameterPatterns
 import QleisliKernel.SourceTypes.QuantumLabels
 import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SourceEffectClosure
+import QleisliKernel.SourceTypes.SourceComputedSyntax
 
 /-! Whole original-body symbolic obligations before closing static actuals.
 The same checked source tree is traversed with opaque declaration/ordinal Basis
@@ -334,6 +335,43 @@ structure BasisObligation (sources : Sources) where
   input : Code
   output : Code
 
+structure ComputedPredicate (sources : Sources) where
+  resolution : Resolved
+  definition : Definition sources resolution.moduleName resolution.declaration.name
+  original : definition.original.envelope.source = resolution.source ∧
+    definition.original.envelope.declaration = resolution.declaration
+  rows : List (String × String)
+
+private def computedPredicate {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (input : Code) (reference : SourceComputedSyntax.Reference) :
+    WorkM (ComputedPredicate sources) := do
+  let (resolution,rows) ← named state scope reference.argument.tokens
+  let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
+  let definition ← readDefinition sources resolution.moduleName resolution.declaration.name (some helpers)
+  guard (definition.original.header.formals.isEmpty &&
+    definition.original.envelope.parsedHeader.ordinaryOnly) .request
+  let [parameter] := definition.parameters | throw .request
+  GenericValues.expect state parameter (← adapt (GenericValues.ordinaryValue input))
+  GenericValues.expect state definition.result [.ordinary [.fixed .bit]]
+  if original : definition.original.envelope.source = resolution.source ∧
+      definition.original.envelope.declaration = resolution.declaration then
+    pure ⟨resolution,definition,original,rows ++ definition.rows⟩
+  else throw .request
+
+/-- Original scoped typing is retained separately from the actual finite
+protected/certified cleanup equation. A dormant concrete scope still needs
+that native equation; no name, type or effect label discharges it. -/
+structure ComputedObligation (sources : Sources) where
+  owner : String
+  name : String
+  offset : Nat
+  state : GenericLexicalNatural.SomeEnvironment sources
+  input : Code
+  tokens : List LocatedToken
+  written : SourceComputedSyntax.Checked tokens
+  predicate : ComputedPredicate sources
+  logical : Option (Operation sources)
+
 structure Outcome (sources : Sources) where
   value : Value
   remaining : Environment
@@ -344,6 +382,7 @@ structure Outcome (sources : Sources) where
   needs : List Need := []
   meanings : List (SourceMeaning.Request sources) := []
   basisObligations : List (BasisObligation sources) := []
+  computedObligations : List (ComputedObligation sources) := []
   rows : List (String × String) := []
 
 def append {sources} (first last : Outcome sources) : Outcome sources :=
@@ -352,6 +391,7 @@ def append {sources} (first last : Outcome sources) : Outcome sources :=
     references := first.references ++ last.references,needs := first.needs ++ last.needs,
     recursions := first.recursions ++ last.recursions,
     meanings := first.meanings ++ last.meanings,basisObligations := first.basisObligations ++ last.basisObligations,
+    computedObligations := first.computedObligations ++ last.computedObligations,
     rows := first.rows ++ last.rows}
 
 private def ordinaryCodeNode : Nat → Value → WorkM (Code × Value) :=
@@ -686,6 +726,43 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         effect := direct effect,quantumUse := true,needs := body.needs ++ [⟨body.effect,.unitary,true⟩],
         basisObligations := body.basisObligations ++ [obligation]}
       pure (append input result)
+    | .computed written input body =>
+      let input ← next state scope environment input
+      let [.owner inputBasis] := input.value | throw .request
+      let predicate ← computedPredicate state scope inputBasis written.parts.predicate
+      let predicateEffect := functionEffect state.owner predicate.definition
+      let (logical,initial,names,expected) ← match written.parts.logical,written.parts.data with
+        | none,none =>
+          pure (none,input.remaining.filter (fun cell => !hasOwner cell.value),
+            [written.parts.auxiliary.text],[.owner [.fixed .bit]])
+        | some reference,some data => do
+          let logical ← operation state scope definition.operations 65 (some inputBasis) reference.argument.tokens
+          guard logical.paths.applicable .request
+          let _ ← SymbolicTypes.equate state logical.input inputBasis
+          let _ ← SymbolicTypes.equate state logical.output inputBasis
+          let initial ← adapt (GenericValues.bind [data.text] [.owner inputBasis] [] (data.span.startByte+1))
+          pure (some logical,initial,[data.text,written.parts.auxiliary.text],
+            [.tuple 2,.owner inputBasis,.owner [.fixed .bit]])
+        | _,_ => throw .request
+      guard (names.all fun name => !staticNames.contains name) .request
+      let initial ← adapt (GenericValues.bind [written.parts.auxiliary.text] [.owner [.fixed .bit]] initial
+        (written.parts.auxiliary.span.startByte+1))
+      let region ← next state (names ++ scope) initial body
+      guard (region.remaining.all fun cell => !hasOwner cell.value) .request
+      GenericValues.expect state region.value expected
+      let offset := written.parts.header.call.callee.head?.map (·.span.startByte) |>.getD 0
+      let obligation : ComputedObligation sources :=
+        ⟨owner,name,offset,state,inputBasis,tokens,written,predicate,logical⟩
+      let result : Outcome sources := {region with
+        value := [.owner inputBasis],remaining := input.remaining,effect := direct .unitary,quantumUse := true,
+        references := region.references ++ [(predicate.resolution.moduleName,predicate.resolution.declaration.name)] ++
+          (logical.toList.flatMap (·.references)),
+        needs := region.needs ++ [⟨predicateEffect,.unitary,true⟩,⟨region.effect,.unitary,false⟩] ++
+          logical.toList.flatMap (fun operation => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
+        meanings := region.meanings ++ logical.toList.flatMap (·.meanings),
+        computedObligations := region.computedObligations ++ [obligation],
+        rows := predicate.rows ++ logical.toList.flatMap (·.rows) ++ region.rows}
+      pure (append input result)
     | .variant written =>
       let reference ← SourceNominal.readVariant sources owner scope written
       let value ← typedNominal state reference.nominal.query.basis
@@ -936,6 +1013,9 @@ def Checked.basisObligations {sources owner name original} (checked : @Checked s
 
 def Checked.recursiveCalls {sources owner name original} (checked : @Checked sources owner name original) :=
   checked.root.outcome.recursions
+
+def Checked.computedObligations {sources owner name original} (checked : @Checked sources owner name original) :=
+  checked.root.outcome.computedObligations
 
 def Checked.sourceRows {sources owner name original} (checked : @Checked sources owner name original) : List (String × String) :=
   checked.records.flatMap fun body => body.definition.rows ++ body.outcome.rows

@@ -147,30 +147,38 @@ def primitiveKind {sources caller scope tokens}
   | .primitive _ _ _ _ _ _ .globalPhaseEighth _ => some .globalPhaseEighth
   | _ => none
 
-/-- Existing direct runtime adjoint/control accepts sealed unary gates using
+/-- Existing direct contextual targets and runtime adjoint/control accept sealed unary gates using
 the actual complete target type. Static provider arguments and nested static
 constructor leaves do not gain this contextual exception. -/
 private def runtimePrimitive (sources : Sources) (caller : String) (scope : List String)
     (target : Semantics.FiniteCarrier.Basis) (tokens : List LocatedToken) :
     WorkM (Option (Description × List (String × String))) := do
-  match CallSyntax.read tokens with
-  | .error _ => pure none
-  | .ok call =>
-    match call.call.callee.map (·.text),call.call.arguments with
-    | [constructor],[argument] =>
-      if constructor != "adjoint" && constructor != "controlled" then pure none else
-        match CallName.readName argument.tokens with
-        | .error _ => pure none
-        | .ok _ => do
-          let candidate ← CallName.read sources caller scope argument.tokens
-          match primitiveKind candidate with
-          | none => pure none
-          | some kind =>
-            guard (kind == .globalPhaseEighth || target == [.bit]) .request
-            let child : Description := ⟨[.primitive kind target],0⟩
-            let description := if constructor == "adjoint" then child.unary .inverse else child.unary .controlled
-            pure (some (description,CallName.sourceRows candidate))
-    | _,_ => pure none
+  if (CallName.readName tokens).isOk then
+    let candidate ← CallName.read sources caller scope tokens
+    match primitiveKind candidate with
+    | some kind =>
+      guard (kind == .globalPhaseEighth || target == [.bit]) .request
+      pure (some (⟨[.primitive kind target],0⟩,CallName.sourceRows candidate))
+    | none => pure none
+  else
+    match CallSyntax.read tokens with
+    | .error _ => pure none
+    | .ok call =>
+      match call.call.callee.map (·.text),call.call.arguments with
+      | [constructor],[argument] =>
+        if constructor != "adjoint" && constructor != "controlled" then pure none else
+          match CallName.readName argument.tokens with
+          | .error _ => pure none
+          | .ok _ => do
+            let candidate ← CallName.read sources caller scope argument.tokens
+            match primitiveKind candidate with
+            | none => pure none
+            | some kind =>
+              guard (kind == .globalPhaseEighth || target == [.bit]) .request
+              let child : Description := ⟨[.primitive kind target],0⟩
+              let description := if constructor == "adjoint" then child.unary .inverse else child.unary .controlled
+              pure (some (description,CallName.sourceRows candidate))
+      | _,_ => pure none
 
 def proposalWithInstantiation {sources caller callerName original}
     (instantiation : @StaticInstantiation.Checked sources caller callerName original)
