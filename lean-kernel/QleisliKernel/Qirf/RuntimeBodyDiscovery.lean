@@ -77,10 +77,10 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
         indices.foldlM (fun (discovery,bodies) index => do
           let bodyRequest :: rest := bodies | throw .request
           let header ← RuntimeProviderHeader.read artifact graph index bodyRequest
-          guard (!header.original.instance.arguments.hasMeaningRequirements) .request
+          guard (!header.original.supplied.arguments.hasMeaningRequirements) .request
           let body := header.original.body.checked
           let nested ← next body.signature body.events body.summary.staticRows bodyRequest.2 true
-          return (discovery.append (Discovery.append ⟨header.original.instance.arguments.sourceRows,header.roots⟩ nested),rest))
+          return (discovery.append (Discovery.append ⟨header.original.supplied.arguments.sourceRows,header.roots⟩ nested),rest))
           (⟨graph.sourceRows,[]⟩,bodies)
       let initial : Discovery := ⟨signature.sourceRows ++ staticRows,[]⟩
       let (initial,bodies) ← if prefixRequired then do

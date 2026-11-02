@@ -37,7 +37,7 @@ def bindings (roles : List Owner) (owners : List Semantics.CarrierInterface.Owne
   exactWork (Exact.charge (16*(Raw.OwnerFlow.fields roles+1)*(owners.length+1)))
   guard (roles.length == owners.length) .request
   (roles.zip owners).mapM fun (role,owner) => do
-    if same : role.basis = owner.basis then return ⟨role,owner.port⟩ else throw .request
+    if _same : role.basis = owner.basis then return ⟨role,owner.port⟩ else throw .request
 
 structure Inputs {sources owner name signature dependencies program}
     (body : @SourceRuntimeTrace.Body sources owner name signature)

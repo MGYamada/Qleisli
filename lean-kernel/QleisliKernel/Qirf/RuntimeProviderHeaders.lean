@@ -21,7 +21,7 @@ inductive Reads (artifact : Artifact) {context description}
   | nil : Reads artifact graph [] []
   | cons {index indices request requests}
       (header : RuntimeProviderHeader.Header artifact graph index request)
-      (noPendingMeaning : header.original.instance.arguments.hasMeaningRequirements = false)
+      (noPendingMeaning : header.original.supplied.arguments.hasMeaningRequirements = false)
       (rest : Reads artifact graph indices requests) :
       Reads artifact graph (index::indices) (request::requests)
 
@@ -33,7 +33,7 @@ def readHeaders (artifact : Artifact) {context description}
     | [],[] => return .nil
     | index::indices,request::requests =>
       let header ← RuntimeProviderHeader.read artifact graph index request
-      if noPendingMeaning : header.original.instance.arguments.hasMeaningRequirements = false then
+      if noPendingMeaning : header.original.supplied.arguments.hasMeaningRequirements = false then
         let rest ← next indices requests
         return .cons header noPendingMeaning rest
       else throw .request

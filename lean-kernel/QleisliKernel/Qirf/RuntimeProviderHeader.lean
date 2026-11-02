@@ -15,29 +15,29 @@ abbrev Request := SourceProviderSubject.Subject × RuntimeContextRequest.Context
 
 structure Original {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (index : Nat) where
-  instance : StaticOperation.ProviderInstance graph index
-  runtime : SourceRuntimeContext.CoreBinding instance.provider.signature instance.context instance.arguments
+  supplied : StaticOperation.ProviderInstance graph index
+  runtime : SourceRuntimeContext.CoreBinding supplied.provider.signature supplied.context supplied.arguments
   body : SourceRuntimeTrace.Body runtime.signature
   traversed : RuntimeInterval.Computed (SourceRuntimeTrace.readBodyWithSignature runtime.signature) body
 
 def readOriginal {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (index : Nat) :
     WorkM (Original graph index) := do
-  let instance ← StaticOperation.argumentsAt graph index
-  let runtime ← SourceRuntimeContext.fromQuantumCore instance.provider.signature instance.context instance.arguments
+  let supplied ← StaticOperation.argumentsAt graph index
+  let runtime ← SourceRuntimeContext.fromQuantumCore supplied.provider.signature supplied.context supplied.arguments
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature runtime.signature)
-  return ⟨instance,runtime,body.val,by with_reducible exact body.property⟩
+  return ⟨supplied,runtime,body.val,by with_reducible exact body.property⟩
 
 structure Header (artifact : Artifact) {context description}
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (index : Nat) (request : Request) where
   original : Original graph index
-  subject : SourceProviderBinding.Bound artifact original.instance.provider request.1
+  subject : SourceProviderBinding.Bound artifact original.supplied.provider request.1
 
 def read (artifact : Artifact) {context description}
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (index : Nat) (request : Request) :
     WorkM (Header artifact graph index request) := do
   let original ← readOriginal graph index
-  let subject ← SourceProviderBinding.read artifact original.instance.provider request.1
+  let subject ← SourceProviderBinding.read artifact original.supplied.provider request.1
   return ⟨original,subject⟩
 
 def Header.roots {artifact context description graph index request}
@@ -63,12 +63,12 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
 def Header.rows {artifact context description graph index request}
     (header : @Header artifact context description graph index request) : List (String × String) :=
   let body := header.original.body.checked
-  graph.sourceRows ++ header.original.instance.arguments.sourceRows ++
+  graph.sourceRows ++ header.original.supplied.arguments.sourceRows ++
     body.signature.sourceRows ++ body.summary.staticRows ++ body.events.flatMap (eventRows 65)
 
 structure IR {artifact context description graph index request}
     (header : @Header artifact context description graph index request) (root : Validity.Root) where
-  original : PureProviderSubject.Checked artifact root header.original.instance.provider header.subject.programIndex
+  original : PureProviderSubject.Checked artifact root header.original.supplied.provider header.subject.programIndex
 
 /-- IR/code facts use exactly this bound subject and final dependency root.
 They do not consume body contexts, demanded inverse/control paths or Meaning
@@ -81,13 +81,13 @@ def readIR {artifact context description graph index request}
 
 theorem Original.sameSource {sources context description graph index}
     (original : @Original sources context description graph index) :
-    original.body.checked.signature.original.source = original.instance.provider.signature.original.source := by
+    original.body.checked.signature.original.source = original.supplied.provider.signature.original.source := by
   rw [original.body.originalSignature]
   exact original.runtime.source
 
 theorem Original.sameSupplier {sources context description graph index}
     (original : @Original sources context description graph index) :
-    original.body.checked.signature.context = original.instance.context := by
+    original.body.checked.signature.context = original.supplied.context := by
   rw [original.body.originalSignature]
   exact original.runtime.sameContext
 
