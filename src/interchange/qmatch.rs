@@ -28,6 +28,26 @@ pub(crate) struct ArmSubject {
     pub body: ArmBody,
     pub controlled: crate::ir::RawProgram,
     pub context: std::sync::Arc<ContextSubject>,
+    pub operation: Option<std::sync::Arc<OperationSubject>>,
+}
+
+/// Retained original provider subjects in descriptor child-edge postorder.
+/// These objects remain proposals; Meaning reference bodies and demanded path
+/// equations are derived independently before any v5 execution authority.
+pub(crate) enum OriginalBody {
+    Function {
+        evidence: std::sync::Arc<crate::contract::FunctionEvidence>,
+        context: std::sync::Arc<ContextSubject>,
+    },
+    Pure {
+        program: crate::AcceptedProgram,
+        context: std::sync::Arc<ContextSubject>,
+    },
+}
+
+pub(crate) struct OperationSubject {
+    pub description: Description,
+    pub bodies: Vec<OriginalBody>,
 }
 
 /// Original lowering coordinates retained alongside the exact prepared body.

@@ -137,6 +137,7 @@ pub(super) struct PureOrigin {
     pub(super) equation: Arc<crate::interchange::pure_leaf::SourcePureEquation>,
 }
 mod bindings;
+mod source;
 #[cfg(test)]
 mod identity_tests;
 mod pure;

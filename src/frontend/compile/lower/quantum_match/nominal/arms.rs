@@ -14,7 +14,7 @@ pub(super) fn prepare(
     target: &Ty,
     bits: usize,
     env: &Env,
-) -> Result<(ArmBody, Arc<ContextSubject>, Vec<CircuitStep>), CompileError> {
+) -> Result<(ArmBody, Arc<ContextSubject>, Vec<CircuitStep>, Arc<crate::interchange::qmatch::OperationSubject>), CompileError> {
     if target.basis_bits().is_some() {
         let operation = lower.operation(module, expression, env)?;
         if operation.basis != *target
@@ -41,7 +41,8 @@ pub(super) fn prepare(
                 "qmatch arm lacks its actual original lowering context")
         })?;
         let steps = operation.steps(module, expression.span, Access::Controlled, lower.compiler)?;
-        return Ok((ArmBody::Evidence(Arc::clone(evidence)), context, steps));
+        let original = lower.compiler.qmatch_operation_subject(&operation, module, expression.span)?;
+        return Ok((ArmBody::Evidence(Arc::clone(evidence)), context, steps, Arc::new(original)));
     }
 
     let StaticOpKind::Name(name) = &expression.kind else {
@@ -138,13 +139,27 @@ pub(super) fn prepare(
         name.span,
         path.len().saturating_mul(2).saturating_add(1),
     )?;
+    let original_name = &lower.compiler.source.resolution.declaration(key).name;
+    lower.compiler.charge(module, name.span,
+        original_name.0.len() + original_name.1.len() + 24)?;
     Ok((
         ArmBody::Physical {
             bits: bits as u32,
             raw: raw.clone(),
             identity: Box::new(RetainedIdentity::interned(path.clone(), path, sources)),
         },
-        context,
+        Arc::clone(&context),
         steps,
+        Arc::new(crate::interchange::qmatch::OperationSubject {
+            description: crate::interchange::qmatch::Description {
+                nodes: vec![crate::interchange::qmatch::OperationNode::Provider {
+                    module: lower.compiler.source.resolution.declaration(key).name.0.clone(),
+                    function: lower.compiler.source.resolution.declaration(key).name.1.clone(),
+                    bases: vec![], naturals: vec![], operations: vec![],
+                }],
+                root: 0,
+            },
+            bodies: vec![crate::interchange::qmatch::OriginalBody::Pure { program, context }],
+        }),
     ))
 }

@@ -636,7 +636,7 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        let (subject, context, mut body) = arms::prepare(
+        let (subject, context, mut body, original) = arms::prepare(
             lower,
             module,
             &arm.operation,
@@ -654,6 +654,7 @@ pub(super) fn emit(
             body: subject,
             controlled: controlled(body.clone(), target_bits),
             context,
+            operation: Some(original),
         });
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
             .map_err(|e| lower.compiler.op_error(module, arm.span, e))?;

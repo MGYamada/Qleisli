@@ -472,6 +472,7 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
                     } else {
                         vec![phase(1, true)]
                     }),
+                    operation: None,
                 }
             })
             .collect::<Vec<_>>()
