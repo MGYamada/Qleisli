@@ -1070,6 +1070,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           guard (values.length == application.parameters.length) .request
           for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
           let externalPermission := owner != application.owner &&
+            !application.definition.original.envelope.parsedHeader.ordinaryOnly &&
             application.definition.original.envelope.parsedHeader.effect.isSome
           let result : Outcome sources := {
             value := application.result,remaining := arguments.remaining,

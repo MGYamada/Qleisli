@@ -10,6 +10,8 @@ development milestones from the scope of their evidence.
   compare every row with an independent interpreter of the original source
   trees and callees. Retain exact nominal types, tuple order and scalar phase;
   native implementation equations and Meaning admission remain unfinished.
+- Preserve original classical-only contracts across module calls when checking
+  quantum use. Keep the declared public effect as the external effect bound.
 - Expand original operation duties in source order through checked call-chain
   substitutions. Keep written assertions distinct, share exact callee-header
   requirement identities and retain unresolved recursive coverage explicitly.
