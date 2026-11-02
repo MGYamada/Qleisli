@@ -153,8 +153,8 @@ private theorem knownBinding {sources owner} (known : KnownModule sources owner)
   unfold originalBinding
   rw [known.bound]
   change (do
-    let declarations ← SourceTypes.declarations known.source
-    let [decl] := declarations.filter (fun decl => decl.name == declaration.name)
+    let declarations : List Declaration ← SourceTypes.declarations known.source
+    let [decl] := declarations.filter (fun (decl : Declaration) => decl.name == declaration.name)
       | throw "missing/ambiguous original type declaration"
     pure (known.source,decl)) = .ok (known.source,declaration)
   rw [readDeclarations]
