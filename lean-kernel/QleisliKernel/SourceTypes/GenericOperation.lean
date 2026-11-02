@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.GenericLexicalNatural
 import QleisliKernel.SourceTypes.OperationDescription
 import QleisliKernel.SourceTypes.OperationPaths
 import QleisliKernel.SourceTypes.SourceMeaning
+import QleisliKernel.SourceTypes.StaticApplication
 import QleisliKernel.Semantics.SymbolicBasis
 
 /-! Original operation closures before a particular static instantiation.
@@ -260,6 +261,27 @@ inductive Requirement (sources : Sources) where
   | meaning (request : SourceMeaning.Request sources)
   | access (paths : OperationPaths.Paths)
 
+/-- Every original static actual and its symbolic premise-transfer witness
+remain attached to the call occurrence, including unused supplied arguments.
+This is not a runtime interval or an accepted provider instance. -/
+structure ActualOperation (sources : Sources) where
+  original : Parameter
+  subject : Description
+  suppliers : List (Nat × Origin sources)
+
+structure ApplicationSource (sources : Sources) where
+  state : GenericLexicalNatural.SomeEnvironment sources
+  scope : List String
+  tokens : List LocatedToken
+  owner : String
+  name : String
+  target : StaticHeaders.Original sources owner name
+  written : StaticApplication.Syntax tokens
+  transfer : StaticCallPremises.InState state scope target written.arguments
+  basisActuals : List (Parameter × Code)
+  naturalActuals : List Form
+  operationActuals : List (ActualOperation sources)
+
 /-- A required formal is paired with the actual original child occurrence.
 Its key includes the callee declaration and mixed ordinal. Forwarding retains
 this chain instead of rebinding the actual under the callee's module policy. -/
@@ -269,12 +291,15 @@ structure Binding (sources : Sources) where
   original : StaticHeaders.Original sources owner name
   formal : StaticHeaders.Formal
   actual : Origin sources
+  application : Option (ApplicationSource sources) := none
 
 structure Duty (sources : Sources) where
   origin : Origin sources
   subject : Description
   requirement : Requirement sources
   bindings : List (Binding sources) := []
+  suppliers : List (Nat × Origin sources) := []
+  runtimeApplication : Option (ApplicationSource sources) := none
 
 def Duty.sourceRows {sources} (duty : Duty sources) : List (String × String) :=
   (duty.origin.state.owner,duty.origin.state.prepared.original.envelope.source) ::

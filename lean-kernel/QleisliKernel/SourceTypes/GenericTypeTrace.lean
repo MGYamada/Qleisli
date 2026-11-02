@@ -10,6 +10,7 @@ import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SourceEffectClosure
 import QleisliKernel.SourceTypes.SourceComputedSyntax
 import QleisliKernel.SourceTypes.SourceModules
+import QleisliKernel.SourceTypes.GenericOperation
 
 /-! Whole original-body symbolic obligations before closing static actuals.
 The same checked source tree is traversed with opaque declaration/ordinal Basis
@@ -43,6 +44,11 @@ structure Operation (sources : Sources) where
   needs : List Need := []
   meanings : List (SourceMeaning.Request sources) := []
   rows : List (String × String) := []
+  subject : GenericOperation.Description
+  origin : GenericOperation.Origin sources
+  duties : List (GenericOperation.Duty sources) := []
+  suppliers : List (Nat × GenericOperation.Origin sources) := []
+  applications : List (GenericOperation.ApplicationSource sources) := []
 
 structure Definition (sources : Sources) (owner name : String) where
   original : StaticHeaders.Original sources owner name
@@ -81,8 +87,15 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
       let _ ← SymbolicTypes.checkRefinement state scope formal.ordinal parsed.input parsed.output
         selected.meaning.graph.input selected.meaning.graph.output
       pure [selected.request]
+  let rows := ports.input.result.rows ++ ports.output.result.rows ++ meanings.flatMap (·.sourceRows)
+  let origin ← GenericOperation.readOrigin state scope
+    state.prepared.original.envelope.occurrence.header rows
+  let subject := GenericOperation.Description.singleton (StaticHeaders.frame state.prepared.original)
+    (.formal ⟨state.owner,state.name,formal.ordinal⟩)
+  let duties := meanings.map fun request =>
+    (⟨origin,subject,.meaning request,[],[(0,origin)]⟩ : GenericOperation.Duty sources)
   pure ⟨ports.input.result.code,ports.output.result.code,direct effect,access,[],[],meanings,
-    ports.input.result.rows ++ ports.output.result.rows ++ meanings.flatMap (·.sourceRows)⟩
+    rows,subject,origin,duties,[(0,origin)],[]⟩
 
 def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
     (helpers : Option (NaturalHelpers.Checked sources) := none)
@@ -169,6 +182,11 @@ structure Application (sources : Sources) where
   needs : List Need
   meanings : List (SourceMeaning.Request sources)
   rows : List (String × String)
+  subject : GenericOperation.Description
+  origin : GenericOperation.Origin sources
+  duties : List (GenericOperation.Duty sources)
+  suppliers : List (Nat × GenericOperation.Origin sources)
+  applications : List (GenericOperation.ApplicationSource sources)
 
 def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) {tokens} (written : StaticApplication.Syntax tokens) (owner name : String)
@@ -220,10 +238,54 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
     definition.operations.map (fun (formalName,required) =>
       let actual := operations.find? (·.1 == formalName) |>.map (·.2)
       ⟨actual.map (·.effect) |>.getD (direct .observe),required.effect.direct,false⟩)
+  let rows := definition.rows ++ actuals.flatMap (·.2.2) ++
+    operations.flatMap (fun (_,operation) => operation.rows)
+  let origin ← GenericOperation.readOrigin state scope tokens rows
+  let operationActuals ← operations.mapM fun (formalName,actual) => do
+    let some formal := target.header.formals.find? (·.name == formalName) | throw .request
+    pure (⟨⟨owner,name,formal.ordinal⟩,actual.subject,actual.suppliers⟩ : GenericOperation.ActualOperation sources)
+  let occurrence : GenericOperation.ApplicationSource sources :=
+    ⟨state,scope,tokens,owner,name,target,written,transfer,bases,naturals,operationActuals⟩
+  let supplied ← operations.mapM fun (formalName,actual) => do
+    let some formal := target.header.formals.find? (·.name == formalName) | throw .request
+    let some (_,argument) := (target.header.formals.zip written.arguments).find?
+      (fun (formal,_) => formal.name == formalName) | throw .request
+    let actualOrigin ← GenericOperation.readOrigin state scope argument.tokens actual.rows
+    let binding : GenericOperation.Binding sources := ⟨owner,name,target,formal,actualOrigin,some occurrence⟩
+    let inherited := actual.duties.map fun duty => {duty with bindings := duty.bindings ++ [binding]}
+    let some (_,required) := definition.operations.find? (·.1 == formalName) | throw .request
+    let meanings := required.meanings.map fun request =>
+      (⟨required.origin,actual.subject,.meaning request,[binding],actual.suppliers⟩ : GenericOperation.Duty sources)
+    let access := if required.paths.applicable || required.paths.adjointable || required.paths.controllable then
+      [(⟨required.origin,actual.subject,.access required.paths,[binding],actual.suppliers⟩ : GenericOperation.Duty sources)]
+      else []
+    pure (inherited ++ meanings ++ access)
+  let basisArguments ← target.header.formals.foldlM (fun arguments formal => do
+    match formal.kind with
+    | .basis =>
+      let some (_,code) := bases.find? (·.1 == ⟨owner,name,formal.ordinal⟩) | throw .request
+      pure (arguments ++ [(formal.name,code)])
+    | _ => pure arguments) []
+  let naturalArguments ← target.header.formals.foldlM (fun arguments formal => do
+    match formal.kind with
+    | .natural =>
+      let some value := transfer.forms[formal.ordinal]? | throw .request
+      pure (arguments ++ [(formal.name,value.form)])
+    | _ => pure arguments) []
+  let frame := StaticHeaders.frame state.prepared.original
+  guard (operations.all fun (_,operation) => operation.subject.frame.binders == frame.binders) .request
+  let subject := GenericOperation.provider frame owner name basisArguments naturalArguments
+    (operations.map fun (name,operation) => (name,operation.subject))
+    (definition.operations.map fun (name,operation) => (name,operation.paths))
+  let (_,suppliers) := operations.foldl (fun (offset,suppliers) (_,operation) =>
+    (offset+operation.subject.nodes.length,
+      suppliers ++ operation.suppliers.map (fun (index,origin) => (index+offset,origin)))) (0,[])
+  let suppliers := suppliers ++ [(subject.root,origin)]
   pure ⟨owner,name,definition,parameters,result,operations,recursion,
     (owner,name) :: operations.flatMap (fun (_,operation) => operation.references),needs,
     operations.flatMap (fun (_,operation) => operation.meanings) ++ definition.operations.flatMap (fun (_,operation) => operation.meanings),
-    definition.rows ++ actuals.flatMap (·.2.2) ++ operations.flatMap (fun (_,operation) => operation.rows)⟩
+    rows,subject,origin,supplied.flatten,suppliers,
+    operations.flatMap (fun (_,operation) => operation.applications) ++ [occurrence]⟩
 
 private def named {sources : Sources} (modules : Option (SourceModules.Prepared sources)) (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (tokens : List LocatedToken) : WorkM (Resolved × List (String × String)) := do
@@ -232,17 +294,23 @@ private def named {sources : Sources} (modules : Option (SourceModules.Prepared 
   pure (resolution,CallName.sourceRows candidate)
 
 private def combineOperation {sources} (a b : Operation sources) (input output : Code)
-    (effect : Formula) (paths : OperationPaths.Paths) : Operation sources :=
-  ⟨input,output,effect,paths,a.references ++ b.references,a.needs ++ b.needs,
-    a.meanings ++ b.meanings,a.rows ++ b.rows⟩
+    (effect : Formula) (paths : OperationPaths.Paths) (origin : GenericOperation.Origin sources)
+    (constructor : Nat → Nat → GenericOperation.Node) : WorkM (Operation sources) := do
+  guard (a.subject.frame.binders == b.subject.frame.binders) .request
+  return ⟨input,output,effect,paths,a.references ++ b.references,a.needs ++ b.needs,
+    a.meanings ++ b.meanings,a.rows ++ b.rows,a.subject.binary b.subject constructor,origin,
+    a.duties ++ b.duties,a.suppliers ++ b.suppliers.map (fun (index,origin) =>
+      (index+a.subject.nodes.length,origin)),a.applications ++ b.applications⟩
 
-private def validateCount {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
-    (scope : List String) (tokens : List LocatedToken) : WorkM (List (String × String)) := do
+private def operationCount {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (tokens : List LocatedToken) : WorkM (GenericOperation.Count × List (String × String)) := do
   let texts := tokens.map (·.text)
-  let tokens := if texts.take 2 == ["2","^"] then tokens.drop 2 else tokens
+  let powerTwo := texts.take 2 == ["2","^"]
+  let tokens := if powerTwo then tokens.drop 2 else tokens
   let expression ← adapt (StaticBindings.natural tokens)
-  let _ ← GenericLexicalNatural.read state.prepared state.environment scope expression.expression
-  NaturalRows.expression sources state.owner state.prepared.helpers scope expression.expression
+  let checked ← GenericLexicalNatural.read state.prepared state.environment scope expression.expression
+  let rows ← NaturalRows.expression sources state.owner state.prepared.helpers scope expression.expression
+  pure (⟨checked.normalized.form,powerTwo⟩,rows)
 
 private def operationWithModules {sources : Sources} (modules : Option (SourceModules.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources)
@@ -250,6 +318,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
     Nat → Option Code → List LocatedToken → WorkM (Operation sources) :=
   Nat.rec (fun _ _ => throw .limit) (fun _ next primitiveTarget tokens => do
     exactWork (Exact.charge (32*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
+    let origin ← GenericOperation.readOrigin state scope tokens []
     if tokens.getLast?.map (·.text) == some ")" then
       let call ← adapt (CallSyntax.read tokens)
       match call.call.callee.map (·.text),call.call.arguments with
@@ -259,7 +328,9 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         pure {child with
           input := child.output,output := child.input,
           effect := direct .unitary,paths := ⟨child.paths.adjointable,child.paths.applicable,child.paths.controllable⟩,
-          needs := child.needs ++ [⟨child.effect,.unitary,false⟩]}
+          needs := child.needs ++ [⟨child.effect,.unitary,false⟩],
+          subject := child.subject.unary .inverse,origin := {origin with rows := child.rows},
+          duties := child.duties ++ [⟨origin,child.subject,.access ⟨false,true,false⟩,[],child.suppliers⟩]}
       | ["controlled"],[child] =>
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
@@ -267,31 +338,36 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         pure {child with
           input := basis,output := basis,effect := direct .unitary,
           paths := ⟨child.paths.controllable,child.paths.controllable,child.paths.controllable⟩,
-          needs := child.needs ++ [⟨child.effect,.unitary,false⟩]}
+          needs := child.needs ++ [⟨child.effect,.unitary,false⟩],
+          subject := child.subject.unary .controlled,origin := {origin with rows := child.rows}}
       | ["power"],[child,count] =>
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
-        let rows ← validateCount state scope count.tokens
-        pure {child with rows := child.rows ++ rows}
+        let (count,rows) ← operationCount state scope count.tokens
+        pure {child with rows := child.rows ++ rows,subject := child.subject.unary (fun index => .power index count),
+          origin := {origin with rows := child.rows ++ rows}}
       | ["then_op"],[left,right] =>
         let left ← next none left.tokens
         let right ← next none right.tokens
         let _ ← SymbolicTypes.equate state left.output right.input
-        pure (combineOperation left right left.input right.output (join left.effect right.effect) (meet left.paths right.paths))
+        combineOperation left right left.input right.output (join left.effect right.effect) (meet left.paths right.paths)
+          {origin with rows := left.rows ++ right.rows} .thenOp
       | ["tensor_op"],[left,right] =>
         let left ← next none left.tokens
         let right ← next none right.tokens
-        pure (combineOperation left right (.fixed .pair :: left.input ++ right.input)
-          (.fixed .pair :: left.output ++ right.output) (join left.effect right.effect) (meet left.paths right.paths))
+        combineOperation left right (.fixed .pair :: left.input ++ right.input)
+          (.fixed .pair :: left.output ++ right.output) (join left.effect right.effect) (meet left.paths right.paths)
+          {origin with rows := left.rows ++ right.rows} .tensor
       | ["conjugate_op"],[outer,middle] =>
         let outer ← next none outer.tokens
         let middle ← next none middle.tokens
         let _ ← SymbolicTypes.equate state outer.input middle.input
         let _ ← SymbolicTypes.equate state middle.input middle.output
-        let result := combineOperation outer middle outer.output outer.output (join outer.effect middle.effect)
+        let result ← combineOperation outer middle outer.output outer.output (join outer.effect middle.effect)
           ⟨outer.paths.applicable && outer.paths.adjointable && middle.paths.applicable,
             outer.paths.applicable && outer.paths.adjointable && middle.paths.adjointable,
             outer.paths.applicable && outer.paths.adjointable && middle.paths.controllable⟩
+          {origin with rows := outer.rows ++ middle.rows} .conjugate
         pure {result with needs := result.needs ++ [⟨outer.effect,.unitary,false⟩]}
       | ["checked_op"],[child,meaning] =>
         let _ ← adapt (CallName.readName child.tokens)
@@ -301,7 +377,11 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         let output ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length selected.meaning.graph.output
         let _ ← SymbolicTypes.equate state child.input input.code
         let _ ← SymbolicTypes.equate state child.output output.code
-        pure {child with meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows}
+        let origin := {origin with rows := child.rows ++ selected.request.sourceRows}
+        pure {child with meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows,
+          subject := child.subject.unary (fun index =>
+            .requested index selected.request.moduleName selected.request.declarationName),origin,
+          duties := child.duties ++ [⟨origin,child.subject,.meaning selected.request,[],child.suppliers⟩]}
       | _,_ => throw .request
     else
       let written ← adapt (StaticApplication.readSyntax tokens)
@@ -310,15 +390,20 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
       | .lexical name .. =>
         guard written.arguments.isEmpty .request
         let some (_,formal) := formals.find? (·.1 == name) | throw .request
-        pure formal
+        pure {formal with origin := {origin with rows := formal.rows}}
       | .primitive _ _ _ _ _ _ kind _ =>
         guard written.arguments.isEmpty .request
         let some target := primitiveTarget | throw .request
         match kind with
         | .h =>
           let _ ← SymbolicTypes.equate state target [.fixed .bit]
-          pure ⟨target,target,direct .unitary,⟨true,true,true⟩,[],[],[],CallName.sourceRows candidate⟩
-        | .globalPhaseEighth => pure ⟨target,target,direct .unitary,⟨true,true,true⟩,[],[],[],CallName.sourceRows candidate⟩
+          pure ⟨target,target,direct .unitary,⟨true,true,true⟩,[],[],[],CallName.sourceRows candidate,
+            .singleton (StaticHeaders.frame state.prepared.original) (.primitive .h target),
+            {origin with rows := CallName.sourceRows candidate},[],[],[]⟩
+        | .globalPhaseEighth =>
+          pure ⟨target,target,direct .unitary,⟨true,true,true⟩,[],[],[],CallName.sourceRows candidate,
+            .singleton (StaticHeaders.frame state.prepared.original) (.primitive .globalPhaseEighth target),
+            {origin with rows := CallName.sourceRows candidate},[],[],[]⟩
         | _ => throw .request
       | _ =>
         let some resolution := CallName.candidateResolution candidate | throw .request
@@ -331,7 +416,9 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         let same ← SymbolicTypes.optionalEquality state input output
         let effect := functionEffect state.owner application.definition
         pure ⟨input,output,effect,⟨true,reverse,control && same.isSome⟩,application.references,
-          application.needs ++ [⟨effect,.iso,false⟩],application.meanings,CallName.sourceRows candidate ++ application.rows⟩)
+          application.needs ++ [⟨effect,.iso,false⟩],application.meanings,CallName.sourceRows candidate ++ application.rows,
+          application.subject,{application.origin with rows := CallName.sourceRows candidate ++ application.rows},
+          application.duties,application.suppliers,application.applications⟩)
 
 structure BasisObligation (sources : Sources) where
   owner : String
@@ -433,6 +520,8 @@ structure Outcome (sources : Sources) where
   recursions : List (Recursion sources) := []
   needs : List Need := []
   meanings : List (SourceMeaning.Request sources) := []
+  duties : List (GenericOperation.Duty sources) := []
+  applications : List (GenericOperation.ApplicationSource sources) := []
   basisObligations : List (BasisObligation sources) := []
   computedObligations : List (ComputedObligation sources) := []
   rows : List (String × String) := []
@@ -443,6 +532,7 @@ def append {sources} (first last : Outcome sources) : Outcome sources :=
     references := first.references ++ last.references,needs := first.needs ++ last.needs,
     recursions := first.recursions ++ last.recursions,
     meanings := first.meanings ++ last.meanings,basisObligations := first.basisObligations ++ last.basisObligations,
+    duties := first.duties ++ last.duties,applications := first.applications ++ last.applications,
     computedObligations := first.computedObligations ++ last.computedObligations,
     rows := first.rows ++ last.rows}
 
@@ -524,6 +614,9 @@ private def selection {sources} (modules : Option (SourceModules.Prepared source
     effect := direct .unitary,references := arms.flatMap (·.2.references),
     needs := arms.flatMap (fun (_,operation) => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
     meanings := arms.flatMap (·.2.meanings),
+    duties := arms.flatMap (fun (_,operation) => operation.duties ++
+      [⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,[],operation.suppliers⟩]),
+    applications := arms.flatMap (·.2.applications),
     rows := arms.flatMap (fun (label,operation) => label.sourceRows ++ operation.rows)}
 
 private def expectEnvironment {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
@@ -645,7 +738,9 @@ private def applyOperation {sources} (modules : Option (SourceModules.Prepared s
       pure [.owner op.output]
   pure {
     value,remaining,effect := op.effect,quantumUse := true,references := op.references,
-    needs := op.needs,meanings := op.meanings,rows := op.rows}
+    needs := op.needs,meanings := op.meanings,rows := op.rows,
+    duties := op.duties ++ [⟨op.origin,op.subject,.access ⟨true,false,false⟩,[],op.suppliers⟩],
+    applications := op.applications}
 
 private def quantumGroup (value : Value) : Bool :=
   hasOwner value && value.all (fun atom => match atom with | .ordinary _ => false | _ => true)
@@ -657,7 +752,8 @@ private def runtimeTransform {sources} (modules : Option (SourceModules.Prepared
     WorkM (Outcome sources) := do
   let base := written.base
   let candidate ← CallName.readWithModules sources modules state.owner scope base.2.callee
-  let rows ← written.counts.mapM (fun count => validateCount state scope count.tokens)
+  let counts ← written.counts.mapM (fun count => operationCount state scope count.tokens)
+  let rows := counts.map (·.2)
   match candidate.decision with
   | .primitive _ _ _ _ _ _ kind _ =>
     guard (written.counts.isEmpty && (kind == .h || kind == .globalPhaseEighth)) .request
@@ -701,11 +797,23 @@ private def runtimeTransform {sources} (modules : Option (SourceModules.Prepared
         actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)
     guard access .request
     let effect := functionEffect state.owner application.definition
+    let origin ← GenericOperation.readOrigin state scope tokens
+      (CallName.sourceRows candidate ++ rows.flatten ++ application.rows)
+    let subject := counts.foldl (fun subject (count,_) =>
+      subject.unary (fun child => .power child count)) application.subject
+    let requested : OperationPaths.Paths := match written.access with
+      | .forward => ⟨true,false,false⟩
+      | .adjoint => ⟨false,true,false⟩
+      | .controlled => ⟨false,false,true⟩
+    let some occurrence := application.applications.getLast? | throw .request
     pure {
       value,remaining,effect := direct .unitary,quantumUse := true,references := application.references,
       recursions := application.recursion.toList,
       needs := application.needs ++ [⟨effect,.unitary,false⟩],meanings := application.meanings,
-      rows := CallName.sourceRows candidate ++ rows.flatten ++ application.rows}
+      rows := CallName.sourceRows candidate ++ rows.flatten ++ application.rows,
+      duties := application.duties ++
+        [⟨origin,subject,.access requested,[],application.suppliers,some occurrence⟩],
+      applications := application.applications}
 
 private def bindingNames (tokens : List LocatedToken) : WorkM (List String) := do
   let pattern ← adapt (QuantumMoves.parsePattern 65 (tokens.map (·.text)))
@@ -864,6 +972,9 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         needs := region.needs ++ [⟨predicateEffect,.unitary,true⟩,⟨region.effect,.unitary,false⟩] ++
           logical.toList.flatMap (fun operation => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
         meanings := region.meanings ++ logical.toList.flatMap (·.meanings),
+        duties := region.duties ++ logical.toList.flatMap (fun operation => operation.duties ++
+          [⟨operation.origin,operation.subject,.access ⟨true,false,false⟩,[],operation.suppliers⟩]),
+        applications := region.applications ++ logical.toList.flatMap (·.applications),
         computedObligations := region.computedObligations ++ [obligation],
         rows := predicate.rows ++ logical.toList.flatMap (·.rows) ++ region.rows}
       pure (append input result)
@@ -938,6 +1049,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
             value := application.result,remaining := arguments.remaining,
             effect := functionEffect owner application.definition,quantumUse := externalPermission,
             references := application.references,needs := application.needs,meanings := application.meanings,
+            duties := application.duties,applications := application.applications,
             recursions := application.recursion.toList,
             rows := CallName.sourceRows candidate ++ application.rows}
           pure (append arguments result))

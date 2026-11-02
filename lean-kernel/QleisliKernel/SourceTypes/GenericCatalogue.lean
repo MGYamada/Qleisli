@@ -259,6 +259,15 @@ def checkMeaningReferences {sources} (catalogue : RuntimeChecked sources) (graph
 def bodyMeanings {sources} (body : BodyRecord sources) : List (SourceMeaning.Graph sources) :=
   (body.definition.operations.flatMap (·.2.meanings) ++ body.outcome.meanings).map (·.meaning.graph)
 
+/-- These are original obligations rather than evidence. Each requested
+Meaning remains paired with its actual typed subject and supplying contexts;
+ordinary control flow retains both arms and zero powers retain their child. -/
+def bodyDuties {sources} (body : BodyRecord sources) : List (GenericOperation.Duty sources) :=
+  body.definition.operations.flatMap (·.2.duties) ++ body.outcome.duties
+
+def bodyApplications {sources} (body : BodyRecord sources) : List (GenericOperation.ApplicationSource sources) :=
+  body.definition.operations.flatMap (·.2.applications) ++ body.outcome.applications
+
 def bodyReferences {sources} (body : BodyRecord sources) : List DefId :=
   body.outcome.references ++ (bodyMeanings body).flatMap fun graph =>
     (graph.references.map fun reference =>
@@ -316,6 +325,40 @@ structure Checked (sources : Sources) extends RuntimeChecked sources where
   meaningReferences : ∃ before after,
     ((auxiliary.flatMap (·.meanings) ++ records.flatMap bodyMeanings).forM
       (checkMeaningReferences toRuntimeChecked)).run before = (.ok (),after)
+
+def Checked.duties {sources} (catalogue : Checked sources) : List (GenericOperation.Duty sources) :=
+  catalogue.records.flatMap bodyDuties
+
+def Checked.applications {sources} (catalogue : Checked sources) : List (GenericOperation.ApplicationSource sources) :=
+  catalogue.records.flatMap bodyApplications
+
+/-- A closure decision refers to one actual catalogue occurrence, rather than
+an arbitrary caller-supplied Meaning, descriptor or success Boolean. -/
+structure DutyAt {sources} (catalogue : Checked sources) where
+  index : Fin catalogue.duties.length
+  status : GenericOperation.Status (catalogue.duties[index.val]'index.isLt).subject
+  computed : ∃ before after,
+    (GenericOperation.close (catalogue.duties[index.val]'index.isLt).subject).run before = (.ok status,after)
+
+def DutyAt.duty {sources catalogue} (entry : @DutyAt sources catalogue) : GenericOperation.Duty sources :=
+  catalogue.duties[entry.index.val]'entry.index.isLt
+
+structure Duties {sources} (catalogue : Checked sources) where
+  entries : List (DutyAt catalogue)
+  every : entries.map (·.index) = List.finRange catalogue.duties.length
+
+/-- Conversion proves only that an original subject is concrete. A native
+consumer must separately establish every Meaning equation and demanded path;
+unconsumed concrete duties cannot be promoted by catalogue or selected success. -/
+def readDuties {sources} (catalogue : Checked sources) : WorkM (Duties catalogue) := do
+  exactWork (Exact.charge (16*(catalogue.duties.length+1)))
+  let entries ← (List.finRange catalogue.duties.length).mapM fun index => do
+    let status ← NaturalAffine.witness
+      (GenericOperation.close (catalogue.duties[index.val]'index.isLt).subject)
+    pure (⟨index,status.val,by with_reducible exact status.property⟩ : DutyAt catalogue)
+  if every : entries.map (·.index) = List.finRange catalogue.duties.length then
+    return ⟨entries,every⟩
+  else throw .request
 
 /-- All original declarations are audited before the caller may project a
 selected body. Native gates must separately consume the retained concrete
