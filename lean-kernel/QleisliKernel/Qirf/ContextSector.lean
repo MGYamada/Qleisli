@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RawTrace
 import QleisliKernel.Qirf.SelectionCore
+import QleisliKernel.Qirf.SourcePendingMeaning
 
 /-! Complete source events, literal Raw intervals and original qmatch equations.
 Primitive events remain alongside all original selections.
@@ -36,6 +37,7 @@ the old nongeneric header boundary until the complete v5 continuation exists.
 The catalogue itself contributes no source-relevance rows. -/
 def readSource (sources : Sources) (owner name : String) : WorkM (SourceTrace.Checked sources owner name) := do
   let catalogue ← GenericCatalogue.read sources
+  let _ ← SourcePendingMeaning.read catalogue
   let signature ← QuantumSignature.readWithArguments sources owner name {} .external (some catalogue)
   guard (signature.original.parsedHeader.staticTokens.isNone &&
     signature.original.parsedHeader.requiresTokens.isNone) .request

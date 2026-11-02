@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.GenericCatalogue
+import QleisliKernel.Qirf.SourcePendingMeaning
 
 /-! Discover every original runtime body before the one fresh graph check.
 The traversal follows actual source events and supplied context occurrences;
@@ -170,6 +171,8 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
 structure Source (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) where
   catalogue : GenericCatalogue.Checked artifact.sources
   audited : RuntimeInterval.Computed (GenericCatalogue.read artifact.sources) catalogue
+  pending : SourcePendingMeaning.Checked catalogue
+  pendingRead : RuntimeInterval.Computed (SourcePendingMeaning.read catalogue) pending
   signature : SourceRuntimeContext.Signature artifact.sources owner name
   selected : RuntimeInterval.Computed
     (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue)) signature
@@ -179,10 +182,12 @@ structure Source (artifact : Artifact) (owner name : String) (arguments : Static
 def readSource (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) :
     WorkM (Source artifact owner name arguments) := do
   let catalogue ← NaturalAffine.witness (GenericCatalogue.read artifact.sources)
+  let pending ← NaturalAffine.witness (SourcePendingMeaning.read catalogue.val)
   let signature ← NaturalAffine.witness
     (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue.val))
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature signature.val)
-  return ⟨catalogue.val,by with_reducible exact catalogue.property,signature.val,
+  return ⟨catalogue.val,by with_reducible exact catalogue.property,
+    pending.val,by with_reducible exact pending.property,signature.val,
     by with_reducible exact signature.property,
     body.val,by with_reducible exact body.property⟩
 
