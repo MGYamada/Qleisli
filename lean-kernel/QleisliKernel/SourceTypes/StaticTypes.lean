@@ -105,8 +105,9 @@ def readType {sources owner name arguments}
     WorkM (TypeRead sources) := do
   let read ← typeExpressionScopedWithSources sources owner
     (fun expression => do
-      let prepared ← StaticNatural.prepare sources owner name expression
-      return (← StaticNatural.close prepared arguments.naturals).value)
+      let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+      let prepared ← StaticNatural.prepareOriginalWithHelpers environment.numeric.original expression helpers
+      return (← StaticNatural.close prepared.prepared arguments.naturals).value)
     (parameter environment) tokens
   let _ ← FiniteCarrier.read read.basis
   return read
