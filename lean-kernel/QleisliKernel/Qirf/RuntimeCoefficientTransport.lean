@@ -9,7 +9,7 @@ theorem, code/action reassociation or a new accepted-handle path.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeCoefficientTransport
 open QleisliKernel Finite Semantics.Finite Semantics.Exact
-open FiniteRestriction (pack)
+open QleisliKernel.FiniteRestriction (pack)
 
 def shiftAxes (offset : Nat) (axes : List Nat) : List Nat := axes.map (offset+·)
 
@@ -207,5 +207,6 @@ theorem applyUnitary_event (state next : Semantics.RawTrace.Interface) (input ou
         [.circuit state.frame.length (steps.map (Semantics.RawTrace.localize
           (Semantics.RawTrace.axes state port.wires)))]) := by
   simp only [Semantics.RawTrace.step,taken,bind,Option.bind]
+  rfl
 
 end QleisliKernel.Qirf.RuntimeCoefficientTransport
