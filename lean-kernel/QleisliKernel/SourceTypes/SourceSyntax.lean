@@ -4,6 +4,7 @@ import QleisliKernel.SourceTypes.QuantumSequence
 import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.SourceBoolean
 import QleisliKernel.SourceTypes.SourceControlSyntax
+import QleisliKernel.SourceTypes.SourceStaticControlSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -42,6 +43,8 @@ inductive Tree : List LocatedToken → Type where
   | conditional {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedConditional tokens)
       (condition : Tree written.parts.condition) (thenBody : Tree written.parts.thenBody)
       (elseBody : Tree written.parts.elseBody) : Tree tokens
+  | staticConditional {tokens : List LocatedToken} (written : SourceStaticControlSyntax.Checked tokens)
+      (thenBody : Tree written.parts.thenBody) (elseBody : Tree written.parts.elseBody) : Tree tokens
   | basis {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedBasis tokens)
       (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
 
@@ -90,6 +93,7 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
       return (← children.trees.mapM (fun child => next child.2)).flatten
     | .conditional _ condition thenBody elseBody =>
       return (← next condition) ++ (← next thenBody) ++ (← next elseBody)
+    | .staticConditional _ thenBody elseBody => return (← next thenBody) ++ (← next elseBody)
     | .basis _ input body => return (← next input) ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
@@ -128,6 +132,11 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
         return .sequence cut expression rest
       | .error _ => pure ()
     if tokens.head?.map (·.text) == some "if" then
+      if (tokens[1]?.map (·.text)) == some "static" then
+        let written ← SourceStaticControlSyntax.read tokens
+        let thenBody ← next (depth+1) true written.parts.thenBody
+        let elseBody ← next (depth+1) true written.parts.elseBody
+        return .staticConditional written thenBody elseBody
       let written ← SourceControlSyntax.readConditional tokens
       let condition ← next (depth+1) false written.parts.condition
       let thenBody ← next (depth+1) true written.parts.thenBody

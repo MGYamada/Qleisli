@@ -93,6 +93,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
+      | .staticConditional .. => throw .request
       | .move tokens _ _ =>
         Finite.exactWork (Exact.charge (SourceTrace.Meter.moveWork tokens []+16*environmentCells environment))
         let (value,remaining) ← adapt (move tokens environment)

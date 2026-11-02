@@ -41,14 +41,19 @@ def Conditional.spelling (parts : Conditional) : Bool :=
   parts.keyword.text == "if" && parts.thenOpen.text == "{" && parts.thenClose.text == "}" &&
     parts.otherwise.text == "else" && parts.elseOpen.text == "{" && parts.elseClose.text == "}"
 
-private def conditional (tokens : List LocatedToken) : Except String Conditional := do
-  let keyword :: rest := tokens | throw "missing original if keyword"
-  let (condition,thenOpen,rest) ← cut (tokens.length+1) "{" [] rest []
+/-- Shared original block splitter. A caller adding a static marker must retain
+that marker and check its complete original reconstruction separately. -/
+def conditionalParts (keyword : LocatedToken) (tokens : List LocatedToken) : Except String Conditional := do
+  let (condition,thenOpen,rest) ← cut (tokens.length+1) "{" [] tokens []
   let (thenBody,thenClose,rest) ← cut (tokens.length+1) "}" [] rest []
   let otherwise :: elseOpen :: rest := rest | throw "missing original else block"
   let (elseBody,elseClose,suffix) ← cut (tokens.length+1) "}" [] rest []
   if !suffix.isEmpty || condition.isEmpty then throw "incomplete original if expression"
   return ⟨keyword,condition,thenOpen,thenBody,thenClose,otherwise,elseOpen,elseBody,elseClose⟩
+
+private def conditional (tokens : List LocatedToken) : Except String Conditional := do
+  let keyword :: rest := tokens | throw "missing original if keyword"
+  conditionalParts keyword rest
 
 structure CheckedConditional (tokens : List LocatedToken) where
   parts : Conditional
