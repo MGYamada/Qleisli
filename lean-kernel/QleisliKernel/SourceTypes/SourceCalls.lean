@@ -77,7 +77,8 @@ structure Canonical {sources owner name}
     signature.original.occurrence.body = .ok tree
   generic : GenericTypeTrace.Checked signature.original
   genericRead : ∃ before after,
-    (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
+    (GenericTypeTrace.readWithTree signature.instantiation tree
+      (signature.operations.catalogue.map (·.modulesContext))).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   value : Value
   remaining : Environment

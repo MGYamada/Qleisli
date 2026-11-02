@@ -442,7 +442,8 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
         match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
         | .error _ => throw .request
         | .ok tree =>
-          let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+          let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
+            (signature.operations.catalogue.map (·.modulesContext)))
           let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
             if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
               pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
@@ -532,7 +533,8 @@ structure Checked (sources : Sources) (owner name : String) where
     signature.original.occurrence.body = .ok tree
   generic : GenericTypeTrace.Checked signature.original
   genericRead : ∃ before after,
-    (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
+    (GenericTypeTrace.readWithTree signature.instantiation tree
+      (signature.operations.catalogue.map (·.modulesContext))).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   result : Outcome sources owner initial
   traversed : ∃ before after,
@@ -581,7 +583,8 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
       match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
       | .error _ => throw .request
       | .ok tree =>
-        let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+        let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
+          (signature.operations.catalogue.map (·.modulesContext)))
         let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
           if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
             pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
