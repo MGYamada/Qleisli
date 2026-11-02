@@ -5,7 +5,7 @@ valuation. Source body generation, actual SSA/measurement/phi correspondence and
 complete native instrument equations remain separate checked obligations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceRuntimeOrdinary
-open QleisliKernel SourceRuntimeValues
+open QleisliKernel
 open Semantics.SourceOrdinary
 
 def readAtom (values : Valuation) : Atom → Except String ResultAtom
