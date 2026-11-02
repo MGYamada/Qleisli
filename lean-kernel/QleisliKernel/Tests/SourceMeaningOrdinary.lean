@@ -1,9 +1,10 @@
 import QleisliKernel.Qirf.SourceMeaningOrdinary
 
 /-! Small ordinary expression candidates from freshly traversed source bodies.
-These controls build no quantum program, admitted Meaning or accepted handle.
-Original source-semantics correspondence, native provider/reference equality
-and catalogue-duty consumption remain separate integration obligations.
+Every successful snapshot also compares the independent original-tree/callee
+interpreter at every canonical input. These controls build no quantum program,
+admitted Meaning or accepted handle. Native provider/reference equality and
+catalogue-duty consumption remain separate integration obligations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.SourceMeaningOrdinary
 open QleisliKernel Finite SourceTypes Qirf
@@ -18,9 +19,11 @@ private def inspect (sources : Sources) (name : String) : WorkM Snapshot := do
   match node.action with
   | .permutation reference =>
     let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .permutation node.input.basis
+    let _ ← Qirf.SourceMeaningOrdinary.connect prepared
     return (prepared.rows.targets,prepared.candidate.entries,prepared.inputs.fields.map (·.ordinal))
   | .phase reference =>
     let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .phase node.input.basis
+    let _ ← Qirf.SourceMeaningOrdinary.connect prepared
     return (prepared.rows.targets,prepared.candidate.entries,prepared.inputs.fields.map (·.ordinal))
   | _ => throw .request
 
@@ -32,8 +35,16 @@ private def flip : String :=
 
 #guard view flip "Flip" = some ([1,0],[Scalar.zero,Scalar.one,Scalar.one,Scalar.zero],[0])
 
-private def pair : String :=
+private def firstPairDraft : String :=
   "#![no_implicit_prelude]\nclassical fn flip_first(p:(Bit,Bit))->(Bit,Bit){let(a,b)=p;(not a,b)}" ++
+  "meaning Flip:(Bit,Bit)=permutation_by(flip_first);"
+
+-- Preserve the first forbidden-let prediction as the current native
+-- classifier/profile refusal; this is not a permanent language restriction.
+#guard (view firstPairDraft "Flip").isNone
+
+private def pair : String :=
+  "#![no_implicit_prelude]\nclassical fn flip_first((a,b):(Bit,Bit))->(Bit,Bit){(not a,b)}" ++
   "meaning Flip:(Bit,Bit)=permutation_by(flip_first);"
 
 -- Every original input label is present, with the first field on low axes.
@@ -84,7 +95,9 @@ private def helperRows : Option Bool :=
     let [node] := meaning.graph.nodes | throw .request
     let .permutation reference := node.action | throw .request
     let prepared ← Qirf.SourceMeaningOrdinary.prepare catalogue reference .permutation node.input.basis
-    return prepared.original.sourceRows.contains ("helper",helper) : WorkM Bool).run 10000000).1.toOption
+    let connected ← Qirf.SourceMeaningOrdinary.connect prepared
+    return prepared.original.sourceRows.contains ("helper",helper) &&
+      connected.program.sourceRows.contains ("helper",helper) : WorkM Bool).run 10000000).1.toOption
 
 #guard helperRows = some true
 

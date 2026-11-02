@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.OrdinaryDomain
 import QleisliKernel.Semantics.PrimitiveOperator
+import QleisliKernel.Qirf.SourceClassicalTree
 
 /-! Prepare ordinary candidates for original permutation/phase Meaning leaves.
 The actual original body is freshly traversed; only its symbolic value is
@@ -158,31 +159,8 @@ def valuation (inputs : List (Nat × Nat)) : Semantics.SourceOrdinary.Valuation 
     basisInputs := fun _ => none
     measured := fun _ _ _ => none }
 
-structure Label where
-  basis : Basis
-  ordinal : Nat
-  dimension : Nat
-  deriving BEq, DecidableEq, Repr
-
-/-- Preserve the complete result prefix while forming its logical ordinal.
-Nominal records remain atomic and each tuple keeps its actual arity/order. -/
-def pack (value : Semantics.SourceOrdinary.Result) : Except String Label := do
-  let stack ← value.reverse.foldlM (fun (stack : List Label) atom => do
-    match atom with
-    | .owner _ => throw "quantum owner in an ordinary Meaning result"
-    | .ordinary basis ordinal =>
-      let some dimension := Semantics.FiniteCarrier.dimension basis | throw "invalid original Meaning result basis"
-      if ordinal ≥ dimension then throw "original Meaning result outside its exact basis"
-      return ⟨basis,ordinal,dimension⟩ :: stack
-    | .tuple arity =>
-      if arity > stack.length then throw "original Meaning result tuple shape"
-      let fields := stack.take arity
-      let (ordinal,dimension) := fields.foldl (fun (ordinal,stride) field =>
-        (ordinal+stride*field.ordinal,stride*field.dimension)) (0,1)
-      let basis := (if arity == 2 then Atom.pair else .tuple arity) :: fields.flatMap (·.basis)
-      return ⟨basis,ordinal,dimension⟩ :: stack.drop arity) ([] : List Label)
-  let [result] := stack | throw "original Meaning result multiplicity"
-  pure result
+abbrev Label := Semantics.SourceClassical.Packed
+abbrev pack := Semantics.SourceClassical.pack
 
 structure Row {sources catalogue reference original basis}
     (inputs : @Inputs sources catalogue reference original basis) (label : Nat) where
@@ -307,5 +285,131 @@ def prepare {sources} (catalogue : GenericCatalogue.Checked sources)
       else throw .notIsometric
     else throw .request
   else throw .request
+
+structure RootBinding {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller) where
+  definition : SourceClassicalTree.Definition catalogue
+  present : program.state.definitions[program.root]? = some definition
+  identity : definition.owner = reference.resolution.result.moduleName ∧
+    definition.name = reference.resolution.result.declaration.name ∧ definition.caller = reference.caller
+  original : definition.original.signature.original.source = reference.signature.original.source ∧
+    definition.original.signature.original.declaration = reference.signature.original.declaration ∧
+    definition.original.signature.original.occurrence = reference.signature.original.occurrence
+  sameSymbolic : definition.original.signature.original.source = prepared.original.body.checked.signature.original.source ∧
+    definition.original.signature.original.declaration = prepared.original.body.checked.signature.original.declaration ∧
+    definition.original.signature.original.occurrence = prepared.original.body.checked.signature.original.occurrence
+  ports : definition.function.inputs = [basis] ∧ definition.function.output = reference.signature.basis
+
+def readRootBinding {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller) : WorkM (RootBinding prepared program) := do
+  match present : program.state.definitions[program.root]? with
+  | none => throw .request
+  | some definition =>
+    exactWork (Exact.charge (16*(definition.original.signature.original.source.utf8ByteSize+
+      reference.signature.original.source.utf8ByteSize+definition.function.inputs.length+basis.length+1)))
+    if identity : definition.owner = reference.resolution.result.moduleName ∧
+        definition.name = reference.resolution.result.declaration.name ∧ definition.caller = reference.caller then
+      if original : definition.original.signature.original.source = reference.signature.original.source ∧
+          definition.original.signature.original.declaration = reference.signature.original.declaration ∧
+          definition.original.signature.original.occurrence = reference.signature.original.occurrence then
+        if sameSymbolic : definition.original.signature.original.source = prepared.original.body.checked.signature.original.source ∧
+            definition.original.signature.original.declaration = prepared.original.body.checked.signature.original.declaration ∧
+            definition.original.signature.original.occurrence = prepared.original.body.checked.signature.original.occurrence then
+          if ports : definition.function.inputs = [basis] ∧ definition.function.output = reference.signature.basis then
+            return ⟨definition,present,identity,original,sameSymbolic,ports⟩
+          else throw .request
+        else throw .request
+      else throw .request
+    else throw .request
+
+structure ReferenceRow {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller)
+    {label : Nat} (row : Row prepared.inputs label) where
+  ordinal : Nat
+  canonical : prepared.inputs.domain.code.labels[ordinal]? = some label
+  argument : Semantics.SourceClassical.Value
+  expanded : Semantics.SourceClassical.expand basis ordinal = .ok argument
+  result : Semantics.SourceClassical.Value
+  evaluated : Semantics.SourceClassical.evaluate program.state.functions
+    (program.state.definitions.length+1) program.root [argument] = .ok result
+  agrees : result = row.result
+
+def readReferenceRow {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller)
+    {label : Nat} (row : Row prepared.inputs label) : WorkM (ReferenceRow prepared program row) := do
+  exactWork (Exact.charge (program.workUnits+16*(prepared.inputs.domain.code.labels.length+basis.length+1)))
+  let ordinal := prepared.inputs.domain.code.labels.idxOf label
+  if canonical : prepared.inputs.domain.code.labels[ordinal]? = some label then
+    match expanded : Semantics.SourceClassical.expand basis ordinal with
+    | .error _ => throw .request
+    | .ok argument =>
+      match evaluated : Semantics.SourceClassical.evaluate program.state.functions
+          (program.state.definitions.length+1) program.root [argument] with
+      | .error _ => throw .request
+      | .ok result =>
+        if agrees : result = row.result then
+          return ⟨ordinal,canonical,argument,expanded,result,evaluated,agrees⟩
+        else throw .equation
+  else throw .request
+
+inductive Correspondence {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller) :
+    {labels : List Nat} → Rows prepared.inputs labels → Type where
+  | nil : Correspondence prepared program .nil
+  | cons {label labels} {row : Row prepared.inputs label} {rows : Rows prepared.inputs labels}
+      (head : ReferenceRow prepared program row) (tail : Correspondence prepared program rows) :
+      Correspondence prepared program (.cons row rows)
+
+def readCorrespondence {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis)
+    (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+      reference.resolution.result.declaration.name reference.caller) :
+    Nat → {labels : List Nat} → (rows : Rows prepared.inputs labels) →
+      WorkM (Correspondence prepared program rows) :=
+  Nat.rec (fun {_} _ => throw .limit) (fun _ next {_} rows => do
+    match rows with
+    | .nil => pure .nil
+    | .cons head tail => return .cons (← readReferenceRow prepared program head) (← next tail))
+
+structure Connected {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis) where
+  program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
+    reference.resolution.result.declaration.name reference.caller
+  root : RootBinding prepared program
+  everyInput : Correspondence prepared program prepared.rows
+
+/-- The independent program comes from fresh ORIGINAL trees/callees, and each
+canonical input receives an actual interpreter result equal to the extracted
+symbolic result. This is a bounded per-input connection, not an all-source AST
+theorem, final native implementation equation or Meaning admission by itself. -/
+def connect {sources catalogue reference kind basis}
+    (prepared : @Prepared sources catalogue reference kind basis) : WorkM (Connected prepared) := do
+  let program ← SourceClassicalTree.prepare catalogue reference.resolution.result.moduleName
+    reference.resolution.result.declaration.name reference.caller
+  let root ← readRootBinding prepared program
+  let correspondence ← readCorrespondence prepared program
+    (prepared.inputs.domain.code.labels.length+1) prepared.rows
+  return ⟨program,root,correspondence⟩
+
+theorem Correspondence.every {sources catalogue reference kind basis prepared program labels rows}
+    (checked : @Correspondence sources catalogue reference kind basis prepared program labels rows)
+    (label : Nat) (member : label ∈ labels) :
+    ∃ row : Row prepared.inputs label,Nonempty (ReferenceRow prepared program row) := by
+  induction checked with
+  | nil => cases member
+  | cons head tail ih =>
+    rcases List.mem_cons.mp member with same | later
+    · subst label; exact ⟨_,⟨head⟩⟩
+    · exact ih later
 
 end QleisliKernel.Qirf.SourceMeaningOrdinary
