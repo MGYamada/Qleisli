@@ -50,15 +50,15 @@ inductive Covers {dependencies program} {block : RuntimeInterval.Block dependenc
 
 private def readCover {dependencies program block} :
     (nodes : List (Node dependencies program block)) → (cursor : Nat) →
-    WorkM (Covers cursor nodes block.operations.length)
+    WorkM (PLift (Covers cursor nodes block.operations.length))
   | [],cursor =>
     if finished : cursor = block.operations.length then
-      pure (by simpa only [finished] using (Covers.nil (block := block) cursor))
+      pure ⟨by simpa only [finished] using (Covers.nil (block := block) cursor)⟩
     else throw .request
   | node::nodes,cursor => do
     if atCursor : (region node).start = cursor then
       let rest ← readCover nodes (cursor+(region node).count)
-      return .cons atCursor rest
+      return ⟨.cons atCursor rest.down⟩
     else throw .request
 
 structure Partition {dependencies program} (block : RuntimeInterval.Block dependencies program)
@@ -75,7 +75,7 @@ def readPartition {dependencies program block} (nodes : List (Node dependencies 
       (RuntimePureInterval.fragment (region node).frame.selected (operations node) (region node).outputs)).sum))
   let cover ← readCover nodes 0
   if literal : (nodes.flatMap operations).map Semantics.Observation.Op.pure = block.operations then
-    return ⟨cover,literal⟩
+    return ⟨cover.down,literal⟩
   else throw .request
 
 /-- Grouping the same operations into source intervals preserves the complete
@@ -153,6 +153,17 @@ theorem Prepared.orderedExecution {artifact root owner name signature body reque
         (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state) state := by
   rw [prepared.operations]
   exact executeChunks (checked.result.actions.map operations) state
+
+theorem Prepared.orderedRootTrace {artifact root owner name signature body request initial checked}
+    (prepared : @Prepared artifact root owner name signature body request initial checked) :
+    Semantics.RawTrace.run prepared.raw = (do
+      let state := Semantics.RawTrace.initial prepared.raw.inputs
+      let final ← (checked.result.actions.map operations).foldlM
+        (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state)
+        ⟨state,[],state.frame.length⟩
+      pure (Semantics.RawTrace.finish prepared.raw final)) := by
+  simp only [Semantics.RawTrace.run]
+  rw [prepared.orderedExecution]
 
 /-- Existing sector evidence supplies all-vector lifting of the actual full
 step list, independently of the target code and source arm checks. -/
