@@ -28,7 +28,7 @@ private def request : RuntimeFamily.Request := {
 private def check (requested : RuntimeFamily.Request) : WorkM Unit := do
   let signature ← SourceTypes.SourceRuntimeContext.readSignature sources "main" "route" {}
   let body ← SourceTypes.SourceRuntimeTrace.readBodyWithSignature signature
-  let root ← Validity.checkRootWithSources artifact #[] signature.sourceRows
+  let root ← Validity.checkRootWithSources artifact #[0] signature.sourceRows
   let prepared ← RuntimeInterval.prepare root.dependencies root.program
   let bindings : RuntimeOwnerMap.Map := [⟨⟨1,[.unit]⟩,port 1⟩,⟨⟨0,[.unit]⟩,port 0⟩]
   let _ ← Qirf.RuntimeStructuredRoot.readBoundary body root prepared bindings requested
