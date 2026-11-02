@@ -242,11 +242,26 @@ structure Checked {sources} (application : ApplicationSource sources) (original 
   result : Result application original
   computed : ∃ before after,(run application original).run before = (.ok result,after)
 
+/-- One actual setup for this exact original application. The retained
+execution authenticates all simultaneous mixed-key maps and original frames;
+it contains no translated subject, closure result or native proof. -/
+structure Prepared {sources} (application : ApplicationSource sources) : Type where
+  context : Context application
+  original : ∃ before after,(readContext application).run before = (.ok context,after)
+
+def prepare {sources} (application : ApplicationSource sources) : WorkM (Prepared application) := do
+  let context ← NaturalAffine.witness (readContext application)
+  return ⟨context.val,by with_reducible exact context.property⟩
+
+def readWithPrepared {sources application} (prepared : @Prepared sources application)
+    (description : Description) (suppliers : List (Nat × Origin sources)) :
+    WorkM (Checked application ⟨description,suppliers⟩) := do
+  let result ← NaturalAffine.witness (run application ⟨description,suppliers⟩)
+  return ⟨prepared.context,prepared.original,result.val,by with_reducible exact result.property⟩
+
 def read {sources} (application : ApplicationSource sources) (description : Description)
     (suppliers : List (Nat × Origin sources)) : WorkM (Checked application ⟨description,suppliers⟩) := do
-  let context ← NaturalAffine.witness (readContext application)
-  let result ← NaturalAffine.witness (run application ⟨description,suppliers⟩)
-  return ⟨context.val,by with_reducible exact context.property,result.val,by with_reducible exact result.property⟩
+  readWithPrepared (← prepare application) description suppliers
 
 structure DutyChecked {sources} (application : ApplicationSource sources) (original : Duty sources) where
   subject : Checked application ⟨original.subject,original.suppliers⟩

@@ -62,12 +62,14 @@ structure Target {sources catalogue record}
   resolved : ∃ before after,
     (GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope).run before =
       (.ok entry,after)
+  substitution : GenericOperationSubstitute.Prepared application.original
 
 def readTarget {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) : WorkM (Target application) := do
   let target ← NaturalAffine.witness
     (GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope)
-  return ⟨target.val,by with_reducible exact target.property⟩
+  let substitution ← GenericOperationSubstitute.prepare application.original
+  return ⟨target.val,by with_reducible exact target.property,substitution⟩
 
 /-- The indices, original occurrences and exact target-original receipts are
 retained at every edge. Module/name strings are never used as instance IDs. -/
@@ -97,6 +99,24 @@ def Invocation.records {sources catalogue record} : @Invocation sources catalogu
   | .root original => [original.val]
   | .call caller _ target => caller.records ++ [target.entry.index.val]
 
+/-- The list index is the exact original application chain; there is no
+name/descriptor lookup or successful-subject cache at replay. -/
+inductive PreparedChain {sources} : List (ApplicationSource sources) → Type where
+  | nil : PreparedChain []
+  | cons (application : ApplicationSource sources)
+      (prepared : GenericOperationSubstitute.Prepared application)
+      (rest : List (ApplicationSource sources)) (tail : PreparedChain rest) :
+      PreparedChain (application :: rest)
+
+def Invocation.prepared {sources catalogue record}
+    (invocation : @Invocation sources catalogue record) : PreparedChain invocation.applications.reverse :=
+  match invocation with
+  | .root _ => .nil
+  | .call parent application target => by
+    change PreparedChain ((parent.applications ++ [application.original]).reverse)
+    rw [List.reverse_append]
+    exact .cons application.original target.substitution parent.applications.reverse parent.prepared
+
 /-- Substitutions run from the innermost original callee toward the root.
 Inserted caller Op actuals are left untouched by each simultaneous step. -/
 inductive Transport {sources} : List (ApplicationSource sources) →
@@ -119,6 +139,15 @@ def readTransport {sources} (applications : List (ApplicationSource sources)) (o
   | application :: rest =>
     let checked ← GenericOperationSubstitute.read application original.description original.suppliers
     let next ← readTransport rest checked.result.subject
+    return ⟨next.subject,.step application rest original checked next.receipt⟩
+
+def readPreparedTransport {sources applications} (chain : @PreparedChain sources applications)
+    (original : Subject sources) : WorkM (Transported applications original) := do
+  match chain with
+  | .nil => return ⟨original,.identity original⟩
+  | .cons application prepared rest tail =>
+    let checked ← GenericOperationSubstitute.readWithPrepared prepared original.description original.suppliers
+    let next ← readPreparedTransport tail checked.result.subject
     return ⟨next.subject,.step application rest original checked next.receipt⟩
 
 structure Demand {sources catalogue record} (invocation : @Invocation sources catalogue record) where
@@ -334,7 +363,7 @@ private def expand {sources} (catalogue : GenericCatalogue.Checked sources) (pre
         if (original.bindings.find? (bindingMatches original.kind)).isSome then
           return [Item.header invocation (← readHeaderReference invocation source originalRecord)]
         else
-          let transported ← readTransport invocation.applications.reverse ⟨original.subject,original.suppliers⟩
+          let transported ← readPreparedTransport invocation.prepared ⟨original.subject,original.suppliers⟩
           return [Item.demand invocation ⟨source,transported⟩]
       | .application _original =>
         let cached ← preparedCall originalRecord index
