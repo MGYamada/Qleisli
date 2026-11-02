@@ -64,6 +64,7 @@ structure Definition (sources : Sources) (owner name : String) where
   operations : List (String × Operation sources)
   rows : List (String × String)
   modules : Option (SourceModules.Prepared sources) := none
+  meanings : Option (SourceMeaning.Prepared sources) := none
 
 private def paths (header : StaticHeaders.Parsed) (name : String) : OperationPaths.Paths :=
   ⟨header.access.contains (.applicable,name),header.access.contains (.adjointable,name),
@@ -76,7 +77,8 @@ private def meets (actual required : OperationPaths.Paths) : Bool :=
 private def meet (a b : OperationPaths.Paths) : OperationPaths.Paths := a.meet b
 
 private def formalOperation {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
-    (formal : StaticHeaders.Formal) : WorkM (Operation sources) := do
+    (formal : StaticHeaders.Formal) (meanings : Option (SourceMeaning.Prepared sources) := none) :
+    WorkM (Operation sources) := do
   let .operation tokens := formal.kind | throw .request
   let parsed ← adapt (OperationPorts.read tokens)
   let scope := (state.prepared.original.header.formals.filter (·.ordinal < formal.ordinal)).map (·.name)
@@ -88,7 +90,7 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
   let meanings ← match parsed.meaning with
     | none => pure []
     | some tokens => do
-      let selected ← SourceMeaning.select sources state.owner scope tokens
+      let selected ← SourceMeaning.select sources state.owner scope tokens meanings
       let _ ← SymbolicTypes.checkRefinement state scope formal.ordinal parsed.input parsed.output
         selected.meaning.graph.input selected.meaning.graph.output
       pure [selected.request]
@@ -110,7 +112,8 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
 def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
     (helpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none)
-    (modules : Option (SourceModules.Prepared sources) := none) :
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) :
     WorkM {definition : Definition sources owner name // definition.original = original} := do
   let helpers ← match helpers with | some helpers => pure helpers | none => NaturalHelpers.read sources
   let numeric ← StaticNatural.prepareOriginalWithHelpers original ["0"] helpers originals
@@ -120,20 +123,21 @@ def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Origin
   let result ← GenericValues.readType state 65 (original.envelope.parsedHeader.resultTokens.map (·.text))
   let operations ← original.header.formals.mapM fun formal => do
     match formal.kind with
-    | .operation _ => pure [(formal.name,← formalOperation state formal)]
+    | .operation _ => pure [(formal.name,← formalOperation state formal meanings)]
     | _ => pure []
   let rows ← NaturalRows.bindings sources owner state.prepared.helpers state.prepared.bindings
   pure ⟨⟨original,state,by
       change HEq numeric.prepared.original original
       rw [numeric.originalHeader],parameters.map (·.value),result.value,operations.flatten,
     (owner,original.envelope.source) :: rows ++ parameters.flatMap (·.rows) ++ result.rows ++
-      operations.flatten.flatMap (fun (_,operation) => operation.rows),modules⟩,rfl⟩
+      operations.flatten.flatMap (fun (_,operation) => operation.rows),modules,meanings⟩,rfl⟩
 
 def readDefinition (sources : Sources) (owner name : String)
     (helpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (Definition sources owner name) := do
-  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name originals) helpers originals modules).val
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (Definition sources owner name) := do
+  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name originals) helpers originals modules meanings).val
 
 private def functionEffect {sources owner name} (caller : String) (definition : Definition sources owner name) : Formula :=
   if caller == owner then ⟨.unitary,[(owner,name)]⟩
@@ -206,10 +210,11 @@ def Application.applications {sources} (application : Application sources) : Lis
 def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) {tokens} (written : StaticApplication.Syntax tokens) (owner name : String)
     (operationReader : List LocatedToken → WorkM (Operation sources)) (runtimeRecursion : Bool)
-    (modules : Option (SourceModules.Prepared sources) := none) :
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) :
     WorkM (Application sources) := do
   let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
-  let definition ← readDefinition sources owner name (some helpers) state.prepared.originals modules
+  let definition ← readDefinition sources owner name (some helpers) state.prepared.originals modules meanings
   let target := definition.original
   guard (written.arguments.length == target.header.formals.length) .request
   let transfer ← StaticCallPremises.readInState state scope target written.arguments
@@ -330,6 +335,7 @@ private def operationCount {sources : Sources} (state : GenericLexicalNatural.So
   pure (⟨checked.normalized.form,powerTwo⟩,rows)
 
 private def operationWithModules {sources : Sources} (modules : Option (SourceModules.Prepared sources))
+    (meanings : Option (SourceMeaning.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) :
     Nat → Option Code → List LocatedToken → WorkM (Operation sources) :=
@@ -390,7 +396,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
       | ["checked_op"],[child,meaning] =>
         let _ ← adapt (CallName.readName child.tokens)
         let child ← next none child.tokens
-        let selected ← SourceMeaning.select sources state.owner scope (meaning.tokens.map (·.text))
+        let selected ← SourceMeaning.select sources state.owner scope (meaning.tokens.map (·.text)) meanings
         let input ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length selected.meaning.graph.input
         let output ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length selected.meaning.graph.output
         let _ ← SymbolicTypes.equate state child.input input.code
@@ -429,7 +435,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
         | _ => throw .request
       | _ =>
         let some resolution := CallName.candidateResolution candidate | throw .request
-        let application ← instantiate state scope written resolution.moduleName resolution.declaration.name (next none) false modules
+        let application ← instantiate state scope written resolution.moduleName resolution.declaration.name (next none) false modules meanings
         let [[.owner input]] := application.parameters | throw .request
         let [.owner output] := application.result | throw .request
         let reverse := application.operations.all fun (_,actual) => actual.paths.applicable && actual.paths.adjointable
@@ -455,7 +461,7 @@ candidate reader; contextual body traversal uses the same operation checker. -/
 def operation {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) :
     Nat → Option Code → List LocatedToken → WorkM (Operation sources) :=
-  operationWithModules none state scope formals
+  operationWithModules none none state scope formals
 
 /-- Total classical declarations and basis expressions keep their existing
 restricted expression grammar. Quantum-use inference alone cannot authorize a
@@ -502,13 +508,14 @@ structure ComputedPredicate (sources : Sources) where
   rows : List (String × String)
 
 private def computedPredicate {sources} (modules : Option (SourceModules.Prepared sources))
+    (meanings : Option (SourceMeaning.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (input : Code) (reference : SourceComputedSyntax.Reference) :
     WorkM (ComputedPredicate sources) := do
   let (resolution,rows) ← named modules state scope reference.argument.tokens
   let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
   let definition ← readDefinition sources resolution.moduleName resolution.declaration.name (some helpers)
-    state.prepared.originals modules
+    state.prepared.originals modules meanings
   guard (definition.original.header.formals.isEmpty &&
     definition.original.envelope.parsedHeader.ordinaryOnly) .request
   let [parameter] := definition.parameters | throw .request
@@ -619,6 +626,7 @@ private def scalarLabelBasis {sources} (state : GenericLexicalNatural.SomeEnviro
   | _ => throw .request
 
 private def selection {sources} (modules : Option (SourceModules.Prepared sources))
+    (meanings : Option (SourceMeaning.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources) (scope : List String)
     (formals : List (String × Operation sources)) (parsed : QuantumMatch.Parsed)
     (selector target : Value) (remaining : Environment) : WorkM (Outcome sources) := do
@@ -629,7 +637,7 @@ private def selection {sources} (modules : Option (SourceModules.Prepared source
   let labelBasis ← scalarLabelBasis state selector parsed.arms.length
   let arms ← parsed.arms.mapM fun arm => do
     let label ← QuantumLabels.read sources state.owner labelBasis arm.label
-    let operation ← operationWithModules modules state scope formals 65 (some target) arm.operation
+    let operation ← operationWithModules modules meanings state scope formals 65 (some target) arm.operation
     let _ ← SymbolicTypes.equate state operation.input target
     let _ ← SymbolicTypes.equate state operation.output target
     guard operation.paths.controllable .request
@@ -745,10 +753,11 @@ private def primitiveApplication {sources} (state : GenericLexicalNatural.SomeEn
     primitive state kind arguments remaining
 
 private def applyOperation {sources} (modules : Option (SourceModules.Prepared sources))
+    (meanings : Option (SourceMeaning.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) (tokens : List LocatedToken)
     (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
-  let op ← operationWithModules modules state scope formals 65 none tokens
+  let op ← operationWithModules modules meanings state scope formals 65 none tokens
   guard op.paths.applicable .request
   let value ← if SourceOperationSyntax.controlled tokens then do
       let [[.owner control],[.owner target]] := arguments | throw .request
@@ -771,6 +780,7 @@ private def quantumGroup (value : Value) : Bool :=
   hasOwner value && value.all (fun atom => match atom with | .ordinary _ => false | _ => true)
 
 private def runtimeTransform {sources} (modules : Option (SourceModules.Prepared sources))
+    (meanings : Option (SourceMeaning.Prepared sources))
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) {tokens}
     (written : SourceRuntimeTransformSyntax.Checked tokens) (arguments : List Value) (remaining : Environment) :
@@ -795,7 +805,7 @@ private def runtimeTransform {sources} (modules : Option (SourceModules.Prepared
   | _ =>
     let some resolution := CallName.candidateResolution candidate | throw .request
     let application ← instantiate state scope base.2 resolution.moduleName resolution.declaration.name
-      (operationWithModules modules state scope formals 65 none) true modules
+      (operationWithModules modules meanings state scope formals 65 none) true modules meanings
     let input ← match application.parameters with
       | [] => throw .request
       | [single] => pure single
@@ -937,11 +947,11 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let target ← adapt (QuantumMoves.parse 65 (parsed.target.map (·.text)))
       let (selector,remaining) ← adapt (GenericValues.move selector environment)
       let (target,remaining) ← adapt (GenericValues.move target remaining)
-      selection definition.modules state scope definition.operations parsed selector target remaining
+      selection definition.modules definition.meanings state scope definition.operations parsed selector target remaining
     | .selectionExpression _ parsed _ selector target =>
       let first ← next state scope environment selector
       let last ← next state scope first.remaining target
-      let result ← selection definition.modules state scope definition.operations parsed first.value last.value last.remaining
+      let result ← selection definition.modules definition.meanings state scope definition.operations parsed first.value last.value last.remaining
       pure (append first (append last result))
     | .basis written input body =>
       let input ← next state scope environment input
@@ -966,14 +976,14 @@ private def evaluator {sources owner name} (definition : Definition sources owne
     | .computed written input body =>
       let input ← next state scope environment input
       let [.owner inputBasis] := input.value | throw .request
-      let predicate ← computedPredicate definition.modules state scope inputBasis written.parts.predicate
+      let predicate ← computedPredicate definition.modules definition.meanings state scope inputBasis written.parts.predicate
       let predicateEffect := functionEffect state.owner predicate.definition
       let (logical,initial,names,expected) ← match written.parts.logical,written.parts.data with
         | none,none =>
           pure (none,input.remaining.filter (fun cell => !hasOwner cell.value),
             [written.parts.auxiliary.text],[.owner [.fixed .bit]])
         | some reference,some data => do
-          let logical ← operationWithModules definition.modules state scope definition.operations 65 (some inputBasis) reference.argument.tokens
+          let logical ← operationWithModules definition.modules definition.meanings state scope definition.operations 65 (some inputBasis) reference.argument.tokens
           guard logical.paths.applicable .request
           let _ ← SymbolicTypes.equate state logical.input inputBasis
           let _ ← SymbolicTypes.equate state logical.output inputBasis
@@ -1041,9 +1051,9 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           pure (match candidate.decision with | .lexical .. => false | _ => true)
       if transformedNamed then
         let some transformed := transformed | throw .request
-        pure (append arguments (← runtimeTransform definition.modules state scope definition.operations transformed values arguments.remaining))
+        pure (append arguments (← runtimeTransform definition.modules definition.meanings state scope definition.operations transformed values arguments.remaining))
       else if SourceOperationSyntax.selected (definition.operations.map (·.1)) call.call.callee then
-        pure (append arguments (← applyOperation definition.modules state scope definition.operations call.call.callee values arguments.remaining))
+        pure (append arguments (← applyOperation definition.modules definition.meanings state scope definition.operations call.call.callee values arguments.remaining))
       else
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let candidate ← CallName.readWithModules sources definition.modules owner scope written.callee
@@ -1066,7 +1076,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         | _ =>
           let some resolution := CallName.candidateResolution candidate | throw .request
           let application ← instantiate state scope written resolution.moduleName resolution.declaration.name
-            (operationWithModules definition.modules state scope definition.operations 65 none) true definition.modules
+            (operationWithModules definition.modules definition.meanings state scope definition.operations 65 none) true definition.modules definition.meanings
           guard (values.length == application.parameters.length) .request
           for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
           let externalPermission := owner != application.owner &&
@@ -1115,8 +1125,9 @@ def BodyRecord.quantumDirect {sources} (body : BodyRecord sources) : Bool :=
 def readBody (sources : Sources) (owner name : String)
     (helpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (BodyRecord sources) := do
-  let definition ← readDefinition sources owner name helpers originals modules
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (BodyRecord sources) := do
+  let definition ← readDefinition sources owner name helpers originals modules meanings
   let tokens := definition.original.envelope.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
   let result ← NaturalAffine.witness (checkTree definition tree)
@@ -1125,7 +1136,8 @@ def readBody (sources : Sources) (owner name : String)
 def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : List (BodyRecord sources))
     (helpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (List (BodyRecord sources)) :=
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (List (BodyRecord sources)) :=
   (Nat.rec
     (motive := fun _ => List DefId → List (BodyRecord sources) → WorkM (List (BodyRecord sources)))
     (fun (pending : List DefId) (visited : List (BodyRecord sources)) =>
@@ -1139,7 +1151,7 @@ def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : 
       | [] => pure visited
       | (owner,name) :: rest =>
         if visited.any (fun body => body.id == (owner,name)) then next rest visited else
-          let body ← readBody sources owner name helpers originals modules
+          let body ← readBody sources owner name helpers originals modules meanings
           next (rest ++ body.outcome.references) (visited ++ [body])) fuel) pending visited
 
 private def effectEntries {sources} (records : List (BodyRecord sources)) : List Entry := records.map (·.entry)
@@ -1325,10 +1337,11 @@ structure Checked {sources owner name} (original : OrdinarySignature.Original so
   helpers : NaturalHelpers.Checked sources
   originals : Option (OrdinarySignature.Originals sources)
   modules : Option (SourceModules.Prepared sources)
+  meanings : Option (SourceMeaning.Prepared sources)
   records : List (BodyRecord sources)
   discovered : ∃ before after,
     (discover sources ((sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1)
-      root.outcome.references [root.record] (some helpers) originals modules).run before = (.ok records,after)
+      root.outcome.references [root.record] (some helpers) originals modules meanings).run before = (.ok records,after)
   all : AllInferred records records
   inferred : Inferred records root.record
 
@@ -1355,18 +1368,19 @@ def readOriginalWithTree {sources owner name}
     (tree : SourceSyntax.Tree original.occurrence.body)
     (providedHelpers : Option (NaturalHelpers.Checked sources) := none)
     (originals : Option (OrdinarySignature.Originals sources) := none)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (Checked original) := do
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (Checked original) := do
   match parsed : StaticHeaders.parse original.parsedHeader with
   | .error _ => throw .request
   | .ok header =>
     let header : StaticHeaders.Original sources owner name := ⟨original,header,parsed⟩
     let helpers ← match providedHelpers with | some helpers => pure helpers | none => NaturalHelpers.read sources
-    let definition ← readDefinitionOriginal header (some helpers) originals modules
+    let definition ← readDefinitionOriginal header (some helpers) originals modules meanings
     have same : definition.val.original.envelope = original := congrArg (fun h => h.envelope) definition.property
     let result ← NaturalAffine.witness (checkTree definition.val (originalTree definition.val same tree))
     let root : Root original tree := ⟨definition.val,same,result.val,by with_reducible exact result.property⟩
     let records ← NaturalAffine.witness (discover sources ((sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1)
-      root.outcome.references [root.record] (some helpers) originals modules)
+      root.outcome.references [root.record] (some helpers) originals modules meanings)
     checkCycles records.val
     let prepared ← SourceEffectClosure.prepare (effectEntries records.val)
     let cohort ← SourceEffectClosure.readCohort prepared
@@ -1375,29 +1389,32 @@ def readOriginalWithTree {sources owner name}
     let all ← inferAllCohort records.val prepared cohort records.val cells
     let selected ← SourceEffectClosure.lookup cohort root.record.id
     let inferred ← inferClosure records.val prepared (some cohort) root.record selected.value
-    pure ⟨tree,root,helpers,originals,modules,records.val,by with_reducible exact records.property,all,inferred⟩
+    pure ⟨tree,root,helpers,originals,modules,meanings,records.val,by with_reducible exact records.property,all,inferred⟩
 
 def readWithTree {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (tree : SourceSyntax.Tree original.occurrence.body)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (Checked original) :=
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (Checked original) :=
   match instantiation with
-  | .closed _ => readOriginalWithTree original tree none none modules
+  | .closed _ => readOriginalWithTree original tree none none modules meanings
   | .static _ environment _ =>
     readOriginalWithTree original tree (some ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩)
-      environment.numeric.originals modules
+      environment.numeric.originals modules meanings
 
 def readOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (Checked original) := do
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (Checked original) := do
   let tokens := original.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
-  readOriginalWithTree original tree none none modules
+  readOriginalWithTree original tree none none modules meanings
 
 def readWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
-    (modules : Option (SourceModules.Prepared sources) := none) : WorkM (Checked original) := do
+    (modules : Option (SourceModules.Prepared sources) := none)
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (Checked original) := do
   let tokens := original.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
-  readWithTree instantiation tree modules
+  readWithTree instantiation tree modules meanings
 
 end QleisliKernel.SourceTypes.GenericTypeTrace

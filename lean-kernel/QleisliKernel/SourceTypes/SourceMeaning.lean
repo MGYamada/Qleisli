@@ -270,6 +270,70 @@ def read (sources : Sources) (caller : Option String) (owner name : String) : Wo
   let graph ← NaturalAffine.witness (readGraph 65 sources caller owner name [])
   pure ⟨graph.val,by with_reducible exact graph.property⟩
 
+/-- This table retains actual original graph reads in their original owning
+module. Reuse never changes the caller type or supplies a Meaning equation. -/
+structure PreparedEntry (sources : Sources) where
+  owner : String
+  name : String
+  checked : Checked sources (some owner) owner name
+
+private def readPreparedEntry (sources : Sources) (id : String × String) : WorkM (PreparedEntry sources) := do
+  let (owner,name) := id
+  return ⟨owner,name,← read sources (some owner) owner name⟩
+
+structure Prepared (sources : Sources) where
+  ids : List (String × String)
+  entries : List (PreparedEntry sources)
+  original : ∃ before after,(ids.mapM (readPreparedEntry sources)).run before = (.ok entries,after)
+  every : entries.map (fun entry => (entry.owner,entry.name)) = ids
+
+def prepare (sources : Sources) (ids : List (String × String)) : WorkM (Prepared sources) := do
+  let fields := (ids.map fun (owner,name) => owner.utf8ByteSize+name.utf8ByteSize+1).sum
+  exactWork (Exact.charge (16*(ids.length+1)*(fields+1)))
+  let entries ← NaturalAffine.witness (ids.mapM (readPreparedEntry sources))
+  if every : entries.val.map (fun entry => (entry.owner,entry.name)) = ids then
+    return ⟨ids,entries.val,by with_reducible exact entries.property,every⟩
+  else throw .request
+
+private def cachedRootWork {sources} (graph : Graph sources) : Nat :=
+  match graph.nodes[graph.root]? with
+  | none => 8*(graph.nodes.length+1)
+  | some root =>
+    -- The later select still compares its exact original root with the fresh
+    -- resolution. Reserve those source/declaration fields on a cache hit.
+    16*(graph.nodes.length+2*root.original.source.utf8ByteSize+root.owner.utf8ByteSize+
+      root.name.utf8ByteSize+root.original.declaration.name.utf8ByteSize+
+      root.original.declaration.kind.utf8ByteSize+
+      (root.original.declaration.body.map fun part => part.utf8ByteSize+1).sum+1)
+
+/-- A cached graph is reused only at the SAME Sources/owner/name and exact
+owning-module caller. External/host queries keep the fresh visibility path;
+cache misses are fresh reads, never absence or imported/private authority. -/
+def readWithPrepared (sources : Sources) (caller : Option String) (owner name : String)
+    (prepared : Option (Prepared sources) := none) : WorkM (Checked sources caller owner name) := do
+  match prepared with
+  | none => read sources caller owner name
+  | some prepared =>
+    exactWork (Exact.charge (8*(owner.utf8ByteSize+(caller.map String.utf8ByteSize).getD 0+1)))
+    if sameCaller : caller = some owner then
+      let keys := (prepared.entries.map fun entry => entry.owner.utf8ByteSize+entry.name.utf8ByteSize+1).sum
+      exactWork (Exact.charge (16*(keys+(prepared.entries.length+1)*(owner.utf8ByteSize+name.utf8ByteSize+1)+1)))
+      match prepared.entries.find? (fun entry => entry.owner == owner && entry.name == name) with
+      | none => read sources caller owner name
+      | some entry =>
+        if sameOwner : entry.owner = owner then
+          if sameName : entry.name = name then
+            exactWork (Exact.charge (cachedRootWork entry.checked.graph))
+            have checked : Checked sources caller owner name := by
+              cases sameOwner
+              cases sameName
+              cases sameCaller
+              exact entry.checked
+            return checked
+          else throw .request
+        else throw .request
+    else read sources caller owner name
+
 def decisionResolution {sources caller scope tokens} (decision : CallName.Decision sources caller scope tokens) : Option Resolved :=
   match decision with
   | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
@@ -313,10 +377,11 @@ structure Selected (sources : Sources) (caller : String) (scope tokens : List St
   original : root.owner = resolution.moduleName ∧ root.name = resolution.declaration.name ∧
     root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration
 
-def select (sources : Sources) (caller : String) (scope tokens : List String) : WorkM (Selected sources caller scope tokens) := do
+def select (sources : Sources) (caller : String) (scope tokens : List String)
+    (prepared : Option (Prepared sources) := none) : WorkM (Selected sources caller scope tokens) := do
   let chosen ← selectName sources caller scope tokens
   let resolution := chosen.resolution
-  let meaning ← read sources (some caller) resolution.moduleName resolution.declaration.name
+  let meaning ← readWithPrepared sources (some caller) resolution.moduleName resolution.declaration.name prepared
   match originalRoot : meaning.graph.nodes[meaning.graph.root]? with
   | none => throw .request
   | some root =>
