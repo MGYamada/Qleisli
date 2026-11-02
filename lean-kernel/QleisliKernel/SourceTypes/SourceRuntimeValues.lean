@@ -25,6 +25,7 @@ namespace Expression
 @[match_pattern] abbrev project := Semantics.SourceOrdinary.Expression.project
 @[match_pattern] abbrev combine := Semantics.SourceOrdinary.Expression.combine
 @[match_pattern] abbrev field := Semantics.SourceOrdinary.Expression.field
+@[match_pattern] abbrev equalsOrdinal := Semantics.SourceOrdinary.Expression.equalsOrdinal
 @[match_pattern] abbrev not := Semantics.SourceOrdinary.Expression.not
 @[match_pattern] abbrev xor := Semantics.SourceOrdinary.Expression.xor
 @[match_pattern] abbrev and := Semantics.SourceOrdinary.Expression.and
@@ -191,6 +192,8 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
       (← expressionTransport site actuals ordinary second)
   | .field stride dimension receiver => do
     return .field stride dimension (← expressionTransport site actuals ordinary receiver)
+  | .equalsOrdinal ordinal value =>
+    return .equalsOrdinal ordinal (← expressionTransport site actuals ordinary value)
   | .not value => do return .not (← expressionTransport site actuals ordinary value)
   | .xor first second => do
     let first ← expressionTransport site actuals ordinary first
@@ -208,7 +211,7 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
 /-- Size is derived from actual expression structure; the 65 source nesting
 bound cannot accidentally cap long flat helper/call chains during transport. -/
 def expressionSize : Expression → Nat
-  | .project value _ | .field _ _ value | .not value => 1+expressionSize value
+  | .project value _ | .field _ _ value | .equalsOrdinal _ value | .not value => 1+expressionSize value
   | .xor first second | .and first second | .combine _ first second => 1+expressionSize first+expressionSize second
   | .choose condition thenValue elseValue =>
     1+expressionSize condition+expressionSize thenValue+expressionSize elseValue
@@ -220,7 +223,7 @@ def siteFields (site : Site) : Nat :=
 def expressionFields : Expression → Nat
   | .measured origin calls owner =>
     1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
-  | .project value _ | .field _ _ value | .not value => 1+expressionFields value
+  | .project value _ | .field _ _ value | .equalsOrdinal _ value | .not value => 1+expressionFields value
   | .xor first second | .and first second | .combine _ first second => 1+expressionFields first+expressionFields second
   | .choose condition thenValue elseValue =>
     1+expressionFields condition+expressionFields thenValue+expressionFields elseValue

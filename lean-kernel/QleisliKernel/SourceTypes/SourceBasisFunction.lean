@@ -33,7 +33,7 @@ private def freeVariables (inputTypes boundTypes : List Basis) : Expression →
   | expression@(.measured ..) => pure [(expression,[.bit])]
   | .unit | .bit _ | .ordinal _ => pure []
   | .project .. => throw "coherent nominal field projection needs its original field contract"
-  | .not value | .field _ _ value => freeVariables inputTypes boundTypes value
+  | .not value | .field _ _ value | .equalsOrdinal _ value => freeVariables inputTypes boundTypes value
   | .xor first second | .and first second | .combine _ first second => do
     return (← freeVariables inputTypes boundTypes first) ++ (← freeVariables inputTypes boundTypes second)
   | .choose condition thenValue elseValue => do

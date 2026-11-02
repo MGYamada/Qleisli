@@ -24,6 +24,7 @@ inductive Expression where
   | project (value : Expression) (ordinal : Nat)
   | combine (stride : Nat) (first second : Expression)
   | field (stride dimension : Nat) (receiver : Expression)
+  | equalsOrdinal (ordinal : Nat) (value : Expression)
   | not (value : Expression)
   | xor (first second : Expression)
   | and (first second : Expression)
@@ -56,6 +57,9 @@ def evaluate (values : Valuation) : Expression → Option Nat
     if stride == 0 || dimension == 0 then none else do
       let receiver ← evaluate values receiver
       some ((receiver/stride)%dimension)
+  | .equalsOrdinal ordinal value => do
+    let value ← evaluate values value
+    some (if value == ordinal then 1 else 0)
   | .not value => do
     let value ← evaluate values value
     if value ≥ 2 then none else some (1-value)

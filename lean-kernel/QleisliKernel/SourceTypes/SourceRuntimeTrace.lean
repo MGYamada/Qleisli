@@ -102,7 +102,49 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
-      | .matching .. => throw .request
+      | .matching written scrutinee children =>
+        let (selected,context) ← recurse naturals held scope nextOrdinal environment scrutinee context
+        let [.ordinary basis condition] := selected.value | throw .request
+        let labels ← SourceMatchLabels.read sources owner naturals.helpers.val scope written basis
+        let (arms,armEvents,ordinal,context) ← children.trees.foldlM
+          (fun (arms,events,ordinal,context) child => do
+            let (result,context) ← recurse naturals held scope ordinal selected.remaining child.2 context
+            match callsRead : child.2.calls with
+            | .error _ => throw .request
+            | .ok calls =>
+              Finite.guard (result.events.flatMap Event.callOffsets == calls &&
+                result.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets child.1) .request
+              let arm : Arm sources owner selected.remaining child.1 :=
+                ⟨child.2,result.value,result.remaining,result.allocated,result.consumed,result.nextOrdinal,
+                  result.balanced,inferredEffect result.events,result.events.any Event.quantumUse,
+                  result.staticRows,calls,callsRead,result.events.flatMap Event.basisOffsets⟩
+              return (arms ++ [⟨child.1,arm⟩],events ++ [result.events],result.nextOrdinal,context))
+          (([] : List (Sigma (Arm sources owner selected.remaining))),
+            ([] : List (List (Event sources owner))),selected.nextOrdinal,context)
+        if originalBodies : arms.map (·.1) = written.parts.arms.map (·.body.tokens) then
+          let some first := arms.head? | throw .request
+          let remaining ← adapt (SourceRuntimeBranches.outer selected.remaining first.2.remaining)
+          if projected : arms.all (fun arm => decide
+              (SourceRuntimeBranches.outer selected.remaining arm.2.remaining = .ok remaining)) = true then
+            Finite.exactWork (Exact.charge (64*((arms.map fun arm => valueFields arm.2.value+
+              environmentCells arm.2.remaining).sum+environmentCells remaining+1)))
+            match merged : SourceRuntimeMatching.merge condition labels.labels.ordinals (arms.map (·.2.value)) ordinal with
+            | .error _ => throw .request
+            | .ok (value,phis) =>
+              have exits : ∀ arm ∈ arms,SourceRuntimeBranches.outer selected.remaining arm.2.remaining = .ok remaining := by
+                intro arm member
+                exact of_decide_eq_true ((List.all_eq_true.mp projected) arm member)
+              let event : MatchEvent sources owner :=
+                ⟨tokens,written,name,signature,generic,naturals,scope,basis,condition,labels,
+                  selected.remaining,selected.nextOrdinal,arms,originalBodies,remaining,exits,ordinal,value,phis,merged,held⟩
+              let allocated := arms.flatMap (·.2.allocated)
+              let consumed := SourceRuntimeBranches.retired selected.remaining remaining ++ allocated
+              return (← outcome environment value remaining
+                (selected.allocated ++ allocated ++ phis.map (·.output)) (selected.consumed ++ consumed)
+                (ordinal+phis.length) (selected.events ++ [.matching event armEvents])
+                (selected.staticRows ++ labels.labels.sourceRows ++ arms.flatMap (·.2.staticRows)),context)
+          else throw .request
+        else throw .request
       | .staticConditional written thenTree elseTree =>
         let selection ← SourceStaticSelection.read sources owner naturals scope written
         let selected : Sigma SourceSyntax.Tree := if selection.selected then
@@ -744,6 +786,30 @@ def readStaticSource {sources caller} (event : StaticEvent sources caller) :
       result.events.flatMap Event.basisOffsets = event.selected.2.basisOffsets then
     let ⟨value,remaining,allocated,consumed,nextOrdinal,effect,quantumUse,basis⟩ := checked
     return ⟨result,value,remaining,allocated,consumed,nextOrdinal,effect,quantumUse,basis⟩
+  else throw .request
+
+structure MatchBodies {sources caller} (event : MatchEvent sources caller) where
+  results : List (Outcome sources caller event.before)
+  original : results.map Outcome.description = event.arms.map (fun arm => arm.2.description)
+
+/-- Every ordinary match arm is freshly traversed at its original slice with
+the same pre-environment. No known constructor suppresses an inactive arm's
+effect, source row, owner, measurement history or native body obligation. -/
+def readMatchSource {sources caller} (event : MatchEvent sources caller) :
+    Finite.WorkM (MatchBodies event) := do
+  let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
+  let (results,_) ← event.arms.foldlM (fun (results,ordinal) arm => do
+    let (result,_) ← evalWithReader event.signature event.generic basis
+      (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
+        [callFrame event.signature] callee).summary)
+      (arm.1.length+1) event.naturals event.held event.scope ordinal event.before arm.2.tree {}
+    return (results ++ [result],result.nextOrdinal))
+    (([] : List (Outcome sources caller event.before)),event.nextOrdinal)
+  Finite.exactWork (Exact.charge (64*((results.map fun result => valueFields result.value+
+    environmentCells result.remaining+result.events.length+
+    Raw.OwnerFlow.fields (result.allocated ++ result.consumed)).sum+1)))
+  if original : results.map Outcome.description = event.arms.map (fun arm => arm.2.description) then
+    return ⟨results,original⟩
   else throw .request
 
 theorem Checked.effectAssertion {sources owner name} (checked : Checked sources owner name) :

@@ -7,6 +7,8 @@ import QleisliKernel.SourceTypes.SourceRuntimeBranches
 import QleisliKernel.SourceTypes.SourceRuntimeTransformPorts
 import QleisliKernel.SourceTypes.SourceBasisBindings
 import QleisliKernel.SourceTypes.SourceStaticSelection
+import QleisliKernel.SourceTypes.SourceMatchLabels
+import QleisliKernel.SourceTypes.SourceRuntimeMatching
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -380,6 +382,29 @@ structure StaticEvent (sources : Sources) (caller : String) where
   projected : SourceRuntimeBranches.outer before selected.2.remaining = .ok remaining
   held : List Semantics.SourceOwners.Owner
 
+structure MatchEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceMatchSyntax.Checked tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  generic : GenericTypeTrace.Checked signature.original
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  basis : Semantics.FiniteCarrier.Basis
+  condition : Expression
+  labels : SourceMatchLabels.Checked sources caller scope written basis
+  before : Environment
+  nextOrdinal : Nat
+  arms : List (Sigma (Arm sources caller before))
+  originalBodies : arms.map (·.1) = written.parts.arms.map (·.body.tokens)
+  remaining : Environment
+  projected : ∀ arm ∈ arms,SourceRuntimeBranches.outer before arm.2.remaining = .ok remaining
+  afterArms : Nat
+  value : Value
+  phis : List SourceRuntimeMatching.Phi
+  merged : SourceRuntimeMatching.merge condition labels.labels.ordinals (arms.map (·.2.value)) afterArms = .ok (value,phis)
+  held : List Semantics.SourceOwners.Owner
+
 structure TransformCount {sources caller callerName}
     (signature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
     (scope : List String) where
@@ -438,6 +463,7 @@ inductive Event (sources : Sources) (caller : String) where
   | conditional (event : BranchEvent sources caller) (thenEvents elseEvents : List (Event sources caller))
   | transform (event : TransformEvent sources caller)
   | staticConditional (event : StaticEvent sources caller) (events : List (Event sources caller))
+  | matching (event : MatchEvent sources caller) (arms : List (List (Event sources caller)))
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -449,12 +475,14 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .conditional .. => none
   | .transform event => some event.call.calleeOffset
   | .staticConditional .. => none
+  | .matching .. => none
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
   | .basis event => event.bodyCalls
   | .conditional event .. => event.thenArm.calls ++ event.elseArm.calls
   | .staticConditional event .. => event.thenCalls ++ event.elseCalls
+  | .matching event .. => event.arms.flatMap (·.2.calls)
   | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
@@ -467,12 +495,14 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | .staticConditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
       QuantumSequence.originalOffsets event.written.parts.elseBody
+  | .matching event .. => event.written.parts.arms.flatMap (fun arm => QuantumSequence.originalOffsets arm.body.tokens)
   | _ => event.qmatchOffset.toList
 
 def Event.basisOffsets {sources caller} : Event sources caller → List Nat
   | .basis event => [event.written.parts.keyword.span.startByte]
   | .conditional event .. => event.thenArm.basisOffsets ++ event.elseArm.basisOffsets
   | .staticConditional event .. => event.selected.2.basisOffsets
+  | .matching event .. => event.arms.flatMap (·.2.basisOffsets)
   | _ => []
 
 def Event.offset {sources caller} : Event sources caller → Nat
@@ -485,6 +515,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .conditional event .. => event.written.parts.keyword.span.startByte
   | .transform event => event.call.calleeOffset
   | .staticConditional event .. => event.written.parts.keyword.span.startByte
+  | .matching event .. => event.written.parts.keyword.span.startByte
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
@@ -494,6 +525,7 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
   | .transform _ => .unitary
   | .staticConditional event .. => event.selected.2.inferredEffect
+  | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
@@ -504,6 +536,7 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
     else event.canonical.generic.quantumUse
   | .conditional event .. => event.thenArm.quantumUse || event.elseArm.quantumUse
   | .staticConditional event .. => event.selected.2.quantumUse
+  | .matching event .. => event.arms.any (·.2.quantumUse)
   | _ => true
 
 def Event.staticRows {sources caller} : Event sources caller → List (String × String)
@@ -517,6 +550,7 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
       event.counts.flatMap (·.checked.rows)
   | .staticConditional event .. => event.selection.naturals.sourceRows ++ event.selected.2.staticRows
+  | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
@@ -530,6 +564,31 @@ structure Outcome (sources : Sources) (caller : String) (before : Environment) w
   events : List (Event sources caller)
   balanced : (owners before ++ allocated).Perm (valueOwners value ++ owners remaining ++ consumed)
   staticRows : List (String × String)
+
+/-- Actual data compared when a native continuation freshly recovers an
+original arm. Proof fields are retained by the arm and outcome themselves. -/
+structure ArmDescription where
+  value : Value
+  remaining : Environment
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  nextOrdinal : Nat
+  inferredEffect : Semantics.Raw.Effect
+  quantumUse : Bool
+  staticRows : List (String × String)
+  calls : List Nat
+  qmatches : List Nat
+  basis : List Nat
+  deriving DecidableEq, Repr
+
+def Arm.description {sources caller before tokens} (arm : Arm sources caller before tokens) : ArmDescription :=
+  ⟨arm.value,arm.remaining,arm.allocated,arm.consumed,arm.nextOrdinal,arm.inferredEffect,
+    arm.quantumUse,arm.staticRows,arm.calls,QuantumSequence.originalOffsets tokens,arm.basisOffsets⟩
+
+def Outcome.description {sources caller before} (result : Outcome sources caller before) : ArmDescription :=
+  ⟨result.value,result.remaining,result.allocated,result.consumed,result.nextOrdinal,inferredEffect result.events,
+    result.events.any Event.quantumUse,result.staticRows,result.events.flatMap Event.callOffsets,
+    result.events.flatMap Event.qmatchOffsets,result.events.flatMap Event.basisOffsets⟩
 
 structure Evaluated {sources owner name} (signature : Signature sources owner name) where
   summary : Summary signature
