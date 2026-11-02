@@ -5,6 +5,7 @@ import QleisliKernel.SourceTypes.SourceOperationApplication
 import QleisliKernel.SourceTypes.SourceBasisFunction
 import QleisliKernel.SourceTypes.SourceRuntimeBranches
 import QleisliKernel.SourceTypes.SourceRuntimeTransformPorts
+import QleisliKernel.SourceTypes.SourceBasisBindings
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -207,6 +208,7 @@ structure Summary {sources owner name} (signature : Signature sources owner name
   genericRead : ∃ before after,
     (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
+  basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
   value : Value
   remaining : Environment
   allocated : List Semantics.SourceOwners.Owner
@@ -290,6 +292,7 @@ structure BasisEvent (sources : Sources) (caller : String) where
   written : SourceControlSyntax.CheckedBasis tokens
   callerName : String
   signature : Signature sources caller callerName
+  generic : GenericTypeTrace.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   input : Semantics.SourceOwners.Owner
@@ -300,6 +303,9 @@ structure BasisEvent (sources : Sources) (caller : String) where
   bodyValue : Value
   inputTypes : List Semantics.FiniteCarrier.Basis
   outputBasis : Semantics.FiniteCarrier.Basis
+  binding : SourceBasisBindings.ActiveAt signature.instantiation generic.basisObligations written.parts.keyword.span.startByte
+  inputType : binding.ports.input = input.basis
+  outputType : binding.ports.output = outputBasis
   function : SourceBasisFunction.Checked input.basis outputBasis inputTypes bodyValue
   bodySeeded : SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) function.bound ordinaryBefore
     (.basis written.parts.keyword.span.startByte) = .ok bodyInitial
@@ -327,12 +333,14 @@ structure Arm (sources : Sources) (caller : String) (before : Environment) (toke
   staticRows : List (String × String)
   calls : List Nat
   originalCalls : tree.calls = .ok calls
+  basisOffsets : List Nat
 
 structure BranchEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
   written : SourceControlSyntax.CheckedConditional tokens
   callerName : String
   signature : Signature sources caller callerName
+  generic : GenericTypeTrace.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   condition : Expression
@@ -432,6 +440,11 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | _ => event.qmatchOffset.toList
 
+def Event.basisOffsets {sources caller} : Event sources caller → List Nat
+  | .basis event => [event.written.parts.keyword.span.startByte]
+  | .conditional event .. => event.thenArm.basisOffsets ++ event.elseArm.basisOffsets
+  | _ => []
+
 def Event.offset {sources caller} : Event sources caller → Nat
   | .selection _ parsed .. => parsed.keyword.span.startByte
   | .primitive event => event.call.calleeOffset
@@ -488,5 +501,6 @@ structure Evaluated {sources owner name} (signature : Signature sources owner na
   summary : Summary signature
   events : List (Event sources owner)
   inferred : inferredEffect events = summary.inferredEffect
+  basisCovered : summary.basis.covered (events.flatMap Event.basisOffsets) = true
 
 end QleisliKernel.SourceTypes.SourceRuntimeContext
