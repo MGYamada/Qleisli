@@ -534,6 +534,7 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
+  | .primitive event => event.kind != .emptyBits && event.kind != .prependBit
   | .named event =>
     if caller != event.target.resolution.moduleName && event.target.signature.original.declaration.isPublic then
       (!event.target.signature.original.parsedHeader.ordinaryOnly &&

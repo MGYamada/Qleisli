@@ -49,6 +49,7 @@ private def primitiveAction (kind : CallName.Primitive) (site : Site) (arguments
     (nextOrdinal : Nat) : Except String
       (Value × List Semantics.SourceOwners.Owner × List Semantics.SourceOwners.Owner × Nat) := do
   match kind,arguments with
+  | .emptyBits,[] => return ([.ordinary [.bits 0] (.ordinal 0)],[],[],nextOrdinal)
   | .h,[[.owner owner]] =>
     if owner.basis != [.bit] then throw "H runtime source type"
     return ([.owner owner],[],[],nextOrdinal)
