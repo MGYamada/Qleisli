@@ -61,6 +61,38 @@ private def fields (table : Table) : Nat :=
     SourceTypes.SourceRuntimeValues.expressionFields binding.2+
     SourceTypes.SourceRuntimeValues.expressionSize binding.2) 0
 
+def agreement (reference : Valuation) (actual : Values) (table : Table) : Bool :=
+  table.all fun (id,expression) =>
+    match Semantics.OrdinaryValue.lookup actual id with
+    | none => false
+    | some bit => decide (Semantics.SourceOrdinary.evaluate reference expression = some (bitValue bit))
+
+theorem agreement_sound (reference : Valuation) (actual : Values) (table : Table)
+    (checked : agreement reference actual table = true) : Agreement reference actual table := by
+  intro id expression member
+  have one := List.all_eq_true.mp checked (id,expression) member
+  change (match Semantics.OrdinaryValue.lookup actual id with
+    | none => false
+    | some bit => decide (Semantics.SourceOrdinary.evaluate reference expression = some (bitValue bit))) = true at one
+  cases found : Semantics.OrdinaryValue.lookup actual id with
+  | none => simp only [found] at one; cases one
+  | some bit =>
+    simp only [found] at one
+    exact ⟨bit,found,of_decide_eq_true one⟩
+
+structure CheckedAgreement (reference : Valuation) (actual : Values) (table : Table) : Type where
+  original : agreement reference actual table = true
+  agrees : Agreement reference actual table
+
+/-- This finite check is repeated over the enclosing gate's complete actual
+history family. It does not select histories or create a source valuation. -/
+def readAgreement (reference : Valuation) (actual : Values) (table : Table) :
+    WorkM (CheckedAgreement reference actual table) := do
+  exactWork (Exact.charge (32*(fields table+1)*(actual.length+1)))
+  if original : agreement reference actual table = true then
+    return ⟨original,agreement_sound reference actual table original⟩
+  else throw .equation
+
 def read (table : Table) (id : Nat) : WorkM (Read table id) := do
   exactWork (Exact.charge (16*(fields table+1)))
   match found : table.find? (fun binding => binding.1 == id) with

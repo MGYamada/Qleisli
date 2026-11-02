@@ -105,6 +105,45 @@ def readCondition {sources caller dependencies program block offset source actua
     return ⟨value.val,by with_reducible exact value.property,computed⟩
   else throw .equation
 
+structure MergedAt {sources caller dependencies program block offset source actual before left right}
+    (bound : @Bound sources caller dependencies program block offset source actual before left right)
+    (reference : Valuation) (history : Raw.Instrument.History) where
+  condition : ConditionAt bound reference history.values
+  result : Raw.Instrument.History
+  original : RuntimeInterval.Computed
+    (Raw.Instrument.mergeClassical condition.value actual.classical history) result
+  agreement : CheckedAgreement reference result.values bound.outputs
+
+/-- The actual Instrument merge reads every phi from the same completed arm
+history. The original source condition and every resulting SSA expression are
+then checked under that same valuation. All enclosing hidden histories remain
+required, regardless of their operator or probability. -/
+def readMerged {sources caller dependencies program block offset source actual before left right}
+    (bound : @Bound sources caller dependencies program block offset source actual before left right)
+    (reference : Valuation) (history : Raw.Instrument.History) : WorkM (MergedAt bound reference history) := do
+  let condition ← readCondition bound reference history.values
+  let merged ← NaturalAffine.witness (Raw.Instrument.mergeClassical condition.value actual.classical history)
+  let agreement ← RuntimeOrdinarySSA.readAgreement reference merged.val.values bound.outputs
+  return ⟨condition,merged.val,by with_reducible exact merged.property,agreement⟩
+
+theorem merge_retains (choice : Bool) (phis : List Phi) (history result : Raw.Instrument.History)
+    (work remaining : Nat)
+    (executed : (Raw.Instrument.mergeClassical choice phis history).run work = (.ok result,remaining)) :
+    result.hidden = history.hidden ∧ result.operator = history.operator := by
+  unfold Raw.Instrument.mergeClassical at executed
+  obtain ⟨values,middle,_read,finish⟩ := bind_success _ _ _ _ _ executed
+  have same : result = {history with values := history.values ++ values} := (pure_success _ _ _ _ finish).1
+  subst result
+  exact ⟨rfl,rfl⟩
+
+theorem MergedAt.retains {sources caller dependencies program block offset source actual before left right
+    bound reference history}
+    (merged : @MergedAt sources caller dependencies program block offset source actual before left right
+      bound reference history) :
+    merged.result.hidden = history.hidden ∧ merged.result.operator = history.operator := by
+  obtain ⟨work,remaining,executed⟩ := merged.original
+  exact merge_retains merged.condition.value actual.classical history merged.result work remaining executed
+
 theorem Bound.bothOperands {sources caller dependencies program block offset source actual before left right}
     (bound : @Bound sources caller dependencies program block offset source actual before left right)
     (phi : Phi) (member : phi ∈ actual.classical) : Nonempty (One left right phi) := by

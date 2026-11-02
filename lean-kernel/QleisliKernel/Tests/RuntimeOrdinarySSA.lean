@@ -21,8 +21,18 @@ private def compiled (operations : List Instruction) (inputs : Table := []) : Op
 #guard compiled [.branch 0 [] [] [] []] = none
 #guard compiled [.pure (.packUnit 0)] = none
 
+private def sourceValues : Valuation :=
+  { inputs := fun ordinal => if ordinal == 0 then some 1 else none
+    basisInputs := fun _ => none
+    measured := fun _ _ _ => none }
+
+#guard agreement sourceValues [(0,true),(1,false)] [(0,.input 0),(1,.not (.input 0))]
+#guard !agreement sourceValues [(0,true),(1,true)] [(0,.input 0),(1,.not (.input 0))]
+#guard !agreement sourceValues [(0,true)] [(0,.input 0),(1,.not (.input 0))]
+
 #print axioms QleisliKernel.Qirf.RuntimeOrdinarySSA.Definition.sound
 #print axioms QleisliKernel.Qirf.RuntimeOrdinarySSA.Action.preserves
 #print axioms QleisliKernel.Qirf.RuntimeOrdinarySSA.Gap.classical
+#print axioms QleisliKernel.Qirf.RuntimeOrdinarySSA.agreement_sound
 
 end QleisliKernel.Tests.RuntimeOrdinarySSA

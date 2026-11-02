@@ -26,5 +26,6 @@ private def operands (left right : Table) (actual : List Phi) :
 
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryPhis.One.sound
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryPhis.Bound.bothOperands
+#print axioms QleisliKernel.Qirf.RuntimeOrdinaryPhis.MergedAt.retains
 
 end QleisliKernel.Tests.RuntimeOrdinaryPhis
