@@ -142,8 +142,12 @@ def read {dependencies program block start count inputs outputs roles}
     WorkM (Literal frame selectorBits targetBits retained restricted before after) := do
   let fields := (frame.operations.map fun operation => Raw.rawFields
     ⟨[],[operation],[],.unitary⟩).sum
-  exactWork (Exact.charge (32*(fields+frame.interval.before.quantum.frame.length+
-    frame.interval.after.quantum.frame.length+selection.selected.length+retained.steps.length+1)+
+  -- Each literal take/insert scans a live list. One pure Raw operation grows
+  -- that list by at most one; event append likewise visits the earlier trace.
+  -- Reserve those actual repeated traversals, not just the input byte count.
+  let traversal := frame.interval.before.quantum.live.length+frame.operations.length+
+    frame.interval.before.quantum.frame.length+frame.interval.after.quantum.frame.length+1
+  exactWork (Exact.charge (16*(fields+retained.steps.length+selection.selected.length+1)*traversal+
     16*(Raw.OwnerFlow.fields roles+Raw.OwnerFlow.fields selection.selectedRoles+1)+
     FiniteRestriction.restrictionFields retained.steps))
   if selectedRoles : selection.selectedRoles = roles then
