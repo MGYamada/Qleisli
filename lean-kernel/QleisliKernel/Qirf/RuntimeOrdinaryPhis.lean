@@ -54,7 +54,7 @@ theorem One.sound {left right phi reference actual} (one : One left right phi)
     simp [One.expression,Semantics.SourceOrdinary.evaluate,conditionComputed,computed,bitValue]
 
 structure Bound {sources caller dependencies program block offset}
-    (source : SourceRuntimeContext.ConditionalEvent sources caller)
+    (source : SourceRuntimeContext.BranchEvent sources caller)
     (actual : @RuntimeInterval.Branch dependencies program block offset)
     (before left right : Table) where
   condition : Read before actual.condition
@@ -71,7 +71,7 @@ def Bound.outputs {sources caller dependencies program block offset source actua
 source event supplies its exact original condition and both original bodies.
 No output is visible while either operand snapshot is being read. -/
 def read {sources caller dependencies program block offset}
-    (source : SourceRuntimeContext.ConditionalEvent sources caller)
+    (source : SourceRuntimeContext.BranchEvent sources caller)
     (actual : @RuntimeInterval.Branch dependencies program block offset)
     (before left right : Table) : WorkM (Bound source actual before left right) := do
   exactWork (Exact.charge (32*(before.length+left.length+right.length+actual.classical.length+1)^2))
