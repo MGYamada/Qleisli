@@ -169,7 +169,7 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
   guard (written.arguments.length == target.header.formals.length) .request
   let transfer ← StaticCallPremises.readInState state scope target written.arguments
   let recursion ← if sameKey : owner = state.owner ∧ name = state.name then do
-      guard runtimeRecursion .request
+      guard (runtimeRecursion && !state.prepared.original.envelope.parsedHeader.ordinaryOnly) .request
       let decrease ← NaturalAffine.witness (decreasing state scope target transfer.forms)
       have unit : decrease.val = () := by cases decrease.val; rfl
       if sameOriginal : target.envelope.source = state.prepared.original.envelope.source ∧

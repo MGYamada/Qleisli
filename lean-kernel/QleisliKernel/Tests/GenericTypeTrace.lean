@@ -65,6 +65,8 @@ private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
     {naturals := [("n",1)]} = none
 #guard summary (program ("pub unitary fn root[const n:Nat,const m:Nat](q:Q<Bit>)->Q<Bit>{" ++
     "if static n>0 {root[n-1,m+1](q)} else {q}}")) {naturals := [("n",1),("m",0)]} = none
+#guard summary (program "pub classical fn root[const n:Nat](x:Bit)->Bit{if static n>0 {root[n-1](x)} else {x}}")
+    {naturals := [("n",1)]} = none
 
 -- Binding identity prevents an inner owner shadow from resurrecting a moved
 -- outer owner when the original branch ends.
