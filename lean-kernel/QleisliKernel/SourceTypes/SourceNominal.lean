@@ -89,15 +89,28 @@ def readRecord (sources : Sources) (caller : String) (scope : List String)
         let some field := definition.val.fields.find? (fun field => field.member.name.text == initializer.name.text)
           | throw .request
         return field
-      if checked : fields.map (fun (field : MemberFields.Field) => field.member.name.text) =
-          written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text) ∧
-          (∀ field ∈ fields,field ∈ definition.val.fields) ∧
-          (definition.val.fields.map (fun (field : MemberFields.Field) => field.member.name.text)).Perm
-            (written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text)) ∧
-          (written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text)).Nodup ∧
-          (∀ field ∈ fields,field.member.isPublic = true ∨ caller = origin.moduleName) then
-        return ⟨nominal,origin,names,tail,record,definition.val,by with_reducible exact definition.property,
-          exactType,fields,checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2⟩
+      let writtenNames := written.initializers.map (fun initializer => initializer.name.text)
+      let declaredNames := definition.val.fields.map (fun field => field.member.name.text)
+      if ordered : fields.map (fun field => field.member.name.text) = writtenNames then
+        if selected : fields.all (fun field => decide (field ∈ definition.val.fields)) = true then
+          if complete : declaredNames.Perm writtenNames then
+            if unique : writtenNames.Nodup then
+              if accessible : fields.all (fun field => field.member.isPublic || caller == origin.moduleName) = true then
+                have originals : ∀ field ∈ fields,field ∈ definition.val.fields := by
+                  intro field member
+                  exact of_decide_eq_true ((List.all_eq_true.mp selected) field member)
+                have permissions : ∀ field ∈ fields,MemberFields.VisibleFrom caller origin field.member := by
+                  intro field member
+                  have allowed := (List.all_eq_true.mp accessible) field member
+                  rcases Bool.or_eq_true.mp allowed with public | same
+                  · exact Or.inl public
+                  · exact Or.inr (beq_iff_eq.mp same)
+                return ⟨nominal,origin,names,tail,record,definition.val,by with_reducible exact definition.property,
+                  exactType,fields,ordered,originals,complete,unique,permissions⟩
+              else throw .request
+            else throw .request
+          else throw .request
+        else throw .request
       else throw .request
     else throw .request
   | _ => throw .request
