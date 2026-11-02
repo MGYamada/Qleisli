@@ -6,6 +6,7 @@ import QleisliKernel.SourceTypes.SourceBoolean
 import QleisliKernel.SourceTypes.SourceControlSyntax
 import QleisliKernel.SourceTypes.SourceStaticControlSyntax
 import QleisliKernel.SourceTypes.SourceNominalSyntax
+import QleisliKernel.SourceTypes.SourceMatchSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -51,6 +52,9 @@ inductive Tree : List LocatedToken → Type where
       (children : Children (written.initializers.map (·.expression))) : Tree tokens
   | projection {tokens : List LocatedToken} (written : SourceNominalSyntax.Projection tokens)
       (receiver : Tree written.receiver) : Tree tokens
+  | matching {tokens : List LocatedToken} (written : SourceMatchSyntax.Checked tokens)
+      (scrutinee : Tree written.parts.scrutinee)
+      (children : Children (written.parts.arms.map (·.body.tokens))) : Tree tokens
   | basis {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedBasis tokens)
       (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
 
@@ -103,6 +107,8 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .variant _ => return []
     | .record _ children => return (← children.trees.mapM (fun child => next child.2)).flatten
     | .projection _ receiver => next receiver
+    | .matching _ scrutinee children =>
+      return (← next scrutinee) ++ (← children.trees.mapM (fun child => next child.2)).flatten
     | .basis _ input body => return (← next input) ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
@@ -151,6 +157,11 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       let thenBody ← next (depth+1) true written.parts.thenBody
       let elseBody ← next (depth+1) true written.parts.elseBody
       return .conditional written condition thenBody elseBody
+    if tokens.head?.map (·.text) == some "match" then
+      let written ← SourceMatchSyntax.read tokens
+      let scrutinee ← next (depth+1) false written.parts.scrutinee
+      let children ← readChildren (next (depth+1) true) (written.parts.arms.map (·.body.tokens))
+      return .matching written scrutinee children
     if tokens.head?.map (·.text) == some "basis" then
       let written ← SourceControlSyntax.readBasis tokens
       let input ← next (depth+1) false written.parts.input
