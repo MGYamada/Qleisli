@@ -286,12 +286,12 @@ private def readNode : Node → WorkM NodeClosed
     return ⟨.provider owner name (bases.map fun (name,basis) => (name,basis.closed.value))
       (naturals.map fun (name,natural) => (name,natural.closed.value)) operations,
       naturals.map (·.2),bases.map (·.2)⟩
-  | .inverse child => pure ⟨.inverse child⟩
-  | .controlled child => pure ⟨.controlled child⟩
-  | .thenOp left right => pure ⟨.thenOp left right⟩
-  | .tensor left right => pure ⟨.tensor left right⟩
-  | .conjugate outer middle => pure ⟨.conjugate outer middle⟩
-  | .requested child owner name => pure ⟨.requested child owner name⟩
+  | .inverse child => pure ⟨.inverse child,[],[]⟩
+  | .controlled child => pure ⟨.controlled child,[],[]⟩
+  | .thenOp left right => pure ⟨.thenOp left right,[],[]⟩
+  | .tensor left right => pure ⟨.tensor left right,[],[]⟩
+  | .conjugate outer middle => pure ⟨.conjugate outer middle,[],[]⟩
+  | .requested child owner name => pure ⟨.requested child owner name,[],[]⟩
   | .power child count => do
     let natural ← readConstant count.form
     let value ← if count.powerTwo then do
