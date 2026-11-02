@@ -30,7 +30,10 @@ structure Phi where
   elseOwner : Semantics.SourceOwners.Owner
   thenType : thenOwner.basis = output.basis
   elseType : elseOwner.basis = output.basis
-  deriving BEq, DecidableEq, Repr
+  deriving DecidableEq, Repr
+
+instance : BEq Phi where
+  beq first second := decide (first = second)
 
 def merge (condition : Expression) (thenValue elseValue : Value) (nextOrdinal : Nat) :
     Except String (Value × List Phi) := do
