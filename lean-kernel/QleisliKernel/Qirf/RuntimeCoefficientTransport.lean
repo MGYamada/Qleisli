@@ -207,6 +207,5 @@ theorem applyUnitary_event (state next : Semantics.RawTrace.Interface) (input ou
         [.circuit state.frame.length (steps.map (Semantics.RawTrace.localize
           (Semantics.RawTrace.axes state port.wires)))]) := by
   simp only [Semantics.RawTrace.step,taken,bind,Option.bind]
-  rfl
 
 end QleisliKernel.Qirf.RuntimeCoefficientTransport
