@@ -18,6 +18,22 @@ structure Checked (sources : Sources) (owner name : String) where
   originalItems : declarations source = .ok items
   matching : items.filter (fun item => item.name == name) = binding.toList
 
+/-- Select from one complete original declaration scan. Preparing that scan
+does not decide which name or lexical occurrence is being queried. -/
+structure Selection (items : List Declaration) (name : String) where
+  binding : Option Declaration
+  matching : items.filter (fun item => item.name == name) = binding.toList
+
+def select (items : List Declaration) (name : String) : Except String (Selection items name) := do
+  let selected := items.filter (fun item => item.name == name)
+  let binding ← match selected with
+    | [] => pure none
+    | [item] => pure (some item)
+    | _ => throw "ambiguous original source declaration"
+  if matching : selected = binding.toList then
+    return ⟨binding,matching⟩
+  else throw "original source lookup lost its selection"
+
 /-- A source row and its complete declaration scan are retained even for
 absence. A caller must account for this original row in graph relevance. -/
 def read (sources : Sources) (owner name : String) : Except String (Checked sources owner name) := do
@@ -27,14 +43,8 @@ def read (sources : Sources) (owner name : String) : Except String (Checked sour
       match parsed : declarations source with
       | .error error => throw error
       | .ok items =>
-        let selected := items.filter (fun item => item.name == name)
-        let binding ← match selected with
-          | [] => pure none
-          | [item] => pure (some item)
-          | _ => throw "ambiguous original source declaration"
-        if matching : selected = binding.toList then
-          return ⟨source,items,binding,by simpa only [same] using rows,parsed,matching⟩
-        else throw "original source lookup lost its selection"
+        let selected ← select items name
+        return ⟨source,items,selected.binding,by simpa only [same] using rows,parsed,selected.matching⟩
     else throw "original source row name differs"
   | _ => throw "missing/ambiguous original source module"
 

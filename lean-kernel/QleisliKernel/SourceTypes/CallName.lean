@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceLookup
 import QleisliKernel.SourceTypes.ResolutionProvenance
 import QleisliKernel.SourceTypes.ModuleHeader
+import QleisliKernel.SourceTypes.SourceModules
 
 /-! Original-call-name candidates, without standalone acceptance authority.
 The supplied lexical scope must retain consumed bindings; authenticating that
@@ -211,13 +212,33 @@ private def primitiveDecision {sources caller scope tokens name}
     return .primitive name spelling unbound localMissing policy preludeMissing candidate originalName
   else throw .request
 
-/-- Charge original bytes and names before lexing, catalogue scans or path
-construction. There is no new expression-count cap. Existing lexing/source and
-resolver limits remain in force; the budget is intentionally conservative. -/
-def readTexts (sources : Sources) (caller : String) (scope : List String)
+private structure Lookup (sources : Sources) (owner name : String) where
+  checked : SourceLookup.Checked sources owner name
+  policy : Option (Policy checked.source)
+
+private def readLookup (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (owner name : String) : Finite.WorkM (Lookup sources owner name) := do
+  match modules with
+  | none => pure ⟨← adapt (SourceLookup.read sources owner name),none⟩
+  | some modules =>
+    let original ← SourceModules.lookup modules owner
+    Finite.exactWork (Exact.charge (4*((original.items.map fun item => item.name.utf8ByteSize+1).sum+
+      name.utf8ByteSize+1)))
+    let selected ← adapt (SourceLookup.select original.items name)
+    let checked : SourceLookup.Checked sources owner name :=
+      ⟨original.source,original.items,selected.binding,original.originalModule,original.originalItems,selected.matching⟩
+    pure ⟨checked,some ⟨original.tokens,original.lexed,original.disabled,original.policy⟩⟩
+
+/-- The fresh path charges full source bytes before scanning. A prepared path
+instead charges its actual module/name matching; its exact scans and policy
+are retained by the shared original-source preparation. Named/import paths
+still execute the original resolver, including every visibility/import gate. -/
+private def readTextsUsing (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (scope : List String)
     (tokens : List String) : Finite.WorkM (Decision sources caller scope tokens) := do
   Finite.exactWork (Exact.charge (1 + caller.utf8ByteSize +
-    (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize + 3).sum * 4 +
+    (if modules.isSome then 0 else
+      (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize + 3).sum * 4) +
     (scope.map fun name => name.utf8ByteSize + 1).sum +
     (tokens.map fun token => token.utf8ByteSize + 4).sum * 4))
   let parsed ← adapt (readTextName tokens)
@@ -228,19 +249,23 @@ def readTexts (sources : Sources) (caller : String) (scope : List String)
       if bound : name ∈ scope then
         pure (.lexical name spelling bound)
       else
-        let lookup ← adapt (SourceLookup.read sources caller name)
+        let localRead ← readLookup sources modules caller name
+        let lookup := localRead.checked
         match present : lookup.binding with
         | some _ =>
           pure (.named (← resolve sources caller tokens))
         | none =>
           let localMissing : Absent sources caller name := ⟨lookup,present⟩
-          let policy ← adapt (readPolicy lookup.source)
+          let policy ← match localRead.policy with
+            | some policy => pure policy
+            | none => adapt (readPolicy lookup.source)
           if disabled : policy.disabled = true then
             let miss : PreludeMiss sources name policy.disabled := disabled ▸ .disabled
             primitiveDecision spelling bound localMissing policy miss
           else
             have enabled : policy.disabled = false := by cases h : policy.disabled <;> simp_all
-            let preludeLookup ← adapt (SourceLookup.read sources "std::prelude" name)
+            let preludeRead ← readLookup sources modules "std::prelude" name
+            let preludeLookup := preludeRead.checked
             -- Rust's exports::prepare rejects primitive spellings in any
             -- public prelude reexport, even though local public fn is not an export.
             Finite.guard (!(preludeLookup.items.any fun item =>
@@ -258,6 +283,10 @@ def readTexts (sources : Sources) (caller : String) (scope : List String)
     | _ => pure (.named (← resolve sources caller tokens))
   return decision
 
+def readTexts (sources : Sources) (caller : String) (scope : List String)
+    (tokens : List String) : Finite.WorkM (Decision sources caller scope tokens) :=
+  readTextsUsing sources none caller scope tokens
+
 /-- Located source calls and original raw header paths use the same candidate
 decision. Raw paths never receive synthetic source positions; their enclosing
 original header/call reader retains the actual occurrence and byte witness. -/
@@ -266,5 +295,14 @@ def read (sources : Sources) (caller : String) (scope : List String)
   let decision ← readTexts sources caller scope (tokens.map (·.text))
   let parsed ← adapt (readName tokens)
   return ⟨parsed,decision⟩
+
+/-- Same candidate semantics with one exact prepared module table. Lexical
+shadowing remains the first lookup tier, before any module is selected. -/
+def readWithModules (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (scope : List String) (tokens : List LocatedToken) :
+    Finite.WorkM (Checked sources caller scope tokens) := do
+  let decision ← readTextsUsing sources modules caller scope (tokens.map (·.text))
+  let parsed ← adapt (readName tokens)
+  pure ⟨parsed,decision⟩
 
 end QleisliKernel.SourceTypes.CallName
