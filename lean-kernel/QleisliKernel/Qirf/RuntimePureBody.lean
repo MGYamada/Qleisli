@@ -88,10 +88,10 @@ end
 def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
     Nodes dependencies program block := nodes.foldr Nodes.cons Nodes.nil
 
+mutual
 /-- The common loop records every actual mixed interval. Pure composition
 continues to consume only its pure islands and requires complete pure coverage;
 an observation or classical gap cannot acquire a fabricated pure equation. -/
-mutual
 inductive Step (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
   | pure {program block} (node : Node dependencies program block) : Step dependencies program block
