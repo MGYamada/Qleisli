@@ -215,7 +215,8 @@ theorem Predicate.branch_truth_of_values (fuel : Nat) (names : Names) (calls : C
     (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
     (right : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right = some b) :
     (predicate.forBranch (predicate.comparison.test (a : Int) (b : Int))).Truth fuel names calls := by
-  rw [Predicate.truth_iff_of_values _ _ _ _ _ _ left right]
+  apply (Predicate.truth_iff_of_values fuel names calls
+    (predicate.forBranch (predicate.comparison.test (a : Int) (b : Int))) a b left right).mpr
   cases compared : predicate.comparison.test (a : Int) (b : Int) with
   | true =>
     change predicate.comparison.Relation (a : Int) (b : Int)
