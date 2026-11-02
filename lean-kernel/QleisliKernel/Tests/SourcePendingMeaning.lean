@@ -82,6 +82,26 @@ private def inactiveCount : WorkM Nat := do
 -- retained conditionally, with an all-valuations contradiction certificate.
 #guard inactiveCount.run 10000000 |>.1.toOption == some 1
 
+
+private def inactiveMeaning : String := "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn leaf[const n:Nat](q:Q<Bit>)->Q<Bit>{q}\nmeaning Identity:Bit=reference(keep);\nunitary fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}\nunitary fn need[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){invoke[checked_op(U,Identity)](q)}\nunitary fn middle[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0{need[leaf[n-1]](q)}else{q}}\nunitary fn dormant[const unused:Nat](q:Q<Bit>)->Q<Bit>{middle[0](q)}\nfn main()->Unit{()}\n"
+
+private def inactiveMeaningStatus {sources catalogue} (item : @GenericDutyQueue.Item sources catalogue) :
+    Qirf.SourcePendingMeaning.Assessment item → Bool :=
+  match item with
+  | .demand _ demand => fun assessment => match demand.source.original.requirement,assessment with
+    | .meaning _,.inactive _ => true | _,_ => false
+  | _ => fun _ => false
+
+private def inactiveMeaningCount : WorkM Nat := do
+  let catalogue ← GenericCatalogue.read #[("main",inactiveMeaning)]
+  let checked ← Qirf.SourcePendingMeaning.read catalogue
+  pure (checked.entries.filter fun entry =>
+    inactiveMeaningStatus (checked.queue.items[entry.index.val]'entry.index.isLt) entry.assessment).length
+
+-- The exception also reaches a written M in a different original callee.
+-- Its exact inserted leaf[n-1] is conditional under the retained middle guard.
+#guard inactiveMeaningCount.run 10000000 |>.1.toOption == some 1
+
 private def fixedInactive := first.replace
   "invoke[checked_op(sign, Identity)](q)"
   "if static n>0{invoke[checked_op(sign, Identity)](q)}else{q}"
