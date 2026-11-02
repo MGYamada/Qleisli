@@ -16,6 +16,8 @@ pub(in crate::frontend::compile::lower) struct Frame {
     primitive_prelude: bool,
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
+    branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
+    contains_selections: bool,
     source_gate: bool,
 }
 
@@ -141,6 +143,8 @@ impl Frame {
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
+            branches: Vec::new(),
+            contains_selections: false,
             source_gate,
         }))
     }
@@ -149,17 +153,68 @@ impl Frame {
         self.source_gate
     }
 
+    /// A branch inherits its original declaration/actuals, while its literal
+    /// operation coordinates start at zero in that actual Raw child list.
+    pub(in crate::frontend::compile::lower) fn branch_frame(&self) -> Self {
+        Self {
+            key: self.key,
+            inputs: Vec::new(),
+            start: 0,
+            positions: Vec::new(),
+            primitive_prelude: false,
+            selections: Vec::new(),
+            calls: Vec::new(),
+            branches: Vec::new(),
+            contains_selections: false,
+            source_gate: self.source_gate,
+        }
+    }
+
+    /// Retain a real branch body without pretending that it is the complete
+    /// containing source function. The enclosing v5 gate checks its origin.
+    pub(in crate::frontend::compile::lower) fn branch_subject(
+        self,
+        lower: &mut Lowerer<'_, '_>,
+        module: &str,
+    ) -> Result<Arc<ContextSubject>, CompileError> {
+        lower.compiler.charge(module, lower.compiler.declarations[&self.key].span,
+            self.selections.len().saturating_mul(8) + 1)?;
+        let selections = self.selections.into_iter().map(|selected| {
+            Ok(SelectionBody {
+                position: position(lower, module, selected.span, selected.offset, selected.start, selected.count)?,
+                interface: Interface { inputs: selected.inputs, outputs: selected.outputs, public_effect: Effect::Unitary },
+                arms: selected.arms,
+            })
+        }).collect::<Result<Vec<_>, CompileError>>()?;
+        Ok(Arc::new(ContextSubject {
+            positions: self.positions,
+            selections,
+            calls: self.calls,
+            branches: self.branches,
+            contains_selections: self.contains_selections,
+            requires_source_gate: self.source_gate,
+        }))
+    }
+
     pub(in crate::frontend::compile::lower) fn finish(
         self,
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
+        if self.source_gate && self.contains_selections && !self.branches.is_empty() {
+            let name = lower.compiler.source.resolution.declaration(self.key).name.0.clone();
+            return Err(lower.error(&name, lower.compiler.declarations[&self.key].span, ErrorCode::Unsupported,
+                "nominal qmatch with ordinary branches is outside the currently checked source profile"));
+        }
         let selections = self.selections;
         if selections.is_empty() {
             return Ok(Some(Arc::new(ContextSubject {
                 positions: self.positions,
                 selections: Vec::new(),
                 calls: self.calls,
+                branches: self.branches,
+                contains_selections: self.contains_selections,
+                requires_source_gate: self.source_gate,
             })));
         }
         let span = selections.first().map_or(lower.compiler.declarations[&self.key].span, |first| first.span);
@@ -311,7 +366,9 @@ impl Frame {
                 arms: selected.arms,
             })
         }).collect::<Result<Vec<_>, CompileError>>()?;
-        Ok(Some(Arc::new(ContextSubject { positions: self.positions, selections, calls: self.calls })))
+        Ok(Some(Arc::new(ContextSubject { positions: self.positions, selections, calls: self.calls,
+            branches: self.branches, contains_selections: self.contains_selections,
+            requires_source_gate: self.source_gate })))
     }
 }
 
@@ -398,7 +455,29 @@ pub(in crate::frontend::compile::lower) fn record_named(
     lower.compiler.charge(module, callee.span, 8)?;
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
+    frame.contains_selections |= body.contains_selections;
     frame.calls.push((position, body));
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn record_branch(
+    lower: &mut Lowerer<'_, '_>, module: &str, span: Span, start: usize,
+    then_body: Option<Arc<ContextSubject>>, else_body: Option<Arc<ContextSubject>>,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else { return Ok(()); };
+    let (Some(then_body), Some(else_body)) = (then_body, else_body) else {
+        return Err(lower.error(module, span, ErrorCode::InvalidIr,
+            "original branch lost one of its actual lowering contexts"));
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| lower.error(module, span,
+        ErrorCode::InvalidIr, "branch precedes its original containing context"))?;
+    let position = position(lower, module, span, span.start, relative, 1)?;
+    lower.compiler.charge(module, span, 12)?;
+    let frame = lower.nominal_qmatch.as_mut().expect("original containing context");
+    frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
+    frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
+    frame.positions.push(position.clone());
+    frame.branches.push((position, then_body, else_body));
     Ok(())
 }
 
@@ -635,6 +714,7 @@ pub(super) fn emit(
         start: relative,
         count,
     });
+    frame.contains_selections = true;
     frame.positions.push(position);
     Ok(result)
 }

@@ -41,6 +41,33 @@ impl Lowerer<'_, '_> {
         then_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
         else_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
     ) -> Result<Value, CompileError> {
+        // Child Raw lists have their own literal coordinates. Keep both exact
+        // contexts and restore the containing frame even when an arm refuses.
+        let containing = self.nominal_qmatch.take();
+        let then_frame = containing.as_ref().map(|frame| frame.branch_frame());
+        let else_frame = containing.as_ref().map(|frame| frame.branch_frame());
+        let lowered = self.branch_evaluate_inner(
+            module, span, condition, env, then_arm, else_arm, then_frame, else_frame,
+        );
+        self.nominal_qmatch = containing;
+        let (value, index, then_body, else_body) = lowered?;
+        super::quantum_match::nominal::record_branch(self, module, span, index, then_body, else_body)?;
+        Ok(value)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn branch_evaluate_inner(
+        &mut self,
+        module: &str,
+        span: Span,
+        condition: ClassicalId,
+        env: &mut Env,
+        then_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
+        else_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
+        then_frame: Option<super::quantum_match::nominal::Frame>,
+        else_frame: Option<super::quantum_match::nominal::Frame>,
+    ) -> Result<(Value, usize, Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
+        Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>), CompileError> {
         self.compiler.charge(
             module,
             span,
@@ -55,7 +82,10 @@ impl Lowerer<'_, '_> {
         let entry_contract_effect = self.contract_effect;
         let entry_effect_source = self.effect_source.clone();
         let mut then_env = env.clone();
+        self.nominal_qmatch = then_frame;
         let then_result = then_arm(self, &mut then_env)?;
+        let then_body = self.nominal_qmatch.take()
+            .map(|frame| frame.branch_subject(self, module)).transpose()?;
         let then_ops = std::mem::take(&mut self.raw.operations);
         let then_sources = std::mem::take(&mut self.operation_sources);
         let mut then_registers =
@@ -67,7 +97,10 @@ impl Lowerer<'_, '_> {
         self.contract_effect = entry_contract_effect;
         self.effect_source = entry_effect_source;
         let mut else_env = env.clone();
+        self.nominal_qmatch = else_frame;
         let else_result = else_arm(self, &mut else_env)?;
+        let else_body = self.nominal_qmatch.take()
+            .map(|frame| frame.branch_subject(self, module)).transpose()?;
         let else_ops = std::mem::replace(&mut self.raw.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
         let mut else_registers = std::mem::take(&mut self.raw.registers);
@@ -168,7 +201,7 @@ impl Lowerer<'_, '_> {
             quantum_phis,
             classical_phis,
         });
-        Ok(result)
+        Ok((result, branch_index, then_body, else_body))
     }
 
     fn merge_classical_word(

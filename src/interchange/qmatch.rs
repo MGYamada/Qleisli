@@ -37,6 +37,10 @@ pub(crate) struct ContextSubject {
     pub positions: Vec<Position>,
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
+    pub branches: Vec<(Position, std::sync::Arc<ContextSubject>, std::sync::Arc<ContextSubject>)>,
+    // Producer eligibility only; never serialized or trusted by a native gate.
+    pub contains_selections: bool,
+    pub requires_source_gate: bool,
 }
 
 pub(crate) struct SelectionBody {
@@ -51,6 +55,7 @@ impl std::fmt::Debug for ContextSubject {
             .field("positions", &self.positions)
             .field("selections", &self.selections.len())
             .field("calls", &self.calls.len())
+            .field("branches", &self.branches.len())
             .finish()
     }
 }
