@@ -192,6 +192,8 @@ structure Row {sources catalogue reference original basis}
   output : Label
   packed : pack result = .ok output
   exactType : output.basis = reference.signature.basis
+  bounded : Semantics.FiniteCarrier.dimension output.basis = some output.dimension ∧
+    output.ordinal < output.dimension
 
 def readRow {sources catalogue reference original basis}
     (inputs : @Inputs sources catalogue reference original basis) (label : Nat) : WorkM (Row inputs label) := do
@@ -205,7 +207,10 @@ def readRow {sources catalogue reference original basis}
       | .error _ => throw .request
       | .ok output =>
         if exactType : output.basis = reference.signature.basis then
-          pure ⟨arguments,decoded,result,evaluated,output,packed,exactType⟩
+          if bounded : Semantics.FiniteCarrier.dimension output.basis = some output.dimension ∧
+              output.ordinal < output.dimension then
+            pure ⟨arguments,decoded,result,evaluated,output,packed,exactType,bounded⟩
+          else throw .request
         else throw .request
 
 inductive Rows {sources catalogue reference original basis}
@@ -266,6 +271,8 @@ structure Checked {sources} (catalogue : GenericCatalogue.Checked sources)
   ports : reference.signature.basis = outputBasis kind basis
   inputs : Inputs original basis
   rows : Rows inputs inputs.domain.code.labels
+  targetBounds : rows.targets.all (fun target => decide (target < match kind with
+    | .permutation => inputs.domain.code.labels.length | .phase => 8)) = true
   permutation : kind = .permutation → rows.targets.Nodup
   action : Semantics.Exact.Matrix
   computed : matrix kind rows.targets = .ok action
@@ -286,11 +293,14 @@ def read {sources} (catalogue : GenericCatalogue.Checked sources)
     exactWork (Exact.charge (64*(inputs.domain.code.labels.length+1)*cells+
       inputs.domain.code.labels.length*inputs.domain.code.labels.length+1))
     let rows ← readRows inputs (inputs.domain.code.labels.length+1) inputs.domain.code.labels
-    if permutation : kind = .permutation → rows.targets.Nodup then
-      match computed : matrix kind rows.targets with
-      | .error error => throw (.arithmetic error)
-      | .ok action => pure ⟨original,ports,inputs,rows,permutation,action,computed⟩
-    else throw .notIsometric
+    if targetBounds : rows.targets.all (fun target => decide (target < match kind with
+        | .permutation => inputs.domain.code.labels.length | .phase => 8)) = true then
+      if permutation : kind = .permutation → rows.targets.Nodup then
+        match computed : matrix kind rows.targets with
+        | .error error => throw (.arithmetic error)
+        | .ok action => pure ⟨original,ports,inputs,rows,targetBounds,permutation,action,computed⟩
+      else throw .notIsometric
+    else throw .request
   else throw .request
 
 end QleisliKernel.Qirf.SourceMeaningOrdinary
