@@ -110,6 +110,50 @@ structure Transfer {sources owner name original targetOwner targetName}
         (NaturalFrames.argumentValues (StaticHeaders.frame target) (numbers forms values)))
       (NaturalHelpers.interpretation callee.helpers callee.bindings) target.header.premises
 
+/-- A whole-body symbolic traversal already authenticates its lexical state
+from the original header and every original initializer. This variant never
+closes that state or replaces it by the selected static argument values. -/
+structure InState {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) {targetOwner targetName}
+    (target : StaticHeaders.Original sources targetOwner targetName) (arguments : List CallSyntax.Argument) where
+  callee : StaticNatural.Prepared sources targetOwner targetName ["0"]
+  originalHeader : callee.original = target
+  forms : List (Known state)
+  formsRead : ∃ before after,(readForms state scope target.header.formals arguments).run before = (.ok forms,after)
+  count : forms.length = target.header.formals.length
+  originalPredicates : ∀ values,Meaning state values →
+    PredicatesTruth 128
+      (NaturalFrames.names (StaticHeaders.frame target)
+        (NaturalFrames.argumentValues (StaticHeaders.frame target) (numbers forms values)))
+      (NaturalHelpers.interpretation callee.helpers callee.bindings) target.header.premises
+
+def readInState {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) {targetOwner targetName}
+    (target : StaticHeaders.Original sources targetOwner targetName) (arguments : List CallSyntax.Argument) :
+    WorkM (InState state scope target arguments) := do
+  let callee ← StaticNatural.prepareOriginal target ["0"]
+  let forms ← NaturalAffine.witness (readForms state scope target.header.formals arguments)
+  if count : forms.val.length = target.header.formals.length then
+    let replacements := NaturalFrames.replacements (StaticHeaders.frame callee.prepared.original) (forms.val.map (·.form))
+    let premises ← NaturalHelpers.implyPremises state.prepared.scope.context
+      (StaticHeaders.frame state.prepared.original).binders.length replacements callee.prepared.scope.numeric
+    pure ⟨callee.prepared,callee.originalHeader,forms.val,by with_reducible exact forms.property,count,by
+      intro values held
+      have substitution := NaturalFrames.replacements_meaning (StaticHeaders.frame callee.prepared.original)
+        (forms.val.map (·.form)) (numbers forms.val values) values (related forms.val values held)
+      have numeric := premises.proof values held
+      change NaturalPrepare.NumericsTruth callee.prepared.scope.numeric
+        (NaturalSubstitute.replacementValues replacements values) at numeric
+      rw [substitution] at numeric
+      have natural := NaturalFrames.argumentValues_natural (StaticHeaders.frame callee.prepared.original) (numbers forms.val values)
+      have predicates := (callee.prepared.scope.correct _ natural).mp numeric
+      have frameSame := congrArg
+        (fun (header : StaticHeaders.Original sources targetOwner targetName) => StaticHeaders.frame header) callee.originalHeader
+      have premisesSame := congrArg
+        (fun (header : StaticHeaders.Original sources targetOwner targetName) => header.header.premises) callee.originalHeader
+      simpa only [frameSame,premisesSame] using predicates⟩
+  else throw .request
+
 inductive Checked {sources owner name original targetOwner targetName}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (provided : Option (GenericLexicalNatural.SomeEnvironment sources)) (scope : List String)
@@ -126,28 +170,8 @@ def read {sources owner name original targetOwner targetName}
   | [] => pure (.empty noPremises)
   | _ :: _ =>
     let state ← NaturalAffine.witness (callerState instantiation provided)
-    let callee ← StaticNatural.prepareOriginal target ["0"]
-    let forms ← NaturalAffine.witness (readForms state.val scope target.header.formals arguments)
-    if count : forms.val.length = target.header.formals.length then
-      let replacements := NaturalFrames.replacements (StaticHeaders.frame callee.prepared.original) (forms.val.map (·.form))
-      let premises ← NaturalHelpers.implyPremises state.val.prepared.scope.context
-        (StaticHeaders.frame state.val.prepared.original).binders.length replacements callee.prepared.scope.numeric
-      pure (.transferred ⟨state.val,by with_reducible exact state.property,callee.prepared,callee.originalHeader,
-        forms.val,by with_reducible exact forms.property,count,by
-          intro values held
-          have substitution := NaturalFrames.replacements_meaning (StaticHeaders.frame callee.prepared.original)
-            (forms.val.map (·.form)) (numbers forms.val values) values (related forms.val values held)
-          have numeric := premises.proof values held
-          change NaturalPrepare.NumericsTruth callee.prepared.scope.numeric
-            (NaturalSubstitute.replacementValues replacements values) at numeric
-          rw [substitution] at numeric
-          have natural := NaturalFrames.argumentValues_natural (StaticHeaders.frame callee.prepared.original) (numbers forms.val values)
-          have predicates := (callee.prepared.scope.correct _ natural).mp numeric
-          have frameSame := congrArg
-            (fun (header : StaticHeaders.Original sources targetOwner targetName) => StaticHeaders.frame header) callee.originalHeader
-          have premisesSame := congrArg
-            (fun (header : StaticHeaders.Original sources targetOwner targetName) => header.header.premises) callee.originalHeader
-          simpa only [frameSame,premisesSame] using predicates⟩)
-    else throw .request
+    let given ← readInState state.val scope target arguments
+    pure (.transferred ⟨state.val,by with_reducible exact state.property,given.callee,given.originalHeader,
+      given.forms,given.formsRead,given.count,given.originalPredicates⟩)
 
 end QleisliKernel.SourceTypes.StaticCallPremises
