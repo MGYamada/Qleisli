@@ -31,6 +31,9 @@ private def argumentFields (arguments : StaticTypes.Arguments) : Nat :=
     (arguments.operations.map fun (name,description) =>
       name.utf8ByteSize+(description.nodes.map nodeFields).sum+2).sum
 
+def rawEffect (root : Validity.Root) : Semantics.Raw.Effect :=
+  if root.checked.state.observe then .observe else root.program.effect
+
 structure Boundary {sources owner name signature}
     (body : @SourceRuntimeTrace.Body sources owner name signature)
     (root : Validity.Root)
@@ -56,7 +59,7 @@ structure Boundary {sources owner name signature}
     signature.original.declaration.isPublic (RuntimeSourceBoundary.summary body).quantumUse request.publicEffect = true
   originalEffect : SourceEffect.rank (RuntimeSourceBoundary.summary body).generic.inferredEffect ≤
     SourceEffect.rank request.publicEffect
-  actualEffect : SourceEffect.rank root.program.effect ≤ SourceEffect.rank request.publicEffect
+  actualEffect : SourceEffect.rank (rawEffect root) ≤ SourceEffect.rank request.publicEffect
   domain : OrdinaryDomain.Checked ((RuntimeFamily.inputValues request).map (·.1))
   inputRows : request.inputRows = OrdinaryDomain.assignments domain
 
@@ -103,7 +106,7 @@ def readBoundary {sources owner name signature}
                         request.publicEffect = true then
                       if originalEffect : SourceEffect.rank (RuntimeSourceBoundary.summary body).generic.inferredEffect ≤
                           SourceEffect.rank request.publicEffect then
-                        if actualEffect : SourceEffect.rank root.program.effect ≤ SourceEffect.rank request.publicEffect then
+                        if actualEffect : SourceEffect.rank (rawEffect root) ≤ SourceEffect.rank request.publicEffect then
                           let domain ← OrdinaryDomain.read ((RuntimeFamily.inputValues request).map (·.1))
                           if inputRows : request.inputRows = OrdinaryDomain.assignments domain then
                             return ⟨moduleName,declarationName,externalActuals,arguments,selection,
