@@ -111,6 +111,7 @@ import QleisliKernel.Qirf.RuntimeOrdinaryPhis
 import QleisliKernel.Qirf.RuntimeOrdinaryStreamedPhis
 import QleisliKernel.Qirf.RuntimeOrdinaryBody
 import QleisliKernel.Qirf.RuntimeOrdinaryInputs
+import QleisliKernel.Qirf.RuntimeOrdinaryHistories
 import QleisliKernel.Qirf.RuntimeCallInterval
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeStructuralAction

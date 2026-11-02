@@ -76,6 +76,7 @@ import QleisliKernel.Tests.RuntimeOrdinaryPhis
 import QleisliKernel.Tests.RuntimeOrdinaryStreamedPhis
 import QleisliKernel.Tests.RuntimeOrdinaryBody
 import QleisliKernel.Tests.RuntimeOrdinaryInputs
+import QleisliKernel.Tests.RuntimeOrdinaryHistories
 import QleisliKernel.Tests.RuntimeBodyMixed
 import QleisliKernel.Tests.RuntimeStructuralAction
 import QleisliKernel.Tests.SourceMeaning
