@@ -192,6 +192,10 @@ structure Summary {sources owner name} (signature : Signature sources owner name
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
+  generic : GenericTypeTrace.Checked signature.original
+  genericRead : ∃ before after,
+    (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
+  originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   value : Value
   remaining : Environment
   allocated : List Semantics.SourceOwners.Owner
@@ -233,7 +237,7 @@ structure NamedEvent (sources : Sources) (caller : String) where
 def NamedEvent.effect {sources caller} (event : NamedEvent sources caller) : Semantics.Raw.Effect :=
   SourceEffect.visible caller event.target.resolution.moduleName
     event.target.signature.original.declaration.isPublic
-    event.target.signature.original.parsedHeader.effect event.canonical.inferredEffect
+    event.target.signature.original.parsedHeader.effect event.canonical.generic.inferredEffect
 
 def primitive {sources caller scope tokens}
     (candidate : CallName.Checked sources caller scope tokens) : Option CallName.Primitive :=
@@ -351,7 +355,7 @@ structure TransformEvent (sources : Sources) (caller : String) where
   sameBase : target.written = written.base.2
   forward : Summary target.signature
   visibleUnitary : SourceEffect.visible caller target.resolution.moduleName target.signature.original.declaration.isPublic
-    target.signature.original.parsedHeader.effect forward.inferredEffect = .unitary
+    target.signature.original.parsedHeader.effect forward.generic.inferredEffect = .unitary
   counts : List (TransformCount signature naturals scope)
   originalCounts : counts.map (·.argument) = written.counts
   copies : Nat
@@ -440,8 +444,8 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
   | .named event =>
     if caller != event.target.resolution.moduleName && event.target.signature.original.declaration.isPublic then
       (!event.target.signature.original.parsedHeader.ordinaryOnly &&
-        event.target.signature.original.parsedHeader.effect.isSome) || event.canonical.quantumUse
-    else event.canonical.quantumUse
+        event.target.signature.original.parsedHeader.effect.isSome) || event.canonical.generic.quantumUse
+    else event.canonical.generic.quantumUse
   | .conditional event .. => event.thenArm.quantumUse || event.elseArm.quantumUse
   | _ => true
 

@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceSyntax
 import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.SourceEffect
+import QleisliKernel.SourceTypes.GenericTypeTrace
 import QleisliKernel.SourceTypes.StaticSelection
 import QleisliKernel.SourceTypes.PhaseApplication
 
@@ -72,6 +73,10 @@ structure Canonical {sources owner name}
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
+  generic : GenericTypeTrace.Checked signature.original
+  genericRead : ∃ before after,
+    (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
+  originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   value : Value
   remaining : Environment
   complete : owners remaining = []
@@ -112,7 +117,7 @@ def Event.outputOwners {sources caller} (event : Event sources caller) : List Ow
 
 def Event.effect {sources caller} (event : Event sources caller) : Semantics.Raw.Effect :=
   SourceEffect.visible caller event.moduleName event.signature.original.declaration.isPublic
-    event.signature.original.parsedHeader.effect event.canonical.inferredEffect
+    event.signature.original.parsedHeader.effect event.canonical.generic.inferredEffect
 
 theorem Event.originalTokens {sources caller} (event : Event sources caller) :
     event.call.call.render = event.tokens := event.call.original

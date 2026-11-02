@@ -284,7 +284,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let forward ← readCallee target.signature
             if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
                 target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
-                forward.inferredEffect = .unitary then
+                forward.generic.inferredEffect = .unitary then
               let counts ← written.counts.mapM fun argument => do
                 let checked ← SourceOperation.readCount signature.instantiation naturals.helpers.val
                   naturals.environment scope argument.tokens naturals.generic
@@ -416,6 +416,11 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
           match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
           | .error _ => throw .request
           | .ok tree =>
+            let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+            let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
+              if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
+                pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
+              else throw .request
             let naturals ← signature.naturals
             let (result,_) ← evalWithReader signature
               (fun callee => do return (← readNested sources fuel ((owner,name) :: active) callee).summary)
@@ -448,12 +453,14 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                         if publicQuantum : signature.original.declaration.isPublic = true →
                             quantumUse signature result.events = true →
                             signature.original.parsedHeader.effect.isSome = true then
+                          let staticRows ← SourceTrace.retainStaticRows (generic.val.sourceRows ++ result.staticRows)
                           let summary : Summary signature :=
                             ⟨patterns,parameters,parameterValues,nextOwner,nextOrdinary,valuesRead,
-                            initial,seeded,tree,parsed,result.value,result.remaining,result.allocated,
+                            initial,seeded,tree,parsed,generic.val,by with_reducible exact generic.property,
+                            originalAsserted.down,result.value,result.remaining,result.allocated,
                             result.consumed,result.nextOrdinal,issued,ordinalCount,complete,balanced,typed,
                             inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum,
-                            result.staticRows⟩
+                            staticRows⟩
                           return ⟨summary,result.events,rfl⟩
                         else throw .request
                       else throw .request
@@ -512,6 +519,7 @@ def readNamedBody {sources caller} (event : NamedEvent sources caller) :
     checked.summary.consumed == event.canonical.consumed &&
     checked.summary.allocated == event.canonical.allocated &&
     checked.summary.inferredEffect == event.canonical.inferredEffect &&
+    checked.summary.generic.inferredEffect == event.canonical.generic.inferredEffect &&
     checked.summary.quantumUse == event.canonical.quantumUse) .request
   return body
 
@@ -534,6 +542,7 @@ def readTransformBody {sources caller} (event : TransformEvent sources caller) :
     checked.summary.consumed == event.forward.consumed &&
     checked.summary.allocated == event.forward.allocated &&
     checked.summary.inferredEffect == event.forward.inferredEffect &&
+    checked.summary.generic.inferredEffect == event.forward.generic.inferredEffect &&
     checked.summary.quantumUse == event.forward.quantumUse) .request
   return body
 

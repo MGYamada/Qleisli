@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceSyntax
+import QleisliKernel.SourceTypes.QuantumSequence
 import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.SourceTypes.SourceCalls
@@ -441,6 +442,11 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
         match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
         | .error _ => throw .request
         | .ok tree =>
+          let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+          let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
+            if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
+              pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
+            else throw .request
           let naturals ← if signature.staticNames.isEmpty &&
               !(tokens.any fun token => token.text == "static" || token.text == "[") then
             pure none
@@ -467,8 +473,10 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                   Finite.guard (decide offsets.Nodup) .request
                   if asserted : SourceEffect.permits signature.original.parsedHeader.effect
                       (inferredEffect result.events) = true then
-                    return ⟨patterns,parameters,initial,seeded,tree,parsed,result.value,result.remaining,
-                      complete,returned,shape,types,inferredEffect result.events,asserted,result.staticRows⟩
+                    let rows ← retainStaticRows (generic.val.sourceRows ++ result.staticRows)
+                    return ⟨patterns,parameters,initial,seeded,tree,parsed,generic.val,
+                      by with_reducible exact generic.property,originalAsserted.down,result.value,result.remaining,
+                      complete,returned,shape,types,inferredEffect result.events,asserted,rows⟩
                   else throw .request
                 else throw .request
               else throw .request
@@ -522,6 +530,10 @@ structure Checked (sources : Sources) (owner name : String) where
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
+  generic : GenericTypeTrace.Checked signature.original
+  genericRead : ∃ before after,
+    (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
+  originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   result : Outcome sources owner initial
   traversed : ∃ before after,
     (evalSignature signature initial tree).run before = (.ok result,after)
@@ -569,6 +581,11 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
       match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
       | .error _ => throw .request
       | .ok tree =>
+        let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
+        let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
+          if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
+            pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
+          else throw .request
         let result ← NaturalAffine.witness
           (evalSignature signature initial tree)
         -- Complete filtering/traversal and ordered nominal result comparisons.
@@ -597,7 +614,8 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
                           if uniqueCalls : callOffsets.Nodup then
                             if asserted : SourceEffect.permits signature.original.parsedHeader.effect
                                 (inferredEffect result.val.events) = true then
-                              return ⟨⟨signature,patterns,parameters,initial,seeded,tree,parsed,result.val,
+                              return ⟨⟨signature,patterns,parameters,initial,seeded,tree,parsed,generic.val,
+                                by with_reducible exact generic.property,originalAsserted.down,result.val,
                                 by with_reducible exact result.property,complete,returned,shape,resultTypes,
                                 everyQmatch,uniqueQmatches,boundedQmatches,
                                 callOffsets,originalCalls,everyCall,uniqueCalls,asserted⟩,rfl⟩
@@ -619,6 +637,9 @@ def read (sources : Sources) (owner name : String) : Finite.WorkM (Checked sourc
   let body ← readWithSignature signature
   return body.checked
 
+def Checked.sourceRows {sources owner name} (checked : Checked sources owner name) : List (String × String) :=
+  checked.signature.sourceRows ++ checked.generic.sourceRows ++ checked.result.staticRows
+
 /-- Native call intervals re-enter the same original-body reader. The fresh
 computed return is compared with the canonical result used for caller transport;
 the event's summary cannot supply acceptance for an unchecked callee. -/
@@ -629,7 +650,8 @@ def readNamedSource {sources caller} (event : SourceCalls.Event sources caller) 
     event.canonical.value.length+body.checked.result.events.length+
     Raw.OwnerFlow.fields (valueOwners body.checked.result.value ++ valueOwners event.canonical.value)+1)))
   Finite.guard (body.checked.result.value == event.canonical.value &&
-    inferredEffect body.checked.result.events == event.canonical.inferredEffect) .request
+    inferredEffect body.checked.result.events == event.canonical.inferredEffect &&
+    body.checked.generic.inferredEffect == event.canonical.generic.inferredEffect) .request
   return body
 
 theorem Checked.allOriginalQmatches {sources owner name} (checked : Checked sources owner name) :

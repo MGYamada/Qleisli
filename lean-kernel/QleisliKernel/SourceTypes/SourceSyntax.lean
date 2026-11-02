@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.StatementSyntax
-import QleisliKernel.SourceTypes.QuantumSequence
+import QleisliKernel.SourceTypes.QuantumMatch
+import QleisliKernel.SourceTypes.QuantumMoves
 import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.SourceBoolean
 import QleisliKernel.SourceTypes.SourceControlSyntax
