@@ -82,7 +82,7 @@ same runtime reachability. Unit allocation/release cannot disappear by effect. -
 def Checked.quantumUse {entries root} (checked : Checked entries root) (direct : DefId → Bool) : Bool :=
   checked.ids.any direct
 
-structure Setup (entries : List Entry) where
+structure Setup (entries : List Entry) : Type where
   unique : (entries.map (·.id)).Nodup
   internalModules : entries.all (fun entry => entry.formula.dependencies.all
     (fun dependency => dependency.1 == entry.id.1)) = true
@@ -102,7 +102,7 @@ def checkSetup (entries : List Entry) : WorkM (Setup entries) := do
     return ⟨unique,internalModules.down⟩
   else throw .request
 
-structure Prepared (entries : List Entry) where
+structure Prepared (entries : List Entry) : Type where
   setup : Setup entries
   original : ∃ before after,(checkSetup entries).run before = (.ok setup,after)
 

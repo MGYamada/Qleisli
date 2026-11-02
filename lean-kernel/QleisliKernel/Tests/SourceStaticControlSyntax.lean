@@ -8,7 +8,7 @@ open QleisliKernel QleisliKernel.SourceTypes
 
 private def read (source : String) := do
   let tokens ← lexLocated source
-  let checked ← SourceStaticControlSyntax.read tokens
+  let checked ← QleisliKernel.SourceTypes.SourceStaticControlSyntax.read tokens
   return (⟨tokens,checked⟩ : Sigma SourceStaticControlSyntax.Checked)
 
 #guard (read "if static n==0{q}else{f[n-1](q)}").isOk

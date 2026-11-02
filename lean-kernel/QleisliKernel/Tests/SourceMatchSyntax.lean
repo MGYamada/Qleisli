@@ -8,7 +8,7 @@ open QleisliKernel QleisliKernel.SourceTypes
 
 private def read (source : String) := do
   let tokens ← lexLocated source
-  let written ← SourceMatchSyntax.read tokens
+  let written ← QleisliKernel.SourceTypes.SourceMatchSyntax.read tokens
   return (⟨tokens,written⟩ : Sigma SourceMatchSyntax.Checked)
 
 #guard (read "match c{Tag::Off=>{f(q)},Tag::On=>g(q),}").toOption.map (fun checked =>
