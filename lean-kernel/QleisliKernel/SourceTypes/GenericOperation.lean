@@ -339,6 +339,91 @@ def close (original : Description) : WorkM (Status original) := do
       return .closed ⟨data.val,by simpa only [empty] using keys,by with_reducible exact data.property⟩
     else return .conditional free empty keys
 
+def Node.pathShape : Node → WorkM OperationPaths.Shape
+  | .primitive .. => pure .leaf
+  | .formal _ => pure (.formal [] none)
+  | .provider _ _ _ _ operations premises => do
+    let actuals ← operations.mapM fun (name,index) => do
+      let some (_,paths) := premises.find? (·.1 == name) | throw .request
+      pure (index,paths)
+    pure (.provider actuals)
+  | .inverse child => pure (.inverse child)
+  | .controlled child => pure (.controlled child)
+  | .power child _ | .requested child _ _ => pure (.repeat child)
+  | .thenOp left right | .tensor left right => pure (.pair left right)
+  | .conjugate outer middle => pure (.conjugate outer middle)
+
+structure Selection where
+  indices : List Nat
+  subject : Description
+
+/-- Select an original node closure, preserving every Op actual edge and its
+own retained natural frame. This is a source-metadata operation, not evidence
+that any selected provider or requested path has an implementation. -/
+def select (original : Description) (root : Nat) : WorkM Selection := do
+  exactWork (Exact.charge (Meter.rebuildWork original))
+  guard (root < original.nodes.length && original.nodes.length ≤ 4096 &&
+    original.nodeFrames.length == original.nodes.length &&
+    original.nodes.zipIdx.all (fun (node,index) => node.children.all (· < index))) .request
+  let reachable := (original.nodes.zipIdx.reverse.foldl (fun seen (node,index) =>
+    if seen.contains index then node.children ++ seen else seen) [root]).eraseDups
+  let selected := ((original.nodes.zip original.nodeFrames).zipIdx).filter
+    (fun (_,index) => reachable.contains index)
+  let indices := selected.map (·.2)
+  let nodes := selected.map fun ((node,_),_) => node.remap indices.idxOf
+  let frames := selected.map fun ((_,frame),_) => frame
+  let subject : Description := ⟨original.frame,nodes,indices.idxOf root,frames⟩
+  guard (subject.root < subject.nodes.length) .request
+  return ⟨indices,subject⟩
+
+structure Fragment (original : Description) where
+  index : Nat
+  path : List Nat
+  requested : OperationPaths.Paths
+  selection : Selection
+  selected : ∃ before after,(select original index).run before = (.ok selection,after)
+  status : Status selection.subject
+  computed : ∃ before after,(close selection.subject).run before = (.ok status,after)
+
+def Fragment.readSuppliers {sources original} (fragment : Fragment original)
+    (origins : List (Nat × Origin sources)) : WorkM (List (Nat × Origin sources)) := do
+  exactWork (Exact.charge (16*(fragment.selection.indices.length+1)*(origins.length+1)))
+  return fragment.selection.indices.zipIdx.flatMap fun (original,selected) =>
+    (origins.filter (·.1 == original)).map (fun (_,origin) => (selected,origin))
+
+private def fragments (original : Description) : Nat → Nat → List Nat → OperationPaths.Paths →
+    Nat → WorkM (Nat × List (Fragment original)) :=
+  Nat.rec (fun _ _ _ _ => throw .limit) (fun _ next index path requested visited => do
+    guard (visited < 4096) .limit
+    exactWork (Exact.charge (8*(original.nodes.length+path.length+1)))
+    let node ← lift (readOption original.nodes[index]?)
+    exactWork (Exact.charge (16*(Meter.node node+path.length+1)*(node.children.length+1)))
+    let shape ← node.pathShape
+    let children := shape.children requested
+    let current ← if requested.any then do
+        let selection ← NaturalAffine.witness (select original index)
+        let status ← NaturalAffine.witness (close selection.val.subject)
+        pure [(⟨index,path,requested,selection.val,by with_reducible exact selection.property,
+          status.val,by with_reducible exact status.property⟩ : Fragment original)]
+      else pure []
+    let (visited,rest) ← children.zipIdx.foldlM (fun (visited,previous) ((child,paths),ordinal) => do
+      let (visited,entries) ← next child (path ++ [ordinal]) paths visited
+      pure (visited,previous ++ entries)) (visited+1,[])
+    return (visited,current ++ rest))
+
+/-- Every child occurrence is visited, even with no demand at its parent.
+This retains mandatory inverse formation and original prerequisites on unused
+actuals. Repetition count and a free sibling never suppress a closed fragment.
+The existing 4096 expanded-tree capacity bounds visits; no node deduplication
+replaces per-edge source/provider provenance. -/
+def readAccessFragments (original : Description) (requested : OperationPaths.Paths) :
+    WorkM (List (Fragment original)) := do
+  exactWork (Exact.charge (Meter.rebuildWork original))
+  guard (!original.nodes.isEmpty && original.nodes.length ≤ 4096 &&
+    original.root+1 == original.nodes.length && original.nodeFrames.length == original.nodes.length &&
+    original.nodes.zipIdx.all (fun (node,index) => node.children.all (· < index))) .request
+  return (← fragments original (original.nodes.length+1) original.root [] requested 0).2
+
 inductive Requirement (sources : Sources) where
   | meaning (request : SourceMeaning.Request sources)
   | access (paths : OperationPaths.Paths)

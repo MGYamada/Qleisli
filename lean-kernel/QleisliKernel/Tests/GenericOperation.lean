@@ -78,4 +78,42 @@ private def typed (code : Code) : Description := provider frame "main" "typed" [
 #guard Meter.freeWork (typed [.parameter ⟨"long_original_module","long_original_function",0⟩]) >
   Meter.freeWork (typed [.parameter ⟨"m","f",0⟩])
 
+private def closedPaths (description : Description) (paths : OperationPaths.Paths) :
+    Option (List (List Nat × OperationPaths.Paths)) :=
+  let action : Finite.WorkM (List (List Nat × OperationPaths.Paths)) := do
+    let fragments ← readAccessFragments description paths
+    return fragments.filterMap fun fragment => match fragment.status with
+      | .closed _ => some (fragment.path,fragment.requested)
+      | .conditional .. => none
+  (action.run 10000000).1.toOption
+
+private def openPair := formal.binary named .thenOp
+private def forward : OperationPaths.Paths := ⟨true,false,false⟩
+private def inverse : OperationPaths.Paths := ⟨false,true,false⟩
+private def control : OperationPaths.Paths := ⟨false,false,true⟩
+private def noPaths : OperationPaths.Paths := ⟨false,false,false⟩
+
+-- A free left operand does not hide demanded access on the closed right
+-- occurrence. The path records child edges rather than deduplicated indices.
+#guard closedPaths openPair forward = some [([1],forward)]
+#guard closedPaths (openPair.unary .controlled) forward = some [([0,1],control)]
+#guard closedPaths (openPair.unary .inverse) noPaths = some [([0,1],inverse)]
+#guard closedPaths (openPair.unary (fun child => .power child ⟨⟨0,[0]⟩,false⟩)) forward =
+  some [([0,1],forward)]
+
+-- A provider's original prerequisite applies to its unused actual even when
+-- the containing provider itself receives no implementation-path demand.
+#guard closedPaths (provider frame "main" "outer" [] [] [("U",formal),("V",named)]
+  [("U",noPaths),("V",inverse)]) noPaths = some [([1],inverse)]
+
+-- Two formal occurrences sharing one description node still have separate
+-- selected-formal demands. Node-index equality cannot select both operands.
+#guard (OperationPaths.Shape.formal [(7,noPaths),(7,noPaths)] (some 0)).children forward =
+  [(7,forward),(7,noPaths)]
+
+-- Missing original prerequisite metadata refuses rather than supplying an
+-- empty access contract for a named actual.
+#guard (match (readAccessFragments (provider frame "main" "stale" [] [] [("U",formal)] []) noPaths).run 10000000 with
+  | (.error .request,_) => true | _ => false)
+
 end QleisliKernel.Tests.GenericOperation
