@@ -2,7 +2,11 @@ import QleisliKernel.SourceTypes.GenericValues
 import QleisliKernel.SourceTypes.SourceSyntax
 import QleisliKernel.SourceTypes.SourceNominal
 import QleisliKernel.SourceTypes.SourceRuntimeTransformSyntax
-import QleisliKernel.SourceTypes.SourceOperationApplication
+import QleisliKernel.SourceTypes.SourceOperationSyntax
+import QleisliKernel.SourceTypes.OperationPaths
+import QleisliKernel.SourceTypes.ParameterPatterns
+import QleisliKernel.SourceTypes.QuantumLabels
+import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SourceEffectClosure
 
 /-! Whole original-body symbolic obligations before closing static actuals.
@@ -32,7 +36,7 @@ structure Operation (sources : Sources) where
   input : Code
   output : Code
   effect : Formula
-  paths : StaticOperation.Paths
+  paths : OperationPaths.Paths
   references : List DefId := []
   needs : List Need := []
   meanings : List (SourceMeaning.Request sources) := []
@@ -47,15 +51,15 @@ structure Definition (sources : Sources) (owner name : String) where
   operations : List (String × Operation sources)
   rows : List (String × String)
 
-private def paths (header : StaticHeaders.Parsed) (name : String) : StaticOperation.Paths :=
+private def paths (header : StaticHeaders.Parsed) (name : String) : OperationPaths.Paths :=
   ⟨header.access.contains (.applicable,name),header.access.contains (.adjointable,name),
     header.access.contains (.controllable,name)⟩
 
-private def meets (actual required : StaticOperation.Paths) : Bool :=
+private def meets (actual required : OperationPaths.Paths) : Bool :=
   (!required.applicable || actual.applicable) && (!required.adjointable || actual.adjointable) &&
     (!required.controllable || actual.controllable)
 
-private def meet (a b : StaticOperation.Paths) : StaticOperation.Paths := a.meet b
+private def meet (a b : OperationPaths.Paths) : OperationPaths.Paths := a.meet b
 
 private def formalOperation {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (formal : StaticHeaders.Formal) : WorkM (Operation sources) := do
@@ -210,11 +214,11 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
 private def named {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (tokens : List LocatedToken) : WorkM (Resolved × List (String × String)) := do
   let candidate ← CallName.read sources state.owner scope tokens
-  let some resolution := QuantumSignature.candidateResolution candidate | throw .request
+  let some resolution := CallName.candidateResolution candidate | throw .request
   pure (resolution,CallName.sourceRows candidate)
 
 private def combineOperation {sources} (a b : Operation sources) (input output : Code)
-    (effect : Formula) (paths : StaticOperation.Paths) : Operation sources :=
+    (effect : Formula) (paths : OperationPaths.Paths) : Operation sources :=
   ⟨input,output,effect,paths,a.references ++ b.references,a.needs ++ b.needs,
     a.meanings ++ b.meanings,a.rows ++ b.rows⟩
 
@@ -300,7 +304,7 @@ def operation {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment
         | .globalPhaseEighth => pure ⟨target,target,direct .unitary,⟨true,true,true⟩,[],[],[],CallName.sourceRows candidate⟩
         | _ => throw .request
       | _ =>
-        let some resolution := QuantumSignature.candidateResolution candidate | throw .request
+        let some resolution := CallName.candidateResolution candidate | throw .request
         let application ← instantiate state scope written resolution.moduleName resolution.declaration.name (next none) false
         let [[.owner input]] := application.parameters | throw .request
         let [.owner output] := application.result | throw .request
@@ -401,7 +405,7 @@ private def selection {sources} (state : GenericLexicalNatural.SomeEnvironment s
   let [.owner target] := target | throw .request
   let labelBasis ← scalarLabelBasis state selector parsed.arms.length
   let arms ← parsed.arms.mapM fun arm => do
-    let label ← QuantumArms.readLabel sources state.owner labelBasis arm.label
+    let label ← QuantumLabels.read sources state.owner labelBasis arm.label
     let operation ← operation state scope formals 65 (some target) arm.operation
     let _ ← SymbolicTypes.equate state operation.input target
     let _ ← SymbolicTypes.equate state operation.output target
@@ -472,7 +476,7 @@ private def applyOperation {sources} (state : GenericLexicalNatural.SomeEnvironm
     (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
   let op ← operation state scope formals 65 none tokens
   guard op.paths.applicable .request
-  let value ← if SourceOperationApplication.controlled tokens then do
+  let value ← if SourceOperationSyntax.controlled tokens then do
       let [[.owner control],[.owner target]] := arguments | throw .request
       let (inputControl,inputTarget) ← adapt (GenericValues.pairCodes op.input)
       let (outputControl,outputTarget) ← adapt (GenericValues.pairCodes op.output)
@@ -511,7 +515,7 @@ private def runtimeTransform {sources} (state : GenericLexicalNatural.SomeEnviro
     let value := match control with | none => [.owner target] | some control => [.tuple 2,.owner control,.owner target]
     pure {value,remaining,quantumUse := true,rows := rows.flatten ++ CallName.sourceRows candidate}
   | _ =>
-    let some resolution := QuantumSignature.candidateResolution candidate | throw .request
+    let some resolution := CallName.candidateResolution candidate | throw .request
     let application ← instantiate state scope base.2 resolution.moduleName resolution.declaration.name
       (operation state scope formals 65 none) true
     let input ← match application.parameters with
@@ -703,7 +707,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       if transformedNamed then
         let some transformed := transformed | throw .request
         pure (append arguments (← runtimeTransform state scope definition.operations transformed values arguments.remaining))
-      else if SourceOperationApplication.selected (definition.operations.map (·.1)) call.call.callee then
+      else if SourceOperationSyntax.selected (definition.operations.map (·.1)) call.call.callee then
         pure (append arguments (← applyOperation state scope definition.operations call.call.callee values arguments.remaining))
       else
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
@@ -725,7 +729,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           let result ← primitive state kind values arguments.remaining
           pure (append arguments {result with rows := CallName.sourceRows candidate ++ result.rows})
         | _ =>
-          let some resolution := QuantumSignature.candidateResolution candidate | throw .request
+          let some resolution := CallName.candidateResolution candidate | throw .request
           let application ← instantiate state scope written resolution.moduleName resolution.declaration.name
             (operation state scope definition.operations 65 none) true
           guard (values.length == application.parameters.length) .request
@@ -741,7 +745,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
 
 def checkTree {sources owner name} (definition : Definition sources owner name)
     (tree : SourceSyntax.Tree definition.original.envelope.occurrence.body) : WorkM (Outcome sources) := do
-  let patterns ← adapt (QuantumOperands.parameterPatterns definition.original.envelope)
+  let patterns ← adapt (ParameterPatterns.read definition.original.envelope)
   let initial ← adapt (GenericValues.seed patterns definition.parameters)
   let staticNames := definition.original.header.formals.map (·.name)
   guard (initial.all fun cell => !staticNames.contains cell.name) .request

@@ -188,6 +188,12 @@ def sourceRows {sources caller scope tokens} (candidate : Checked sources caller
   | .primitive _ _ _ localMissing _ preludeMissing _ _ =>
     (caller,localMissing.lookup.source) :: preludeMissing.sourceRows
 
+def candidateResolution {sources caller scope tokens}
+    (candidate : Checked sources caller scope tokens) : Option Resolved :=
+  match candidate.decision with
+  | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
+  | _ => none
+
 private def primitiveDecision {sources caller scope tokens name}
     (spelling : tokens = [name]) (unbound : name ∉ scope)
     (localMissing : Absent sources caller name) (policy : Policy localMissing.lookup.source)

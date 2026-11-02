@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.QuantumSignatureCore
 import QleisliKernel.SourceTypes.StaticKinds
 import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SymbolicTypes
+import QleisliKernel.SourceTypes.OperationPaths
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -22,15 +23,8 @@ def Context.visible (context : Context) (owner : String) (isPublic : Bool) : Boo
 def Context.internal (context : Context) (owner : String) : Bool :=
   match context with | .external => false | .source caller => owner == caller
 
-structure Paths where
-  applicable : Bool
-  adjointable : Bool
-  controllable : Bool
-  deriving BEq, DecidableEq, Repr
-
-def Paths.meet (left right : Paths) : Paths :=
-  ⟨left.applicable && right.applicable,left.adjointable && right.adjointable,
-    left.controllable && right.controllable⟩
+abbrev Paths := OperationPaths.Paths
+abbrev Paths.meet := OperationPaths.Paths.meet
 
 private def joinEffect : Effect → Effect → Effect
   | .observe,_ | _,.observe => .observe

@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.StaticSelection
 import QleisliKernel.SourceTypes.PhaseApplication
+import QleisliKernel.SourceTypes.QuantumLabels
 
 /-! Original exact-label qmatch table and source-function arm headers.
 Actual arm/control bodies, source/runtime preservation and native/QDV binding
@@ -12,28 +13,9 @@ open Semantics.FiniteCarrier Semantics.Raw Finite
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
-structure Label (sources : Sources) where
-  ordinal : Nat
-  typeQuery : Option (TypeRead sources)
-
-def Label.sourceRows {sources : Sources} (label : @Label sources) : List (String × String) :=
-  match label.typeQuery with | none => [] | some query => query.sourceRows
-
-def readLabel (sources : Sources) (caller : String) (selector : Basis) (tokens : List LocatedToken) :
-    WorkM (@Label sources) := do
-  match selector with
-  | [.unit] | [.bit] | [.bits _] =>
-    let [literal] := tokens | throw .request
-    let ordinal ← adapt (NaturalSyntax.decimal literal.text)
-    guard (ordinal ≤ 4294967295) .request
-    return ⟨ordinal,none⟩
-  | [.enumeration _ variants] =>
-    let some variant := tokens.getLast? | throw .request
-    guard (tokens.length ≥ 3 && (tokens[tokens.length-2]?.map (·.text)) == some "::") .request
-    let ty ← typeExpressionWithSources sources caller ((tokens.dropLast.dropLast).map (·.text))
-    guard (ty.basis == selector && variants.contains variant.text) .request
-    return ⟨variants.idxOf variant.text,some ty⟩
-  | _ => throw .request
+abbrev Label := QuantumLabels.Label
+abbrev Label.sourceRows := @QuantumLabels.Label.sourceRows
+abbrev readLabel := QuantumLabels.read
 
 def primitiveKind {sources owner scope tokens}
     (candidate : CallName.Checked sources owner scope tokens) : Option OperationDescription.Primitive :=

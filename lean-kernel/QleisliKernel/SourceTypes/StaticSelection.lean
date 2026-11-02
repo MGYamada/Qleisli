@@ -11,9 +11,7 @@ open Finite
 
 def candidateResolution {sources caller scope tokens}
     (candidate : CallName.Checked sources caller scope tokens) : Option Resolved :=
-  match candidate.decision with
-  | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
-  | _ => none
+  CallName.candidateResolution candidate
 
 structure InstanceSelected {sources caller callerName}
     (callerSignature : Checked sources caller callerName)

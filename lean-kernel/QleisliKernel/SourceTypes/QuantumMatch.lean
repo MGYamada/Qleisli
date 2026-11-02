@@ -1,4 +1,4 @@
-import QleisliKernel.SourceTypes.QuantumSignature
+import QleisliKernel.SourceTypes.OrdinarySignature
 
 /-! Informed original qmatch-site extraction. All expression/arm tokens and
 their original byte occurrences are retained. This is neither typing nor an
