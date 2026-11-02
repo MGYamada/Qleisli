@@ -211,7 +211,9 @@ private theorem shifted_weights (label : Nat) (pairs : List (Nat × Nat)) :
   induction pairs with
   | nil => rfl
   | cons first rest ih =>
-    simp only [List.map_cons,List.sum_cons,Nat.pow_succ,ih,Nat.mul_add]
+    simp only [List.map_cons,List.sum_cons]
+    rw [ih]
+    simp only [Nat.pow_succ,Nat.mul_add]
     ac_rfl
 
 private theorem gather_cons (label first : Nat) (rest : List Nat) :
@@ -303,15 +305,21 @@ theorem step_selected (dependencies : List Dependency) (base value : Nat)
       enabled_selected base value selected unique controlList controls,
       hadamard_selected base value selected unique axis bound values,pull]
   | monomial axes permutation phases =>
+    have gathered : gather (scatter base selected value) (axes.map fun index => (selected[index]?).getD 0) =
+        gather value axes := gather_mapped base value selected unique axes targets
+    have scattered (input : Nat) : scatter (scatter base selected value)
+        (axes.map fun index => (selected[index]?).getD 0) input = scatter base selected (scatter value axes input) :=
+      scatter_mapped base value input selected unique axes targets
     simp only [Raw.Coefficient.step,Semantics.RawTrace.localize,
-      enabled_selected base value selected unique controlList controls,
-      gather_mapped base value selected unique axes targets,
-      scatter_mapped base value _ selected unique axes targets,pull]
+      enabled_selected base value selected unique controlList controls,gathered,scattered,pull]
   | contract axes dependency adjoint =>
+    have gathered : gather (scatter base selected value) (axes.map fun index => (selected[index]?).getD 0) =
+        gather value axes := gather_mapped base value selected unique axes targets
+    have scattered (input : Nat) : scatter (scatter base selected value)
+        (axes.map fun index => (selected[index]?).getD 0) input = scatter base selected (scatter value axes input) :=
+      scatter_mapped base value input selected unique axes targets
     simp only [Raw.Coefficient.step,Semantics.RawTrace.localize,
-      enabled_selected base value selected unique controlList controls,
-      gather_mapped base value selected unique axes targets,
-      scatter_mapped base value _ selected unique axes targets,pull]
+      enabled_selected base value selected unique controlList controls,gathered,scattered,pull]
 
 theorem circuit_selected (dependencies : List Dependency) (base : Nat)
     (selected : List Nat) (unique : selected.Nodup) (steps : List Step)
