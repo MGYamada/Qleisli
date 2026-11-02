@@ -118,7 +118,7 @@ def eventRows {sources owner} : SourceTrace.Event sources owner → List (String
   | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
-  headers.source.val.signature.sourceRows ++ headers.source.val.result.staticRows ++
+  headers.source.val.sourceRows ++
     headers.source.val.result.events.flatMap eventRows ++
     headers.sites.flatMap fun header =>
     Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
@@ -137,7 +137,7 @@ def prepare {artifact owner name requests} (order : Array Nat)
   let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   let nodes := headers.sites.foldl (fun count header =>
     count+Carrier.sourceNodes header.request.attached header.request.required) 0
-  let rowCount := headers.source.val.signature.sourceRows.length+
+  let rowCount := headers.source.val.sourceRows.length+
     (headers.source.val.result.events.flatMap eventRows).length+nodes+
     headers.sites.foldl (fun count header => count+header.rows.val.length) 0
   let rootCount := 1+headers.sites.foldl (fun count header => count+header.roots.val.length) 0

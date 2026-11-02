@@ -46,7 +46,7 @@ def bindings {artifact owner name source request} (header : @Header artifact own
 
 def rows {artifact owner name source request} (header : @Header artifact owner name source request) :
     List (String × String) :=
-  source.signature.sourceRows ++ source.result.staticRows ++ source.result.events.flatMap ContextSector.eventRows ++
+  source.sourceRows ++ source.result.events.flatMap ContextSector.eventRows ++
     header.sites.flatMap fun site =>
       Carrier.sourceRows site.request.attached site.request.required ++ site.rows.val
 
