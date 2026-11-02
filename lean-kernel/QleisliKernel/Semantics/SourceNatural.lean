@@ -212,8 +212,8 @@ def Predicate.evaluate (fuel : Nat) (names : Names) (calls : Calls) (predicate :
 
 theorem Predicate.branch_truth_of_values (fuel : Nat) (names : Names) (calls : Calls)
     (predicate : Predicate) (a b : Nat)
-    (left : evaluate fuel names calls predicate.left = some a)
-    (right : evaluate fuel names calls predicate.right = some b) :
+    (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
+    (right : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right = some b) :
     (predicate.forBranch (predicate.comparison.test (a : Int) (b : Int))).Truth fuel names calls := by
   rw [Predicate.truth_iff_of_values _ _ _ _ _ _ left right]
   cases compared : predicate.comparison.test (a : Int) (b : Int) with
@@ -241,8 +241,8 @@ theorem predicates_singleton (fuel : Nat) (names : Names) (calls : Calls) (p : P
   simp only [PredicatesTruth,List.mem_singleton,forall_eq]
 
 def Predicate.check (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Option Unit := do
-  let a ← evaluate fuel names calls predicate.left
-  let b ← evaluate fuel names calls predicate.right
+  let a ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left
+  let b ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right
   if predicate.comparison.test (a : Int) (b : Int) then some () else none
 
 theorem Predicate.check_of_truth (fuel : Nat) (names : Names) (calls : Calls) (p : Predicate)
