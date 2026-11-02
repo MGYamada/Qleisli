@@ -143,11 +143,11 @@ def Branch.thenBlock {dependencies program block offset}
   have parent : Origin dependencies program (branch.childFuel+1) block.entry block.operations := by
     rw [← branch.depth]
     exact block.original
-  have prefix : Computed (Raw.Observation.checkOps dependencies (branch.childFuel+1)
+  have preamble : Computed (Raw.Observation.checkOps dependencies (branch.childFuel+1)
       block.entry (block.operations.take offset)) branch.interval.before := by
     rw [← branch.depth]
     exact branch.interval.prefixRead
-  exact .thenArm parent offset branch.original prefix
+  exact .thenArm parent offset branch.original preamble
 
 def Branch.elseBlock {dependencies program block offset}
     (branch : @Branch dependencies program block offset) : Block dependencies program := by
@@ -155,11 +155,11 @@ def Branch.elseBlock {dependencies program block offset}
   have parent : Origin dependencies program (branch.childFuel+1) block.entry block.operations := by
     rw [← branch.depth]
     exact block.original
-  have prefix : Computed (Raw.Observation.checkOps dependencies (branch.childFuel+1)
+  have preamble : Computed (Raw.Observation.checkOps dependencies (branch.childFuel+1)
       block.entry (block.operations.take offset)) branch.interval.before := by
     rw [← branch.depth]
     exact branch.interval.prefixRead
-  exact .elseArm parent offset branch.original prefix branch.thenRead
+  exact .elseArm parent offset branch.original preamble branch.thenRead
 
 theorem Prepared.originalRoot {dependencies program} (prepared : Prepared dependencies program) :
     Raw.Observation.Postcondition program prepared.whole := by
@@ -172,9 +172,9 @@ theorem Checked.history {dependencies program block start count}
     Raw.Observation.history block.entry checked.before = true ∧
     Raw.stateValid checked.after.quantum = true ∧
     Raw.Observation.history checked.before checked.after = true := by
-  obtain ⟨a,b,prefix⟩ := checked.prefixRead
+  obtain ⟨a,b,preamble⟩ := checked.prefixRead
   obtain ⟨c,d,interval⟩ := checked.intervalRead
-  have before := Raw.Observation.checkOps_invariants _ _ _ _ _ _ _ prefix
+  have before := Raw.Observation.checkOps_invariants _ _ _ _ _ _ _ preamble
   have after := Raw.Observation.checkOps_invariants _ _ _ _ _ _ _ interval
   exact ⟨before.1,before.2,after.1,after.2⟩
 
