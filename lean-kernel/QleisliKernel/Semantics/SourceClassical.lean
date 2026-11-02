@@ -194,12 +194,12 @@ structure Function where
   root : Nat
   deriving BEq, DecidableEq, Repr
 
-private def bitValue (value : Value) : Except String Nat := do
+def bitValue (value : Value) : Except String Nat := do
   let [.ordinary [.bit] ordinal] := value | throw "ordinary Boolean type"
   if ordinal ≥ 2 then throw "ordinary Boolean label"
   return ordinal
 
-private def construct (original : Record) (written : List (String × Value)) : Except String Value := do
+def construct (original : Record) (written : List (String × Value)) : Except String Value := do
   if !decide (written.map (·.1)).Nodup then throw "duplicate ordinary record field"
   if !decide ((original.fields.map (·.1)).Perm (written.map (·.1))) then throw "ordinary record field coverage"
   let (ordinal,_) ← original.fields.foldlM (fun (ordinal,stride) (name,basis) => do
@@ -209,7 +209,7 @@ private def construct (original : Record) (written : List (String × Value)) : E
     return (ordinal+stride*field.ordinal,stride*field.dimension)) (0,1)
   return [.ordinary original.basis ordinal]
 
-private def project (original : Record) (index : Nat) (value : Value) : Except String Value := do
+def project (original : Record) (index : Nat) (value : Value) : Except String Value := do
   let [.ordinary basis ordinal] := value | throw "ordinary projection receiver shape"
   if basis != original.basis then throw "ordinary projection receiver exact type"
   let some (_,field) := original.fields[index]? | throw "ordinary projection field index"
@@ -221,11 +221,16 @@ private def project (original : Record) (index : Nat) (value : Value) : Except S
   if stride == 0 || dimension == 0 then throw "empty ordinary field carrier"
   expand field ((ordinal/stride)%dimension)
 
-def evaluateNode (nodes : List Node) (callee : Nat → List Value → Except String Value) :
-    Nat → Environment → Nat → Except String Value :=
-  Nat.rec (fun _ _ => throw "ordinary expression evaluation capacity")
-    (fun _ next environment index => do
-      let some node := nodes[index]? | throw "missing ordinary expression node"
+def selectMatch (labels bodies : List Nat) (value : Value) : Except String Nat := do
+  let [.ordinary _ ordinal] := value | throw "ordinary match scrutinee shape"
+  if labels.length != bodies.length || !decide labels.Nodup then throw "ordinary match label table"
+  let position := labels.idxOf ordinal
+  let some selected := bodies[position]? | throw "ordinary match has no matching label"
+  return selected
+
+def nodeAction (callee : Nat → List Value → Except String Value)
+    (next : Environment → Nat → Except String Value) (environment : Environment) (node : Node) :
+    Except String Value := do
       let child (index : Nat) := next environment index
       match node with
       | .unit => return [.ordinary [.unit] 0]
@@ -266,27 +271,51 @@ def evaluateNode (nodes : List Node) (callee : Nat → List Value → Except Str
         construct original values
       | .projection original field receiver => project original field (← child receiver)
       | .matching scrutinee labels bodies =>
-        let [.ordinary _ ordinal] ← child scrutinee | throw "ordinary match scrutinee shape"
-        if labels.length != bodies.length || !decide labels.Nodup then throw "ordinary match label table"
-        let position := labels.idxOf ordinal
-        let some selected := bodies[position]? | throw "ordinary match has no matching label"
-        child selected
-      | .call function arguments => callee function (← arguments.mapM child))
+        child (← selectMatch labels bodies (← child scrutinee))
+      | .call function arguments => callee function (← arguments.mapM child)
+
+def evaluateNode (nodes : List Node) (callee : Nat → List Value → Except String Value) :
+    Nat → Environment → Nat → Except String Value :=
+  Nat.rec (fun _ _ => throw "ordinary expression evaluation capacity")
+    (fun _ next environment index => do
+      let some node := nodes[index]? | throw "missing ordinary expression node"
+      nodeAction callee next environment node)
+
+theorem evaluateNode_succ (nodes : List Node) (callee : Nat → List Value → Except String Value)
+    (fuel : Nat) (environment : Environment) (index : Nat) :
+    evaluateNode nodes callee (fuel+1) environment index = (do
+      let some node := nodes[index]? | throw "missing ordinary expression node"
+      nodeAction callee (evaluateNode nodes callee fuel) environment node) := rfl
 
 /-- Functions refer to explicit original callees. The adapter supplies their
 acyclic source order; neither an undefined callee nor exhausted fuel has a
 default result. Complete declared argument/result trees remain distinct. -/
-def evaluate (functions : List Function) : Nat → Nat → List Value → Except String Value :=
-  Nat.rec (fun _ _ => throw "ordinary call evaluation capacity") (fun _ next index arguments => do
-    let some function := functions[index]? | throw "missing ordinary callee"
+def bindArguments (function : Function) (arguments : List Value) : Except String Environment := do
     if arguments.length != function.patterns.length || arguments.length != function.inputs.length then
       throw "ordinary call arity"
     let types ← arguments.mapM valueBasis
     if types != function.inputs then throw "ordinary call exact input types"
-    let environment ← (function.patterns.zip arguments).foldlM
+    (function.patterns.zip arguments).foldlM
       (fun environment (pattern,value) => bind pattern value environment) []
+
+def checkResult (output : Basis) (result : Value) : Except String Value := do
+    if (← valueBasis result) != output then throw "ordinary call exact result type"
+    return result
+
+def functionAction (next : Nat → List Value → Except String Value)
+    (function : Function) (arguments : List Value) : Except String Value := do
+    let environment ← bindArguments function arguments
     let result ← evaluateNode function.nodes next (function.nodes.length+1) environment function.root
-    if (← valueBasis result) != function.output then throw "ordinary call exact result type"
-    return result)
+    checkResult function.output result
+
+def evaluate (functions : List Function) : Nat → Nat → List Value → Except String Value :=
+  Nat.rec (fun _ _ => throw "ordinary call evaluation capacity") (fun _ next index arguments => do
+    let some function := functions[index]? | throw "missing ordinary callee"
+    functionAction next function arguments)
+
+theorem evaluate_succ (functions : List Function) (fuel index : Nat) (arguments : List Value) :
+    evaluate functions (fuel+1) index arguments = (do
+      let some function := functions[index]? | throw "missing ordinary callee"
+      functionAction (evaluate functions fuel) function arguments) := rfl
 
 end QleisliKernel.Semantics.SourceClassical

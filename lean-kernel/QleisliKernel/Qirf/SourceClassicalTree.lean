@@ -1,4 +1,5 @@
 import QleisliKernel.Semantics.SourceClassical
+import QleisliKernel.Qirf.SourceClassicalExecution
 import QleisliKernel.SourceTypes.SourceRuntimeContext
 import QleisliKernel.SourceTypes.SourceNominal
 import QleisliKernel.SourceTypes.SourceMatchLabels
@@ -304,12 +305,14 @@ structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) (own
   original : ∃ before after,
     (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {} retained).run before =
       (.ok (state,root),after)
+  metadata : SourceClassicalExecution.Metadata state.functions
 
 def prepare {sources} (catalogue : GenericCatalogue.Checked sources) (owner name caller : String) :
     WorkM (Prepared catalogue owner name caller) := do
   let program ← NaturalAffine.witness
     (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {})
-  return ⟨none,program.val.1,program.val.2,by with_reducible exact program.property⟩
+  let metadata ← SourceClassicalExecution.readMetadata program.val.1.functions
+  return ⟨none,program.val.1,program.val.2,by with_reducible exact program.property,metadata⟩
 
 /-- Reuse only one exact original signature already checked by the containing
 Meaning preparation. Original body parsing, lexical callee resolution, source
@@ -319,7 +322,8 @@ def prepareRetained {sources} (catalogue : GenericCatalogue.Checked sources) (ow
     WorkM (Prepared catalogue owner name caller) := do
   let program ← NaturalAffine.witness
     (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {} (some signature))
-  return ⟨some signature,program.val.1,program.val.2,by with_reducible exact program.property⟩
+  let metadata ← SourceClassicalExecution.readMetadata program.val.1.functions
+  return ⟨some signature,program.val.1,program.val.2,by with_reducible exact program.property,metadata⟩
 
 def Prepared.sourceRows {sources catalogue owner name caller}
     (prepared : @Prepared sources catalogue owner name caller) : List (String × String) :=
@@ -344,9 +348,9 @@ private def nodeCells (node : Semantics.SourceClassical.Node) : Nat :=
         (original.fields.map fun (name,basis) => name.utf8ByteSize+basisCells basis).sum
     | _ => 0
 
-/-- Charge the actual interpreted program and its complete type/value copies
-before evaluating a canonical row. Original source snapshots not inspected by
-the interpreter are not repeatedly charged as a substitute for this work. -/
+/-- The previous whole-program reservation remains observable for diagnostics.
+Execution now uses SourceClassicalExecution's actual node and boundary reads,
+with exact reference equations and one immutable metadata cache. -/
 def Prepared.workUnits {sources catalogue owner name caller}
     (prepared : @Prepared sources catalogue owner name caller) : Nat :=
   prepared.state.definitions.foldl (fun count definition =>

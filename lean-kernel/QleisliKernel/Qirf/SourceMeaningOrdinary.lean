@@ -344,19 +344,20 @@ def readReferenceRow {sources catalogue reference kind basis}
     (program : SourceClassicalTree.Prepared catalogue reference.resolution.result.moduleName
       reference.resolution.result.declaration.name reference.caller)
     {label : Nat} (row : Row prepared.inputs label) : WorkM (ReferenceRow prepared program row) := do
-  exactWork (Exact.charge (program.workUnits+16*(prepared.inputs.domain.code.labels.length+basis.length+1)))
+  exactWork (Exact.charge (32*(program.metadata.codeCells+SourceClassicalExecution.basisCells basis+
+    prepared.inputs.domain.code.labels.length+1)))
   let ordinal := prepared.inputs.domain.code.labels.idxOf label
   if canonical : prepared.inputs.domain.code.labels[ordinal]? = some label then
     match expanded : Semantics.SourceClassical.expand basis ordinal with
     | .error _ => throw .request
     | .ok argument =>
-      match evaluated : Semantics.SourceClassical.evaluate program.state.functions
-          (program.state.definitions.length+1) program.root [argument] with
-      | .error _ => throw .request
-      | .ok result =>
-        if agrees : result = row.result then
-          return ⟨ordinal,canonical,argument,expanded,result,evaluated,agrees⟩
-        else throw .equation
+      let result ← SourceClassicalExecution.read program.metadata
+        (program.state.definitions.length+1) program.root [argument]
+      exactWork (Exact.charge (32*(SourceClassicalExecution.valueCells result.val+
+        SourceClassicalExecution.valueCells row.result+1)))
+      if agrees : result.val = row.result then
+        return ⟨ordinal,canonical,argument,expanded,result.val,result.property,agrees⟩
+      else throw .equation
   else throw .request
 
 inductive Correspondence {sources catalogue reference kind basis}
