@@ -48,4 +48,31 @@ private def activities (body : String) : WorkM (List String) := do
 #guard (activities "unitary fn caller(q:Q<Bit>)->Q<Bit>{ignore[power(checked_op(sign,Identity),0)](q)}").run
   10000000 |>.1.toOption == some ["call:sign","M:caller","call:ignore"]
 
+
+private def kindName : GenericOperation.RequirementKind → String
+  | .formalMeaning key => "header-M:" ++ key.declarationName ++ ":" ++ toString key.ordinal
+  | .formalAccess key => "header-access:" ++ key.declarationName ++ ":" ++ toString key.ordinal
+  | .checkedMeaning => "written-M"
+  | .inverseFormation => "inverse-J"
+  | .application => "application"
+  | .selectionControl => "selection-C"
+  | .runtimeTransform => "transform"
+  | .computedLogical => "computed"
+
+private def kinds (suffix : String) : WorkM (List String) := do
+  let catalogue ← GenericCatalogue.read #[("main",sourcePrelude ++ suffix)]
+  let some caller := catalogue.records.find? (·.name == "caller") | throw .request
+  pure ((GenericCatalogue.bodyDuties caller).map (fun duty => kindName duty.kind))
+
+-- A lexical use borrows the original refined premise. It does not copy the
+-- header M; the later explicit checked_op is a distinct written assertion.
+#guard (kinds "unitary fn caller[const U:Op<Bit,Identity>](q:Q<Bit>)->Q<Bit> requires Applicable(U){let q=invoke[U](q);invoke[checked_op(U,Identity)](q)}").run
+  10000000 |>.1.toOption == some ["header-M:caller:0","header-access:caller:0",
+    "header-access:invoke:0","written-M","header-access:invoke:0"]
+
+-- The constructor's mandatory inverse demand is distinct from the generic
+-- header assumption, including when its supplied actual is never executed.
+#guard (kinds "unitary fn caller[const U:Op<Bit,Identity>](q:Q<Bit>)->Q<Bit> requires Applicable(U),Adjointable(U){ignore[adjoint(U)](q)}").run
+  10000000 |>.1.toOption == some ["header-M:caller:0","header-access:caller:0","inverse-J"]
+
 end QleisliKernel.Tests.GenericActivities

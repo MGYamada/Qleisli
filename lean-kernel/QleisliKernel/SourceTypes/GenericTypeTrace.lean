@@ -97,8 +97,13 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
     state.prepared.original.envelope.occurrence.header rows
   let subject := GenericOperation.Description.singleton (StaticHeaders.frame state.prepared.original)
     (.formal ⟨state.owner,state.name,formal.ordinal⟩)
-  let duties := meanings.map fun request =>
-    (⟨origin,subject,.meaning request,[],[(0,origin)],none⟩ : GenericOperation.Duty sources)
+  let key : Parameter := ⟨state.owner,state.name,formal.ordinal⟩
+  let meaningDuties := meanings.map fun request =>
+    (⟨origin,subject,.meaning request,.formalMeaning key,[],[(0,origin)],none⟩ : GenericOperation.Duty sources)
+  let accessDuties := if access.any then
+    [(⟨origin,subject,.access access,.formalAccess key,[],[(0,origin)],none⟩ : GenericOperation.Duty sources)]
+    else []
+  let duties := meaningDuties ++ accessDuties
   pure ⟨ports.input.result.code,ports.output.result.code,direct effect,access,[],[],meanings,
     rows,subject,origin,[(0,origin)],duties.map GenericOperation.Activity.duty⟩
 
@@ -267,9 +272,9 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
       | .application call => .application call
     let some (_,required) := definition.operations.find? (·.1 == formalName) | throw .request
     let meanings := required.meanings.map fun request =>
-      (⟨required.origin,actual.subject,.meaning request,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)
+      (⟨required.origin,actual.subject,.meaning request,.formalMeaning ⟨owner,name,formal.ordinal⟩,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)
     let access := if required.paths.applicable || required.paths.adjointable || required.paths.controllable then
-      [(⟨required.origin,actual.subject,.access required.paths,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)]
+      [(⟨required.origin,actual.subject,.access required.paths,.formalAccess ⟨owner,name,formal.ordinal⟩,[binding],actual.suppliers,none⟩ : GenericOperation.Duty sources)]
       else []
     pure (inherited,(meanings ++ access).map GenericOperation.Activity.duty)
   let basisArguments ← target.header.formals.foldlM (fun arguments formal => do
@@ -342,7 +347,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
           effect := direct .unitary,paths := ⟨child.paths.adjointable,child.paths.applicable,child.paths.controllable⟩,
           needs := child.needs ++ [⟨child.effect,.unitary,false⟩],
           subject := child.subject.unary .inverse,origin := {origin with rows := child.rows},
-          activities := child.activities ++ [.duty ⟨origin,child.subject,.access ⟨false,true,false⟩,[],child.suppliers,none⟩]}
+          activities := child.activities ++ [.duty ⟨origin,child.subject,.access ⟨false,true,false⟩,.inverseFormation,[],child.suppliers,none⟩]}
       | ["controlled"],[child] =>
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
@@ -395,7 +400,7 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
           meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows,
           subject := child.subject.unary (fun index =>
             .requested index selected.request.moduleName selected.request.declarationName),origin,
-          activities := child.activities ++ [.duty ⟨origin,child.subject,.meaning selected.request,[],child.suppliers,none⟩]}
+          activities := child.activities ++ [.duty ⟨origin,child.subject,.meaning selected.request,.checkedMeaning,[],child.suppliers,none⟩]}
       | _,_ => throw .request
     else
       let written ← adapt (StaticApplication.readSyntax tokens)
@@ -404,7 +409,10 @@ private def operationWithModules {sources : Sources} (modules : Option (SourceMo
       | .lexical name .. =>
         guard written.arguments.isEmpty .request
         let some (_,formal) := formals.find? (·.1 == name) | throw .request
-        pure {formal with origin := {origin with rows := formal.rows}}
+        -- The original header premise is retained once by the definition.
+        -- A lexical use borrows it; only a written checked_op or path demand
+        -- creates another occurrence in the activity stream.
+        pure {formal with origin := {origin with rows := formal.rows},activities := []}
       | .primitive _ _ _ _ _ _ kind _ =>
         guard written.arguments.isEmpty .request
         let some target := primitiveTarget | throw .request
@@ -634,7 +642,7 @@ private def selection {sources} (modules : Option (SourceModules.Prepared source
     needs := arms.flatMap (fun (_,operation) => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
     meanings := arms.flatMap (·.2.meanings),
     activities := arms.flatMap (fun (_,operation) => operation.activities ++
-      [.duty ⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,[],operation.suppliers,none⟩]),
+      [.duty ⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,.selectionControl,[],operation.suppliers,none⟩]),
     rows := arms.flatMap (fun (label,operation) => label.sourceRows ++ operation.rows)}
 
 private def expectEnvironment {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
@@ -757,7 +765,7 @@ private def applyOperation {sources} (modules : Option (SourceModules.Prepared s
   pure {
     value,remaining,effect := op.effect,quantumUse := true,references := op.references,
     needs := op.needs,meanings := op.meanings,rows := op.rows,
-    activities := op.activities ++ [.duty ⟨op.origin,op.subject,.access ⟨true,false,false⟩,[],op.suppliers,none⟩]}
+    activities := op.activities ++ [.duty ⟨op.origin,op.subject,.access ⟨true,false,false⟩,.application,[],op.suppliers,none⟩]}
 
 private def quantumGroup (value : Value) : Bool :=
   hasOwner value && value.all (fun atom => match atom with | .ordinary _ => false | _ => true)
@@ -829,7 +837,7 @@ private def runtimeTransform {sources} (modules : Option (SourceModules.Prepared
       needs := application.needs ++ [⟨effect,.unitary,false⟩],meanings := application.meanings,
       rows := CallName.sourceRows candidate ++ rows.flatten ++ application.rows,
       activities := application.activities ++
-        [.duty ⟨origin,subject,.access requested,[],application.suppliers,some occurrence⟩]}
+        [.duty ⟨origin,subject,.access requested,.runtimeTransform,[],application.suppliers,some occurrence⟩]}
 
 private def bindingNames (tokens : List LocatedToken) : WorkM (List String) := do
   let pattern ← adapt (QuantumMoves.parsePattern 65 (tokens.map (·.text)))
@@ -989,7 +997,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           logical.toList.flatMap (fun operation => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
         meanings := region.meanings ++ logical.toList.flatMap (·.meanings),
         activities := logical.toList.flatMap (fun operation => operation.activities ++
-          [.duty ⟨operation.origin,operation.subject,.access ⟨true,false,false⟩,[],operation.suppliers,none⟩]) ++
+          [.duty ⟨operation.origin,operation.subject,.access ⟨true,false,false⟩,.computedLogical,[],operation.suppliers,none⟩]) ++
           region.activities,
         computedObligations := region.computedObligations ++ [obligation],
         rows := predicate.rows ++ logical.toList.flatMap (·.rows) ++ region.rows}

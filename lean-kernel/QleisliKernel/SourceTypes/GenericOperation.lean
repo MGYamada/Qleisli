@@ -460,10 +460,29 @@ structure Binding (sources : Sources) where
   actual : Origin sources
   application : Option (ApplicationSource sources) := none
 
+/-- A header premise has one original mixed-formal identity. Written
+assertions and executable path demands remain separate source occurrences,
+even when they happen to request the same Meaning or access. -/
+inductive RequirementKind where
+  | formalMeaning (original : Parameter)
+  | formalAccess (original : Parameter)
+  | checkedMeaning
+  | inverseFormation
+  | application
+  | selectionControl
+  | runtimeTransform
+  | computedLogical
+  deriving BEq, DecidableEq, Repr
+
+def RequirementKind.formal? : RequirementKind → Option Parameter
+  | .formalMeaning original | .formalAccess original => some original
+  | _ => none
+
 structure Duty (sources : Sources) where
   origin : Origin sources
   subject : Description
   requirement : Requirement sources
+  kind : RequirementKind
   bindings : List (Binding sources) := []
   suppliers : List (Nat × Origin sources) := []
   runtimeApplication : Option (ApplicationSource sources) := none
