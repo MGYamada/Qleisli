@@ -122,6 +122,27 @@ impl Compiler<'_> {
         Ok(result)
     }
 
+    pub(in crate::frontend::compile) fn qmatch_operation_application(
+        &mut self, operation: &Operation, access: Access, module: &str, span: Span,
+    ) -> Result<OperationSubject, CompileError> {
+        let mut subject = self.qmatch_operation_subject(operation, module, span)?;
+        if access != Access::Apply {
+            if subject.description.nodes.len() >= MAX_TREE_NODES || operation.depth >= MAX_DEPTH {
+                return Err(self.error(module, span, ErrorCode::Limit,
+                    "transformed original operation exceeds the existing tree profile"));
+            }
+            self.charge(module, span, 4)?;
+            let child = subject.description.root;
+            subject.description.root = subject.description.nodes.len() as u32;
+            subject.description.nodes.push(match access {
+                Access::Adjoint => OperationNode::Inverse(child),
+                Access::Controlled => OperationNode::Controlled(child),
+                Access::Apply => unreachable!(),
+            });
+        }
+        Ok(subject)
+    }
+
     /// This is proposal generation from the same retained lowering objects.
     /// The complete native body/access/Meaning gate remains mandatory, including
     /// unused original actuals and children beneath a zero power.

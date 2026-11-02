@@ -191,6 +191,7 @@ impl Frame {
             selections,
             calls: self.calls,
             branches: self.branches,
+            operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
         }))
@@ -213,6 +214,7 @@ impl Frame {
                 selections: Vec::new(),
                 calls: self.calls,
                 branches: self.branches,
+                operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
             })));
@@ -367,7 +369,7 @@ impl Frame {
             })
         }).collect::<Result<Vec<_>, CompileError>>()?;
         Ok(Some(Arc::new(ContextSubject { positions: self.positions, selections, calls: self.calls,
-            branches: self.branches, contains_selections: self.contains_selections,
+            branches: self.branches, operation: None, contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate })))
     }
 }
@@ -456,6 +458,27 @@ pub(in crate::frontend::compile::lower) fn record_named(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
+    frame.calls.push((position, body));
+    Ok(())
+}
+
+/// Retain one actual operation application after its arguments have run.
+/// Its child carries the complete original tree, including unused suppliers.
+pub(in crate::frontend::compile::lower) fn record_operation(
+    lower: &mut Lowerer<'_, '_>, module: &str, span: Span, start: usize,
+    operation: &crate::frontend::compile::operations::Operation, access: Access,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else { return Ok(()); };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| lower.error(module, span,
+        ErrorCode::InvalidIr, "operation call precedes its original source context"))?;
+    let count = lower.raw.operations.len().checked_sub(start).ok_or_else(|| lower.error(module, span,
+        ErrorCode::InvalidIr, "operation call removed its actual instruction prefix"))?;
+    let position = position(lower, module, span, span.start, relative, count)?;
+    let original = lower.compiler.qmatch_operation_application(operation, access, module, span)?;
+    lower.compiler.charge(module, span, 12)?;
+    let body = Arc::new(ContextSubject { operation: Some(Arc::new(original)), ..ContextSubject::default() });
+    let frame = lower.nominal_qmatch.as_mut().expect("original operation context");
+    frame.positions.push(position.clone());
     frame.calls.push((position, body));
     Ok(())
 }

@@ -25,10 +25,12 @@ impl Lowerer<'_, '_> {
                 "operation and argument have different exact basis trees",
             ));
         }
+        let start = self.raw.operations.len();
         if !op.needs_raw() {
             let steps = op.steps(module, span, access, self.compiler)?;
             self.apply_circuit(slot, steps);
             self.add_contract_effect(module, span, op.effect);
+            quantum_match::nominal::record_operation(self, module, span, start, op, access)?;
             return Ok(value);
         }
         let body = op.raw(module, span, access, self.compiler)?;
@@ -38,7 +40,6 @@ impl Lowerer<'_, '_> {
             wires: original.wires.clone(),
             shape: body.boundary().input().shape,
         };
-        let start = self.raw.operations.len();
         let output = crate::frontend::raw_splice::append(
             &mut self.raw,
             body.program(),
@@ -74,6 +75,7 @@ impl Lowerer<'_, '_> {
                 basis: codomain.clone(),
             },
         );
+        quantum_match::nominal::record_operation(self, module, span, start, op, access)?;
         Ok(Value::Quantum(slot, Ty::quantum(codomain.clone())))
     }
     pub(super) fn constructed_inverse(
@@ -119,11 +121,29 @@ impl Lowerer<'_, '_> {
             ));
         }
         let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
+        let start = self.raw.operations.len();
         self.add_contract_effect(module, span, op.effect);
         let joined = self.primitive_call(module, span, PrimitiveId::Join, vec![c, q])?;
         let slot = self.quantum(module, span, &joined, false)?;
         self.apply_circuit(slot, steps);
-        self.primitive_call(module, span, PrimitiveId::Split, vec![joined])
+        let value = self.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+        quantum_match::nominal::record_operation(self, module, span, start, &op, Access::Controlled)?;
+        Ok(value)
+    }
+
+    pub(super) fn retained_bound_operation(
+        &mut self, module: &str, name: &Ident,
+    ) -> Result<Option<Operation>, CompileError> {
+        let Some(cost) = self.bound_operation(name).map(Operation::copy_size) else { return Ok(None); };
+        self.compiler.charge(module, name.span, cost)?;
+        let operation = self.bound_operation(name).expect("retained bound operation").clone();
+        let lookup = self.compiler.locals();
+        let id = lookup.usage(name).static_parameter.ok_or_else(|| self.error(module, name.span,
+            ErrorCode::InvalidIr, "bound Op has no original formal occurrence"))?;
+        let key = lookup.key(id).clone();
+        let owner = self.compiler.current_instance_owner().ok_or_else(|| self.error(module, name.span,
+            ErrorCode::InvalidIr, "bound Op has no original containing instance"))?;
+        Ok(Some(self.compiler.retain_source_formal(operation, owner, &key, module, name.span)?))
     }
 
     pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {

@@ -58,6 +58,9 @@ pub(crate) struct ContextSubject {
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
     pub branches: Vec<(Position, std::sync::Arc<ContextSubject>, std::sync::Arc<ContextSubject>)>,
+    /// An actual operation application has provider bodies and no fabricated
+    /// containing-function prefix or nested runtime instruction coordinates.
+    pub operation: Option<std::sync::Arc<OperationSubject>>,
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
     pub requires_source_gate: bool,

@@ -841,8 +841,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
         if count.is_none() {
-            let op = if let Some(op) = self.bound_operation(function) {
-                Some(op.clone())
+            let op = if let Some(op) = self.retained_bound_operation(module, function)? {
+                Some(op)
             } else {
                 match self.compiler.resolve(module, function)? {
                     Callee::User(key) => {
@@ -1239,10 +1239,7 @@ impl Lowerer<'_, '_> {
                 ));
             }
             let value = values.into_iter().next().expect("one argument");
-            let op = self
-                .bound_operation(callee)
-                .expect("bound operation")
-                .clone();
+            let op = self.retained_bound_operation(module, callee)?.expect("bound operation");
             return self.apply_operation(module, span, &op, value, Access::Apply);
         }
         let site = CallSite {
