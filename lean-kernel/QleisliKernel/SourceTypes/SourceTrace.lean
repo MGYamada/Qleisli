@@ -108,7 +108,9 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .selection _ _ _ _ naturals => naturals.map (·.sourceRows) |>.getD []
   | .primitive _ => []
   | .phase event => event.naturals.sourceRows
-  | .named event => event.canonical.staticRows
+  | .named event => event.target.naturals.sourceRows ++ event.target.signature.sourceRows ++
+      event.target.selected.operationActuals.rows ++ event.target.selected.actuals.actuals.flatMap (·.sourceRows) ++
+      ResolutionProvenance.sourceRows event.target.resolved ++ event.canonical.staticRows
   | .operation event => event.naturals.sourceRows ++ event.operation.rows
 
 structure Outcome (sources : Sources) (caller : String) (before : Environment) where
@@ -313,7 +315,7 @@ def evalWithReader (sources : Sources) (caller : String)
         let arguments := values.map SourceOperationApplication.ofQuantum
         let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee arguments)
         let application ← SourceOperation.readWithInstantiation callerInfo.2.instantiation current.helpers.val
-          current.environment scope call.call.callee current.generic (some targetBasis)
+          current.environment scope call.call.callee current.generic (some targetBasis) (some callerInfo.2.supply)
         if applicable : application.graph.root.paths.applicable = true then
           Finite.exactWork (Exact.charge (16*(Raw.OwnerFlow.fields (values.flatMap valueOwners)+
             Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))

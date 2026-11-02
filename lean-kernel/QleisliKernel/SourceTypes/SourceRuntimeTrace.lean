@@ -321,7 +321,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
           let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
           let application ← SourceOperation.readWithInstantiation signature.instantiation naturals.helpers.val
-            naturals.environment scope call.call.callee naturals.generic (some targetBasis)
+            naturals.environment scope call.call.callee naturals.generic (some targetBasis) (some signature.supply)
           if applicable : application.graph.root.paths.applicable = true then
             Finite.exactWork (Exact.charge (16*((values.map valueFields).sum+
               Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))

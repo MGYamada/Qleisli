@@ -44,6 +44,29 @@ def Signature.naturals {sources owner name} (signature : Signature sources owner
 def Signature.operationNames {sources owner name} (signature : Signature sources owner name) : List String :=
   signature.instantiation.operationNames
 
+def Signature.supply {sources owner name} (signature : Signature sources owner name) :
+    StaticOperation.Supply signature.instantiation := ⟨signature.context,signature.operations⟩
+
+structure WithPrepared {sources owner name arguments}
+    (checked : StaticRuntimeSignature.Checked sources owner name arguments) (context : StaticOperation.Context)
+    (actuals : List (Sigma (StaticOperation.Actual sources context))) where
+  signature : Signature sources owner name
+  originalArguments : signature.arguments = arguments
+  originalChecked : HEq signature.checked checked
+  originalContext : signature.context = context
+  originalActuals : HEq signature.operations.actuals actuals
+
+/-- Rebind the original formal obligations to the same checked actual receipts.
+Their per-occurrence supply authority is never reconstructed in the callee. -/
+def fromPreparedWithArguments {sources owner name arguments}
+    (checked : StaticRuntimeSignature.Checked sources owner name arguments) (context : StaticOperation.Context)
+    (actuals : List (Sigma (StaticOperation.Actual sources context))) :
+    Finite.WorkM (WithPrepared checked context actuals) := do
+  let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
+  let operations ← StaticOperation.checkArgumentsFromWithActuals instantiation context actuals
+  let signature : Signature sources owner name := ⟨arguments,checked,context,operations.val⟩
+  return ⟨signature,rfl,HEq.rfl,rfl,heq_of_eq operations.property⟩
+
 def readSignature (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
     (context : StaticOperation.Context := .external) :
     Finite.WorkM (Signature sources owner name) := do
@@ -73,12 +96,15 @@ structure CoreBinding {sources owner name} (core : QuantumSignatureCore.Checked 
   inputTrees : signature.parameters.map (·.tree) = core.inputs.map Semantics.RuntimeType.owner
   outputOwners : Semantics.RuntimeType.ownerBases signature.result.tree = some core.outputs
   sameContext : signature.context = context
+  sameActuals : HEq signature.operations.actuals supply.actuals
 
 def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked sources owner name)
     (context : StaticOperation.Context)
     (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) :
     Finite.WorkM (CoreBinding core context supply) := do
-  let signature ← readSignature sources owner name core.staticArguments context
+  let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name core.staticArguments
+  let prepared ← fromPreparedWithArguments checked context supply.actuals
+  let signature := prepared.signature
   Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+
     signature.original.source.utf8ByteSize+
     SourceTrace.Meter.tokenFields core.original.occurrence.header+
@@ -99,7 +125,7 @@ def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked so
       signature.context = context then
     let ⟨source,declaration,header,body,opening,closing,bases,naturals,operations,inputTrees,outputOwners,sameContext⟩ := same
     return ⟨signature,source,declaration,header,body,opening,closing,bases,naturals,operations,
-      inputTrees,outputOwners,sameContext⟩
+      inputTrees,outputOwners,sameContext,prepared.originalActuals⟩
   else throw .request
 
 structure Target (sources : Sources) (caller : String) (scope : List String)
@@ -114,10 +140,13 @@ structure Target (sources : Sources) (caller : String) (scope : List String)
   operationReader : StaticApplication.OperationReader
   actuals : StaticApplication.Checked callerSignature.instantiation naturals.helpers.val
     naturals.environment scope operationReader written resolution.moduleName resolution.declaration.name
+  operationActuals : SourceOperation.ApplicationActuals actuals callerSignature.supply
   signature : Signature sources resolution.moduleName resolution.declaration.name
   arguments : signature.arguments = actuals.arguments
   original : signature.original.source = resolution.source ∧
     signature.original.declaration = resolution.declaration
+  originalActuals : actuals.target.envelope.source = signature.original.source ∧
+    actuals.target.envelope.declaration = signature.original.declaration
 
 def readTarget {sources caller callerName scope tokens}
     (callerSignature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
@@ -131,14 +160,25 @@ def readTarget {sources caller callerName scope tokens}
       naturals.helpers.val naturals.environment scope naturals.generic 65
     let actuals ← StaticApplication.read callerSignature.instantiation naturals.helpers.val
       naturals.environment scope written resolution.moduleName resolution.declaration.name operationReader naturals.generic
-    let signature ← readSignature sources resolution.moduleName resolution.declaration.name actuals.arguments (.source caller)
+    let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
+    let checked ← StaticRuntimeSignature.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
+    let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals
+    let signature := prepared.signature
     if arguments : signature.arguments = actuals.arguments then
       if original : signature.original.source = resolution.source ∧
           signature.original.declaration = resolution.declaration then
-        return ⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
-          operationReader,actuals,signature,arguments,original⟩
+        if originalActuals : actuals.target.envelope.source = signature.original.source ∧
+            actuals.target.envelope.declaration = signature.original.declaration then
+          return ⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
+            operationReader,actuals,operationActuals,signature,arguments,original,originalActuals⟩
+        else throw .request
       else throw .request
     else throw .request
+
+def Target.sourceRows {sources caller scope tokens} (target : Target sources caller scope tokens) :
+    List (String × String) :=
+  target.naturals.sourceRows ++ target.signature.sourceRows ++ target.operationActuals.rows ++
+    target.actuals.actuals.flatMap (·.sourceRows) ++ ResolutionProvenance.sourceRows target.resolution
 
 structure Summary {sources owner name} (signature : Signature sources owner name) where
   patterns : List (List String)
@@ -409,11 +449,11 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .selection _ _ _ _ _ _ naturals .. => naturals.sourceRows
   | .primitive _ => []
   | .phase event => event.naturals.sourceRows
-  | .named event => event.canonical.staticRows
+  | .named event => event.target.sourceRows ++ event.canonical.staticRows
   | .operation event => event.naturals.sourceRows ++ event.operation.rows
   | .basis event => event.staticRows
   | .conditional event .. => event.naturals.sourceRows ++ event.thenArm.staticRows ++ event.elseArm.staticRows
-  | .transform event => event.naturals.sourceRows ++ event.target.signature.sourceRows ++ event.forward.staticRows ++
+  | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
       event.counts.flatMap (·.checked.rows)
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
