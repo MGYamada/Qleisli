@@ -109,6 +109,10 @@ import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Qirf.RuntimeOrdinarySSA
 import QleisliKernel.Qirf.RuntimeOrdinaryPhis
 import QleisliKernel.Qirf.RuntimeOrdinaryStreamedPhis
+import QleisliKernel.Qirf.RuntimeOrdinaryBody
+import QleisliKernel.Qirf.RuntimeOrdinaryInputs
+import QleisliKernel.Qirf.RuntimeCallInterval
+import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.SourceTypes.SourceComputedSyntax
 import QleisliKernel.Qirf.RuntimeStructuredRoot
