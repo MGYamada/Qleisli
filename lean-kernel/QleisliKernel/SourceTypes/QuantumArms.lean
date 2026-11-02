@@ -53,6 +53,11 @@ inductive OperationOrigin (sources : Sources) (owner : String) (tokens : List Lo
       (naturals : PhaseApplication.Naturals sources) (scope : List String)
       (read : SourceOperation.Checked signature.toChecked naturals.helpers.val naturals.environment scope tokens)
       (sameDescription : description = read.description) (sameGraph : HEq graph read.graph)
+  | instantiated (callerName : String) (original : OrdinarySignature.Original sources owner callerName)
+      (instantiation : StaticInstantiation.Checked original) (supply : StaticOperation.Supply instantiation)
+      (naturals : PhaseApplication.Naturals sources) (scope : List String)
+      (read : SourceOperation.CheckedWithInstantiation instantiation naturals.helpers.val naturals.environment scope tokens)
+      (sameDescription : description = read.description) (sameGraph : HEq graph read.graph)
   | primitive (scope : List String) (candidate : CallName.Checked sources owner scope tokens)
       (kind : OperationDescription.Primitive) (selected : primitiveKind candidate = some kind)
       (target : Basis) (original : description = ⟨[.primitive kind target],0⟩)
@@ -73,6 +78,8 @@ def Operation.sourceRows {sources owner tokens} (operation : Operation sources o
   operation.graph.sourceRows ++ match operation.original with
     | .named selected _ => ResolutionProvenance.sourceRows selected.resolution ++ selected.signature.sourceRows
     | .source _ signature naturals _ read _ _ => signature.sourceRows ++ naturals.sourceRows ++ read.rows
+    | .instantiated _ original _ supply naturals _ read _ _ =>
+      [(owner,original.source)] ++ supply.arguments.sourceRows ++ naturals.sourceRows ++ read.rows
     | .primitive _ candidate .. => CallName.sourceRows candidate
 
 structure BoundArm (sources : Sources) (owner : String) (selector target : Basis) where
@@ -149,6 +156,42 @@ def readArmWithSignature {sources owner name}
     else throw .request
   else throw .request
 
+/-- The same operation/body contract for an original ordinary or mixed caller.
+Its exact instantiation and argument receipts replace no source signature. -/
+def readArmWithInstantiation {sources owner name}
+    (original : OrdinarySignature.Original sources owner name) (instantiation : StaticInstantiation.Checked original)
+    (supply : StaticOperation.Supply instantiation)
+    (naturals : PhaseApplication.Naturals sources) (scope : List String)
+    (selector target : Basis) (written : QuantumMatch.Arm) :
+    WorkM (BoundArm sources owner selector target) := do
+  let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
+  let operation : Operation sources owner written.operation ←
+    match CallName.readName written.operation with
+    | .ok _ => do
+      let candidate ← CallName.read sources owner scope written.operation
+      match selected : primitiveKind candidate with
+      | some kind =>
+        let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
+        let graph ← StaticOperation.check sources (.source owner) description
+        pure ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
+      | none => do
+        let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
+          scope written.operation naturals.generic none (some supply)
+        pure ⟨source.description,source.graph,.instantiated name original instantiation supply naturals scope source rfl HEq.rfl⟩
+    | .error _ => do
+      let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
+        scope written.operation naturals.generic none (some supply)
+      pure ⟨source.description,source.graph,.instantiated name original instantiation supply naturals scope source rfl HEq.rfl⟩
+  if input : operation.graph.root.input = target then
+    if output : operation.graph.root.output = target then
+      if effect : operation.graph.root.effect = .unitary then
+        if controlled : operation.graph.root.paths.controllable = true then
+          pure ⟨written,label.val,by with_reducible exact label.property,operation,input,output,effect,controlled⟩
+        else throw .request
+      else throw .request
+    else throw .request
+  else throw .request
+
 def BoundArm.sourceRows {sources owner selector target} (arm : BoundArm sources owner selector target) :
     List (String × String) :=
   arm.label.sourceRows ++ arm.operation.sourceRows
@@ -213,6 +256,31 @@ def readArmsWithSignature {sources owner name}
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
       return ⟨site,layout.val,by with_reducible exact original.property,
+        by obtain ⟨before,after,ran⟩ := layout.property
+           exact FiniteCarrier.read_reference _ _ _ _ ran,
+        arms,same,complete⟩
+    else throw .request
+  else throw .request
+
+def readArmsWithInstantiation {sources owner name}
+    (originalCaller : OrdinarySignature.Original sources owner name)
+    (instantiation : StaticInstantiation.Checked originalCaller) (supply : StaticOperation.Supply instantiation)
+    (offset : Nat) (selector target : Basis)
+    (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
+    (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
+  let site ← QuantumMatch.readSite originalCaller offset
+  let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
+  let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
+  let naturals ← match eventNaturals with
+    | some naturals => pure naturals
+    | none => PhaseApplication.prepareWithInstantiation instantiation
+  let scope := instantiation.names ++ eventScope
+  let arms ← site.parsed.arms.mapM
+    (readArmWithInstantiation originalCaller instantiation supply naturals scope selector target)
+  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
+  if same : arms.map (·.written) = site.parsed.arms then
+    if complete : partition layout.val.labels.length arms = true then
+      pure ⟨site,layout.val,by with_reducible exact original.property,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
         arms,same,complete⟩
