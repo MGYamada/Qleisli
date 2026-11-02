@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.QuantumMoves
 import QleisliKernel.SourceTypes.RuntimeSignature
 import QleisliKernel.Raw.OwnerFlow
+import QleisliKernel.Semantics.SourceOrdinary
 
 /-! Typed symbolic runtime values for complete original-body traversal.
 Ordinary values copy; any value containing a logical quantum owner moves.
@@ -11,35 +12,33 @@ namespace QleisliKernel.SourceTypes.SourceRuntimeValues
 open QleisliKernel QleisliKernel.Semantics.SourceOwners
 open QleisliKernel.Semantics.FiniteCarrier
 
-structure Site where
-  moduleName : String
-  functionName : String
-  offset : Nat
-  deriving BEq, DecidableEq, Repr
+abbrev Site := Semantics.SourceOrdinary.Site
+abbrev Expression := Semantics.SourceOrdinary.Expression
 
-inductive Expression where
-  | input (ordinal : Nat)
-  | basisInput (ordinal : Nat)
-  | unit
-  | bit (value : Bool)
-  | ordinal (value : Nat)
-  | measured (origin : Site) (calls : List Site) (owner : Owner)
-  | project (value : Expression) (ordinal : Nat)
-  | combine (stride : Nat) (first second : Expression)
-  | field (stride dimension : Nat) (receiver : Expression)
-  | not (value : Expression)
-  | xor (first second : Expression)
-  | and (first second : Expression)
-  | choose (condition thenValue elseValue : Expression)
-  deriving BEq, DecidableEq, Repr
+namespace Expression
+@[match_pattern] abbrev input := Semantics.SourceOrdinary.Expression.input
+@[match_pattern] abbrev basisInput := Semantics.SourceOrdinary.Expression.basisInput
+@[match_pattern] abbrev unit := Semantics.SourceOrdinary.Expression.unit
+@[match_pattern] abbrev bit := Semantics.SourceOrdinary.Expression.bit
+@[match_pattern] abbrev ordinal := Semantics.SourceOrdinary.Expression.ordinal
+@[match_pattern] abbrev measured := Semantics.SourceOrdinary.Expression.measured
+@[match_pattern] abbrev project := Semantics.SourceOrdinary.Expression.project
+@[match_pattern] abbrev combine := Semantics.SourceOrdinary.Expression.combine
+@[match_pattern] abbrev field := Semantics.SourceOrdinary.Expression.field
+@[match_pattern] abbrev not := Semantics.SourceOrdinary.Expression.not
+@[match_pattern] abbrev xor := Semantics.SourceOrdinary.Expression.xor
+@[match_pattern] abbrev and := Semantics.SourceOrdinary.Expression.and
+@[match_pattern] abbrev choose := Semantics.SourceOrdinary.Expression.choose
+end Expression
 
-inductive Atom where
-  | owner (value : Owner)
-  | ordinary (basis : Basis) (expression : Expression)
-  | tuple (arity : Nat)
-  deriving BEq, DecidableEq, Repr
+abbrev Atom := Semantics.SourceOrdinary.Atom
+abbrev Value := Semantics.SourceOrdinary.Value
 
-abbrev Value := List Atom
+namespace Atom
+@[match_pattern] abbrev owner := Semantics.SourceOrdinary.Atom.owner
+@[match_pattern] abbrev ordinary := Semantics.SourceOrdinary.Atom.ordinary
+@[match_pattern] abbrev tuple := Semantics.SourceOrdinary.Atom.tuple
+end Atom
 
 inductive BindingOrigin where
   | parameter (ordinal : Nat)

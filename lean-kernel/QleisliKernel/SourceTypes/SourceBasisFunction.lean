@@ -51,46 +51,23 @@ private def labels (bases : List Basis) (bits : List Bool) : Except String (List
   if !rest.isEmpty then throw "ordinary finite assignment trailing bits"
   return values
 
-private def evaluate (bound : List Nat) (external : List (Expression × Nat)) : Expression → Except String Nat
-  | expression@(.input _) | expression@(.measured ..) => do
-    let some (_,value) := external.find? (fun (key,_) => key == expression)
-      | throw "missing captured ordinary valuation"
-    return value
-  | .basisInput ordinal => do
-    let some value := bound[ordinal]? | throw "missing coherent basis valuation"
-    return value
-  | .unit => pure 0
-  | .bit value => pure (if value then 1 else 0)
-  | .ordinal value => pure value
-  | .project .. => throw "unsupported untyped ordinary field projection"
-  | .combine stride first second => do
-    if stride == 0 then throw "zero logical record packing stride"
-    let first ← evaluate bound external first
-    let second ← evaluate bound external second
-    if first ≥ stride then throw "logical record prefix exceeds its exact dimension"
-    return first+stride*second
-  | .field stride dimension receiver => do
-    if stride == 0 || dimension == 0 then throw "invalid logical original field dimensions"
-    let receiver ← evaluate bound external receiver
-    return (receiver/stride)%dimension
-  | .not value => do
-    let value ← evaluate bound external value
-    if value ≥ 2 then throw "Boolean basis operand range"
-    return 1-value
-  | .xor first second => do
-    let first ← evaluate bound external first
-    let second ← evaluate bound external second
-    if first ≥ 2 || second ≥ 2 then throw "Boolean basis operand range"
-    return if first == second then 0 else 1
-  | .and first second => do
-    let first ← evaluate bound external first
-    let second ← evaluate bound external second
-    if first ≥ 2 || second ≥ 2 then throw "Boolean basis operand range"
-    return if first == 1 && second == 1 then 1 else 0
-  | .choose condition thenValue elseValue => do
-    let condition ← evaluate bound external condition
-    if condition ≥ 2 then throw "Boolean basis condition range"
-    if condition == 1 then evaluate bound external thenValue else evaluate bound external elseValue
+def valuation (bound : List Nat) (external : List (Expression × Nat)) : Semantics.SourceOrdinary.Valuation :=
+  { inputs := fun ordinal => (external.find? (fun (key,_) => key == .input ordinal)).map Prod.snd
+    basisInputs := fun ordinal => bound[ordinal]?
+    measured := fun origin calls owner =>
+      (external.find? (fun (key,_) => key == .measured origin calls owner)).map Prod.snd }
+
+private def evaluate (bound : List Nat) (external : List (Expression × Nat)) (expression : Expression) :
+    Except String Nat :=
+  match Semantics.SourceOrdinary.evaluate (valuation bound external) expression with
+  | none => .error "undefined original ordinary expression"
+  | some value => .ok value
+
+theorem evaluate_reference (bound : List Nat) (external : List (Expression × Nat)) (expression : Expression) :
+    (evaluate bound external expression).toOption =
+      Semantics.SourceOrdinary.evaluate (valuation bound external) expression := by
+  unfold evaluate
+  cases Semantics.SourceOrdinary.evaluate (valuation bound external) expression <;> rfl
 
 private structure Label where
   basis : Basis
