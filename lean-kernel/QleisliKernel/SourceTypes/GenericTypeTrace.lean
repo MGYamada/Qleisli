@@ -860,7 +860,7 @@ def AllInferred.get {sources} {records : List (BodyRecord sources)} :
       Inferred records (pending[index.val]'index.isLt)
   | [],.nil,index => False.elim (Nat.not_lt_zero index.val index.isLt)
   | _ :: _,.cons head _,⟨0,_⟩ => head
-  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,by omega⟩
+  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,Nat.lt_of_succ_lt_succ bound⟩
 
 def Inferred.inferredEffect {sources records body} (inferred : @Inferred sources records body) : Semantics.Raw.Effect :=
   inferred.closure.inferred
