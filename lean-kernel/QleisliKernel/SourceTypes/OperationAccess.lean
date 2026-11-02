@@ -129,7 +129,7 @@ of a shared provider may bind different actual implementation subjects. -/
 private def childrenAt {sources : Sources} (node : Node) (result : Result sources) (requested : Paths) :
     WorkM (List (Nat × Paths)) := do
   guard (satisfies result.paths requested) .request
-  let shape : OperationPaths.Shape ← match node with
+  let shapeAction : WorkM OperationPaths.Shape := match node with
     | .primitive .. => pure .leaf
     | .provider _ _ _ _ operations => do
       let some provider := result.provider | throw .request
@@ -152,6 +152,7 @@ private def childrenAt {sources : Sources} (node : Node) (result : Result source
     | .power child _ | .requested child _ _ => pure (.repeat child)
     | .thenOp left right | .tensor left right => pure (.pair left right)
     | .conjugate outer middle => pure (.conjugate outer middle)
+  let shape ← shapeAction
   pure (shape.children requested)
 
 private inductive OccurrenceTask where
