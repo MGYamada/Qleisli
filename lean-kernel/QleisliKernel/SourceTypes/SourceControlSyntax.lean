@@ -22,6 +22,12 @@ private def cut : Nat → String → List String → List LocatedToken → List 
         recurse delimiter stack rest (token :: reversed)
       else recurse delimiter stack rest (token :: reversed))
 
+/-- Split one complete original top-level delimiter, respecting nested source
+parentheses, brackets and braces. The caller retains exact reconstruction. -/
+def delimiter (text : String) (tokens : List LocatedToken) :
+    Except String (List LocatedToken × LocatedToken × List LocatedToken) :=
+  cut (tokens.length+1) text [] tokens []
+
 structure Conditional where
   keyword : LocatedToken
   condition : List LocatedToken

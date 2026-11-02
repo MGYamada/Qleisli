@@ -5,6 +5,7 @@ import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.SourceBoolean
 import QleisliKernel.SourceTypes.SourceControlSyntax
 import QleisliKernel.SourceTypes.SourceStaticControlSyntax
+import QleisliKernel.SourceTypes.SourceNominalSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -45,6 +46,11 @@ inductive Tree : List LocatedToken → Type where
       (elseBody : Tree written.parts.elseBody) : Tree tokens
   | staticConditional {tokens : List LocatedToken} (written : SourceStaticControlSyntax.Checked tokens)
       (thenBody : Tree written.parts.thenBody) (elseBody : Tree written.parts.elseBody) : Tree tokens
+  | variant {tokens : List LocatedToken} (written : SourceNominalSyntax.Variant tokens) : Tree tokens
+  | record {tokens : List LocatedToken} (written : SourceNominalSyntax.Record tokens)
+      (children : Children (written.initializers.map (·.expression))) : Tree tokens
+  | projection {tokens : List LocatedToken} (written : SourceNominalSyntax.Projection tokens)
+      (receiver : Tree written.receiver) : Tree tokens
   | basis {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedBasis tokens)
       (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
 
@@ -94,6 +100,9 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .conditional _ condition thenBody elseBody =>
       return (← next condition) ++ (← next thenBody) ++ (← next elseBody)
     | .staticConditional _ thenBody elseBody => return (← next thenBody) ++ (← next elseBody)
+    | .variant _ => return []
+    | .record _ children => return (← children.trees.mapM (fun child => next child.2)).flatten
+    | .projection _ receiver => next receiver
     | .basis _ input body => return (← next input) ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
@@ -160,6 +169,15 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
         let target ← next (depth+1) false parsed.target
         return .selectionExpression tokens parsed original selector target
       | _ => throw "qmatch does not consume the complete original expression"
+    if (tokens[tokens.length-2]?.map (·.text)) == some "." then
+      let written ← SourceNominalSyntax.readProjection tokens
+      return .projection written (← next (depth+1) false written.receiver)
+    if tokens.getLast?.map (·.text) == some "}" then
+      let written ← SourceNominalSyntax.readRecord tokens
+      let children ← readChildren (next (depth+1) false) (written.initializers.map (·.expression))
+      return .record written children
+    if (tokens[tokens.length-2]?.map (·.text)) == some "::" then
+      return .variant (← SourceNominalSyntax.readVariant tokens)
     if tokens.head?.map (·.text) == some "(" then
       let group ← CallSyntax.readGroup tokens
       let children ← readChildren (next (depth+1) false) (group.group.arguments.map (·.tokens))
