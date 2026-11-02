@@ -95,6 +95,43 @@ private def partialSource := sourcePrelude ++
 #guard (closedAt partialSource "caller").run 10000000 |>.1.toOption.map (·.map fun (origin,_,provider,depth) =>
   (origin,provider,depth)) == some [("caller","main::sign",0)]
 
+
+private def zeroSource := sourcePrelude ++
+  "static fn zero[const x:Nat]()->Nat{x-x}\n" ++
+  "unitary fn ignore[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}\n" ++
+  "unitary fn caller[const n:Nat](q:Q<Bit>)->Q<Bit>{static let count=zero[n]();ignore[power(checked_op(sign,Identity),count)](q)}"
+
+-- The original helper and local alias prove the count is zero; neither the
+-- zero repetition nor the unused formal erases its child's written M.
+#guard (closedAt zeroSource "caller").run 10000000 |>.1.toOption.map (·.map fun (origin,_,provider,depth) =>
+  (origin,provider,depth)) == some [("caller","main::sign",0)]
+
+private def inactiveSource := "#![no_implicit_prelude]\n" ++
+  "unitary fn leaf[const n:Nat](q:Q<Bit>)->Q<Bit>{q}\n" ++
+  "unitary fn middle[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0{adjoint(leaf[n-1])(q)}else{q}}\n" ++
+  "unitary fn caller(q:Q<Bit>)->Q<Bit>{middle[0](q)}"
+
+private def inactiveForm : WorkM (Int × List Int × String × Nat) := do
+  let catalogue ← GenericCatalogue.read #[("main",inactiveSource)]
+  let queue ← SourceTypes.GenericDutyQueue.read catalogue
+  let some root := queue.roots.find? (fun root =>
+    (catalogue.records[root.record.val]'root.record.isLt).name == "caller") | throw .request
+  let selected : Option (Int × List Int × String × Nat) ← root.items.foldlM (fun previous item => do
+    match item with
+    | .demand invocation demand =>
+      if demand.source.original.kind == .runtimeTransform then
+        let description := demand.transported.subject.description
+        let some (.provider _ _ _ [(_,count)] _ _) := description.nodes[description.root]? | throw .request
+        pure (some (count.constant,count.coefficients,demand.source.original.origin.state.name,
+          invocation.id.calls.length))
+      else pure previous
+    | _ => pure previous) none
+  lift (readOption selected)
+
+-- The original guarded environment and signed substitution survive. Queue
+-- construction does not attempt to close -1 or erase independent fixed duties.
+#guard inactiveForm.run 10000000 |>.1.toOption == some (-1,[],"middle",1)
+
 private def recursive : WorkM (Bool × Nat) := do
   let source := sourcePrelude ++
     "unitary fn recursive[const n:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){" ++
