@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
@@ -20,6 +21,10 @@ open SourceRuntimeValues RuntimeOwnerMap
 abbrev Context := RuntimeContextRequest.Context
 abbrev Position := SourceSequence.Position
 
+inductive OutputBoundary where
+  | rootOrder
+  | localScope
+
 def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) := do
   let ordered ← RuntimeOwnerMap.order roles bindings
   return ordered.map (·.port)
@@ -35,17 +40,13 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
       Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
-      {arity start count inputs outputs roles} {sources : Sources} {owner name : String}
-      (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
-      (source : SourceRuntimeTrace.Checked sources owner name) (offset : Nat)
-      (child : Semantics.Observation.Program)
-      (literal : child = Semantics.Ownership.pureProgram
-        (RuntimePureInterval.fragment frame.selected frame.operations child.outputs))
-      (childBlock : RuntimeInterval.Block dependencies child)
-      (finalBindings : Map) (returned : List Semantics.Raw.Port)
-      (returnRead : RuntimeInterval.Computed (rolePorts (valueOwners source.summary.value) finalBindings) returned)
-      (returnOrder : returned.map (·.token) = child.outputs)
-      (children : Nodes dependencies child childBlock) : Node dependencies program block
+      {start count inputs} {sources : Sources} {caller : String} {before childHistory childRetired}
+      (event : SourceRuntimeContext.NamedEvent sources caller)
+      (frame : RuntimeCallInterval.Checked block start count inputs)
+      (source : SourceRuntimeTrace.Body event.target.signature)
+      (childBlock : RuntimeInterval.Block dependencies frame.program)
+      (boundary : RuntimeNamedBoundary.Checked frame event before childHistory childRetired source.checked.summary.value)
+      (children : Nodes dependencies frame.program childBlock) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -123,11 +124,11 @@ identities are valid; an omitted phase or a wrong equal-width role still fails
 the actual local equation. Selection providers re-enter this same source body
 reader before their arm equations are used. Basis actions, observing calls,
 ordinary branches and demanded source transformations remain incomplete. -/
-def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : String} →
+def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary → {owner name : String} →
     SourceRuntimeTrace.Checked artifact.sources owner name → (program : Semantics.Observation.Program) → Context → Map →
     WorkM (Result root.dependencies program) :=
-  Nat.rec (fun {_ _} _ _ _ _ => throw .limit)
-    (fun _ next {_ _} source program request initial => do
+  Nat.rec (fun _ {_ _} _ _ _ _ => throw .limit)
+    (fun _ next outputBoundary {_ _} source program request initial => do
       let dependencies := root.dependencies
       guard (request.branches.isEmpty && !source.signature.operations.hasMeaningRequirements) .request
       guard (source.summary.inferredEffect == .unitary &&
@@ -150,7 +151,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
           let owner := (⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩ :
             Semantics.CarrierInterface.Owner)
           let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
-          let checked ← next body native.ir.original.program headerRequest.2 bindings
+          let checked ← next .rootOrder body native.ir.original.program headerRequest.2 bindings
           pure checked.islands
         let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
         pure (logical,children.flatten)
@@ -185,7 +186,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
           let structural := match event with
             | .primitive event => ([.join,.split,.unit,.finish] : List CallName.Primitive).contains event.kind
             | _ => false
-          let after : Map ← if structural then pure bindings else do
+          let separatelyBound := structural || match event with | .named _ => true | _ => false
+          let after : Map ← if separatelyBound then pure bindings else do
             let changed ← transition interval bindings
             reordered (bindings.map (·.owner)) interval.after changed
           let continued : RuntimeStructuralAction.SourceState := {before with bindings := after}
@@ -214,30 +216,21 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
             return (continued,retired,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
-            guard (event.effect == .unitary && event.allocated.isEmpty && event.consumed.isEmpty) .request
+            guard (event.effect == .unitary) .request
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position) .request
             let original ← SourceRuntimeTrace.readNamedBody event
             let inputs ← rolePorts event.inputOwners bindings
-            let stableOutputs ← rolePorts event.inputOwners after
-            let actualOutputs ← rolePorts (valueOwners event.value) after
-            let framed ← RuntimePureInterval.check prepared.block inputs.length position.start position.count
-              (inputs.map (·.token)) (stableOutputs.map (·.token)) event.inputOwners
-            let fragment := Semantics.Ownership.pureProgram
-              (RuntimePureInterval.fragment framed.selected framed.operations (actualOutputs.map (·.token)))
+            let frame ← RuntimeCallInterval.read prepared.block position.start position.count (inputs.map (·.token))
             let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
-            let inputOwners := (framed.selected.zip event.inputOwners).map fun (port,role) =>
+            let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
               (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
             let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
-            let nested ← next original.checked fragment child childInitial
-            let childOutputs ← NaturalAffine.witness
-              (rolePorts (valueOwners original.checked.summary.value) nested.bindings)
-            if returnOrder : childOutputs.val.map (·.token) = actualOutputs.map (·.token) then
-              return (continued,retired,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
-                nested.prepared.block nested.bindings childOutputs.val
-                (by with_reducible exact childOutputs.property) returnOrder (Nodes.ofList nested.actions)],
-                obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
-            else throw .request
+            let nested ← next .localScope original.checked frame.program child childInitial
+            let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
+            return (boundary.after,retired ++ event.consumed,actions ++
+              [.named event frame original nested.prepared.block boundary (Nodes.ofList nested.actions)],
+              obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
           | .operation event =>
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
               event.allocated.isEmpty && event.consumed.isEmpty) .request
@@ -306,20 +299,22 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
         history.nextOrdinal == source.summary.nextOrdinal) .request
       let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state history.bindings
       let outputs ← rolePorts (valueOwners source.summary.value) bindings
-      guard (outputs.map (·.token) == program.outputs) .request
+      guard (match outputBoundary with
+        | .rootOrder => outputs.map (·.token) == program.outputs
+        | .localScope => decide ((outputs.map (·.token)).Perm program.outputs)) .request
       return ⟨prepared,{history with bindings},retired,actions,obligations⟩)
 
 structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) where
   result : Result root.dependencies program
-  checked : RuntimeInterval.Computed (run artifact root 128 body.checked program request initial) result
+  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body.checked program request initial) result
 
 def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) :
     WorkM (Checked artifact root body program request initial) := do
-  let checked ← NaturalAffine.witness (run artifact root 128 body.checked program request initial)
+  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body.checked program request initial)
   return ⟨checked.val,by with_reducible exact checked.property⟩
 
 end QleisliKernel.Qirf.RuntimePureBody

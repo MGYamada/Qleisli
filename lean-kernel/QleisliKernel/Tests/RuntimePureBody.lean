@@ -100,4 +100,37 @@ private def releaseRecreate (exponent : Nat) := structural
 #guard (releaseRecreate 1).run 10000000 |>.1.toOption == some ([0,1],[0],[1])
 #guard (match (releaseRecreate 0).run 10000000 with | (.error .equation,_) => true | _ => false)
 
+private def namedStructural (omitH wrongJoin wrongReturn : Bool) : WorkM (List Nat × List Nat × List Nat) := do
+  let text := "#![no_implicit_prelude]\nunitary fn rebuild(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let (u,b)=split(q);join(u,h(b))}\npub unitary fn main(s:Q<Unit>,q:Q<(Unit,Bit)>)->(Q<(Unit,Bit)>,Q<Unit>){(rebuild(q),s)}"
+  let operations : List Semantics.Raw.Op := [.split 1 2 3 0] ++ (if omitH then [] else [.gate .h 3 4]) ++
+    [.join (if wrongJoin then (if omitH then 3 else 4) else 2)
+      (if wrongJoin then 2 else (if omitH then 3 else 4)) 5]
+  let program : Semantics.Observation.Program := ⟨[⟨0,[],0⟩,⟨1,[0],1⟩],[],operations.map .pure,
+    (if wrongReturn then [0,5] else [5,0]),[],.unitary⟩
+  let artifact : Qirf.Artifact := ⟨#[program],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "main" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let callee ← SourceRuntimeTrace.readBodyWithSignature
+    (← SourceRuntimeContext.readSignature artifact.sources "main" "rebuild" {})
+  let some call := body.checked.events.head? | throw .request
+  let [split,h,join] := callee.checked.events | throw .request
+  let hCount := if omitH then 0 else 1
+  let callPosition : SourceSequence.Position := ⟨call.offset,0,2+hCount⟩
+  let context : RuntimeContextRequest.Context := .mk [callPosition] [] [(callPosition,
+    .mk [⟨split.offset,0,1⟩,⟨h.offset,1,hCount⟩,⟨join.offset,1+hCount,1⟩] [] [] [] [])] [] []
+  let roles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
+  let initial := (roles.zip program.inputs).map fun (owner,port) => (⟨owner,port⟩ : RuntimeOwnerMap.Binding)
+  let root ← Validity.checkRootFromRoots artifact #[0] [("main",text)] [0]
+  let checked ← Qirf.RuntimePureBody.check artifact root body root.program context initial
+  let _ ← RuntimePureComposition.prepare artifact root body context initial checked
+  return (checked.result.history.issued.map (·.ordinal),checked.result.retired.map (·.ordinal),
+    checked.result.bindings.map (·.owner.ordinal))
+
+-- The callee's canonical owners are distinct from the caller's zero-width
+-- spectator, and its source return order is not the native live-list order.
+#guard (namedStructural false false false).run 10000000 |>.1.toOption == some ([0,1,2,3,4],[1,2,3],[4,0])
+#guard (match (namedStructural true false false).run 10000000 with | (.error .equation,_) => true | _ => false)
+#guard (match (namedStructural false true false).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard (match (namedStructural false false true).run 10000000 with | (.error .request,_) => true | _ => false)
+
 end QleisliKernel.Tests.RuntimePureBody

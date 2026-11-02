@@ -38,7 +38,10 @@ def region {dependencies program block} : Node dependencies program block → Lo
   | .structural (start := start) (count := count) action =>
     ⟨start,count,action.inputs.map (·.token),action.outputs.map (·.token),action.inputRoles,action.outputRoles,
       action.interval,action.inputs,action.outputs,[action.operation],action.literal,action.spectators⟩
-  | .named frame .. => pureLocal frame
+  | .named (start := start) (count := count) (inputs := inputs) event frame _ _ boundary _ =>
+    ⟨start,count,inputs,boundary.returned.map (·.token),event.inputOwners,
+      SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,
+      frame.operations,frame.literal,boundary.spectators⟩
   | .operation frame .. => pureLocal frame
   | .selection frame .. => pureLocal frame
 
