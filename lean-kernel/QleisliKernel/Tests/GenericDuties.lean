@@ -43,9 +43,15 @@ private def pending (suffix : String) : WorkM (List (String × String × String)
 #guard (pending "unitary fn dormant[const n:Nat](q:Q<Bit>)->Q<Bit>{ignore[checked_op(sign,Identity)](q)}").run
   10000000 |>.1.toOption == some [("dormant","Identity","dormant")]
 
--- Repetition, including a zero count proved by an original helper and lexical
--- alias, retains the child's false Meaning assertion and its binding chain.
-#guard (pending "static fn zero(x:Nat)->Nat{x-x}\nunitary fn dormant[const n:Nat](q:Q<Bit>)->Q<Bit>{static let count=zero(n);invoke[power(checked_op(sign,Identity),count)](q)}").run
+-- The first helper proposal used runtime parameters, outside the admitted
+-- static-helper syntax. Preserve its actual grammar refusal; it establishes
+-- no downstream Meaning result. Its first source/observation remain recorded.
+#guard (match (pending "static fn zero(x:Nat)->Nat{x-x}\nunitary fn dormant[const n:Nat](q:Q<Bit>)->Q<Bit>{static let count=zero(n);invoke[power(checked_op(sign,Identity),count)](q)}").run
+  10000000 with | (.error .request,_) => true | _ => false)
+
+-- This separate translation uses the existing const-Nat helper and invocation
+-- forms. Zero is proved for every original n; none is chosen for closure.
+#guard (pending "static fn zero[const x:Nat]()->Nat{x-x}\nunitary fn dormant[const n:Nat](q:Q<Bit>)->Q<Bit>{static let count=zero[n]();invoke[power(checked_op(sign,Identity),count)](q)}").run
   10000000 |>.1.toOption == some [("dormant","Identity","dormant")]
 
 private def subject : WorkM (String × Nat × List String × List (String × String)) := do

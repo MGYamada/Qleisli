@@ -41,10 +41,11 @@ private def read (text : String) : WorkM (List GenericOperation.Key) := do
 #guard (read (first.replace "invoke[checked_op(sign, Identity)]" "invoke[sign]")).run
   10000000 |>.1.toOption == some []
 
-private def conditional := (first.replace
-  "unitary fn dormant[const n: Nat](q: Q<Bit>) -> Q<Bit> {"
-  "unitary fn dormant[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) {")
-  .replace "checked_op(sign, Identity)" "checked_op(U, Identity)"
+private def conditional :=
+  let header := first.replace
+    "unitary fn dormant[const n: Nat](q: Q<Bit>) -> Q<Bit> {"
+    "unitary fn dormant[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) {"
+  header.replace "checked_op(sign, Identity)" "checked_op(U, Identity)"
 
 #guard (read conditional).run 10000000 |>.1.toOption == some [.operation ⟨"main","dormant",0⟩]
 

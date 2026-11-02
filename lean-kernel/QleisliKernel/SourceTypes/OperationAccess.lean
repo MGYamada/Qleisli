@@ -129,31 +129,30 @@ of a shared provider may bind different actual implementation subjects. -/
 private def childrenAt {sources : Sources} (node : Node) (result : Result sources) (requested : Paths) :
     WorkM (List (Nat × Paths)) := do
   guard (satisfies result.paths requested) .request
-  match node with
-  | .primitive .. => pure []
-  | .provider _ _ _ _ operations =>
-    let some provider := result.provider | throw .request
-    match provider.signature.instantiation with
-    | .closed _ => guard operations.isEmpty .request
-    | .static .. => pure ()
-    let reverse := if requested.adjointable then ⟨true,true,false⟩ else empty
-    let control := if requested.controllable then ⟨true,true,true⟩ else empty
-    pure (operations.map fun (name,index) => (index,join (premiseAt provider name) (join reverse control)))
-  | .formal _ _ _ _ operations ordinal =>
-    let some provider := result.formal | throw .request
-    match provider.signature.instantiation with
-    | .closed _ => throw .request
-    | .static _ environment _ =>
-      let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
-      let .operation _ := formal.kind | throw .request
-      guard (formal.ordinal == ordinal && operations.any (·.1 == formal.name)) .request
-      pure (operations.map fun (name,index) =>
-        (index,join (premiseAt provider name) (if name == formal.name then requested else empty)))
-  | .inverse child => pure [(child,⟨requested.adjointable,true,requested.controllable⟩)]
-  | .controlled child => pure [(child,if any requested then controllable else empty)]
-  | .power child _ | .requested child _ _ => pure [(child,requested)]
-  | .thenOp left right | .tensor left right => pure [(left,requested),(right,requested)]
-  | .conjugate outer middle => pure [(outer,if any requested then ⟨true,true,false⟩ else empty),(middle,requested)]
+  let shape : OperationPaths.Shape ← match node with
+    | .primitive .. => pure .leaf
+    | .provider _ _ _ _ operations => do
+      let some provider := result.provider | throw .request
+      match provider.signature.instantiation with
+      | .closed _ => guard operations.isEmpty .request
+      | .static .. => pure ()
+      pure (.provider (operations.map fun (name,index) => (index,premiseAt provider name)))
+    | .formal _ _ _ _ operations ordinal => do
+      let some provider := result.formal | throw .request
+      match provider.signature.instantiation with
+      | .closed _ => throw .request
+      | .static _ environment _ =>
+        let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
+        let .operation _ := formal.kind | throw .request
+        guard (formal.ordinal == ordinal && operations.any (·.1 == formal.name)) .request
+        let selected := (operations.map (·.1)).idxOf formal.name
+        pure (.formal (operations.map fun (name,index) => (index,premiseAt provider name)) (some selected))
+    | .inverse child => pure (.inverse child)
+    | .controlled child => pure (.controlled child)
+    | .power child _ | .requested child _ _ => pure (.repeat child)
+    | .thenOp left right | .tensor left right => pure (.pair left right)
+    | .conjugate outer middle => pure (.conjugate outer middle)
+  pure (shape.children requested)
 
 private inductive OccurrenceTask where
   | enter (index : Nat) (requested : Paths)
