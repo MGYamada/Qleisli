@@ -45,6 +45,8 @@ inductive BindingOrigin where
   | parameter (ordinal : Nat)
   | letBinding (offset : Nat)
   | basis (offset : Nat)
+  | computedData (offset : Nat)
+  | computedAuxiliary (offset : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure Cell where

@@ -9,6 +9,8 @@ import QleisliKernel.SourceTypes.SourceBasisBindings
 import QleisliKernel.SourceTypes.SourceStaticSelection
 import QleisliKernel.SourceTypes.SourceMatchLabels
 import QleisliKernel.SourceTypes.SourceRuntimeMatching
+import QleisliKernel.SourceTypes.SourceRuntimeComputed
+import QleisliKernel.SourceTypes.SourceComputedBindings
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -217,6 +219,7 @@ structure Summary {sources owner name} (signature : Signature sources owner name
     (GenericTypeTrace.readWithTree signature.instantiation tree).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
+  computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
   value : Value
   remaining : Environment
   allocated : List Semantics.SourceOwners.Owner
@@ -342,6 +345,59 @@ structure Arm (sources : Sources) (caller : String) (before : Environment) (toke
   calls : List Nat
   originalCalls : tree.calls = .ok calls
   basisOffsets : List Nat
+  computedOffsets : List Nat
+
+structure ComputedPredicate (sources : Sources) (caller : String) (scope : List String)
+    (reference : SourceComputedSyntax.Reference) (basis : Semantics.FiniteCarrier.Basis) where
+  target : Target sources caller scope reference.argument.tokens
+  canonical : Summary target.signature
+  classical : target.signature.original.parsedHeader.ordinaryOnly = true
+  input : target.signature.parameters.map (·.tree) = [Semantics.RuntimeType.ordinary basis]
+  output : target.signature.result.tree = Semantics.RuntimeType.ordinary [.bit]
+  pure : canonical.generic.quantumUse = false
+
+inductive ComputedLogical {sources caller callerName} (signature : Signature sources caller callerName)
+    (naturals : PhaseApplication.Naturals sources) (scope : List String) (basis : Semantics.FiniteCarrier.Basis) :
+    Option SourceComputedSyntax.Reference → Type where
+  | protectedScope : ComputedLogical signature naturals scope basis none
+  | certified {reference : SourceComputedSyntax.Reference}
+      (operation : SourceOperation.CheckedWithInstantiation signature.instantiation naturals.helpers.val
+        naturals.environment scope reference.argument.tokens)
+      (applicable : operation.graph.root.paths.applicable = true)
+      (input : operation.graph.root.input = basis) (output : operation.graph.root.output = basis)
+      (unitary : operation.graph.root.effect = .unitary) :
+      ComputedLogical signature naturals scope basis (some reference)
+
+def ComputedLogical.sourceRows {sources caller callerName signature naturals scope basis reference} :
+    @ComputedLogical sources caller callerName signature naturals scope basis reference → List (String × String)
+  | .protectedScope => []
+  | .certified operation .. => operation.rows
+
+structure ComputedEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceComputedSyntax.Checked tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  generic : GenericTypeTrace.Checked signature.original
+  bindings : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
+  binding : SourceBasisBindings.ActiveAt signature.instantiation
+    (generic.computedObligations.map SourceComputedBindings.port) (SourceRuntimeComputed.offset written)
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  input : Semantics.SourceOwners.Owner
+  inputType : binding.ports.input = input.basis
+  predicate : ComputedPredicate sources caller scope written.parts.predicate input.basis
+  logical : ComputedLogical signature naturals scope input.basis written.parts.logical
+  before : Environment
+  nextOrdinal : Nat
+  initial : SourceRuntimeComputed.Initial
+  prepared : SourceRuntimeComputed.prepare written input before nextOrdinal signature.staticNames = .ok initial
+  body : Arm sources caller initial.environment written.parts.body
+  pure : body.inferredEffect = .unitary
+  complete : owners body.remaining = []
+  returned : SourceRuntimeComputed.Returned input
+  returnedRead : SourceRuntimeComputed.returned written input body.value = .ok returned
+  held : List Semantics.SourceOwners.Owner
 
 structure BranchEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
@@ -469,6 +525,7 @@ inductive Event (sources : Sources) (caller : String) where
   | transform (event : TransformEvent sources caller)
   | staticConditional (event : StaticEvent sources caller) (events : List (Event sources caller))
   | matching (event : MatchEvent sources caller) (arms : List (List (Event sources caller)))
+  | computed (event : ComputedEvent sources caller) (body : List (Event sources caller))
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -481,6 +538,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .transform event => some event.call.calleeOffset
   | .staticConditional .. => none
   | .matching .. => none
+  | .computed .. => none
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
@@ -488,6 +546,7 @@ def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat
   | .conditional event .. => event.thenArm.calls ++ event.elseArm.calls
   | .staticConditional event .. => event.thenCalls ++ event.elseCalls
   | .matching event .. => event.arms.flatMap (·.2.calls)
+  | .computed event .. => event.body.calls
   | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
@@ -501,6 +560,7 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
   | .staticConditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | .matching event .. => event.written.parts.arms.flatMap (fun arm => QuantumSequence.originalOffsets arm.body.tokens)
+  | .computed event .. => QuantumSequence.originalOffsets event.written.parts.body
   | _ => event.qmatchOffset.toList
 
 def Event.basisOffsets {sources caller} : Event sources caller → List Nat
@@ -508,6 +568,14 @@ def Event.basisOffsets {sources caller} : Event sources caller → List Nat
   | .conditional event .. => event.thenArm.basisOffsets ++ event.elseArm.basisOffsets
   | .staticConditional event .. => event.selected.2.basisOffsets
   | .matching event .. => event.arms.flatMap (·.2.basisOffsets)
+  | .computed event .. => event.body.basisOffsets
+  | _ => []
+
+def Event.computedOffsets {sources caller} : Event sources caller → List Nat
+  | .computed event .. => event.body.computedOffsets ++ [SourceRuntimeComputed.offset event.written]
+  | .conditional event .. => event.thenArm.computedOffsets ++ event.elseArm.computedOffsets
+  | .staticConditional event .. => event.selected.2.computedOffsets
+  | .matching event .. => event.arms.flatMap (·.2.computedOffsets)
   | _ => []
 
 def Event.offset {sources caller} : Event sources caller → Nat
@@ -521,6 +589,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .transform event => event.call.calleeOffset
   | .staticConditional event .. => event.written.parts.keyword.span.startByte
   | .matching event .. => event.written.parts.keyword.span.startByte
+  | .computed event .. => SourceRuntimeComputed.offset event.written
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
@@ -531,6 +600,7 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .transform _ => .unitary
   | .staticConditional event .. => event.selected.2.inferredEffect
   | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
+  | .computed _ _ => .unitary
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
@@ -557,6 +627,8 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
       event.counts.flatMap (·.checked.rows)
   | .staticConditional event .. => event.selection.naturals.sourceRows ++ event.selected.2.staticRows
   | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
+  | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+      event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
@@ -585,21 +657,23 @@ structure ArmDescription where
   calls : List Nat
   qmatches : List Nat
   basis : List Nat
+  computed : List Nat
   deriving DecidableEq, Repr
 
 def Arm.description {sources caller before tokens} (arm : Arm sources caller before tokens) : ArmDescription :=
   ⟨arm.value,arm.remaining,arm.allocated,arm.consumed,arm.nextOrdinal,arm.inferredEffect,
-    arm.quantumUse,arm.staticRows,arm.calls,QuantumSequence.originalOffsets tokens,arm.basisOffsets⟩
+    arm.quantumUse,arm.staticRows,arm.calls,QuantumSequence.originalOffsets tokens,arm.basisOffsets,arm.computedOffsets⟩
 
 def Outcome.description {sources caller before} (result : Outcome sources caller before) : ArmDescription :=
   ⟨result.value,result.remaining,result.allocated,result.consumed,result.nextOrdinal,inferredEffect result.events,
     result.events.any Event.quantumUse,result.staticRows,result.events.flatMap Event.callOffsets,
-    result.events.flatMap Event.qmatchOffsets,result.events.flatMap Event.basisOffsets⟩
+    result.events.flatMap Event.qmatchOffsets,result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets⟩
 
 structure Evaluated {sources owner name} (signature : Signature sources owner name) where
   summary : Summary signature
   events : List (Event sources owner)
   inferred : inferredEffect events = summary.inferredEffect
   basisCovered : summary.basis.covered (events.flatMap Event.basisOffsets) = true
+  computedCovered : summary.computed.covered (events.flatMap Event.computedOffsets) = true
 
 end QleisliKernel.SourceTypes.SourceRuntimeContext
