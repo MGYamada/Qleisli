@@ -59,6 +59,17 @@ def fromCore {sources owner name} (signature : QuantumSignatureCore.Checked sour
   let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs))
   return ⟨⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩,rfl⟩
 
+/-- Reuse original checked argument receipts at a provider/call boundary.
+The original core is unchanged, and no child is reread in the callee module. -/
+def fromCoreWithArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
+    (context : StaticOperation.Context) (operations : StaticOperation.ArgumentsChecked signature context) :
+    WorkM (WithCore signature) := do
+  let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs))
+  pure ⟨⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩,rfl⟩
+
+def Checked.supply {sources owner name} (signature : Checked sources owner name) :
+    StaticOperation.Supply signature.instantiation := ⟨signature.context,signature.operations⟩
+
 def read (sources : Sources) (owner name : String) : WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.read sources owner name
   return (← fromCore signature .external).checked

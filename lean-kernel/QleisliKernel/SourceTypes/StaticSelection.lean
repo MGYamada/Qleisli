@@ -25,6 +25,7 @@ structure InstanceSelected {sources caller callerName}
   operationReader : StaticApplication.OperationReader
   actuals : StaticApplication.Checked callerSignature.instantiation entries environment scope operationReader written
     resolution.moduleName resolution.declaration.name
+  operationActuals : SourceOperation.ApplicationActuals actuals callerSignature.supply
   signature : Checked sources resolution.moduleName resolution.declaration.name
   arguments : signature.staticArguments = actuals.arguments
   declared : signature.original.source = resolution.source ∧
@@ -45,7 +46,10 @@ def selectInstance {sources caller callerName}
     let operationReader := SourceOperation.buildWithGeneric callerSignature.toChecked entries environment scope genericState 65
     let actuals ← StaticApplication.read callerSignature.instantiation entries environment scope written
       resolution.moduleName resolution.declaration.name operationReader genericState
-    let signature ← readWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments (.source caller)
+    let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
+    let core ← QuantumSignatureCore.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
+    let operations ← StaticOperation.checkArgumentsFrom core.instantiation (.source caller) operationActuals.actuals
+    let signature := (← fromCoreWithArguments core (.source caller) operations).checked
     let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
     exactWork (Exact.charge (8*(bytes+tokens.length+1)*
       (actuals.arguments.bases.length+actuals.arguments.naturals.length+1)^2))
@@ -54,7 +58,7 @@ def selectInstance {sources caller callerName}
           signature.original.declaration = resolution.declaration then
         if originalActuals : actuals.target.envelope.source = signature.original.source ∧
             actuals.target.envelope.declaration = signature.original.declaration then
-          return ⟨resolution,selected,operationReader,actuals,signature,arguments,declared,originalActuals⟩
+          return ⟨resolution,selected,operationReader,actuals,operationActuals,signature,arguments,declared,originalActuals⟩
         else throw .request
       else throw .request
     else throw .request

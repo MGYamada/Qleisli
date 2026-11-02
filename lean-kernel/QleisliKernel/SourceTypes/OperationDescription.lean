@@ -139,6 +139,14 @@ def Description.select (description : Description) (root : Nat) : Option Descrip
     let result := ⟨selected.map (fun (node,_) => node.remap indices.idxOf),indices.idxOf root⟩
     if result.complete then some result else none
 
+/-- Exact source indices used by `select`, in its unchanged original order.
+Receipt transport uses these indices to retain each supplying context. -/
+def Description.selection (description : Description) (root : Nat) : Option (List Nat × Description) := do
+  let selected ← description.select root
+  let reachable := description.reachable root
+  let indices := (description.nodes.zipIdx.filter (fun (_,index) => reachable.contains index)).map (·.2)
+  pure (indices,selected)
+
 def Description.unary (constructor : Nat → Node) (child : Description) : Description :=
   ⟨child.nodes ++ [constructor child.root],child.nodes.length⟩
 

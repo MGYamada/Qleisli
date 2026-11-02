@@ -133,9 +133,11 @@ def readArmWithSignature {sources owner name}
         return ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
       | none => do
         let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
+          none (some signature.supply)
         return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
     | .error _ => do
       let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
+        none (some signature.supply)
       return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then

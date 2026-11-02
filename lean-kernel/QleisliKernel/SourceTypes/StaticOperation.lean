@@ -334,13 +334,167 @@ def readNodes (sources : Sources) (context : Context) (description : Description
     let next ← readNode sources context description previous node
     pure (previous ++ [next])) []
 
-structure CheckedGraph (sources : Sources) (context : Context) (description : Description) where
+structure GraphData (sources : Sources) where
+  description : Description
   results : List (Result sources)
-  read : ∃ before after, (readNodes sources context description).run before = (.ok results,after)
+  contexts : List Context
   count : results.length = description.nodes.length
+  contextCount : contexts.length = description.nodes.length
   complete : description.complete = true
   root : Result sources
   selected : results[description.root]? = some root
+
+/-- A complete original argument receipt before its recursive graph proofs are
+attached. Exact descriptor order and the checked formal binding are retained. -/
+structure SupplyData (sources : Sources) where
+  owner : String
+  name : String
+  original : OrdinarySignature.Original sources owner name
+  instantiation : StaticInstantiation.Checked original
+  context : Context
+  actuals : List (String × GraphData sources)
+  ordered : actuals.map (fun (name,graph) => (name,graph.description)) = instantiation.arguments.operations
+  bound : ∃ before after,
+    (bindArgumentsWithInstantiation instantiation (actuals.map fun (name,graph) => (name,graph.root))).run before = (.ok (),after)
+
+private def remapResult {sources : Sources} (mapping : Nat → Option Nat) (value : Result sources) :
+    Option (Result sources) := do
+  let requirements ← value.requirements.mapM fun (index,request) => do
+    let index ← mapping index
+    pure (index,request)
+  pure {value with requirements}
+
+def selectData {sources : Sources} (data : GraphData sources) (index : Nat) : Option (GraphData sources) := do
+  let (indices,description) ← data.description.selection index
+  let results ← indices.mapM fun sourceIndex => do
+    let value ← data.results[sourceIndex]?
+    remapResult (fun old => if indices.contains old then some (indices.idxOf old) else none) value
+  let contexts ← indices.mapM (data.contexts[·]?)
+  if count : results.length = description.nodes.length then
+    if contextCount : contexts.length = description.nodes.length then
+      if complete : description.complete = true then
+        match selected : results[description.root]? with
+        | none => none
+        | some root => some ⟨description,results,contexts,count,contextCount,complete,root,selected⟩
+      else none
+    else none
+  else none
+
+private structure Borrowed where
+  destination : Nat
+  actual : Nat
+  sourceIndex : Nat
+  occurrence : Nat
+
+private def insertBorrowed (previous : List Borrowed) (next : Borrowed) : WorkM (List Borrowed) := do
+  exactWork (Exact.charge (previous.length+1))
+  match previous.find? (·.destination == next.destination) with
+  | none => pure (previous ++ [next])
+  | some existing =>
+    guard (existing.actual == next.actual && existing.sourceIndex == next.sourceIndex &&
+      existing.occurrence == next.occurrence) .request
+    pure previous
+
+private def originalFormal {sources : Sources} (supply : SupplyData sources) (description : Description) (node : Node) :
+    WorkM (Option (List (String × Nat))) := do
+  match node with
+  | .formal owner name bases naturals operations ordinal =>
+    guard (owner == supply.owner && name == supply.name &&
+      bases == supply.instantiation.arguments.bases && naturals == supply.instantiation.arguments.naturals) .request
+    let actuals ← operations.mapM fun (name,index) => do
+      let some child := description.select index | throw .request
+      pure (name,child)
+    guard (actuals == supply.instantiation.arguments.operations) .request
+    match supply.instantiation with
+    | .closed _ => throw .request
+    | .static _ environment _ =>
+      let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
+      guard (formal.ordinal == ordinal && match formal.kind with | .operation _ => true | _ => false) .request
+      pure (some operations)
+  | _ => pure none
+
+private def borrowPlan {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (List Borrowed) := do
+  exactWork (Exact.charge (16*(description.nodes.length+1)^2))
+  description.nodes.zipIdx.reverse.foldlM (fun plan (node,occurrence) => do
+    if plan.any (·.destination == occurrence) then pure plan else
+    match node with
+    | .formal owner name .. =>
+      if owner != supply.owner || name != supply.name then pure plan else
+        let some operations ← originalFormal supply description node | throw .request
+        operations.foldlM (fun plan (name,index) => do
+          let some actual := (supply.actuals.zipIdx).find? (fun (actual,_) => actual.1 == name) | throw .request
+          let some (indices,selected) := description.selection index | throw .request
+          guard (selected == actual.1.2.description && indices.length == actual.1.2.results.length) .request
+          (indices.zipIdx).foldlM (fun plan (destination,sourceIndex) =>
+            insertBorrowed plan ⟨destination,actual.2,sourceIndex,occurrence⟩) plan) plan
+    | _ => pure plan) []
+
+private def borrowedValue {sources : Sources} (supply : SupplyData sources) (description : Description)
+    (plan : List Borrowed) (entry : Borrowed) : WorkM (Result sources × Context) := do
+  let some (_,actual) := supply.actuals[entry.actual]? | throw .request
+  let some value := actual.results[entry.sourceIndex]? | throw .request
+  let some context := actual.contexts[entry.sourceIndex]? | throw .request
+  let some value := remapResult (fun sourceIndex =>
+    (plan.find? fun other => other.occurrence == entry.occurrence && other.actual == entry.actual &&
+      other.sourceIndex == sourceIndex).map (·.destination)) value
+    | throw .request
+  guard (entry.destination < description.nodes.length) .request
+  pure (value,context)
+
+def readSuppliedData {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (GraphData sources) := do
+  guard description.complete .request
+  let _ ← readOccurrences description
+  let plan ← borrowPlan supply description
+  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
+  exactWork (Exact.charge (64*(bytes+1)*(description.nodes.length+1)^2))
+  let (results,contexts) ← description.nodes.zipIdx.foldlM (fun (previous,contexts) (node,index) => do
+    let (value,context) ← match plan.find? (·.destination == index) with
+      | some entry => borrowedValue supply description plan entry
+      | none => do
+        let _ ← originalFormal supply description node
+        let value ← readNode sources (.source supply.owner) description previous node
+        pure (value,Context.source supply.owner)
+    pure (previous ++ [value],contexts ++ [context])) ([],[])
+  if count : results.length = description.nodes.length then
+    if contextCount : contexts.length = description.nodes.length then
+      if complete : description.complete = true then
+        match selected : results[description.root]? with
+        | none => throw .request
+        | some root => pure ⟨description,results,contexts,count,contextCount,complete,root,selected⟩
+      else throw .request
+    else throw .request
+  else throw .request
+
+/-- Actual reader provenance. An inherited read matches complete original
+formal instances; selecting a closure keeps its parent receipts. -/
+inductive GraphReadProof (sources : Sources) : GraphData sources → Type where
+  | fresh (data : GraphData sources) (context : Context)
+      (read : ∃ before after,(readNodes sources context data.description).run before = (.ok data.results,after))
+      (contexts : data.contexts = List.replicate data.results.length context) : GraphReadProof sources data
+  | inherited (supply : SupplyData sources)
+      (actuals : ∀ actual ∈ supply.actuals,GraphReadProof sources actual.2)
+      (data : GraphData sources)
+      (read : ∃ before after,(readSuppliedData supply data.description).run before = (.ok data,after)) :
+      GraphReadProof sources data
+  | selected (parent : GraphData sources) (proof : GraphReadProof sources parent) (index : Nat)
+      (data : GraphData sources) (read : selectData parent index = some data) : GraphReadProof sources data
+
+structure CheckedGraph (sources : Sources) (context : Context) (description : Description) where
+  results : List (Result sources)
+  contexts : List Context
+  count : results.length = description.nodes.length
+  contextCount : contexts.length = description.nodes.length
+  complete : description.complete = true
+  root : Result sources
+  selected : results[description.root]? = some root
+  read : GraphReadProof sources ⟨description,results,contexts,count,contextCount,complete,root,selected⟩
+
+def CheckedGraph.data {sources context description} (graph : CheckedGraph sources context description) : GraphData sources :=
+  ⟨description,graph.results,graph.contexts,graph.count,graph.contextCount,graph.complete,graph.root,graph.selected⟩
+
+def ofData {sources : Sources} (context : Context) (data : GraphData sources) (proof : GraphReadProof sources data) :
+    CheckedGraph sources context data.description :=
+  ⟨data.results,data.contexts,data.count,data.contextCount,data.complete,data.root,data.selected,proof⟩
 
 def check (sources : Sources) (context : Context) (description : Description) :
     WorkM (CheckedGraph sources context description) := do
@@ -349,9 +503,21 @@ def check (sources : Sources) (context : Context) (description : Description) :
     if count : results.val.length = description.nodes.length then
       match selected : results.val[description.root]? with
       | none => throw .request
-      | some root => return ⟨results.val,by with_reducible exact results.property,count,complete,root,selected⟩
+      | some root =>
+        let contexts := List.replicate results.val.length context
+        let data : GraphData sources :=
+          ⟨description,results.val,contexts,count,by simp only [List.length_replicate,count],complete,root,selected⟩
+        pure (ofData context data (.fresh data context (by with_reducible exact results.property) rfl))
     else throw .request
   else throw .request
+
+def CheckedGraph.select {sources context description} (graph : CheckedGraph sources context description)
+    (index : Nat) (selectedContext : Context := context) :
+    WorkM (Sigma (CheckedGraph sources selectedContext)) := do
+  exactWork (Exact.charge (16*(description.nodes.length+1)^2))
+  match selected : selectData graph.data index with
+  | none => throw .request
+  | some data => pure ⟨data.description,ofData selectedContext data (.selected graph.data graph.read index data selected)⟩
 
 def CheckedGraph.providers {sources context description} (graph : CheckedGraph sources context description) :
     List (Provider sources) := graph.results.filterMap (·.provider)
@@ -402,6 +568,89 @@ def checkArgumentsWithInstantiation {sources owner name original}
         obtain ⟨before,after,ran⟩ := bindings.property
         exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩
   else throw .request
+
+/-- Rebind checked actual graphs without rereading a provider under a different
+module. This repeats the original formal/actual obligations, including unused
+actuals and refinements, while retaining every graph receipt. -/
+def checkArgumentsFrom {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (context : Context) (actuals : List (Sigma (Actual sources context))) :
+    WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
+  if ordered : actuals.map (·.1) = instantiation.arguments.operations then
+    let bindings ← NaturalAffine.witness (bindArgumentsWithContracts instantiation
+      (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
+    let rows ← NaturalAffine.witness (kindRowsWithInstantiation instantiation)
+    pure ⟨actuals,ordered,by
+      obtain ⟨before,after,ran⟩ := bindings.property
+      exact ⟨before,after,bindingProjection _ (fun _ => ()) _ _ _ ran⟩,
+      rows.val,by with_reducible exact rows.property,bindings.val.requirements,by
+        obtain ⟨before,after,ran⟩ := bindings.property
+        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩
+  else throw .request
+
+structure Supply {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original) where
+  context : Context
+  arguments : ArgumentsCheckedWithInstantiation instantiation context
+
+def Supply.data {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) : SupplyData sources :=
+  ⟨owner,name,original,instantiation,supply.context,
+    supply.arguments.actuals.map (fun actual => (actual.1.1,actual.2.graph.data)),by
+      simpa only [List.map_map,Function.comp_def,CheckedGraph.data] using supply.arguments.ordered,
+    by simpa only [List.map_map,Function.comp_def,CheckedGraph.data] using supply.arguments.bound⟩
+
+def Supply.valid {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) :
+    ∀ actual ∈ supply.data.actuals,GraphReadProof sources actual.2 := by
+  intro actual member
+  obtain ⟨packed,_member,same⟩ := List.mem_map.mp member
+  subst actual
+  exact packed.2.graph.read
+
+def checkWithSupply {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) (description : Description) :
+    WorkM (CheckedGraph sources (.source owner) description) := do
+  let data ← NaturalAffine.witness (readSuppliedData supply.data description)
+  if same : data.val.description = description then
+    let checked := ofData (.source owner) data.val
+      (.inherited supply.data supply.valid data.val (by with_reducible exact data.property))
+    exact same ▸ checked
+  else throw .request
+
+structure ProviderInstance {sources siteContext description}
+    (graph : CheckedGraph sources siteContext description) (index : Nat) where
+  result : Result sources
+  selected : graph.results[index]? = some result
+  provider : Provider sources
+  originalProvider : result.provider = some provider
+  context : Context
+  contextRead : graph.contexts[index]? = some context
+  arguments : ArgumentsCheckedWithInstantiation provider.signature.instantiation context
+
+/-- Recover the provider's exact original actuals and their inherited contexts
+at this occurrence. The returned context is the original supplying site; it is
+never reconstructed from the provider's declaration module. -/
+def argumentsAt {sources context description} (graph : CheckedGraph sources context description) (index : Nat) :
+    WorkM (ProviderInstance graph index) := do
+  let some node := description.nodes[index]? | throw .request
+  let .provider owner name bases naturals operations := node | throw .request
+  match selected : graph.results[index]? with
+  | none => throw .request
+  | some result =>
+    match found : result.provider with
+    | none => throw .request
+    | some provider =>
+      guard (provider.moduleName == owner && provider.declarationName == name &&
+        provider.signature.staticArguments.bases == bases && provider.signature.staticArguments.naturals == naturals) .request
+      match contextRead : graph.contexts[index]? with
+      | none => throw .request
+      | some originalContext =>
+        let actuals ← operations.mapM fun (name,index) => do
+          let selected ← graph.select index originalContext
+          pure (⟨(name,selected.1),⟨selected.2⟩⟩ : Sigma (Actual sources originalContext))
+        let arguments ← checkArgumentsFrom provider.signature.instantiation originalContext actuals
+        pure ⟨result,selected,provider,found,originalContext,contextRead,arguments⟩
 
 def ArgumentsCheckedWithInstantiation.sourceRows {sources owner name original instantiation context}
     (checked : @ArgumentsCheckedWithInstantiation sources owner name original instantiation context) :

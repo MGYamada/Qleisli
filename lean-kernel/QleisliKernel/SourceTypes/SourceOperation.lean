@@ -242,6 +242,7 @@ structure CheckedWithInstantiation {sources caller callerName original}
   description : Description
   genericState : Option (GenericLexicalNatural.SomeEnvironment sources)
   target : Option Semantics.FiniteCarrier.Basis
+  supply : Option (StaticOperation.Supply instantiation)
   original : ∃ before after,
     (proposalWithInstantiation instantiation entries environment scope genericState target tokens).run before = (.ok description,after)
   graph : StaticOperation.CheckedGraph sources (.source caller) description
@@ -254,12 +255,15 @@ def readWithInstantiation {sources caller callerName original}
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (tokens : List LocatedToken)
     (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none)
-    (target : Option Semantics.FiniteCarrier.Basis := none) :
+    (target : Option Semantics.FiniteCarrier.Basis := none)
+    (supply : Option (StaticOperation.Supply instantiation) := none) :
     WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
   let description ← NaturalAffine.witness (proposalWithInstantiation instantiation entries environment scope genericState target tokens)
-  let graph ← StaticOperation.check sources (.source caller) description.val
+  let graph ← match supply with
+    | none => StaticOperation.check sources (.source caller) description.val
+    | some supply => StaticOperation.checkWithSupply supply description.val
   let rows ← NaturalAffine.witness (proposalRowsWithInstantiation instantiation entries environment scope genericState target tokens)
-  pure ⟨description.val,genericState,target,by with_reducible exact description.property,graph,rows.val,
+  pure ⟨description.val,genericState,target,supply,by with_reducible exact description.property,graph,rows.val,
     by with_reducible exact rows.property⟩
 
 abbrev Checked {sources caller callerName} (signature : QuantumSignatureCore.Checked sources caller callerName)
@@ -271,8 +275,48 @@ def read {sources caller callerName} (signature : QuantumSignatureCore.Checked s
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) (tokens : List LocatedToken)
     (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none)
-    (target : Option Semantics.FiniteCarrier.Basis := none) :
+    (target : Option Semantics.FiniteCarrier.Basis := none)
+    (supply : Option (StaticOperation.Supply signature.instantiation) := none) :
     WorkM (Checked signature entries environment scope tokens) :=
-  readWithInstantiation signature.instantiation entries environment scope tokens genericState target
+  readWithInstantiation signature.instantiation entries environment scope tokens genericState target supply
+
+def readApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (supply : StaticOperation.Supply instantiation) :
+    WorkM (List (Sigma (StaticOperation.Actual sources (.source caller))) × List (String × String)) := do
+  let read ← application.actuals.mapM fun actual => do
+    match actual.operations with
+    | [] => pure ([],[])
+    | [(name,description)] =>
+      let checked ← readWithInstantiation instantiation entries environment scope actual.argument.tokens
+        application.genericState none (some supply)
+      guard (checked.description == description) .request
+      let actual : Sigma (StaticOperation.Actual sources (.source caller)) :=
+        ⟨(name,checked.description),⟨checked.graph⟩⟩
+      pure ([actual],checked.rows)
+    | _ => throw .request
+  pure (read.flatMap (·.1),read.flatMap (·.2))
+
+/-- Original application tokens authenticate these graph receipts and routes;
+the callee's original binding check independently verifies all exact ports,
+access demands and Meaning requirements. -/
+structure ApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (supply : StaticOperation.Supply instantiation) where
+  actuals : List (Sigma (StaticOperation.Actual sources (.source caller)))
+  rows : List (String × String)
+  original : ∃ before after,(readApplicationActuals application supply).run before = (.ok (actuals,rows),after)
+
+def checkApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (supply : StaticOperation.Supply instantiation) : WorkM (ApplicationActuals application supply) := do
+  let checked ← NaturalAffine.witness (readApplicationActuals application supply)
+  pure ⟨checked.val.1,checked.val.2,by with_reducible exact checked.property⟩
 
 end QleisliKernel.SourceTypes.SourceOperation
