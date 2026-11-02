@@ -23,10 +23,11 @@ def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.
   let ordered ← RuntimeOwnerMap.order roles bindings
   return ordered.map (·.port)
 
-inductive Node (dependencies : List Semantics.Finite.Dependency) where
+inductive Node (dependencies : List Semantics.Finite.Dependency) :
+    (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
   | primitive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count input output role kind}
-      (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies
+      (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles} {sources : Sources} {owner name : String}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -34,10 +35,11 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) where
       (child : Semantics.Observation.Program)
       (literal : child = Semantics.Ownership.pureProgram
         (RuntimePureInterval.fragment frame.selected frame.operations child.outputs))
+      (childBlock : RuntimeInterval.Block dependencies child)
       (finalBindings : Map) (returned : List Semantics.Raw.Port)
       (returnRead : RuntimeInterval.Computed (rolePorts (valueOwners source.summary.value) finalBindings) returned)
       (returnOrder : returned.map (·.token) = child.outputs)
-      (children : List (Node dependencies)) : Node dependencies
+      (children : List (Node dependencies child childBlock)) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -48,7 +50,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) where
         (Carrier.ownerCode ((frame.returned.zip roles).map fun (port,role) => ⟨port,role.basis⟩)) outputCode)
       (physicalRead : RuntimeInterval.Computed (Raw.ProtectedEvaluation.reconstruct dependencies
         (RuntimePureInterval.fragment frame.selected frame.operations outputs)) physical)
-      (action : CodeSpace.Map inputCode outputCode physical) (equation : action.logical = expected) : Node dependencies
+      (action : CodeSpace.Map inputCode outputCode physical) (equation : action.logical = expected) : Node dependencies program block
   | selection {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block 2 start count inputs outputs roles)
@@ -58,12 +60,20 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) where
       (inputCode outputCode : Semantics.Exact.Matrix) (labels : List Nat)
       (expected logical : List Semantics.Exact.Matrix)
       (equations : RuntimeInterval.Computed
-        (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical) : Node dependencies
+        (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical) : Node dependencies program block
 
-structure Result (dependencies : List Semantics.Finite.Dependency) where
+abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
+  (program : Semantics.Observation.Program) ×
+    (block : RuntimeInterval.Block dependencies program) × Node dependencies program block
+
+structure Result (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) where
+  prepared : RuntimeInterval.Prepared dependencies program
   bindings : Map
-  actions : List (Node dependencies)
-  obligations : List (Node dependencies) := []
+  actions : List (Node dependencies program prepared.block)
+  obligations : List (Island dependencies) := []
+
+def Result.islands {dependencies program} (result : Result dependencies program) : List (Island dependencies) :=
+  result.actions.map (fun node => ⟨program,result.prepared.block,node⟩) ++ result.obligations
 
 /-- Literal Raw transport determines each token's opaque source role. Width or
 wire equality never chooses between owners, including separate Unit owners. -/
@@ -95,8 +105,8 @@ the actual local equation. Selection providers re-enter this same source body
 reader before their arm equations are used. Basis actions, observing calls,
 ordinary branches and demanded source transformations remain incomplete. -/
 def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : String} →
-    SourceRuntimeTrace.Checked artifact.sources owner name → Semantics.Observation.Program → Context → Map →
-    WorkM (Result root.dependencies) :=
+    SourceRuntimeTrace.Checked artifact.sources owner name → (program : Semantics.Observation.Program) → Context → Map →
+    WorkM (Result root.dependencies program) :=
   Nat.rec (fun {_ _} _ _ _ _ => throw .limit)
     (fun _ next {_ _} source program request initial => do
       let dependencies := root.dependencies
@@ -113,7 +123,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
       let checkOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
-          WorkM (Semantics.Exact.Matrix × List (Node dependencies)) := do
+          WorkM (Semantics.Exact.Matrix × List (Island dependencies)) := do
         let paths ← RuntimeOperationPaths.read graph root requested requests
         let children ← paths.bodies.mapM fun {_} {headerRequest} header _ native => do
           let body := header.original.body.checked
@@ -122,13 +132,13 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             Semantics.CarrierInterface.Owner)
           let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
           let checked ← next body native.ir.original.program headerRequest.2 bindings
-          pure (checked.actions ++ checked.obligations)
+          pure checked.islands
         let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
         pure (logical,children.flatten)
       let consumeOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
-          WorkM (Semantics.Exact.Matrix × List (Node dependencies) × List RuntimeProviderHeader.Request) := do
+          WorkM (Semantics.Exact.Matrix × List (Island dependencies) × List RuntimeProviderHeader.Request) := do
         let occurrences ← StaticOperation.readOccurrences description
         let count := (RuntimeProviderHeaders.providerIndices description occurrences).length
         guard (count ≤ requests.length) .request
@@ -193,7 +203,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
               (rolePorts (valueOwners original.checked.summary.value) nested.bindings)
             if returnOrder : childOutputs.val.map (·.token) = actualOutputs.map (·.token) then
               return (after,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
-                nested.bindings childOutputs.val (by with_reducible exact childOutputs.property) returnOrder nested.actions],
+                nested.prepared.block nested.bindings childOutputs.val
+                (by with_reducible exact childOutputs.property) returnOrder nested.actions],
                 obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
             else throw .request
           | .operation event =>
@@ -257,17 +268,18 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             pure (after,actions ++ [.selection frame selectorLayout.bits targetLayout.bits restriction.val
               (by with_reducible exact restriction.property) inputCode outputCode selectorLayout.labels expected logical.val
               (by with_reducible exact logical.property)],obligations ++ checked,position.start+position.count,calls,sites,bodies)
-          | _ => throw .request) (initial,[],obligations,0,request.calls,request.sites,bodies)
+          | _ => throw .request) (initial,([] : List (Node dependencies program prepared.block)),
+            obligations,0,request.calls,request.sites,bodies)
       guard (cursor == program.operations.length && calls.isEmpty && sites.isEmpty && bodies.isEmpty) .request
       let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state bindings
       let outputs ← rolePorts (valueOwners source.summary.value) bindings
       guard (outputs.map (·.token) == program.outputs) .request
-      return ⟨bindings,actions,obligations⟩)
+      return ⟨prepared,bindings,actions,obligations⟩)
 
 structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) where
-  result : Result root.dependencies
+  result : Result root.dependencies program
   checked : RuntimeInterval.Computed (run artifact root 128 body.checked program request initial) result
 
 def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
