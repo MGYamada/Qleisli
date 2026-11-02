@@ -143,27 +143,53 @@ private def namedResults {sources : Sources} (arguments : List (String × Descri
     (results : List (String × Result sources)) : Bool :=
   arguments.map (·.1) == results.map (·.1)
 
+structure Bindings (sources : Sources) where
+  contracts : List (String × FormalContract sources)
+
+def Bindings.requirements {sources : Sources} (bindings : Bindings sources) : List (String × SourceMeaning.Request sources) :=
+  bindings.contracts.flatMap fun (name,contract) => contract.requirement.toList.map (name,·)
+
 /-- Check every original operation formal and actual, including unused ones.
 The signature core supplies original mixed-kind identities and ordered Nat
 premises; equal width cannot replace either exact operation port. -/
-def bindArgumentsWithInstantiation {sources owner name original}
+def bindArgumentsWithContracts {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
-    (results : List (String × Result sources)) : WorkM Unit := do
+    (results : List (String × Result sources)) : WorkM (Bindings sources) := do
   let arguments := instantiation.arguments
   exactWork (Exact.charge (32*(results.length+1)*(original.occurrence.header.length+1)))
   guard (namedResults arguments.operations results) .request
   match instantiation with
-  | .closed _ => guard results.isEmpty .request
+  | .closed _ =>
+    guard results.isEmpty .request
+    pure ⟨[]⟩
   | .static _ environment _ =>
     let formals := environment.numeric.original.header.formals.filter fun formal =>
       match formal.kind with | .operation _ => true | _ => false
     guard (formals.length == results.length) .request
-    for formal in formals do
+    let contracts ← formals.mapM fun formal => do
       let some (_,actual) := results.find? (·.1 == formal.name) | throw .request
-      let (input,output) ← formalPorts environment formal
-      guard (actual.input == input && actual.output == output &&
-        actual.effect != .observe && (input != output || actual.effect == .unitary) &&
+      let contract ← formalContract environment formal
+      guard (actual.input == contract.input && actual.output == contract.output &&
+        actual.effect != .observe && (contract.input != contract.output || actual.effect == .unitary) &&
         satisfies actual.paths (required environment.numeric.original.header.access formal.name)) .request
+      pure (formal.name,contract)
+    pure ⟨contracts⟩
+
+def bindArgumentsWithInstantiation {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (results : List (String × Result sources)) : WorkM Unit :=
+  bindArgumentsWithContracts instantiation results >>= fun _ => pure ()
+
+def bindArgumentsWithRequirements {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (results : List (String × Result sources)) : WorkM (List (String × SourceMeaning.Request sources)) :=
+  bindArgumentsWithContracts instantiation results >>= fun bindings => pure bindings.requirements
+
+private theorem bindingProjection {α β : Type} (action : WorkM α) (projection : α → β)
+    (value : α) (before after : Nat) (ran : action.run before = (.ok value,after)) :
+    (action >>= fun value => pure (projection value)).run before = (.ok (projection value),after) := by
+  rw [Finite.bind_run,ran]
+  rfl
 
 def bindArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
     (results : List (String × Result sources)) : WorkM Unit :=
@@ -189,11 +215,11 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
   guard (context.visible owner signature.original.declaration.isPublic) .request
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
-  bindArguments signature originalResults
+  let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
   let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
   let kindRows := kindRows ++ staticRows
-  let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
+  let requirements ← indexedRequirements operations bindings.requirements
   let [input] := signature.inputs | throw .request
   let [output] := signature.outputs | throw .request
   guard (match signature.parts with | .owner _ => true | _ => false) .request
@@ -228,17 +254,19 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       return (name,description)
     let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
     let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
-    bindArguments signature originalResults
+    let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
     let kindRows ← kindRowsWithInstantiation signature.instantiation
     let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
     let kindRows := kindRows ++ staticRows
-    let requirements ← indexedRequirements operations (← requirementsWithInstantiation signature.instantiation)
+    let requirements ← indexedRequirements operations bindings.requirements
     match signature.instantiation with
     | .closed _ => throw .request
     | .static _ environment _ =>
       let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
       guard (formal.ordinal == ordinal) .request
-      let (input,output) ← formalPorts environment formal
+      let some (_,contract) := bindings.contracts.find? (·.1 == formal.name) | throw .request
+      let input := contract.input
+      let output := contract.output
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
       let effect := if input == output then Effect.unitary else .iso
@@ -355,7 +383,7 @@ structure ArgumentsCheckedWithInstantiation {sources owner name original}
     (kindRowsWithInstantiation instantiation).run before = (.ok kindRows,after)
   rootRequirements : List (String × SourceMeaning.Request sources)
   rootRequirementsRead : ∃ before after,
-    (requirementsWithInstantiation instantiation).run before = (.ok rootRequirements,after)
+    (bindArgumentsWithRequirements instantiation (actuals.map fun actual => (actual.1.1,actual.2.graph.root))).run before = (.ok rootRequirements,after)
 
 def checkArgumentsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
@@ -364,13 +392,15 @@ def checkArgumentsWithInstantiation {sources owner name original}
     let graph ← check sources context argument.2
     pure (⟨argument,⟨graph⟩⟩ : Sigma (Actual sources context))
   if ordered : actuals.map (·.1) = instantiation.arguments.operations then
-    let bound ← NaturalAffine.witness (bindArgumentsWithInstantiation instantiation
+    let bindings ← NaturalAffine.witness (bindArgumentsWithContracts instantiation
       (actuals.map fun actual => (actual.1.1,actual.2.graph.root)))
-    have same : bound.val = () := by cases bound.val; rfl
     let rows ← NaturalAffine.witness (kindRowsWithInstantiation instantiation)
-    let requirements ← NaturalAffine.witness (requirementsWithInstantiation instantiation)
-    return ⟨actuals,ordered,by with_reducible simpa only [same] using bound.property,
-      rows.val,by with_reducible exact rows.property,requirements.val,by with_reducible exact requirements.property⟩
+    return ⟨actuals,ordered,by
+      obtain ⟨before,after,ran⟩ := bindings.property
+      exact ⟨before,after,bindingProjection _ (fun _ => ()) _ _ _ ran⟩,
+      rows.val,by with_reducible exact rows.property,bindings.val.requirements,by
+        obtain ⟨before,after,ran⟩ := bindings.property
+        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩
   else throw .request
 
 def ArgumentsCheckedWithInstantiation.sourceRows {sources owner name original instantiation context}

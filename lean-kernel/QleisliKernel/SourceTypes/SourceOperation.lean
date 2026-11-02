@@ -62,7 +62,7 @@ def buildWithInstantiation {sources caller callerName original}
         | "checked_op",[child,meaning] =>
           let _ ← adapt (CallName.readName child.tokens)
           let child ← next child.tokens
-          let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
+          let selected ← SourceMeaning.selectName sources caller scope (meaning.tokens.map (·.text))
           return child.unary (fun index => .requested index selected.resolution.moduleName selected.resolution.declaration.name)
         | _,_ => throw .request
       else do
@@ -167,8 +167,8 @@ def readRowsWithInstantiation {sources caller callerName original}
         return (← next left.tokens) ++ (← next right.tokens)
       | "checked_op",[child,meaning] =>
         let _ ← adapt (CallName.readName child.tokens)
-        let selected ← SourceMeaning.select sources caller scope (meaning.tokens.map (·.text))
-        return (← next child.tokens) ++ selected.request.sourceRows
+        let selected ← SourceMeaning.selectName sources caller scope (meaning.tokens.map (·.text))
+        return (← next child.tokens) ++ selected.queryRows
       | _,_ => throw .request
     else
       let written ← adapt (StaticApplication.readSyntax tokens)

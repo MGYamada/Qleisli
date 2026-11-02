@@ -275,6 +275,33 @@ def decisionResolution {sources caller scope tokens} (decision : CallName.Decisi
   | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
   | _ => none
 
+private def decisionRows {sources caller scope tokens} (decision : CallName.Decision sources caller scope tokens) :
+    List (String × String) := match decision with
+  | .named resolution => ResolutionProvenance.sourceRows resolution.result
+  | .prelude _ _ _ localMissing _ _ lookup _ resolution =>
+    (caller,localMissing.lookup.source) :: ("std::prelude",lookup.source) :: ResolutionProvenance.sourceRows resolution.result
+  | _ => []
+
+/-- Original name binding only. Descriptor construction and provenance passes
+reuse this query; the mandatory graph gate separately reads the complete M.
+No type, denotation, equality or provider access is granted by this value. -/
+structure SelectedName (sources : Sources) (caller : String) (scope tokens : List String) where
+  decision : CallName.Decision sources caller scope tokens
+  resolution : Resolved
+  selected : decisionResolution decision = some resolution
+  category : resolution.declaration.kind = "meaning"
+  queryRows : List (String × String)
+
+def selectName (sources : Sources) (caller : String) (scope tokens : List String) :
+    WorkM (SelectedName sources caller scope tokens) := do
+  let decision ← CallName.readTexts sources caller scope tokens
+  match selected : decisionResolution decision with
+  | none => throw .request
+  | some resolution =>
+    if category : resolution.declaration.kind = "meaning" then
+      pure ⟨decision,resolution,selected,category,decisionRows decision⟩
+    else throw .request
+
 structure Selected (sources : Sources) (caller : String) (scope tokens : List String) where
   decision : CallName.Decision sources caller scope tokens
   resolution : Resolved
@@ -287,24 +314,16 @@ structure Selected (sources : Sources) (caller : String) (scope tokens : List St
     root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration
 
 def select (sources : Sources) (caller : String) (scope tokens : List String) : WorkM (Selected sources caller scope tokens) := do
-  let decision ← CallName.readTexts sources caller scope tokens
-  match selected : decisionResolution decision with
+  let chosen ← selectName sources caller scope tokens
+  let resolution := chosen.resolution
+  let meaning ← read sources (some caller) resolution.moduleName resolution.declaration.name
+  match originalRoot : meaning.graph.nodes[meaning.graph.root]? with
   | none => throw .request
-  | some resolution =>
-    guard (resolution.declaration.kind == "meaning") .request
-    let meaning ← read sources (some caller) resolution.moduleName resolution.declaration.name
-    match originalRoot : meaning.graph.nodes[meaning.graph.root]? with
-    | none => throw .request
-    | some root =>
-      if original : root.owner = resolution.moduleName ∧ root.name = resolution.declaration.name ∧
-          root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration then
-        let rows := match decision with
-          | .named resolution => ResolutionProvenance.sourceRows resolution.result
-          | .prelude _ _ _ localMissing _ _ lookup _ resolution =>
-            (caller,localMissing.lookup.source) :: ("std::prelude",lookup.source) :: ResolutionProvenance.sourceRows resolution.result
-          | _ => []
-        pure ⟨decision,resolution,selected,meaning,rows,root,originalRoot,original⟩
-      else throw .request
+  | some root =>
+    if original : root.owner = resolution.moduleName ∧ root.name = resolution.declaration.name ∧
+        root.original.source = resolution.source ∧ root.original.declaration = resolution.declaration then
+      pure ⟨chosen.decision,resolution,chosen.selected,meaning,chosen.queryRows,root,originalRoot,original⟩
+    else throw .request
 
 /-- An independently reconstructed original requirement, with its original
 query routes. This is a request for equality, never evidence of that equality. -/
