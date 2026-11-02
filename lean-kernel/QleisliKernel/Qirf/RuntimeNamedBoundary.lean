@@ -13,6 +13,14 @@ open SourceRuntimeValues (valueOwners mappedOwner transport ordinary)
 open RuntimeOwnerMap (Owner Map)
 abbrev SourceState := RuntimeStructuralAction.SourceState
 
+private def exactResult {α : Type} [DecidableEq α] (action : Except String α) (expected : α) :
+    WorkM (PLift (action = .ok expected)) := do
+  match ran : action with
+  | .error _ => throw .request
+  | .ok actual =>
+    if same : actual = expected then return ⟨ran.trans (congrArg Except.ok same)⟩
+    else throw .request
+
 structure Checked {dependencies program sources caller block start count inputs}
     (frame : @RuntimeCallInterval.Checked dependencies program block start count inputs)
     (event : SourceRuntimeContext.NamedEvent sources caller) (before child : SourceState)
@@ -51,32 +59,30 @@ def read {dependencies program sources caller block start count inputs}
   if issued : before.issued.map (·.ordinal) = List.range before.nextOrdinal then
     if liveIssued : before.bindings.all (fun binding => before.issued.contains binding.owner) = true then
       if fresh : event.allocated.map (·.ordinal) = (List.range event.allocated.length).map (before.nextOrdinal+·) then
-        if completeHistory : child.issued.mapM (mappedOwner event.ownerMap) = .ok event.ownerMap then
-          if completeRetired : childRetired.mapM (mappedOwner event.ownerMap) = .ok event.consumed then
-            if result : transport ⟨caller,event.target.callerName,event.call.calleeOffset⟩ event.ownerMap
-                (event.arguments.flatMap ordinary) childValue = .ok event.value then
-              match mappedRead : child.bindings.mapM (fun binding => do
-                  let owner ← mappedOwner event.ownerMap binding.owner
-                  pure (⟨owner,binding.port⟩ : RuntimeOwnerMap.Binding)) with
-              | .error _ => throw .request
-              | .ok mapped =>
-                if resultOwners : mapped.map (·.owner) = valueOwners event.value then
-                  let returned := mapped.map (·.port)
-                  if atExit : PureInterval.ports frame.interval.after (returned.map (·.token)) = some returned then
-                    if spectators : PureInterval.spectators frame.interval.before inputs =
-                        PureInterval.spectators frame.interval.after (returned.map (·.token)) then
-                      let bindings := before.bindings.filter (fun binding => !event.inputOwners.contains binding.owner) ++ mapped
-                      let after : SourceState := ⟨bindings,before.issued ++ event.allocated,
-                        before.nextOrdinal+event.allocated.length⟩
-                      let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) frame.interval.after after.bindings
-                      return ⟨issued,liveIssued,fresh,completeHistory,completeRetired,result,mapped,mappedRead,
-                        resultOwners,returned,rfl,atExit,spectators,after,rfl,rfl,rfl,afterFrame⟩
-                    else throw .request
-                  else throw .request
-                else throw .request
+        let completeHistory ← exactResult (child.issued.mapM (mappedOwner event.ownerMap)) event.ownerMap
+        let completeRetired ← exactResult (childRetired.mapM (mappedOwner event.ownerMap)) event.consumed
+        let result ← exactResult
+          (transport ⟨caller,event.target.callerName,event.call.calleeOffset⟩ event.ownerMap
+            (event.arguments.flatMap ordinary) childValue) event.value
+        match mappedRead : child.bindings.mapM (fun binding => do
+            let owner ← mappedOwner event.ownerMap binding.owner
+            pure (⟨owner,binding.port⟩ : RuntimeOwnerMap.Binding)) with
+        | .error _ => throw .request
+        | .ok mapped =>
+          if resultOwners : mapped.map (·.owner) = valueOwners event.value then
+            let returned := mapped.map (·.port)
+            if atExit : PureInterval.ports frame.interval.after (returned.map (·.token)) = some returned then
+              if spectators : PureInterval.spectators frame.interval.before inputs =
+                  PureInterval.spectators frame.interval.after (returned.map (·.token)) then
+                let bindings := before.bindings.filter (fun binding => !event.inputOwners.contains binding.owner) ++ mapped
+                let after : SourceState := ⟨bindings,before.issued ++ event.allocated,
+                  before.nextOrdinal+event.allocated.length⟩
+                let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) frame.interval.after after.bindings
+                return ⟨issued,liveIssued,fresh,completeHistory.down,completeRetired.down,result.down,mapped,mappedRead,
+                  resultOwners,returned,rfl,atExit,spectators,after,rfl,rfl,rfl,afterFrame⟩
+              else throw .request
             else throw .request
           else throw .request
-        else throw .request
       else throw .request
     else throw .request
   else throw .request
