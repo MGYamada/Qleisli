@@ -78,7 +78,7 @@ theorem agreement_sound (reference : Valuation) (actual : Values) (table : Table
   | none => simp only [found] at one; cases one
   | some bit =>
     simp only [found] at one
-    exact ⟨bit,found,of_decide_eq_true one⟩
+    exact ⟨bit,rfl,of_decide_eq_true one⟩
 
 structure CheckedAgreement (reference : Valuation) (actual : Values) (table : Table) : Type where
   original : agreement reference actual table = true
