@@ -48,7 +48,7 @@ private def inactive := predicate ++
 #guard ((SourceRuntimeTrace.read (sources inactive) "main" "route" {naturals := [("n",1)]}).run 2000000000).1.toOption.map
   (fun checked => checked.events.flatMap Event.computedOffsets |>.length) = some 1
 
-private def recovered := do
+private def recovered : Finite.WorkM (List Nat × Bool) := do
   let checked ← SourceRuntimeTrace.read (sources protectedSource) "main" "route"
   let [Event.computed event _] := checked.events | throw Finite.Error.request
   let body ← SourceRuntimeTrace.readComputedSource event
