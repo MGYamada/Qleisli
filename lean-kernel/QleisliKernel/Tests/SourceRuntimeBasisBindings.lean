@@ -24,9 +24,12 @@ private def staticBindings (n : Nat) := do
   let signature ← SourceRuntimeContext.readSignature sources "main" "route" {naturals := [("n",n)]}
   let original ← GenericTypeTrace.readWithInstantiation signature.instantiation
   let bindings ← SourceBasisBindings.prepare signature.instantiation original.basisObligations
-  let states := bindings.entries.map fun entry => match entry.2.binding.status with
+  let states := bindings.entries.map fun
+      (entry : Sigma (SourceBasisBindings.Closed signature.instantiation original.basisObligations)) =>
+    match (entry.2.binding.status : GenericBasisInstance.Status signature.instantiation original.basisObligations[entry.1]) with
     | .inactive _ => false | .active _ => true
-  return (states,bindings.covered [],bindings.covered (original.basisObligations.map (·.offset)))
+  return (states,bindings.covered [],bindings.covered
+    (original.basisObligations.map (fun (obligation : GenericTypeTrace.BasisObligation sources) => obligation.offset)))
 #guard ((staticBindings 0).run 2000000000).1.toOption = some ([false],true,false)
 #guard ((staticBindings 1).run 2000000000).1.toOption = some ([true],false,true)
 

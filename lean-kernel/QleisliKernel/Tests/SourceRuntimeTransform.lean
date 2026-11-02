@@ -67,7 +67,7 @@ private def arrows :=
 #guard view "unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}pub unitary fn route(q:Q<Bits<0>>)->Q<Bits<0>>{power(f,0)(q)}" =
   some ([1],[0],.unitary)
 #guard (SourceRuntimeTransformPorts.product [4294967295,2,0]).toOption.isNone
-#guard SourceRuntimeTransformPorts.product [4294967295,0] = .ok 0
+#guard (SourceRuntimeTransformPorts.product [4294967295,0]).toOption = some 0
 
 -- A genuine primitive keeps its contextual unary rule.
 #guard view "pub unitary fn route(q:Q<Bit>)->Q<Bit>{adjoint(h)(q)}" = some ([0],[],.unitary)
