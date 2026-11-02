@@ -33,9 +33,13 @@ structure Ready (sources : Sources) (modules : List (Packed sources)) : Type whe
   bytes : (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum ≤ 1048576
 
 /-- Only this table's key/coverage checks are shared. Every supplied snapshot
-already binds its complete scan and exact policy to its original source row. -/
+already binds its complete scan and exact policy to its original source row.
+The extra module-count factor reserves all pairwise name comparisons in
+eraseDups: each key can be compared against every other retained key, with
+each comparison bounded by the sum of their byte lengths plus a delimiter.
+The same reservation also covers the linear complete-key comparison. -/
 def check (sources : Sources) (modules : List (Packed sources)) : WorkM (Ready sources modules) := do
-  exactWork (Exact.charge (16*((sources.toList.map fun row => row.1.utf8ByteSize+1).sum+
+  exactWork (Exact.charge (16*(modules.length+1)*((sources.toList.map fun row => row.1.utf8ByteSize+1).sum+
     (modules.map fun row => row.owner.utf8ByteSize+1).sum+1)))
   if count : sources.size ≤ 128 then
     if bytes : (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum ≤ 1048576 then
