@@ -107,6 +107,8 @@ import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Qirf.RuntimeOrdinarySSA
+import QleisliKernel.Qirf.RuntimeOrdinaryPhis
+import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.SourceTypes.SourceComputedSyntax
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeMaterialization

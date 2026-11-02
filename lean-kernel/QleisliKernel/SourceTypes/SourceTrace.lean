@@ -4,6 +4,7 @@ import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.SourceTypes.SourceCalls
 import QleisliKernel.SourceTypes.SourceOperationApplication
+import QleisliKernel.SourceTypes.SourceRows
 import QleisliKernel.Raw.OwnerFlow
 
 /-! Complete original quantum-body traversal with primitive/qmatch events.
@@ -157,11 +158,8 @@ end Meter
 
 /-- Aggregate only already authenticated source rows. Charge full byte-sensitive
 comparisons before deduplication so wrapper depth cannot duplicate row forests. -/
-def retainStaticRows (rows : List (String × String)) : Finite.WorkM (List (String × String)) := do
-  if rows.isEmpty then return []
-  let fields := (rows.map fun (owner,source) => owner.utf8ByteSize+source.utf8ByteSize+1).sum
-  Finite.exactWork (Exact.charge (8*(rows.length+1)*(fields+1)))
-  return rows.eraseDups
+def retainStaticRows (rows : List (String × String)) : Finite.WorkM (List (String × String)) :=
+  SourceRows.retain rows
 
 private def outcome {sources caller} (before : Environment) (value : Value)
     (remaining : Environment) (events : List (Event sources caller)) (rows : List (String × String) := []) :

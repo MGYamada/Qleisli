@@ -72,6 +72,8 @@ import QleisliKernel.Tests.SourceRuntimeRegisters
 import QleisliKernel.Tests.SourceRuntimePatterns
 import QleisliKernel.Tests.NaturalNames
 import QleisliKernel.Tests.RuntimeOrdinarySSA
+import QleisliKernel.Tests.RuntimeOrdinaryPhis
+import QleisliKernel.Tests.RuntimeStructuralAction
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises
