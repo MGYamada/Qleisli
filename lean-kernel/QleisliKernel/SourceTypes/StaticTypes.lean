@@ -105,9 +105,9 @@ def parameter {sources owner name arguments}
 def readType {sources owner name arguments}
     (environment : Environment sources owner name arguments) (tokens : List String) :
     WorkM (TypeRead sources) := do
-  let read ← typeExpressionScopedWithSources sources owner
+  let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+  let read ← typeExpressionScopedWithCheckedHelpers sources helpers owner
     (fun expression => do
-      let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
       let prepared ← StaticNatural.prepareOriginalWithHelpers environment.numeric.original expression helpers environment.numeric.originals
       return (← StaticNatural.close prepared.prepared arguments.naturals).value)
     (parameter environment) tokens

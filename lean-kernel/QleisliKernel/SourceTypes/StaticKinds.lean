@@ -33,7 +33,8 @@ def readType {sources owner name arguments}
     let lexical := LexicalNatural.ofBindings environment.numeric.helpers arguments.naturals
     let closed ← LexicalNatural.read sources owner environment.numeric.helpers lexical names expression
     pure closed.result.value
-  let read ← typeExpressionScopedWithSources sources owner natural parameter tokens
+  let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+  let read ← typeExpressionScopedWithCheckedHelpers sources helpers owner natural parameter tokens
   let _ ← FiniteCarrier.read read.basis
   pure read
 

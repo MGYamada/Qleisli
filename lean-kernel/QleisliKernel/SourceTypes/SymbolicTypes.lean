@@ -81,7 +81,8 @@ def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment 
         guard (formal.kind == StaticHeaders.Kind.basis) .request
         pure ⟨[.parameter ⟨state.owner,state.name,formal.ordinal⟩],[]⟩
       | none =>
-        let query ← typeExpressionWithSources sources state.owner tokens
+        let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
+        let query ← typeExpressionWithCheckedHelpers sources helpers state.owner tokens
         let closed ← ofClosed (StaticHeaders.frame state.prepared.original).binders.length query.basis
         let rows ← NaturalRows.typeRead sources state.owner state.prepared.helpers [] tokens query
         pure ⟨closed.code,rows⟩)

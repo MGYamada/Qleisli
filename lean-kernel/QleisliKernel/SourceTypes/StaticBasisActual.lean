@@ -32,7 +32,9 @@ def readType {sources owner name original}
     let expression ← adapt (NaturalSyntax.read tokens)
     StaticCallPremises.validateNatural instantiation genericState scope expression
     pure (← LexicalNatural.read sources owner entries environment scope expression).result.value
-  let query ← typeExpressionScopedWithSources sources owner natural parameter inner
+  let query ← match instantiation.helpers with
+    | none => typeExpressionScopedWithSources sources owner natural parameter inner
+    | some helpers => typeExpressionScopedWithCheckedHelpers sources helpers owner natural parameter inner
   let _ ← FiniteCarrier.read query.basis
   pure query
 
