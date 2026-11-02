@@ -132,6 +132,83 @@ def readPrepared {entries : List Entry} (prepared : Prepared entries) (root : De
 def read (entries : List Entry) (root : DefId) : WorkM (Checked entries root) := do
   readPrepared (← prepare entries) root
 
+/-- One actual root invocation over the exact prepared original entry table. -/
+structure Closure {entries : List Entry} (prepared : Prepared entries) (root : DefId) : Type where
+  checked : Checked entries root
+  original : ∃ before after,(readPrepared prepared root).run before = (.ok checked,after)
+
+def readClosure {entries : List Entry} (prepared : Prepared entries) (root : DefId) :
+    WorkM (Closure prepared root) := fun before =>
+  match ran : (readPrepared prepared root).run before with
+  | (.error error,after) => (.error error,after)
+  | (.ok checked,after) => (.ok ⟨checked,⟨before,after,ran⟩⟩,after)
+
+inductive Closures {entries : List Entry} (prepared : Prepared entries) : List DefId → Type where
+  | nil : Closures prepared []
+  | cons {root roots} (head : Closure prepared root) (tail : Closures prepared roots) :
+      Closures prepared (root :: roots)
+
+def readClosures {entries : List Entry} (prepared : Prepared entries) :
+    (roots : List DefId) → WorkM (Closures prepared roots)
+  | [] => pure .nil
+  | root :: roots => do pure (.cons (← readClosure prepared root) (← readClosures prepared roots))
+
+def Closures.get {entries prepared} : {roots : List DefId} → @Closures entries prepared roots →
+    (index : Fin roots.length) → Closure prepared (roots[index.val]'index.isLt)
+  | [],.nil,index => False.elim (Nat.not_lt_zero index.val index.isLt)
+  | _ :: _,.cons head _,⟨0,_⟩ => head
+  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,Nat.lt_of_succ_lt_succ bound⟩
+
+/-- Original entry identities are already unique. This ordered cohort checks
+each of their roots once; it does not normalize any source/provider occurrence. -/
+structure Cohort {entries : List Entry} (prepared : Prepared entries) : Type where
+  closures : Closures prepared (entries.map (·.id))
+  original : ∃ before after,(readClosures prepared (entries.map (·.id))).run before = (.ok closures,after)
+
+private def collectCohort {entries : List Entry} (prepared : Prepared entries) :
+    WorkM (Cohort prepared) := fun before =>
+  match ran : (readClosures prepared (entries.map (·.id))).run before with
+  | (.error error,after) => (.error error,after)
+  | (.ok closures,after) => (.ok ⟨closures,⟨before,after,ran⟩⟩,after)
+
+def readCohort {entries : List Entry} (prepared : Prepared entries) : WorkM (Cohort prepared) := do
+  exactWork (Exact.charge (16*(entries.length+1)))
+  collectCohort prepared
+
+def Cohort.get {entries prepared} (cohort : @Cohort entries prepared) (index : Fin entries.length) :
+    Closure prepared (entries[index.val]'index.isLt).id := by
+  have bounded : index.val < (entries.map (·.id)).length := by
+    simpa only [List.length_map] using index.isLt
+  have selected := cohort.closures.get ⟨index.val,bounded⟩
+  simpa only [List.getElem_map] using selected
+
+def Closure.at {entries prepared first last} (value : @Closure entries prepared first)
+    (same : first = last) : Closure prepared last := same ▸ value
+
+theorem Closure.at_heq {entries prepared first last} (value : @Closure entries prepared first)
+    (same : first = last) : HEq value (value.at same) := by
+  cases same
+  rfl
+
+/-- The selected value is the actual indexed cohort member, not a separately
+read object with coincident names or inferred effects. -/
+structure Lookup {entries prepared} (cohort : @Cohort entries prepared) (root : DefId) : Type where
+  index : Fin entries.length
+  sameRoot : (entries[index.val]'index.isLt).id = root
+  value : Closure prepared root
+  original : HEq (cohort.get index) value
+
+def lookup {entries prepared} (cohort : @Cohort entries prepared) (root : DefId) :
+    WorkM (Lookup cohort root) := do
+  exactWork (Exact.charge (16*((entries.map fun entry => idFields entry.id).sum+idFields root+entries.length+1)))
+  let index := entries.findIdx (fun entry => entry.id == root)
+  if bounded : index < entries.length then
+    if sameRoot : (entries[index]'bounded).id = root then
+      let value := cohort.get ⟨index,bounded⟩
+      pure ⟨⟨index,bounded⟩,sameRoot,value.at sameRoot,value.at_heq sameRoot⟩
+    else throw .request
+  else throw .request
+
 private theorem entry_unique (entries : List Entry) : (entries.map (·.id)).Nodup →
     {first second : Entry} → first ∈ entries → second ∈ entries → first.id = second.id → first = second := by
   induction entries with

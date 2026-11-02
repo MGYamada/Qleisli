@@ -985,6 +985,14 @@ def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : 
 
 private def effectEntries {sources} (records : List (BodyRecord sources)) : List Entry := records.map (·.entry)
 
+private theorem effectEntryIds {sources} (records : List (BodyRecord sources)) :
+    (effectEntries records).map Entry.id = records.map BodyRecord.id := by
+  induction records with
+  | nil => rfl
+  | cons body rest ih =>
+    change body.id :: (effectEntries rest).map Entry.id = body.id :: rest.map BodyRecord.id
+    exact congrArg (List.cons body.id) ih
+
 private def directQuantum {sources} (records : List (BodyRecord sources)) (id : DefId) : Bool :=
   records.find? (·.id == id) |>.map (·.quantumDirect) |>.getD true
 
@@ -1007,38 +1015,62 @@ private def formulaEffectPrepared {sources} (records : List (BodyRecord sources)
     pure (SourceEffect.join effect inferred.inferred,quantum || inferred.quantumUse (directQuantum records)))
     (formula.direct,false)
 
+private def formulaEffectCohort {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records))
+    (cohort : Option (SourceEffectClosure.Cohort prepared)) (formula : Formula) :
+    WorkM (Semantics.Raw.Effect × Bool) := do
+  match cohort with
+  | none => formulaEffectPrepared records prepared formula
+  | some cohort =>
+    formula.dependencies.foldlM (fun (effect,quantum) id => do
+      let selected ← SourceEffectClosure.lookup cohort id
+      let inferred := selected.value.checked
+      pure (SourceEffect.join effect inferred.inferred,quantum || inferred.quantumUse (directQuantum records)))
+      (formula.direct,false)
+
 private def checkNeedsPrepared {sources} (records : List (BodyRecord sources))
-    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (needs : List Need) : WorkM Unit := do
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (needs : List Need)
+    (cohort : Option (SourceEffectClosure.Cohort prepared) := none) : WorkM Unit := do
   for need in needs do
-    let (effect,quantum) ← formulaEffectPrepared records prepared need.effect
+    let (effect,quantum) ← formulaEffectCohort records prepared cohort need.effect
     guard (SourceEffect.rank effect ≤ SourceEffect.rank need.ceiling && (!need.classical || !quantum)) .request
 
 structure Inferred {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) where
   prepared : SourceEffectClosure.Prepared (effectEntries records)
+  cohort : Option (SourceEffectClosure.Cohort prepared)
   closure : SourceEffectClosure.Checked (effectEntries records) body.id
+  closureOriginal : ∃ before after,
+    (SourceEffectClosure.readPrepared prepared body.id).run before = (.ok closure,after)
   effectBound : SourceEffect.permits body.definition.original.envelope.parsedHeader.effect closure.inferred = true
   classical : body.definition.original.envelope.parsedHeader.ordinaryOnly = true →
     closure.quantumUse (directQuantum records) = false
   publicPermission : body.definition.original.envelope.declaration.isPublic = true →
     closure.quantumUse (directQuantum records) = true → body.definition.original.envelope.parsedHeader.effect.isSome = true
-  needs : ∃ before after,(checkNeedsPrepared records prepared body.outcome.needs).run before = (.ok (),after)
+  needs : ∃ before after,(checkNeedsPrepared records prepared body.outcome.needs cohort).run before = (.ok (),after)
 
-private def inferPrepared {sources} (records : List (BodyRecord sources))
-    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (body : BodyRecord sources) :
+private def inferClosure {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records))
+    (cohort : Option (SourceEffectClosure.Cohort prepared)) (body : BodyRecord sources)
+    (selected : SourceEffectClosure.Closure prepared body.id) :
     WorkM (Inferred records body) := do
-  let closure ← SourceEffectClosure.readPrepared prepared body.id
+  let closure := selected.checked
   if effectBound : SourceEffect.permits body.definition.original.envelope.parsedHeader.effect closure.inferred = true then
     if classical : body.definition.original.envelope.parsedHeader.ordinaryOnly = true →
         closure.quantumUse (directQuantum records) = false then
       if publicPermission : body.definition.original.envelope.declaration.isPublic = true →
           closure.quantumUse (directQuantum records) = true → body.definition.original.envelope.parsedHeader.effect.isSome = true then
-        let needs ← NaturalAffine.witness (checkNeedsPrepared records prepared body.outcome.needs)
+        let needs ← NaturalAffine.witness (checkNeedsPrepared records prepared body.outcome.needs cohort)
         have unit : needs.val = () := by cases needs.val; rfl
-        pure ⟨prepared,closure,effectBound,classical,publicPermission,
+        pure ⟨prepared,cohort,closure,selected.original,effectBound,classical,publicPermission,
           by with_reducible simpa only [unit] using needs.property⟩
       else throw .request
     else throw .request
   else throw .request
+
+private def inferPrepared {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (body : BodyRecord sources) :
+    WorkM (Inferred records body) := do
+  inferClosure records prepared none body (← SourceEffectClosure.readClosure prepared body.id)
 
 def infer {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) : WorkM (Inferred records body) := do
   inferPrepared records (← SourceEffectClosure.prepare (effectEntries records)) body
@@ -1053,13 +1085,34 @@ private def inferAllPrepared {sources} (records : List (BodyRecord sources))
   | [] => pure .nil
   | body :: rest => do pure (.cons (← inferPrepared records prepared body) (← inferAllPrepared records prepared rest))
 
-/-- Share the actual same entry-table setup across all original bodies and
-their separately checked effect/classical needs. Each root walk still runs. -/
+private def inferAllCohort {sources} (records : List (BodyRecord sources))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (cohort : SourceEffectClosure.Cohort prepared) :
+    (pending : List (BodyRecord sources)) → SourceEffectClosure.Closures prepared (pending.map BodyRecord.id) →
+      WorkM (AllInferred records pending)
+  | [],.nil => pure .nil
+  | body :: rest,.cons head tail => do
+    pure (.cons (← inferClosure records prepared (some cohort) body head)
+      (← inferAllCohort records prepared cohort rest tail))
+
+/-- Every original body root is checked once in its ordered cohort. Each Need
+still performs its own exact-root lookup and effect/classical guard. Arbitrary
+subset callers keep the prepared traversal rather than checking extra roots. -/
 def inferAll {sources} (records : List (BodyRecord sources))
     (pending : List (BodyRecord sources)) : WorkM (AllInferred records pending) := do
   match pending with
   | [] => pure .nil
-  | first :: rest => inferAllPrepared records (← SourceEffectClosure.prepare (effectEntries records)) (first :: rest)
+  | first :: rest =>
+    let prepared ← SourceEffectClosure.prepare (effectEntries records)
+    let fields := ((first :: rest).map fun body => body.owner.utf8ByteSize+body.name.utf8ByteSize+2).sum+
+      (records.map fun body => body.owner.utf8ByteSize+body.name.utf8ByteSize+2).sum
+    exactWork (Exact.charge (16*(fields+(first :: rest).length+records.length+1)))
+    if same : (first :: rest).map BodyRecord.id = records.map BodyRecord.id then
+      let cohort ← SourceEffectClosure.readCohort prepared
+      let originalCells : SourceEffectClosure.Closures prepared (records.map BodyRecord.id) :=
+        effectEntryIds records ▸ cohort.closures
+      let cells : SourceEffectClosure.Closures prepared ((first :: rest).map BodyRecord.id) := same.symm ▸ originalCells
+      inferAllCohort records prepared cohort (first :: rest) cells
+    else inferAllPrepared records prepared (first :: rest)
 
 def AllInferred.get {sources} {records : List (BodyRecord sources)} :
     {pending : List (BodyRecord sources)} → AllInferred records pending → (index : Fin pending.length) →
@@ -1155,8 +1208,12 @@ def readOriginalWithTree {sources owner name}
       root.outcome.references [root.record] (some helpers) originals)
     checkCycles records.val
     let prepared ← SourceEffectClosure.prepare (effectEntries records.val)
-    let all ← inferAllPrepared records.val prepared records.val
-    let inferred ← inferPrepared records.val prepared root.record
+    let cohort ← SourceEffectClosure.readCohort prepared
+    let cells : SourceEffectClosure.Closures prepared (records.val.map BodyRecord.id) :=
+      effectEntryIds records.val ▸ cohort.closures
+    let all ← inferAllCohort records.val prepared cohort records.val cells
+    let selected ← SourceEffectClosure.lookup cohort root.record.id
+    let inferred ← inferClosure records.val prepared (some cohort) root.record selected.value
     pure ⟨tree,root,helpers,originals,records.val,by with_reducible exact records.property,all,inferred⟩
 
 def readWithTree {sources owner name original}

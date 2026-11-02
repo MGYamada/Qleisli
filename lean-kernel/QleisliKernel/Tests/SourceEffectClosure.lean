@@ -53,6 +53,27 @@ private def shared (entries : List Entry) (roots : List DefId) :
 #guard shared [⟨root,⟨.unitary,[("external","pure")]⟩⟩,
     ⟨("external","pure"),⟨.unitary,[]⟩⟩] [root] = none
 
+private def cohorted (entries : List Entry) (roots : List DefId) :
+    Option (List (Semantics.Raw.Effect × List DefId × Bool)) :=
+  let action : Finite.WorkM (List (Semantics.Raw.Effect × List DefId × Bool)) := do
+    let prepared ← SourceEffectClosure.prepare entries
+    let cohort ← SourceEffectClosure.readCohort prepared
+    roots.mapM fun selected => do
+      let found ← SourceEffectClosure.lookup cohort selected
+      let checked := found.value.checked
+      pure (checked.inferred,checked.ids,checked.quantumUse (fun id => id == helper))
+  (action.run 10000000).1.toOption
+
+-- Repeated requests retain their exact root and result, while all original
+-- entry roots were checked once. A missing dormant dependency still refuses.
+#guard cohorted [⟨root,⟨.unitary,[helper]⟩⟩,⟨helper,⟨.iso,[]⟩⟩,⟨unrelated,⟨.observe,[]⟩⟩]
+    [root,helper,root,unrelated] =
+  some [(.iso,[root,helper],true),(.iso,[helper],true),(.iso,[root,helper],true),(.observe,[unrelated],false)]
+#guard cohorted [⟨root,⟨.unitary,[]⟩⟩] [helper] = none
+#guard cohorted [⟨root,⟨.unitary,[]⟩⟩,⟨unrelated,⟨.unitary,[helper]⟩⟩] [root] = none
+#guard cohorted [⟨root,⟨.unitary,[helper]⟩⟩,⟨helper,⟨.observe,[root]⟩⟩] [root,helper] =
+  some [(.observe,[root,helper],true),(.observe,[helper,root],true)]
+
 -- This is a classical effect graph only, not a maximum quantum instance. The
 -- source call count is not capped by the short root name/token list.
 private def chain : List Entry := (List.range 140).map fun index =>
@@ -64,6 +85,7 @@ private def chain : List Entry := (List.range 140).map fun index =>
 
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.read
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.readPrepared
+#print axioms QleisliKernel.SourceTypes.SourceEffectClosure.lookup
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.direct_bound
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.least
 #print axioms QleisliKernel.SourceTypes.SourceEffectClosure.Checked.internal_bound
