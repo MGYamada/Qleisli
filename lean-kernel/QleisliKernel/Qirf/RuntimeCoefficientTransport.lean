@@ -43,7 +43,7 @@ theorem gather_shift (offset low high : Nat) (bound : low < 2^offset) (axes : Li
     intro axis member
     obtain ⟨original,_present,rfl⟩ := List.mem_map.mp member
     omega
-  simpa [shiftAxes,List.map_map] using
+  simpa [shiftAxes,List.map_map,Function.comp_def] using
     FiniteRestriction.gather_pack offset low high bound (shiftAxes offset axes) after
 
 theorem scatter_shift (offset low high value : Nat) (bound : low < 2^offset) (axes : List Nat) :
@@ -53,14 +53,15 @@ theorem scatter_shift (offset low high value : Nat) (bound : low < 2^offset) (ax
     intro axis member
     obtain ⟨original,_present,rfl⟩ := List.mem_map.mp member
     omega
-  simpa [shiftAxes,List.map_map] using
+  simpa [shiftAxes,List.map_map,Function.comp_def] using
     FiniteRestriction.scatter_pack offset low high value bound (shiftAxes offset axes) after
 
 private theorem clear_pack (offset low high axis : Nat) (bound : low < 2^offset) :
     pack offset low high - bit high axis * 2^(offset+axis) =
       pack offset low (high-bit high axis*2^axis) := by
   have changed := FiniteRestriction.update_pack offset low high axis 0 0 bound
-  simpa only [FiniteRestriction.bit_target offset low high axis bound,bit,Nat.zero_div,Nat.zero_mod,
+  rw [FiniteRestriction.bit_target offset low high axis bound] at changed
+  simpa only [bit,Nat.zero_div,Nat.zero_mod,
     Nat.zero_mul,Nat.add_zero] using changed
 
 private theorem high_pack (offset low high : Nat) (axis : Nat) :
