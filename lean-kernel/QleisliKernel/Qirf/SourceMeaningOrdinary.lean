@@ -19,7 +19,6 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.SourceMeaningOrdinary
 open QleisliKernel Finite SourceTypes
 open Semantics.FiniteCarrier
-open SourceRuntimeValues (Value)
 
 inductive Kind where
   | permutation | phase
@@ -108,7 +107,7 @@ def readFieldCode (fields : List Field) : WorkM Layout := do
 structure Inputs {sources catalogue reference} (original : @Original sources catalogue reference)
     (basis : Basis) where
   oneParameter : reference.signature.inputs = [basis]
-  parameter : Value
+  parameter : SourceRuntimeValues.Value
   value : original.body.checked.summary.parameterValues = [parameter]
   exactType : SourceRuntimeValues.typeOf parameter = Semantics.RuntimeType.ordinary basis
   fields : List Field
