@@ -29,8 +29,21 @@ def selectionData {sources owner} : SourceTrace.Event sources owner →
   | .selection event _ scope _ naturals => some (event,naturals,scope)
   | _ => none
 
+/-- The legacy closed-source entry shares one audit of these exact original
+rows with its checked signature and all subsequent arm queries. This is a new
+computation witness, never a claimed execution of SourceTrace.read. Preserve
+the old nongeneric header boundary until the complete v5 continuation exists.
+The catalogue itself contributes no source-relevance rows. -/
+def readSource (sources : Sources) (owner name : String) : WorkM (SourceTrace.Checked sources owner name) := do
+  let catalogue ← GenericCatalogue.read sources
+  let signature ← QuantumSignature.readWithArguments sources owner name {} .external (some catalogue)
+  guard (signature.original.parsedHeader.staticTokens.isNone &&
+    signature.original.parsedHeader.requiresTokens.isNone) .request
+  let body ← SourceTrace.readWithSignature signature
+  return body.checked
+
 structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
-  source : Witness (SourceTrace.read artifact.sources owner name)
+  source : Witness (readSource artifact.sources owner name)
   sites : List (SelectionCore.Header artifact source.val.signature)
   everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection
   everyRequest : sites.map (·.request) = requests
@@ -38,7 +51,7 @@ structure Headers (artifact : Artifact) (owner name : String) (requests : List R
 def readHeaders (artifact : Artifact) (owner name : String) (requests : List Request) :
     WorkM (Headers artifact owner name requests) := do
   guard (0 < requests.length && requests.length ≤ 128) .limit
-  let source ← SourceTypes.NaturalAffine.witness (SourceTrace.read artifact.sources owner name)
+  let source ← SourceTypes.NaturalAffine.witness (readSource artifact.sources owner name)
   guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request
   let events := source.val.result.events.filterMap selectionData
   exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
