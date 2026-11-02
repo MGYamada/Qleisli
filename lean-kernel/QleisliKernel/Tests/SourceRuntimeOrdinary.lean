@@ -34,8 +34,25 @@ private def tri : Semantics.FiniteCarrier.Basis :=
 #guard (QleisliKernel.SourceTypes.SourceRuntimeOrdinary.extract (values) [.ordinary tri (.ordinal 2)]).isOk
 #guard (QleisliKernel.SourceTypes.SourceRuntimeOrdinary.extract (values) [.ordinary tri (.ordinal 3)]).toOption.isNone
 
+private def calleeSite : Site := ⟨"lib","observe",41⟩
+private def canonicalOwner : Semantics.SourceOwners.Owner := ⟨0,[.bit]⟩
+private def actualOwner : Semantics.SourceOwners.Owner := ⟨7,[.bit]⟩
+private def callerValues : Valuation :=
+  ⟨fun i => if i == 0 then some 0 else none,fun _ => none,
+    fun origin calls measured =>
+      if origin == calleeSite && calls == [site] && measured.ordinal == 7 then some 1 else none⟩
+private def calleeValue : Expression :=
+  .choose (.not (.input 0)) (.measured calleeSite [] canonicalOwner) (.bit false)
+private def arguments : List (Semantics.FiniteCarrier.Basis × Expression) := [([.bit],.input 0)]
+#guard (SourceRuntimeValues.expressionTransport site [actualOwner] arguments calleeValue).toOption.map
+  (evaluate callerValues) = some (some 1)
+#guard evaluate (QleisliKernel.SourceTypes.SourceRuntimeOrdinary.calledValuation callerValues site [actualOwner] arguments)
+  calleeValue = some 1
+#guard (SourceRuntimeValues.expressionTransport site [⟨7,[.bits 1]⟩] arguments calleeValue).toOption.isNone
+
 #print axioms QleisliKernel.Semantics.SourceOrdinary.evaluate
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeOrdinary.readAtom_sound
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeOrdinary.extract_sound
+#print axioms QleisliKernel.SourceTypes.SourceRuntimeOrdinary.expressionTransport_reference
 #print axioms QleisliKernel.SourceTypes.SourceBasisFunction.evaluate_reference
 end QleisliKernel.Tests.SourceRuntimeOrdinary
