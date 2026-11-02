@@ -84,23 +84,97 @@ structure Description where
   frame : NaturalFrames.Frame
   nodes : List Node
   root : Nat
+  nodeFrames : List NaturalFrames.Frame
 
-def Description.singleton (frame : NaturalFrames.Frame) (node : Node) : Description := ⟨frame,[node],0⟩
+def Description.singleton (frame : NaturalFrames.Frame) (node : Node) : Description := ⟨frame,[node],0,[frame]⟩
 
 def Description.unary (child : Description) (constructor : Nat → Node) : Description :=
-  ⟨child.frame,child.nodes ++ [constructor child.root],child.nodes.length⟩
+  ⟨child.frame,child.nodes ++ [constructor child.root],child.nodes.length,child.nodeFrames ++ [child.frame]⟩
 
 def Description.binary (left right : Description) (constructor : Nat → Nat → Node) : Description :=
   ⟨left.frame,left.nodes ++ right.nodes.map (Node.remap (·+left.nodes.length)) ++
-    [constructor left.root (right.root+left.nodes.length)],left.nodes.length+right.nodes.length⟩
+    [constructor left.root (right.root+left.nodes.length)],left.nodes.length+right.nodes.length,
+    left.nodeFrames ++ right.nodeFrames ++ [left.frame]⟩
 
 def provider (frame : NaturalFrames.Frame) (owner name : String) (bases : List (String × Code))
     (naturals : List (String × Form)) (operations : List (String × Description))
     (premises : List (String × OperationPaths.Paths)) : Description :=
-  let (nodes,indices) := operations.foldl (fun (nodes,indices) (name,description) =>
+  let (nodes,indices,frames) := operations.foldl (fun (nodes,indices,frames) (name,description) =>
     (nodes ++ description.nodes.map (Node.remap (·+nodes.length)),
-      indices ++ [(name,description.root+nodes.length)])) ([],[])
-  ⟨frame,nodes ++ [.provider owner name bases naturals indices premises],nodes.length⟩
+      indices ++ [(name,description.root+nodes.length)],frames ++ description.nodeFrames)) ([],[],[])
+  ⟨frame,nodes ++ [.provider owner name bases naturals indices premises],nodes.length,frames ++ [frame]⟩
+
+namespace Meter
+
+def key (original : Parameter) : Nat :=
+  original.moduleName.utf8ByteSize+original.declarationName.utf8ByteSize+3
+
+def frame (original : NaturalFrames.Frame) : Nat :=
+  (original.binders.map fun binder =>
+    binder.owner.moduleName.utf8ByteSize+binder.owner.declarationName.utf8ByteSize+binder.name.utf8ByteSize+4).sum
+
+def form (value : Form) : Nat := value.coefficients.length+2
+
+def basis (code : Code) : Nat := (code.map fun atom => 1+match atom with
+  | .parameter original => key original
+  | .bits width => form width
+  | .fixed _ => 1).sum
+
+def node : Node → Nat
+  | .primitive _ target => basis target+2
+  | .provider owner name bases naturals operations premises =>
+    owner.utf8ByteSize+name.utf8ByteSize+5+
+      (bases.map fun (name,code) => name.utf8ByteSize+basis code+1).sum+
+      (naturals.map fun (name,value) => name.utf8ByteSize+form value+1).sum+
+      (operations.map fun (name,_) => name.utf8ByteSize+2).sum+
+      (premises.map fun (name,_) => name.utf8ByteSize+4).sum
+  | .formal original => key original+1
+  | .power _ count => form count.form+3
+  | .requested _ owner name => owner.utf8ByteSize+name.utf8ByteSize+3
+  | other => other.children.length+1
+
+private def basisKeys (code : Code) : Nat := (code.map fun atom => match atom with
+  | .parameter _ => 1 | .bits width => width.coefficients.length | .fixed _ => 0).sum
+
+def nodeKeys : Node → Nat
+  | .primitive _ target => basisKeys target
+  | .provider _ _ bases naturals _ _ =>
+    (bases.map fun (_,code) => basisKeys code).sum+
+      (naturals.map fun (_,value) => value.coefficients.length).sum
+  | .formal _ => 1
+  | .power _ count => count.form.coefficients.length
+  | _ => 0
+
+private def basisKeyBytes (code : Code) : Nat :=
+  (code.map fun atom => match atom with | .parameter original => key original | _ => 0).foldl max 0
+
+def nodeKeyBytes : Node → Nat
+  | .primitive _ target => basisKeyBytes target
+  | .provider _ _ bases _ _ _ => (bases.map fun (_,code) => basisKeyBytes code).foldl max 0
+  | .formal original => key original
+  | _ => 0
+
+def payload (original : Description) : Nat :=
+  frame original.frame+(original.nodeFrames.map frame).sum+(original.nodes.map node).sum+original.nodes.length+1
+
+/-- Q keys can each scan the exact original frame and eraseDups can compare
+Q squared pairs of original string keys. Every visited type-prefix cell and
+coefficient is counted. Retained original source snapshots are not traversed
+by closure and are not multiplied into this reservation. -/
+def freeWork (original : Description) : Nat :=
+  let keys := (original.nodes.map nodeKeys).sum
+  let bytes := max
+    ((original.frame.binders.map fun binder =>
+      binder.owner.moduleName.utf8ByteSize+binder.owner.declarationName.utf8ByteSize+3).foldl max 0)
+    ((original.nodes.map nodeKeyBytes).foldl max 0)
+  16*(payload original+(original.nodes.length+1)*(frame original.frame+1)+
+    keys*(original.frame.binders.length+1)+(keys+1)^2*(bytes+1)+1)
+
+def rebuildWork (original : Description) : Nat :=
+  let edges := (original.nodes.map fun value => value.children.length).sum
+  32*(payload original+1)+64*(original.nodes.length+edges+1)^2
+
+end Meter
 
 private def naturalKeys (frame : NaturalFrames.Frame) (form : Form) : Except String (List Key) := do
   if form.coefficients.length != frame.binders.length then throw "original natural frame differs"
@@ -129,6 +203,9 @@ def Node.freeKeys (frame : NaturalFrames.Frame) : Node → Except String (List K
 /-- All retained nodes contribute keys, including unused actual children and
 zero-power operands. A convenient closed root type cannot hide a free child. -/
 def Description.freeKeys (description : Description) : Except String (List Key) := do
+  if description.nodeFrames.length != description.nodes.length ||
+      !description.nodeFrames.all (fun frame => frame.binders == description.frame.binders) then
+    throw "operation children have different original natural frames"
   pure ((← description.nodes.mapM (Node.freeKeys description.frame)).flatten.eraseDups)
 
 structure Constant (form : Form) where
@@ -229,12 +306,17 @@ structure ClosedData where
   retained : nodes.map (·.node) = description.nodes
 
 def readClosedData (description : Description) : WorkM ClosedData := do
+  exactWork (Exact.charge (Meter.rebuildWork description))
+  guard (description.nodeFrames.length == description.nodes.length &&
+    description.nodeFrames.all (fun frame => frame.binders == description.frame.binders)) .request
   guard (!description.nodes.isEmpty && description.nodes.length ≤ 4096 &&
     description.root+1 == description.nodes.length &&
     description.nodes.zipIdx.all (fun (node,index) => node.children.all (· < index))) .request
-  exactWork (Exact.charge (32*(description.nodes.length+1)^2))
   let nodes ← description.nodes.mapM readNode
   let result : OperationDescription.Description := ⟨nodes.map (·.node),description.root⟩
+  let size ← lift ((result.treeSize).mapError fun _ => Error.request)
+  let edges := (description.nodes.map fun node => node.children.length).sum
+  exactWork (Exact.charge (16*(size+1)*(description.nodes.length+edges+1)))
   let _ ← lift ((result.occurrences).mapError fun _ => Error.request)
   return ⟨result,nodes,rfl⟩
 
@@ -248,7 +330,7 @@ inductive Status (original : Description) where
   | closed (checked : Closed original)
 
 def close (original : Description) : WorkM (Status original) := do
-  exactWork (Exact.charge (16*(original.nodes.length+original.frame.binders.length+1)))
+  exactWork (Exact.charge (Meter.freeWork original))
   match keys : original.freeKeys with
   | .error _ => throw .request
   | .ok free =>

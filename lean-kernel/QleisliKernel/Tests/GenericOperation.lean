@@ -57,4 +57,25 @@ private def dependentWidth : Description := provider frame "main" "bits"
 #guard (match (close (provider frame "main" "stale" [] [("n",⟨1,[]⟩)] [] [])).run 10000000 with
   | (.error .request,_) => true | _ => false)
 
+private def otherFrame : NaturalFrames.Frame := ⟨[⟨⟨"other","original"⟩,0,"n"⟩]⟩
+private def other : Description := provider otherFrame "main" "counted" [] [("n",⟨0,[1]⟩)] [] []
+
+-- Equal frame widths and names do not permit rebinding another declaration's
+-- coefficient to the left/parent frame during binary or provider assembly.
+#guard (match (close (named.binary other .thenOp)).run 10000000 with
+  | (.error .request,_) => true | _ => false)
+#guard (match (close (provider frame "main" "outer" [] [] [("U",other)] [])).run 10000000 with
+  | (.error .request,_) => true | _ => false)
+
+-- The reservation follows actual prefix cells and compared key bytes, even
+-- with the same number of operation nodes and Nat formals. Closure does not
+-- walk a retained nominal declaration's complete original source snapshot.
+private def typed (code : Code) : Description := provider frame "main" "typed" [("A",code)] [] [] []
+#guard Meter.freeWork (typed (.fixed (.tuple 16) :: List.replicate 16 (.fixed .unit))) >
+  Meter.freeWork (typed [.fixed .unit])
+#guard Meter.rebuildWork (typed (.fixed (.tuple 16) :: List.replicate 16 (.fixed .unit))) >
+  Meter.rebuildWork (typed [.fixed .unit])
+#guard Meter.freeWork (typed [.parameter ⟨"long_original_module","long_original_function",0⟩]) >
+  Meter.freeWork (typed [.parameter ⟨"m","f",0⟩])
+
 end QleisliKernel.Tests.GenericOperation
