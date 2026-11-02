@@ -63,8 +63,7 @@ private def formals (header : OrdinarySignature.Header) : Except String (List Fo
   if parts.length > 32 then throw "static formal capacity"
   parts.foldlM (fun parsed tokens => do
     let "const" :: name :: ":" :: tokens := tokens | throw "expected const static formal"
-    if !identifier name || parsed.any (fun formal => formal.name == name) then
-      throw "invalid or duplicate static formal"
+    if parsed.any (fun formal => formal.name == name) then throw "duplicate static formal"
     let kind ← match tokens with
       | ["Basis"] => pure Kind.basis
       | ["Nat"] => pure Kind.natural
@@ -72,6 +71,8 @@ private def formals (header : OrdinarySignature.Header) : Except String (List Fo
         if rest.length < 2 || rest.getLast? != some ">" then throw "incomplete operation kind"
         pure (Kind.operation rest.dropLast)
       | _ => throw "unknown static kind"
+    if !(if kind == .natural then NaturalSyntax.isName name else identifier name) then
+      throw "invalid static formal name"
     return parsed ++ [⟨name,parsed.length,kind⟩]) []
 
 private def requirement (state : Parsed) (tokens : List String) : Except String Parsed := do

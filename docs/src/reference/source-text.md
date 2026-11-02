@@ -737,7 +737,12 @@ migration errors. `adjoint(U)` is the current static description and
 `controlled` and `inverse` retain ordinary single-stage name resolution.
 
 `Bits`, `CBits` and `Nat` are contextual type/kind names and remain valid names
-in identifier positions. `as` is contextual: it separates the quantum input
+in identifier positions. The existing static-Nat grammar also permits `Q`,
+`Op`, `Unit`, `Bit` and `CBit` as a `const` Nat formal, a static fold index or
+the first name atom of a Nat expression. This exception is confined to those
+Nat positions; ordinary runtime identifiers, Basis/Op formal names and qualified
+path tails retain their ordinary reserved-word rules. `as` is contextual: it
+separates the quantum input
 expression and pattern in `basis input as pattern { expression }`, and remains
 an ordinary identifier elsewhere. Retained tokens for `CBit`, `true` and `false` permit
 targeted rejection of their old type/literal uses; they do not keep those uses
