@@ -8,6 +8,7 @@ import QleisliKernel.SourceTypes.SourceControlSyntax
 import QleisliKernel.SourceTypes.SourceStaticControlSyntax
 import QleisliKernel.SourceTypes.SourceNominalSyntax
 import QleisliKernel.SourceTypes.SourceMatchSyntax
+import QleisliKernel.SourceTypes.SourceComputedSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -58,6 +59,8 @@ inductive Tree : List LocatedToken → Type where
       (children : Children (written.parts.arms.map (·.body.tokens))) : Tree tokens
   | basis {tokens : List LocatedToken} (written : SourceControlSyntax.CheckedBasis tokens)
       (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
+  | computed {tokens : List LocatedToken} (written : SourceComputedSyntax.Checked tokens)
+      (input : Tree written.parts.source.tokens) (body : Tree written.parts.body) : Tree tokens
 
 inductive Children : List (List LocatedToken) → Type where
   | nil : Children []
@@ -110,7 +113,8 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .projection _ receiver => next receiver
     | .matching _ scrutinee children =>
       return (← next scrutinee) ++ (← children.trees.mapM (fun child => next child.2)).flatten
-    | .basis _ input body => return (← next input) ++ (← next body))
+    | .basis _ input body => return (← next input) ++ (← next body)
+    | .computed _ input body => return (← next input) ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
 refuses instead of silently truncating the coverage list. The bound comes from
@@ -168,6 +172,11 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       let input ← next (depth+1) false written.parts.input
       let body ← next (depth+1) true written.parts.body
       return .basis written input body
+    if tokens.head?.map (·.text) == some "with_computed" then
+      let written ← SourceComputedSyntax.read tokens
+      let input ← next (depth+1) false written.parts.source.tokens
+      let body ← next (depth+1) true written.parts.body
+      return .computed written input body
     if let some written := SourceBoolean.read tokens then
       let children ← readChildren (next (depth+1) false) written.parts
       return .boolean written children

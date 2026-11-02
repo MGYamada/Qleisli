@@ -102,6 +102,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
+      | .computed .. => throw .request
       | .matching written scrutinee children =>
         let (selected,context) ← recurse naturals held scope nextOrdinal environment scrutinee context
         let [.ordinary basis condition] := selected.value | throw .request

@@ -197,7 +197,7 @@ def evalWithReader (sources : Sources) (caller : String)
     match tree with
     | .empty .. => return (← outcome environment [.tuple 0] environment [],context)
     | .literal .. | .boolean .. | .conditional .. | .staticConditional .. | .basis .. |
-        .variant .. | .record .. | .projection .. | .matching .. => throw .request
+        .variant .. | .record .. | .projection .. | .matching .. | .computed .. => throw .request
     | .move tokens _ _ =>
       Finite.exactWork (Exact.charge (Meter.moveWork tokens environment))
       let (value,remaining) ← adapt (QuantumMoves.eval (tokens.map (·.text)) environment)
