@@ -35,7 +35,7 @@ theorem exits_sound (before after remaining : Environment)
   | error message => simp only [exits,found,Bool.false_eq_true] at allowed
   | ok actual =>
     have same : actual = remaining := of_decide_eq_true (by simpa only [exits,found] using allowed)
-    simpa only [same] using found
+    simp only [same]
 
 structure Phi where
   output : Semantics.SourceOwners.Owner
