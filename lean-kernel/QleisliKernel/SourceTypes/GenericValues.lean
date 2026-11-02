@@ -20,6 +20,7 @@ abbrev Value := List Atom
 structure Cell where
   name : String
   value : Value
+  binding : Nat
   deriving BEq, DecidableEq, Repr
 
 abbrev Environment := List Cell
@@ -112,7 +113,7 @@ def move (term : QuantumMoves.Term) (environment : Environment) : Except String 
   if !rest.isEmpty then throw "trailing symbolic source move"
   pure (value,remaining)
 
-private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
+private def bindNode (binding : Nat) : Nat → QuantumMoves.Term → Value → Environment →
     Except String (QuantumMoves.Term × Value × Environment) :=
   Nat.rec (fun _ _ _ => throw "symbolic source binding nesting") (fun _ next term value environment => do
     let atom :: rest := term | throw "missing symbolic source pattern"
@@ -121,7 +122,7 @@ private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
       let (selected,tail) ← splitValue value
       if environment.any (fun cell => cell.name == name && hasOwner cell.value) then
         throw "shadowing a live symbolic owner"
-      pure (rest,tail,⟨name,selected⟩ :: environment.filter (·.name != name))
+      pure (rest,tail,⟨name,selected,binding⟩ :: environment.filter (·.name != name))
     | .wildcard =>
       let (selected,tail) ← splitValue value
       if hasOwner selected then throw "implicit symbolic owner discard"
@@ -131,11 +132,11 @@ private def bindNode : Nat → QuantumMoves.Term → Value → Environment →
       if arity != count then throw "symbolic tuple pattern arity"
       (List.range count).foldlM (fun (term,value,current) _ => next term value current) (rest,tail,environment))
 
-def bind (tokens : List String) (value : Value) (environment : Environment) : Except String Environment := do
+def bind (tokens : List String) (value : Value) (environment : Environment) (binding : Nat := 0) : Except String Environment := do
   let term ← QuantumMoves.parse 65 tokens
   let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
   if !decide names.Nodup then throw "duplicate symbolic binding"
-  let (rest,value,environment) ← bindNode (term.length+1) term value environment
+  let (rest,value,environment) ← bindNode binding (term.length+1) term value environment
   if !rest.isEmpty || !value.isEmpty then throw "incomplete symbolic binding"
   pure environment
 
