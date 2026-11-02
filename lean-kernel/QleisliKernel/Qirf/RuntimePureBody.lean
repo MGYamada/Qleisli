@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.Qirf.RuntimeNamedBoundary
+import QleisliKernel.Qirf.RuntimeCallScope
 import QleisliKernel.Qirf.RuntimeOrdinaryInputs
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimeContextRequest
@@ -90,6 +91,7 @@ def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies p
 /-- The common loop records every actual mixed interval. Pure composition
 continues to consume only its pure islands and requires complete pure coverage;
 an observation or classical gap cannot acquire a fabricated pure equation. -/
+mutual
 inductive Step (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
   | pure {program block} (node : Node dependencies program block) : Step dependencies program block
@@ -98,6 +100,25 @@ inductive Step (dependencies : List Semantics.Finite.Dependency) :
   | observation {program block sources rootOwner rootName caller functionName path event position before ordinary}
       (checked : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies program
         path event block position before ordinary) : Step dependencies program block
+  | named {program block start count inputs sources caller before childHistory childRetired ordinary}
+      (event : SourceRuntimeContext.NamedEvent sources caller)
+      (frame : RuntimeCallScope.Checked block start count inputs ordinary event.effect)
+      (source : SourceRuntimeTrace.Body event.target.signature)
+      (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
+      (childBlock : RuntimeInterval.Block dependencies frame.program)
+      (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
+      (finalOrdinary : RuntimeOrdinaryBody.State)
+      (children : Steps dependencies frame.program childBlock) : Step dependencies program block
+
+inductive Steps (dependencies : List Semantics.Finite.Dependency) :
+    (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
+  | nil {program block} : Steps dependencies program block
+  | cons {program block} (first : Step dependencies program block)
+      (rest : Steps dependencies program block) : Steps dependencies program block
+end
+
+def Steps.ofList {dependencies program block} (steps : List (Step dependencies program block)) :
+    Steps dependencies program block := steps.foldr Steps.cons Steps.nil
 
 abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
   (program : Semantics.Observation.Program) ×
@@ -146,7 +167,7 @@ identities are valid; an omitted phase or a wrong equal-width role still fails
 the actual local equation. Selection providers re-enter this same source body
 reader before their arm equations are used. Classical-only gaps and destructive
 primitives use the ordinary companion on this same body/block. Complete ordinary
-histories/storage, mixed named scopes, basis actions, ordinary branches and
+histories/storage, basis actions, ordinary branches and
 demanded source transformations remain incomplete. -/
 def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBoundary →
     {rootOwner rootName owner name : String} →
@@ -271,29 +292,45 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
-            guard (event.effect == .unitary) .request
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position) .request
             let originalRead ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
             let original := originalRead.val
             let inputs ← rolePorts event.inputOwners bindings
-            let frame ← RuntimeCallInterval.read prepared.block position.start position.count (inputs.map (·.token))
             let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
-            let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
-              (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
-            let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
             if callerName : event.target.callerName = name then
               let parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.target.callerName := by
                 simpa only [callerName] using path
               let childPath := RuntimeOrdinaryBody.CallPath.named event original
                 (by with_reducible exact originalRead.property) parent
-              let nested ← next mode .localScope original childPath frame.program child childInitial ordinary frame.prepared
-              let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
-                event before nested.history nested.retired original.checked.summary.value
-              let node : Node dependencies program prepared.block := .named event frame original
-                (by with_reducible exact originalRead.property) nested.prepared.block boundary (Nodes.ofList nested.actions)
-              return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
-                obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+              match mode with
+              | .pureBody =>
+                guard (event.effect == .unitary) .request
+                let frame ← RuntimeCallInterval.read prepared.block position.start position.count (inputs.map (·.token))
+                let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
+                  (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
+                let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
+                let nested ← next .pureBody .localScope original childPath frame.program child childInitial ordinary frame.prepared
+                let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
+                  event before nested.history nested.retired original.checked.summary.value
+                let node : Node dependencies program prepared.block := .named event frame original
+                  (by with_reducible exact originalRead.property) nested.prepared.block boundary (Nodes.ofList nested.actions)
+                return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
+                  obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+              | .runtimeBody =>
+                let frame ← RuntimeCallScope.read prepared.block position.start position.count
+                  (inputs.map (·.token)) ordinary event.effect
+                let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
+                  (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
+                let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
+                let nested ← next .runtimeBody .localScope original childPath frame.program child childInitial
+                  frame.visible.ssa frame.prepared
+                let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
+                  event before nested.history nested.retired original.checked.summary.value
+                let step : Step dependencies program prepared.block := .named event frame original
+                  (by with_reducible exact originalRead.property) nested.prepared.block boundary nested.ordinary (Steps.ofList nested.steps)
+                return (boundary.after,retired ++ event.consumed,nested.ordinary,actions,steps ++ [step],
+                  obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
             else throw .request
           | .operation event =>
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&

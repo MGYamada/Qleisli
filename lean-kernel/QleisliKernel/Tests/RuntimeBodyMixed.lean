@@ -83,4 +83,52 @@ private def completeGraph (wrong : Bool) : WorkM Nat := do
 #guard (completeGraph false).run 10000000 |>.1.toOption == some 1
 #guard (match (completeGraph true).run 10000000 with | (.error .equation,_) => true | _ => false)
 
+private def namedObservation (negate : Bool) : WorkM (List Nat × List Nat) := do
+  let text := "#![no_implicit_prelude]\nobserve fn read(q:Q<Bit>)->Bit{measure_z(q)}pub observe fn route(q:Q<Bit>)->Bit{read(q)}"
+  let input : Semantics.Raw.Port := ⟨0,[0],1⟩
+  let output := if negate then 2 else 1
+  let program : Semantics.Observation.Program := ⟨[input],[],
+    [.measure 0 1] ++ (if negate then [.not 1 2] else []),[],[output],.observe⟩
+  let artifact : Qirf.Artifact := ⟨#[program],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.named call] := body.checked.events | throw .request
+  let callee ← SourceRuntimeTrace.readNamedBody call
+  let [.primitive measured] := callee.checked.events | throw .request
+  let position : SourceSequence.Position := ⟨call.call.calleeOffset,0,program.operations.length⟩
+  let context : RuntimeContextRequest.Context := .mk [position] []
+    [(position,.mk [⟨measured.call.calleeOffset,0,1⟩] [] [] [] [])] [] []
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",signature.parameters.map (·.tree),[[.quantum ⟨input,[.bit]⟩]],[[]],
+      signature.result.tree,[.ordinary [.bit] (.bit output)],.observe,{}⟩
+  let checked ← RuntimeBodyGraph.prepareRuntime artifact #[0] "main" "route" {} context runtime
+  return (checked.derivation.result.retired.map (·.ordinal),
+    checked.derivation.result.ordinary.measurements.map (·.calls.length))
+
+-- The preserved minimal observing-call form is exercised here as a component
+-- translation. Its literal callee and original measurement path are retained.
+#guard (namedObservation false).run 10000000 |>.1.toOption == some ([0],[1])
+#guard (match (namedObservation true).run 10000000 with | (.error .equation,_) => true | _ => false)
+
+private def namedAlias : WorkM (List Nat × List Nat) := do
+  let text := "#![no_implicit_prelude]\nfn same(a:Bit,b:Bit)->Bit{a xor b}pub unitary fn route(c:Bit,u:Q<Unit>)->(Bit,Q<Unit>){(same(c,c),u)}"
+  let unit : Semantics.Raw.Port := ⟨7,[],0⟩
+  let program : Semantics.Observation.Program := ⟨[unit],[2],[.xor 2 2 3],[7],[3],.unitary⟩
+  let artifact : Qirf.Artifact := ⟨#[program],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.named call] := body.checked.events | throw .request
+  let position : SourceSequence.Position := ⟨call.call.calleeOffset,0,1⟩
+  let context : RuntimeContextRequest.Context := .mk [position] [] [(position,.mk [] [] [] [] [])] [] []
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",signature.parameters.map (·.tree),
+      [[.ordinary [.bit] (.bit 2)],[.quantum ⟨unit,[.unit]⟩]],[[false],[true]],signature.result.tree,
+      [.tuple 2,.ordinary [.bit] (.bit 3),.quantum ⟨unit,[.unit]⟩],.unitary,{}⟩
+  let checked ← RuntimeBodyGraph.prepareRuntime artifact #[0] "main" "route" {} context runtime
+  return (checked.derivation.result.ordinary.table.map Prod.fst,checked.derivation.result.bindings.map (·.port.token))
+
+-- Two original ordinary formals receive the same caller value. The complete
+-- actual SSA interface has one input, while source substitution keeps both.
+#guard namedAlias.run 10000000 |>.1.toOption == some ([2,3],[7])
+
 end QleisliKernel.Tests.RuntimeBodyMixed
