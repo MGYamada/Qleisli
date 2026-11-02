@@ -750,7 +750,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let region ← next state (names ++ scope) initial body
       guard (region.remaining.all fun cell => !hasOwner cell.value) .request
       GenericValues.expect state region.value expected
-      let offset := written.parts.header.call.callee.head?.map (·.span.startByte) |>.getD 0
+      let [keyword] := written.parts.header.call.callee | throw .request
+      let offset := keyword.span.startByte
       let obligation : ComputedObligation sources :=
         ⟨owner,name,offset,state,inputBasis,tokens,written,predicate,logical⟩
       let result : Outcome sources := {region with
