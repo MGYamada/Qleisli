@@ -1240,7 +1240,9 @@ impl<'ast> Validation<'_, 'ast> {
                 self.budget.charge(span, selection.arms.len())?;
                 let mut found = None;
                 for arm in &selection.arms {
-                    if let Some(arguments) = self.call_in_operation(owner, &arm.operation, site, 1)? {
+                    if let Some(arguments) =
+                        self.call_in_operation(owner, &arm.operation, site, 1)?
+                    {
                         found = Some(arguments);
                         break;
                     }

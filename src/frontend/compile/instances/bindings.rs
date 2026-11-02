@@ -284,7 +284,13 @@ impl Compiler<'_> {
                         };
                         self.charge(module, value.span, operation.copy_size())?;
                         let operation = outer_ops[key].clone();
-                        self.retain_source_formal(operation, environment.owner, key, module, value.span)?
+                        self.retain_source_formal(
+                            operation,
+                            environment.owner,
+                            key,
+                            module,
+                            value.span,
+                        )?
                     }
                     ResolvedUse::Global(Target::Declaration(target)) => {
                         let instance = self.prepare_instance(

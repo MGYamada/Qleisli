@@ -38,8 +38,16 @@ fn ordinary(value: &ordinary_root::Storage, remaining: &mut usize) -> Result<()>
 
 pub(super) fn bounded(value: &runtime_root::Request, remaining: &mut usize) -> Result<()> {
     value.preflight()?;
-    charge(remaining, 2048usize.saturating_add(
-        value.module.len().saturating_add(value.declaration.len()).saturating_mul(6)))?;
+    charge(
+        remaining,
+        2048usize.saturating_add(
+            value
+                .module
+                .len()
+                .saturating_add(value.declaration.len())
+                .saturating_mul(6),
+        ),
+    )?;
     for (name, basis) in &value.static_bases {
         charge(remaining, name.len().saturating_mul(6).saturating_add(64))?;
         basis_storage(basis, remaining)?;
@@ -49,7 +57,9 @@ pub(super) fn bounded(value: &runtime_root::Request, remaining: &mut usize) -> R
     }
     for atom in value.parameters.iter().flatten().chain(&value.result) {
         match atom {
-            runtime_root::Atom::Finite(atom) => basis_storage(std::slice::from_ref(atom), remaining)?,
+            runtime_root::Atom::Finite(atom) => {
+                basis_storage(std::slice::from_ref(atom), remaining)?
+            }
             runtime_root::Atom::Quantum => charge(remaining, 64)?,
         }
     }
@@ -68,7 +78,10 @@ pub(super) fn bounded(value: &runtime_root::Request, remaining: &mut usize) -> R
         }
     }
     for row in &value.input_rows {
-        charge(remaining, 64usize.saturating_add(row.len().saturating_mul(8)))?;
+        charge(
+            remaining,
+            64usize.saturating_add(row.len().saturating_mul(8)),
+        )?;
     }
     Ok(())
 }

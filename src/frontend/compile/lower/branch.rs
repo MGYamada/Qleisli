@@ -51,7 +51,9 @@ impl Lowerer<'_, '_> {
         );
         self.nominal_qmatch = containing;
         let (value, index, then_body, else_body) = lowered?;
-        super::quantum_match::nominal::record_branch(self, module, span, index, then_body, else_body)?;
+        super::quantum_match::nominal::record_branch(
+            self, module, span, index, then_body, else_body,
+        )?;
         Ok(value)
     }
 
@@ -66,8 +68,15 @@ impl Lowerer<'_, '_> {
         else_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
         then_frame: Option<super::quantum_match::nominal::Frame>,
         else_frame: Option<super::quantum_match::nominal::Frame>,
-    ) -> Result<(Value, usize, Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
-        Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>), CompileError> {
+    ) -> Result<
+        (
+            Value,
+            usize,
+            Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
+            Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
+        ),
+        CompileError,
+    > {
         self.compiler.charge(
             module,
             span,
@@ -84,8 +93,11 @@ impl Lowerer<'_, '_> {
         let mut then_env = env.clone();
         self.nominal_qmatch = then_frame;
         let then_result = then_arm(self, &mut then_env)?;
-        let then_body = self.nominal_qmatch.take()
-            .map(|frame| frame.branch_subject(self, module)).transpose()?;
+        let then_body = self
+            .nominal_qmatch
+            .take()
+            .map(|frame| frame.branch_subject(self, module))
+            .transpose()?;
         let then_ops = std::mem::take(&mut self.raw.operations);
         let then_sources = std::mem::take(&mut self.operation_sources);
         let mut then_registers =
@@ -99,8 +111,11 @@ impl Lowerer<'_, '_> {
         let mut else_env = env.clone();
         self.nominal_qmatch = else_frame;
         let else_result = else_arm(self, &mut else_env)?;
-        let else_body = self.nominal_qmatch.take()
-            .map(|frame| frame.branch_subject(self, module)).transpose()?;
+        let else_body = self
+            .nominal_qmatch
+            .take()
+            .map(|frame| frame.branch_subject(self, module))
+            .transpose()?;
         let else_ops = std::mem::replace(&mut self.raw.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
         let mut else_registers = std::mem::take(&mut self.raw.registers);
@@ -449,7 +464,7 @@ mod tests {
                 operation_sources: BTreeMap::new(),
                 instrument_calls: Vec::new(),
                 nominal_qmatch: None,
-            source_context: None,
+                source_context: None,
                 tuple_binding_origins: Vec::new(),
                 access_updates: Vec::new(),
                 effect: Effect::Unitary,

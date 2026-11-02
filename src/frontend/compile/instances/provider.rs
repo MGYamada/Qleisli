@@ -291,8 +291,12 @@ impl Compiler<'_> {
             .as_mut()
             .and_then(Arc::get_mut)
             .ok_or_else(|| {
-                self.error(module, span, ErrorCode::InvalidIr,
-                    "new provider lost its unique original lowering context")
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "new provider lost its unique original lowering context",
+                )
             })?;
         origin.instance = Some(Arc::clone(&instance));
         self.charge(module, span, instance.operations.len().saturating_mul(3))?;

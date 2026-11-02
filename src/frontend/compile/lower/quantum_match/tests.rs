@@ -20,9 +20,11 @@ fn inert_builtin_context_metadata_does_not_request_finite_carrier_acceptance() {
     // program, state, matrix or maximum-size instance.
     assert_eq!(
         nominal::builtin_basis_description(&Ty::pair(Ty::bits(7), Ty::unit())),
-        [crate::interchange::carrier::Atom::Pair,
-         crate::interchange::carrier::Atom::Bits(7),
-         crate::interchange::carrier::Atom::Unit]
+        [
+            crate::interchange::carrier::Atom::Pair,
+            crate::interchange::carrier::Atom::Bits(7),
+            crate::interchange::carrier::Atom::Unit
+        ]
     );
 }
 

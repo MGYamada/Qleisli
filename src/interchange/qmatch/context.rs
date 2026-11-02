@@ -66,7 +66,10 @@ impl Context {
             if site.arms.is_empty() || site.arms.len() > 64 {
                 return Err(Error::limit("qmatch arm capacity"));
             }
-            charge(remaining, site.arms.len().saturating_mul(128).saturating_add(512))?;
+            charge(
+                remaining,
+                site.arms.len().saturating_mul(128).saturating_add(512),
+            )?;
         }
         for call in &self.calls {
             call.body.bounded(depth + 1, remaining)?;
@@ -83,11 +86,26 @@ impl Context {
 
     pub(super) fn fields(&self) -> [(String, Value); 5] {
         [
-            ("positions".into(), Value::Array(self.positions.iter().map(Position::encode).collect())),
-            ("sites".into(), Value::Array(self.sites.iter().map(ContextSite::encode).collect())),
-            ("calls".into(), Value::Array(self.calls.iter().map(Call::encode).collect())),
-            ("branches".into(), Value::Array(self.branches.iter().map(Branch::encode).collect())),
-            ("bodies".into(), Value::Array(self.bodies.iter().map(BodyRequest::encode).collect())),
+            (
+                "positions".into(),
+                Value::Array(self.positions.iter().map(Position::encode).collect()),
+            ),
+            (
+                "sites".into(),
+                Value::Array(self.sites.iter().map(ContextSite::encode).collect()),
+            ),
+            (
+                "calls".into(),
+                Value::Array(self.calls.iter().map(Call::encode).collect()),
+            ),
+            (
+                "branches".into(),
+                Value::Array(self.branches.iter().map(Branch::encode).collect()),
+            ),
+            (
+                "bodies".into(),
+                Value::Array(self.bodies.iter().map(BodyRequest::encode).collect()),
+            ),
         ]
     }
 
@@ -100,7 +118,11 @@ impl Context {
         Self::decode_fields(value, depth, remaining)
     }
 
-    pub(super) fn decode_fields(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
+    pub(super) fn decode_fields(
+        value: &Value,
+        depth: usize,
+        remaining: &mut usize,
+    ) -> Result<Self> {
         if depth > 128 {
             return Err(Error::limit("qmatch source context depth"));
         }
@@ -118,11 +140,26 @@ impl Context {
         charge(remaining, branches.len().saturating_mul(192))?;
         charge(remaining, bodies.len().saturating_mul(64))?;
         Ok(Self {
-            positions: positions.iter().map(Position::decode).collect::<Result<_>>()?,
-            sites: sites.iter().map(ContextSite::decode).collect::<Result<_>>()?,
-            calls: calls.iter().map(|call| Call::decode(call, depth + 1, remaining)).collect::<Result<_>>()?,
-            branches: branches.iter().map(|branch| Branch::decode(branch, depth + 1, remaining)).collect::<Result<_>>()?,
-            bodies: bodies.iter().map(|body| BodyRequest::decode(body, depth + 1, remaining)).collect::<Result<_>>()?,
+            positions: positions
+                .iter()
+                .map(Position::decode)
+                .collect::<Result<_>>()?,
+            sites: sites
+                .iter()
+                .map(ContextSite::decode)
+                .collect::<Result<_>>()?,
+            calls: calls
+                .iter()
+                .map(|call| Call::decode(call, depth + 1, remaining))
+                .collect::<Result<_>>()?,
+            branches: branches
+                .iter()
+                .map(|branch| Branch::decode(branch, depth + 1, remaining))
+                .collect::<Result<_>>()?,
+            bodies: bodies
+                .iter()
+                .map(|body| BodyRequest::decode(body, depth + 1, remaining))
+                .collect::<Result<_>>()?,
         })
     }
 }
@@ -130,9 +167,13 @@ impl Context {
 impl ContextSite {
     fn encode(&self) -> Value {
         Value::object([
-            ("attached", self.attached.encode()), ("required", self.required.encode()),
+            ("attached", self.attached.encode()),
+            ("required", self.required.encode()),
             ("position", self.position.encode()),
-            ("arms", Value::Array(self.arms.iter().map(ContextArm::encode).collect())),
+            (
+                "arms",
+                Value::Array(self.arms.iter().map(ContextArm::encode).collect()),
+            ),
         ])
     }
     fn decode(value: &Value) -> Result<Self> {
@@ -153,20 +194,25 @@ impl ContextSite {
 impl ContextArm {
     fn encode(&self) -> Value {
         Value::object([
-            ("implementation", n(self.implementation)), ("controlled", n(self.controlled)),
+            ("implementation", n(self.implementation)),
+            ("controlled", n(self.controlled)),
         ])
     }
     fn decode(value: &Value) -> Result<Self> {
         value.fields(&["implementation", "controlled"])?;
         Ok(Self {
-            implementation: number(value.field("implementation")?)?, controlled: number(value.field("controlled")?)?,
+            implementation: number(value.field("implementation")?)?,
+            controlled: number(value.field("controlled")?)?,
         })
     }
 }
 
 impl BodyRequest {
     fn encode(&self) -> Value {
-        Value::object([("subject", self.subject.encode()), ("body", self.body.encode())])
+        Value::object([
+            ("subject", self.subject.encode()),
+            ("body", self.body.encode()),
+        ])
     }
     fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
         value.fields(&["subject", "body"])?;
@@ -180,14 +226,28 @@ impl BodyRequest {
 impl ProviderSubject {
     fn encode(&self) -> Value {
         match self {
-            Self::Function { evidence } => Value::object([("kind", text("function")), ("evidence", n(*evidence))]),
-            Self::Pure { program } => Value::object([("kind", text("pure")), ("program", n(*program))]),
+            Self::Function { evidence } => {
+                Value::object([("kind", text("function")), ("evidence", n(*evidence))])
+            }
+            Self::Pure { program } => {
+                Value::object([("kind", text("pure")), ("program", n(*program))])
+            }
         }
     }
     fn decode(value: &Value) -> Result<Self> {
         Ok(match value.field("kind")?.text()? {
-            "function" => { value.fields(&["kind", "evidence"])?; Self::Function { evidence: number(value.field("evidence")?)? } }
-            "pure" => { value.fields(&["kind", "program"])?; Self::Pure { program: number(value.field("program")?)? } }
+            "function" => {
+                value.fields(&["kind", "evidence"])?;
+                Self::Function {
+                    evidence: number(value.field("evidence")?)?,
+                }
+            }
+            "pure" => {
+                value.fields(&["kind", "program"])?;
+                Self::Pure {
+                    program: number(value.field("program")?)?,
+                }
+            }
             _ => return Err(Error::format("unknown qmatch provider subject")),
         })
     }
@@ -195,7 +255,10 @@ impl ProviderSubject {
 
 impl Call {
     fn encode(&self) -> Value {
-        Value::object([("position", self.position.encode()), ("body", self.body.encode())])
+        Value::object([
+            ("position", self.position.encode()),
+            ("body", self.body.encode()),
+        ])
     }
 
     fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
@@ -210,7 +273,9 @@ impl Call {
 impl Branch {
     fn encode(&self) -> Value {
         Value::object([
-            ("position", self.position.encode()), ("then", self.then_body.encode()), ("else", self.else_body.encode()),
+            ("position", self.position.encode()),
+            ("then", self.then_body.encode()),
+            ("else", self.else_body.encode()),
         ])
     }
     fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {

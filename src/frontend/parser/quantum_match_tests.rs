@@ -138,5 +138,8 @@ fn static_arms_retain_specializations_constructor_children_and_spans() {
         &source[selection.arms[0].operation.span.start..selection.arms[0].operation.span.end],
         "then_op(keep[type(Bit), 2], adjoint(other))"
     );
-    assert!(matches!(selection.arms[1].operation.kind, StaticOpKind::Repeat(_, _)));
+    assert!(matches!(
+        selection.arms[1].operation.kind,
+        StaticOpKind::Repeat(_, _)
+    ));
 }

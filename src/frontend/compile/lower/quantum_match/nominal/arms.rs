@@ -13,46 +13,101 @@ mod tests;
 /// providers. This proposal retains their exact one-owner target and scalar
 /// phase; it grants no static/host Op binding or accepted execution.
 fn primitive(
-    lower: &mut Lowerer<'_, '_>, module: &str, name: &Ident, primitive: PrimitiveId,
-    target: &Ty, bits: usize,
-) -> Result<(ArmBody, Arc<ContextSubject>, Vec<CircuitStep>, Arc<crate::interchange::qmatch::OperationSubject>), CompileError> {
-    use crate::interchange::qmatch::{Description, OperationNode, OperationPrimitive, OperationSubject};
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    name: &Ident,
+    primitive: PrimitiveId,
+    target: &Ty,
+    bits: usize,
+) -> Result<
+    (
+        ArmBody,
+        Arc<ContextSubject>,
+        Vec<CircuitStep>,
+        Arc<crate::interchange::qmatch::OperationSubject>,
+    ),
+    CompileError,
+> {
+    use crate::interchange::qmatch::{
+        Description, OperationNode, OperationPrimitive, OperationSubject,
+    };
     if primitive == PrimitiveId::H && *target != Ty::bit() {
-        return Err(lower.error(module, name.span, ErrorCode::TypeMismatch, "h requires Q<Bit>"));
+        return Err(lower.error(
+            module,
+            name.span,
+            ErrorCode::TypeMismatch,
+            "h requires Q<Bit>",
+        ));
     }
-    lower.compiler.charge(module, name.span, bits + target.tree_size().nodes * 2 + 24)?;
+    lower
+        .compiler
+        .charge(module, name.span, bits + target.tree_size().nodes * 2 + 24)?;
     let target = if target.basis_bits().is_some() {
         super::builtin_basis_description(target)
     } else {
-        lower.compiler.carrier_description(module, name.span, target)?
+        lower
+            .compiler
+            .carrier_description(module, name.span, target)?
     };
-    let (kind,step) = match primitive {
-        PrimitiveId::H => (OperationPrimitive::H,circuit::gate(SingleGate::H,0)),
-        PrimitiveId::GlobalPhaseEighth => (OperationPrimitive::GlobalPhaseEighth,CircuitStep {
-            controls: vec![],
-            action: CircuitAction::Monomial { indices: vec![], permutation: vec![0], phases: vec![1] },
-        }),
+    let (kind, step) = match primitive {
+        PrimitiveId::H => (OperationPrimitive::H, circuit::gate(SingleGate::H, 0)),
+        PrimitiveId::GlobalPhaseEighth => (
+            OperationPrimitive::GlobalPhaseEighth,
+            CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Monomial {
+                    indices: vec![],
+                    permutation: vec![0],
+                    phases: vec![1],
+                },
+            },
+        ),
         _ => unreachable!("only direct unary unitary primitives enter this preparation"),
     };
     let operations = if primitive == PrimitiveId::H {
-        vec![RawOp::Gate { gate: SingleGate::H, input: TokenId(0), output: TokenId(1) }]
+        vec![RawOp::Gate {
+            gate: SingleGate::H,
+            input: TokenId(0),
+            output: TokenId(1),
+        }]
     } else {
-        vec![RawOp::ApplyUnitary { input: TokenId(0), output: TokenId(1), steps: vec![step.clone()] }]
+        vec![RawOp::ApplyUnitary {
+            input: TokenId(0),
+            output: TokenId(1),
+            steps: vec![step.clone()],
+        }]
     };
     let raw = RawProgram {
         quantum_inputs: vec![QuantumPort {
             token: TokenId(0),
-            shape: BasisShape { bits: lower.compiler.narrow_u8(module, name.span, bits, "primitive target width")? },
+            shape: BasisShape {
+                bits: lower.compiler.narrow_u8(
+                    module,
+                    name.span,
+                    bits,
+                    "primitive target width",
+                )?,
+            },
             wires: (0..bits as u32).map(WireId).collect(),
         }],
-        classical_inputs: vec![], operations, quantum_outputs: vec![TokenId(1)],
-        classical_outputs: vec![], declared_effect: Effect::Unitary,
+        classical_inputs: vec![],
+        operations,
+        quantum_outputs: vec![TokenId(1)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
     };
-    Ok((ArmBody::Primitive(raw),Arc::new(ContextSubject::default()),
-        operations::controlled(vec![step],bits),Arc::new(OperationSubject {
-            description: Description { nodes: vec![OperationNode::Primitive { kind,target }],root: 0 },
+    Ok((
+        ArmBody::Primitive(raw),
+        Arc::new(ContextSubject::default()),
+        operations::controlled(vec![step], bits),
+        Arc::new(OperationSubject {
+            description: Description {
+                nodes: vec![OperationNode::Primitive { kind, target }],
+                root: 0,
+            },
             bodies: vec![],
-        })))
+        }),
+    ))
 }
 
 pub(super) fn prepare(
@@ -62,16 +117,29 @@ pub(super) fn prepare(
     target: &Ty,
     bits: usize,
     env: &Env,
-) -> Result<(ArmBody, Arc<ContextSubject>, Vec<CircuitStep>, Arc<crate::interchange::qmatch::OperationSubject>), CompileError> {
+) -> Result<
+    (
+        ArmBody,
+        Arc<ContextSubject>,
+        Vec<CircuitStep>,
+        Arc<crate::interchange::qmatch::OperationSubject>,
+    ),
+    CompileError,
+> {
     if let StaticOpKind::Name(name) = &expression.kind {
         lower.static_name(module, name, env)?;
-        if lower.compiler.locals().usage(name).static_parameter.is_none()
+        if lower
+            .compiler
+            .locals()
+            .usage(name)
+            .static_parameter
+            .is_none()
             && lower.bound_operation(name).is_none()
         {
             if let Callee::Primitive(id @ (PrimitiveId::H | PrimitiveId::GlobalPhaseEighth)) =
                 lower.compiler.resolve(module, name)?
             {
-                return primitive(lower,module,name,id,target,bits);
+                return primitive(lower, module, name, id, target, bits);
             }
         }
     }
@@ -97,12 +165,24 @@ pub(super) fn prepare(
             ));
         };
         let context = evidence.source_context().cloned().ok_or_else(|| {
-            lower.error(module, expression.span, ErrorCode::InvalidIr,
-                "qmatch arm lacks its actual original lowering context")
+            lower.error(
+                module,
+                expression.span,
+                ErrorCode::InvalidIr,
+                "qmatch arm lacks its actual original lowering context",
+            )
         })?;
         let steps = operation.steps(module, expression.span, Access::Controlled, lower.compiler)?;
-        let original = lower.compiler.qmatch_operation_subject(&operation, module, expression.span)?;
-        return Ok((ArmBody::Evidence(Arc::clone(evidence)), context, steps, Arc::new(original)));
+        let original =
+            lower
+                .compiler
+                .qmatch_operation_subject(&operation, module, expression.span)?;
+        return Ok((
+            ArmBody::Evidence(Arc::clone(evidence)),
+            context,
+            steps,
+            Arc::new(original),
+        ));
     }
 
     let StaticOpKind::Name(name) = &expression.kind else {
@@ -165,8 +245,12 @@ pub(super) fn prepare(
     }
     let mut steps = circuit::flatten(lower.compiler, module, name.span, &program)?;
     let context = program.source_context().cloned().ok_or_else(|| {
-        lower.error(module, name.span, ErrorCode::InvalidIr,
-            "qmatch arm lacks its actual original lowering context")
+        lower.error(
+            module,
+            name.span,
+            ErrorCode::InvalidIr,
+            "qmatch arm lacks its actual original lowering context",
+        )
     })?;
     lower.compiler.charge(
         module,
@@ -200,8 +284,11 @@ pub(super) fn prepare(
         path.len().saturating_mul(2).saturating_add(1),
     )?;
     let original_name = &lower.compiler.source.resolution.declaration(key).name;
-    lower.compiler.charge(module, name.span,
-        original_name.0.len() + original_name.1.len() + 24)?;
+    lower.compiler.charge(
+        module,
+        name.span,
+        original_name.0.len() + original_name.1.len() + 24,
+    )?;
     Ok((
         ArmBody::Physical {
             bits: bits as u32,
@@ -213,9 +300,25 @@ pub(super) fn prepare(
         Arc::new(crate::interchange::qmatch::OperationSubject {
             description: crate::interchange::qmatch::Description {
                 nodes: vec![crate::interchange::qmatch::OperationNode::Provider {
-                    module: lower.compiler.source.resolution.declaration(key).name.0.clone(),
-                    function: lower.compiler.source.resolution.declaration(key).name.1.clone(),
-                    bases: vec![], naturals: vec![], operations: vec![],
+                    module: lower
+                        .compiler
+                        .source
+                        .resolution
+                        .declaration(key)
+                        .name
+                        .0
+                        .clone(),
+                    function: lower
+                        .compiler
+                        .source
+                        .resolution
+                        .declaration(key)
+                        .name
+                        .1
+                        .clone(),
+                    bases: vec![],
+                    naturals: vec![],
+                    operations: vec![],
                 }],
                 root: 0,
             },

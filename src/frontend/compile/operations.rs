@@ -137,10 +137,10 @@ pub(super) struct PureOrigin {
     pub(super) equation: Arc<crate::interchange::pure_leaf::SourcePureEquation>,
 }
 mod bindings;
-mod source;
 #[cfg(test)]
 mod identity_tests;
 mod pure;
+mod source;
 pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
 
 /// Bounded port-copy work, including nominal fields and their retained metadata.
@@ -918,14 +918,34 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<Operation, CompileError> {
-        self.charge(module, span, key.name.len().saturating_mul(
-            self.source.interfaces[&owner].statics.len() + 1).saturating_add(8))?;
-        let ordinal = self.source.interfaces[&owner].statics.iter()
-            .position(|formal| formal.key == *key && matches!(formal.kind, StaticKind::Operation { .. }))
-            .ok_or_else(|| self.error(module, span, ErrorCode::InvalidIr,
-                "Op reference lost its original mixed-kind formal ordinal"))?;
-        let instance = self.concrete_context.current.as_ref()
-            .filter(|instance| instance.definition == owner).cloned();
+        self.charge(
+            module,
+            span,
+            key.name
+                .len()
+                .saturating_mul(self.source.interfaces[&owner].statics.len() + 1)
+                .saturating_add(8),
+        )?;
+        let ordinal = self.source.interfaces[&owner]
+            .statics
+            .iter()
+            .position(|formal| {
+                formal.key == *key && matches!(formal.kind, StaticKind::Operation { .. })
+            })
+            .ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "Op reference lost its original mixed-kind formal ordinal",
+                )
+            })?;
+        let instance = self
+            .concrete_context
+            .current
+            .as_ref()
+            .filter(|instance| instance.definition == owner)
+            .cloned();
         operation.source_formal = Some(Arc::new(FormalOrigin {
             definition: owner,
             table: Arc::clone(&self.source.lexical[&owner]),
@@ -1243,7 +1263,8 @@ impl Operation {
         match (&self.source_formal, &other.source_formal) {
             (Some(left), Some(right)) => {
                 charge(4)?;
-                if left.definition != right.definition || left.ordinal != right.ordinal
+                if left.definition != right.definition
+                    || left.ordinal != right.ordinal
                     || !Arc::ptr_eq(&left.table, &right.table)
                     || match (&left.instance, &right.instance) {
                         (Some(left), Some(right)) => !Arc::ptr_eq(left, right),

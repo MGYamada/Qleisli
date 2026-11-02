@@ -60,7 +60,11 @@ pub(crate) struct ContextSubject {
     pub positions: Vec<Position>,
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
-    pub branches: Vec<(Position, std::sync::Arc<ContextSubject>, std::sync::Arc<ContextSubject>)>,
+    pub branches: Vec<(
+        Position,
+        std::sync::Arc<ContextSubject>,
+        std::sync::Arc<ContextSubject>,
+    )>,
     /// An actual operation application has provider bodies and no fabricated
     /// containing-function prefix or nested runtime instruction coordinates.
     pub operation: Option<std::sync::Arc<OperationSubject>>,
@@ -126,8 +130,12 @@ pub(crate) fn proposal(
         for arm in selection.arms {
             let evidence = match &arm.body {
                 ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
-                ArmBody::Primitive(_) => return Err(Error::new("unsupported",
-                    "direct primitive qmatch arms require the complete v5 source gate")),
+                ArmBody::Primitive(_) => {
+                    return Err(Error::new(
+                        "unsupported",
+                        "direct primitive qmatch arms require the complete v5 source gate",
+                    ));
+                }
                 ArmBody::Physical {
                     bits,
                     raw,

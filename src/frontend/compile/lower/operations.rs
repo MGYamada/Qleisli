@@ -127,23 +127,51 @@ impl Lowerer<'_, '_> {
         let slot = self.quantum(module, span, &joined, false)?;
         self.apply_circuit(slot, steps);
         let value = self.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
-        quantum_match::nominal::record_operation(self, module, span, start, &op, Access::Controlled)?;
+        quantum_match::nominal::record_operation(
+            self,
+            module,
+            span,
+            start,
+            &op,
+            Access::Controlled,
+        )?;
         Ok(value)
     }
 
     pub(super) fn retained_bound_operation(
-        &mut self, module: &str, name: &Ident,
+        &mut self,
+        module: &str,
+        name: &Ident,
     ) -> Result<Option<Operation>, CompileError> {
-        let Some(cost) = self.bound_operation(name).map(Operation::copy_size) else { return Ok(None); };
+        let Some(cost) = self.bound_operation(name).map(Operation::copy_size) else {
+            return Ok(None);
+        };
         self.compiler.charge(module, name.span, cost)?;
-        let operation = self.bound_operation(name).expect("retained bound operation").clone();
+        let operation = self
+            .bound_operation(name)
+            .expect("retained bound operation")
+            .clone();
         let lookup = self.compiler.locals();
-        let id = lookup.usage(name).static_parameter.ok_or_else(|| self.error(module, name.span,
-            ErrorCode::InvalidIr, "bound Op has no original formal occurrence"))?;
+        let id = lookup.usage(name).static_parameter.ok_or_else(|| {
+            self.error(
+                module,
+                name.span,
+                ErrorCode::InvalidIr,
+                "bound Op has no original formal occurrence",
+            )
+        })?;
         let key = lookup.key(id).clone();
-        let owner = self.compiler.current_instance_owner().ok_or_else(|| self.error(module, name.span,
-            ErrorCode::InvalidIr, "bound Op has no original containing instance"))?;
-        Ok(Some(self.compiler.retain_source_formal(operation, owner, &key, module, name.span)?))
+        let owner = self.compiler.current_instance_owner().ok_or_else(|| {
+            self.error(
+                module,
+                name.span,
+                ErrorCode::InvalidIr,
+                "bound Op has no original containing instance",
+            )
+        })?;
+        Ok(Some(self.compiler.retain_source_formal(
+            operation, owner, &key, module, name.span,
+        )?))
     }
 
     pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {

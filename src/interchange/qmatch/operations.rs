@@ -24,14 +24,24 @@ pub enum OperationPrimitive {
 
 impl OperationPrimitive {
     pub(crate) fn name(self) -> &'static str {
-        match self { Self::H => "h", Self::GlobalPhaseEighth => "global_phase_eighth" }
+        match self {
+            Self::H => "h",
+            Self::GlobalPhaseEighth => "global_phase_eighth",
+        }
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperationNode {
-    Requested { child: u32, module: String, function: String },
-    Primitive { kind: OperationPrimitive, target: Vec<Atom> },
+    Requested {
+        child: u32,
+        module: String,
+        function: String,
+    },
+    Primitive {
+        kind: OperationPrimitive,
+        target: Vec<Atom>,
+    },
     Provider {
         module: String,
         function: String,
@@ -51,8 +61,14 @@ pub enum OperationNode {
     Then(u32, u32),
     Tensor(u32, u32),
     Controlled(u32),
-    Power { child: u32, count: u32 },
-    Conjugate { outer: u32, middle: u32 },
+    Power {
+        child: u32,
+        count: u32,
+    },
+    Conjugate {
+        outer: u32,
+        middle: u32,
+    },
 }
 
 fn basis(value: &Value) -> Result<Vec<Atom>> {
@@ -64,29 +80,57 @@ fn basis(value: &Value) -> Result<Vec<Atom>> {
 }
 
 pub(super) fn bases(value: &Value) -> Result<Vec<(String, Vec<Atom>)>> {
-    value.array()?.iter().map(|value| {
-        value.fields(&["name", "basis"])?;
-        Ok((value.field("name")?.text()?.into(), basis(value.field("basis")?)?))
-    }).collect()
+    value
+        .array()?
+        .iter()
+        .map(|value| {
+            value.fields(&["name", "basis"])?;
+            Ok((
+                value.field("name")?.text()?.into(),
+                basis(value.field("basis")?)?,
+            ))
+        })
+        .collect()
 }
 
 pub(super) fn naturals(value: &Value) -> Result<Vec<(String, u32)>> {
-    value.array()?.iter().map(|value| {
-        value.fields(&["name", "value"])?;
-        Ok((value.field("name")?.text()?.into(), number(value.field("value")?)?))
-    }).collect()
+    value
+        .array()?
+        .iter()
+        .map(|value| {
+            value.fields(&["name", "value"])?;
+            Ok((
+                value.field("name")?.text()?.into(),
+                number(value.field("value")?)?,
+            ))
+        })
+        .collect()
 }
 
 pub(super) fn encode_bases(values: &[(String, Vec<Atom>)]) -> Value {
-    Value::Array(values.iter().map(|(name, basis)| Value::object([
-        ("name", text(name)), ("basis", Value::Array(basis.iter().map(Atom::encode).collect()))
-    ])).collect())
+    Value::Array(
+        values
+            .iter()
+            .map(|(name, basis)| {
+                Value::object([
+                    ("name", text(name)),
+                    (
+                        "basis",
+                        Value::Array(basis.iter().map(Atom::encode).collect()),
+                    ),
+                ])
+            })
+            .collect(),
+    )
 }
 
 pub(super) fn encode_naturals(values: &[(String, u32)]) -> Value {
-    Value::Array(values.iter().map(|(name, value)| Value::object([
-        ("name", text(name)), ("value", n(*value))
-    ])).collect())
+    Value::Array(
+        values
+            .iter()
+            .map(|(name, value)| Value::object([("name", text(name)), ("value", n(*value))]))
+            .collect(),
+    )
 }
 
 fn name_storage(value: &str, remaining: &mut usize) -> Result<()> {
@@ -96,9 +140,18 @@ fn name_storage(value: &str, remaining: &mut usize) -> Result<()> {
     charge(remaining, value.len().saturating_mul(6).saturating_add(32))
 }
 
-fn scalar_arguments_storage(bases: &[(String, Vec<Atom>)], naturals: &[(String,u32)], count: usize,
-    remaining: &mut usize) -> Result<()> {
-    if bases.len().saturating_add(naturals.len()).saturating_add(count) > 32 {
+fn scalar_arguments_storage(
+    bases: &[(String, Vec<Atom>)],
+    naturals: &[(String, u32)],
+    count: usize,
+    remaining: &mut usize,
+) -> Result<()> {
+    if bases
+        .len()
+        .saturating_add(naturals.len())
+        .saturating_add(count)
+        > 32
+    {
         return Err(Error::limit("qmatch static argument capacity"));
     }
     for (name, basis) in bases {
@@ -114,7 +167,12 @@ fn scalar_arguments_storage(bases: &[(String, Vec<Atom>)], naturals: &[(String,u
 
 impl StaticArguments {
     pub(super) fn bounded(&self, remaining: &mut usize) -> Result<()> {
-        scalar_arguments_storage(&self.bases, &self.naturals, self.operations.len(), remaining)?;
+        scalar_arguments_storage(
+            &self.bases,
+            &self.naturals,
+            self.operations.len(),
+            remaining,
+        )?;
         for (name, description) in &self.operations {
             name_storage(name, remaining)?;
             description.bounded(remaining)?;
@@ -123,9 +181,14 @@ impl StaticArguments {
     }
 
     pub(super) fn operations_value(&self) -> Value {
-        Value::Array(self.operations.iter().map(|(name, description)| Value::object([
-            ("name", text(name)), ("description", description.encode())
-        ])).collect())
+        Value::Array(
+            self.operations
+                .iter()
+                .map(|(name, description)| {
+                    Value::object([("name", text(name)), ("description", description.encode())])
+                })
+                .collect(),
+        )
     }
 
     pub(super) fn decode(value: &Value) -> Result<Self> {
@@ -138,10 +201,16 @@ impl StaticArguments {
         Ok(Self {
             bases: bases(value.field("static_bases")?)?,
             naturals: naturals(value.field("static_naturals")?)?,
-            operations: o.iter().map(|value| {
-                value.fields(&["name", "description"])?;
-                Ok((value.field("name")?.text()?.into(), Description::decode(value.field("description")?)?))
-            }).collect::<Result<_>>()?,
+            operations: o
+                .iter()
+                .map(|value| {
+                    value.fields(&["name", "description"])?;
+                    Ok((
+                        value.field("name")?.text()?.into(),
+                        Description::decode(value.field("description")?)?,
+                    ))
+                })
+                .collect::<Result<_>>()?,
         })
     }
 }
@@ -153,24 +222,51 @@ impl Description {
         }
         charge(remaining, self.nodes.len().saturating_mul(128))?;
         for node in &self.nodes {
-            if let OperationNode::Primitive { target,.. } = node { basis_storage(target, remaining)?; }
-            if let OperationNode::Requested { module,function,.. } = node {
+            if let OperationNode::Primitive { target, .. } = node {
+                basis_storage(target, remaining)?;
+            }
+            if let OperationNode::Requested {
+                module, function, ..
+            } = node
+            {
                 name_storage(module, remaining)?;
                 name_storage(function, remaining)?;
             }
-            if let OperationNode::Provider { module,function,bases,naturals,operations }
-                | OperationNode::Formal { module,function,bases,naturals,operations,.. } = node {
+            if let OperationNode::Provider {
+                module,
+                function,
+                bases,
+                naturals,
+                operations,
+            }
+            | OperationNode::Formal {
+                module,
+                function,
+                bases,
+                naturals,
+                operations,
+                ..
+            } = node
+            {
                 name_storage(module, remaining)?;
                 name_storage(function, remaining)?;
                 scalar_arguments_storage(bases, naturals, operations.len(), remaining)?;
-                for (name, _) in operations { name_storage(name, remaining)?; }
+                for (name, _) in operations {
+                    name_storage(name, remaining)?;
+                }
             }
         }
         Ok(())
     }
 
     fn encode(&self) -> Value {
-        Value::object([("nodes", Value::Array(self.nodes.iter().map(OperationNode::encode).collect())), ("root", n(self.root))])
+        Value::object([
+            (
+                "nodes",
+                Value::Array(self.nodes.iter().map(OperationNode::encode).collect()),
+            ),
+            ("root", n(self.root)),
+        ])
     }
 
     fn decode(value: &Value) -> Result<Self> {
@@ -179,40 +275,111 @@ impl Description {
         if nodes.is_empty() || nodes.len() > 4096 {
             return Err(Error::limit("qmatch operation description capacity"));
         }
-        Ok(Self { nodes: nodes.iter().map(OperationNode::decode).collect::<Result<_>>()?, root: number(value.field("root")?)? })
+        Ok(Self {
+            nodes: nodes
+                .iter()
+                .map(OperationNode::decode)
+                .collect::<Result<_>>()?,
+            root: number(value.field("root")?)?,
+        })
     }
 }
 
 impl OperationNode {
     fn encode(&self) -> Value {
         match self {
-            Self::Requested { child,module,function } => Value::object([
-                ("tag", text("requested")), ("child", n(*child)), ("module", text(module)), ("function", text(function)),
+            Self::Requested {
+                child,
+                module,
+                function,
+            } => Value::object([
+                ("tag", text("requested")),
+                ("child", n(*child)),
+                ("module", text(module)),
+                ("function", text(function)),
             ]),
-            Self::Primitive { kind,target } => Value::object([
-                ("tag", text("primitive")), ("kind", text(kind.name())),
-                ("target", Value::Array(target.iter().map(Atom::encode).collect())),
+            Self::Primitive { kind, target } => Value::object([
+                ("tag", text("primitive")),
+                ("kind", text(kind.name())),
+                (
+                    "target",
+                    Value::Array(target.iter().map(Atom::encode).collect()),
+                ),
             ]),
-            Self::Provider { module,function,bases,naturals,operations } => Value::object([
-                ("tag", text("provider")), ("module", text(module)), ("function", text(function)),
-                ("static_bases", encode_bases(bases)), ("static_naturals", encode_naturals(naturals)),
-                ("static_operations", Value::Array(operations.iter().map(|(name,node)| Value::object([
-                    ("name", text(name)), ("node", n(*node))
-                ])).collect())),
+            Self::Provider {
+                module,
+                function,
+                bases,
+                naturals,
+                operations,
+            } => Value::object([
+                ("tag", text("provider")),
+                ("module", text(module)),
+                ("function", text(function)),
+                ("static_bases", encode_bases(bases)),
+                ("static_naturals", encode_naturals(naturals)),
+                (
+                    "static_operations",
+                    Value::Array(
+                        operations
+                            .iter()
+                            .map(|(name, node)| {
+                                Value::object([("name", text(name)), ("node", n(*node))])
+                            })
+                            .collect(),
+                    ),
+                ),
             ]),
-            Self::Formal { module,function,bases,naturals,operations,ordinal } => Value::object([
-                ("tag", text("formal")), ("module", text(module)), ("function", text(function)),
-                ("static_bases", encode_bases(bases)), ("static_naturals", encode_naturals(naturals)),
-                ("static_operations", Value::Array(operations.iter().map(|(name,node)| Value::object([
-                    ("name", text(name)), ("node", n(*node))
-                ])).collect())), ("ordinal", n(*ordinal)),
+            Self::Formal {
+                module,
+                function,
+                bases,
+                naturals,
+                operations,
+                ordinal,
+            } => Value::object([
+                ("tag", text("formal")),
+                ("module", text(module)),
+                ("function", text(function)),
+                ("static_bases", encode_bases(bases)),
+                ("static_naturals", encode_naturals(naturals)),
+                (
+                    "static_operations",
+                    Value::Array(
+                        operations
+                            .iter()
+                            .map(|(name, node)| {
+                                Value::object([("name", text(name)), ("node", n(*node))])
+                            })
+                            .collect(),
+                    ),
+                ),
+                ("ordinal", n(*ordinal)),
             ]),
             Self::Inverse(child) => Value::object([("tag", text("inverse")), ("child", n(*child))]),
-            Self::Controlled(child) => Value::object([("tag", text("controlled")), ("child", n(*child))]),
-            Self::Then(left,right) => Value::object([("tag", text("then")), ("left", n(*left)), ("right", n(*right))]),
-            Self::Tensor(left,right) => Value::object([("tag", text("tensor")), ("left", n(*left)), ("right", n(*right))]),
-            Self::Power { child,count } => Value::object([("tag", text("power")), ("child", n(*child)), ("count", n(*count))]),
-            Self::Conjugate { outer,middle } => Value::object([("tag", text("conjugate")), ("outer", n(*outer)), ("middle", n(*middle))]),
+            Self::Controlled(child) => {
+                Value::object([("tag", text("controlled")), ("child", n(*child))])
+            }
+            Self::Then(left, right) => Value::object([
+                ("tag", text("then")),
+                ("left", n(*left)),
+                ("right", n(*right)),
+            ]),
+            Self::Tensor(left, right) => Value::object([
+                ("tag", text("tensor")),
+                ("left", n(*left)),
+                ("right", n(*right)),
+            ]),
+            Self::Power { child, count } => Value::object([
+                ("tag", text("power")),
+                ("child", n(*child)),
+                ("count", n(*count)),
+            ]),
+            Self::Conjugate { outer, middle } => Value::object([
+                ("tag", text("conjugate")),
+                ("outer", n(*outer)),
+                ("middle", n(*middle)),
+            ]),
         }
     }
 
@@ -221,7 +388,11 @@ impl OperationNode {
         Ok(match value.field("tag")?.text()? {
             "requested" => {
                 value.fields(&["tag", "child", "module", "function"])?;
-                Self::Requested { child:get("child")?, module:value.field("module")?.text()?.into(), function:value.field("function")?.text()?.into() }
+                Self::Requested {
+                    child: get("child")?,
+                    module: value.field("module")?.text()?.into(),
+                    function: value.field("function")?.text()?.into(),
+                }
             }
             "primitive" => {
                 value.fields(&["tag", "kind", "target"])?;
@@ -230,40 +401,105 @@ impl OperationNode {
                     "global_phase_eighth" => OperationPrimitive::GlobalPhaseEighth,
                     _ => return Err(Error::format("unknown qmatch operation primitive")),
                 };
-                Self::Primitive { kind, target:basis(value.field("target")?)? }
+                Self::Primitive {
+                    kind,
+                    target: basis(value.field("target")?)?,
+                }
             }
             tag @ ("provider" | "formal") => {
                 if tag == "formal" {
-                    value.fields(&["tag", "module", "function", "static_bases", "static_naturals", "static_operations", "ordinal"])?;
+                    value.fields(&[
+                        "tag",
+                        "module",
+                        "function",
+                        "static_bases",
+                        "static_naturals",
+                        "static_operations",
+                        "ordinal",
+                    ])?;
                 } else {
-                    value.fields(&["tag", "module", "function", "static_bases", "static_naturals", "static_operations"])?;
+                    value.fields(&[
+                        "tag",
+                        "module",
+                        "function",
+                        "static_bases",
+                        "static_naturals",
+                        "static_operations",
+                    ])?;
                 }
                 let operations = value.field("static_operations")?.array()?;
                 let b = value.field("static_bases")?.array()?;
                 let n = value.field("static_naturals")?.array()?;
-                if b.len().saturating_add(n.len()).saturating_add(operations.len()) > 32 {
+                if b.len()
+                    .saturating_add(n.len())
+                    .saturating_add(operations.len())
+                    > 32
+                {
                     return Err(Error::limit("qmatch static argument capacity"));
                 }
                 let module = value.field("module")?.text()?.into();
                 let function = value.field("function")?.text()?.into();
                 let bases = bases(value.field("static_bases")?)?;
                 let naturals = naturals(value.field("static_naturals")?)?;
-                let operations = operations.iter().map(|value| {
+                let operations = operations
+                    .iter()
+                    .map(|value| {
                         value.fields(&["name", "node"])?;
-                        Ok((value.field("name")?.text()?.into(), number(value.field("node")?)?))
-                    }).collect::<Result<_>>()?;
+                        Ok((
+                            value.field("name")?.text()?.into(),
+                            number(value.field("node")?)?,
+                        ))
+                    })
+                    .collect::<Result<_>>()?;
                 if tag == "formal" {
-                    Self::Formal { module,function,bases,naturals,operations,ordinal:get("ordinal")? }
+                    Self::Formal {
+                        module,
+                        function,
+                        bases,
+                        naturals,
+                        operations,
+                        ordinal: get("ordinal")?,
+                    }
                 } else {
-                    Self::Provider { module,function,bases,naturals,operations }
+                    Self::Provider {
+                        module,
+                        function,
+                        bases,
+                        naturals,
+                        operations,
+                    }
                 }
             }
-            "inverse" => { value.fields(&["tag", "child"])?; Self::Inverse(get("child")?) }
-            "controlled" => { value.fields(&["tag", "child"])?; Self::Controlled(get("child")?) }
-            "then" => { value.fields(&["tag", "left", "right"])?; Self::Then(get("left")?, get("right")?) }
-            "tensor" => { value.fields(&["tag", "left", "right"])?; Self::Tensor(get("left")?, get("right")?) }
-            "power" => { value.fields(&["tag", "child", "count"])?; Self::Power { child:get("child")?, count:get("count")? } }
-            "conjugate" => { value.fields(&["tag", "outer", "middle"])?; Self::Conjugate { outer:get("outer")?, middle:get("middle")? } }
+            "inverse" => {
+                value.fields(&["tag", "child"])?;
+                Self::Inverse(get("child")?)
+            }
+            "controlled" => {
+                value.fields(&["tag", "child"])?;
+                Self::Controlled(get("child")?)
+            }
+            "then" => {
+                value.fields(&["tag", "left", "right"])?;
+                Self::Then(get("left")?, get("right")?)
+            }
+            "tensor" => {
+                value.fields(&["tag", "left", "right"])?;
+                Self::Tensor(get("left")?, get("right")?)
+            }
+            "power" => {
+                value.fields(&["tag", "child", "count"])?;
+                Self::Power {
+                    child: get("child")?,
+                    count: get("count")?,
+                }
+            }
+            "conjugate" => {
+                value.fields(&["tag", "outer", "middle"])?;
+                Self::Conjugate {
+                    outer: get("outer")?,
+                    middle: get("middle")?,
+                }
+            }
             _ => return Err(Error::format("unknown qmatch operation node")),
         })
     }

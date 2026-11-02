@@ -1239,7 +1239,9 @@ impl Lowerer<'_, '_> {
                 ));
             }
             let value = values.into_iter().next().expect("one argument");
-            let op = self.retained_bound_operation(module, callee)?.expect("bound operation");
+            let op = self
+                .retained_bound_operation(module, callee)?
+                .expect("bound operation");
             return self.apply_operation(module, span, &op, value, Access::Apply);
         }
         let site = CallSite {
@@ -2051,7 +2053,7 @@ fn lower_function_in_context(
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
-            source_context: None,
+        source_context: None,
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,
@@ -2186,7 +2188,11 @@ fn lower_function_in_context(
             .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
     };
     accepted
-        .map(|program| program.retain_source_context(lower.source_context).retain_instrument_calls(lower.instrument_calls))
+        .map(|program| {
+            program
+                .retain_source_context(lower.source_context)
+                .retain_instrument_calls(lower.instrument_calls)
+        })
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(

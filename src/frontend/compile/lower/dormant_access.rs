@@ -356,7 +356,7 @@ fn check_action(
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
-            source_context: None,
+        source_context: None,
         tuple_binding_origins: Vec::new(),
         access_updates: vec![BTreeSet::new()],
         effect: Effect::Unitary,
