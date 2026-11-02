@@ -9,6 +9,8 @@ use crate::interchange::qmatch::{
 };
 
 mod arms;
+#[cfg(test)]
+mod tests;
 
 pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
@@ -120,6 +122,31 @@ fn owner(
             wires: register.wires,
         },
         basis,
+    })
+}
+
+fn retained_raw(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    inputs: &[Owner],
+    start: usize,
+    value: &Value,
+    declared_effect: Effect,
+) -> Result<RawProgram, CompileError> {
+    lower.compiler.charge(module, span, value.tree_size().nodes)?;
+    let mut quantum_outputs = Vec::new();
+    let mut classical_outputs = Vec::new();
+    value.outputs(&lower.raw.registers, &mut quantum_outputs, &mut classical_outputs);
+    lower.compiler.charge(module, span,
+        crate::frontend::raw_state::operations_size(&lower.raw.operations[start..]))?;
+    Ok(RawProgram {
+        quantum_inputs: inputs.iter().map(|owner| owner.port.clone()).collect(),
+        classical_inputs: vec![],
+        operations: lower.raw.operations[start..].to_vec(),
+        quantum_outputs,
+        classical_outputs,
+        declared_effect,
     })
 }
 
@@ -279,31 +306,10 @@ impl Frame {
         // A qmatch value may be nested in an ordinary runtime product. Keep
         // that value and its full type tree intact; the Raw boundary lists
         // only its actual owners and classical storage, in structural order.
-        lower
-            .compiler
-            .charge(&name.0, span, value.tree_size().nodes)?;
-        let mut quantum_outputs = Vec::new();
-        let mut classical_outputs = Vec::new();
-        value.outputs(
-            &lower.raw.registers,
-            &mut quantum_outputs,
-            &mut classical_outputs,
-        );
-        lower.compiler.charge(
-            &name.0,
-            span,
-            crate::frontend::raw_state::operations_size(&lower.raw.operations[self.start..]),
-        )?;
-        let raw = RawProgram {
-            quantum_inputs: self.inputs.iter().map(|owner| owner.port.clone()).collect(),
-            classical_inputs: vec![],
-            operations: lower.raw.operations[self.start..].to_vec(),
-            quantum_outputs,
-            classical_outputs,
-            declared_effect: lower.compiler.source.effects[&self.key]
-                .asserted()
-                .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred()),
-        };
+        let declared_effect = lower.compiler.source.effects[&self.key]
+            .asserted()
+            .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred());
+        let raw = retained_raw(lower, &name.0, span, &self.inputs, self.start, value, declared_effect)?;
         let mut rows = lower
             .compiler
             .retained_ordinary_type_sources(self.key, &name.0, span)?;
