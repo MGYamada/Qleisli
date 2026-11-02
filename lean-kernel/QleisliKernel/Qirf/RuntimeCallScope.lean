@@ -42,7 +42,7 @@ structure Checked {dependencies original} (block : RuntimeInterval.Block depende
 
 def Checked.program {dependencies original block start count inputs ordinary effect}
     (checked : @Checked dependencies original block start count inputs ordinary effect) : Semantics.Observation.Program :=
-  program checked.selected (checked.visible.table.map Prod.fst) ((block.operations.drop start).take count)
+  RuntimeCallScope.program checked.selected (checked.visible.table.map Prod.fst) ((block.operations.drop start).take count)
     (checked.returned.map (·.token)) checked.classicalOutputs effect
 
 /-- This is the complete literal subject for a named callee, with every actual
