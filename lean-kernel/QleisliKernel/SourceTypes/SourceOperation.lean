@@ -33,6 +33,44 @@ private def count (sources : Sources) (caller : String) (entries : List NaturalH
     validate expression.expression
     pure (← LexicalNatural.read sources caller entries environment scope expression.expression).result.value
 
+def countValue {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (tokens : List LocatedToken) : WorkM Nat :=
+  count sources caller entries environment scope
+    (StaticApplication.validateNatural instantiation genericState scope) tokens
+
+def countRows (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope : List String) (tokens : List LocatedToken) : WorkM (List (String × String)) := do
+  let texts := if (tokens.take 2).map (·.text) == ["2","^"] then tokens.drop 2 else tokens
+  let expression ← adapt (StaticBindings.natural texts)
+  NaturalRows.expression sources caller entries scope expression.expression
+
+structure Count {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (tokens : List LocatedToken) where
+  value : Nat
+  genericState : Option (GenericLexicalNatural.SomeEnvironment sources)
+  original : ∃ before after,
+    (countValue instantiation entries environment scope genericState tokens).run before = (.ok value,after)
+  rows : List (String × String)
+  rowsRead : ∃ before after,(countRows sources caller entries scope tokens).run before = (.ok rows,after)
+
+/-- Shared original count reader for static descriptions and direct runtime
+group transforms. Zero counts still retain their original syntax/helper rows;
+operand traversal and requested access remain the enclosing rule's duties. -/
+def readCount {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (tokens : List LocatedToken)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
+    WorkM (Count instantiation entries environment scope tokens) := do
+  let value ← NaturalAffine.witness (countValue instantiation entries environment scope genericState tokens)
+  let rows ← NaturalAffine.witness (countRows sources caller entries scope tokens)
+  pure ⟨value.val,genericState,by with_reducible exact value.property,rows.val,by with_reducible exact rows.property⟩
+
 /-- Every constructor child is visited before its graph is assembled, including
 zero-power children and unused actuals of a provider. The same callback handles
 operation arguments recursively; it is never a producer-supplied path flag. -/
@@ -52,8 +90,7 @@ def buildWithInstantiation {sources caller callerName original}
         | "controlled",[child] => return (← next child.tokens).unary .controlled
         | "power",[child,amount] =>
           let child ← next child.tokens
-          let count ← count sources caller entries environment scope
-            (StaticApplication.validateNatural instantiation genericState scope) amount.tokens
+          let count ← countValue instantiation entries environment scope genericState amount.tokens
           return child.unary (fun index => .power index count)
         | "then_op",[left,right] => return Description.binary .thenOp (← next left.tokens) (← next right.tokens)
         | "tensor_op",[left,right] => return Description.binary .tensor (← next left.tokens) (← next right.tokens)
