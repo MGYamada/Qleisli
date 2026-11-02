@@ -1,7 +1,7 @@
 import Protocol.Carrier
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
-import QleisliKernel.Qirf.SourceProviderSubject
+import QleisliKernel.Qirf.RuntimeContextRequest
 
 /-! Strict v5 data preparation, paired with the retained Rust request.
 This module issues no handle and has no production dispatcher. The complete
@@ -94,21 +94,10 @@ private def source (value : Json) : Except String Source := do
   return ⟨← text (← field value "module"),← text (← field value "function"),
     ⟨← bases b,← naturals n,operations⟩⟩
 
-abbrev Provider := Qirf.SourceProviderSubject.Subject
-structure Arm where
-  implementation : Nat
-  controlled : Nat
-  deriving BEq, DecidableEq, Repr
-structure Site where
-  attached : Interface
-  required : Interface
-  position : Qirf.SourceSequence.Position
-  arms : List Arm
-  deriving BEq, DecidableEq, Repr
-inductive Context where
-  | mk (positions : List Qirf.SourceSequence.Position) (sites : List Site)
-      (calls : List (Qirf.SourceSequence.Position × Context))
-      (branches : List (Qirf.SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context))
+abbrev Provider := Qirf.RuntimeContextRequest.Provider
+abbrev Arm := Qirf.RuntimeContextRequest.Arm
+abbrev Site := Qirf.RuntimeContextRequest.Site
+abbrev Context := Qirf.RuntimeContextRequest.Context
 
 -- Keep recursive transport data plain: the paired walker uses total fuel and
 -- exact byte comparison, without generated partial equality/printing helpers.
