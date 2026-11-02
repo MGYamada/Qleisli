@@ -23,7 +23,8 @@ theorem retain_value (raw rows : List Row) (before after : Nat)
   | nil => exact (pure_success [] rows before after ran).1
   | cons row rest =>
     obtain ⟨_,middle,_,tailRun⟩ := bind_success _ _ before after rows ran
-    exact (pure_success ((row :: rest).eraseDups) rows middle after tailRun).1
+    obtain ⟨_,afterCharge,_,returned⟩ := bind_success _ _ middle after rows tailRun
+    exact (pure_success ((row :: rest).eraseDups) rows afterCharge after returned).1
 
 structure Retained (raw : List Row) where
   rows : List Row
