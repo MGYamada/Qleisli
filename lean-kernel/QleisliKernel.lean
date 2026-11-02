@@ -109,6 +109,7 @@ import QleisliKernel.Qirf.RuntimeForestCode
 import QleisliKernel.Qirf.RuntimeCoefficientTransport
 import QleisliKernel.Semantics.SourceClassical
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
+import QleisliKernel.SourceTypes.GenericDutyQueue
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Qirf.RuntimeOrdinarySSA
 import QleisliKernel.Qirf.RuntimeOrdinaryPhis

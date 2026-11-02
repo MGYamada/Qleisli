@@ -62,6 +62,7 @@ import QleisliKernel.Tests.GenericOperation
 import QleisliKernel.Tests.GenericDuties
 import QleisliKernel.Tests.GenericActivities
 import QleisliKernel.Tests.GenericOperationSubstitute
+import QleisliKernel.Tests.GenericDutyQueue
 import QleisliKernel.Tests.SourcePendingMeaning
 import QleisliKernel.Tests.GenericCatalogueOriginals
 import QleisliKernel.Tests.SourceComputedSyntax
