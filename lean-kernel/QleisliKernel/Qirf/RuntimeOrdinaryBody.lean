@@ -71,6 +71,37 @@ def valuation (inputs : List Nat) (measurements : List Measurement) (values : Va
       let bit ← Semantics.OrdinaryValue.lookup values measured.output
       return bitValue bit }
 
+def visibleIds (native : Raw.Observation.State) : List Nat :=
+  native.classical.filterMap fun (id,scope) => if native.active.contains scope then some id else none
+
+def visibleTable (native : Raw.Observation.State) (ssa : State) : Table :=
+  ssa.table.filter fun binding => Raw.Observation.visible native binding.1
+
+structure Visible (native : Raw.Observation.State) (before : State) where
+  table : Table
+  original : table = visibleTable native before
+  complete : table.map Prod.fst = visibleIds native
+  distinct : (table.map Prod.fst).Nodup
+
+def Visible.ssa {native before} (visible : Visible native before) : State :=
+  {before with table := visible.table}
+
+theorem Visible.measurements {native before} (visible : Visible native before) :
+    visible.ssa.measurements = before.measurements := rfl
+
+/-- A named scope receives every currently visible actual SSA input and its
+original symbolic expression. Inaccessible identities are not scope inputs;
+the measurement-key environment remains intact for transported expressions. -/
+def readVisible (native : Raw.Observation.State) (before : State) : WorkM (Visible native before) := do
+  exactWork (Exact.charge (32*(native.classical.length+native.active.length+before.table.length+1)^2+
+    32*(before.table.map fun binding => SourceRuntimeValues.expressionFields binding.2).sum))
+  let table := visibleTable native before
+  if complete : table.map Prod.fst = visibleIds native then
+    if distinct : (table.map Prod.fst).Nodup then
+      return ⟨table,rfl,complete,distinct⟩
+    else throw .request
+  else throw .request
+
 structure Gap {dependencies program} (block : RuntimeInterval.Block dependencies program)
     (start count : Nat) (before : SourceState) (ssa : State) where
   checked : RuntimeOrdinarySSA.Gap block start count ssa.table

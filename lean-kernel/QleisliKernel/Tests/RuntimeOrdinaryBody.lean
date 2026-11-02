@@ -21,6 +21,17 @@ private def gapView := ((do
 
 #guard gapView = some ([7],[0],1,[(2,.input 0),(3,.not (.input 0))])
 
+private def visibility (missing : Bool) : Option (List Nat × Nat) :=
+  let native : Raw.Observation.State := {classical := [(1,0),(2,1),(3,2)],active := [0,2],scope := 2}
+  let ordinary : RuntimeOrdinaryBody.State :=
+    ⟨if missing then [(1,.input 0)] else [(1,.input 0),(2,.bit true),(3,.not (.input 0))],
+      [⟨⟨"main","read",17⟩,[],⟨0,[.bit]⟩,2⟩]⟩
+  ((RuntimeOrdinaryBody.readVisible native ordinary).run 1000000).1.toOption.map fun checked =>
+    (checked.ssa.table.map Prod.fst,checked.ssa.measurements.length)
+
+#guard visibility false = some ([1,3],1)
+#guard (visibility true).isNone
+
 -- The first bundled test is preserved at a85f9d7d. This separately labelled
 -- component fixture declares its actual prelude policy and uses the fixed
 -- native budget; it makes no bundled-standard-library coverage claim.
@@ -70,5 +81,6 @@ private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × Lis
 
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Gap.sameSource
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Observation.issuedUnchanged
+#print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Visible.measurements
 
 end QleisliKernel.Tests.RuntimeOrdinaryBody
