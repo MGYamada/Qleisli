@@ -150,17 +150,32 @@ def readAuxiliary (sources : Sources) (helpers : NaturalHelpers.Checked sources)
     pure (.imported owner declaration.name resolved.val (by with_reducible exact resolved.property))
   | _ => throw .request
 
-def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources) (ids : List DefId) :
-    WorkM (List (BodyRecord sources)) := ids.mapM fun (owner,name) => readBody sources owner name (some helpers)
+def readModuleOriginals (sources : Sources) (row : Module) : WorkM (OrdinarySignature.Originals sources) := do
+  exactWork (Exact.charge (16*((sources.toList.map fun source => source.1.utf8ByteSize+1).sum+row.owner.utf8ByteSize+1)))
+  if bound : sources.toList.filter (fun source => source.1 == row.owner) = [(row.owner,row.source)] then
+    let known : OrdinarySignature.KnownModule sources row.owner :=
+      ⟨row.source,bound,row.tokens,row.lexed,row.disabled,row.policy,row.catalogue,row.scanned,row.source.toUTF8,rfl⟩
+    OrdinarySignature.readKnownModule known
+  else throw .request
+
+def readOriginals (sources : Sources) (modules : List Module) : WorkM (OrdinarySignature.Originals sources) := do
+  pure (← modules.mapM (readModuleOriginals sources)).flatten
+
+def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (originals : OrdinarySignature.Originals sources) (ids : List DefId) : WorkM (List (BodyRecord sources)) :=
+  ids.mapM fun (owner,name) => readBody sources owner name (some helpers) (some originals)
 
 structure RuntimeChecked (sources : Sources) where
   modules : List Module
   moduleRead : ∃ before after,(sources.toList.mapM readModule).run before = (.ok modules,after)
   moduleNames : modules.map (·.owner) = sources.toList.map (·.1)
   uniqueModules : (modules.map (·.owner)).eraseDups.length = modules.length
+  originals : OrdinarySignature.Originals sources
+  originalsRead : ∃ before after,(readOriginals sources modules).run before = (.ok originals,after)
+  originalsComplete : originals.map (fun original => (original.owner,original.name)) = runtimeIds modules
   helpers : NaturalHelpers.Checked sources
   records : List (BodyRecord sources)
-  bodiesRead : ∃ before after,(readBodies sources helpers (runtimeIds modules)).run before = (.ok records,after)
+  bodiesRead : ∃ before after,(readBodies sources helpers originals (runtimeIds modules)).run before = (.ok records,after)
   identified : records.map (·.id) = runtimeIds modules
   cycles : ∃ before after,(checkCycles records).run before = (.ok (),after)
   all : AllInferred records records
@@ -291,22 +306,26 @@ def read (sources : Sources) : WorkM (Checked sources) := do
   let modules ← NaturalAffine.witness (sources.toList.mapM readModule)
   if moduleNames : modules.val.map (·.owner) = sources.toList.map (·.1) then
     if uniqueModules : (modules.val.map (·.owner)).eraseDups.length = modules.val.length then
-      let helpers ← NaturalHelpers.read sources
-      let records ← NaturalAffine.witness (readBodies sources helpers (runtimeIds modules.val))
-      if identified : records.val.map (·.id) = runtimeIds modules.val then
-        let cycles ← NaturalAffine.witness (checkCycles records.val)
-        have cycleUnit : cycles.val = () := by cases cycles.val; rfl
-        let all ← inferAll records.val records.val
-        let runtime : RuntimeChecked sources :=
-          ⟨modules.val,by with_reducible exact modules.property,moduleNames,uniqueModules,helpers,records.val,
-            by with_reducible exact records.property,identified,
-            by with_reducible simpa only [cycleUnit] using cycles.property,all⟩
-        let auxiliary ← NaturalAffine.witness ((auxiliaryIds modules.val).mapM (readAuxiliary sources helpers))
-        let meaningReferences ← NaturalAffine.witness
-          ((auxiliary.val.flatMap (·.meanings) ++ records.val.flatMap bodyMeanings).forM (checkMeaningReferences runtime))
-        have meaningUnit : meaningReferences.val = () := by cases meaningReferences.val; rfl
-        pure ⟨runtime,auxiliary.val,by with_reducible exact auxiliary.property,
-          by with_reducible simpa only [meaningUnit] using meaningReferences.property⟩
+      let originals ← NaturalAffine.witness (readOriginals sources modules.val)
+      if originalsComplete : originals.val.map (fun original => (original.owner,original.name)) = runtimeIds modules.val then
+        let helpers ← NaturalHelpers.read sources
+        let records ← NaturalAffine.witness (readBodies sources helpers originals.val (runtimeIds modules.val))
+        if identified : records.val.map (·.id) = runtimeIds modules.val then
+          let cycles ← NaturalAffine.witness (checkCycles records.val)
+          have cycleUnit : cycles.val = () := by cases cycles.val; rfl
+          let all ← inferAll records.val records.val
+          let runtime : RuntimeChecked sources :=
+            ⟨modules.val,by with_reducible exact modules.property,moduleNames,uniqueModules,
+              originals.val,by with_reducible exact originals.property,originalsComplete,helpers,records.val,
+              by with_reducible exact records.property,identified,
+              by with_reducible simpa only [cycleUnit] using cycles.property,all⟩
+          let auxiliary ← NaturalAffine.witness ((auxiliaryIds modules.val).mapM (readAuxiliary sources helpers))
+          let meaningReferences ← NaturalAffine.witness
+            ((auxiliary.val.flatMap (·.meanings) ++ records.val.flatMap bodyMeanings).forM (checkMeaningReferences runtime))
+          have meaningUnit : meaningReferences.val = () := by cases meaningReferences.val; rfl
+          pure ⟨runtime,auxiliary.val,by with_reducible exact auxiliary.property,
+            by with_reducible simpa only [meaningUnit] using meaningReferences.property⟩
+        else throw .request
       else throw .request
     else throw .request
   else throw .request

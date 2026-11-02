@@ -20,6 +20,16 @@ def Checked.arguments {sources owner name original}
     (instantiation : @Checked sources owner name original) : StaticTypes.Arguments :=
   match instantiation with | .closed _ => {} | .static arguments _ _ => arguments
 
+def Checked.originals {sources owner name original}
+    (instantiation : @Checked sources owner name original) : Option (OrdinarySignature.Originals sources) :=
+  match instantiation with | .closed _ => none | .static _ environment _ => environment.numeric.originals
+
+def Checked.helpers {sources owner name original}
+    (instantiation : @Checked sources owner name original) : Option (NaturalHelpers.Checked sources) :=
+  match instantiation with
+  | .closed _ => none
+  | .static _ environment _ => some ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+
 def Checked.names {sources owner name original}
     (instantiation : @Checked sources owner name original) : List String :=
   match instantiation with

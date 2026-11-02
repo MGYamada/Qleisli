@@ -64,10 +64,12 @@ structure Environment (sources : Sources) (owner name : String) (arguments : Arg
 /-- Type preparation retains operation descriptions as unresolved obligations.
 It checks their complete names, never their ports, paths or actual bodies.
 Only the separate original-operation graph checker discharges those duties. -/
-def prepareWithObligations (sources : Sources) (owner name : String) (arguments : Arguments) :
+def prepareWithObligations (sources : Sources) (owner name : String) (arguments : Arguments)
+    (originals : Option (OrdinarySignature.Originals sources) := none)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) :
     WorkM (Environment sources owner name arguments) := do
   guard (arguments.bases.length+arguments.naturals.length+arguments.operations.length ≤ 32) .limit
-  let numeric ← StaticNatural.prepare sources owner name ["0"]
+  let numeric ← StaticNatural.prepare sources owner name ["0"] originals helpers
   if operations : operationsMatch numeric.original arguments = true then
     exactWork (Exact.charge ((arguments.bases.map (fun a => a.1.utf8ByteSize+1)).sum*
       (numeric.original.header.formals.length+1)+1))
@@ -106,7 +108,7 @@ def readType {sources owner name arguments}
   let read ← typeExpressionScopedWithSources sources owner
     (fun expression => do
       let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
-      let prepared ← StaticNatural.prepareOriginalWithHelpers environment.numeric.original expression helpers
+      let prepared ← StaticNatural.prepareOriginalWithHelpers environment.numeric.original expression helpers environment.numeric.originals
       return (← StaticNatural.close prepared.prepared arguments.naturals).value)
     (parameter environment) tokens
   let _ ← FiniteCarrier.read read.basis

@@ -102,12 +102,19 @@ structure Original (sources : Sources) (owner name : String) where
   header : Parsed
   parsed : parse envelope.parsedHeader = .ok header
 
-def read (sources : Sources) (owner name : String) : Finite.WorkM (Original sources owner name) := do
-  let original ← OrdinarySignature.readOriginalEnvelope sources owner name
+def readOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Finite.WorkM (Original sources owner name) := do
   Finite.exactWork (Exact.charge (32*original.occurrence.header.length^2+1))
   match parsed : parse original.parsedHeader with
   | .error _ => throw .request
   | .ok header => pure ⟨original,header,parsed⟩
+
+def read (sources : Sources) (owner name : String)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : Finite.WorkM (Original sources owner name) := do
+  let original ← match originals with
+    | none => OrdinarySignature.readOriginalEnvelope sources owner name
+    | some originals => OrdinarySignature.lookupOriginals originals owner name
+  readOriginal original
 
 /-- Original mixed-kind ordinals survive canonical name-first affine order. -/
 def frame {sources owner name} (original : Original sources owner name) : NaturalFrames.Frame :=

@@ -193,7 +193,7 @@ def read {sources owner name original}
     (targetOwner targetName : String) (operationReader : OperationReader := noOperations)
     (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
     WorkM (Checked instantiation entries environment scope operationReader written targetOwner targetName) := do
-  let target ← StaticHeaders.read sources targetOwner targetName
+  let target ← StaticHeaders.read sources targetOwner targetName instantiation.originals
   guard (written.arguments.length ≤ 32) .limit
   exactWork (Exact.charge (64*(tokens.length+1)*(target.header.formals.length+1)))
   if complete : target.header.formals.length = written.arguments.length then

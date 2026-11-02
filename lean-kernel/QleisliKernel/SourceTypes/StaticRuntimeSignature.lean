@@ -64,9 +64,11 @@ def fromEnvironment {sources owner name arguments}
 
 /-- Type-only preparation for an enclosing caller which separately checks all
 operation actuals. The unresolved graph duties remain explicit in environment. -/
-def prepareWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments) :
+def prepareWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
+    (originals : Option (OrdinarySignature.Originals sources) := none)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) :
     WorkM (Checked sources owner name arguments) := do
-  fromEnvironment (← StaticTypes.prepareWithObligations sources owner name arguments)
+  fromEnvironment (← StaticTypes.prepareWithObligations sources owner name arguments originals helpers)
 
 /-- Existing runtime type routes stay strict: operation formals cannot pass
 without the separate original-operation graph continuation. -/

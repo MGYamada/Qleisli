@@ -81,6 +81,7 @@ def readWithArguments (sources : Sources) (owner name : String) (arguments : Sta
     (context : StaticOperation.Context := .external) (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name arguments
+    (catalogue.map (·.originals)) (catalogue.map (·.helpers))
   return (← fromCore signature context catalogue).checked
 
 structure ResolvedSelection (sources : Sources) (resolution : Resolved) where

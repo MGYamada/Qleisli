@@ -82,10 +82,11 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
     ports.input.result.rows ++ ports.output.result.rows ++ meanings.flatMap (·.sourceRows)⟩
 
 def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
-    (helpers : Option (NaturalHelpers.Checked sources) := none) :
+    (helpers : Option (NaturalHelpers.Checked sources) := none)
+    (originals : Option (OrdinarySignature.Originals sources) := none) :
     WorkM {definition : Definition sources owner name // definition.original = original} := do
   let helpers ← match helpers with | some helpers => pure helpers | none => NaturalHelpers.read sources
-  let numeric ← StaticNatural.prepareOriginalWithHelpers original ["0"] helpers
+  let numeric ← StaticNatural.prepareOriginalWithHelpers original ["0"] helpers originals
   let state : GenericLexicalNatural.SomeEnvironment sources :=
     ⟨owner,name,numeric.prepared,GenericLexicalNatural.initial numeric.prepared⟩
   let parameters ← original.envelope.parsedHeader.parameterTypes.mapM (GenericValues.readType state 65)
@@ -102,8 +103,9 @@ def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Origin
       operations.flatten.flatMap (fun (_,operation) => operation.rows)⟩,rfl⟩
 
 def readDefinition (sources : Sources) (owner name : String)
-    (helpers : Option (NaturalHelpers.Checked sources) := none) : WorkM (Definition sources owner name) := do
-  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name) helpers).val
+    (helpers : Option (NaturalHelpers.Checked sources) := none)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : WorkM (Definition sources owner name) := do
+  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name originals) helpers originals).val
 
 private def functionEffect {sources owner name} (caller : String) (definition : Definition sources owner name) : Formula :=
   if caller == owner then ⟨.unitary,[(owner,name)]⟩
@@ -168,7 +170,7 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
     (operationReader : List LocatedToken → WorkM (Operation sources)) (runtimeRecursion : Bool) :
     WorkM (Application sources) := do
   let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
-  let definition ← readDefinition sources owner name (some helpers)
+  let definition ← readDefinition sources owner name (some helpers) state.prepared.originals
   let target := definition.original
   guard (written.arguments.length == target.header.formals.length) .request
   let transfer ← StaticCallPremises.readInState state scope target written.arguments
@@ -787,15 +789,18 @@ def BodyRecord.quantumDirect {sources} (body : BodyRecord sources) : Bool :=
     !body.definition.operations.isEmpty
 
 def readBody (sources : Sources) (owner name : String)
-    (helpers : Option (NaturalHelpers.Checked sources) := none) : WorkM (BodyRecord sources) := do
-  let definition ← readDefinition sources owner name helpers
+    (helpers : Option (NaturalHelpers.Checked sources) := none)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : WorkM (BodyRecord sources) := do
+  let definition ← readDefinition sources owner name helpers originals
   let tokens := definition.original.envelope.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
   let result ← NaturalAffine.witness (checkTree definition tree)
   pure ⟨owner,name,definition,tree,result.val,by with_reducible exact result.property⟩
 
-def discover (sources : Sources) : Nat → List DefId → List (BodyRecord sources) → WorkM (List (BodyRecord sources)) :=
-  Nat.rec (fun pending visited => if pending.isEmpty then pure visited else throw .limit)
+def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : List (BodyRecord sources))
+    (helpers : Option (NaturalHelpers.Checked sources) := none)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : WorkM (List (BodyRecord sources)) :=
+  (Nat.rec (fun pending visited => if pending.isEmpty then pure visited else throw .limit)
     (fun _ next pending visited => do
       exactWork (Exact.charge (16*((pending.map fun (owner,name) => owner.utf8ByteSize+name.utf8ByteSize+1).sum+
         (visited.map fun body => body.owner.utf8ByteSize+body.name.utf8ByteSize+1).sum+1)))
@@ -803,8 +808,8 @@ def discover (sources : Sources) : Nat → List DefId → List (BodyRecord sourc
       | [] => pure visited
       | (owner,name) :: rest =>
         if visited.any (fun body => body.id == (owner,name)) then next rest visited else
-          let body ← readBody sources owner name
-          next (rest ++ body.outcome.references) (visited ++ [body]))
+          let body ← readBody sources owner name helpers originals
+          next (rest ++ body.outcome.references) (visited ++ [body])) fuel) pending visited
 
 private def effectEntries {sources} (records : List (BodyRecord sources)) : List Entry := records.map (·.entry)
 
@@ -904,10 +909,12 @@ def Root.record {sources owner name original tree} (root : @Root sources owner n
 structure Checked {sources owner name} (original : OrdinarySignature.Original sources owner name) where
   tree : SourceSyntax.Tree original.occurrence.body
   root : Root original tree
+  helpers : NaturalHelpers.Checked sources
+  originals : Option (OrdinarySignature.Originals sources)
   records : List (BodyRecord sources)
   discovered : ∃ before after,
     (discover sources ((sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1)
-      root.outcome.references [root.record]).run before = (.ok records,after)
+      root.outcome.references [root.record] (some helpers) originals).run before = (.ok records,after)
   all : AllInferred records records
   inferred : Inferred records root.record
 
@@ -928,26 +935,33 @@ def Checked.sourceRows {sources owner name original} (checked : @Checked sources
 
 def readOriginalWithTree {sources owner name}
     (original : OrdinarySignature.Original sources owner name)
-    (tree : SourceSyntax.Tree original.occurrence.body) : WorkM (Checked original) := do
+    (tree : SourceSyntax.Tree original.occurrence.body)
+    (providedHelpers : Option (NaturalHelpers.Checked sources) := none)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : WorkM (Checked original) := do
   match parsed : StaticHeaders.parse original.parsedHeader with
   | .error _ => throw .request
   | .ok header =>
     let header : StaticHeaders.Original sources owner name := ⟨original,header,parsed⟩
-    let definition ← readDefinitionOriginal header
+    let helpers ← match providedHelpers with | some helpers => pure helpers | none => NaturalHelpers.read sources
+    let definition ← readDefinitionOriginal header (some helpers) originals
     have same : definition.val.original.envelope = original := congrArg (fun h => h.envelope) definition.property
     let result ← NaturalAffine.witness (checkTree definition.val (originalTree definition.val same tree))
     let root : Root original tree := ⟨definition.val,same,result.val,by with_reducible exact result.property⟩
     let records ← NaturalAffine.witness (discover sources ((sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1)
-      root.outcome.references [root.record])
+      root.outcome.references [root.record] (some helpers) originals)
     checkCycles records.val
     let all ← inferAll records.val records.val
     let inferred ← infer records.val root.record
-    pure ⟨tree,root,records.val,by with_reducible exact records.property,all,inferred⟩
+    pure ⟨tree,root,helpers,originals,records.val,by with_reducible exact records.property,all,inferred⟩
 
 def readWithTree {sources owner name original}
-    (_instantiation : @StaticInstantiation.Checked sources owner name original)
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
     (tree : SourceSyntax.Tree original.occurrence.body) : WorkM (Checked original) :=
-  readOriginalWithTree original tree
+  match instantiation with
+  | .closed _ => readOriginalWithTree original tree
+  | .static _ environment _ =>
+    readOriginalWithTree original tree (some ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩)
+      environment.numeric.originals
 
 def readOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name) : WorkM (Checked original) := do
   let tokens := original.occurrence.body

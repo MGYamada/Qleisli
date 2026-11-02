@@ -132,7 +132,7 @@ def readInState {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
     (target : StaticHeaders.Original sources targetOwner targetName) (arguments : List CallSyntax.Argument) :
     WorkM (InState state scope target arguments) := do
   let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
-  let callee ← StaticNatural.prepareOriginalWithHelpers target ["0"] helpers
+  let callee ← StaticNatural.prepareOriginalWithHelpers target ["0"] helpers state.prepared.originals
   let forms ← NaturalAffine.witness (readForms state scope target.header.formals arguments)
   if count : forms.val.length = target.header.formals.length then
     let replacements := NaturalFrames.replacements (StaticHeaders.frame callee.prepared.original) (forms.val.map (·.form))

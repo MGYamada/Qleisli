@@ -217,6 +217,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
     let some description := description.select index | throw .request
     return (name,description)
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
+    (catalogue.map (·.originals)) (catalogue.map (·.helpers))
   guard (context.visible owner signature.original.declaration.isPublic) .request
   let generic ← GenericCatalogue.inferOriginal signature.original catalogue
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
@@ -261,6 +262,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let some description := description.select index | throw .request
       return (name,description)
     let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
+      (catalogue.map (·.originals)) (catalogue.map (·.helpers))
     let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
     let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
     let kindRows ← kindRowsWithInstantiation signature.instantiation

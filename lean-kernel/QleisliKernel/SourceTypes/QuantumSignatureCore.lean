@@ -149,9 +149,11 @@ def read (sources : Sources) (owner name : String) : WorkM (Checked sources owne
 /-- Complete checked actuals close types on the untouched source envelope.
 Unused actuals and the original ordered numeric premises are checked by the
 shared StaticTypes environment before any parameter or result read. -/
-def prepareWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments) :
+def prepareWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
+    (originals : Option (OrdinarySignature.Originals sources) := none)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) :
     WorkM (Checked sources owner name) := do
-  let environment ← StaticTypes.prepareWithObligations sources owner name arguments
+  let environment ← StaticTypes.prepareWithObligations sources owner name arguments originals helpers
   let original := environment.numeric.original.envelope
   let instantiation := StaticInstantiation.Checked.static arguments environment rfl
   if ordinary : original.parsedHeader.ordinaryOnly = false then

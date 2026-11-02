@@ -46,6 +46,7 @@ def selectInstance {sources caller callerName}
       resolution.moduleName resolution.declaration.name operationReader genericState
     let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
     let core ← QuantumSignatureCore.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
+      (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers))
     let operations ← StaticOperation.checkArgumentsFrom core.instantiation (.source caller) operationActuals.actuals
       callerSignature.operations.catalogue
     let signature := (← fromCoreWithArguments core (.source caller) operations).checked
