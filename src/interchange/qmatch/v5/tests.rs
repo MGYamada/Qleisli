@@ -3,10 +3,15 @@
 use super::*;
 
 const EMPTY: &str = r#"{"positions":[],"sites":[],"calls":[],"branches":[],"bodies":[]}"#;
+const RUNTIME: &str = r#"{"format":"qleisli.runtime-root-request","version":2,"profile":"finite-runtime-root-v2",
+ "selection":"internal","module":"m","declaration":"f","static_bases":[],"static_naturals":[],
+ "parameters":[],"input_storage":[],"input_rows":[[]],"result":[{"tag":"finite","atom":{"tag":"unit"}}],
+ "storage":[{"tag":"ordinary","basis":[{"tag":"unit"}],"storage":{"tag":"unit"}}],"public_effect":"unitary"}"#;
 
 fn value() -> Value {
     json::parse(format!(r#"{{"format":"qleisli.qmatch-request","version":5,"profile":"finite-source-qmatch-context-v5",
       "source":{{"module":"m","function":"f","static_bases":[],"static_naturals":[],"static_operations":[]}},
+      "runtime":{RUNTIME},
       "positions":[],"sites":[],"calls":[],"branches":[],"bodies":[
        {{"subject":{{"kind":"function","evidence":7}},"body":{EMPTY}}},
        {{"subject":{{"kind":"pure","program":9}},"body":{EMPTY}}}]}}"#).as_bytes()).unwrap()
@@ -32,11 +37,38 @@ fn unified_body_subject_variants_are_exact_and_old_profiles_refuse() {
         object(&mut changed).insert(extra.into(), Value::Bool(true));
         assert!(Request::decode(&json::encode(&changed).unwrap()).is_err(), "{extra}");
     }
-    for missing in ["calls", "branches", "bodies"] {
+    for missing in ["runtime", "calls", "branches", "bodies"] {
         let mut changed = value();
         object(&mut changed).remove(missing);
         assert!(Request::decode(&json::encode(&changed).unwrap()).is_err(), "{missing}");
     }
+}
+
+#[test]
+fn retained_runtime_identity_and_static_actuals_match_the_same_source_instance() {
+    let initial = value();
+    let decoded = Request::decode(&json::encode(&initial).unwrap()).unwrap();
+    assert_eq!(Request::decode(&decoded.encode().unwrap()).unwrap(), decoded);
+    for field in ["module", "declaration"] {
+        let mut changed = initial.clone();
+        object(object(&mut changed).get_mut("runtime").unwrap())
+            .insert(field.into(), Value::String("other".into()));
+        assert!(Request::decode(&json::encode(&changed).unwrap()).is_err());
+    }
+    for field in ["static_bases", "static_naturals"] {
+        let actual = if field == "static_bases" { r#"[{"name":"A","basis":[{"tag":"unit"}]}]"# }
+            else { r#"[{"name":"unused","value":17}]"# };
+        let actual = json::parse(actual.as_bytes()).unwrap();
+        let mut changed = initial.clone();
+        object(object(&mut changed).get_mut("runtime").unwrap()).insert(field.into(), actual.clone());
+        assert!(Request::decode(&json::encode(&changed).unwrap()).is_err());
+        object(object(&mut changed).get_mut("source").unwrap()).insert(field.into(), actual);
+        assert!(Request::decode(&json::encode(&changed).unwrap()).is_ok());
+    }
+    let mut changed = initial;
+    object(object(&mut changed).get_mut("runtime").unwrap())
+        .insert("static_operations".into(), Value::Array(vec![]));
+    assert!(Request::decode(&json::encode(&changed).unwrap()).is_err());
 }
 
 #[test]

@@ -121,14 +121,20 @@ fn source(view: &mut View<'_>, value: &data::v5::Source) -> Result<()> {
     })
 }
 
+fn runtime(view: &mut View<'_>, value: &crate::interchange::runtime_root::Request) -> Result<()> {
+    view.record("source-runtime", 11, |w| super::runtime_root::fields(w, value))
+}
+
 pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> Result<Vec<u8>> {
+    request.bounded()?;
     let mut writer = Writer { bytes:b"QDV1".to_vec(), limit:MAX_BYTES, depth:0 };
-    writer.sized(5, 4)?;
+    writer.sized(5, 5)?;
     writer.depth += 1;
     writer.text(data::v5::PROFILE)?;
     graph.write(&mut writer)?;
     let mut view = View { writer:&mut writer, dependencies:&BTreeMap::new() };
     source(&mut view,&request.source)?;
+    runtime(&mut view,&request.runtime)?;
     context(&mut view,&request.context)?;
     writer.depth -= 1;
     Ok(writer.bytes)

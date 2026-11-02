@@ -1,4 +1,5 @@
 import Protocol.Carrier
+import Protocol.RuntimeRoot
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.Qirf.RuntimeContextRequest
@@ -103,7 +104,19 @@ abbrev Context := Qirf.RuntimeContextRequest.Context
 -- exact byte comparison, without generated partial equality/printing helpers.
 structure Request where
   source : Source
+  runtime : Qirf.RuntimeFamily.Request
   context : Context
+
+/-- The runtime JSON remains the strict existing v2 object. Its operation
+actuals come exclusively from this same original qmatch source instance. -/
+def Request.combinedRuntime (request : Request) : Qirf.RuntimeFamily.Request :=
+  {request.runtime with staticArguments := request.source.arguments}
+
+def Request.compatible (request : Request) : Bool :=
+  request.source.moduleName == request.runtime.moduleName &&
+  request.source.functionName == request.runtime.declarationName &&
+  request.source.arguments.bases == request.runtime.staticArguments.bases &&
+  request.source.arguments.naturals == request.runtime.staticArguments.naturals
 
 private def position (value : Json) : Except String Qirf.SourceSequence.Position := do
   Carrier.fields value ["offset","start","count"]
@@ -160,11 +173,21 @@ private def context : Nat → Json → WorkM Context
     return .mk positions sites calls branches bodies
 
 def decode (value : Json) : WorkM Request := do
-  adapt (Carrier.fields value ["format","version","profile","source","positions","sites","calls","branches","bodies"])
+  adapt (Carrier.fields value ["format","version","profile","source","runtime","positions","sites","calls","branches","bodies"])
   guard (← adapt (do return (← (← field value "format").getStr?) == "qleisli.qmatch-request" &&
     (← number (← field value "version")) == 5 && (← (← field value "profile").getStr?) == profile)) .request
   let source ← adapt (source (← adapt (field value "source")))
-  return ⟨source,← context 129 value⟩
+  let runtime ← Protocol.RuntimeRoot.decode (← adapt (field value "runtime"))
+  let names := source.moduleName.utf8ByteSize+source.functionName.utf8ByteSize+
+    runtime.moduleName.utf8ByteSize+runtime.declarationName.utf8ByteSize+
+    ((source.arguments.bases ++ runtime.staticArguments.bases).map fun (name,_) => name.utf8ByteSize).sum+
+    ((source.arguments.naturals ++ runtime.staticArguments.naturals).map fun (name,_) => name.utf8ByteSize).sum
+  exactWork (Exact.charge (16*(names+Raw.OwnerFlow.fields
+    ((source.arguments.bases ++ runtime.staticArguments.bases).map fun (_,basis) => ⟨0,basis⟩)+1)))
+  let body ← context 129 value
+  let request : Request := ⟨source,runtime,body⟩
+  guard request.compatible .request
+  return request
 
 def readRequest (bytes : ByteArray) : WorkM Request := do
   let value ← adapt (do

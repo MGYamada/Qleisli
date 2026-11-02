@@ -1,5 +1,6 @@
 import Protocol.QmatchV5
 import Protocol.ExecutionView.CheckedCarrier
+import Protocol.ExecutionView.CheckedRuntimeRoot
 import Protocol.ExecutionView.Graph
 
 /-! Independent typed v5 view preparation. No JSON encoder or original-body
@@ -63,9 +64,12 @@ def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value
     let bodies ← bodies.mapM fun (subject,body) => do return record "source-body" [provider subject,← context fuel body]
     return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies]
 
+def runtime (request : Qirf.RuntimeFamily.Request) : Finite.WorkM Value := do
+  return record "source-runtime" (← CheckedRuntimeRoot.requestDescription request)
+
 def description (artifact : Qirf.Artifact) (root : Qirf.Validity.Root) (request : Protocol.QmatchV5.Request) :
     Finite.WorkM Value := do
   let graph ← FiniteView.graph artifact root
-  return record Protocol.QmatchV5.profile [graph,source request.source,← context 129 request.context]
+  return record Protocol.QmatchV5.profile [graph,source request.source,← runtime request.runtime,← context 129 request.context]
 
 end QleisliKernel.Protocol.ExecutionView.QmatchV5

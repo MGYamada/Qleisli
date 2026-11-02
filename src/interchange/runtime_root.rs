@@ -135,8 +135,14 @@ fn storage(value: &Value, nodes: &mut usize, ordinary: &mut usize) -> Result<Vec
 
 impl Request {
     pub fn encode(&self) -> Result<Vec<u8>> {
+        json::encode(&self.value()?)
+    }
+
+    /// Shared typed serialization for the nested qmatch envelope. This does
+    /// not decode/replay a byte encoding to recover the retained object.
+    pub(in crate::interchange) fn value(&self) -> Result<Value> {
         self.preflight()?;
-        json::encode(&Value::object([
+        Ok(Value::object([
             ("format", text("qleisli.runtime-root-request")),
             ("version", Value::Number(2)),
             ("profile", text("finite-runtime-root-v2")),
@@ -234,6 +240,10 @@ impl Request {
 
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let value = json::parse(bytes)?;
+        Self::decode_value(&value)
+    }
+
+    pub(in crate::interchange) fn decode_value(value: &Value) -> Result<Self> {
         value.fields(&[
             "format",
             "version",

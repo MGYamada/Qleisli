@@ -16,8 +16,12 @@ pub struct Source {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Request {
     pub source: Source,
+    /// This is the same typed object retained for public runtime execution.
+    pub runtime: std::sync::Arc<crate::interchange::runtime_root::Request>,
     pub context: Context,
 }
+
+mod runtime;
 
 impl Source {
     fn bounded(&self, remaining: &mut usize) -> Result<()> {
@@ -45,9 +49,15 @@ impl Source {
 }
 
 impl Request {
-    fn bounded(&self) -> Result<()> {
+    pub(in crate::interchange) fn bounded(&self) -> Result<()> {
         let mut remaining = json::MAX_BYTES;
         self.source.bounded(&mut remaining)?;
+        runtime::bounded(&self.runtime, &mut remaining)?;
+        if self.source.module != self.runtime.module || self.source.function != self.runtime.declaration
+            || self.source.arguments.bases != self.runtime.static_bases
+            || self.source.arguments.naturals != self.runtime.static_naturals {
+            return Err(Error::format("qmatch source and retained runtime instance differ"));
+        }
         self.context.bounded(0, &mut remaining)
     }
     pub fn encode(&self) -> Result<Vec<u8>> {
@@ -55,20 +65,23 @@ impl Request {
         let mut fields = vec![
             ("format".into(), text("qleisli.qmatch-request")), ("version".into(), n(5)),
             ("profile".into(), text(PROFILE)), ("source".into(), self.source.encode()),
+            ("runtime".into(), self.runtime.value()?),
         ];
         fields.extend(self.context.fields());
         json::encode(&Value::object(fields))
     }
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let value = json::parse(bytes)?;
-        value.fields(&["format", "version", "profile", "source", "positions", "sites", "calls", "branches", "bodies"])?;
+        value.fields(&["format", "version", "profile", "source", "runtime", "positions", "sites", "calls", "branches", "bodies"])?;
         if value.field("format")?.text()? != "qleisli.qmatch-request" || value.field("version")?.number()? != 5
             || value.field("profile")?.text()? != PROFILE {
             return Err(Error::format("unsupported qmatch request profile"));
         }
         let mut remaining = json::MAX_BYTES;
         let request = Self {
-            source:Source::decode(value.field("source")?)?, context:Context::decode_fields(&value, 0, &mut remaining)?,
+            source:Source::decode(value.field("source")?)?,
+            runtime:std::sync::Arc::new(crate::interchange::runtime_root::Request::decode_value(value.field("runtime")?)?),
+            context:Context::decode_fields(&value, 0, &mut remaining)?,
         };
         request.bounded()?;
         Ok(request)

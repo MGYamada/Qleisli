@@ -16,8 +16,9 @@ fn expected(text: &str) -> Vec<u8> {
         match value {
             json::Value::String(value) => execution_view::Value::Text(value.clone()),
             json::Value::Number(value) => execution_view::Value::Natural(*value),
+            json::Value::Bool(value) => execution_view::Value::Bool(*value),
             json::Value::Array(values) => execution_view::Value::Array(values.iter().map(convert).collect()),
-            _ => panic!("literal QDV test expects only records, strings and naturals"),
+            _ => panic!("literal QDV test expects records, strings, naturals and Booleans"),
         }
     }
     execution_view::encode(&convert(&json::parse(text.as_bytes()).unwrap())).unwrap()
@@ -91,4 +92,42 @@ fn source_actuals_and_original_meaning_selector_have_independent_literal_view() 
     value.arguments.bases[0].1 = vec![Atom::Unit];
     value.arguments.naturals[0].1 += 1;
     assert_ne!(actual,write(|w| source(w,&value)));
+}
+
+#[test]
+fn retained_runtime_forests_storage_rows_and_public_effect_have_literal_view() {
+    use crate::interchange::{ordinary_root, runtime_root};
+    use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, TokenId};
+    let owner = |token| crate::interchange::carrier::Owner {
+        port:QuantumPort { token:TokenId(token),wires:vec![],shape:BasisShape { bits:0 } },
+        basis:vec![Atom::Unit],
+    };
+    let mut value = runtime_root::Request {
+        selection:ordinary_root::Selection::Internal,module:"m".into(),declaration:"f".into(),
+        static_bases:vec![("A".into(),vec![Atom::Unit])],static_naturals:vec![("unused".into(),17)],
+        parameters:vec![vec![runtime_root::Atom::Finite(Atom::Bit)],
+            vec![runtime_root::Atom::Quantum,runtime_root::Atom::Finite(Atom::Unit)]],
+        input_storage:vec![vec![runtime_root::Storage::Ordinary(vec![Atom::Bit],ordinary_root::Storage::Bit(ClassicalId(9)))],
+            vec![runtime_root::Storage::Quantum(owner(4))]],
+        input_rows:vec![vec![false],vec![true]],
+        result:vec![runtime_root::Atom::Finite(Atom::Pair),runtime_root::Atom::Quantum,
+            runtime_root::Atom::Finite(Atom::Unit),runtime_root::Atom::Finite(Atom::Bit)],
+        storage:vec![runtime_root::Storage::Tuple(2),runtime_root::Storage::Quantum(owner(5)),
+            runtime_root::Storage::Ordinary(vec![Atom::Bit],ordinary_root::Storage::Bit(ClassicalId(10)))],
+        public_effect:Effect::Observe,
+    };
+    let actual = write(|w| runtime(w,&value));
+    assert_eq!(actual,expected(r#"["source-runtime","internal","m","f",[["A",[["unit"]]]],[["unused",17]],
+      [[["finite",["bit"]]],[["quantum"],["finite",["unit"]]]],
+      [[["ordinary",[["bit"]],["bit",9]]],[["quantum",["typed-owner",["port",4,[],0],[["unit"]]]]]],
+      [[false],[true]],[["finite",["pair"]],["quantum"],["finite",["unit"]],["finite",["bit"]]],
+      [["tuple",2],["quantum",["typed-owner",["port",5,[],0],[["unit"]]]],["ordinary",[["bit"]],["bit",10]]],2]"#));
+    value.input_rows.swap(0,1);
+    assert_ne!(actual,write(|w| runtime(w,&value)));
+    value.input_rows.swap(0,1);
+    value.storage[1] = runtime_root::Storage::Quantum(owner(4));
+    assert_ne!(actual,write(|w| runtime(w,&value)));
+    value.storage[1] = runtime_root::Storage::Quantum(owner(5));
+    value.public_effect = Effect::Unitary;
+    assert_ne!(actual,write(|w| runtime(w,&value)));
 }
