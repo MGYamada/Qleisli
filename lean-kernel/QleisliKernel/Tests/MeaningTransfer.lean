@@ -7,7 +7,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.MeaningTransfer
 open SourceTypes Semantics.FiniteCarrier OperationDescription
 
+-- This self-contained original source explicitly disables implicit prelude lookup.
 private def source :=
+  "#![no_implicit_prelude] " ++
   "pub unitary fn keep(q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)} " ++
   "pub unitary fn bits(q:Q<Bits<1>>)->Q<Bits<1>>{q} " ++
