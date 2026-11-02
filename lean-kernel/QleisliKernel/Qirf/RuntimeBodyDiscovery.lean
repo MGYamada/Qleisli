@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeProviderHeader
+import QleisliKernel.Qirf.RuntimeProviderHeaders
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.GenericCatalogue
 
@@ -86,7 +87,8 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
       let initial : Discovery := ⟨signature.sourceRows ++ staticRows,[]⟩
       let (initial,bodies) ← if prefixRequired then do
           guard (!signature.operations.hasMeaningRequirements) .request
-          signature.operations.actuals.foldlM (fun (discovery,bodies) actual => do
+          let actuals ← RuntimeProviderHeaders.originalActuals signature.operations
+          actuals.foldlM (fun (discovery,bodies) actual => do
             let (prepared,rest) ← readOperation actual.2.graph bodies
             return (discovery.append prepared,rest)) (initial,request.bodies)
         else pure (initial,request.bodies)

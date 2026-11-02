@@ -130,7 +130,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name} →
           (⟨environment.numeric.original.header.access.contains (.applicable,argument),
             environment.numeric.original.header.access.contains (.adjointable,argument),
             environment.numeric.original.header.access.contains (.controllable,argument)⟩ : StaticOperation.Paths)
-      let (obligations,bodies) ← source.signature.operations.actuals.foldlM
+      let actuals ← RuntimeProviderHeaders.originalActuals source.signature.operations
+      let (obligations,bodies) ← actuals.foldlM
         (fun (obligations,bodies) actual => do
           let (_,checked,rest) ← consumeOperation actual.2.graph (required actual.1.1) bodies
           pure (obligations ++ checked,rest)) ([],request.bodies)

@@ -10,6 +10,26 @@ namespace QleisliKernel.Qirf.RuntimeProviderHeaders
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
 open RuntimeProviderHeader (Request)
 
+/-- Named wire bindings do not choose the containing function's body order.
+Each original formal selects exactly one retained value; equal values under
+different formal names remain separate occurrences. -/
+def originalBindings {α : Type} (names : List String) (bindings : List (String × α)) :
+    Except Finite.Error (List α) := do
+  if names.length != bindings.length || names.eraseDups.length != names.length then throw .request
+  names.mapM fun name => do
+    let [(_,value)] := bindings.filter (·.1 == name) | throw .request
+    pure value
+
+def originalActuals {sources owner name original}
+    {instantiation : @StaticInstantiation.Checked sources owner name original} {context}
+    (arguments : StaticOperation.ArgumentsCheckedWithInstantiation instantiation context) :
+    WorkM (List (Sigma (StaticOperation.Actual sources context))) := do
+  let names := instantiation.operationNames
+  exactWork (Exact.charge (16*(names.length+arguments.actuals.length+1)^2+
+    (names.map String.utf8ByteSize).sum+
+    (arguments.actuals.map fun actual => actual.1.1.utf8ByteSize).sum))
+  lift (originalBindings names (arguments.actuals.map fun actual => (actual.1.1,actual)))
+
 def providerIndices (description : OperationDescription.Description) (occurrences : List Nat) : List Nat :=
   occurrences.filter fun index => match description.nodes[index]? with
     | some (.provider ..) => true
