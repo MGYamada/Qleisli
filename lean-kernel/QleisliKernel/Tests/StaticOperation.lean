@@ -12,6 +12,8 @@ private def source :=
   "pub unitary fn keep(q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn bits(q:Q<Bits<1>>)->Q<Bits<1>>{q} " ++
   "pub observe fn observed(q:Q<Bit>)->Q<Bit>{q} " ++
+  "pub observe fn observed_impure(q:Q<Bit>)->Q<Bit>{let u=unit(());let b=basis u as _ {0};let _=discard(b);q} " ++
+  "pub isometry fn weak(q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn unused_pair[const V:Op<(Bit,Bit)>](q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn generic[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qmatch(s,q){0=>U,1=>U}} " ++
@@ -53,6 +55,15 @@ private def accepted (description : Description) (context : SourceTypes.StaticOp
         (provider.signature.original.parsedHeader.effect,provider.expectedEffect,provider.internalInference)) =
       some [(some .observe,.unitary,true)]
 
+-- An internal annotation cannot conceal actual observation, even when the
+-- returned owner and input type are unchanged.
+#guard accepted (named "observed_impure") (.source "main") = false
+
+-- Public Iso stays Iso outside its original module. Forming controlled must
+-- satisfy Unit even when its execution paths are unused/absent.
+#guard accepted ((named "weak").unary .controlled) = false
+#guard accepted ((named "weak").unary .controlled) (.source "main") = true
+
 -- unrelated unused description node cannot hide a subject
 #guard
     accepted ⟨[.provider "main" "bits" [] [] [],.provider "main" "keep" [] [] []],1⟩ = false
@@ -84,6 +95,10 @@ private def accepted (description : Description) (context : SourceTypes.StaticOp
 -- formal ordinal cannot be a natural or later binder
 #guard
     accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 1) (.source "main") = false
+
+-- A host descriptor cannot mint a lexical original formal scope.
+#guard accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 0) = false
+#guard accepted (OperationDescription.formal "main" "generic" [] [] [("U",named "keep")] 0) (.source "other") = false
 
 -- Forming controlled(U) is well kinded without acquiring an execution path.
 #guard

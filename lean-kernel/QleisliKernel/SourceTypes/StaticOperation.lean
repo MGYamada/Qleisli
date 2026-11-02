@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.StaticKinds
 import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SymbolicTypes
 import QleisliKernel.SourceTypes.OperationPaths
+import QleisliKernel.SourceTypes.GenericTypeTrace
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -37,6 +38,7 @@ structure Provider (sources : Sources) where
   signature : QuantumSignatureCore.Checked sources moduleName declarationName
   expectedEffect : Effect
   internalInference : Bool
+  generic : Option (GenericTypeTrace.Checked signature.original) := none
 
 structure Result (sources : Sources) where
   input : Basis
@@ -215,6 +217,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
     return (name,description)
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
   guard (context.visible owner signature.original.declaration.isPublic) .request
+  let generic ← GenericTypeTrace.readWithInstantiation signature.instantiation
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
   let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
@@ -225,20 +228,21 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   let [output] := signature.outputs | throw .request
   guard (match signature.parts with | .owner _ => true | _ => false) .request
   let internal := context.internal owner
-  -- Internal purity is a deferred body obligation, not a fact inferred from
-  -- an annotation. The native body gate must prove this bound for each leaf.
-  -- External/host selection always retains the public effect unchanged.
-  let visible := if internal then none else signature.original.parsedHeader.effect
-  guard (visible != some .observe) .request
+  -- Eligibility uses the independently checked ORIGINAL body, before closing
+  -- any convenient Basis/Nat values. Actual native body/Gram and J/C paths
+  -- remain separate obligations. External selection keeps the public bound.
+  let visible := if internal then generic.inferredEffect
+    else signature.original.parsedHeader.effect.getD generic.inferredEffect
+  guard (visible != .observe) .request
   let endomorphic := input == output
-  let reversible := visible == none || visible == some .unitary
+  let reversible := visible == .unitary
   let reverseArgs := originalResults.all fun (_,actual) => actual.paths.applicable && actual.paths.adjointable
   let controlArgs := originalResults.all fun (_,actual) =>
     actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable
-  let expected := visible.getD (if endomorphic then .unitary else .iso)
+  let expected := visible
   result input output expected
     ⟨true,reversible && reverseArgs,reversible && endomorphic && controlArgs⟩
-    (some ⟨owner,name,signature,expected,internal⟩) none kindRows requirements
+    (some ⟨owner,name,signature,expected,internal,some generic⟩) none kindRows requirements
 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
@@ -250,6 +254,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
   | .provider owner name bases naturals operations =>
     readProvider sources context description previous owner name bases naturals operations
   | .formal owner name bases naturals operations ordinal =>
+    guard (context == .source owner) .request
     let actuals ← operations.mapM fun (name,index) => do
       let some description := description.select index | throw .request
       return (name,description)
@@ -271,14 +276,14 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let some (_,actual) := originalResults.find? (·.1 == formal.name) | throw .request
       let paths := actual.paths.meet (required environment.numeric.original.header.access formal.name)
       let effect := contract.effect
-      result input output effect paths none (some ⟨owner,name,signature,effect,false⟩) kindRows requirements
+      result input output effect paths none (some ⟨owner,name,signature,effect,false,none⟩) kindRows requirements
   | .inverse index =>
     let c ← child previous index
-    guard c.paths.adjointable .request
+    guard (c.effect == .unitary && c.paths.adjointable) .request
     result c.output c.input c.effect ⟨c.paths.adjointable,c.paths.applicable,c.paths.controllable⟩
   | .controlled index =>
     let c ← child previous index
-    guard (c.input == c.output) .request
+    guard (c.effect == .unitary && c.input == c.output) .request
     result (.pair :: .bit :: c.input) (.pair :: .bit :: c.output) .unitary
       ⟨c.paths.controllable,c.paths.controllable,c.paths.controllable⟩
   | .power index count =>
@@ -298,7 +303,7 @@ def readNode (sources : Sources) (context : Context) (description : Description)
   | .conjugate outer middle =>
     let a ← child previous outer
     let b ← child previous middle
-    guard (b.input == a.input && b.output == a.input) .request
+    guard (a.effect == .unitary && b.input == a.input && b.output == a.input) .request
     result a.output a.output (joinEffect a.effect b.effect)
       ⟨a.paths.applicable && a.paths.adjointable && b.paths.applicable,
         a.paths.applicable && a.paths.adjointable && b.paths.adjointable,
@@ -529,7 +534,8 @@ def CheckedGraph.providers {sources context description} (graph : CheckedGraph s
 
 def CheckedGraph.sourceRows {sources context description} (graph : CheckedGraph sources context description) :
     List (String × String) := graph.results.flatMap fun result =>
-  result.kindRows ++ ((result.provider.toList ++ result.formal.toList).flatMap fun provider => provider.signature.sourceRows) ++
+  result.kindRows ++ ((result.provider.toList ++ result.formal.toList).flatMap fun provider =>
+    provider.signature.sourceRows ++ (provider.generic.map (·.sourceRows) |>.getD [])) ++
     (result.requirements.flatMap fun (_,request) => request.sourceRows)
 
 /-- Local requests in original node order. Descendant requests remain separate
