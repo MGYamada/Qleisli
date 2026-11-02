@@ -81,9 +81,11 @@ private def formalOperation {sources : Sources} (state : GenericLexicalNatural.S
   pure ⟨ports.input.result.code,ports.output.result.code,direct effect,access,[],[],meanings,
     ports.input.result.rows ++ ports.output.result.rows ++ meanings.flatMap (·.sourceRows)⟩
 
-def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Original sources owner name) :
+def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) :
     WorkM {definition : Definition sources owner name // definition.original = original} := do
-  let numeric ← StaticNatural.prepareOriginal original ["0"]
+  let helpers ← match helpers with | some helpers => pure helpers | none => NaturalHelpers.read sources
+  let numeric ← StaticNatural.prepareOriginalWithHelpers original ["0"] helpers
   let state : GenericLexicalNatural.SomeEnvironment sources :=
     ⟨owner,name,numeric.prepared,GenericLexicalNatural.initial numeric.prepared⟩
   let parameters ← original.envelope.parsedHeader.parameterTypes.mapM (GenericValues.readType state 65)
@@ -99,8 +101,9 @@ def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Origin
     (owner,original.envelope.source) :: rows ++ parameters.flatMap (·.rows) ++ result.rows ++
       operations.flatten.flatMap (fun (_,operation) => operation.rows)⟩,rfl⟩
 
-def readDefinition (sources : Sources) (owner name : String) : WorkM (Definition sources owner name) := do
-  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name)).val
+def readDefinition (sources : Sources) (owner name : String)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) : WorkM (Definition sources owner name) := do
+  pure (← readDefinitionOriginal (← StaticHeaders.read sources owner name) helpers).val
 
 private def functionEffect {sources owner name} (caller : String) (definition : Definition sources owner name) : Formula :=
   if caller == owner then ⟨.unitary,[(owner,name)]⟩
@@ -164,7 +167,8 @@ def instantiate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
     (scope : List String) {tokens} (written : StaticApplication.Syntax tokens) (owner name : String)
     (operationReader : List LocatedToken → WorkM (Operation sources)) (runtimeRecursion : Bool) :
     WorkM (Application sources) := do
-  let definition ← readDefinition sources owner name
+  let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
+  let definition ← readDefinition sources owner name (some helpers)
   let target := definition.original
   guard (written.arguments.length == target.header.formals.length) .request
   let transfer ← StaticCallPremises.readInState state scope target written.arguments
@@ -782,8 +786,9 @@ def BodyRecord.quantumDirect {sources} (body : BodyRecord sources) : Bool :=
   body.outcome.quantumUse || body.definition.parameters.any hasOwner || hasOwner body.definition.result ||
     !body.definition.operations.isEmpty
 
-def readBody (sources : Sources) (owner name : String) : WorkM (BodyRecord sources) := do
-  let definition ← readDefinition sources owner name
+def readBody (sources : Sources) (owner name : String)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) : WorkM (BodyRecord sources) := do
+  let definition ← readDefinition sources owner name helpers
   let tokens := definition.original.envelope.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
   let result ← NaturalAffine.witness (checkTree definition tree)

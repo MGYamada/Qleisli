@@ -36,26 +36,29 @@ structure WithOriginal {sources owner name} (original : StaticHeaders.Original s
 
 /-- Reuse the exact checked original header at a call boundary. No source
 lookup, token replacement or artificial closed declaration is introduced. -/
-def prepareOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
-    (tokens : List String) : WorkM (WithOriginal original tokens) := do
-  let helpers ← NaturalAffine.witness (NaturalHelpers.prepare sources)
+def prepareOriginalWithHelpers {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (tokens : List String) (helpers : NaturalHelpers.Checked sources) : WorkM (WithOriginal original tokens) := do
   exactWork (Exact.charge ((tokens.map String.utf8ByteSize).sum+tokens.length+1))
   match parsed : NaturalSyntax.read tokens with
   | .error _ => throw .request
   | .ok expression =>
     let bindings ← NaturalAffine.witness
-      (NaturalCatalog.scopedExpressionBindings sources (helpers.val.map (·.original)) owner
+      (NaturalCatalog.scopedExpressionBindings sources (helpers.entries.map (·.original)) owner
         (original.header.formals.map (·.name))
         (expression :: original.header.premises.flatMap (fun p => [p.left,p.right])))
     let frame := StaticHeaders.frame original
-    let calls := NaturalHelpers.interpretation helpers.val bindings.val
-    let callReader := NaturalHelpers.reader frame helpers.val bindings.val
+    let calls := NaturalHelpers.interpretation helpers.entries bindings.val
+    let callReader := NaturalHelpers.reader frame helpers.entries bindings.val
     let scope ← NaturalPrepare.checkPremises frame calls callReader original.header.premises
     let normalized ← NaturalNormalize.normalize frame.binders.length scope.context
       ⟨NaturalFrames.readName frame calls (fun _ held => held.1),
         callReader.read scope.context (fun _ held => held.1)⟩ 128 expression
-    return ⟨⟨original,helpers.val,by with_reducible exact helpers.property,
+    return ⟨⟨original,helpers.entries,helpers.prepared,
       expression,parsed,bindings.val,by with_reducible exact bindings.property,scope,normalized⟩,rfl⟩
+
+def prepareOriginal {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (tokens : List String) : WorkM (WithOriginal original tokens) := do
+  prepareOriginalWithHelpers original tokens (← NaturalHelpers.read sources)
 
 def prepare (sources : Sources) (owner name : String) (tokens : List String) :
     WorkM (Prepared sources owner name tokens) := do

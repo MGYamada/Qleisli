@@ -130,4 +130,15 @@ def prepare (sources : Sources) : WorkM (List Entry) := do
     let checked ← NaturalPrepare.check original calls (reader (NaturalFrames.original original) entries original.calls)
     return (⟨original,calls,checked⟩ : Entry) :: entries) []
 
+/-- The same complete original-helper check may be shared by independently
+checked declarations in one exact source catalogue. It supplies no source-row
+coverage and is indexed by the complete original Sources value. -/
+structure Checked (sources : Sources) where
+  entries : List Entry
+  prepared : ∃ before after,(prepare sources).run before = (.ok entries,after)
+
+def read (sources : Sources) : WorkM (Checked sources) := do
+  let entries ← NaturalAffine.witness (prepare sources)
+  pure ⟨entries.val,by with_reducible exact entries.property⟩
+
 end QleisliKernel.SourceTypes.NaturalHelpers
