@@ -20,7 +20,7 @@ private def scalarPaths : WorkM (Matrix × List Matrix) := do
 
 #guard (scalarPaths.run 1000000).1.toOption.map (fun result =>
   result.1.entries == [Exact.Scalar.phase 7] &&
-    (result.2.map (·.entries)) == [[Exact.Scalar.one],[Exact.Scalar.phase 1]]) == some true
+    (result.2.map (·.entries)) == [[Semantics.Exact.Scalar.one],[Exact.Scalar.phase 1]]) == some true
 
 private def identity : Semantics.Observation.Program :=
   ⟨[⟨0,[],0⟩],[],[],[0],[],.unitary⟩

@@ -58,7 +58,7 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
     List (SourceRuntimeContext.Event artifact.sources owner) → List (String × String) →
     Context → Bool → WorkM Discovery :=
   Nat.rec (fun {_ _} _ _ _ _ _ => throw .limit)
-    (fun _ next {owner name} signature events staticRows request prefixRequired => do
+    (fun _ next {_ _} signature events staticRows request prefixRequired => do
       guard (request.positions.length ≤ 4096 && request.sites.length ≤ 128 &&
         request.calls.length ≤ 4096 && request.branches.length ≤ 4096 && request.bodies.length ≤ 4096) .limit
       exactWork (Exact.charge (32*(events.length+request.positions.length+request.sites.length+
