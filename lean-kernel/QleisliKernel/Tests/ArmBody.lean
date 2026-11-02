@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.SourceArmBody
-import QleisliKernel.Tests.ContextSectorTests
+import QleisliKernel.Tests.ContextSectorData
 
 /-! Two-qubit original-body controls using the frozen phase-substitution source.
 The body continuation is not native admission or a general source proof.
