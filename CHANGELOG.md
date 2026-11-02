@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Use the same original-body loop and retained Raw preparation for classical
+  gaps and destructive observations. Derive initial SSA and logical ordinals
+  from the complete typed input forest, retaining zero-width fields and nominal
+  identities. Named pure scopes derive their return order from the original
+  callee and transport every issued/retired owner back to the complete caller
+  frame. General named/branch/history/code continuations and public v5 execution
+  remain unfinished; these preparations issue no accepted handle.
 - Share the small contextual regression's source/IR data with its stage-cost
   observer. Preserve the first incomplete prelude proposal as a refusal case,
   retain every original semantic control and use a separately identified actual
