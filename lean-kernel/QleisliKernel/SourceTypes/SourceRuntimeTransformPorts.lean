@@ -14,6 +14,11 @@ structure Ports where
   output : Semantics.RuntimeType.Tree
   deriving BEq, DecidableEq, Repr
 
+def typeFields (tree : Semantics.RuntimeType.Tree) : Nat :=
+  (tree.map fun atom => match atom with
+    | .quantum => 1
+    | .finite finite => Raw.OwnerFlow.fields [⟨0,[finite]⟩]).sum
+
 def group (parameters : List Semantics.RuntimeType.Tree) : Except String Semantics.RuntimeType.Tree :=
   match parameters with
   | [] => .error "direct runtime transform arity zero"

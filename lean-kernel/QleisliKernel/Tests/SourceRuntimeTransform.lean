@@ -44,7 +44,8 @@ private def zeroPower :=
 #guard ((read zeroPower).map fun checked => checked.events.all fun event => match event with
   | .transform event => event.copies == 0 && event.counts.map (·.checked.value) == [2,0]
   | _ => false) = some true
-#guard (read (zeroPower.replace "unitary fn f" "observe fn f" |>.replace "(h(a),b)" "(reset(a),b)")).isNone
+#guard (read ("use std::state::reset;" ++
+  (zeroPower.replace "unitary fn f" "observe fn f").replace "(h(a),b)" "(reset(a),b)")).isNone
 
 -- A same-original-module public prefix remains conservative; external use
 -- keeps that public effect even when the original forward body is pure.
@@ -65,7 +66,7 @@ private def arrows :=
 #guard (read "unitary fn f(c:Bit,q:Q<Bit>)->(Bit,Q<Bit>){(c,q)}pub unitary fn route(c:Bit,q:Q<Bit>)->(Bit,Q<Bit>){power(f,0)((c,q))}").isNone
 #guard view "unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(q)}pub unitary fn route(q:Q<Bits<0>>)->Q<Bits<0>>{power(f,0)(q)}" =
   some ([1],[0],.unitary)
-#guard SourceRuntimeTransformPorts.product [4294967295,2,0] |>.isError
+#guard (SourceRuntimeTransformPorts.product [4294967295,2,0]).isError
 #guard SourceRuntimeTransformPorts.product [4294967295,0] = .ok 0
 
 -- A genuine primitive keeps its contextual unary rule.

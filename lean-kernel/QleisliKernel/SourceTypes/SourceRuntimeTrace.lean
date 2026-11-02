@@ -297,8 +297,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                           actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable &&
                             actual.2.graph.root.paths.controllable)) = true then
                     let fields := (values.map valueFields).sum+
-                      (target.signature.parameters.map fun part => part.tree.length).sum+
-                      target.signature.result.tree.length
+                      (target.signature.parameters.map fun part => SourceRuntimeTransformPorts.typeFields part.tree).sum+
+                      SourceRuntimeTransformPorts.typeFields target.signature.result.tree
                     Finite.exactWork (Exact.charge (32*(fields+1)))
                     match portsRead : SourceRuntimeTransformPorts.read (target.signature.parameters.map (·.tree))
                         target.signature.result.tree written.access (!written.counts.isEmpty) with
