@@ -145,7 +145,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
       | .computed written inputTree bodyTree =>
         let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
         let [.owner input] := inputResult.value | throw .request
-        let binding ← computed.activeAt (SourceRuntimeComputed.offset written)
+        let binding ← SourceBasisBindings.activeAt computed (SourceRuntimeComputed.offset written)
         if inputType : binding.ports.input = input.basis then
           let predicate ← readComputedPredicate signature naturals scope written.parts.predicate input.basis readCallee
           let logical ← readComputedLogical signature naturals scope input.basis written.parts.logical
