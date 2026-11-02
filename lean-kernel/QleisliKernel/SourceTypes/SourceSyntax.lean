@@ -180,7 +180,7 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
     if let some written := SourceBoolean.read tokens then
       let children ← readChildren (next (depth+1) false) written.parts
       return .boolean written children
-    if tokens.head?.map (·.text) == some "qmatch" then
+    if tokens.head?.map (·.text) == some "qmatch" || tokens.head?.map (·.text) == some "qif" then
       match original : QuantumMatch.parse tokens with
       | .ok (parsed,[]) =>
         if (QuantumMoves.parse 65 (parsed.selector.map (·.text))).isOk &&

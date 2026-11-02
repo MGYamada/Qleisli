@@ -121,6 +121,7 @@ def primitiveSpelling (name : String) : Bool :=
 
 inductive Primitive where
   | h | globalPhaseEighth | phase | measureZ | discard | unit | finish | split | join
+  | emptyBits | prependBit | takeBit | putBit
   deriving BEq, DecidableEq, Repr
 
 def Primitive.name : Primitive → String
@@ -129,6 +130,8 @@ def Primitive.name : Primitive → String
   | .phase => "phase"
   | .measureZ => "measure_z" | .discard => "discard" | .unit => "unit"
   | .finish => "finish" | .split => "split" | .join => "join"
+  | .emptyBits => "empty_bits" | .prependBit => "prepend_bit"
+  | .takeBit => "take_bit" | .putBit => "put_bit"
 
 private def primitive (name : String) : Except String Primitive :=
   if name == "h" then .ok .h
@@ -140,6 +143,10 @@ private def primitive (name : String) : Except String Primitive :=
   else if name == "finish" then .ok .finish
   else if name == "split" then .ok .split
   else if name == "join" then .ok .join
+  else if name == "empty_bits" then .ok .emptyBits
+  else if name == "prepend_bit" then .ok .prependBit
+  else if name == "take_bit" then .ok .takeBit
+  else if name == "put_bit" then .ok .putBit
   else .error "not a supported unbound primitive candidate"
 
 /-- Enabled lookup retains the exact canonical row even when no public export

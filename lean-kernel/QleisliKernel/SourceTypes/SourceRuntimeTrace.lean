@@ -262,6 +262,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let [.owner selector] := first.value | throw .request
         let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining target context
         let [.owner target] := last.value | throw .request
+        let _ ← QuantumMatch.checkSelector parsed selector.basis
         Finite.guard (selector.ordinal != target.ordinal &&
           QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
@@ -273,6 +274,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let [.owner selector] := first.value | throw .request
         let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining targetTree context
         let [.owner target] := last.value | throw .request
+        let _ ← QuantumMatch.checkSelector parsed selector.basis
         Finite.guard (selector.ordinal != target.ordinal &&
           QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining

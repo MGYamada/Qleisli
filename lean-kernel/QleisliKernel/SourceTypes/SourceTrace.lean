@@ -212,6 +212,7 @@ def evalWithReader (sources : Sources) (caller : String)
       let operationNames := callerSignature.map (fun signature => signature.2.operationNames) |>.getD []
       let selected ← adapt (QuantumSequence.expression tokens environment scope operationNames)
       let [event] := selected.events | throw .request
+      let _ ← QuantumMatch.checkSelector parsed event.selector.basis
       Finite.guard (event.parsed == parsed) .request
       Finite.exactWork (Exact.charge (Meter.permutationWork (held ++ owners event.before)
         ([event.selector,event.target] ++ held ++ owners event.remaining)))
@@ -227,6 +228,7 @@ def evalWithReader (sources : Sources) (caller : String)
       let [.owner selector] := selected.value | throw .request
       let (targeted,context) ← next naturals (held ++ [selector]) scope selected.remaining targetTree context
       let [.owner target] := targeted.value | throw .request
+      let _ ← QuantumMatch.checkSelector parsed selector.basis
       Finite.exactWork (Exact.charge (Meter.permutationWork (owners environment)
         ([selector,target] ++ owners targeted.remaining)+
         Meter.permutationWork (held ++ owners environment)
