@@ -366,7 +366,8 @@ def readDuties {sources} (catalogue : Checked sources) : WorkM (Duties catalogue
   let entries ← (List.finRange duties.length).mapM fun index => do
     let status ← NaturalAffine.witness
       (GenericOperation.close (duties[index.val]'index.isLt).subject)
-    pure (⟨index,status.val,by with_reducible exact status.property⟩ : DutyAt catalogue)
+    pure (⟨index,status.val,by
+      simpa only [duties,activities,Checked.duties] using status.property⟩ : DutyAt catalogue)
   if every : entries.map (·.index) = List.finRange catalogue.duties.length then
     return ⟨entries,every⟩
   else throw .request
