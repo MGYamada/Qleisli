@@ -31,10 +31,10 @@ private def ordinary :=
 #guard (read ordinary 2).isSome
 #guard (read (ordinary.replace "pub fn" "pub classical fn") 0).isNone
 
-private def mutual :=
+private def mutualSource :=
   "unitary fn helper[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n==0{q}else{route[n-1](q)}}" ++
   "pub unitary fn route[const n:Nat](q:Q<Bit>)->Q<Bit>{helper[n](q)}"
-#guard (read mutual 0).isNone
+#guard (read mutualSource 0).isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceRecursion.read
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.readNested

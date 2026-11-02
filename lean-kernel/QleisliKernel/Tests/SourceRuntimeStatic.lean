@@ -38,7 +38,7 @@ private def localScope :=
 #guard (read localScope 1).isSome
 #guard (read (localScope.replace ";r}" ";a}") 0).isNone
 
-private def recovered := do
+private def recovered : Finite.WorkM (Nat × List Nat) := do
   let body ← SourceRuntimeTrace.read (sources choice) "main" "route" {naturals := [("n",1)]}
   let [Event.staticConditional event _] := body.events | throw Finite.Error.request
   let fresh ← SourceRuntimeTrace.readStaticSource event

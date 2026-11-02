@@ -44,7 +44,7 @@ private def coherent :=
   "pub unitary fn route(q:Q<Bit>)->Q<Bit>{match Tag::A{Tag::A=>q,Tag::B=>reset(q)}}")).isNone
 #guard (read (owners.replace "(a,b),Tag::B=>(a,b)" "(a,b),Tag::B=>(b,a)")).isNone
 
-private def recovered := do
+private def recovered : Finite.WorkM (List (List Nat)) := do
   let body ← SourceRuntimeTrace.read (sources owners) "main" "route"
   let [Event.matching event _] := body.events | throw Finite.Error.request
   let fresh ← SourceRuntimeTrace.readMatchSource event

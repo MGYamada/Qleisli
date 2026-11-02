@@ -32,7 +32,7 @@ def exits (before after remaining : Environment) : Bool :=
 theorem exits_sound (before after remaining : Environment)
     (allowed : exits before after remaining = true) : outer before after = .ok remaining := by
   cases found : outer before after with
-  | error message => simp only [exits,found,Bool.false_eq_true] at allowed
+  | error message => simp [exits,found] at allowed
   | ok actual =>
     have same : actual = remaining := of_decide_eq_true (by simpa only [exits,found] using allowed)
     simp only [same]
