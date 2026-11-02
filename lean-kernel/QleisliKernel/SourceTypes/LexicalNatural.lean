@@ -108,7 +108,8 @@ structure PredicateChecked (sources : Sources) (caller : String) (entries : List
   selectedTruth : (predicate.forBranch value).Truth 128 environment.names
     (NaturalHelpers.interpretation entries bindings.val)
 
-private def predicateOfOperands {sources caller entries environment scope predicate}
+private def predicateOfOperands {sources : Sources} {caller : String} {entries : List NaturalHelpers.Entry}
+    {environment : Environment entries} {scope : List String} {predicate : Predicate}
     (bindings : Witness (NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope
       [predicate.left,predicate.right]))
     (left : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.left)
