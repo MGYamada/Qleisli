@@ -84,6 +84,10 @@ def Invocation.id {sources catalogue record} : @Invocation sources catalogue rec
     let parent := caller.id
     ⟨parent.root,parent.calls ++ [application.id]⟩
 
+def Invocation.depth {sources catalogue record} : @Invocation sources catalogue record → Nat
+  | .root _ => 0
+  | .call caller _ _ => caller.depth+1
+
 def Invocation.applications {sources catalogue record} :
     @Invocation sources catalogue record → List (ApplicationSource sources)
   | .root _ => []
@@ -248,6 +252,11 @@ private def expand {sources} (catalogue : GenericCatalogue.Checked sources) :
   Nat.rec (fun _ _ => throw .limit) (fun _ next record invocation => do
     let stream := activities catalogue record
     reserveActivities stream
+    -- Forming/reversing retained call paths, ancestor checks and eventual
+    -- source IDs traverse the depth. The quadratic allowance also covers
+    -- copying each nested item through its ancestors, without source scans.
+    exactWork (Exact.charge (16*(stream.length+1)*
+      ((invocation.depth+1)^2+catalogue.records.length+1)))
     let entries ← (List.finRange stream.length).mapM fun index => do
       match selected : stream[index.val]'index.isLt with
       | .duty original =>
