@@ -393,8 +393,9 @@ symbolic result. This is a bounded per-input connection, not an all-source AST
 theorem, final native implementation equation or Meaning admission by itself. -/
 def connect {sources catalogue reference kind basis}
     (prepared : @Prepared sources catalogue reference kind basis) : WorkM (Connected prepared) := do
-  let program ← SourceClassicalTree.prepare catalogue reference.resolution.result.moduleName
+  let program ← SourceClassicalTree.prepareRetained catalogue reference.resolution.result.moduleName
     reference.resolution.result.declaration.name reference.caller
+    ⟨prepared.original.signature,prepared.original.signatureRead⟩
   let root ← readRootBinding prepared program
   let correspondence ← readCorrespondence prepared program
     (prepared.inputs.domain.code.labels.length+1) prepared.rows

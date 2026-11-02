@@ -48,6 +48,16 @@ structure Original {sources} (catalogue : GenericCatalogue.Checked sources)
   output : Basis
   outputRead : ordinaryBasis signature.result.tree = .ok output
 
+/-- A shared signature retains the actual original reader execution at the
+same source table, catalogue, declaration and supplying caller. It contains no
+source result or interpreter node. -/
+abbrev RetainedSignature {sources} (catalogue : GenericCatalogue.Checked sources)
+    (owner name caller : String) :=
+  {signature : SourceRuntimeContext.Signature sources owner name //
+    ∃ before after,
+      (SourceRuntimeContext.readSignature sources owner name {} (.source caller) (some catalogue)).run before =
+        (.ok signature,after)}
+
 structure Definition {sources} (catalogue : GenericCatalogue.Checked sources) where
   owner : String
   name : String
@@ -234,14 +244,19 @@ def readTree {sources owner name} (catalogue : GenericCatalogue.Checked sources)
 /-- Read each actual original body and every callee from the same Sources.
 No symbolic source Value, execution result or cached map participates. -/
 def readFunction {sources} (catalogue : GenericCatalogue.Checked sources) (fuel : Nat)
-    (active : List (String × String)) (owner name caller : String) (state : State catalogue) :
+    (active : List (String × String)) (owner name caller : String) (state : State catalogue)
+    (retained : Option (RetainedSignature catalogue owner name caller) := none) :
     WorkM (State catalogue × Nat) := do
   match fuel with
   | 0 => throw .limit
   | fuel+1 =>
     guard (!active.contains (owner,name)) .request
-    let signature ← NaturalAffine.witness (SourceRuntimeContext.readSignature sources owner name {}
-      (.source caller) (some catalogue))
+    let signatureAction : WorkM (RetainedSignature catalogue owner name caller) :=
+      match retained with
+      | some signature => pure signature
+      | none => NaturalAffine.witness (SourceRuntimeContext.readSignature sources owner name {}
+          (.source caller) (some catalogue))
+    let signature ← signatureAction
     guard (signature.val.original.declaration.isPublic || caller == owner) .request
     let inferred ← GenericCatalogue.lookup catalogue.toRuntimeChecked signature.val.original
     guard (SourceEffect.visible caller owner signature.val.original.declaration.isPublic
@@ -283,16 +298,28 @@ def readFunction {sources} (catalogue : GenericCatalogue.Checked sources) (fuel 
 termination_by fuel
 
 structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) (owner name caller : String) where
+  retained : Option (RetainedSignature catalogue owner name caller)
   state : State catalogue
   root : Nat
   original : ∃ before after,
-    (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {}).run before = (.ok (state,root),after)
+    (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {} retained).run before =
+      (.ok (state,root),after)
 
 def prepare {sources} (catalogue : GenericCatalogue.Checked sources) (owner name caller : String) :
     WorkM (Prepared catalogue owner name caller) := do
   let program ← NaturalAffine.witness
     (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {})
-  return ⟨program.val.1,program.val.2,by with_reducible exact program.property⟩
+  return ⟨none,program.val.1,program.val.2,by with_reducible exact program.property⟩
+
+/-- Reuse only one exact original signature already checked by the containing
+Meaning preparation. Original body parsing, lexical callee resolution, source
+node construction and every later input evaluation remain independent. -/
+def prepareRetained {sources} (catalogue : GenericCatalogue.Checked sources) (owner name caller : String)
+    (signature : RetainedSignature catalogue owner name caller) :
+    WorkM (Prepared catalogue owner name caller) := do
+  let program ← NaturalAffine.witness
+    (readFunction catalogue (SourceTrace.sourceFuel sources) [] owner name caller {} (some signature))
+  return ⟨some signature,program.val.1,program.val.2,by with_reducible exact program.property⟩
 
 def Prepared.sourceRows {sources catalogue owner name caller}
     (prepared : @Prepared sources catalogue owner name caller) : List (String × String) :=
