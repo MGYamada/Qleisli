@@ -148,7 +148,19 @@ impl Frame {
             .declaration(self.key)
             .name
             .clone();
-        let outputs = outputs(lower, &name.0, span, value)?;
+        // A qmatch value may be nested in an ordinary runtime product. Keep
+        // that value and its full type tree intact; the Raw boundary lists
+        // only its actual owners and classical storage, in structural order.
+        lower
+            .compiler
+            .charge(&name.0, span, value.tree_size().nodes)?;
+        let mut quantum_outputs = Vec::new();
+        let mut classical_outputs = Vec::new();
+        value.outputs(
+            &lower.raw.registers,
+            &mut quantum_outputs,
+            &mut classical_outputs,
+        );
         lower.compiler.charge(
             &name.0,
             span,
@@ -158,8 +170,8 @@ impl Frame {
             quantum_inputs: self.inputs.iter().map(|owner| owner.port.clone()).collect(),
             classical_inputs: vec![],
             operations: lower.raw.operations[self.start..].to_vec(),
-            quantum_outputs: outputs.iter().map(|owner| owner.port.token).collect(),
-            classical_outputs: vec![],
+            quantum_outputs,
+            classical_outputs,
             declared_effect: lower.compiler.source.effects[&self.key]
                 .asserted()
                 .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred()),
