@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.SourceTypes.QuantumArms
+import QleisliKernel.SourceTypes.GenericCatalogue
 
 /-! Discover every original runtime body before the one fresh graph check.
 The traversal follows actual source events and supplied context occurrences;
@@ -164,17 +165,22 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
       return discovery)
 
 structure Source (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) where
+  catalogue : GenericCatalogue.Checked artifact.sources
+  audited : RuntimeInterval.Computed (GenericCatalogue.read artifact.sources) catalogue
   signature : SourceRuntimeContext.Signature artifact.sources owner name
   selected : RuntimeInterval.Computed
-    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external) signature
+    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue)) signature
   body : SourceRuntimeTrace.Body signature
   traversed : RuntimeInterval.Computed (SourceRuntimeTrace.readBodyWithSignature signature) body
 
 def readSource (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) :
     WorkM (Source artifact owner name arguments) := do
-  let signature ← NaturalAffine.witness (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external)
+  let catalogue ← NaturalAffine.witness (GenericCatalogue.read artifact.sources)
+  let signature ← NaturalAffine.witness
+    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue.val))
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature signature.val)
-  return ⟨signature.val,by with_reducible exact signature.property,
+  return ⟨catalogue.val,by with_reducible exact catalogue.property,signature.val,
+    by with_reducible exact signature.property,
     body.val,by with_reducible exact body.property⟩
 
 structure Headers (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments)
