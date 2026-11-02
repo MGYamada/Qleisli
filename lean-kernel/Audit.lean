@@ -56,6 +56,7 @@ import QleisliKernel.Tests.SourceRuntimeOrdinary
 import QleisliKernel.Tests.RuntimeStructuredRoot
 import QleisliKernel.Tests.RuntimeMaterialization
 import QleisliKernel.Tests.RuntimePureBody
+import QleisliKernel.Tests.RuntimeProviderHeaders
 import QleisliKernel.Tests.GenericCatalogue
 import QleisliKernel.Tests.SourceComputedSyntax
 import QleisliKernel.Tests.SourceRuntimeMatch
