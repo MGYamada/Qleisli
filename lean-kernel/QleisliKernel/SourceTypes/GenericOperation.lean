@@ -472,4 +472,19 @@ def Duty.sourceRows {sources} (duty : Duty sources) : List (String × String) :=
   (duty.origin.state.owner,duty.origin.state.prepared.original.envelope.source) ::
     duty.origin.rows ++ (match duty.requirement with | .meaning request => request.sourceRows | .access _ => [])
 
+/-- The original traversal supplies one interleaving. A call is expanded at
+this point after its argument duties, before the next enclosing expression;
+offset sorting or independently concatenated projections cannot recover it. -/
+inductive Activity (sources : Sources) where
+  | duty (original : Duty sources)
+  | application (original : ApplicationSource sources)
+
+def Activity.duty? {sources} : Activity sources → Option (Duty sources)
+  | .duty original => some original
+  | .application _ => none
+
+def Activity.application? {sources} : Activity sources → Option (ApplicationSource sources)
+  | .duty _ => none
+  | .application original => some original
+
 end QleisliKernel.SourceTypes.GenericOperation
