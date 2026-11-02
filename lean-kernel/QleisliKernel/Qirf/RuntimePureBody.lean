@@ -53,7 +53,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (source : SourceRuntimeTrace.Body event.target.signature)
       (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
       (childBlock : RuntimeInterval.Block dependencies frame.program)
-      (boundary : RuntimeNamedBoundary.Checked frame event before childHistory childRetired source.checked.summary.value)
+      (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
       (children : Nodes dependencies frame.program childBlock) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
@@ -288,7 +288,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               let childPath := RuntimeOrdinaryBody.CallPath.named event original
                 (by with_reducible exact originalRead.property) parent
               let nested ← next mode .localScope original childPath frame.program child childInitial ordinary frame.prepared
-              let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
+              let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
+                event before nested.history nested.retired original.checked.summary.value
               let node : Node dependencies program prepared.block := .named event frame original
                 (by with_reducible exact originalRead.property) nested.prepared.block boundary (Nodes.ofList nested.actions)
               return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],

@@ -21,8 +21,8 @@ private def exactResult {α : Type} [DecidableEq α] (action : Except String α)
     if same : actual = expected then return ⟨congrArg Except.ok same⟩
     else throw .request
 
-structure Checked {dependencies program sources caller block start count inputs}
-    (frame : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+structure Checked {dependencies program sources caller block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (inputs : List Nat)
     (event : SourceRuntimeContext.NamedEvent sources caller) (before child : SourceState)
     (childRetired : List Owner) (childValue : SourceRuntimeValues.Value) where
   issued : before.issued.map (·.ordinal) = List.range before.nextOrdinal
@@ -39,20 +39,20 @@ structure Checked {dependencies program sources caller block start count inputs}
   resultOwners : mapped.map (·.owner) = valueOwners event.value
   returned : List Semantics.Raw.Port
   returnRead : returned = mapped.map (·.port)
-  atExit : PureInterval.ports frame.interval.after (returned.map (·.token)) = some returned
-  spectators : PureInterval.spectators frame.interval.before inputs =
-    PureInterval.spectators frame.interval.after (returned.map (·.token))
+  atExit : PureInterval.ports interval.after (returned.map (·.token)) = some returned
+  spectators : PureInterval.spectators interval.before inputs =
+    PureInterval.spectators interval.after (returned.map (·.token))
   after : SourceState
   afterBindings : after.bindings = before.bindings.filter (fun binding => !event.inputOwners.contains binding.owner) ++ mapped
   afterIssued : after.issued = before.issued ++ event.allocated
   afterOrdinal : after.nextOrdinal = before.nextOrdinal+event.allocated.length
-  afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) frame.interval.after
+  afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
 
-def read {dependencies program sources caller block start count inputs}
-    (frame : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+def read {dependencies program sources caller block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (inputs : List Nat)
     (event : SourceRuntimeContext.NamedEvent sources caller) (before child : SourceState)
     (childRetired : List Owner) (childValue : SourceRuntimeValues.Value) :
-    WorkM (Checked frame event before child childRetired childValue) := do
+    WorkM (Checked interval inputs event before child childRetired childValue) := do
   exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (before.issued ++ event.ownerMap ++ child.issued ++ childRetired)+
     SourceRuntimeValues.valueFields childValue+SourceRuntimeValues.valueFields event.value+
     before.bindings.length+child.bindings.length+before.nextOrdinal+1)^2))
@@ -71,13 +71,13 @@ def read {dependencies program sources caller block start count inputs}
         | .ok mapped =>
           if resultOwners : mapped.map (·.owner) = valueOwners event.value then
             let returned := mapped.map (·.port)
-            if atExit : PureInterval.ports frame.interval.after (returned.map (·.token)) = some returned then
-              if spectators : PureInterval.spectators frame.interval.before inputs =
-                  PureInterval.spectators frame.interval.after (returned.map (·.token)) then
+            if atExit : PureInterval.ports interval.after (returned.map (·.token)) = some returned then
+              if spectators : PureInterval.spectators interval.before inputs =
+                  PureInterval.spectators interval.after (returned.map (·.token)) then
                 let bindings := before.bindings.filter (fun binding => !event.inputOwners.contains binding.owner) ++ mapped
                 let after : SourceState := ⟨bindings,before.issued ++ event.allocated,
                   before.nextOrdinal+event.allocated.length⟩
-                let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) frame.interval.after after.bindings
+                let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) interval.after after.bindings
                 return ⟨issued,liveIssued,fresh,completeHistory.down,completeRetired.down,result.down,mapped,mappedRead,
                   resultOwners,returned,rfl,atExit,spectators,after,rfl,rfl,rfl,afterFrame⟩
               else throw .request
