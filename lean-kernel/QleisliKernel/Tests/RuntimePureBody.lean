@@ -63,4 +63,41 @@ private def selected (exponent : Nat) : WorkM Nat := do
 -- Every original provider body is nevertheless traversed, so this refuses.
 #guard (match (selected 0).run 10000000 with | (.error .equation,_) => true | _ => false)
 
+private def structural (text : String) (inputs : List Semantics.Raw.Port)
+    (operations : List Semantics.Raw.Op) (outputs : List Nat) : WorkM (List Nat × List Nat × List Nat) := do
+  let text := "#![no_implicit_prelude]\n" ++ text
+  let sources : Sources := #[("main",text)]
+  let program : Semantics.Observation.Program := ⟨inputs,[],operations.map .pure,outputs,[],.unitary⟩
+  let artifact : Qirf.Artifact := ⟨#[program],#[],sources,0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "main" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let roles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
+  let initial := (roles.zip inputs).map fun (owner,port) => (⟨owner,port⟩ : RuntimeOwnerMap.Binding)
+  let context : RuntimeContextRequest.Context := .mk
+    (body.checked.events.zipIdx.map fun (event,index) => ⟨event.offset,index,1⟩) [] [] [] []
+  let root ← Validity.checkRootFromRoots artifact #[0] [("main",text)] [0]
+  let checked ← Qirf.RuntimePureBody.check artifact root body root.program context initial
+  let _ ← RuntimePureComposition.prepare artifact root body context initial checked
+  return (checked.result.history.issued.map (·.ordinal),checked.result.retired.map (·.ordinal),
+    checked.result.bindings.map (·.owner.ordinal))
+
+private def splitJoin (wrongBoundary wrongOrder : Bool) := structural
+  "pub unitary fn main(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let (u,b)=split(q);join(u,h(b))}"
+  [⟨0,[0],1⟩] [.split 0 1 2 (if wrongBoundary then 1 else 0),.gate .h 2 3,
+    .join (if wrongOrder then 3 else 1) (if wrongOrder then 1 else 3) 4] [4]
+
+-- The original owner 0 is replaced by 1,2,3. The same literal intervals retain
+-- that complete history while H acts only on the original Bit component.
+#guard (splitJoin false false).run 10000000 |>.1.toOption == some ([0,1,2,3],[0,1,2],[3])
+#guard (match (splitJoin true false).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard (match (splitJoin false true).run 10000000 with | (.error .request,_) => true | _ => false)
+
+-- Releasing a zero-width owner does not undo its scalar phase or issued ID.
+private def releaseRecreate (exponent : Nat) := structural
+  "pub unitary fn main(u:Q<Unit>)->Q<Unit>{let u=global_phase_eighth(u);finish(u);unit(())}"
+  [⟨0,[],0⟩] [.applyUnitary 0 1 [⟨[],.monomial [] [0] [exponent]⟩],.unpackUnit 1,.packUnit 2] [2]
+
+#guard (releaseRecreate 1).run 10000000 |>.1.toOption == some ([0,1],[0],[1])
+#guard (match (releaseRecreate 0).run 10000000 with | (.error .equation,_) => true | _ => false)
+
 end QleisliKernel.Tests.RuntimePureBody

@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
+import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
@@ -29,6 +30,10 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
   | primitive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count input output role kind}
       (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies program block
+  | structural {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller event before}
+      (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
+      Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles} {sources : Sources} {owner name : String}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -79,9 +84,12 @@ abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
 
 structure Result (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) where
   prepared : RuntimeInterval.Prepared dependencies program
-  bindings : Map
+  history : RuntimeStructuralAction.SourceState
+  retired : List Owner
   actions : List (Node dependencies program prepared.block)
   obligations : List (Island dependencies) := []
+
+def Result.bindings {dependencies program} (result : Result dependencies program) : Map := result.history.bindings
 
 def Result.islands {dependencies program} (result : Result dependencies program) : List (Island dependencies) :=
   result.actions.map (fun node => ⟨program,result.prepared.block,node⟩) ++ result.obligations
@@ -124,13 +132,13 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
       guard (request.branches.isEmpty && !source.signature.operations.hasMeaningRequirements) .request
       guard (source.summary.inferredEffect == .unitary &&
         singletonOrdinary source.summary.value && source.summary.parameterValues.all singletonOrdinary &&
-        source.summary.allocated.isEmpty && source.summary.consumed.isEmpty &&
         program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty) .request
       let prepared ← RuntimeInterval.prepare dependencies program
       guard (!prepared.whole.state.observe) .request
       let _ ← lift (readOption (Sector.pureOps program.operations))
       let roles := source.summary.parameterValues.flatMap valueOwners
       let initial ← reordered roles prepared.entry initial
+      let initialHistory : RuntimeStructuralAction.SourceState := ⟨initial,roles,source.summary.nextOwner⟩
       let checkOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
@@ -168,31 +176,43 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
           pure (obligations ++ checked,rest)) ([],request.bodies)
       exactWork (Exact.charge (32*(source.events.length+request.positions.length+request.calls.length+1)^2))
       guard (request.positions.map (·.offset) == source.events.map SourceRuntimeContext.Event.offset) .request
-      let (bindings,actions,obligations,cursor,calls,sites,bodies) ← (source.events.zip request.positions).foldlM
-        (fun (bindings,actions,obligations,cursor,calls,sites,bodies) (event,position) => do
+      let (history,retired,actions,obligations,cursor,calls,sites,bodies) ← (source.events.zip request.positions).foldlM
+        (fun (history,retired,actions,obligations,cursor,calls,sites,bodies) (event,position) => do
           guard (position.start == cursor) .request
           let interval ← RuntimeInterval.check prepared.block position.start position.count
-          let bindings ← reordered (bindings.map (·.owner)) interval.before bindings
-          let after ← transition interval bindings
-          let after ← reordered (bindings.map (·.owner)) interval.after after
+          let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+          let before := {history with bindings}
+          let structural := match event with
+            | .primitive event => [.join,.split,.unit,.finish].contains event.kind
+            | _ => false
+          let after ← if structural then pure bindings else do
+            let changed ← transition interval bindings
+            reordered (bindings.map (·.owner)) interval.after changed
+          let continued := {before with bindings := after}
           match event with
           | .primitive event =>
-            let [[.owner operand]] := event.arguments | throw .request
-            let kind ← match event.kind with
-              | .h => pure Semantics.PrimitiveOperator.Kind.h
-              | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
-              | _ => throw .request
-            let [input] ← rolePorts [operand] bindings | throw .request
-            let [output] ← rolePorts [operand] after | throw .request
-            let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
-              input.token output.token operand kind
-            return (after,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
+            if structural then
+              let action ← RuntimeStructuralAction.read prepared.block position.start position.count event before
+              return (action.after,retired ++ action.inputRoles,actions ++ [.structural action],
+                obligations,position.start+position.count,calls,sites,bodies)
+            else do
+              guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
+              let [[.owner operand]] := event.arguments | throw .request
+              let kind ← match event.kind with
+                | .h => pure Semantics.PrimitiveOperator.Kind.h
+                | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
+                | _ => throw .request
+              let [input] ← rolePorts [operand] bindings | throw .request
+              let [output] ← rolePorts [operand] after | throw .request
+              let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
+                input.token output.token operand kind
+              return (continued,retired,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
           | .phase event =>
             let [input] ← rolePorts [event.operand] bindings | throw .request
             let [output] ← rolePorts [event.operand] after | throw .request
             let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
-            return (after,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
+            return (continued,retired,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
             guard (event.effect == .unitary && event.allocated.isEmpty && event.consumed.isEmpty) .request
             let (callPosition,child) :: calls := calls | throw .request
@@ -213,7 +233,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             let childOutputs ← NaturalAffine.witness
               (rolePorts (valueOwners original.checked.summary.value) nested.bindings)
             if returnOrder : childOutputs.val.map (·.token) = actualOutputs.map (·.token) then
-              return (after,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
+              return (continued,retired,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
                 nested.prepared.block nested.bindings childOutputs.val
                 (by with_reducible exact childOutputs.property) returnOrder (Nodes.ofList nested.actions)],
                 obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
@@ -238,7 +258,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             let action ← CodeSpace.readMap inputCode.val outputCode.val physical.val
             exactWork (Exact.charge (action.logical.entries.length+expected.entries.length+1))
             if equation : action.logical = expected then
-              pure (after,actions ++ [.operation frame inputCode.val outputCode.val physical.val expected
+              pure (continued,retired,actions ++ [.operation frame inputCode.val outputCode.val physical.val expected
                 (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
                 (by with_reducible exact physical.property) action equation],
                 obligations ++ children,position.start+position.count,calls,sites,bodies)
@@ -276,16 +296,18 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
               [.bits targetLayout.bits] (RuntimePureInterval.fragment frame.selected frame.operations [so.token,to.token]))
             let logical ← NaturalAffine.witness (NominalSector.checkLogicals inputCode outputCode restriction.val.sectors
               selectorLayout.labels expected)
-            pure (after,actions ++ [.selection frame selectorLayout.bits targetLayout.bits restriction.val
+            pure (continued,retired,actions ++ [.selection frame selectorLayout.bits targetLayout.bits restriction.val
               (by with_reducible exact restriction.property) inputCode outputCode selectorLayout.labels expected logical.val
               (by with_reducible exact logical.property)],obligations ++ checked,position.start+position.count,calls,sites,bodies)
-          | _ => throw .request) (initial,([] : List (Node dependencies program prepared.block)),
+          | _ => throw .request) (initialHistory,([] : List Owner),([] : List (Node dependencies program prepared.block)),
             obligations,0,request.calls,request.sites,bodies)
       guard (cursor == program.operations.length && calls.isEmpty && sites.isEmpty && bodies.isEmpty) .request
-      let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state bindings
+      guard (history.issued == roles ++ source.summary.allocated && retired == source.summary.consumed &&
+        history.nextOrdinal == source.summary.nextOrdinal) .request
+      let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state history.bindings
       let outputs ← rolePorts (valueOwners source.summary.value) bindings
       guard (outputs.map (·.token) == program.outputs) .request
-      return ⟨prepared,bindings,actions,obligations⟩)
+      return ⟨prepared,{history with bindings},retired,actions,obligations⟩)
 
 structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)

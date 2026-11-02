@@ -14,33 +14,43 @@ open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
 open RuntimePureBody RuntimeOwnerMap
 
 structure Local {dependencies program} (block : RuntimeInterval.Block dependencies program) where
-  arity : Nat
   start : Nat
   count : Nat
   inputs : List Nat
   outputs : List Nat
-  roles : List Owner
-  frame : RuntimePureInterval.Checked block arity start count inputs outputs roles
+  inputRoles : List Owner
+  outputRoles : List Owner
+  interval : RuntimeInterval.Checked block start count
+  selected : List Semantics.Raw.Port
+  returned : List Semantics.Raw.Port
+  operations : List Semantics.Raw.Op
+  literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure
+  spectators : PureInterval.spectators interval.before inputs = PureInterval.spectators interval.after outputs
+
+private def pureLocal {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    Local block :=
+  ⟨start,count,inputs,outputs,roles,roles,frame.interval,frame.selected,frame.returned,
+    frame.operations,frame.literal,frame.spectators⟩
 
 def region {dependencies program block} : Node dependencies program block → Local block
-  | .primitive (start := start) (count := count) (input := input) (output := output)
-      (role := role) action => ⟨1,start,count,[input],[output],[role],action.interval⟩
-  | .named (arity := arity) (start := start) (count := count) (inputs := inputs)
-      (outputs := outputs) (roles := roles) frame .. => ⟨arity,start,count,inputs,outputs,roles,frame⟩
-  | .operation (arity := arity) (start := start) (count := count) (inputs := inputs)
-      (outputs := outputs) (roles := roles) frame .. => ⟨arity,start,count,inputs,outputs,roles,frame⟩
-  | .selection (start := start) (count := count) (inputs := inputs)
-      (outputs := outputs) (roles := roles) frame .. => ⟨2,start,count,inputs,outputs,roles,frame⟩
+  | .primitive action => pureLocal action.interval
+  | .structural (start := start) (count := count) action =>
+    ⟨start,count,action.inputs.map (·.token),action.outputs.map (·.token),action.inputRoles,action.outputRoles,
+      action.interval,action.inputs,action.outputs,[action.operation],action.literal,action.spectators⟩
+  | .named frame .. => pureLocal frame
+  | .operation frame .. => pureLocal frame
+  | .selection frame .. => pureLocal frame
 
 def operations {dependencies program block} (node : Node dependencies program block) : List Semantics.Raw.Op :=
-  (region node).frame.operations
+  (region node).operations
 
 /-- Every caller spectator, including distinct zero-width owners, is retained
 by this same interval. No tensor-product state assumption occurs here. -/
 theorem spectators {dependencies program block} (node : Node dependencies program block) :
-    PureInterval.spectators (region node).frame.interval.before (region node).inputs =
-      PureInterval.spectators (region node).frame.interval.after (region node).outputs :=
-  (region node).frame.spectators
+    PureInterval.spectators (region node).interval.before (region node).inputs =
+      PureInterval.spectators (region node).interval.after (region node).outputs :=
+  (region node).spectators
 
 inductive Covers {dependencies program} {block : RuntimeInterval.Block dependencies program} :
     Nat → List (Node dependencies program block) → Nat → Prop where
@@ -56,9 +66,9 @@ theorem Covers.literalRemaining {dependencies program block cursor nodes finish}
   | nil cursor => rfl
   | @cons cursor finish node nodes atCursor rest ih =>
     simp only [List.flatMap_cons,List.map_append,List.append_assoc,ih]
-    change (region node).frame.operations.map Semantics.Observation.Op.pure ++
+    change (region node).operations.map Semantics.Observation.Op.pure ++
       block.operations.drop (cursor+(region node).count) = block.operations.drop cursor
-    rw [← (region node).frame.literal,atCursor]
+    rw [← (region node).literal,atCursor]
     simpa only [List.drop_drop] using List.take_append_drop (region node).count (block.operations.drop cursor)
 
 theorem Covers.literal {dependencies program block nodes}
@@ -90,7 +100,7 @@ def readPartition {dependencies program block} (nodes : List (Node dependencies 
     WorkM (Partition block nodes) := do
   exactWork (Exact.charge (32*(nodes.length+block.operations.length+1)+
     (nodes.map fun node => Raw.rawFields
-      (RuntimePureInterval.fragment (region node).frame.selected (operations node) (region node).outputs)).sum))
+      (RuntimePureInterval.fragment (region node).selected (operations node) (region node).outputs)).sum))
   let cover ← readCover nodes 0
   return ⟨cover.down,cover.down.literal⟩
 
@@ -115,8 +125,12 @@ structure Prepared (artifact : Artifact) (root : Validity.Root) {owner name sign
   raw : Semantics.Raw.Program
   original : Sector.project root.program = some raw
   operations : raw.operations = checked.result.actions.flatMap RuntimePureComposition.operations
-  sourceOrder : (body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners).Perm
-    (SourceRuntimeValues.valueOwners body.checked.summary.value)
+  sourceBalance : (SourceRuntimeValues.owners body.checked.summary.initial ++ body.checked.summary.allocated).Perm
+    (SourceRuntimeValues.valueOwners body.checked.summary.value ++ body.checked.summary.consumed)
+  issued : checked.result.history.issued =
+    body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners ++ body.checked.summary.allocated
+  retired : checked.result.retired = body.checked.summary.consumed
+  nextOrdinal : checked.result.history.nextOrdinal = body.checked.summary.nextOrdinal
   finalOwners : RuntimeOwnerMap.Checked (SourceRuntimeValues.valueOwners body.checked.summary.value) root.checked.state
   returned : List Semantics.Raw.Port
   returnRead : RuntimeInterval.Computed
@@ -143,15 +157,18 @@ def prepare (artifact : Artifact) (root : Validity.Root) {owner name signature}
   | none => throw .request
   | some raw =>
     if operations : raw.operations = checked.result.actions.flatMap RuntimePureComposition.operations then
-      if sourceOrder : (body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners).Perm
-          (SourceRuntimeValues.valueOwners body.checked.summary.value) then
-        let finalOwners ← RuntimeOwnerMap.check (SourceRuntimeValues.valueOwners body.checked.summary.value)
-          root.checked.state checked.result.bindings
-        let returned ← NaturalAffine.witness (RuntimePureBody.rolePorts
-          (SourceRuntimeValues.valueOwners body.checked.summary.value) checked.result.bindings)
-        if outputOrder : returned.val.map (·.token) = root.program.outputs then
-          return ⟨partition,raw,original,operations,sourceOrder,finalOwners,returned.val,
-            by with_reducible exact returned.property,outputOrder⟩
+      if issued : checked.result.history.issued = inputRoles ++ body.checked.summary.allocated then
+        if retired : checked.result.retired = body.checked.summary.consumed then
+          if nextOrdinal : checked.result.history.nextOrdinal = body.checked.summary.nextOrdinal then
+            let finalOwners ← RuntimeOwnerMap.check (SourceRuntimeValues.valueOwners body.checked.summary.value)
+              root.checked.state checked.result.bindings
+            let returned ← NaturalAffine.witness (RuntimePureBody.rolePorts
+              (SourceRuntimeValues.valueOwners body.checked.summary.value) checked.result.bindings)
+            if outputOrder : returned.val.map (·.token) = root.program.outputs then
+              return ⟨partition,raw,original,operations,body.checked.summary.balanced,issued,retired,nextOrdinal,
+                finalOwners,returned.val,by with_reducible exact returned.property,outputOrder⟩
+            else throw .request
+          else throw .request
         else throw .request
       else throw .request
     else throw .request
