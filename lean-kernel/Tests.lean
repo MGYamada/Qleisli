@@ -64,6 +64,13 @@ import QleisliKernel.Tests.SourceRuntimeRecursion
 import QleisliKernel.Tests.SourceRuntimeStatic
 import QleisliKernel.Tests.ContextSectorStages
 import QleisliKernel.Tests.ContextSource
+import QleisliKernel.Tests.QuantumSelectionSyntax
+import QleisliKernel.Tests.SourceRuntimeQif
+import QleisliKernel.Tests.SourceRuntimeEmpty
+import QleisliKernel.Tests.SourceRuntimeComputed
+import QleisliKernel.Tests.SourceRuntimeRegisters
+import QleisliKernel.Tests.SourceRuntimePatterns
+import QleisliKernel.Tests.NaturalNames
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises

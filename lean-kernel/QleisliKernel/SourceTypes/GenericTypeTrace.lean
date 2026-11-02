@@ -384,6 +384,7 @@ private def computedPredicate {sources} (state : GenericLexicalNatural.SomeEnvir
   let (resolution,rows) ← named state scope reference.argument.tokens
   let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
   let definition ← readDefinition sources resolution.moduleName resolution.declaration.name (some helpers)
+    state.prepared.originals
   guard (definition.original.header.formals.isEmpty &&
     definition.original.envelope.parsedHeader.ordinaryOnly) .request
   let [parameter] := definition.parameters | throw .request
