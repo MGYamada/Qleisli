@@ -472,10 +472,22 @@ def Checked.summary {sources owner name} (checked : Checked sources owner name) 
 def Checked.events {sources owner name} (checked : Checked sources owner name) : List (Event sources owner) :=
   checked.evaluated.events
 
+structure Body {sources owner name} (signature : Signature sources owner name) where
+  checked : Checked sources owner name
+  originalSignature : checked.signature = signature
+
+/-- The continuation retains the exact already-checked original signature and
+its instantiation/supply context. No equal-width replacement is selected. -/
+def readBodyWithSignature {sources owner name} (signature : Signature sources owner name) :
+    Finite.WorkM (Body signature) := do
+  let summary ← NaturalAffine.witness (readNested sources (SourceTrace.sourceFuel sources) [] signature)
+  let checked : Checked sources owner name :=
+    ⟨signature,summary.val,by with_reducible exact summary.property⟩
+  return ⟨checked,rfl⟩
+
 def readWithSignature {sources owner name} (signature : Signature sources owner name) :
     Finite.WorkM (Checked sources owner name) := do
-  let summary ← NaturalAffine.witness (readNested sources (SourceTrace.sourceFuel sources) [] signature)
-  return ⟨signature,summary.val,by with_reducible exact summary.property⟩
+  return (← readBodyWithSignature signature).checked
 
 def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments := {}) :
     Finite.WorkM (Checked sources owner name) := do
@@ -484,9 +496,10 @@ def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Argu
 /-- A native continuation must freshly recover each original callee, using this
 same reader and its own nested source coordinates. No flattened event list or
 caller-supplied history can stand in for that independent traversal. -/
-def readNamedSource {sources caller} (event : NamedEvent sources caller) :
-    Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
-  let checked ← readWithSignature event.target.signature
+def readNamedBody {sources caller} (event : NamedEvent sources caller) :
+    Finite.WorkM (Body event.target.signature) := do
+  let body ← readBodyWithSignature event.target.signature
+  let checked := body.checked
   Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
     valueFields event.canonical.value+checked.events.length+
     Raw.OwnerFlow.fields (checked.summary.allocated ++ checked.summary.consumed ++
@@ -496,14 +509,19 @@ def readNamedSource {sources caller} (event : NamedEvent sources caller) :
     checked.summary.allocated == event.canonical.allocated &&
     checked.summary.inferredEffect == event.canonical.inferredEffect &&
     checked.summary.quantumUse == event.canonical.quantumUse) .request
-  return checked
+  return body
+
+def readNamedSource {sources caller} (event : NamedEvent sources caller) :
+    Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
+  return (← readNamedBody event).checked
 
 /-- The complete original forward body remains mandatory for a direct group
 transform, including under zero powers. The continuation must separately bind
 its ordered ports and transformed operator to the actual emitted interval. -/
-def readTransformSource {sources caller} (event : TransformEvent sources caller) :
-    Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
-  let checked ← readWithSignature event.target.signature
+def readTransformBody {sources caller} (event : TransformEvent sources caller) :
+    Finite.WorkM (Body event.target.signature) := do
+  let body ← readBodyWithSignature event.target.signature
+  let checked := body.checked
   Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
     valueFields event.forward.value+checked.events.length+
     Raw.OwnerFlow.fields (checked.summary.allocated ++ checked.summary.consumed ++
@@ -513,7 +531,11 @@ def readTransformSource {sources caller} (event : TransformEvent sources caller)
     checked.summary.allocated == event.forward.allocated &&
     checked.summary.inferredEffect == event.forward.inferredEffect &&
     checked.summary.quantumUse == event.forward.quantumUse) .request
-  return checked
+  return body
+
+def readTransformSource {sources caller} (event : TransformEvent sources caller) :
+    Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
+  return (← readTransformBody event).checked
 
 /-- Coherent body calls are source/reference dependencies, not invented runtime
 call intervals. A native basis continuation freshly recovers their original
