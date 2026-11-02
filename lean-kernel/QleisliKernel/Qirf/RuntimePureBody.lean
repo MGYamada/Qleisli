@@ -44,6 +44,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (event : SourceRuntimeContext.NamedEvent sources caller)
       (frame : RuntimeCallInterval.Checked block start count inputs)
       (source : SourceRuntimeTrace.Body event.target.signature)
+      (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
       (childBlock : RuntimeInterval.Block dependencies frame.program)
       (boundary : RuntimeNamedBoundary.Checked frame event before childHistory childRetired source.checked.summary.value)
       (children : Nodes dependencies frame.program childBlock) : Node dependencies program block
@@ -125,10 +126,12 @@ the actual local equation. Selection providers re-enter this same source body
 reader before their arm equations are used. Basis actions, observing calls,
 ordinary branches and demanded source transformations remain incomplete. -/
 def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary → {owner name : String} →
-    SourceRuntimeTrace.Checked artifact.sources owner name → (program : Semantics.Observation.Program) → Context → Map →
+    {signature : SourceRuntimeContext.Signature artifact.sources owner name} →
+    SourceRuntimeTrace.Body signature → (program : Semantics.Observation.Program) → Context → Map →
     WorkM (Result root.dependencies program) :=
-  Nat.rec (fun _ {_ _} _ _ _ _ => throw .limit)
-    (fun _ next outputBoundary {_ _} source program request initial => do
+  Nat.rec (fun _ {_ _ _} _ _ _ _ => throw .limit)
+    (fun _ next outputBoundary {_ _ _} body program request initial => do
+      let source := body.checked
       let dependencies := root.dependencies
       guard (request.branches.isEmpty && !source.signature.operations.hasMeaningRequirements) .request
       guard (source.summary.inferredEffect == .unitary &&
@@ -146,8 +149,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
           WorkM (Semantics.Exact.Matrix × List (Island dependencies)) := do
         let paths ← RuntimeOperationPaths.read graph root requested requests
         let children ← paths.bodies.mapM fun {_} {headerRequest} header _ native => do
-          let body := header.original.body.checked
-          let canonical := body.summary.parameterValues.flatMap valueOwners
+          let body := header.original.body
+          let canonical := body.checked.summary.parameterValues.flatMap valueOwners
           let owner := (⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩ :
             Semantics.CarrierInterface.Owner)
           let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
@@ -219,17 +222,19 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
             guard (event.effect == .unitary) .request
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position) .request
-            let original ← SourceRuntimeTrace.readNamedBody event
+            let originalRead ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+            let original := originalRead.val
             let inputs ← rolePorts event.inputOwners bindings
             let frame ← RuntimeCallInterval.read prepared.block position.start position.count (inputs.map (·.token))
             let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
             let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
               (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
             let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
-            let nested ← next .localScope original.checked frame.program child childInitial
+            let nested ← next .localScope original frame.program child childInitial
             let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
             return (boundary.after,retired ++ event.consumed,actions ++
-              [.named event frame original nested.prepared.block boundary (Nodes.ofList nested.actions)],
+              [.named event frame original (by with_reducible exact originalRead.property)
+                nested.prepared.block boundary (Nodes.ofList nested.actions)],
               obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
           | .operation event =>
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
@@ -308,13 +313,13 @@ structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signa
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) where
   result : Result root.dependencies program
-  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body.checked program request initial) result
+  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body program request initial) result
 
 def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) :
     WorkM (Checked artifact root body program request initial) := do
-  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body.checked program request initial)
+  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body program request initial)
   return ⟨checked.val,by with_reducible exact checked.property⟩
 
 end QleisliKernel.Qirf.RuntimePureBody
