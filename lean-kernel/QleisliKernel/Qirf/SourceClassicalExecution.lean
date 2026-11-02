@@ -17,9 +17,28 @@ open Semantics.SourceClassical
 abbrev Result {α : Type} (action : Except String α) := {value : α // action = .ok value}
 
 private def runPure {α : Type} (action : Except String α) : WorkM (Result action) :=
-  match computed : action with
+  match action with
   | .error _ => throw .request
-  | .ok value => pure ⟨value,computed⟩
+  | .ok value => pure ⟨value,rfl⟩
+
+/-- Freeze the returned payload while replacing only the first computation.
+Rewriting the entire dependent Result type would also abstract its projection. -/
+private theorem bindResult {α β : Type} {action : Except String α} (result : Result action)
+    (next : α → Except String β) :
+    (do let value ← action; next value) = next result.val :=
+  congrArg (fun computation : Except String α => computation >>= next) result.property
+
+private theorem nodeAt (nodes : List Node) (callee : Nat → List Value → Except String Value)
+    (fuel : Nat) (environment : Environment) (index : Nat) (node : Node)
+    (present : nodes[index]? = some node) :
+    evaluateNode nodes callee (fuel+1) environment index =
+      nodeAction callee (evaluateNode nodes callee fuel) environment node := by
+  simp only [evaluateNode_succ,present]
+
+private theorem functionAt (functions : List Function) (fuel index : Nat) (arguments : List Value)
+    (function : Function) (present : functions[index]? = some function) :
+    evaluate functions (fuel+1) index arguments = functionAction (evaluate functions fuel) function arguments := by
+  simp only [evaluate_succ,present]
 
 def basisCells (basis : Basis) : Nat := Raw.OwnerFlow.fields [⟨0,basis⟩]
 
@@ -139,7 +158,10 @@ private def readList {α β : Type} (reference : α → Except String β)
     let head ← action first
     let tail ← readList reference action rest
     return ⟨head.val :: tail.val,by
-      simp only [List.mapM_cons,head.property,tail.property,Except.bind,Except.pure]⟩
+      simp only [List.mapM_cons]
+      exact (bindResult head (fun value => do
+        let rest ← rest.mapM reference
+        pure (value :: rest))).trans (bindResult tail (fun rest => .ok (head.val :: rest)))⟩
 
 /-- Each recursive call carries the exact independent child equation. The
 reservation covers the literal node lookup, complete current value frame,
@@ -160,89 +182,83 @@ def readNode {functions} (metadata : Metadata functions) (nodes : List Node)
           (node.children.length+1)))
         let child := next environment
         let reference := evaluateNode nodes callee fuel environment
-        match node with
+        match kind : node with
         | .unit | .bit _ | .emptyBits | .variable _ | .variant .. =>
           let result ← runPure (nodeAction callee (evaluateNode nodes callee fuel) environment node)
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((congrArg (nodeAction callee (evaluateNode nodes callee fuel) environment) kind).symm.trans
+                result.property)⟩
         | .tuple fields =>
           let values ← readList reference child fields
           return ⟨.tuple fields.length :: values.val.flatten,by
-            rw [evaluateNode_succ,present]
-            change (do
-              let values ← fields.mapM reference
-              pure (.tuple fields.length :: values.flatten)) = _
-            rw [values.property]
-            rfl⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              (bindResult values (fun values => .ok ((.tuple fields.length :: values.flatten) : Value)))⟩
         | .not input =>
           let value ← child input
           let result ← runPure (do
             let value ← bitValue value.val
             pure [.ordinary [.bit] (1-value)])
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [value.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult value (fun value => do
+                let value ← bitValue value
+                pure [.ordinary [.bit] (1-value)])).trans result.property)⟩
         | .xor first second =>
           let first ← child first
           let a ← runPure (bitValue first.val)
           let second ← child second
           let b ← runPure (bitValue second.val)
           return ⟨[.ordinary [.bit] (if a.val == b.val then 0 else 1)],by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [first.property]
-            change (do
-              let a ← bitValue first.val
-              let b ← bitValue (← reference _)
-              pure [.ordinary [.bit] (if a == b then 0 else 1)]) = _
-            rw [a.property]
-            rw [second.property]
-            change (do
-              let b ← bitValue second.val
-              pure [.ordinary [.bit] (if a.val == b then 0 else 1)]) = _
-            rw [b.property]
-            rfl⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult first (fun first => do
+                let a ← bitValue first
+                let second ← reference _
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a == b then 0 else 1)])).trans
+              ((bindResult a (fun a => do
+                let second ← reference _
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a == b then 0 else 1)])).trans
+              ((bindResult second (fun second => do
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a.val == b then 0 else 1)])).trans
+                (bindResult b (fun b => .ok [.ordinary [.bit] (if a.val == b then 0 else 1)])))))⟩
         | .and first second =>
           let first ← child first
           let a ← runPure (bitValue first.val)
           let second ← child second
           let b ← runPure (bitValue second.val)
           return ⟨[.ordinary [.bit] (if a.val == 1 && b.val == 1 then 1 else 0)],by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [first.property]
-            change (do
-              let a ← bitValue first.val
-              let b ← bitValue (← reference _)
-              pure [.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)]) = _
-            rw [a.property]
-            rw [second.property]
-            change (do
-              let b ← bitValue second.val
-              pure [.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)]) = _
-            rw [b.property]
-            rfl⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult first (fun first => do
+                let a ← bitValue first
+                let second ← reference _
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)])).trans
+              ((bindResult a (fun a => do
+                let second ← reference _
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a == 1 && b == 1 then 1 else 0)])).trans
+              ((bindResult second (fun second => do
+                let b ← bitValue second
+                pure [.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)])).trans
+                (bindResult b (fun b => .ok [.ordinary [.bit] (if a.val == 1 && b == 1 then 1 else 0)])))))⟩
         | .conditional condition left right =>
           let condition ← child condition
           let selected ← runPure (bitValue condition.val)
           let result ← child (if selected.val == 1 then left else right)
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [condition.property]
-            change (do
-              let selected ← bitValue condition.val
-              reference (if selected == 1 then left else right)) = _
-            rw [selected.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult condition (fun condition => do
+                let selected ← bitValue condition
+                reference (if selected == 1 then left else right))).trans
+              ((bindResult selected (fun selected => reference (if selected == 1 then left else right))).trans
+                result.property))⟩
         | .staticConditional selected left right =>
           let result ← child (if selected then left else right)
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans result.property⟩
         | .binding pattern value rest =>
           let value ← child value
           exactWork (Exact.charge (32*(patternCells pattern+1)*
@@ -250,66 +266,48 @@ def readNode {functions} (metadata : Metadata functions) (nodes : List Node)
           let bound ← runPure (bind pattern value.val environment)
           let result ← next bound.val rest
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [value.property]
-            change (do
-              let bound ← bind pattern value.val environment
-              evaluateNode nodes callee fuel bound rest) = _
-            rw [bound.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult value (fun value => do
+                let bound ← bind pattern value environment
+                evaluateNode nodes callee fuel bound rest)).trans
+              ((bindResult bound (fun bound => evaluateNode nodes callee fuel bound rest)).trans result.property))⟩
         | .sequence first rest =>
           let first ← child first
           let result ← child rest
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [first.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult first (fun _ => reference rest)).trans result.property)⟩
         | .record original written =>
           let values ← readList (fun (name,index) => do return (name,← reference index))
             (fun (name,index) => do
               let value ← child index
-              return ⟨(name,value.val),by rw [value.property]; rfl⟩) written
+              return ⟨(name,value.val),bindResult value (fun value => .ok (name,value))⟩) written
           let result ← runPure (construct original values.val)
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            change (do
-              let values ← written.mapM fun (name,index) => do return (name,← reference index)
-              construct original values) = _
-            rw [values.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult values (construct original)).trans result.property)⟩
         | .projection original field receiver =>
           let receiver ← child receiver
           let result ← runPure (project original field receiver.val)
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [receiver.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult receiver (project original field)).trans result.property)⟩
         | .matching scrutinee labels bodies =>
           let scrutinee ← child scrutinee
           let selected ← runPure (selectMatch labels bodies scrutinee.val)
           let result ← child selected.val
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            simp only [nodeAction]
-            rw [scrutinee.property]
-            change (do
-              let selected ← selectMatch labels bodies scrutinee.val
-              reference selected) = _
-            rw [selected.property]
-            exact result.property⟩
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult scrutinee (fun scrutinee => do
+                let selected ← selectMatch labels bodies scrutinee
+                reference selected)).trans
+              ((bindResult selected reference).trans result.property))⟩
         | .call function arguments =>
           let arguments ← readList reference child arguments
           let result ← readCallee function arguments.val
           return ⟨result.val,by
-            rw [evaluateNode_succ,present]
-            change (do
-              let arguments ← List.mapM reference _
-              callee function arguments) = _
-            rw [arguments.property]
-            exact result.property⟩)
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult arguments (callee function)).trans result.property)⟩)
 
 /-- Actual ordinary calls retain complete source types and fresh local pattern
 bindings. The shared type cache is unchanged across every canonical input. -/
@@ -333,15 +331,11 @@ def read {functions} (metadata : Metadata functions) :
         exactWork (Exact.charge (32*(valueCells result.val+basisCells function.output+metadata.codeCells+1)))
         let checked ← runPure (checkResult function.output result.val)
         return ⟨checked.val,by
-          rw [evaluate_succ,present]
-          change functionAction (evaluate functions fuel) function arguments = _
-          unfold functionAction
-          rw [environment.property]
-          change (do
-            let result ← evaluateNode function.nodes (evaluate functions fuel) (function.nodes.length+1)
-              environment.val function.root
-            checkResult function.output result) = _
-          rw [result.property]
-          exact checked.property⟩)
+          exact (functionAt functions fuel index arguments function present).trans
+            ((bindResult environment (fun environment => do
+              let result ← evaluateNode function.nodes (evaluate functions fuel) (function.nodes.length+1)
+                environment function.root
+              checkResult function.output result)).trans
+            ((bindResult result (checkResult function.output)).trans checked.property))⟩)
 
 end QleisliKernel.Qirf.SourceClassicalExecution
