@@ -293,4 +293,35 @@ def Prepared.sourceRows {sources catalogue owner name caller}
     (prepared : @Prepared sources catalogue owner name caller) : List (String × String) :=
   prepared.state.definitions.flatMap (·.rows)
 
+private def basisCells (basis : Basis) : Nat := Raw.OwnerFlow.fields [⟨0,basis⟩]
+
+private def patternCells (pattern : Semantics.SourceClassical.Pattern) : Nat :=
+  pattern.foldl (fun count atom => count+1+match atom with
+    | .name name => name.utf8ByteSize
+    | _ => 0) 0
+
+private def nodeCells (node : Semantics.SourceClassical.Node) : Nat :=
+  node.children.length+1+match node with
+    | .variable name => name.utf8ByteSize
+    | .binding pattern _ _ => patternCells pattern
+    | .variant basis _ => basisCells basis
+    | .record original written => basisCells original.basis+
+        (original.fields.map fun (name,basis) => name.utf8ByteSize+basisCells basis).sum+
+        (written.map fun (name,_) => name.utf8ByteSize+1).sum
+    | .projection original _ _ => basisCells original.basis+
+        (original.fields.map fun (name,basis) => name.utf8ByteSize+basisCells basis).sum
+    | _ => 0
+
+/-- Charge the actual interpreted program and its complete type/value copies
+before evaluating a canonical row. Original source snapshots not inspected by
+the interpreter are not repeatedly charged as a substitute for this work. -/
+def Prepared.workUnits {sources catalogue owner name caller}
+    (prepared : @Prepared sources catalogue owner name caller) : Nat :=
+  prepared.state.definitions.foldl (fun count definition =>
+    let function := definition.function
+    let nodes := (function.nodes.map nodeCells).sum
+    let ports := (function.inputs.map basisCells).sum+basisCells function.output+
+      (function.patterns.map patternCells).sum
+    count+32*(nodes+1)*(ports+1)) 1
+
 end QleisliKernel.Qirf.SourceClassicalTree
