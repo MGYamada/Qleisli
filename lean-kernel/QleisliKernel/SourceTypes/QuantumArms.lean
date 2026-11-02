@@ -14,7 +14,8 @@ private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
 abbrev Label := QuantumLabels.Label
-abbrev Label.sourceRows := @QuantumLabels.Label.sourceRows
+def Label.sourceRows {sources : Sources} (label : Label sources) : List (String × String) :=
+  QuantumLabels.Label.sourceRows label
 abbrev readLabel := QuantumLabels.read
 
 def primitiveKind {sources owner scope tokens}
@@ -119,15 +120,15 @@ def readArmWithSignature {sources owner name}
       | some kind =>
         let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
         let graph ← StaticOperation.check sources (.source owner) description
-        return ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
+        pure ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
       | none => do
         let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
           none (some signature.supply)
-        return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+        pure ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
     | .error _ => do
       let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
         none (some signature.supply)
-      return ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+      pure ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then
       if effect : operation.graph.root.effect = .unitary then

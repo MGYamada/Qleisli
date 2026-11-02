@@ -73,6 +73,7 @@ def closeBasis {sources owner name original}
     GenericValues.codeFields obligation.input+GenericValues.codeFields obligation.output+
     (obligation.state.environment.context.alternatives.map fun rows =>
       (rows.map fun row => row.coefficients.length+2).sum).sum+1)))
+  letI : Decidable (Aligned instantiation obligation) := by unfold Aligned; infer_instance
   if aligned : Aligned instantiation obligation then
     let actual := values instantiation obligation
     let context := obligation.state.environment.context
