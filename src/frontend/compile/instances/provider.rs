@@ -282,6 +282,19 @@ impl Compiler<'_> {
             &body,
             &instance.operations,
         )?;
+        // Preserve the complete original substitution, including unused actuals.
+        // Every clone shares this immutable occurrence; its actual body is still
+        // independently encoded and checked by the enclosing native graph.
+        self.charge(module, span, 2)?;
+        let origin = operation
+            .source_origin
+            .as_mut()
+            .and_then(Arc::get_mut)
+            .ok_or_else(|| {
+                self.error(module, span, ErrorCode::InvalidIr,
+                    "new provider lost its unique original lowering context")
+            })?;
+        origin.instance = Some(Arc::clone(&instance));
         self.charge(module, span, instance.operations.len().saturating_mul(3))?;
         let reverse = instance
             .operations

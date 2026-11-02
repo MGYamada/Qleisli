@@ -28,12 +28,39 @@ pub(super) struct Operation {
     pub meaning: Option<Matrix>,
     pub effect: Effect,
     pub(super) node: Arc<Node>,
+    /// Untrusted original provider occurrence, retained for paired source/body
+    /// transport. Native receipts and whole-source equations remain separate.
+    pub(super) source_origin: Option<Arc<ProviderOrigin>>,
     depth: usize,
     nodes: usize,
 }
 pub(super) struct CachedProvider {
     pub operation: Operation,
     pub body: AcceptedProgram,
+}
+
+#[derive(Clone)]
+pub(super) struct ProviderOrigin {
+    pub(super) definition: Key,
+    pub(super) table: Arc<crate::frontend::resolve::locals::Table>,
+    pub(super) instance: Option<Arc<super::instances::ClosedInstance>>,
+    pub(super) meaning: Option<Key>,
+    /// The exact original lowering whose contexts and programs will be encoded
+    /// into the one fresh v5 graph. This handle does not authorize that graph.
+    pub(super) body: AcceptedProgram,
+}
+
+impl std::fmt::Debug for ProviderOrigin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ProviderOrigin")
+            .field("definition", &self.definition)
+            .field("meaning", &self.meaning)
+            .field(
+                "instance",
+                &self.instance.as_ref().map(|instance| instance.record),
+            )
+            .finish_non_exhaustive()
+    }
 }
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub(super) enum ProviderRoot {
@@ -826,11 +853,36 @@ impl Compiler<'_> {
             meaning: Some(evidence.meaning().clone()),
             effect,
             node: Arc::new(Node::Provider(evidence)),
+            source_origin: Some(self.provider_origin(key, meaning, program, module, span)?),
             depth: 1,
             nodes: 1,
         };
         self.charge(module, span, operation.copy_size())?;
         Ok(operation)
+    }
+
+    pub(super) fn provider_origin(
+        &mut self,
+        definition: Key,
+        meaning: Option<Key>,
+        body: &AcceptedProgram,
+        module: &str,
+        span: Span,
+    ) -> Result<Arc<ProviderOrigin>, CompileError> {
+        // AcceptedProgram shares its immutable graph and context Arcs. Its
+        // ordered output-port vector is copied with the retained wrapper.
+        self.charge(
+            module,
+            span,
+            16 + total_size(body.output_ports().iter().map(|port| port.wires.len() + 3)),
+        )?;
+        Ok(Arc::new(ProviderOrigin {
+            definition,
+            table: Arc::clone(&self.source.lexical[&definition]),
+            instance: None,
+            meaning,
+            body: body.clone(),
+        }))
     }
     pub(super) fn construct_closed(
         &mut self,
@@ -958,6 +1010,7 @@ impl Compiler<'_> {
             meaning,
             effect,
             node: Arc::new(node),
+            source_origin: None,
             depth,
             nodes,
         })
@@ -1019,6 +1072,7 @@ impl Compiler<'_> {
             depth: operation.depth + 1,
             nodes: operation.nodes + 1,
             node: Arc::new(Node::Requested(meaning, operation)),
+            source_origin: None,
         })
     }
 }
@@ -1128,6 +1182,12 @@ impl Operation {
         {
             return Ok(false);
         }
+        charge(1)?;
+        match (&self.source_origin, &other.source_origin) {
+            (Some(left), Some(right)) if !Arc::ptr_eq(left, right) => return Ok(false),
+            (None, None) | (Some(_), Some(_)) => {}
+            _ => return Ok(false),
+        }
         if !same_port_budgeted(&self.basis, &other.basis, charge)?
             || !same_port_budgeted(&self.codomain, &other.codomain, charge)?
             || !same_meaning_budgeted(self.meaning.as_ref(), other.meaning.as_ref(), charge)?
@@ -1184,7 +1244,7 @@ impl Operation {
         port_nodes(&self.basis)
             + port_nodes(&self.codomain)
             + self.meaning.as_ref().map_or(0, |m| m.entries().len())
-            + 1
+            + 2
     }
     pub(super) fn require(
         &self,
