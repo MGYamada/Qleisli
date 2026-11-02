@@ -136,13 +136,24 @@ fn retained_raw(
     value: &Value,
     declared_effect: Effect,
 ) -> Result<RawProgram, CompileError> {
-    lower.compiler.charge(module, span, value.tree_size().nodes)?;
+    lower
+        .compiler
+        .charge(module, span, value.tree_size().nodes)?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
-    value.outputs(&lower.raw.registers, &mut quantum_outputs, &mut classical_outputs);
-    lower.compiler.charge(module, span,
-        crate::frontend::raw_state::operations_size(&lower.raw.operations[start..]))?;
-    lower.compiler.charge(module, span, classical_inputs.len())?;
+    value.outputs(
+        &lower.raw.registers,
+        &mut quantum_outputs,
+        &mut classical_outputs,
+    );
+    lower.compiler.charge(
+        module,
+        span,
+        crate::frontend::raw_state::operations_size(&lower.raw.operations[start..]),
+    )?;
+    lower
+        .compiler
+        .charge(module, span, classical_inputs.len())?;
     Ok(RawProgram {
         quantum_inputs: inputs.iter().map(|owner| owner.port.clone()).collect(),
         classical_inputs: classical_inputs.to_vec(),
@@ -182,7 +193,11 @@ impl Frame {
         for arg in args {
             inputs.extend(outputs(lower, &name.0, span, arg)?);
             let mut quantum_tokens = Vec::new();
-            arg.outputs(&lower.raw.registers, &mut quantum_tokens, &mut classical_inputs);
+            arg.outputs(
+                &lower.raw.registers,
+                &mut quantum_tokens,
+                &mut classical_inputs,
+            );
         }
         lower.compiler.charge(
             &name.0,
@@ -332,8 +347,16 @@ impl Frame {
         let declared_effect = lower.compiler.source.effects[&self.key]
             .asserted()
             .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred());
-        let raw = retained_raw(lower, &name.0, span, &self.inputs, &self.classical_inputs,
-            self.start, value, declared_effect)?;
+        let raw = retained_raw(
+            lower,
+            &name.0,
+            span,
+            &self.inputs,
+            &self.classical_inputs,
+            self.start,
+            value,
+            declared_effect,
+        )?;
         let mut rows = lower
             .compiler
             .retained_ordinary_type_sources(self.key, &name.0, span)?;

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain ordinary SSA input identities in nominal source frames from the same
+  original actual argument values. Keep physical input IDs unique while
+  preserving every ordinary copy in the source/result trees, and retain the
+  source gate for zero-width quantum owners even when ordinary SSA is empty.
 - Use the same original-body loop and retained Raw preparation for classical
   gaps and destructive observations. Derive initial SSA and logical ordinals
   from the complete typed input forest, retaining zero-width fields and nominal
