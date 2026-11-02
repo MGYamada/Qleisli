@@ -43,8 +43,8 @@ private def closedAt (source name : String) : WorkM (List (String × Nat × Stri
   some [("need",369,"main::sign",1)]
 
 private def namedClosed (suffix : String) : WorkM (List (String × String × Nat)) := do
-  pure (← closedAt (sourcePrelude ++ suffix) "caller").map fun (origin,_,provider,depth) =>
-    (origin,provider,depth)
+  pure ((← closedAt (sourcePrelude ++ suffix) "caller").map fun (origin,_,provider,depth) =>
+    (origin,provider,depth))
 
 -- No header-empty heuristic or choice for the unused n closes this subject.
 #guard (namedClosed "unitary fn caller[const n:Nat](q:Q<Bit>)->Q<Bit>{need[sign](q)}").run
