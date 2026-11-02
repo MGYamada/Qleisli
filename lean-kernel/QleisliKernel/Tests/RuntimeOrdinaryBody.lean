@@ -43,36 +43,43 @@ private def minimalSource (nested : Bool) : String :=
 private def program : Semantics.Observation.Program :=
   ⟨[⟨0,[0],1⟩],[],[.measure 0 1],[],[1],.observe⟩
 
+private def observationState {sources : Sources}
+    {signature : SourceRuntimeContext.Signature sources "main" "route"}
+    (body : SourceRuntimeTrace.Body signature) (prepared : RuntimeInterval.Prepared [] program)
+    (before : RuntimeStructuralAction.SourceState) : WorkM RuntimeOrdinaryBody.State := do
+  let root : CallPath sources "main" "route" "main" "route" := .root body
+  match body.checked.events with
+  | [.primitive event] => do
+    let checked ← readObservation root event prepared.block ⟨event.call.calleeOffset,0,1⟩ before {}
+    return checked.ordinary
+  | [.named event] => do
+    let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+    let parent : CallPath sources "main" "route" "main" event.target.callerName ←
+      if callerName : event.target.callerName = "route" then
+        pure (by rw [callerName]; exact root)
+      else throw .request
+    let path := CallPath.named event callee.val (by with_reducible exact callee.property) parent
+    let [.primitive measured] := callee.val.checked.events | throw .request
+    let checked ← readObservation path measured prepared.block ⟨measured.call.calleeOffset,0,1⟩ before {}
+    return checked.ordinary
+  | _ => throw .request
+
 private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × List String × List Nat × Nat) :=
-  ((do
+  let action : WorkM (String × List String × List Nat × Nat) := do
     let sources : Sources := #[("main",minimalSource nested)]
     let signature ← SourceRuntimeContext.readSignature sources "main" "route" {}
     let body ← SourceRuntimeTrace.readBodyWithSignature signature
     let prepared ← RuntimeInterval.prepare [] program
     let before : RuntimeStructuralAction.SourceState :=
       ⟨[⟨⟨0,[.bit]⟩,⟨0,[0],1⟩⟩],[⟨0,[.bit]⟩],1⟩
-    let root : CallPath sources "main" "route" "main" "route" := .root body
-    let ordinary ← match body.checked.events with
-      | [.primitive event] => do
-        let checked ← readObservation root event prepared.block ⟨event.call.calleeOffset,0,1⟩ before {}
-        return checked.ordinary
-      | [.named event] => do
-        let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-        let parent : CallPath sources "main" "route" "main" event.target.callerName ←
-          if callerName : event.target.callerName = "route" then
-            pure (by rw [callerName]; exact root)
-          else throw .request
-        let path := CallPath.named event callee.val (by with_reducible exact callee.property) parent
-        let [.primitive measured] := callee.val.checked.events | throw .request
-        let checked ← readObservation path measured prepared.block ⟨measured.call.calleeOffset,0,1⟩ before {}
-        return checked.ordinary
-      | _ => throw .request
+    let ordinary : RuntimeOrdinaryBody.State ← observationState body prepared before
     let [measurement] := ordinary.measurements | throw .request
     let values := valuation [] ordinary.measurements [(1,bit)]
     let [.ordinary [.bit] result] ← lift ((SourceRuntimeOrdinary.extract values body.checked.summary.value).mapError fun _ => .request)
       | throw .request
     return (measurement.origin.functionName,measurement.calls.map (·.functionName),
-      [measurement.owner.ordinal],result) : WorkM _).run 10000000).1.toOption
+      [measurement.owner.ordinal],result)
+  (action.run 10000000).1.toOption
 
 #guard observedMinimal false false = some ("route",[],[0],0)
 #guard observedMinimal false true = some ("route",[],[0],1)
