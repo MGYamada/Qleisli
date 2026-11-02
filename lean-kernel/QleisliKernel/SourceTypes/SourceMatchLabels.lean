@@ -55,7 +55,7 @@ def read (sources : Sources) (caller : String) (helpers : List NaturalHelpers.En
     (scope : List String) {tokens} (written : SourceMatchSyntax.Checked tokens) (basis : Basis) :
     WorkM (Checked sources caller scope written basis) := do
   exactWork (Exact.charge (64*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
-  match enumeration : basis with
+  match basis with
   | [.enumeration origin names] =>
     let labels ← readLabels sources caller helpers scope [.enumeration origin names] written.parts.arms
     if complete : labels.ordinals.Perm (List.range names.length) then

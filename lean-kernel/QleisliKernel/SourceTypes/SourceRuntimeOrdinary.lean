@@ -33,7 +33,7 @@ theorem readAtom_sound (values : Valuation) (atom : Atom) (result : ResultAtom)
       | none => simp [readAtom,computed,finite] at read
       | some dimension =>
         by_cases inside : ordinal < dimension
-        · simp only [readAtom,computed,finite,if_pos inside,bind,Except.bind] at read
+        · simp only [readAtom,computed,finite,if_pos inside] at read
           cases read
           exact .ordinary basis expression ordinal dimension computed finite inside
         · simp [readAtom,computed,finite,inside] at read

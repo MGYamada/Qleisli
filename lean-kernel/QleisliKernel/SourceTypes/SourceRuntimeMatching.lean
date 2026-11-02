@@ -45,7 +45,7 @@ def merge (condition : Expression) (ordinals : List Nat) (arms : List Value) (ne
       else throw "match owner original nominal types"
     | .ordinary basis _ =>
       let values ← column.mapM fun atom => match atom with
-        | .ordinary actual expression =>
+        | .ordinary actual expression => do
           if actual != basis then throw "match ordinary nominal types"
           pure expression
         | _ => throw "match ordinary result shape"

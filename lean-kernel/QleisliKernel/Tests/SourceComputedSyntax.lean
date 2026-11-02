@@ -6,9 +6,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.SourceComputedSyntax
 open QleisliKernel.SourceTypes
 
-private def read (source : String) : Except String (Sigma SourceComputedSyntax.Checked) := do
+private def read (source : String) : Except String (Sigma QleisliKernel.SourceTypes.SourceComputedSyntax.Checked) := do
   let tokens ← lexLocated source
-  return ⟨tokens,← SourceComputedSyntax.read tokens⟩
+  return ⟨tokens,← QleisliKernel.SourceTypes.SourceComputedSyntax.read tokens⟩
 
 #guard (read "with_computed(q,p){|aux|z(aux)}").isOk
 #guard (read "with_computed(q,lib::p,logical){|data,aux|(data,z(aux))}").isOk

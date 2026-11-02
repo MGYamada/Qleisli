@@ -40,7 +40,7 @@ private def fields (frame : Frame) : Nat :=
   frame.moduleName.utf8ByteSize+frame.functionName.utf8ByteSize+
     (frame.naturals.map fun binding => binding.1.utf8ByteSize+2).sum+2
 
-structure Checked (active : List Frame) (current : Frame) where
+structure Checked (active : List Frame) (current : Frame) : Type where
   permitted : permits active current = true
 
 def read (active : List Frame) (current : Frame) : WorkM (Checked active current) := do
