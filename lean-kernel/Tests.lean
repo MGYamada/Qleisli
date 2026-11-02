@@ -63,6 +63,7 @@ import QleisliKernel.Tests.SourceRuntimeMatch
 import QleisliKernel.Tests.SourceRuntimeRecursion
 import QleisliKernel.Tests.SourceRuntimeStatic
 import QleisliKernel.Tests.ContextSectorStages
+import QleisliKernel.Tests.ContextSource
 import QleisliKernel.Tests.SourceMeaning
 import QleisliKernel.Tests.StaticBasisActual
 import QleisliKernel.Tests.StaticCallPremises
