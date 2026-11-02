@@ -181,14 +181,14 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
           guard (position.start == cursor) .request
           let interval ← RuntimeInterval.check prepared.block position.start position.count
           let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
-          let before := {history with bindings}
+          let before : RuntimeStructuralAction.SourceState := {history with bindings}
           let structural := match event with
-            | .primitive event => [.join,.split,.unit,.finish].contains event.kind
+            | .primitive event => ([.join,.split,.unit,.finish] : List CallName.Primitive).contains event.kind
             | _ => false
-          let after ← if structural then pure bindings else do
+          let after : Map ← if structural then pure bindings else do
             let changed ← transition interval bindings
             reordered (bindings.map (·.owner)) interval.after changed
-          let continued := {before with bindings := after}
+          let continued : RuntimeStructuralAction.SourceState := {before with bindings := after}
           match event with
           | .primitive event =>
             if structural then
