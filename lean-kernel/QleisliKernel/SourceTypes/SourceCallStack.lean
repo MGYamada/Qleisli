@@ -11,7 +11,7 @@ structure Frame where
   moduleName : String
   functionName : String
   naturals : StaticNatural.Bindings
-  ordinary : Bool
+  runtime : Bool
   deriving BEq, DecidableEq, Repr
 
 def Frame.id (frame : Frame) : String × String := (frame.moduleName,frame.functionName)
@@ -33,7 +33,7 @@ def permits (active : List Frame) (current : Frame) : Bool :=
     | [] => true
     | previous :: _ =>
       if previous.id == current.id then
-        previous.ordinary && current.ordinary && valid previous && decreases previous.naturals current.naturals
+        previous.runtime && current.runtime && valid previous && decreases previous.naturals current.naturals
       else !(active.any (fun previous => previous.id == current.id))
 
 private def fields (frame : Frame) : Nat :=
@@ -45,6 +45,7 @@ structure Checked (active : List Frame) (current : Frame) where
 
 def read (active : List Frame) (current : Frame) : WorkM (Checked active current) := do
   exactWork (Exact.charge (16*((active.map fields).sum+fields current+1)*(current.naturals.length+1)))
+  guard (active.length ≤ 16) .limit
   if permitted : permits active current = true then return ⟨permitted⟩ else throw .request
 
 end QleisliKernel.SourceTypes.SourceCallStack

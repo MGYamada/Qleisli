@@ -1,5 +1,7 @@
 import QleisliKernel.SourceTypes.SourceRuntimeContext
 import QleisliKernel.SourceTypes.SourceRuntimeNominalValue
+import QleisliKernel.SourceTypes.SourceRecursion
+import QleisliKernel.SourceTypes.SourceCallStack
 
 /-! Complete typed mixed-runtime traversal for the shared source syntax.
 Ordinary copying, explicit owner discharge and allocation remain visible across
@@ -15,6 +17,9 @@ private def adapt {α : Type} (action : Except String α) : Finite.WorkM α :=
 
 private def environmentCells (environment : Environment) : Nat :=
   (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+2).sum
+
+private def callFrame {sources owner name} (signature : Signature sources owner name) : SourceCallStack.Frame :=
+  ⟨owner,name,signature.arguments.naturals,!signature.original.parsedHeader.ordinaryOnly⟩
 
 private def outcome {sources caller} (before : Environment) (value : Value) (remaining : Environment)
     (allocated consumed : List Semantics.SourceOwners.Owner) (nextOrdinal : Nat)
@@ -354,6 +359,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               evaluateChildren children.trees lookup.context
             -- The child is checked even when one of the original powers is
             -- zero. No selected-body effect is inferred from the prefix.
+            let _ ← SourceRecursion.read generic scope written.base.1 target.signature.original
             let forward ← readCallee target.signature
             if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
                 target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
@@ -435,6 +441,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         | none =>
           let target ← readTarget signature naturals written candidate
           if matched : values.map typeOf = target.signature.parameters.map (·.tree) then
+            let _ ← SourceRecursion.read generic scope call.call.callee target.signature.original
             let canonical ← readCallee target.signature
             let inputOwners := values.flatMap valueOwners
             let fresh := canonical.allocated.zipIdx.map fun (owner,index) =>
@@ -462,16 +469,16 @@ def quantumUse {sources owner name} (signature : Signature sources owner name)
     !((Semantics.RuntimeType.ownerBases signature.result.tree).getD []).isEmpty ||
     events.any Event.quantumUse
 
-/-- Recursion uses the complete source table independently of expression fuel.
-Cycles refuse by exact original declaration identity before fuel exhaustion. -/
-def readNested (sources : Sources) (fuel : Nat) (active : List (String × String))
+/-- Original guarded decrease is checked at each self-call occurrence before
+this concrete specialization stack. Mutual and repeated instances refuse;
+the existing depth capacity is independent of a caller expression's tokens. -/
+def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.Frame)
     {owner name : String} (signature : Signature sources owner name) : Finite.WorkM (Evaluated signature) :=
   match fuel with
   | 0 => throw .limit
   | fuel+1 => do
-    Finite.exactWork (Exact.charge (8*(SourceTrace.Meter.nameFields
-      (active.flatMap fun (owner,name) => [owner,name])+owner.utf8ByteSize+name.utf8ByteSize+1)))
-    Finite.guard (!(active.contains (owner,name))) .request
+    let frame := callFrame signature
+    let _ ← SourceCallStack.read active frame
     let tokens := signature.original.occurrence.body
     Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork tokens+
       SourceTrace.Meter.syntaxWork signature.original.occurrence.header+
@@ -491,6 +498,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
           | .ok tree =>
             let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree)
             Finite.guard (!signature.original.parsedHeader.ordinaryOnly || !generic.val.quantumUse) .request
+            Finite.guard (!signature.original.parsedHeader.ordinaryOnly || generic.val.recursiveCalls.isEmpty) .request
             Finite.guard (!signature.original.declaration.isPublic || !generic.val.quantumUse ||
               signature.original.parsedHeader.effect.isSome) .request
             let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
@@ -500,7 +508,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
             let basis ← SourceBasisBindings.prepare signature.instantiation generic.val.basisObligations
             let naturals ← signature.naturals
             let (result,_) ← evalWithReader signature generic.val basis
-              (fun callee => do return (← readNested sources fuel ((owner,name) :: active) callee).summary)
+              (fun callee => do return (← readNested sources fuel (frame :: active) callee).summary)
               (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
               nextOwner initial tree {}
             let basisCovered : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true) ←
@@ -640,7 +648,7 @@ def readBasisSource {sources caller} (event : BasisEvent sources caller) :
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let (body,_) ← evalWithReader event.signature event.generic basis
     (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-      [(caller,event.callerName)] callee).summary)
+      [callFrame event.signature] callee).summary)
     (event.written.parts.body.length+1) event.naturals
     (event.held ++ owners event.remaining) (names ++ event.scope) event.bodyOrdinal
     event.bodyInitial event.bodyTree {}
@@ -673,7 +681,7 @@ selects or suppresses an original effect, type check or owner obligation. -/
 def readBranchSource {sources caller} (event : BranchEvent sources caller) :
     Finite.WorkM (BranchBodies event) := do
   let readCallee := fun {owner name} (callee : Signature sources owner name) => do
-    return (← readNested sources (SourceTrace.sourceFuel sources) [(caller,event.callerName)] callee).summary
+    return (← readNested sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee).summary
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let (left,_) ← evalWithReader event.signature event.generic basis readCallee
     (event.written.parts.thenBody.length+1) event.naturals event.held event.scope event.nextOrdinal
@@ -721,7 +729,7 @@ def readStaticSource {sources caller} (event : StaticEvent sources caller) :
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let (result,_) ← evalWithReader event.signature event.generic basis
     (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-      [(caller,event.callerName)] callee).summary)
+      [callFrame event.signature] callee).summary)
     (event.selected.1.length+1) event.selection.naturals event.held event.scope event.nextOrdinal
     event.before event.selected.2.tree {}
   Finite.exactWork (Exact.charge (32*(valueFields result.value+valueFields event.selected.2.value+
