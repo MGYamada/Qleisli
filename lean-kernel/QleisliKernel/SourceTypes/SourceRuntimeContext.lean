@@ -77,6 +77,7 @@ def readSignature (sources : Sources) (owner name : String) (arguments : StaticT
     (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     Finite.WorkM (Signature sources owner name) := do
   let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name arguments
+    (catalogue.map (·.originals)) (catalogue.map (·.helpers))
   let instantiation : StaticInstantiation.Checked checked.original := .static arguments checked.environment rfl
   let operations ← StaticOperation.checkArgumentsWithInstantiation instantiation context catalogue
   return ⟨arguments,checked,context,operations⟩
@@ -109,6 +110,7 @@ def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked so
     (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) :
     Finite.WorkM (CoreBinding core context supply) := do
   let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name core.staticArguments
+    (supply.catalogue.map (·.originals)) (supply.catalogue.map (·.helpers))
   let prepared ← fromPreparedWithArguments checked context supply.actuals supply.catalogue
   let signature := prepared.signature
   Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+
@@ -172,6 +174,7 @@ def readTargetWithWritten {sources caller callerName scope tokens}
       naturals.environment scope written resolution.moduleName resolution.declaration.name operationReader naturals.generic
     let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
     let checked ← StaticRuntimeSignature.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
+      (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers))
     let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals callerSignature.operations.catalogue
     let signature := prepared.signature
     if arguments : signature.arguments = actuals.arguments then
