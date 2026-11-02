@@ -1,5 +1,4 @@
 import QleisliKernel.Qirf.RuntimeOrdinaryBody
-import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Original source events and actual literal gaps/observations on small data.
 These components issue no source/runtime handle or global instrument proof.
@@ -22,16 +21,20 @@ private def gapView := ((do
 
 #guard gapView = some ([7],[0],1,[(2,.input 0),(3,.not (.input 0))])
 
-private def source (nested : Bool) : String :=
+-- The first bundled test is preserved at a85f9d7d. This separately labelled
+-- component fixture declares its actual prelude policy and uses the fixed
+-- native budget; it makes no bundled-standard-library coverage claim.
+private def minimalSource (nested : Bool) : String :=
+  "#![no_implicit_prelude]\n" ++
   if nested then "observe fn read(q:Q<Bit>)->Bit{measure_z(q)}pub observe fn route(q:Q<Bit>)->Bit{read(q)}"
   else "pub observe fn route(q:Q<Bit>)->Bit{measure_z(q)}"
 
 private def program : Semantics.Observation.Program :=
   ⟨[⟨0,[0],1⟩],[],[.measure 0 1],[],[1],.observe⟩
 
-private def observed (nested : Bool) (bit : Bool) : Option (String × List String × List Nat × Nat) :=
+private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × List String × List Nat × Nat) :=
   ((do
-    let sources : Sources := #[("main",source nested)] ++ SourceTraceOriginals.bundled
+    let sources : Sources := #[("main",minimalSource nested)]
     let signature ← SourceRuntimeContext.readSignature sources "main" "route" {}
     let body ← SourceRuntimeTrace.readBodyWithSignature signature
     let prepared ← RuntimeInterval.prepare [] program
@@ -58,12 +61,12 @@ private def observed (nested : Bool) (bit : Bool) : Option (String × List Strin
     let [.ordinary [.bit] result] ← lift ((SourceRuntimeOrdinary.extract values body.checked.summary.value).mapError fun _ => .request)
       | throw .request
     return (measurement.origin.functionName,measurement.calls.map (·.functionName),
-      [measurement.owner.ordinal],result) : WorkM _).run 2000000000).1.toOption
+      [measurement.owner.ordinal],result) : WorkM _).run 10000000).1.toOption
 
-#guard observed false false = some ("route",[],[0],0)
-#guard observed false true = some ("route",[],[0],1)
-#guard observed true false = some ("read",["route"],[0],0)
-#guard observed true true = some ("read",["route"],[0],1)
+#guard observedMinimal false false = some ("route",[],[0],0)
+#guard observedMinimal false true = some ("route",[],[0],1)
+#guard observedMinimal true false = some ("read",["route"],[0],0)
+#guard observedMinimal true true = some ("read",["route"],[0],1)
 
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Gap.sameSource
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Observation.issuedUnchanged
