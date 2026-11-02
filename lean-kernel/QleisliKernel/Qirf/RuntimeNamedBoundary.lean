@@ -18,7 +18,7 @@ private def exactResult {α : Type} [DecidableEq α] (action : Except String α)
   match ran : action with
   | .error _ => throw .request
   | .ok actual =>
-    if same : actual = expected then return ⟨ran.trans (congrArg Except.ok same)⟩
+    if same : actual = expected then return ⟨congrArg Except.ok same⟩
     else throw .request
 
 structure Checked {dependencies program sources caller block start count inputs}
