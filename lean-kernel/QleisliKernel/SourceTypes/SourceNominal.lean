@@ -20,6 +20,15 @@ def unshadowed (scope : List String) (tokens : List LocatedToken) : Bool :=
   | [token] => !scope.contains token.text
   | _ => true
 
+private def fieldMember (field : MemberFields.Field) (fields : List MemberFields.Field) : Bool :=
+  fields.any (fun original => decide (original = field))
+
+private theorem fieldMember_sound (field : MemberFields.Field) (fields : List MemberFields.Field)
+    (selected : fieldMember field fields = true) : field ∈ fields := by
+  obtain ⟨original,member,same⟩ := List.any_eq_true.mp selected
+  have same : original = field := of_decide_eq_true same
+  exact same ▸ member
+
 structure Nominal (sources : Sources) (caller : String) (scope : List String) (tokens : List LocatedToken) where
   query : TypeRead sources
   original : ∃ before after,
@@ -92,20 +101,21 @@ def readRecord (sources : Sources) (caller : String) (scope : List String)
       let writtenNames := written.initializers.map (fun initializer => initializer.name.text)
       let declaredNames := definition.val.fields.map (fun field => field.member.name.text)
       if ordered : fields.map (fun field => field.member.name.text) = writtenNames then
-        if selected : fields.all (fun field => decide (field ∈ definition.val.fields)) = true then
+        if selected : fields.all (fun field => fieldMember field definition.val.fields) = true then
           if complete : declaredNames.Perm writtenNames then
             if unique : writtenNames.Nodup then
               if accessible : fields.all (fun field => field.member.isPublic || caller == origin.moduleName) = true then
                 have originals : ∀ field ∈ fields,field ∈ definition.val.fields := by
                   intro field member
-                  have selectedField := (List.all_eq_true.mp selected) field member
-                  simpa only [decide_eq_true_eq] using selectedField
+                  exact fieldMember_sound _ _ ((List.all_eq_true.mp selected) field member)
                 have permissions : ∀ field ∈ fields,MemberFields.VisibleFrom caller origin field.member := by
                   intro field member
                   have allowed := (List.all_eq_true.mp accessible) field member
-                  rcases Bool.or_eq_true.mp allowed with exported | same
+                  have alternatives : field.member.isPublic = true ∨ caller = origin.moduleName := by
+                    simpa only [Bool.or_eq_true,beq_iff_eq] using allowed
+                  rcases alternatives with exported | same
                   · exact Or.inl exported
-                  · exact Or.inr (beq_iff_eq.mp same)
+                  · exact Or.inr same
                 return ⟨nominal,origin,names,tail,record,definition.val,by with_reducible exact definition.property,
                   exactType,fields,ordered,originals,complete,unique,permissions⟩
               else throw .request

@@ -55,19 +55,20 @@ def apply (ports : Ports) (access : Access) (arguments : List Value) (nextOrdina
   let selected : Option Semantics.SourceOwners.Owner × Value ← if access == .controlled then do
       let [[.owner control],target] := arguments | throw "runtime controlled group arguments"
       if control.basis != [.bit] then throw "runtime group control exact Bit type"
-      return (some control,target)
+      pure ((some control,target) : Option Semantics.SourceOwners.Owner × Value)
     else do
       let [target] := arguments | throw "runtime transform requires one complete target expression"
-      return (none,target)
+      pure ((none,target) : Option Semantics.SourceOwners.Owner × Value)
   let (control,target) := selected
   if typeOf target != ports.input then throw "runtime transform target exact group shape"
   let template ← quantumValue ports.output
-  let (value,fresh) := template.foldl (fun (value,fresh) atom => match atom with
+  let built : Value × List Semantics.SourceOwners.Owner := template.foldl (fun (value,fresh) atom => match atom with
     | .tuple arity => (value ++ [.tuple arity],fresh)
     | .owner owner =>
       let actual : Semantics.SourceOwners.Owner := ⟨nextOrdinal+fresh.length,owner.basis⟩
       (value ++ [.owner actual],fresh ++ [actual])
     | .ordinary .. => (value,fresh)) (([] : Value),([] : List Semantics.SourceOwners.Owner))
+  let (value,fresh) := built
   let consumed := valueOwners target
   if let some control := control then
     if consumed.any (·.ordinal == control.ordinal) then throw "runtime control aliases target owner"
