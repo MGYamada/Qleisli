@@ -89,11 +89,13 @@ def readRecord (sources : Sources) (caller : String) (scope : List String)
         let some field := definition.val.fields.find? (fun field => field.member.name.text == initializer.name.text)
           | throw .request
         return field
-      if checked : fields.map (·.member.name.text) = written.initializers.map (·.name.text) ∧
+      if checked : fields.map (fun (field : MemberFields.Field) => field.member.name.text) =
+          written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text) ∧
           (∀ field ∈ fields,field ∈ definition.val.fields) ∧
-          (definition.val.fields.map (·.member.name.text)).Perm (written.initializers.map (·.name.text)) ∧
-          (written.initializers.map (·.name.text)).Nodup ∧
-          (∀ field ∈ fields,MemberFields.VisibleFrom caller origin field.member) then
+          (definition.val.fields.map (fun (field : MemberFields.Field) => field.member.name.text)).Perm
+            (written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text)) ∧
+          (written.initializers.map (fun (initializer : SourceNominalSyntax.Field) => initializer.name.text)).Nodup ∧
+          (∀ field ∈ fields,field.member.isPublic = true ∨ caller = origin.moduleName) then
         return ⟨nominal,origin,names,tail,record,definition.val,by with_reducible exact definition.property,
           exactType,fields,checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2⟩
       else throw .request
@@ -130,9 +132,9 @@ def readProjection (sources : Sources) (caller : String) (basis : Basis)
       | none => throw .request
       | some field =>
         if named : field.member.name.text = written.member.text then
-          if accessible : MemberFields.VisibleFrom caller origin field.member then
-            return ⟨origin,names,tail,record,definition.val,by with_reducible exact definition.property,
-              exactType,index,field,selected,named,accessible⟩
+          if accessible : field.member.isPublic = true ∨ caller = origin.moduleName then
+            return ⟨origin,names,tail,rfl,definition.val,by with_reducible exact definition.property,
+              by simpa only [record] using exactType,index,field,selected,named,accessible⟩
           else throw .request
         else throw .request
     else throw .request

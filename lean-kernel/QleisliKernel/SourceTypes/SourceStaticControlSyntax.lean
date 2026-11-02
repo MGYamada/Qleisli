@@ -34,7 +34,7 @@ def read (tokens : List LocatedToken) : Except String (Checked tokens) := do
   let keyword :: marker :: rest := tokens | throw "missing original if static prefix"
   let parts ← SourceControlSyntax.conditionalParts keyword rest
   let written : Conditional := ⟨marker,parts⟩
-  if original : written.render = tokens then
+  if original : written.render = keyword :: marker :: rest then
     if spelling : written.spelling = true then
       match predicateRead : NaturalHeaders.predicate (written.parts.condition.map (·.text)) with
       | .ok predicate => return ⟨written,original,spelling,predicate,predicateRead⟩
