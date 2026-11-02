@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.Qirf.RuntimeNamedBoundary
+import QleisliKernel.Qirf.RuntimeOrdinaryInputs
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
@@ -8,12 +9,14 @@ import QleisliKernel.Qirf.OperationIRMeaning
 import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.SourceTypes.QuantumArms
 
-/-! Recursive original pure runtime bodies with literal caller frames.
+/-! One original runtime-body loop with literal caller frames.
 Source parameter/result trees and owner permutations stay intact. A child uses
 only its actual literal parent interval; its canonical role namespace is local,
-while the parent interval separately retains every caller spectator. This
-stage refuses forms whose complete continuations have not yet been connected;
-it issues no handle and is not the complete v5 runtime acceptance gate.
+while the parent interval separately retains every caller spectator. Pure
+islands and actual ordinary/observing steps remain distinct checked data. This
+stage refuses forms whose continuations have not yet been connected; complete
+instrument/code and ordinary history/storage obligations remain open. It issues
+no handle and is not the complete v5 runtime acceptance gate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimePureBody
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
@@ -24,6 +27,10 @@ abbrev Position := SourceSequence.Position
 inductive OutputBoundary where
   | rootOrder
   | localScope
+
+inductive Mode where
+  | pureBody
+  | runtimeBody
 
 def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) := do
   let ordered ← RuntimeOwnerMap.order roles bindings
@@ -80,6 +87,18 @@ end
 def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
     Nodes dependencies program block := nodes.foldr Nodes.cons Nodes.nil
 
+/-- The common loop records every actual mixed interval. Pure composition
+continues to consume only its pure islands and requires complete pure coverage;
+an observation or classical gap cannot acquire a fabricated pure equation. -/
+inductive Step (dependencies : List Semantics.Finite.Dependency) :
+    (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
+  | pure {program block} (node : Node dependencies program block) : Step dependencies program block
+  | gap {program block start count before ordinary}
+      (checked : RuntimeOrdinaryBody.Gap block start count before ordinary) : Step dependencies program block
+  | observation {program block sources rootOwner rootName caller functionName path event position before ordinary}
+      (checked : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies program
+        path event block position before ordinary) : Step dependencies program block
+
 abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
   (program : Semantics.Observation.Program) ×
     (block : RuntimeInterval.Block dependencies program) × Node dependencies program block
@@ -89,6 +108,8 @@ structure Result (dependencies : List Semantics.Finite.Dependency) (program : Se
   history : RuntimeStructuralAction.SourceState
   retired : List Owner
   actions : List (Node dependencies program prepared.block)
+  steps : List (Step dependencies program prepared.block)
+  ordinary : RuntimeOrdinaryBody.State
   obligations : List (Island dependencies) := []
 
 def Result.bindings {dependencies program} (result : Result dependencies program) : Map := result.history.bindings
@@ -123,23 +144,33 @@ private def singletonOrdinary (value : Value) : Bool := (ordinary value).all fun
 /-- Every supported source event consumes exactly its real interval. Empty
 identities are valid; an omitted phase or a wrong equal-width role still fails
 the actual local equation. Selection providers re-enter this same source body
-reader before their arm equations are used. Basis actions, observing calls,
-ordinary branches and demanded source transformations remain incomplete. -/
-def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary → {owner name : String} →
+reader before their arm equations are used. Classical-only gaps and destructive
+primitives use the ordinary companion on this same body/block. Complete ordinary
+histories/storage, mixed named scopes, basis actions, ordinary branches and
+demanded source transformations remain incomplete. -/
+def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBoundary →
+    {rootOwner rootName owner name : String} →
     {signature : SourceRuntimeContext.Signature artifact.sources owner name} →
-    SourceRuntimeTrace.Body signature → (program : Semantics.Observation.Program) → Context → Map →
+    (body : SourceRuntimeTrace.Body signature) →
+    RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name →
+    (program : Semantics.Observation.Program) → Context → Map → RuntimeOrdinaryBody.State →
     RuntimeInterval.Prepared root.dependencies program →
     WorkM (Result root.dependencies program) :=
-  Nat.rec (fun _ {_ _ _} _ _ _ _ _ => throw .limit)
-    (fun _ next outputBoundary {_ _ _} body program request initial prepared => do
+  Nat.rec (fun _ _ {_ _ _ _ _} _ _ _ _ _ _ _ => throw .limit)
+    (fun _ next mode outputBoundary {rootOwner rootName owner name _} body path program request initial initialOrdinary prepared => do
       let source := body.checked
       let dependencies := root.dependencies
       guard (request.branches.isEmpty && !source.signature.operations.hasMeaningRequirements) .request
-      guard (source.summary.inferredEffect == .unitary &&
-        singletonOrdinary source.summary.value && source.summary.parameterValues.all singletonOrdinary &&
-        program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty) .request
-      guard (!prepared.whole.state.observe) .request
-      let _ ← lift (readOption (Sector.pureOps program.operations))
+      match mode with
+      | .pureBody =>
+        guard (source.summary.inferredEffect == .unitary &&
+          singletonOrdinary source.summary.value && source.summary.parameterValues.all singletonOrdinary &&
+          program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty &&
+          !prepared.whole.state.observe) .request
+        let _ ← lift (readOption (Sector.pureOps program.operations))
+        pure ()
+      | .runtimeBody =>
+        guard (SourceEffect.permits (some program.effect) source.summary.inferredEffect) .request
       let roles := source.summary.parameterValues.flatMap valueOwners
       let initial ← reordered roles prepared.entry initial
       let initialHistory : RuntimeStructuralAction.SourceState := ⟨initial,roles,source.summary.nextOwner⟩
@@ -155,7 +186,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
             Semantics.CarrierInterface.Owner)
           let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
           let prepared ← RuntimeInterval.prepare dependencies native.ir.original.program
-          let checked ← next .rootOrder body native.ir.original.program headerRequest.2 bindings prepared
+          let checked ← next .pureBody .rootOrder body (.root body)
+            native.ir.original.program headerRequest.2 bindings {} prepared
           pure checked.islands
         let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
         pure (logical,children.flatten)
@@ -181,16 +213,23 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
           pure (obligations ++ checked,rest)) ([],request.bodies)
       exactWork (Exact.charge (32*(source.events.length+request.positions.length+request.calls.length+1)^2))
       guard (request.positions.map (·.offset) == source.events.map SourceRuntimeContext.Event.offset) .request
-      let (history,retired,actions,obligations,cursor,calls,sites,bodies) ← (source.events.zip request.positions).foldlM
-        (fun (history,retired,actions,obligations,cursor,calls,sites,bodies) (event,position) => do
-          guard (position.start == cursor) .request
+      let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) ←
+        (source.events.zip request.positions).foldlM
+        (fun (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) (event,position) => do
+          guard (cursor ≤ position.start) .request
+          let (ordinary,steps) ← if cursor == position.start then pure (ordinary,steps) else do
+            let gap ← RuntimeOrdinaryBody.readGap prepared.block cursor (position.start-cursor) history ordinary
+            pure (gap.ssa,steps ++ [.gap gap])
           let interval ← RuntimeInterval.check prepared.block position.start position.count
           let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
           let before : RuntimeStructuralAction.SourceState := {history with bindings}
           let structural := match event with
             | .primitive event => ([.join,.split,.unit,.finish] : List CallName.Primitive).contains event.kind
             | _ => false
-          let separatelyBound := structural || match event with | .named _ => true | _ => false
+          let observing := match event with
+            | .primitive event => ([.measureZ,.discard] : List CallName.Primitive).contains event.kind
+            | _ => false
+          let separatelyBound := structural || observing || match event with | .named _ => true | _ => false
           let after : Map ← if separatelyBound then pure bindings else do
             let changed ← transition interval bindings
             reordered (bindings.map (·.owner)) interval.after changed
@@ -199,8 +238,16 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
           | .primitive event =>
             if structural then
               let action ← RuntimeStructuralAction.read prepared.block position.start position.count event before
-              return (action.after,retired ++ action.inputRoles,actions ++ [.structural action],
+              let node : Node dependencies program prepared.block := .structural action
+              return (action.after,retired ++ action.inputRoles,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations,position.start+position.count,calls,sites,bodies)
+            else if observing then
+              match mode with
+              | .pureBody => throw .request
+              | .runtimeBody =>
+                let action ← RuntimeOrdinaryBody.readObservation path event prepared.block position before ordinary
+                return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
+                  obligations,position.start+position.count,calls,sites,bodies)
             else do
               guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
               let [[.owner operand]] := event.arguments | throw .request
@@ -212,13 +259,17 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
               let [output] ← rolePorts [operand] after | throw .request
               let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
                 input.token output.token operand kind
-              return (continued,retired,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
+              let node : Node dependencies program prepared.block := .primitive action
+              return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+                obligations,position.start+position.count,calls,sites,bodies)
           | .phase event =>
             let [input] ← rolePorts [event.operand] bindings | throw .request
             let [output] ← rolePorts [event.operand] after | throw .request
             let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
-            return (continued,retired,actions ++ [.primitive action],obligations,position.start+position.count,calls,sites,bodies)
+            let node : Node dependencies program prepared.block := .primitive action
+            return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
             guard (event.effect == .unitary) .request
             let (callPosition,child) :: calls := calls | throw .request
@@ -231,12 +282,18 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
             let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
               (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
             let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
-            let nested ← next .localScope original frame.program child childInitial frame.prepared
-            let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
-            return (boundary.after,retired ++ event.consumed,actions ++
-              [.named event frame original (by with_reducible exact originalRead.property)
-                nested.prepared.block boundary (Nodes.ofList nested.actions)],
-              obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+            if callerName : event.target.callerName = name then
+              let parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.target.callerName := by
+                simpa only [callerName] using path
+              let childPath := RuntimeOrdinaryBody.CallPath.named event original
+                (by with_reducible exact originalRead.property) parent
+              let nested ← next mode .localScope original childPath frame.program child childInitial ordinary frame.prepared
+              let boundary ← RuntimeNamedBoundary.read frame event before nested.history nested.retired original.checked.summary.value
+              let node : Node dependencies program prepared.block := .named event frame original
+                (by with_reducible exact originalRead.property) nested.prepared.block boundary (Nodes.ofList nested.actions)
+              return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
+                obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+            else throw .request
           | .operation event =>
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
               event.allocated.isEmpty && event.consumed.isEmpty) .request
@@ -257,9 +314,10 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
             let action ← CodeSpace.readMap inputCode.val outputCode.val physical.val
             exactWork (Exact.charge (action.logical.entries.length+expected.entries.length+1))
             if equation : action.logical = expected then
-              pure (continued,retired,actions ++ [.operation frame inputCode.val outputCode.val physical.val expected
+              let node : Node dependencies program prepared.block := .operation frame inputCode.val outputCode.val physical.val expected
                 (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
-                (by with_reducible exact physical.property) action equation],
+                (by with_reducible exact physical.property) action equation
+              pure (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations ++ children,position.start+position.count,calls,sites,bodies)
             else throw .equation
           | .selection _ parsed _ selector target scope naturals .. =>
@@ -295,12 +353,18 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
               [.bits targetLayout.bits] (RuntimePureInterval.fragment frame.selected frame.operations [so.token,to.token]))
             let logical ← NaturalAffine.witness (NominalSector.checkLogicals inputCode outputCode restriction.val.sectors
               selectorLayout.labels expected)
-            pure (continued,retired,actions ++ [.selection frame selectorLayout.bits targetLayout.bits restriction.val
+            let node : Node dependencies program prepared.block := .selection frame selectorLayout.bits targetLayout.bits restriction.val
               (by with_reducible exact restriction.property) inputCode outputCode selectorLayout.labels expected logical.val
-              (by with_reducible exact logical.property)],obligations ++ checked,position.start+position.count,calls,sites,bodies)
-          | _ => throw .request) (initialHistory,([] : List Owner),([] : List (Node dependencies program prepared.block)),
+              (by with_reducible exact logical.property)
+            pure (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations ++ checked,position.start+position.count,calls,sites,bodies)
+          | _ => throw .request) (initialHistory,([] : List Owner),initialOrdinary,
+            ([] : List (Node dependencies program prepared.block)),([] : List (Step dependencies program prepared.block)),
             obligations,0,request.calls,request.sites,bodies)
-      guard (cursor == program.operations.length && calls.isEmpty && sites.isEmpty && bodies.isEmpty) .request
+      guard (cursor ≤ program.operations.length && calls.isEmpty && sites.isEmpty && bodies.isEmpty) .request
+      let (ordinary,steps) ← if cursor == program.operations.length then pure (ordinary,steps) else do
+        let gap ← RuntimeOrdinaryBody.readGap prepared.block cursor (program.operations.length-cursor) history ordinary
+        pure (gap.ssa,steps ++ [.gap gap])
       guard (history.issued == roles ++ source.summary.allocated && retired == source.summary.consumed &&
         history.nextOrdinal == source.summary.nextOrdinal) .request
       let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state history.bindings
@@ -308,21 +372,23 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → OutputBoundary �
       guard (match outputBoundary with
         | .rootOrder => outputs.map (·.token) == program.outputs
         | .localScope => decide ((outputs.map (·.token)).Perm program.outputs)) .request
-      return ⟨prepared,{history with bindings},retired,actions,obligations⟩)
+      return ⟨prepared,{history with bindings},retired,actions,steps,ordinary,obligations⟩)
 
 structure Checked (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map) where
   prepared : RuntimeInterval.Prepared root.dependencies program
   result : Result root.dependencies program
-  checked : RuntimeInterval.Computed (run artifact root 128 .rootOrder body program request initial prepared) result
+  checked : RuntimeInterval.Computed
+    (run artifact root 128 .pureBody .rootOrder body (.root body) program request initial {} prepared) result
 
 def checkPrepared (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (program : Semantics.Observation.Program) (request : Context) (initial : Map)
     (prepared : RuntimeInterval.Prepared root.dependencies program) :
     WorkM (Checked artifact root body program request initial) := do
-  let checked ← NaturalAffine.witness (run artifact root 128 .rootOrder body program request initial prepared)
+  let checked ← NaturalAffine.witness
+    (run artifact root 128 .pureBody .rootOrder body (.root body) program request initial {} prepared)
   return ⟨prepared,checked.val,by with_reducible exact checked.property⟩
 
 def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
@@ -331,5 +397,32 @@ def check (artifact : Artifact) (root : Validity.Root) {owner name signature}
     WorkM (Checked artifact root body program request initial) := do
   let prepared ← RuntimeInterval.prepare root.dependencies program
   checkPrepared artifact root body program request initial prepared
+
+structure RuntimeChecked (artifact : Artifact) (root : Validity.Root) {owner name signature}
+    (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
+    (request : Context) (runtime : RuntimeFamily.Request)
+    (prepared : RuntimeInterval.Prepared root.dependencies root.program)
+    (inputs : RuntimeSourceBoundary.Inputs body prepared runtime.inputStorage)
+    (ordinary : RuntimeOrdinaryInputs.Checked body prepared runtime inputs) where
+  result : Result root.dependencies root.program
+  checked : RuntimeInterval.Computed
+    (run artifact root 128 .runtimeBody .rootOrder body (.root body) root.program request
+      inputs.owners.bindings ordinary.ssa prepared) result
+
+/-- The general preparation receives only an independently derived initial SSA
+state on the same body/root/storage/preparation. Complete actual history and
+final ordinary storage correspondence, branch continuations and code/instrument
+composition remain necessary before any production acceptance can use it. -/
+def checkRuntime (artifact : Artifact) (root : Validity.Root) {owner name signature}
+    (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
+    (request : Context) (runtime : RuntimeFamily.Request)
+    (prepared : RuntimeInterval.Prepared root.dependencies root.program)
+    (inputs : RuntimeSourceBoundary.Inputs body prepared runtime.inputStorage)
+    (ordinary : RuntimeOrdinaryInputs.Checked body prepared runtime inputs) :
+    WorkM (RuntimeChecked artifact root body request runtime prepared inputs ordinary) := do
+  let checked ← NaturalAffine.witness
+    (run artifact root 128 .runtimeBody .rootOrder body (.root body) root.program request
+      inputs.owners.bindings ordinary.ssa prepared)
+  return ⟨checked.val,by with_reducible exact checked.property⟩
 
 end QleisliKernel.Qirf.RuntimePureBody
