@@ -56,6 +56,8 @@ theorem Covers.literalRemaining {dependencies program block cursor nodes finish}
   | nil cursor => rfl
   | @cons cursor finish node nodes atCursor rest ih =>
     simp only [List.flatMap_cons,List.map_append,List.append_assoc,ih]
+    change (region node).frame.operations.map Semantics.Observation.Op.pure ++
+      block.operations.drop (cursor+(region node).count) = block.operations.drop cursor
     rw [← (region node).frame.literal,atCursor]
     simpa only [List.drop_drop] using List.take_append_drop (region node).count (block.operations.drop cursor)
 

@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimeOwnerMap
 import QleisliKernel.SourceTypes.SourceRuntimeContext
 import QleisliKernel.Raw.Coefficient
+import QleisliKernel.Semantics.CarrierInterface
 
 /-! Concrete explicit owner regrouping in an original runtime interval.
 Join/split retain different owner and source-type boundaries. Only their
@@ -13,7 +14,8 @@ this component alone grants no execution, inverse or controlled capability.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeStructuralAction
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
-open SourceRuntimeValues RuntimeOwnerMap
+open SourceRuntimeValues (valueOwners valueFields)
+open RuntimeOwnerMap (Owner Map Binding)
 
 inductive Kind where
   | join | split | unit | finish
@@ -61,18 +63,18 @@ private theorem stepBits (atom : Semantics.FiniteCarrier.Atom)
     stackBits after = atomBits atom+stackBits before := by
   cases atom with
   | unit =>
-    simp only [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
-      Semantics.FiniteCarrier.leaf,bind,Option.bind,pure,Option.pure,Option.some.injEq] at read
+    simp [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
+      Semantics.FiniteCarrier.leaf] at read
     subst after
     simp [stackBits,atomBits,Semantics.FiniteCarrier.singleton]
   | bit =>
-    simp only [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
-      Semantics.FiniteCarrier.leaf,bind,Option.bind,pure,Option.pure,Option.some.injEq] at read
+    simp [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
+      Semantics.FiniteCarrier.leaf] at read
     subst after
     rfl
   | bits width =>
-    simp only [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
-      Semantics.FiniteCarrier.leaf,bind,Option.bind,pure,Option.pure,Option.some.injEq] at read
+    simp [Semantics.FiniteCarrier.layoutStep,Semantics.FiniteCarrier.children,
+      Semantics.FiniteCarrier.leaf] at read
     subst after
     rfl
   | enumeration _origin variants =>
@@ -113,7 +115,7 @@ private theorem foldedBits (basis : Semantics.FiniteCarrier.Basis)
         simpa only [List.foldr_cons,tailRead] using read
       have first := stepBits atom middle after head
       have tail := ih middle tailRead
-      simp only [basisBits,List.map_cons,List.sum_cons]
+      change stackBits after = (atomBits atom+basisBits rest)+stackBits before
       rw [first,tail]
       omega
 
@@ -132,7 +134,7 @@ theorem basisBits_reference (basis : Semantics.FiniteCarrier.Basis) (layout : Se
       cases rest with
       | cons second rest => simp [folded] at read
       | nil =>
-        simp only [folded,bind,Option.bind,pure,Option.pure,Option.some.injEq] at read
+        simp [folded] at read
         subst layout
         have width := foldedBits basis [] [first] folded
         simpa [stackBits] using width
@@ -176,9 +178,9 @@ theorem widths_reference (ports : List Semantics.Raw.Port) (roles : List Owner)
     (member : (port,role) ∈ ports.zip roles) (layout : Semantics.FiniteCarrier.Layout)
     (read : Semantics.FiniteCarrier.layout role.basis = some layout) :
     port.bits = layout.bits ∧ port.wires.length = layout.bits := by
-  have all := (Bool.and_eq_true.mp checked).2
+  have all := (Bool.and_eq_true_iff.mp checked).2
   have good := List.all_eq_true.mp all (port,role) member
-  have fields := Bool.and_eq_true.mp good
+  have fields := Bool.and_eq_true_iff.mp good
   have bits : port.bits = basisBits role.basis := beq_iff_eq.mp fields.1
   have wires : port.wires.length = port.bits := beq_iff_eq.mp fields.2
   have same := basisBits_reference role.basis layout read
