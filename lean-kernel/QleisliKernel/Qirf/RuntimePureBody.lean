@@ -24,6 +24,17 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) where
       {start count input output role kind}
       (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies
   | named (owner name : String) (offset : Nat) (children : List (Node dependencies)) : Node dependencies
+  | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {arity start count inputs outputs roles}
+      (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
+      (inputCode outputCode physical expected : Semantics.Exact.Matrix)
+      (inputRead : RuntimeInterval.Computed
+        (Carrier.ownerCode ((frame.selected.zip roles).map fun (port,role) => ⟨port,role.basis⟩)) inputCode)
+      (outputRead : RuntimeInterval.Computed
+        (Carrier.ownerCode ((frame.returned.zip roles).map fun (port,role) => ⟨port,role.basis⟩)) outputCode)
+      (physicalRead : RuntimeInterval.Computed (Raw.ProtectedEvaluation.reconstruct dependencies
+        (RuntimePureInterval.fragment frame.selected frame.operations outputs)) physical)
+      (action : CodeSpace.Map inputCode outputCode physical) (equation : action.logical = expected) : Node dependencies
   | selection {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block 2 start count inputs outputs roles)
@@ -172,6 +183,31 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name} →
             return (after,actions ++ [.named event.target.resolution.moduleName
               event.target.resolution.declaration.name event.call.calleeOffset nested.actions],
               obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+          | .operation event =>
+            guard (event.operation.graph.root.input == event.operation.graph.root.output &&
+              event.allocated.isEmpty && event.consumed.isEmpty) .request
+            let (callPosition,child) :: calls := calls | throw .request
+            guard (callPosition == position && child.positions.isEmpty && child.sites.isEmpty &&
+              child.calls.isEmpty && child.branches.isEmpty) .request
+            let (expected,children) ← checkOperation event.operation.graph OperationAccess.applicable child.bodies
+            let inputs ← rolePorts event.inputOwners bindings
+            let outputs ← rolePorts event.inputOwners after
+            let frame ← RuntimePureInterval.check prepared.block inputs.length position.start position.count
+              (inputs.map (·.token)) (outputs.map (·.token)) event.inputOwners
+            let inputCode ← NaturalAffine.witness
+              (Carrier.ownerCode ((frame.selected.zip event.inputOwners).map fun (port,role) => ⟨port,role.basis⟩))
+            let outputCode ← NaturalAffine.witness
+              (Carrier.ownerCode ((frame.returned.zip event.inputOwners).map fun (port,role) => ⟨port,role.basis⟩))
+            let physical ← NaturalAffine.witness (Raw.ProtectedEvaluation.reconstruct dependencies
+              (RuntimePureInterval.fragment frame.selected frame.operations (outputs.map (·.token))))
+            let action ← CodeSpace.readMap inputCode.val outputCode.val physical.val
+            exactWork (Exact.charge (action.logical.entries.length+expected.entries.length+1))
+            if equation : action.logical = expected then
+              pure (after,actions ++ [.operation frame inputCode.val outputCode.val physical.val expected
+                (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
+                (by with_reducible exact physical.property) action equation],
+                obligations ++ children,position.start+position.count,calls,sites,bodies)
+            else throw .equation
           | .selection _ parsed _ selector target scope naturals .. =>
             let site :: sites := sites | throw .request
             guard (site.position == position) .request
