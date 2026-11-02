@@ -171,6 +171,19 @@ def widths (ports : List Semantics.Raw.Port) (roles : List Owner) : Bool :=
   ports.length == roles.length && (ports.zip roles).all fun (port,role) =>
     port.bits == basisBits role.basis && port.wires.length == port.bits
 
+theorem widths_reference (ports : List Semantics.Raw.Port) (roles : List Owner)
+    (checked : widths ports roles = true) (port : Semantics.Raw.Port) (role : Owner)
+    (member : (port,role) ∈ ports.zip roles) (layout : Semantics.FiniteCarrier.Layout)
+    (read : Semantics.FiniteCarrier.layout role.basis = some layout) :
+    port.bits = layout.bits ∧ port.wires.length = layout.bits := by
+  have all := (Bool.and_eq_true.mp checked).2
+  have good := List.all_eq_true.mp all (port,role) member
+  have fields := Bool.and_eq_true.mp good
+  have bits : port.bits = basisBits role.basis := beq_iff_eq.mp fields.1
+  have wires : port.wires.length = port.bits := beq_iff_eq.mp fields.2
+  have same := basisBits_reference role.basis layout read
+  exact ⟨bits.trans same.symm,wires.trans (bits.trans same.symm)⟩
+
 structure Checked {dependencies program sources caller}
     (block : RuntimeInterval.Block dependencies program) (start count : Nat)
     (event : SourceRuntimeContext.PrimitiveEvent sources caller) (before : SourceState) where
@@ -279,6 +292,28 @@ def read {dependencies program sources caller}
       else throw .request
     | _ => throw .request
   else throw .request
+
+/-- Every issued source identity is retained after consumption. The next
+structural event therefore starts the same complete canonical history. -/
+theorem Checked.history {dependencies program sources caller block start count event before}
+    (checked : @Checked dependencies program sources caller block start count event before) :
+    checked.after.issued.map (·.ordinal) = List.range checked.after.nextOrdinal := by
+  rw [checked.afterIssued,List.map_append,checked.issued,checked.fresh,checked.afterOrdinal,checked.nextOrdinal]
+  exact List.range_add.symm
+
+theorem Checked.noRevival {dependencies program sources caller block start count event before}
+    (checked : @Checked dependencies program sources caller block start count event before)
+    (created : Owner) (newMember : created ∈ checked.outputRoles) (old : Owner) (oldMember : old ∈ before.issued) :
+    created.ordinal ≠ old.ordinal := by
+  intro same
+  have freshMember : created.ordinal ∈ checked.outputRoles.map (·.ordinal) :=
+    List.mem_map.mpr ⟨created,newMember,rfl⟩
+  rw [checked.fresh] at freshMember
+  obtain ⟨offset,_bound,ordinal⟩ := List.mem_map.mp freshMember
+  have previous : old.ordinal ∈ before.issued.map (·.ordinal) := List.mem_map.mpr ⟨old,oldMember,rfl⟩
+  rw [checked.issued] at previous
+  have bound := List.mem_range.mp previous
+  omega
 
 /-- The existing independent code interpretation is the same expression on
 both sides. This proof constructs no combined labels or dense matrix. Distinct
