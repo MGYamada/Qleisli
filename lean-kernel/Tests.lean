@@ -58,6 +58,10 @@ import QleisliKernel.Tests.RuntimeMaterialization
 import QleisliKernel.Tests.RuntimePureBody
 import QleisliKernel.Tests.RuntimeProviderHeaders
 import QleisliKernel.Tests.GenericCatalogue
+import QleisliKernel.Tests.GenericOperation
+import QleisliKernel.Tests.GenericDuties
+import QleisliKernel.Tests.SourcePendingMeaning
+import QleisliKernel.Tests.GenericCatalogueOriginals
 import QleisliKernel.Tests.SourceComputedSyntax
 import QleisliKernel.Tests.SourceRuntimeMatch
 import QleisliKernel.Tests.SourceRuntimeRecursion

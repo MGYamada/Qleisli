@@ -6,6 +6,20 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reuse exact original module scans and lexical lookup policy throughout the
+  complete source traversal. Preserve original declaration bodies, public
+  effects, import/reexport checks and query-specific source rows. Complete
+  bundled-source and small-caller regression checks keep the existing work cap.
+- Retain original operation subjects, mixed formal keys, supplying contexts
+  and per-child access demands with each pending Meaning assertion. Withhold
+  unconsumed concrete Meaning duties before legacy or unfinished runtime source
+  selection, including unused generic and zero-power occurrences. Complete
+  callee substitution and native Meaning/access consumption remain required.
+- Bind mixed named calls to their literal Raw fragment, all visible ordinary
+  inputs and the complete caller spectator frame. Keep the original callee's
+  nested steps, owner history and final SSA values; small observing-result and
+  copied-input controls cover this component. Public v5 execution and complete
+  source/code composition remain unfinished.
 - Retain ordinary SSA input identities in nominal source frames from the same
   original actual argument values. Keep physical input IDs unique while
   preserving every ordinary copy in the source/result trees, and retain the

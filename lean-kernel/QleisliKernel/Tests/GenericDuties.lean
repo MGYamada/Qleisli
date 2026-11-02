@@ -6,7 +6,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.GenericDuties
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Finite
 
-private def prefix := "#![no_implicit_prelude]\n" ++
+private def sourcePrelude := "#![no_implicit_prelude]\n" ++
   "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}\n" ++
   "unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\n" ++
   "meaning Identity:Bit=reference(keep);\n" ++
@@ -15,7 +15,7 @@ private def prefix := "#![no_implicit_prelude]\n" ++
   "unitary fn need[const U:Op<Bit,Identity>](q:Q<Bit>)->Q<Bit>{q}\n"
 
 private def pending (suffix : String) : WorkM (List (String × String × String)) := do
-  let catalogue ← GenericCatalogue.read #[("main",prefix ++ suffix)]
+  let catalogue ← GenericCatalogue.read #[("main",sourcePrelude ++ suffix)]
   let duties ← GenericCatalogue.readDuties catalogue
   return duties.entries.filterMap fun entry =>
     match entry.duty.requirement,entry.status with
@@ -50,7 +50,7 @@ private def pending (suffix : String) : WorkM (List (String × String × String)
 
 private def subject : WorkM (String × Nat × List String × List (String × String)) := do
   let suffix := "unitary fn dormant[const n:Nat](q:Q<Bit>)->Q<Bit>{need[sign](q)}"
-  let catalogue ← GenericCatalogue.read #[("main",prefix ++ suffix)]
+  let catalogue ← GenericCatalogue.read #[("main",sourcePrelude ++ suffix)]
   let duties ← GenericCatalogue.readDuties catalogue
   let some entry := duties.entries.find? (fun entry => match entry.duty.requirement,entry.status with
     | .meaning _,.closed _ => true | _,_ => false)
