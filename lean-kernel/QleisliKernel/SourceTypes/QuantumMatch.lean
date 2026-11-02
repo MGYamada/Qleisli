@@ -1,6 +1,6 @@
 import QleisliKernel.SourceTypes.OrdinarySignature
 
-/-! Informed original qmatch-site extraction. All expression/arm tokens and
+/-! Informed original qmatch/qif-site extraction. All expression/arm tokens and
 their original byte occurrences are retained. This is neither typing nor an
 operation-capability verdict, source preservation theorem or native acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -65,7 +65,8 @@ structure Parsed where
   deriving BEq, DecidableEq, Repr
 
 def parse (tokens : List LocatedToken) : Except String (Parsed × List LocatedToken) := do
-  let (keyword,rest) ← expect "qmatch" tokens
+  let keyword :: rest := tokens | throw "missing coherent selection keyword"
+  if keyword.text != "qmatch" && keyword.text != "qif" then throw "unexpected coherent selection keyword"
   let (_,rest) ← expect "(" rest
   let selector ← segment (rest.length+1) [","] [] rest []
   let target ← segment (selector.rest.length+1) [",",")"] [] selector.rest []
@@ -74,7 +75,22 @@ def parse (tokens : List LocatedToken) : Except String (Parsed × List LocatedTo
   let (_,rest) ← expect "{" target.rest
   let (arms,suffix) ← arms 65 rest []
   if arms.isEmpty then throw "empty qmatch partition"
-  return (⟨keyword,selector.tokens,target.tokens,arms,tokens.take (tokens.length-suffix.length)⟩,suffix)
+  let original := tokens.take (tokens.length-suffix.length)
+  if keyword.text == "qif" then
+    if arms.map (fun arm => arm.label.map (·.text)) != [["0"],["1"]] then
+      throw "qif requires the original zero arm then one arm"
+    if original.dropLast.getLast?.map (·.text) == some "," then
+      throw "qif does not admit a final arm comma"
+  return (⟨keyword,selector.tokens,target.tokens,arms,original⟩,suffix)
+
+/-- qif keeps its original Bit-only interface. Equal cardinality, a selected
+opaque actual or a same-width nominal declaration cannot supply that type. -/
+def acceptsSelector (parsed : Parsed) (selector : Semantics.FiniteCarrier.Basis) : Bool :=
+  parsed.keyword.text != "qif" || selector == [.bit]
+
+def checkSelector (parsed : Parsed) (selector : Semantics.FiniteCarrier.Basis) :
+    WorkM (PLift (acceptsSelector parsed selector = true)) := do
+  if allowed : acceptsSelector parsed selector = true then pure ⟨allowed⟩ else throw .request
 
 structure Site (sources : Sources) (owner name : String) (offset : Nat) where
   original : OrdinarySignature.Original sources owner name

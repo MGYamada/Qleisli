@@ -193,6 +193,7 @@ structure Table (sources : Sources) (owner name : String) (offset : Nat) (select
   arms : List (BoundArm sources owner selector target)
   originalArms : arms.map (·.written) = site.parsed.arms
   complete : partition layout.labels.length arms = true
+  selectorKind : QuantumMatch.acceptsSelector site.parsed selector = true
 
 /-- Reuse the exact already-read caller; all arm, source-type and partition
 checks remain in this shared continuation. No alternate source body is supplied. -/
@@ -201,6 +202,7 @@ def readArms {sources owner name}
     (offset : Nat) (selector target : Basis) :
     WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite originalCaller offset
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
@@ -210,7 +212,7 @@ def readArms {sources owner name}
       return ⟨site,layout.val,by with_reducible exact original.property,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete⟩
+        arms,same,complete,selectorKind.down⟩
     else throw .request
   else throw .request
 
@@ -228,6 +230,7 @@ def readArmsWithSignature {sources owner name}
     (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
     (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite signature.original offset
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let naturals ← match eventNaturals with
@@ -241,7 +244,7 @@ def readArmsWithSignature {sources owner name}
       return ⟨site,layout.val,by with_reducible exact original.property,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete⟩
+        arms,same,complete,selectorKind.down⟩
     else throw .request
   else throw .request
 
@@ -252,6 +255,7 @@ def readArmsWithInstantiation {sources owner name}
     (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
     (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite originalCaller offset
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let naturals ← match eventNaturals with
@@ -266,7 +270,7 @@ def readArmsWithInstantiation {sources owner name}
       pure ⟨site,layout.val,by with_reducible exact original.property,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete⟩
+        arms,same,complete,selectorKind.down⟩
     else throw .request
   else throw .request
 

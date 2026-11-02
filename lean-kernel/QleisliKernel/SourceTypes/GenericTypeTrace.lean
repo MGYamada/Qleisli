@@ -414,6 +414,8 @@ private def selection {sources} (state : GenericLexicalNatural.SomeEnvironment s
     (selector target : Value) (remaining : Environment) : WorkM (Outcome sources) := do
   let [.owner selector] := selector | throw .request
   let [.owner target] := target | throw .request
+  if parsed.keyword.text == "qif" then
+    let _ ← SymbolicTypes.equate state selector [.fixed .bit]
   let labelBasis ← scalarLabelBasis state selector parsed.arms.length
   let arms ← parsed.arms.mapM fun arm => do
     let label ← QuantumLabels.read sources state.owner labelBasis arm.label

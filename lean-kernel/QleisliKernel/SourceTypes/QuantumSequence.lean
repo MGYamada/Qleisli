@@ -54,12 +54,13 @@ structure Outcome where
 The arm table remains intact for the enclosing independent arm/sector gate. -/
 def expression (tokens : List LocatedToken) (environment : Environment)
     (scope : List String := environment.map (·.name)) (operationNames : List String := []) : Except String Outcome := do
-  if tokens.head?.map (·.text) == some "qmatch" then
+  if tokens.head?.map (fun token => token.text == "qmatch" || token.text == "qif") == some true then
     let (parsed,suffix) ← QuantumMatch.parse tokens
     if !suffix.isEmpty then throw "tokens remain after the original qmatch expression"
     if unshadowed : armsAllowed scope operationNames parsed.arms = true then
       let ([.owner selector],afterSelector) ← QuantumMoves.eval (parsed.selector.map (·.text)) environment
         | throw "qmatch selector is not one original owner"
+      if !QuantumMatch.acceptsSelector parsed selector.basis then throw "qif requires the original Bit selector"
       let ([.owner target],remaining) ← QuantumMoves.eval (parsed.target.map (·.text)) afterSelector
         | throw "qmatch target is not one original owner"
       if distinct : selector.ordinal ≠ target.ordinal then
@@ -104,7 +105,7 @@ def replay (fuel : Nat) (environment : Environment) (tokens : List LocatedToken)
   replayWithScope fuel (environment.map (·.name)) environment tokens
 
 def originalOffsets (tokens : List LocatedToken) : List Nat :=
-  (tokens.filter (·.text == "qmatch")).map (·.span.startByte)
+  (tokens.filter fun token => token.text == "qmatch" || token.text == "qif").map (·.span.startByte)
 
 structure Checked (sources : Sources) (owner name : String) where
   signature : QuantumSignature.Checked sources owner name
@@ -129,7 +130,7 @@ def read (sources : Sources) (owner name : String) : WorkM (Checked sources owne
   let signature ← QuantumSignature.read sources owner name
   let tokens := signature.original.occurrence.body
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  let steps := (tokens.filter fun token => token.text == "let" || token.text == "qmatch").length+1
+  let steps := (tokens.filter fun token => token.text == "let" || token.text == "qmatch" || token.text == "qif").length+1
   let arity := signature.inputs.length+1
   -- Scan complete arm tokens linearly; charge the full nominal identities at
   -- each actual environment transition, rather than squaring arm-table size.
