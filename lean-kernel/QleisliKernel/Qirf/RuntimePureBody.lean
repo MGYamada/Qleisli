@@ -19,11 +19,25 @@ open SourceRuntimeValues RuntimeOwnerMap
 abbrev Context := RuntimeContextRequest.Context
 abbrev Position := SourceSequence.Position
 
+def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) := do
+  let ordered ← RuntimeOwnerMap.order roles bindings
+  return ordered.map (·.port)
+
 inductive Node (dependencies : List Semantics.Finite.Dependency) where
   | primitive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count input output role kind}
       (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies
-  | named (owner name : String) (offset : Nat) (children : List (Node dependencies)) : Node dependencies
+  | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {arity start count inputs outputs roles} {sources : Sources} {owner name : String}
+      (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
+      (source : SourceRuntimeTrace.Checked sources owner name) (offset : Nat)
+      (child : Semantics.Observation.Program)
+      (literal : child = Semantics.Ownership.pureProgram
+        (RuntimePureInterval.fragment frame.selected frame.operations child.outputs))
+      (finalBindings : Map) (returned : List Semantics.Raw.Port)
+      (returnRead : RuntimeInterval.Computed (rolePorts (valueOwners source.summary.value) finalBindings) returned)
+      (returnOrder : returned.map (·.token) = child.outputs)
+      (children : List (Node dependencies)) : Node dependencies
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -50,10 +64,6 @@ structure Result (dependencies : List Semantics.Finite.Dependency) where
   bindings : Map
   actions : List (Node dependencies)
   obligations : List (Node dependencies) := []
-
-private def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) := do
-  let ordered ← RuntimeOwnerMap.order roles bindings
-  return ordered.map (·.port)
 
 /-- Literal Raw transport determines each token's opaque source role. Width or
 wire equality never chooses between owners, including separate Unit owners. -/
@@ -173,17 +183,19 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : Str
             let framed ← RuntimePureInterval.check prepared.block inputs.length position.start position.count
               (inputs.map (·.token)) (stableOutputs.map (·.token)) event.inputOwners
             let fragment := Semantics.Ownership.pureProgram
-              (RuntimePureInterval.fragment inputs framed.operations (actualOutputs.map (·.token)))
+              (RuntimePureInterval.fragment framed.selected framed.operations (actualOutputs.map (·.token)))
             let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
-            let inputOwners := (inputs.zip event.inputOwners).map fun (port,role) =>
+            let inputOwners := (framed.selected.zip event.inputOwners).map fun (port,role) =>
               (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
             let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
             let nested ← next original.checked fragment child childInitial
-            let childOutputs ← rolePorts (valueOwners original.checked.summary.value) nested.bindings
-            guard (childOutputs.map (·.token) == actualOutputs.map (·.token)) .request
-            return (after,actions ++ [.named event.target.resolution.moduleName
-              event.target.resolution.declaration.name event.call.calleeOffset nested.actions],
-              obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+            let childOutputs ← NaturalAffine.witness
+              (rolePorts (valueOwners original.checked.summary.value) nested.bindings)
+            if returnOrder : childOutputs.val.map (·.token) = actualOutputs.map (·.token) then
+              return (after,actions ++ [.named framed original.checked event.call.calleeOffset fragment rfl
+                nested.bindings childOutputs.val (by with_reducible exact childOutputs.property) returnOrder nested.actions],
+                obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
+            else throw .request
           | .operation event =>
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
               event.allocated.isEmpty && event.consumed.isEmpty) .request
