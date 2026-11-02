@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.StaticSelection
 import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.SourceTypes.QuantumLabels
+import QleisliKernel.SourceTypes.SourceRows
 
 /-! Original exact-label qmatch table and source-function arm headers.
 Actual arm/control bodies, source/runtime preservation and native/QDV binding
@@ -45,25 +46,47 @@ inductive OperationOrigin (sources : Sources) (owner : String) (tokens : List Lo
       (kind : OperationDescription.Primitive) (selected : primitiveKind candidate = some kind)
       (target : Basis) (original : description = ⟨[.primitive kind target],0⟩)
 
-/-- Every original provider and constructor remains in this exact graph. A
-composed operation has no representative function name or invented signature.
-The native continuation binds each provider's actual subject separately. -/
-structure Operation (sources : Sources) (owner : String) (tokens : List LocatedToken) where
-  description : OperationDescription.Description
-  graph : StaticOperation.CheckedGraph sources (.source owner) description
-  original : OperationOrigin sources owner tokens description graph
-
-def Operation.providers {sources owner tokens} (operation : Operation sources owner tokens) :
-    List (StaticOperation.Provider sources) := operation.graph.providers
-
-def Operation.sourceRows {sources owner tokens} (operation : Operation sources owner tokens) :
-    List (String × String) :=
-  operation.graph.sourceRows ++ match operation.original with
+def operationSourceRows {sources owner tokens description}
+    (graph : StaticOperation.CheckedGraph sources (.source owner) description)
+    (original : OperationOrigin sources owner tokens description graph) : List SourceRows.Row :=
+  graph.sourceRows ++ match original with
     | .named selected _ => ResolutionProvenance.sourceRows selected.resolution ++ selected.signature.sourceRows
     | .source _ signature naturals _ read _ _ => signature.sourceRows ++ naturals.sourceRows ++ read.rows
     | .instantiated _ original _ supply naturals _ read _ _ =>
       [(owner,original.source)] ++ supply.arguments.sourceRows ++ naturals.sourceRows ++ read.rows
     | .primitive _ candidate .. => CallName.sourceRows candidate
+
+/-- Every original provider and constructor remains in this exact graph. A
+composed operation has no representative function name or invented signature.
+Only repeated relevance rows are shared; every original route remains available
+in graph/original and in the retained row index. -/
+structure Operation (sources : Sources) (owner : String) (tokens : List LocatedToken) where
+  description : OperationDescription.Description
+  graph : StaticOperation.CheckedGraph sources (.source owner) description
+  original : OperationOrigin sources owner tokens description graph
+  relevance : SourceRows.Retained (operationSourceRows graph original)
+
+def Operation.providers {sources owner tokens} (operation : Operation sources owner tokens) :
+    List (StaticOperation.Provider sources) := operation.graph.providers
+
+def Operation.rawSourceRows {sources owner tokens} (operation : Operation sources owner tokens) :
+    List SourceRows.Row := operationSourceRows operation.graph operation.original
+
+def Operation.sourceRows {sources owner tokens} (operation : Operation sources owner tokens) :
+    List SourceRows.Row := operation.relevance.rows
+
+theorem Operation.sourceRows_canonical {sources owner tokens} (operation : Operation sources owner tokens) :
+    operation.sourceRows = operation.rawSourceRows.eraseDups := operation.relevance.canonical
+
+theorem Operation.sourceRows_members {sources owner tokens} (operation : Operation sources owner tokens)
+    (row : SourceRows.Row) : row ∈ operation.sourceRows ↔ row ∈ operation.rawSourceRows :=
+  operation.relevance.members row
+
+private def retainOperation {sources owner tokens description}
+    (graph : StaticOperation.CheckedGraph sources (.source owner) description)
+    (original : OperationOrigin sources owner tokens description graph) : WorkM (Operation sources owner tokens) := do
+  let relevance ← SourceRows.read (operationSourceRows graph original)
+  pure ⟨description,graph,original,relevance⟩
 
 structure BoundArm (sources : Sources) (owner : String) (selector target : Basis) where
   written : QuantumMatch.Arm
@@ -92,7 +115,7 @@ def readArm (sources : Sources) (owner : String) (selector target : Basis) (writ
   let description := OperationDescription.provider selected.resolution.moduleName selected.resolution.declaration.name
     selected.signature.staticArguments.bases selected.signature.staticArguments.naturals selected.signature.staticArguments.operations
   let graph ← StaticOperation.check sources (.source owner) description
-  let operation : Operation sources owner written.operation := ⟨description,graph,.named selected rfl⟩
+  let operation : Operation sources owner written.operation ← retainOperation graph (.named selected rfl)
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then
       if effect : operation.graph.root.effect = .unitary then
@@ -120,15 +143,15 @@ def readArmWithSignature {sources owner name}
       | some kind =>
         let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
         let graph ← StaticOperation.check sources (.source owner) description
-        pure ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
+        retainOperation graph (.primitive scope candidate kind selected target rfl)
       | none => do
         let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
           none (some signature.supply)
-        pure ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+        retainOperation source.graph (.source name signature naturals scope source rfl HEq.rfl)
     | .error _ => do
       let source ← SourceOperation.read signature.toChecked naturals.helpers.val naturals.environment scope written.operation naturals.generic
         none (some signature.supply)
-      pure ⟨source.description,source.graph,.source name signature naturals scope source rfl HEq.rfl⟩
+      retainOperation source.graph (.source name signature naturals scope source rfl HEq.rfl)
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then
       if effect : operation.graph.root.effect = .unitary then
@@ -156,15 +179,15 @@ def readArmWithInstantiation {sources owner name}
       | some kind =>
         let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
         let graph ← StaticOperation.check sources (.source owner) description
-        pure ⟨description,graph,.primitive scope candidate kind selected target rfl⟩
+        retainOperation graph (.primitive scope candidate kind selected target rfl)
       | none => do
         let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
           scope written.operation naturals.generic none (some supply)
-        pure ⟨source.description,source.graph,.instantiated name original instantiation supply naturals scope source rfl HEq.rfl⟩
+        retainOperation source.graph (.instantiated name original instantiation supply naturals scope source rfl HEq.rfl)
     | .error _ => do
       let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
         scope written.operation naturals.generic none (some supply)
-      pure ⟨source.description,source.graph,.instantiated name original instantiation supply naturals scope source rfl HEq.rfl⟩
+      retainOperation source.graph (.instantiated name original instantiation supply naturals scope source rfl HEq.rfl)
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then
       if effect : operation.graph.root.effect = .unitary then
