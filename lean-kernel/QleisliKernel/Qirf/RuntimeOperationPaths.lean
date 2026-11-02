@@ -61,6 +61,21 @@ def read {artifact context description}
   let bodies ← readAll graph root (access.providers.length+1) (providerDemands access) headers.headers
   return ⟨headers,access,bodies⟩
 
+/-- Visit the actual checked header at every occurrence. The callback never
+searches by name, descriptor, width or matrix to recover a supplying context. -/
+def Bound.mapM {artifact context description graph root} {α : Type}
+    (visit : {index : Nat} → {request : Request} →
+      (header : @RuntimeProviderHeader.Header artifact context description graph index request) →
+      (demand : StaticOperation.Paths) → RuntimeProviderPaths.Checked header root demand → WorkM α) :
+    {demands : List (Nat × StaticOperation.Paths)} → {indices : List Nat} → {requests : List Request} →
+    {headers : RuntimeProviderHeaders.Reads artifact graph indices requests} →
+    Bound graph root demands headers → WorkM (List α)
+  | _,_,_,_,.nil => pure []
+  | _,_,_,_,.cons (header := header) (demand := demand) head rest => do
+    let first ← visit header demand head
+    let tail ← rest.mapM visit
+    return first :: tail
+
 def Bound.logicals {artifact context description graph root demands indices requests headers}
     (bound : @Bound artifact context description graph root demands indices requests headers) : List Semantics.Exact.Matrix :=
   match bound with

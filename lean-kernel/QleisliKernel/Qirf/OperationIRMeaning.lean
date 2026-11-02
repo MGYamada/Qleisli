@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.StaticOperation
 import QleisliKernel.Qirf.PureInterval
+import QleisliKernel.Semantics.PrimitiveOperator
 
 /-! Exact operation-tree evaluation over independently realized provider maps.
 This calculation alone accepts neither a source body nor an IR program and
@@ -39,17 +40,11 @@ def power (value : Matrix) (count : Nat) : WorkM Matrix := do
 
 def primitive (kind : Primitive) (target : Semantics.FiniteCarrier.Basis) : WorkM Matrix := do
   let layout ← FiniteCarrier.read target
-  let dimension := layout.labels.length
-  exactWork (Exact.charge (dimension*dimension+1))
-  match kind with
-  | .h =>
-    guard (target == [.bit]) .request
-    let negative ← lift (arithmetic (Exact.Scalar.neg halfRoot))
-    lift (arithmetic (Exact.Matrix.make 2 2 [halfRoot,halfRoot,halfRoot,negative]))
-  | .globalPhaseEighth =>
-    let entries := (List.range (dimension*dimension)).map fun index =>
-      if index / dimension == index % dimension then Exact.Scalar.phase 1 else Scalar.zero
-    lift (arithmetic (Exact.Matrix.make dimension dimension entries))
+  exactWork (Exact.charge ((layout.labels.length+1)^2))
+  let reference := match kind with
+    | .h => Semantics.PrimitiveOperator.Kind.h
+    | .globalPhaseEighth => Semantics.PrimitiveOperator.Kind.globalPhaseEighth
+  lift (readOption (Semantics.PrimitiveOperator.meaning reference target))
 
 private def formalPosition {sources} (metadata : StaticOperation.Result sources)
     (operations : List (String × Nat)) (ordinal : Nat) : WorkM Nat := do
