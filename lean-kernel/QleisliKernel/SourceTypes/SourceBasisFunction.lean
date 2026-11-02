@@ -31,10 +31,10 @@ private def freeVariables (inputTypes boundTypes : List Basis) : Expression →
     let some _ := boundTypes[ordinal]? | throw "unknown coherent basis input"
     return []
   | expression@(.measured ..) => pure [(expression,[.bit])]
-  | .unit | .bit _ => pure []
+  | .unit | .bit _ | .ordinal _ => pure []
   | .project .. => throw "coherent nominal field projection needs its original field contract"
-  | .not value => freeVariables inputTypes boundTypes value
-  | .xor first second | .and first second => do
+  | .not value | .field _ _ value => freeVariables inputTypes boundTypes value
+  | .xor first second | .and first second | .combine _ first second => do
     return (← freeVariables inputTypes boundTypes first) ++ (← freeVariables inputTypes boundTypes second)
   | .choose condition thenValue elseValue => do
     return (← freeVariables inputTypes boundTypes condition) ++
@@ -61,7 +61,18 @@ private def evaluate (bound : List Nat) (external : List (Expression × Nat)) : 
     return value
   | .unit => pure 0
   | .bit value => pure (if value then 1 else 0)
+  | .ordinal value => pure value
   | .project .. => throw "unsupported untyped ordinary field projection"
+  | .combine stride first second => do
+    if stride == 0 then throw "zero logical record packing stride"
+    let first ← evaluate bound external first
+    let second ← evaluate bound external second
+    if first ≥ stride then throw "logical record prefix exceeds its exact dimension"
+    return first+stride*second
+  | .field stride dimension receiver => do
+    if stride == 0 || dimension == 0 then throw "invalid logical original field dimensions"
+    let receiver ← evaluate bound external receiver
+    return (receiver/stride)%dimension
   | .not value => do
     let value ← evaluate bound external value
     if value ≥ 2 then throw "Boolean basis operand range"

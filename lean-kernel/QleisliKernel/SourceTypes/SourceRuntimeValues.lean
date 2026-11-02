@@ -22,8 +22,11 @@ inductive Expression where
   | basisInput (ordinal : Nat)
   | unit
   | bit (value : Bool)
+  | ordinal (value : Nat)
   | measured (origin : Site) (calls : List Site) (owner : Owner)
   | project (value : Expression) (ordinal : Nat)
+  | combine (stride : Nat) (first second : Expression)
+  | field (stride dimension : Nat) (receiver : Expression)
   | not (value : Expression)
   | xor (first second : Expression)
   | and (first second : Expression)
@@ -181,8 +184,14 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
   | .basisInput ordinal => pure (.basisInput ordinal)
   | .unit => pure .unit
   | .bit value => pure (.bit value)
+  | .ordinal value => pure (.ordinal value)
   | .measured origin calls owner => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
   | .project value ordinal => do return .project (← expressionTransport site actuals ordinary value) ordinal
+  | .combine stride first second => do
+    return .combine stride (← expressionTransport site actuals ordinary first)
+      (← expressionTransport site actuals ordinary second)
+  | .field stride dimension receiver => do
+    return .field stride dimension (← expressionTransport site actuals ordinary receiver)
   | .not value => do return .not (← expressionTransport site actuals ordinary value)
   | .xor first second => do
     let first ← expressionTransport site actuals ordinary first
@@ -200,8 +209,8 @@ private def expressionTransport (site : Site) (actuals : List Owner) (ordinary :
 /-- Size is derived from actual expression structure; the 65 source nesting
 bound cannot accidentally cap long flat helper/call chains during transport. -/
 def expressionSize : Expression → Nat
-  | .project value _ | .not value => 1+expressionSize value
-  | .xor first second | .and first second => 1+expressionSize first+expressionSize second
+  | .project value _ | .field _ _ value | .not value => 1+expressionSize value
+  | .xor first second | .and first second | .combine _ first second => 1+expressionSize first+expressionSize second
   | .choose condition thenValue elseValue =>
     1+expressionSize condition+expressionSize thenValue+expressionSize elseValue
   | _ => 1
@@ -212,8 +221,8 @@ def siteFields (site : Site) : Nat :=
 def expressionFields : Expression → Nat
   | .measured origin calls owner =>
     1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
-  | .project value _ | .not value => 1+expressionFields value
-  | .xor first second | .and first second => 1+expressionFields first+expressionFields second
+  | .project value _ | .field _ _ value | .not value => 1+expressionFields value
+  | .xor first second | .and first second | .combine _ first second => 1+expressionFields first+expressionFields second
   | .choose condition thenValue elseValue =>
     1+expressionFields condition+expressionFields thenValue+expressionFields elseValue
   | _ => 1
