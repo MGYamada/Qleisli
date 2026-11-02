@@ -84,7 +84,7 @@ identities are valid; an omitted phase or a wrong equal-width role still fails
 the actual local equation. Selection providers re-enter this same source body
 reader before their arm equations are used. Basis actions, observing calls,
 ordinary branches and demanded source transformations remain incomplete. -/
-def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name} →
+def run (artifact : Artifact) (root : Validity.Root) : Nat → {owner name : String} →
     SourceRuntimeTrace.Checked artifact.sources owner name → Semantics.Observation.Program → Context → Map →
     WorkM (Result root.dependencies) :=
   Nat.rec (fun {_ _} _ _ _ _ => throw .limit)
