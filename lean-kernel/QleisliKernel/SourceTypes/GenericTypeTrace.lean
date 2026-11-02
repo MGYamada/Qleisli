@@ -45,7 +45,7 @@ structure Operation (sources : Sources) where
 structure Definition (sources : Sources) (owner name : String) where
   original : StaticHeaders.Original sources owner name
   state : GenericLexicalNatural.SomeEnvironment sources
-  stateOriginal : state.prepared.original = original
+  stateOriginal : HEq state.prepared.original original
   parameters : List Value
   result : Value
   operations : List (String × Operation sources)
@@ -93,7 +93,9 @@ def readDefinitionOriginal {sources owner name} (original : StaticHeaders.Origin
     | .operation _ => pure [(formal.name,← formalOperation state formal)]
     | _ => pure []
   let rows ← NaturalRows.bindings sources owner state.prepared.helpers state.prepared.bindings
-  pure ⟨⟨original,state,numeric.originalHeader,parameters.map (·.value),result.value,operations.flatten,
+  pure ⟨⟨original,state,by
+      change HEq numeric.prepared.original original
+      rw [numeric.originalHeader],parameters.map (·.value),result.value,operations.flatten,
     (owner,original.envelope.source) :: rows ++ parameters.flatMap (·.rows) ++ result.rows ++
       operations.flatten.flatMap (fun (_,operation) => operation.rows)⟩,rfl⟩
 
@@ -241,14 +243,16 @@ def operation {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment
       | ["adjoint"],[child] =>
         let child ← next none child.tokens
         guard child.paths.adjointable .request
-        pure {child with input := child.output,output := child.input,
+        pure {child with
+          input := child.output,output := child.input,
           effect := direct .unitary,paths := ⟨child.paths.adjointable,child.paths.applicable,child.paths.controllable⟩,
           needs := child.needs ++ [⟨child.effect,.unitary,false⟩]}
       | ["controlled"],[child] =>
         let child ← next none child.tokens
         let _ ← SymbolicTypes.equate state child.input child.output
         let basis := .fixed .pair :: .fixed .bit :: child.input
-        pure {child with input := basis,output := basis,effect := direct .unitary,
+        pure {child with
+          input := basis,output := basis,effect := direct .unitary,
           paths := ⟨child.paths.controllable,child.paths.controllable,child.paths.controllable⟩,
           needs := child.needs ++ [⟨child.effect,.unitary,false⟩]}
       | ["power"],[child,count] =>
@@ -337,7 +341,8 @@ structure Outcome (sources : Sources) where
   rows : List (String × String) := []
 
 def append {sources} (first last : Outcome sources) : Outcome sources :=
-  {last with effect := join first.effect last.effect,quantumUse := first.quantumUse || last.quantumUse,
+  {last with
+    effect := join first.effect last.effect,quantumUse := first.quantumUse || last.quantumUse,
     references := first.references ++ last.references,needs := first.needs ++ last.needs,
     recursions := first.recursions ++ last.recursions,
     meanings := first.meanings ++ last.meanings,basisObligations := first.basisObligations ++ last.basisObligations,
@@ -413,7 +418,8 @@ private def selection {sources} (state : GenericLexicalNatural.SomeEnvironment s
     pure (label,operation)
   let labels := arms.map (·.1.ordinal)
   guard (labels.all (· < arms.length) && labels.eraseDups.length == labels.length) .request
-  pure {value := [.tuple 2,.owner selector,.owner target],remaining,quantumUse := true,
+  pure {
+    value := [.tuple 2,.owner selector,.owner target],remaining,quantumUse := true,
     effect := direct .unitary,references := arms.flatMap (·.2.references),
     needs := arms.flatMap (fun (_,operation) => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
     meanings := arms.flatMap (·.2.meanings),
@@ -488,7 +494,8 @@ private def applyOperation {sources} (state : GenericLexicalNatural.SomeEnvironm
       let [argument] := arguments | throw .request
       GenericValues.expect state argument [.owner op.input]
       pure [.owner op.output]
-  pure {value,remaining,effect := op.effect,quantumUse := true,references := op.references,
+  pure {
+    value,remaining,effect := op.effect,quantumUse := true,references := op.references,
     needs := op.needs,meanings := op.meanings,rows := op.rows}
 
 private def quantumGroup (value : Value) : Bool :=
@@ -544,7 +551,8 @@ private def runtimeTransform {sources} (state : GenericLexicalNatural.SomeEnviro
         actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)
     guard access .request
     let effect := functionEffect state.owner application.definition
-    pure {value,remaining,effect := direct .unitary,quantumUse := true,references := application.references,
+    pure {
+      value,remaining,effect := direct .unitary,quantumUse := true,references := application.references,
       recursions := application.recursion.toList,
       needs := application.needs ++ [⟨effect,.unitary,false⟩],meanings := application.meanings,
       rows := CallName.sourceRows candidate ++ rows.flatten ++ application.rows}
@@ -665,7 +673,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let outputBasis ← ordinaryCode body.value
       let effect ← basisEffect state inputBasis outputBasis
       let obligation : BasisObligation sources := ⟨owner,name,written.parts.keyword.span.startByte,state,inputBasis,outputBasis⟩
-      let result : Outcome sources := {body with value := [.owner outputBasis],remaining := input.remaining,
+      let result : Outcome sources := {body with
+        value := [.owner outputBasis],remaining := input.remaining,
         effect := direct effect,quantumUse := true,needs := body.needs ++ [⟨body.effect,.unitary,true⟩],
         basisObligations := body.basisObligations ++ [obligation]}
       pure (append input result)
@@ -722,7 +731,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
             NaturalRows.expression sources owner state.prepared.helpers scope expression.expression
           let [value] := values | throw .request
           GenericValues.expect state value [.owner [.fixed .bit]]
-          pure (append arguments {value,remaining := arguments.remaining,quantumUse := true,
+          pure (append arguments {
+            value,remaining := arguments.remaining,quantumUse := true,
             rows := CallName.sourceRows candidate ++ rows.flatten})
         | .primitive _ _ _ _ _ _ kind _ =>
           guard written.arguments.isEmpty .request
@@ -736,7 +746,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
           let externalPermission := owner != application.owner &&
             application.definition.original.envelope.parsedHeader.effect.isSome
-          let result : Outcome sources := {value := application.result,remaining := arguments.remaining,
+          let result : Outcome sources := {
+            value := application.result,remaining := arguments.remaining,
             effect := functionEffect owner application.definition,quantumUse := externalPermission,
             references := application.references,needs := application.needs,meanings := application.meanings,
             recursions := application.recursion.toList,
