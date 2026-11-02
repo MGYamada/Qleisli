@@ -264,6 +264,58 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     (condition.events ++ [.conditional event left.events right.events])
                     (condition.staticRows ++ left.staticRows ++ right.staticRows),context)
       | .call call children =>
+        if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
+          let lookup ← SourceContext.read sources owner context scope written.base.2.callee
+          let candidate ← Finite.lift lookup.answer.checked
+          -- Classification uses the original resolved name. Primitive and
+          -- opaque-formal applications retain their separate unary Op rule.
+          if (QuantumSignature.candidateResolution candidate).isSome then
+            let target ← readTarget signature naturals written.base.2 candidate
+            let sameBase : PLift (target.written = written.base.2) ←
+              if same : target.written = written.base.2 then pure ⟨same⟩ else throw .request
+            let (values,remaining,allocated,consumed,ordinal,events,context) ←
+              evaluateChildren children.trees lookup.context
+            -- The child is checked even when one of the original powers is
+            -- zero. No selected-body effect is inferred from the prefix.
+            let forward ← readCallee target.signature
+            if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
+                target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
+                forward.inferredEffect = .unitary then
+              let counts ← written.counts.mapM fun argument => do
+                let checked ← SourceOperation.readCount signature.instantiation naturals.helpers.val
+                  naturals.environment scope argument.tokens naturals.generic
+                pure (⟨argument,checked⟩ : TransformCount signature naturals scope)
+              if originalCounts : counts.map (·.argument) = written.counts then
+                match multiplied : SourceRuntimeTransformPorts.product (counts.map (·.checked.value)) with
+                | .error _ => throw .request
+                | .ok copies =>
+                  if access : (match written.access with
+                      | .forward => true
+                      | .adjoint => target.signature.operations.actuals.all (fun actual =>
+                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable)
+                      | .controlled => target.signature.operations.actuals.all (fun actual =>
+                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable &&
+                            actual.2.graph.root.paths.controllable)) = true then
+                    let fields := (values.map valueFields).sum+
+                      (target.signature.parameters.map fun part => part.tree.length).sum+
+                      target.signature.result.tree.length
+                    Finite.exactWork (Exact.charge (32*(fields+1)))
+                    match portsRead : SourceRuntimeTransformPorts.read (target.signature.parameters.map (·.tree))
+                        target.signature.result.tree written.access (!written.counts.isEmpty) with
+                    | .error _ => throw .request
+                    | .ok ports =>
+                      match applied : SourceRuntimeTransformPorts.apply ports written.access values ordinal with
+                      | .error _ => throw .request
+                      | .ok (value,new,used,after) =>
+                        let event : TransformEvent sources owner :=
+                          ⟨tokens,call,name,signature,naturals,scope,written,target,sameBase.down,forward,
+                            visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
+                            values,ordinal,value,new,used,after,applied,held,remaining⟩
+                        return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
+                          after (events ++ [.transform event]),context)
+                  else throw .request
+              else throw .request
+            else throw .request
         if SourceOperationApplication.selected signature.operationNames call.call.callee then
           let (values,remaining,allocated,consumed,ordinal,events,context) ← evaluateChildren children.trees context
           let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
@@ -444,6 +496,23 @@ def readNamedSource {sources caller} (event : NamedEvent sources caller) :
     checked.summary.allocated == event.canonical.allocated &&
     checked.summary.inferredEffect == event.canonical.inferredEffect &&
     checked.summary.quantumUse == event.canonical.quantumUse) .request
+  return checked
+
+/-- The complete original forward body remains mandatory for a direct group
+transform, including under zero powers. The continuation must separately bind
+its ordered ports and transformed operator to the actual emitted interval. -/
+def readTransformSource {sources caller} (event : TransformEvent sources caller) :
+    Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
+  let checked ← readWithSignature event.target.signature
+  Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
+    valueFields event.forward.value+checked.events.length+
+    Raw.OwnerFlow.fields (checked.summary.allocated ++ checked.summary.consumed ++
+      event.forward.allocated ++ event.forward.consumed)+1)))
+  Finite.guard (checked.summary.value == event.forward.value &&
+    checked.summary.consumed == event.forward.consumed &&
+    checked.summary.allocated == event.forward.allocated &&
+    checked.summary.inferredEffect == event.forward.inferredEffect &&
+    checked.summary.quantumUse == event.forward.quantumUse) .request
   return checked
 
 /-- Coherent body calls are source/reference dependencies, not invented runtime

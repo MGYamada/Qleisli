@@ -4,6 +4,7 @@ import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.SourceOperationApplication
 import QleisliKernel.SourceTypes.SourceBasisFunction
 import QleisliKernel.SourceTypes.SourceRuntimeBranches
+import QleisliKernel.SourceTypes.SourceRuntimeTransformPorts
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -292,6 +293,50 @@ structure BranchEvent (sources : Sources) (caller : String) where
   merged : SourceRuntimeBranches.merge condition thenArm.value elseArm.value elseArm.nextOrdinal = .ok (value,phis)
   held : List Semantics.SourceOwners.Owner
 
+structure TransformCount {sources caller callerName}
+    (signature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
+    (scope : List String) where
+  argument : CallSyntax.Argument
+  checked : SourceOperation.Count signature.instantiation naturals.helpers.val naturals.environment scope argument.tokens
+
+structure TransformEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  call : CallSyntax.Checked tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  written : SourceRuntimeTransformSyntax.Checked call.call.callee
+  target : Target sources caller scope written.base.1
+  sameBase : target.written = written.base.2
+  forward : Summary target.signature
+  visibleUnitary : SourceEffect.visible caller target.resolution.moduleName target.signature.original.declaration.isPublic
+    target.signature.original.parsedHeader.effect forward.inferredEffect = .unitary
+  counts : List (TransformCount signature naturals scope)
+  originalCounts : counts.map (·.argument) = written.counts
+  copies : Nat
+  multiplied : SourceRuntimeTransformPorts.product (counts.map (·.checked.value)) = .ok copies
+  access : (match written.access with
+    | .forward => true
+    | .adjoint => target.signature.operations.actuals.all (fun actual =>
+        actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable)
+    | .controlled => target.signature.operations.actuals.all (fun actual =>
+        actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable &&
+          actual.2.graph.root.paths.controllable)) = true
+  ports : SourceRuntimeTransformPorts.Ports
+  portsRead : SourceRuntimeTransformPorts.read (target.signature.parameters.map (·.tree))
+    target.signature.result.tree written.access (!written.counts.isEmpty) = .ok ports
+  arguments : List Value
+  nextOrdinal : Nat
+  value : Value
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  afterOrdinal : Nat
+  applied : SourceRuntimeTransformPorts.apply ports written.access arguments nextOrdinal =
+    .ok (value,allocated,consumed,afterOrdinal)
+  held : List Semantics.SourceOwners.Owner
+  remaining : Environment
+
 inductive Event (sources : Sources) (caller : String) where
   | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
       (original : QuantumMatch.parse tokens = .ok (parsed,[]))
@@ -304,6 +349,7 @@ inductive Event (sources : Sources) (caller : String) where
   | operation (event : SourceOperationApplication.Event sources caller)
   | basis (event : BasisEvent sources caller)
   | conditional (event : BranchEvent sources caller) (thenEvents elseEvents : List (Event sources caller))
+  | transform (event : TransformEvent sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -313,6 +359,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .operation event => some event.call.calleeOffset
   | .basis _ => none
   | .conditional .. => none
+  | .transform event => some event.call.calleeOffset
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
@@ -338,6 +385,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .operation event => event.call.calleeOffset
   | .basis event => event.written.parts.keyword.span.startByte
   | .conditional event .. => event.written.parts.keyword.span.startByte
+  | .transform event => event.call.calleeOffset
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
   | .primitive event => primitiveEffect event.kind
@@ -345,6 +393,7 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .operation event => event.effect
   | .basis event => event.function.effect
   | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
+  | .transform _ => .unitary
   | _ => .unitary
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
@@ -364,6 +413,8 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .operation event => event.naturals.sourceRows ++ event.operation.rows
   | .basis event => event.staticRows
   | .conditional event .. => event.naturals.sourceRows ++ event.thenArm.staticRows ++ event.elseArm.staticRows
+  | .transform event => event.naturals.sourceRows ++ event.target.signature.sourceRows ++ event.forward.staticRows ++
+      event.counts.flatMap (·.checked.rows)
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
