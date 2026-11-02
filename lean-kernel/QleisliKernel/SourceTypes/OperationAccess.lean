@@ -119,6 +119,95 @@ def Checked.providers {sources context description graph requested}
   (graph.results.zip checked.demands).filterMap fun (result,paths) =>
     result.provider.map (fun provider => (provider,paths))
 
+private def premiseAt {sources : Sources} (provider : Provider sources) (name : String) : Paths :=
+  match provider.signature.instantiation with
+  | .closed _ => empty
+  | .static _ environment _ => required environment.numeric.original.header.access name
+
+/-- Derive demands for CHILD EDGES, before any index union. Two occurrences
+of a shared provider may bind different actual implementation subjects. -/
+private def childrenAt {sources : Sources} (node : Node) (result : Result sources) (requested : Paths) :
+    WorkM (List (Nat × Paths)) := do
+  guard (satisfies result.paths requested) .request
+  match node with
+  | .primitive .. => pure []
+  | .provider _ _ _ _ operations =>
+    let some provider := result.provider | throw .request
+    match provider.signature.instantiation with
+    | .closed _ => guard operations.isEmpty .request
+    | .static .. => pure ()
+    let reverse := if requested.adjointable then ⟨true,true,false⟩ else empty
+    let control := if requested.controllable then ⟨true,true,true⟩ else empty
+    pure (operations.map fun (name,index) => (index,join (premiseAt provider name) (join reverse control)))
+  | .formal _ _ _ _ operations ordinal =>
+    let some provider := result.formal | throw .request
+    match provider.signature.instantiation with
+    | .closed _ => throw .request
+    | .static _ environment _ =>
+      let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
+      let .operation _ := formal.kind | throw .request
+      guard (formal.ordinal == ordinal && operations.any (·.1 == formal.name)) .request
+      pure (operations.map fun (name,index) =>
+        (index,join (premiseAt provider name) (if name == formal.name then requested else empty)))
+  | .inverse child => pure [(child,⟨requested.adjointable,true,requested.controllable⟩)]
+  | .controlled child => pure [(child,if any requested then controllable else empty)]
+  | .power child _ | .requested child _ _ => pure [(child,requested)]
+  | .thenOp left right | .tensor left right => pure [(left,requested),(right,requested)]
+  | .conjugate outer middle => pure [(outer,if any requested then ⟨true,true,false⟩ else empty),(middle,requested)]
+
+private inductive OccurrenceTask where
+  | enter (index : Nat) (requested : Paths)
+  | leave (index : Nat) (requested : Paths)
+
+private def occurrenceLoop {sources context description} (graph : CheckedGraph sources context description) :
+    Nat → List OccurrenceTask → List (Nat × Paths) → WorkM (List (Nat × Paths)) :=
+  Nat.rec (fun tasks reversed => if tasks.isEmpty then pure reversed.reverse else throw .limit)
+    (fun _ next tasks reversed => do
+      exactWork (Exact.charge (8*(tasks.length+reversed.length+1)))
+      match tasks with
+      | [] => pure reversed.reverse
+      | .enter index requested :: rest =>
+        let some node := description.nodes[index]? | throw .request
+        let some result := graph.results[index]? | throw .request
+        let children ← childrenAt node result requested
+        next (children.map (fun (index,paths) => .enter index paths) ++ [.leave index requested] ++ rest) reversed
+      | .leave index requested :: rest => next rest ((index,requested) :: reversed))
+
+def deriveOccurrences {sources context description} (graph : CheckedGraph sources context description)
+    (requested : Paths) (order : List Nat) : WorkM (List (Nat × Paths)) := do
+  guard (order.length ≤ 4096) .limit
+  occurrenceLoop graph (2*order.length+1) [.enter description.root requested] []
+
+structure CheckedOccurrences {sources context description} (graph : CheckedGraph sources context description)
+    (requested : Paths) where
+  order : List Nat
+  originalOrder : ∃ before after,(StaticOperation.readOccurrences description).run before = (.ok order,after)
+  demands : List (Nat × Paths)
+  sameOrder : demands.map (·.1) = order
+  bounded : demands.length ≤ 4096
+  derived : ∃ before after,(deriveOccurrences graph requested order).run before = (.ok demands,after)
+
+def checkOccurrences {sources context description} (graph : CheckedGraph sources context description)
+    (requested : Paths) : WorkM (CheckedOccurrences graph requested) := do
+  let order ← NaturalAffine.witness (StaticOperation.readOccurrences description)
+  let demands ← NaturalAffine.witness (deriveOccurrences graph requested order.val)
+  if sameOrder : demands.val.map (·.1) = order.val then
+    if bounded : demands.val.length ≤ 4096 then
+      pure ⟨order.val,by with_reducible exact order.property,demands.val,sameOrder,bounded,
+        by with_reducible exact demands.property⟩
+    else throw .limit
+  else throw .request
+
+/-- Exact per-occurrence provider subjects, in the same expanded postorder as
+the complete body and Meaning queues. Duplicate source indices remain distinct. -/
+def CheckedOccurrences.providers {sources context description graph requested}
+    (checked : @CheckedOccurrences sources context description graph requested) :
+    List (Nat × Provider sources × Paths) :=
+  checked.demands.filterMap fun (index,paths) => do
+    let result ← graph.results[index]?
+    let provider ← result.provider
+    pure (index,provider,paths)
+
 theorem join_empty (paths : Paths) : join paths empty = paths := by
   cases paths with | mk a j c => simp [join,empty]
 

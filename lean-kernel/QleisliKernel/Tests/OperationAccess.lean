@@ -10,6 +10,7 @@ private def source :=
   "pub unitary fn keep(q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q} " ++
   "pub unitary fn required[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Controllable(U){q} " ++
+  "pub unitary fn both[const U:Op<Bit>,const V:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Controllable(U){q} " ++
   "pub unitary fn only_apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}"
 
 private def sources : Sources := #[("main",source)]
@@ -55,5 +56,24 @@ private def demands (description : Description) (requested : SourceTypes.StaticO
 #guard
   demands (OperationDescription.formal "main" "only_apply" [] [] [("U",named "keep")] 0)
     SourceTypes.OperationAccess.controllable = none
+
+private def perEdges (description : Description) (requested : SourceTypes.StaticOperation.Paths) :
+    Option (List (Nat × String × SourceTypes.StaticOperation.Paths)) :=
+  (((do
+    let graph ← SourceTypes.StaticOperation.check sources (.source "main") description
+    let checked ← SourceTypes.OperationAccess.checkOccurrences graph requested
+    pure (checked.providers.map fun (index,provider,paths) => (index,provider.declarationName,paths))) :
+      Finite.WorkM _).run 10000000).1.toOption
+
+-- Same DAG node, two actual subject occurrences: A and J remain independent.
+#guard perEdges ⟨[.provider "main" "keep" [] [] [],.inverse 0,.thenOp 0 1],2⟩
+    SourceTypes.OperationAccess.applicable =
+      some [(0,"keep",⟨true,false,false⟩),(0,"keep",⟨false,true,false⟩)]
+
+-- Reusing an index as two DIFFERENT original operation actuals does not
+-- transfer U's declared C prerequisite onto the unused V occurrence.
+#guard perEdges ⟨[.provider "main" "keep" [] [] [],.provider "main" "both" [] [] [("U",0),("V",0)]],1⟩
+    SourceTypes.OperationAccess.empty = some [
+      (0,"keep",⟨false,false,true⟩),(0,"keep",⟨false,false,false⟩),(1,"both",⟨false,false,false⟩)]
 
 end QleisliKernel.Tests.OperationAccess
