@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Relate sparse complete owner-forest coordinates to the original finite code,
+  retaining exact nominal trees, wire order, zero-width owners and actual
+  primitive/structural equations. Add reference-indexed lazy coefficient
+  transport for an exact contiguous frame placement without changing sum,
+  failure or work order. Arbitrary-axis transport and complete source/code/Gram
+  composition remain required before the full qmatch profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the
   complete source traversal. Preserve original declaration bodies, public
   effects, import/reexport checks and query-specific source rows. Complete
