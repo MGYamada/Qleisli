@@ -15,7 +15,7 @@ abbrev SourceState := RuntimeStructuralAction.SourceState
 
 private def exactResult {α : Type} [DecidableEq α] (action : Except String α) (expected : α) :
     WorkM (PLift (action = .ok expected)) := do
-  match ran : action with
+  match action with
   | .error _ => throw .request
   | .ok actual =>
     if same : actual = expected then return ⟨congrArg Except.ok same⟩
