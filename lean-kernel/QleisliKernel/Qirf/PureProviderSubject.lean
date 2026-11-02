@@ -11,7 +11,8 @@ namespace QleisliKernel.Qirf.PureProviderSubject
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes Finite
 open Semantics.Exact Semantics.CarrierInterface
 
-abbrev Computed {α : Type} (action : WorkM α) := QleisliKernel.Qirf.PureInterval.Witness action
+abbrev Computed {α : Type} (action : WorkM α) (value : α) : Prop :=
+  ∃ work left, action.run work = (.ok value,left)
 
 def logical (physical inputCode outputCode : Matrix) : WorkM Matrix := do
   let restricted ← exactWork (Exact.Matrix.composeWork physical inputCode)
@@ -34,28 +35,32 @@ structure Ports {sources} (provider : StaticOperation.Provider sources)
   publicBoundary : provider.internalInference = true ∨ program.effect = .unitary ∨ program.effect = .iso
   pureExpected : provider.expectedEffect ≠ .observe
 
-structure Codes {sources provider program verified} (ports : @Ports sources provider program verified) where
-  inputCode : Computed (Carrier.ownerCode [⟨ports.input,ports.domain⟩])
-  outputCode : Computed (Carrier.ownerCode [⟨ports.output,ports.codomain⟩])
+structure Equations (effect : Semantics.Raw.Effect) (inputCode outputCode physical : Matrix) where
+  physicalShape : physical.cols = inputCode.rows ∧ physical.rows = outputCode.rows
+  action : Matrix
+  actionRead : Computed (logical physical inputCode outputCode) action
+  isometryRead : Computed (exactWork (Exact.Matrix.isometryWork action)) true
+  unitaryShape : effect = .unitary → action.rows = action.cols
+  actual : Matrix
+  actualRead : Computed (exactWork (Exact.Matrix.composeWork physical inputCode)) actual
+  specified : Matrix
+  specifiedRead : Computed (exactWork (Exact.Matrix.composeWork outputCode action)) specified
+  noLeak : actual = specified
 
-structure Equations {sources provider program verified ports}
-    (codes : @Codes sources provider program verified ports) (physical : Matrix) where
-  physicalShape : physical.cols = codes.inputCode.val.rows ∧ physical.rows = codes.outputCode.val.rows
-  action : Computed (logical physical codes.inputCode.val codes.outputCode.val)
-  isometry : Computed (exactWork (Exact.Matrix.isometryWork action.val))
-  gram : isometry.val = true
-  unitaryShape : provider.expectedEffect = .unitary → action.val.rows = action.val.cols
-  actual : Computed (exactWork (Exact.Matrix.composeWork physical codes.inputCode.val))
-  specified : Computed (exactWork (Exact.Matrix.composeWork codes.outputCode.val action.val))
-  noLeak : actual.val = specified.val
-
+/-- Retain concrete values and their actual run equations separately. No
+projection must infer a monadic result type by unfolding the whole checker. -/
 structure Prepared {sources} (provider : StaticOperation.Provider sources)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) where
-  verified : Computed (Raw.Observation.verify dependencies program)
-  ports : Ports provider program verified.val
-  codes : Codes ports
-  physical : Computed (Raw.BranchFunction.reconstruct dependencies program)
-  equations : Equations codes physical.val
+  verified : Raw.Observation.Checked
+  verification : Computed (Raw.Observation.verify dependencies program) verified
+  ports : Ports provider program verified
+  inputCode : Matrix
+  outputCode : Matrix
+  inputCodeRead : Computed (Carrier.ownerCode [⟨ports.input,ports.domain⟩]) inputCode
+  outputCodeRead : Computed (Carrier.ownerCode [⟨ports.output,ports.codomain⟩]) outputCode
+  physical : Matrix
+  physicalRead : Computed (Raw.BranchFunction.reconstruct dependencies program) physical
+  equations : Equations provider.expectedEffect inputCode outputCode physical
 
 structure Checked (artifact : Artifact) (root : Validity.Root)
     (provider : StaticOperation.Provider artifact.sources) (index : Nat) where
@@ -63,20 +68,21 @@ structure Checked (artifact : Artifact) (root : Validity.Root)
   original : artifact.programs[index]? = some program
   prepared : Prepared provider root.dependencies program
 
-/-- Independent executable equations over an already prepared exact subject.
-Separate records avoid reducing the complete graph computation in every field. -/
-def equations {sources provider program verified ports}
-    (codes : @Codes sources provider program verified ports) (physical : Matrix) : WorkM (Equations codes physical) := do
-  if physicalShape : physical.cols = codes.inputCode.val.rows ∧ physical.rows = codes.outputCode.val.rows then
-    let action ← NaturalAffine.witness (logical physical codes.inputCode.val codes.outputCode.val)
+def equations (effect : Semantics.Raw.Effect) (inputCode outputCode physical : Matrix) :
+    WorkM (Equations effect inputCode outputCode physical) := do
+  if physicalShape : physical.cols = inputCode.rows ∧ physical.rows = outputCode.rows then
+    let action ← NaturalAffine.witness (logical physical inputCode outputCode)
     let isometry ← NaturalAffine.witness (exactWork (Exact.Matrix.isometryWork action.val))
     if gram : isometry.val = true then
-      if unitaryShape : provider.expectedEffect = .unitary → action.val.rows = action.val.cols then
-        let actual ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork physical codes.inputCode.val))
-        let specified ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork codes.outputCode.val action.val))
+      if unitaryShape : effect = .unitary → action.val.rows = action.val.cols then
+        let actual ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork physical inputCode))
+        let specified ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork outputCode action.val))
         exactWork (Exact.charge (actual.val.entries.length+specified.val.entries.length+1))
         if noLeak : actual.val = specified.val then
-          return ⟨physicalShape,action,isometry,gram,unitaryShape,actual,specified,noLeak⟩
+          return ⟨physicalShape,action.val,by with_reducible exact action.property,
+            by simpa only [gram] using isometry.property,unitaryShape,
+            actual.val,by with_reducible exact actual.property,
+            specified.val,by with_reducible exact specified.property,noLeak⟩
         else throw .equation
       else throw .request
     else throw .equation
@@ -100,10 +106,11 @@ def prepare {sources} (provider : StaticOperation.Provider sources)
                     noClassical,noObservation,publicBoundary,pureExpected⟩
                 let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨input,domain⟩])
                 let outputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨output,codomain⟩])
-                let codes : Codes ports := ⟨inputCode,outputCode⟩
                 let physical ← NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies program)
-                let equations ← equations codes physical.val
-                return ⟨verified,ports,codes,physical,equations⟩
+                let equations ← equations provider.expectedEffect inputCode.val outputCode.val physical.val
+                return ⟨verified.val,by with_reducible exact verified.property,ports,inputCode.val,outputCode.val,
+                  by with_reducible exact inputCode.property,by with_reducible exact outputCode.property,
+                  physical.val,by with_reducible exact physical.property,equations⟩
               else throw .request
             else throw .request
           else throw .request
@@ -112,8 +119,6 @@ def prepare {sources} (provider : StaticOperation.Provider sources)
     | _ => throw .request
   | _,_,_ => throw .request
 
-/-- Only the exact retained root dependencies are consumed. The enclosing
-native result retains the successful root computation and source-body proof. -/
 def check (artifact : Artifact) (root : Validity.Root)
     (provider : StaticOperation.Provider artifact.sources) (index : Nat) :
     WorkM (Checked artifact root provider index) := do
@@ -125,6 +130,6 @@ theorem Checked.originalProgram {artifact root provider index} (checked : Checke
     artifact.programs[index]? = some checked.program := checked.original
 
 theorem Checked.noHiddenObservation {artifact root provider index} (checked : Checked artifact root provider index) :
-    checked.prepared.verified.val.state.observe = false := checked.prepared.ports.noObservation
+    checked.prepared.verified.state.observe = false := checked.prepared.ports.noObservation
 
 end QleisliKernel.Qirf.PureProviderSubject
