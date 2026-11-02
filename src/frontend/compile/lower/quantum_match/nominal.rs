@@ -15,6 +15,7 @@ mod tests;
 pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
     inputs: Vec<Owner>,
+    classical_inputs: Vec<ClassicalId>,
     start: usize,
     positions: Vec<Position>,
     primitive_prelude: bool,
@@ -130,6 +131,7 @@ fn retained_raw(
     module: &str,
     span: Span,
     inputs: &[Owner],
+    classical_inputs: &[ClassicalId],
     start: usize,
     value: &Value,
     declared_effect: Effect,
@@ -140,9 +142,10 @@ fn retained_raw(
     value.outputs(&lower.raw.registers, &mut quantum_outputs, &mut classical_outputs);
     lower.compiler.charge(module, span,
         crate::frontend::raw_state::operations_size(&lower.raw.operations[start..]))?;
+    lower.compiler.charge(module, span, classical_inputs.len())?;
     Ok(RawProgram {
         quantum_inputs: inputs.iter().map(|owner| owner.port.clone()).collect(),
-        classical_inputs: vec![],
+        classical_inputs: classical_inputs.to_vec(),
         operations: lower.raw.operations[start..].to_vec(),
         quantum_outputs,
         classical_outputs,
@@ -169,10 +172,27 @@ impl Frame {
             span,
             total_size(args.iter().map(|arg| arg.tree_size().nodes)),
         )?;
+        lower.compiler.charge(
+            &name.0,
+            span,
+            total_size(args.iter().map(|arg| arg.tree_size().nodes)).saturating_mul(2),
+        )?;
         let mut inputs = Vec::new();
+        let mut classical_inputs = Vec::new();
         for arg in args {
             inputs.extend(outputs(lower, &name.0, span, arg)?);
+            let mut quantum_tokens = Vec::new();
+            arg.outputs(&lower.raw.registers, &mut quantum_tokens, &mut classical_inputs);
         }
+        lower.compiler.charge(
+            &name.0,
+            span,
+            classical_inputs.len().saturating_add(1).saturating_pow(2),
+        )?;
+        // Ordinary actuals may alias. This is the physical SSA interface;
+        // original source arguments retain each formal occurrence separately.
+        let mut seen = BTreeSet::new();
+        classical_inputs.retain(|id| seen.insert(*id));
         let source_gate = inputs.iter().any(|owner| {
             owner.basis.iter().any(|atom| {
                 matches!(
@@ -185,6 +205,7 @@ impl Frame {
         Ok(Some(Self {
             key,
             inputs,
+            classical_inputs,
             start: lower.raw.operations.len(),
             positions: Vec::new(),
             primitive_prelude: false,
@@ -206,6 +227,8 @@ impl Frame {
         Self {
             key: self.key,
             inputs: Vec::new(),
+            // A branch inherits bindings and is not a standalone call scope.
+            classical_inputs: Vec::new(),
             start: 0,
             positions: Vec::new(),
             primitive_prelude: false,
@@ -309,7 +332,8 @@ impl Frame {
         let declared_effect = lower.compiler.source.effects[&self.key]
             .asserted()
             .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred());
-        let raw = retained_raw(lower, &name.0, span, &self.inputs, self.start, value, declared_effect)?;
+        let raw = retained_raw(lower, &name.0, span, &self.inputs, &self.classical_inputs,
+            self.start, value, declared_effect)?;
         let mut rows = lower
             .compiler
             .retained_ordinary_type_sources(self.key, &name.0, span)?;
