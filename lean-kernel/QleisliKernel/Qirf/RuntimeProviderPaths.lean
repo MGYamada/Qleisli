@@ -55,14 +55,22 @@ def read {artifact context description graph index request}
           source.summary.inferredEffect = .unitary ∧ provider.expectedEffect = .unitary then
         if controlPorts : demand.controllable = true → provider.signature.inputs = provider.signature.outputs then
           let forward ← RuntimeMaterialization.readForward root.dependencies ir.original.program
-          let inverse ← if demand.adjointable then do
-              return some (← RuntimeMaterialization.readInverse forward ir.original.prepared.inputCode
-                ir.original.prepared.outputCode ir.original.prepared.equations.action)
+          let inverseAction : WorkM (Option (RuntimeMaterialization.Inverse forward ir.original.prepared.inputCode
+              ir.original.prepared.outputCode ir.original.prepared.equations.action)) :=
+            if demand.adjointable then do
+              let value ← RuntimeMaterialization.readInverse forward ir.original.prepared.inputCode
+                ir.original.prepared.outputCode ir.original.prepared.equations.action
+              pure (some value)
             else pure none
-          let controlled ← if demand.controllable then do
-              return some (← RuntimeMaterialization.readControlled forward ir.original.prepared.inputCode
-                ir.original.prepared.outputCode ir.original.prepared.equations.action)
+          let inverse ← inverseAction
+          let controlledAction : WorkM (Option (RuntimeMaterialization.Controlled forward ir.original.prepared.inputCode
+              ir.original.prepared.outputCode ir.original.prepared.equations.action)) :=
+            if demand.controllable then do
+              let value ← RuntimeMaterialization.readControlled forward ir.original.prepared.inputCode
+                ir.original.prepared.outputCode ir.original.prepared.equations.action
+              pure (some value)
             else pure none
+          let controlled ← controlledAction
           if inverseDemand : inverse.isSome = demand.adjointable then
             if controlDemand : controlled.isSome = demand.controllable then
               return ⟨effects.1,effects.2,ir,.transformed unitary.1 unitary.2.1 unitary.2.2
