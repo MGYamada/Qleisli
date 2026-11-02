@@ -1,4 +1,6 @@
 import QleisliKernel.SourceTypes.SourceSyntax
+import QleisliKernel.SourceTypes.QuantumOperands
+import QleisliKernel.SourceTypes.QuantumBody
 import QleisliKernel.SourceTypes.SourceContext
 import QleisliKernel.SourceTypes.SourceEffect
 import QleisliKernel.SourceTypes.GenericTypeTrace
