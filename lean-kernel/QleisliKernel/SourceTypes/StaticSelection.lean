@@ -47,6 +47,7 @@ def selectInstance {sources caller callerName}
     let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
     let core ← QuantumSignatureCore.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
     let operations ← StaticOperation.checkArgumentsFrom core.instantiation (.source caller) operationActuals.actuals
+      callerSignature.operations.catalogue
     let signature := (← fromCoreWithArguments core (.source caller) operations).checked
     let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
     exactWork (Exact.charge (8*(bytes+tokens.length+1)*

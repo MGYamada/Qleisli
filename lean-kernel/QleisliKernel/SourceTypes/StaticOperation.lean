@@ -3,7 +3,7 @@ import QleisliKernel.SourceTypes.StaticKinds
 import QleisliKernel.SourceTypes.SourceMeaning
 import QleisliKernel.SourceTypes.SymbolicTypes
 import QleisliKernel.SourceTypes.OperationPaths
-import QleisliKernel.SourceTypes.GenericTypeTrace
+import QleisliKernel.SourceTypes.GenericCatalogue
 
 /-! Checked topological operation descriptions and original formal bindings.
 Paths below describe implementation obligations. Fresh original provider-body,
@@ -38,7 +38,7 @@ structure Provider (sources : Sources) where
   signature : QuantumSignatureCore.Checked sources moduleName declarationName
   expectedEffect : Effect
   internalInference : Bool
-  generic : Option (GenericTypeTrace.Checked signature.original) := none
+  generic : Option (GenericCatalogue.Inference signature.original) := none
 
 structure Result (sources : Sources) where
   input : Basis
@@ -211,13 +211,14 @@ private def child {sources : Sources} (previous : List (Result sources)) (index 
 
 private def readProvider (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (owner name : String) (bases : List (String × Basis))
-    (naturals : List (String × Nat)) (operations : List (String × Nat)) : WorkM (Result sources) := do
+    (naturals : List (String × Nat)) (operations : List (String × Nat))
+    (catalogue : Option (GenericCatalogue.Checked sources)) : WorkM (Result sources) := do
   let actuals ← operations.mapM fun (name,index) => do
     let some description := description.select index | throw .request
     return (name,description)
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
   guard (context.visible owner signature.original.declaration.isPublic) .request
-  let generic ← GenericTypeTrace.readWithInstantiation signature.instantiation
+  let generic ← GenericCatalogue.inferOriginal signature.original catalogue
   let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
   let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
@@ -232,7 +233,7 @@ private def readProvider (sources : Sources) (context : Context) (description : 
   -- any convenient Basis/Nat values. Actual native body/Gram and J/C paths
   -- remain separate obligations. External selection keeps the public bound.
   let visible := if internal then generic.inferredEffect
-    else signature.original.parsedHeader.effect.getD generic.inferredEffect
+    else signature.original.parsedHeader.effect.getD .observe
   guard (visible != .observe) .request
   let endomorphic := input == output
   let reversible := visible == .unitary
@@ -245,14 +246,15 @@ private def readProvider (sources : Sources) (context : Context) (description : 
     (some ⟨owner,name,signature,expected,internal,some generic⟩) none kindRows requirements
 
 def readNode (sources : Sources) (context : Context) (description : Description)
-    (previous : List (Result sources)) (node : Node) : WorkM (Result sources) := do
+    (previous : List (Result sources)) (node : Node)
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) : WorkM (Result sources) := do
   match node with
   | .primitive kind target =>
     guard (context != .external) .request
     guard (kind == .globalPhaseEighth || target == [.bit]) .request
     result target target .unitary ⟨true,true,true⟩
   | .provider owner name bases naturals operations =>
-    readProvider sources context description previous owner name bases naturals operations
+    readProvider sources context description previous owner name bases naturals operations catalogue
   | .formal owner name bases naturals operations ordinal =>
     guard (context == .source owner) .request
     let actuals ← operations.mapM fun (name,index) => do
@@ -330,14 +332,15 @@ def readOccurrences (description : Description) : WorkM (List Nat) := do
   exactWork (Exact.charge (8*(count+1)^2))
   adapt description.occurrences
 
-def readNodes (sources : Sources) (context : Context) (description : Description) :
+def readNodes (sources : Sources) (context : Context) (description : Description)
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM (List (Result sources)) := do
   guard description.complete .request
   let _ ← readOccurrences description
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   exactWork (Exact.charge (64*(bytes+1)*(description.nodes.length+1)^2))
   description.nodes.foldlM (fun previous node => do
-    let next ← readNode sources context description previous node
+    let next ← readNode sources context description previous node catalogue
     pure (previous ++ [next])) []
 
 structure GraphData (sources : Sources) where
@@ -362,6 +365,7 @@ structure SupplyData (sources : Sources) where
   ordered : actuals.map (fun (name,graph) => (name,graph.description)) = instantiation.arguments.operations
   bound : ∃ before after,
     (bindArgumentsWithInstantiation instantiation (actuals.map fun (name,graph) => (name,graph.root))).run before = (.ok (),after)
+  catalogue : Option (GenericCatalogue.Checked sources)
 
 private def remapResult {sources : Sources} (mapping : Nat → Option Nat) (value : Result sources) :
     Option (Result sources) := do
@@ -458,7 +462,7 @@ def readSuppliedData {sources : Sources} (supply : SupplyData sources) (descript
       | some entry => borrowedValue supply description plan entry
       | none => do
         let _ ← originalFormal supply description node
-        let value ← readNode sources (.source supply.owner) description previous node
+        let value ← readNode sources (.source supply.owner) description previous node supply.catalogue
         pure (value,Context.source supply.owner)
     pure (previous ++ [value],contexts ++ [context])) ([],[])
   if count : results.length = description.nodes.length then
@@ -474,8 +478,8 @@ def readSuppliedData {sources : Sources} (supply : SupplyData sources) (descript
 /-- Actual reader provenance. An inherited read matches complete original
 formal instances; selecting a closure keeps its parent receipts. -/
 inductive GraphReadProof (sources : Sources) : GraphData sources → Type where
-  | fresh (data : GraphData sources) (context : Context)
-      (read : ∃ before after,(readNodes sources context data.description).run before = (.ok data.results,after))
+  | fresh (data : GraphData sources) (context : Context) (catalogue : Option (GenericCatalogue.Checked sources))
+      (read : ∃ before after,(readNodes sources context data.description catalogue).run before = (.ok data.results,after))
       (contexts : data.contexts = List.replicate data.results.length context) : GraphReadProof sources data
   | inherited (supply : SupplyData sources)
       (actuals : ∀ index : Fin supply.actuals.length,
@@ -503,9 +507,10 @@ def ofData {sources : Sources} (context : Context) (data : GraphData sources) (p
     CheckedGraph sources context data.description :=
   ⟨data.results,data.contexts,data.count,data.contextCount,data.complete,data.root,data.selected,proof⟩
 
-def check (sources : Sources) (context : Context) (description : Description) :
+def check (sources : Sources) (context : Context) (description : Description)
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM (CheckedGraph sources context description) := do
-  let results ← NaturalAffine.witness (readNodes sources context description)
+  let results ← NaturalAffine.witness (readNodes sources context description catalogue)
   if complete : description.complete = true then
     if count : results.val.length = description.nodes.length then
       match selected : results.val[description.root]? with
@@ -517,7 +522,7 @@ def check (sources : Sources) (context : Context) (description : Description) :
             change (List.replicate results.val.length context).length = description.nodes.length
             rw [List.length_replicate]
             exact count,complete,root,selected⟩
-        pure (ofData context data (.fresh data context (by with_reducible exact results.property) rfl))
+        pure (ofData context data (.fresh data context catalogue (by with_reducible exact results.property) rfl))
     else throw .request
   else throw .request
 
@@ -561,12 +566,14 @@ structure ArgumentsCheckedWithInstantiation {sources owner name original}
   rootRequirements : List (String × SourceMeaning.Request sources)
   rootRequirementsRead : ∃ before after,
     (bindArgumentsWithRequirements instantiation (actuals.map fun actual => (actual.1.1,actual.2.graph.root))).run before = (.ok rootRequirements,after)
+  catalogue : Option (GenericCatalogue.Checked sources)
 
 def checkArgumentsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
-    (context : Context) : WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
+    (context : Context) (catalogue : Option (GenericCatalogue.Checked sources) := none) :
+    WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
   let actuals ← instantiation.arguments.operations.mapM fun argument => do
-    let graph ← check sources context argument.2
+    let graph ← check sources context argument.2 catalogue
     pure (⟨argument,⟨graph⟩⟩ : Sigma (Actual sources context))
   if ordered : actuals.map (·.1) = instantiation.arguments.operations then
     let bindings ← NaturalAffine.witness (bindArgumentsWithContracts instantiation
@@ -577,7 +584,7 @@ def checkArgumentsWithInstantiation {sources owner name original}
       exact ⟨before,after,bindingProjection _ (fun _ => ()) _ _ _ ran⟩,
       rows.val,by with_reducible exact rows.property,bindings.val.requirements,by
         obtain ⟨before,after,ran⟩ := bindings.property
-        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩
+        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩,catalogue⟩
   else throw .request
 
 /-- Rebind checked actual graphs without rereading a provider under a different
@@ -585,7 +592,8 @@ module. This repeats the original formal/actual obligations, including unused
 actuals and refinements, while retaining every graph receipt. -/
 def checkArgumentsFromWithActuals {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
-    (context : Context) (actuals : List (Sigma (Actual sources context))) :
+    (context : Context) (actuals : List (Sigma (Actual sources context)))
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM {checked : ArgumentsCheckedWithInstantiation instantiation context // checked.actuals = actuals} := do
   if ordered : actuals.map (·.1) = instantiation.arguments.operations then
     let bindings ← NaturalAffine.witness (bindArgumentsWithContracts instantiation
@@ -596,14 +604,15 @@ def checkArgumentsFromWithActuals {sources owner name original}
       exact ⟨before,after,bindingProjection _ (fun _ => ()) _ _ _ ran⟩,
       rows.val,by with_reducible exact rows.property,bindings.val.requirements,by
         obtain ⟨before,after,ran⟩ := bindings.property
-        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩⟩,rfl⟩
+        exact ⟨before,after,bindingProjection _ Bindings.requirements _ _ _ ran⟩,catalogue⟩,rfl⟩
   else throw .request
 
 def checkArgumentsFrom {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
-    (context : Context) (actuals : List (Sigma (Actual sources context))) :
+    (context : Context) (actuals : List (Sigma (Actual sources context)))
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM (ArgumentsCheckedWithInstantiation instantiation context) := do
-  pure (← checkArgumentsFromWithActuals instantiation context actuals).val
+  pure (← checkArgumentsFromWithActuals instantiation context actuals catalogue).val
 
 structure Supply {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) where
@@ -615,7 +624,8 @@ def Supply.data {sources owner name original instantiation}
   ⟨owner,name,original,instantiation,supply.context,
     supply.arguments.actuals.map (fun actual => (actual.1.1,actual.2.graph.data)),by
       simpa only [List.map_map,Function.comp_def,CheckedGraph.data] using supply.arguments.ordered,
-    by simpa only [List.map_map,Function.comp_def,CheckedGraph.data] using supply.arguments.bound⟩
+    by simpa only [List.map_map,Function.comp_def,CheckedGraph.data] using supply.arguments.bound,
+    supply.arguments.catalogue⟩
 
 def Supply.valid {sources owner name original instantiation}
     (supply : @Supply sources owner name original instantiation) :
@@ -672,6 +682,7 @@ def argumentsAt {sources context description} (graph : CheckedGraph sources cont
           let selected ← graph.select index originalContext
           pure (⟨(name,selected.1),⟨selected.2⟩⟩ : Sigma (Actual sources originalContext))
         let arguments ← checkArgumentsFrom provider.signature.instantiation originalContext actuals
+          (match provider.generic with | some (.catalogued catalogue _) => some catalogue | _ => none)
         pure ⟨result,selected,provider,found,originalContext,contextRead,arguments⟩
 
 def ArgumentsCheckedWithInstantiation.sourceRows {sources owner name original instantiation context}
@@ -687,7 +698,7 @@ abbrev ArgumentsChecked {sources owner name} (signature : QuantumSignatureCore.C
   ArgumentsCheckedWithInstantiation signature.instantiation context
 
 def checkArguments {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
-    (context : Context) : WorkM (ArgumentsChecked signature context) :=
-  checkArgumentsWithInstantiation signature.instantiation context
+    (context : Context) (catalogue : Option (GenericCatalogue.Checked sources) := none) : WorkM (ArgumentsChecked signature context) :=
+  checkArgumentsWithInstantiation signature.instantiation context catalogue
 
 end QleisliKernel.SourceTypes.StaticOperation

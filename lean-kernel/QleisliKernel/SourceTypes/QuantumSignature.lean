@@ -54,8 +54,8 @@ structure WithCore {sources owner name} (signature : QuantumSignatureCore.Checke
 its source envelope. The native provider-body continuation receives that exact
 core plus all checked actuals and original numeric lookup dependencies. -/
 def fromCore {sources owner name} (signature : QuantumSignatureCore.Checked sources owner name)
-    (context : StaticOperation.Context) : WorkM (WithCore signature) := do
-  let operations ← StaticOperation.checkArguments signature context
+    (context : StaticOperation.Context) (catalogue : Option (GenericCatalogue.Checked sources) := none) : WorkM (WithCore signature) := do
+  let operations ← StaticOperation.checkArguments signature context catalogue
   let rows ← NaturalAffine.witness (StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs))
   return ⟨⟨signature,context,operations,rows.val,by with_reducible exact rows.property⟩,rfl⟩
 
@@ -78,9 +78,10 @@ def read (sources : Sources) (owner name : String) : WorkM (Checked sources owne
 Existing closed callers cannot obtain an unresolved operation formal. Source
 applications pass their original module context; host selections stay external. -/
 def readWithArguments (sources : Sources) (owner name : String) (arguments : StaticTypes.Arguments)
-    (context : StaticOperation.Context := .external) : WorkM (Checked sources owner name) := do
+    (context : StaticOperation.Context := .external) (catalogue : Option (GenericCatalogue.Checked sources) := none) :
+    WorkM (Checked sources owner name) := do
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name arguments
-  return (← fromCore signature context).checked
+  return (← fromCore signature context catalogue).checked
 
 structure ResolvedSelection (sources : Sources) (resolution : Resolved) where
   signature : Checked sources resolution.moduleName resolution.declaration.name

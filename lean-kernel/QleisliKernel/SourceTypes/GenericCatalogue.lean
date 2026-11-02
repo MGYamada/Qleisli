@@ -311,4 +311,32 @@ def read (sources : Sources) : WorkM (Checked sources) := do
     else throw .request
   else throw .request
 
+/-- Provider eligibility may reuse an exact original record from the completed
+catalogue. The fresh alternative remains available to component callers; both
+retain the actual original body check and neither uses selected type values. -/
+inductive Inference {sources owner name} (original : OrdinarySignature.Original sources owner name) where
+  | fresh (checked : GenericTypeTrace.Checked original)
+  | catalogued (catalogue : Checked sources) (projection : Projection catalogue.toRuntimeChecked original)
+
+def Inference.inferredEffect {sources owner name original}
+    (inference : @Inference sources owner name original) : Semantics.Raw.Effect := match inference with
+  | .fresh checked => checked.inferredEffect
+  | .catalogued _ projection => projection.inferredEffect
+
+def Inference.quantumUse {sources owner name original}
+    (inference : @Inference sources owner name original) : Bool := match inference with
+  | .fresh checked => checked.quantumUse
+  | .catalogued _ projection => projection.quantumUse
+
+def Inference.sourceRows {sources owner name original}
+    (inference : @Inference sources owner name original) : List (String × String) := match inference with
+  | .fresh checked => checked.sourceRows
+  | .catalogued _ projection => projection.sourceRows
+
+def inferOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name)
+    (catalogue : Option (Checked sources) := none) : WorkM (Inference original) := do
+  match catalogue with
+  | none => pure (.fresh (← GenericTypeTrace.readOriginal original))
+  | some catalogue => pure (.catalogued catalogue (← project catalogue.toRuntimeChecked original))
+
 end QleisliKernel.SourceTypes.GenericCatalogue
