@@ -24,6 +24,7 @@ import Qleisli.RuntimeTargetScatter
 import Qleisli.RuntimeSelectionAction
 import Qleisli.RuntimeSelectionGram
 import Qleisli.RuntimeMultiwayGram
+import Qleisli.RuntimeMultiwayAction
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
 import Qleisli.Raw

@@ -11,7 +11,7 @@ open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct
 
 /-- Move a local matrix action inside the caller's encoding sum while retaining
 every external reference index. Both sums use total complex coefficients. -/
-private theorem reference_sum {roles state checked} (code : @Frame roles state checked)
+theorem reference_sum {roles state checked} (code : @Frame roles state checked)
     (matrix : Matrix) {Reference : Type} (family : Nat → Nat → Reference → ℂ)
     (physical row : Nat) (reference : Reference) :
     action matrix (fun col ref => referenceAction code (family col) physical ref) row reference =

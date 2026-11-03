@@ -27,7 +27,7 @@ private theorem tagBits_capacity (count : Nat) : count ≤ 2^tagBits count := by
   · have remaining := Nat.lt_log2_self (n := count-1)
     omega
 
-private theorem tensor_bounds {first second : Layout}
+theorem tensor_bounds {first second : Layout}
     (left : LayoutBounds first) (right : LayoutBounds second) : LayoutBounds (tensor first second) := by
   constructor
   · have dimensions := (tensor_agrees (ofLayout_agrees first) (ofLayout_agrees second)).dimension
@@ -50,7 +50,7 @@ private theorem tensor_bounds {first second : Layout}
 private theorem singleton_bounds : LayoutBounds QleisliKernel.Semantics.FiniteCarrier.singleton := by
   simp [LayoutBounds,QleisliKernel.Semantics.FiniteCarrier.singleton]
 
-private theorem leaf_bounds (atom : Atom) (code : Layout) (read : leaf atom = some code) : LayoutBounds code := by
+theorem leaf_bounds (atom : Atom) (code : Layout) (read : leaf atom = some code) : LayoutBounds code := by
   cases atom with
   | unit =>
     have same : code = QleisliKernel.Semantics.FiniteCarrier.singleton := by simpa [leaf] using read.symm

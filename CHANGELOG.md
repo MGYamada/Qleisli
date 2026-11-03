@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that the physical selector label of an encoded caller value
+  identifies exactly one original `qmatch` arm, including when the labels
+  have gaps. For a Bit target, the actual Raw action on each supported
+  selector label agrees with that arm on the complete caller and reference.
+
 - Recheck a closed `qmatch` function's original tree in its verified
   declaration catalogue. The checker inspects the actual tree, preserves
   callee visibility and effect requirements, and verifies the selected

@@ -913,26 +913,26 @@ inductive SelectionForm {dependencies program block start count inputs outputs r
 theorem bit_target_selection_output {Reference : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
-    {retained : Raw.Sector.Retained}
-    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+    {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
       (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
     {inputCode outputCode : Matrix}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
     (targetBasis : target.basis = [.bit])
-    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted codes.owners.before codes.owners.transport.after)
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted codes.owners.before codes.owners.transport.after)
     (form : SelectionForm frame codes.owners)
     {label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (label,required) logical)
     (joint : Nat → Reference → ℂ) (physical row : Nat) (reference : Reference)
     (coordinate : Semantics.Finite.gather physical
         (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
-      QleisliKernel.FiniteRestriction.pack 1 label row)
+      QleisliKernel.FiniteRestriction.pack selectorBits label row)
     (rowBound : row < 2) :
     Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
         (fun input => referenceAction literal.inputCode joint input reference) physical =
       action required (fun input ref => referenceAction literal.outputCode joint
         (Semantics.Finite.scatter physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
-          (QleisliKernel.FiniteRestriction.pack 1 label input)) ref) row reference := by
+          (QleisliKernel.FiniteRestriction.pack selectorBits label input)) ref) row reference := by
   have code : literal.inputCode.code.dimension = literal.outputCode.code.dimension ∧
       ∀ p i,literal.inputCode.embedding p i = literal.outputCode.embedding p i := by
     cases form with
@@ -962,7 +962,7 @@ theorem bit_target_selection_output {Reference : Type}
       rfl
   have inputCoordinate : Semantics.Finite.gather physical
       (forestAxes frame.interval.before.quantum.frame literal.selection.selected) =
-        QleisliKernel.FiniteRestriction.pack 1 label row := by rw [axes]; exact coordinate
+        QleisliKernel.FiniteRestriction.pack selectorBits label row := by rw [axes]; exact coordinate
   have sector := Qleisli.RuntimeBitSectorAction.bit_target_sector_references frame codes targetBasis literal binding
     joint physical row reference inputCoordinate rowBound
   rw [axes] at sector

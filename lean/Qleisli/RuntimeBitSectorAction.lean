@@ -54,18 +54,18 @@ selector bound and the exact column count used in the logical action. -/
 theorem binding_bounds
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
-    {retained : Raw.Sector.Retained}
-    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+    {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
       (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
     {inputCode outputCode : Matrix}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
     (targetBasis : target.basis = [.bit])
-    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted
       codes.owners.before codes.owners.transport.after)
     {label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding
       inputCode outputCode retained.sectors (label,required) logical) :
-    label < 2 ∧ required.cols = 2 := by
+    label < 2^selectorBits ∧ required.cols = 2 := by
   obtain ⟨sector,found,_map,_same⟩ := Qleisli.NominalSector.logical_binding_map binding
   have inside := (List.getElem?_eq_some_iff.mp found).1
   have lengths := QleisliKernel.Exact.listRel_length _ _ _ literal.sectorReference.2.2.2.2.2.2.2
@@ -73,7 +73,7 @@ theorem binding_bounds
   have inputRead : RuntimeInterval.Computed
       (Carrier.ownerCode [⟨codes.owners.selected.second.port,[.bit]⟩]) inputCode := by
     simpa only [targetBasis] using codes.inputRead
-  refine ⟨inside,?_⟩
+  refine ⟨by simpa only [width,List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] using inside,?_⟩
   have original : logical = required := binding.1
   rw [← original,binding.2.1,bit_code inputRead]
   rfl
@@ -86,26 +86,26 @@ is not a factorization or separability assumption about those amplitudes. -/
 theorem bit_target_sector_references {Reference : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
-    {retained : Raw.Sector.Retained}
-    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+    {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
       (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
     {inputCode outputCode : Matrix}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
     (targetBasis : target.basis = [.bit])
-    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted
       codes.owners.before codes.owners.transport.after)
     {label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding
       inputCode outputCode retained.sectors (label,required) logical)
     (joint : Nat → Reference → ℂ) (output row : Nat) (reference : Reference)
     (coordinate : gather output (forestAxes frame.interval.before.quantum.frame literal.selection.selected) =
-      pack 1 label row)
+      pack selectorBits label row)
     (rowBound : row < 2) :
     Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
         (fun physical => referenceAction literal.inputCode joint physical reference) output =
       action required (fun input ref => referenceAction literal.inputCode joint
         (scatter output (forestAxes frame.interval.before.quantum.frame literal.selection.selected)
-          (pack 1 label input)) ref) row reference := by
+          (pack selectorBits label input)) ref) row reference := by
   have inputRead : RuntimeInterval.Computed
       (Carrier.ownerCode [⟨codes.owners.selected.second.port,[.bit]⟩]) inputCode := by
     simpa only [targetBasis] using codes.inputRead
@@ -116,28 +116,32 @@ theorem bit_target_sector_references {Reference : Type}
   have labelBound := (binding_bounds frame codes targetBasis literal binding).1
   obtain ⟨before,after,sectorsRead⟩ := read.2.2.2.2.2.2.1
   have valid := (QleisliKernel.FiniteRestriction.readSectors_bound _ _ _ _ _ before after sectorsRead).2.2.1
-  have valid : retained.steps.all (QleisliKernel.Finite.stepValid dependencies 2) = true := by
+  have valid : retained.steps.all (QleisliKernel.Finite.stepValid dependencies (selectorBits+1)) = true := by
     simpa only [width,List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] using valid
   let axes := forestAxes frame.interval.before.quantum.frame literal.selection.selected
   let pulled := fun input => referenceAction literal.inputCode joint (scatter output axes input) reference
   let family := fun selected input ref => referenceAction literal.inputCode joint
-    (scatter output axes (pack 1 selected input)) ref
-  have encoded : ∀ input, input < 2^2 → pulled input =
-      Qleisli.NominalSector.encodedTargets (width [.bits 1]) inputCode family input reference := by
+    (scatter output axes (pack selectorBits selected input)) ref
+  have encoded : ∀ input, input < 2^(selectorBits+1) → pulled input =
+      Qleisli.NominalSector.encodedTargets (width [.bits selectorBits]) inputCode family input reference := by
     intro input bound
-    have highBound : input / 2 < 2 := by omega
-    have encodedRow := bit_action inputRead (family (input % 2)) (input / 2) reference highBound
-    change pulled input = action inputCode (family (input % 2)) (input / 2) reference
+    have highBound : input / 2^selectorBits < 2 :=
+      Nat.div_lt_of_lt_mul (by simpa only [Nat.pow_succ] using bound)
+    have encodedRow := bit_action inputRead (family (input % 2^selectorBits)) (input / 2^selectorBits) reference highBound
+    change pulled input = action inputCode (family (input % 2^selectorBits)) (input / 2^selectorBits) reference
     rw [encodedRow]
-    have packed : pack 1 (input % 2) (input / 2) = input := by
-      change input % 2 + 2 * (input / 2) = input
-      exact Nat.mod_add_div input 2
+    have packed : pack selectorBits (input % 2^selectorBits) (input / 2^selectorBits) = input := by
+      exact Nat.mod_add_div input (2^selectorBits)
     change _ = referenceAction literal.inputCode joint
-      (scatter output axes (pack 1 (input % 2) (input / 2))) reference
+      (scatter output axes (pack selectorBits (input % 2^selectorBits) (input / 2^selectorBits))) reference
     rw [packed]
-  have packedBound : pack 1 label row < 2^2 := by
-    change label + 2 * row < 4
-    omega
+  have packedBound : pack selectorBits label row < 2^(selectorBits+1) := by
+    rw [Nat.pow_succ]
+    change label+2^selectorBits*row < 2^selectorBits*2
+    calc
+      label+2^selectorBits*row < 2^selectorBits+2^selectorBits*row := Nat.add_lt_add_right labelBound _
+      _ = 2^selectorBits*(row+1) := by ring
+      _ ≤ 2^selectorBits*2 := Nat.mul_le_mul_left _ (Nat.succ_le_of_lt rowBound)
   have outputBound : row < outputCode.rows := by
     rw [bit_code outputRead]
     exact rowBound
@@ -148,11 +152,11 @@ theorem bit_target_sector_references {Reference : Type}
     _ = Qleisli.Semantics.RawAction.circuit dependencies retained.steps pulled
         (gather output axes) := localized
     _ = Qleisli.Semantics.RawAction.circuit dependencies retained.steps pulled
-        (pack 1 label row) := by rw [coordinate]
+        (pack selectorBits label row) := by rw [coordinate]
     _ = Qleisli.Semantics.RawAction.circuit dependencies retained.steps
-        (fun input => Qleisli.NominalSector.encodedTargets (width [.bits 1]) inputCode family input reference)
-        (pack 1 label row) :=
-      Qleisli.Finite.rawCircuit_congr dependencies 2 retained.steps _ _ valid encoded _ packedBound
+        (fun input => Qleisli.NominalSector.encodedTargets (width [.bits selectorBits]) inputCode family input reference)
+        (pack selectorBits label row) :=
+      Qleisli.Finite.rawCircuit_congr dependencies (selectorBits+1) retained.steps _ _ valid encoded _ packedBound
     _ = action outputCode (fun value ref => action required (family label) value ref) row reference := sectorAction
     _ = action required (family label) row reference :=
       bit_action outputRead _ row reference rowBound

@@ -68,7 +68,7 @@ theorem gather_disjoint (physical replacement : Nat) (selected untouched : List 
   change bit (scatter physical selected replacement) axis * 2 ^ place = bit physical axis * 2 ^ place
   rw [RuntimeScatterTransport.scatter_outside physical replacement axis selected outside]
 
-private theorem bit_layout {binding} (actual : OwnerCode binding) (basis : binding.owner.basis = [.bit]) :
+theorem bit_layout {binding} (actual : OwnerCode binding) (basis : binding.owner.basis = [.bit]) :
     actual.layout = (⟨1,[0,1]⟩ : Semantics.FiniteCarrier.Layout) := by
   have original := actual.reference.1
   rw [basis] at original
@@ -83,7 +83,7 @@ private theorem bit_delta {binding} (actual : OwnerCode binding) (basis : bindin
       .ok (Semantics.FiniteCarrier.encoding ⟨1,[0,1]⟩) := rfl
   exact (Qleisli.Exact.identity_meaning _ _ original).2.2.2 row col rowBound colBound
 
-private theorem gather_one (physical axis : Nat) : gather physical [axis] = bit physical axis := by
+theorem gather_one (physical axis : Nat) : gather physical [axis] = bit physical axis := by
   simp [gather]
 
 private theorem gather_scatter_one (physical replacement : Nat) (axes : List Nat)
@@ -105,12 +105,12 @@ private theorem gather_scatter_one (physical replacement : Nat) (axes : List Nat
 /-- Flipping the actual returned Bit wire flips exactly the same original
 logical target digit in every sparse coefficient. Nominal spectator factors
 and separate empty-owner factors are retained in their original order. -/
-theorem target_flip_entry
+theorem bit_target_flip_entry
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
     {inputCode outputCode}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
-    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (targetBasis : target.basis = [.bit])
     {selectorBits targetBits retained restricted}
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
@@ -152,7 +152,8 @@ theorem target_flip_entry
     rw [← card]
     exact decode_bound order cards logical (cards_positive output.owners) logicalBound targetBinding member
   have small : 1-digit < 2 := by omega
-  have updated := RuntimeTargetDigit.source_target_update frame codes selectorBasis targetBasis literal logical (1-digit) bound small
+  have updated := RuntimeTargetDigit.update_digits output targetBinding logical (1-digit) bound
+    (by change 1-digit < cards targetBinding; rwa [card])
   have flippedBound : flipped < output.code.dimension := updated.1
   have flippedVolume : flipped < volume order cards := by rw [frame_volume output]; exact flippedBound
   have originalFactors := coefficients_factors output.owners frame.interval.after.quantum.frame output.owners
@@ -172,7 +173,7 @@ theorem target_flip_entry
       by_cases same : binding = targetBinding
       · subst binding
         have changed : decode order cards flipped targetBinding = 1-digit := by
-          have original := updated.2.1 targetBinding member
+          have original := updated.2 targetBinding member
           change decode order cards flipped targetBinding = (if targetBinding = targetBinding then 1-digit else digit) at original
           simpa only [if_pos rfl] using original
         have smallRow : 1-gather physical axes < 2 := by omega
@@ -182,7 +183,7 @@ theorem target_flip_entry
         have condition : 1-gather physical axes = digit ↔ gather physical axes = 1-digit := by omega
         simp only [condition]
       · have changed : decode order cards flipped binding = decode order cards logical binding := by
-          have original := updated.2.1 binding present
+          have original := updated.2 binding present
           change decode order cards flipped binding =
             (if binding = targetBinding then 1-digit else decode order cards logical binding) at original
           simpa only [if_neg same] using original
@@ -194,6 +195,24 @@ theorem target_flip_entry
     _ = _ := flippedFactors.symm
     _ = _ := (ordered_product_entry output physical flipped flippedBound).symm
 
+theorem target_flip_entry
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (physical logical : Nat) (bound : logical < literal.outputCode.code.dimension) :
+    let targetBinding := codes.owners.returned.second
+    let axes := targetBinding.port.wires.map frame.interval.after.quantum.frame.idxOf
+    let digit := decode codes.owners.transport.after.bindings (dimensionAt literal.outputCode.owners) logical targetBinding
+    scalar (literal.outputCode.embedding (scatter physical axes (1-gather physical axes)) logical) =
+      scalar (literal.outputCode.embedding physical (RuntimeTargetDigit.update literal.outputCode targetBinding logical (1-digit))) := by
+  have bitInputs := And.intro selectorBasis targetBasis
+  exact bit_target_flip_entry frame codes bitInputs.2 literal physical logical bound
+
 /-- Flip the actual target's dense logical digit, using its retained carrier
 cardinality and original position rather than a physical bit stride. -/
 def targetFlip {roles state checked} (output : @Frame roles state checked) (target : Binding)
@@ -201,26 +220,31 @@ def targetFlip {roles state checked} (output : @Frame roles state checked) (targ
   RuntimeTargetDigit.update output target logical
     (1-decode checked.bindings (dimensionAt output.owners) logical target)
 
+/-- The actual original Bit code has logical cardinality two. -/
+theorem bit_cardinality {roles state checked} (code : @Frame roles state checked)
+    (binding : Binding) (member : binding ∈ checked.bindings) (basis : binding.owner.basis = [.bit]) :
+    dimensionAt code.owners binding = 2 := by
+  obtain ⟨actual,_read⟩ := lookup_exists code.owners binding member
+  rw [dimensionAt_eq code.owners binding member actual,bit_layout actual basis]
+  rfl
+
 /-- A returned source Bit has exactly two logical digits, regardless of its
 position in the caller's mixed-radix order. -/
 theorem bit_digit_lt {roles state checked} (code : @Frame roles state checked)
     (binding : Binding) (member : binding ∈ checked.bindings) (basis : binding.owner.basis = [.bit])
     (logical : Nat) (bound : logical < code.code.dimension) :
     decode checked.bindings (dimensionAt code.owners) logical binding < 2 := by
-  obtain ⟨actual,_read⟩ := lookup_exists code.owners binding member
-  have card : dimensionAt code.owners binding = 2 := by
-    rw [dimensionAt_eq code.owners binding member actual,bit_layout actual basis]
-    rfl
+  have card := bit_cardinality code binding member basis
   rw [← card]
   apply decode_bound _ _ _ (cards_positive code.owners) _ _ member
   rwa [frame_volume code]
 
-theorem target_flip_domain
+theorem bit_target_flip_domain
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
     {inputCode outputCode}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
-    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (targetBasis : target.basis = [.bit])
     {selectorBits targetBits retained restricted}
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
@@ -240,8 +264,9 @@ theorem target_flip_domain
   have logicalBound : logical < volume order cards := by rw [frame_volume output]; exact bound
   have digitBound : digit < 2 := bit_digit_lt output wanted member (by rw [originalOwners.2,targetBasis]) logical bound
   have small : 1-digit < 2 := by omega
-  have changed := RuntimeTargetDigit.source_target_update frame codes selectorBasis targetBasis literal
-    logical (1-digit) bound small
+  have card : cards wanted = 2 := bit_cardinality output wanted member (by rw [originalOwners.2,targetBasis])
+  have changed := RuntimeTargetDigit.update_digits output wanted logical (1-digit) bound
+    (by change 1-digit < cards wanted; rwa [card])
   have flipBound : targetFlip output wanted logical < output.code.dimension := changed.1
   have unique : order.Nodup :=
     List.Pairwise.of_map (fun binding : Binding => binding.port.token)
@@ -255,7 +280,7 @@ theorem target_flip_domain
     _ = encode order cards (decode order cards logical) := by
       apply encode_congr
       intro binding present
-      have read := changed.2.1 binding present
+      have read := changed.2 binding present
       change decode order cards (targetFlip output wanted logical) binding =
         (if binding = wanted then 1-digit else decode order cards logical binding) at read
       by_cases same : binding = wanted
@@ -265,6 +290,22 @@ theorem target_flip_domain
         omega
       · rw [if_neg same,read,if_neg same]
     _ = logical := encode_decode order cards logical unique (cards_positive output.owners) logicalBound
+
+theorem target_flip_domain
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (logical : Nat) (bound : logical < literal.outputCode.code.dimension) :
+    targetFlip literal.outputCode codes.owners.returned.second logical < literal.outputCode.code.dimension ∧
+      targetFlip literal.outputCode codes.owners.returned.second
+        (targetFlip literal.outputCode codes.owners.returned.second logical) = logical := by
+  have bitInputs := And.intro selectorBasis targetBasis
+  exact bit_target_flip_domain frame codes bitInputs.2 literal logical bound
 
 theorem involution_range (size : Nat) (flip : Nat → Nat)
     (bounded : ∀ logical < size,flip logical < size)
@@ -288,6 +329,45 @@ theorem involution_range (size : Nat) (flip : Nat → Nat)
 /-- Literal target-wire flipping acts on the same original target digit in
 an arbitrary entangled logical/reference family. This only reindexes a finite
 total-complex sum; no successful bounded arithmetic is inferred from it. -/
+theorem bit_target_flip_references
+    {Reference : Type} {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
+    let axes := codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf
+    referenceAction literal.outputCode joint (scatter physical axes (1-gather physical axes)) reference =
+      referenceAction literal.outputCode
+        (fun logical ref => joint (targetFlip literal.outputCode codes.owners.returned.second logical) ref)
+        physical reference := by
+  let output := literal.outputCode
+  let flip := targetFlip output codes.owners.returned.second
+  let axes := codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf
+  have domain := bit_target_flip_domain frame codes targetBasis literal
+  have permutation := involution_range output.code.dimension flip
+    (fun logical bound => (domain logical bound).1) (fun logical bound => (domain logical bound).2)
+  change ((List.range output.code.dimension).map fun logical =>
+      scalar (output.embedding (scatter physical axes (1-gather physical axes)) logical)*joint logical reference).sum =
+    ((List.range output.code.dimension).map fun logical => scalar (output.embedding physical logical)*joint (flip logical) reference).sum
+  calc
+    _ = ((List.range output.code.dimension).map fun logical =>
+        scalar (output.embedding physical (flip logical))*joint (flip (flip logical)) reference).sum := by
+      apply Qleisli.Exact.sum_map_congr
+      intro logical member
+      have inverse : flip (flip logical) = logical := (domain logical (List.mem_range.mp member)).2
+      rw [inverse]
+      exact congrArg (fun coefficient : ℂ => coefficient*joint logical reference)
+        (bit_target_flip_entry frame codes targetBasis literal physical logical (List.mem_range.mp member))
+    _ = (((List.range output.code.dimension).map flip).map fun logical =>
+        scalar (output.embedding physical logical)*joint (flip logical) reference).sum := by
+      rw [List.map_map]
+      rfl
+    _ = _ := (permutation.map (fun logical => scalar (output.embedding physical logical)*joint (flip logical) reference)).sum_eq
+
 theorem target_flip_references
     {Reference : Type} {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -303,29 +383,8 @@ theorem target_flip_references
       referenceAction literal.outputCode
         (fun logical ref => joint (targetFlip literal.outputCode codes.owners.returned.second logical) ref)
         physical reference := by
-  let output := literal.outputCode
-  let flip := targetFlip output codes.owners.returned.second
-  let axes := codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf
-  have domain := target_flip_domain frame codes selectorBasis targetBasis literal
-  have permutation := involution_range output.code.dimension flip
-    (fun logical bound => (domain logical bound).1) (fun logical bound => (domain logical bound).2)
-  change ((List.range output.code.dimension).map fun logical =>
-      scalar (output.embedding (scatter physical axes (1-gather physical axes)) logical)*joint logical reference).sum =
-    ((List.range output.code.dimension).map fun logical => scalar (output.embedding physical logical)*joint (flip logical) reference).sum
-  calc
-    _ = ((List.range output.code.dimension).map fun logical =>
-        scalar (output.embedding physical (flip logical))*joint (flip (flip logical)) reference).sum := by
-      apply Qleisli.Exact.sum_map_congr
-      intro logical member
-      have inverse : flip (flip logical) = logical := (domain logical (List.mem_range.mp member)).2
-      rw [inverse]
-      exact congrArg (fun coefficient : ℂ => coefficient*joint logical reference)
-        (target_flip_entry frame codes selectorBasis targetBasis literal physical logical (List.mem_range.mp member))
-    _ = (((List.range output.code.dimension).map flip).map fun logical =>
-        scalar (output.embedding physical logical)*joint (flip logical) reference).sum := by
-      rw [List.map_map]
-      rfl
-    _ = _ := (permutation.map (fun logical => scalar (output.embedding physical logical)*joint (flip logical) reference)).sum_eq
+  have bitInputs := And.intro selectorBasis targetBasis
+  exact bit_target_flip_references frame codes bitInputs.2 literal joint physical reference
 
 theorem update_self {roles state checked} (output : @Frame roles state checked)
     (wanted : Binding) (logical : Nat) (bound : logical < output.code.dimension) :
@@ -385,7 +444,7 @@ private theorem bit_entry_support {roles state checked} (output : @Frame roles s
   refine List.mem_map.mpr ⟨wanted,member,?_⟩
   rw [factorAt_eq _ _ _ _ member actual,bit_delta actual basis _ _ rowBound digitBound,if_neg (Ne.symm different)]
 
-private theorem singleton_axis (axes : List Nat) (length : axes.length = 1) : ∃ axis,axes = [axis] := by
+theorem singleton_axis (axes : List Nat) (length : axes.length = 1) : ∃ axis,axes = [axis] := by
   cases axes with
   | nil => simp at length
   | cons axis rest =>
@@ -395,15 +454,26 @@ private theorem singleton_axis (axes : List Nat) (length : axes.length = 1) : �
       simp only [List.length_cons] at length
       omega
 
+/-- Nonzero support fixes an actual Bit owner's original logical digit at
+its real physical coordinate, independently of the other source owners. -/
+theorem bit_digit_support {roles state checked} (output : @Frame roles state checked)
+    (wanted : Binding) (member : wanted ∈ checked.bindings) (basis : wanted.owner.basis = [.bit])
+    (physical logical : Nat) (bound : logical < output.code.dimension)
+    (nonzero : scalar (output.embedding physical logical) ≠ 0) :
+    decode checked.bindings (dimensionAt output.owners) logical wanted =
+      gather physical (wanted.port.wires.map state.quantum.frame.idxOf) := by
+  by_contra different
+  exact nonzero (bit_entry_support output wanted member basis physical logical bound different)
+
 /-- Set the literal returned target wire to a Bit input. The same operation
 replaces only that target's original logical digit in the complete code action.
 No condition is placed on the joint amplitudes of nominal or empty spectators. -/
-theorem target_set_references
+theorem bit_target_set_references
     {Reference : Type} {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
     {inputCode outputCode}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
-    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (targetBasis : target.basis = [.bit])
     {selectorBits targetBits retained restricted}
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
@@ -456,7 +526,7 @@ theorem target_set_references
 
   · have opposite : input = 1-row := by omega
     change referenceAction output joint (scatter physical axes input) reference = _
-    rw [opposite,target_flip_references frame codes selectorBasis targetBasis literal joint physical reference]
+    rw [opposite,bit_target_flip_references frame codes targetBasis literal joint physical reference]
     unfold referenceAction
     apply Qleisli.Exact.sum_map_congr
     intro logical present
@@ -472,6 +542,24 @@ theorem target_set_references
     · rw [support logical bound active]
       simp only [zero_mul]
 
+theorem target_set_references
+    {Reference : Type} {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (joint : Nat → Reference → ℂ) (physical input : Nat) (reference : Reference) (small : input < 2) :
+    let axes := codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf
+    referenceAction literal.outputCode joint (scatter physical axes input) reference =
+      referenceAction literal.outputCode
+        (fun logical ref => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second logical input) ref)
+        physical reference := by
+  have bitInputs := And.intro selectorBasis targetBasis
+  exact bit_target_set_references frame codes bitInputs.2 literal joint physical input reference small
+
 private theorem write_packed_bit (label row input : Nat) (labelBound : label < 2) (rowBound : row < 2) :
     RuntimeScatterTransport.write (QleisliKernel.FiniteRestriction.pack 1 label row) 1 input =
       QleisliKernel.FiniteRestriction.pack 1 label input := by
@@ -484,7 +572,7 @@ private theorem write_packed_bit (label row input : Nat) (labelBound : label < 2
   simp only [Nat.pow_one]
   omega
 
-private theorem scatter_one (physical axis input : Nat) (small : input < 2) :
+theorem scatter_one (physical axis input : Nat) (small : input < 2) :
     scatter physical [axis] input = RuntimeScatterTransport.write physical axis input := by
   have low : bit input 0 = input := by simp [bit,Nat.mod_eq_of_lt small]
   change RuntimeScatterTransport.write physical axis (bit input 0) = _
@@ -690,6 +778,10 @@ theorem source_pair_support
 #print axioms output_axes_unique
 #print axioms output_owner_axes_disjoint
 #print axioms gather_disjoint
+#print axioms bit_target_flip_entry
+#print axioms bit_target_flip_domain
+#print axioms bit_target_flip_references
+#print axioms bit_target_set_references
 #print axioms target_flip_entry
 #print axioms target_flip_domain
 #print axioms target_flip_references
