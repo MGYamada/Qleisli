@@ -10,6 +10,9 @@ development milestones from the scope of their evidence.
   identifies exactly one original `qmatch` arm, including when the labels
   have gaps. For a Bit target, the actual Raw action on each supported
   selector label agrees with that arm on the complete caller and reference.
+  At unused selector labels the actual sector acts on a zero input slice.
+  The resulting theorem covers every physical output row and preserves the
+  logical inner product under the same checked arm table.
   A three-variant source test checks every physical output coefficient for
   each valid input, including zero amplitude on the unused selector label.
 

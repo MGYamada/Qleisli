@@ -10,7 +10,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 namespace Qleisli.RuntimeMultiwayAction
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Semantics.Exact
-open QleisliKernel.Semantics.Finite (gather scatter bit)
+open QleisliKernel.Semantics.Finite (gather scatter bit width)
 open QleisliKernel.FiniteRestriction (pack)
 open RuntimeForestCode RuntimeOwnerCodeReindex
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct Qleisli.MixedRadix
@@ -328,6 +328,221 @@ theorem supported_caller_action {Reference : Type}
         (decode codes.owners.transport.after.bindings (dimensionAt literal.outputCode.owners) index.val codes.owners.returned.second) ref
     rw [same,targetDigit]
 
+/-- Selector padding has zero support in the same complete output code. -/
+theorem selector_padding_entry
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode selectorBits targetBits retained restricted labels}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (physical logical : Nat) (bound : logical < literal.outputCode.code.dimension)
+    (padding : gather physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∉ labels) :
+    scalar (literal.outputCode.embedding physical logical) = 0 := by
+  obtain ⟨actual,_found,layout⟩ := returned_selector_layout frame codes layouts literal
+  have selected := RuntimeSelectionPartition.order_values _ _ _ codes.owners.returned.ordered
+  have member : codes.owners.returned.first ∈ codes.owners.transport.after.bindings := selected.1 (by simp)
+  exact Qleisli.RuntimeNominalSupport.owner_padding_zero literal.outputCode codes.owners.returned.first member actual
+    physical logical bound (by simpa only [layout] using padding)
+
+theorem selector_padding_reference {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode selectorBits targetBits retained restricted labels}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (joint : Nat → Reference → ℂ) (physical : Nat) (ref : Reference)
+    (padding : gather physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∉ labels) :
+    referenceAction literal.outputCode joint physical ref = 0 := by
+  unfold referenceAction
+  calc
+    _ = ((List.range literal.outputCode.code.dimension).map fun _ => (0 : ℂ)).sum := by
+      apply Qleisli.Exact.sum_map_congr
+      intro logical member
+      rw [selector_padding_entry frame codes layouts literal physical logical (List.mem_range.mp member) padding,zero_mul]
+    _ = 0 := by simp
+
+theorem finite_selector_padding_reference {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode selectorBits targetBits retained restricted labels}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (joint : Fin literal.outputCode.code.dimension → Reference → ℂ) (physical : Nat) (ref : Reference)
+    (padding : gather physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∉ labels) :
+    finiteReferenceAction literal.outputCode joint physical ref = 0 := by
+  unfold finiteReferenceAction
+  calc
+    _ = ((List.finRange literal.outputCode.code.dimension).map fun _ => (0 : ℂ)).sum := by
+      apply Qleisli.Exact.sum_map_congr
+      intro index _member
+      rw [selector_padding_entry frame codes layouts literal physical index.val index.isLt padding,zero_mul]
+    _ = 0 := by simp
+
+private theorem sector_bit_shape {dependencies selector operations label actual}
+    (binding : QleisliKernel.FiniteRestriction.SectorEvaluationBinding dependencies selector [.bits 1] operations label actual) :
+    actual.rows = 2 ∧ actual.cols = 2 := by
+  obtain ⟨_label,restricted,before,after,_unitary,_restriction,native,_gram,_lifting⟩ := binding
+  obtain ⟨_valid,columns,_read,made⟩ := QleisliKernel.Finite.circuitMatrix_columns dependencies
+    ⟨[.bits 1],restricted⟩ actual before after native
+  constructor
+  · simpa only [width,List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] using congrArg Matrix.rows made
+  · simpa only [width,List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] using congrArg Matrix.cols made
+
+/-- The existing all-physical-label restriction also retains padding sectors.
+Its actual matrix acts on a zero encoded slice, so padding outputs stay zero
+without selecting, inventing or checking an extra logical arm. -/
+theorem padding_caller_action {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained} {labels : List Nat}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits 1 labels)
+    (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
+    (joint : Nat → Reference → ℂ) (physical : Nat) (ref : Reference)
+    (padding : gather physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∉ labels) :
+    Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+      (fun input => referenceAction literal.inputCode joint input ref) physical = 0 := by
+  obtain ⟨axis,axisRead,length,axes,_unique⟩ := returned_axes frame codes layouts targetBasis literal
+  let selected := forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList
+  let low := gather physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf)
+  let row := gather physical (codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf)
+  have lowBound : low < 2^selectorBits := by
+    simpa only [length] using gather_bound physical
+      (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf)
+  have rowBound : row < 2 := by
+    change gather physical (codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf) < 2
+    rw [axisRead]
+    simpa only [List.length_cons,List.length_nil] using gather_bound physical [axis]
+  have packed : gather physical selected = pack selectorBits low row := by
+    change gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) = _
+    rw [axes,gather_append,length]
+    change _ = low+2^selectorBits*gather physical
+      (codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf)
+    rw [axisRead]
+  let pulled := fun input => referenceAction literal.outputCode joint (scatter physical selected input) ref
+  have code := Qleisli.RuntimeOwnerTransitionAction.selection_form_codes frame codes.owners literal form
+  have sameCode (input : Nat) : referenceAction literal.inputCode joint input ref =
+      referenceAction literal.outputCode joint input ref := by
+    unfold referenceAction
+    rw [code.1]
+    apply Qleisli.Exact.sum_map_congr
+    intro index _member
+    rw [code.2 input index]
+  have sameAxes := Qleisli.RuntimeOwnerTransitionAction.selection_form_axes frame codes.owners literal form
+  have localized : Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input ref) physical =
+      Qleisli.Semantics.RawAction.circuit dependencies retained.steps pulled (pack selectorBits low row) := by
+    have actual := congrFun (congrFun (Qleisli.Semantics.RawAction.Locality.literal_references literal
+      (fun reference input => referenceAction literal.inputCode joint input reference)) ref) physical
+    rw [sameAxes] at actual
+    change _ = Qleisli.Semantics.RawAction.circuit dependencies retained.steps
+      (fun input => referenceAction literal.inputCode joint (scatter physical selected input) ref)
+      (gather physical selected) at actual
+    rw [packed] at actual
+    refine actual.trans ?_
+    apply congrArg (fun values : Nat → ℂ => Qleisli.Semantics.RawAction.circuit dependencies retained.steps values (pack selectorBits low row))
+    funext input
+    exact sameCode _
+  have zeroFamily (input : Nat) (small : input < 2) : pulled (pack selectorBits low input) = 0 := by
+    change referenceAction literal.outputCode joint (scatter physical
+      (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) (pack selectorBits low input)) ref = 0
+    rw [target_scatter_references frame codes layouts targetBasis literal joint physical low row input ref
+      packed lowBound rowBound small]
+    exact selector_padding_reference frame codes layouts literal _ physical ref padding
+  have relation := literal.sectorReference.2.2.2.2.2.2.2
+  have lengthSectors := QleisliKernel.Exact.listRel_length _ _ _ relation
+  have inside : low < retained.sectors.length := by
+    rw [lengthSectors,List.length_range]
+    simpa only [width,List.map_cons,List.map_nil,List.sum_cons,List.sum_nil,Nat.add_zero] using lowBound
+  let actual := retained.sectors[low]'inside
+  have found : retained.sectors[low]? = some actual := List.getElem?_eq_getElem inside
+  have binding : QleisliKernel.FiniteRestriction.SectorEvaluationBinding dependencies selectorBits [.bits 1] retained.steps low actual :=
+    Qleisli.NominalSector.indexed_sector relation found
+  have shape := sector_bit_shape binding
+  have actualAction := Qleisli.Semantics.RawAction.Sector.sector_binding_action dependencies selectorBits [.bits 1]
+    retained.steps low actual binding (fun input (_ : Unit) => pulled input) row () (by rw [shape.1]; exact rowBound)
+  calc
+    _ = _ := localized
+    _ = action actual (fun input (_ : Unit) => pulled (pack selectorBits low input)) row () := actualAction
+    _ = ((List.range actual.cols).map fun _ => (0 : ℂ)).sum := by
+      unfold action
+      apply Qleisli.Exact.sum_map_congr
+      intro input member
+      have small := List.mem_range.mp member
+      rw [shape.2] at small
+      change entry actual row input * pulled (pack selectorBits low input) = 0
+      rw [zeroFamily input small,mul_zero]
+    _ = 0 := by simp
+
+/-- Complete phase-sensitive physical intertwining on every output row.
+Supported rows select their native receipt by original ordinal; padding rows
+are zero by the actual retained restriction, with no missing-arm fallback. -/
+theorem caller_action {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {labels : List Nat} {arms : List Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits 1 labels)
+    (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
+    (table : OrdinalTable inputCode outputCode retained.sectors labels arms)
+    (joint : Nat → Reference → ℂ) (physical : Nat) (ref : Reference) :
+    Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input ref) physical =
+      finiteReferenceAction literal.outputCode (sourceAction frame codes layouts literal table joint) physical ref := by
+  by_cases supported : gather physical
+      (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∈ labels
+  · obtain ⟨ordinal,inside,same⟩ := List.mem_iff_getElem.mp supported
+    exact supported_caller_action frame codes layouts targetBasis literal form table joint physical ref ⟨ordinal,inside⟩ same.symm
+  · exact (padding_caller_action frame codes layouts targetBasis literal form joint physical ref supported).trans
+      (finite_selector_padding_reference frame codes layouts literal _ physical ref supported).symm
+
+/-- Consume the actual native table/layout/code receipts once, retaining both
+the all-output physical intertwiner and the verified full logical Gram law. -/
+theorem checked_selection {R S : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits : Nat} {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {labels : List Nat} {expected logical : List Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits 1 labels)
+    (equations : RuntimeInterval.Computed (QleisliKernel.Qirf.NominalSector.checkLogicals
+      inputCode outputCode retained.sectors labels expected) logical)
+    (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame selectorBits 1 retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
+    (joint : Nat → R → ℂ) (other : Nat → S → ℂ) (r : R) (s : S) :
+    logical = expected ∧ ∃ table : OrdinalTable inputCode outputCode retained.sectors labels expected,
+      (∀ physical, Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input r) physical =
+        finiteReferenceAction literal.outputCode (sourceAction frame codes layouts literal table joint) physical r) ∧
+      ((List.finRange literal.outputCode.code.dimension).map fun index =>
+        star (sourceAction frame codes layouts literal table joint index r) *
+          sourceAction frame codes layouts literal table other index s).sum =
+      ((List.finRange literal.outputCode.code.dimension).map fun index => star (joint index.val r)*other index.val s).sum := by
+  obtain ⟨same,table,gram⟩ := Qleisli.RuntimeMultiwayGram.checked_selection frame codes layouts equations
+    targetBasis literal joint other r s
+  exact ⟨same,table,fun physical => caller_action frame codes layouts targetBasis literal form table joint physical r,gram⟩
+
 #print axioms selector_support
 #print axioms supported_ordinal
 #print axioms selected_receipt
@@ -335,5 +550,8 @@ theorem supported_caller_action {Reference : Type}
 #print axioms target_scatter_references
 #print axioms sector_action
 #print axioms supported_caller_action
+#print axioms padding_caller_action
+#print axioms caller_action
+#print axioms checked_selection
 
 end Qleisli.RuntimeMultiwayAction

@@ -310,6 +310,12 @@ arbitrary joint caller/reference amplitudes under the same two arm receipts.
 `RuntimeSelectionGram.checked_selection` obtains both receipts and the
 canonical order `[0, 1]` from the source layout reads and the logical
 matrix comparison retained by the native selection node.
+`RuntimeMultiwayAction.checked_selection` covers any checked finite selector
+with a Bit target under the same literal interval and owner-code premises.
+Each encoded selector label determines one original arm. On valid encoded
+inputs, the physical output agrees with that arm at every output row,
+including zero amplitude on padding labels. The same arm receipts preserve
+the logical inner product with an arbitrary external reference.
 Ordinary and source-`qmatch` checks share a public ceiling of 20,000,000
 exact-work units per request. Decoding, source and graph checks, and execution-view
 comparison spend from the same counter. Rust also charges native receipts
