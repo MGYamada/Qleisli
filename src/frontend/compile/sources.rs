@@ -17,6 +17,38 @@ impl Compiler<'_> {
         bindings: &operations::Bindings,
         bodies: &[&RawProgram],
     ) -> Result<SourceRows, CompileError> {
+        self.collect_source_rows(module, span, roots, bindings, bodies, None)
+    }
+
+    /// Qmatch also checks primitive lookup misses and the imports of the
+    /// original modules supplied to its declaration catalogue.
+    pub(super) fn qmatch_source_rows(
+        &mut self,
+        key: Key,
+        module: &str,
+        span: Span,
+        primitive_prelude: bool,
+    ) -> Result<SourceRows, CompileError> {
+        let types = self.retained_ordinary_type_sources(key, module, span)?;
+        self.collect_source_rows(
+            module,
+            span,
+            &[key],
+            &operations::Bindings::new(),
+            &[],
+            Some((&types, primitive_prelude)),
+        )
+    }
+
+    fn collect_source_rows(
+        &mut self,
+        module: &str,
+        span: Span,
+        roots: &[Key],
+        bindings: &operations::Bindings,
+        bodies: &[&RawProgram],
+        qmatch: Option<(&SourceRows, bool)>,
+    ) -> Result<SourceRows, CompileError> {
         let mut work = self.work;
         let result = (|| {
             let mut collector = Collector {
@@ -29,13 +61,15 @@ impl Compiler<'_> {
                 types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
+                qmatch: qmatch.is_some(),
             };
             // Project entry selection has no lexical UseInfo. A reexported
             // main::main still supplies the host's entry, so its exact export
             // chain belongs to the source receipts produced in this project.
             let resolution = &collector.compiler.source.resolution;
             if let Some(owner) = resolution.module("main") {
-                if resolution.local(owner, "main").is_none()
+                if qmatch.is_none()
+                    && resolution.local(owner, "main").is_none()
                     && resolution.qualified("main::main").is_ok()
                 {
                     resolution.visit_name_sources(owner, "main::main", |module| {
@@ -53,6 +87,13 @@ impl Compiler<'_> {
                 collector.raw(body)?;
             }
             collector.drain()?;
+            if let Some((types, primitive_prelude)) = qmatch {
+                collector.rows(SourceView::Rows(types))?;
+                if primitive_prelude {
+                    collector.source("std::prelude", None)?;
+                }
+                collector.catalogue_imports()?;
+            }
             collector.charge(collector.modules.iter().map(|name| name.len() + 1).sum())?;
             Ok::<_, CompileError>(
                 collector
@@ -177,8 +218,48 @@ struct Collector<'a, 'project> {
     types: BTreeSet<TypeId>,
     modules: BTreeSet<&'a str>,
     receipts: BTreeSet<usize>,
+    qmatch: bool,
 }
 impl<'a> Collector<'a, '_> {
+    fn catalogue_imports(&mut self) -> Result<(), CompileError> {
+        self.charge(self.modules.len().saturating_add(1))?;
+        let mut pending = self.modules.iter().copied().collect::<Vec<_>>();
+        let resolution = &self.compiler.source.resolution;
+        while let Some(name) = pending.pop() {
+            let Some(original) = self.compiler.originals.module(name) else {
+                return self.refusal("catalogue imports lack their original module");
+            };
+            let Some(caller) = resolution.module(name) else {
+                return self.refusal("catalogue imports lack their original resolution");
+            };
+            for import in &original.ast.uses {
+                self.charge(
+                    import
+                        .path
+                        .iter()
+                        .map(|part| part.text.len() + 2)
+                        .sum::<usize>()
+                        + 1,
+                )?;
+                let path = import
+                    .path
+                    .iter()
+                    .map(|part| part.text.as_str())
+                    .collect::<Vec<_>>()
+                    .join("::");
+                resolution.visit_name_sources(caller, &path, |owner| {
+                    let source = resolution.module_name(owner);
+                    self.charge(source.len().saturating_mul(self.modules.len() + 1) + 1)?;
+                    if !self.modules.contains(source) {
+                        self.source(source, None)?;
+                        pending.push(source);
+                    }
+                    Ok(())
+                })?;
+            }
+        }
+        Ok(())
+    }
     fn drain(&mut self) -> Result<(), CompileError> {
         while let Some(dependency) = self.pending.pop() {
             match dependency {
@@ -257,11 +338,10 @@ impl<'a> Collector<'a, '_> {
         let Some(record) = self.compiler.source.resolution.try_declaration(key) else {
             return self.refusal("source closure has an unknown original definition");
         };
-        let original = self
-            .compiler
-            .originals
-            .module(&record.name.0)
-            .and_then(|source| source.ast.decls.get(record.ast_index));
+        let original_module = self.compiler.originals.module(&record.name.0);
+        let lookup_needs_prelude =
+            self.qmatch && original_module.as_ref().is_some_and(|module| !module.ast.no_implicit_prelude);
+        let original = original_module.and_then(|source| source.ast.decls.get(record.ast_index));
         if !original
             .zip(self.compiler.declarations.get(&key))
             .is_some_and(|(actual, kept)| std::ptr::eq(actual, *kept))
@@ -309,7 +389,11 @@ impl<'a> Collector<'a, '_> {
                     })?;
                     self.root(next, None)?;
                 }
-                ResolvedUse::Global(Target::Primitive(_)) => {}
+                ResolvedUse::Global(Target::Primitive(_)) => {
+                    if lookup_needs_prelude && !usage.name.contains("::") {
+                        self.source("std::prelude", None)?;
+                    }
+                }
                 ResolvedUse::Global(Target::Type(next)) => {
                     let resolution = &self.compiler.source.resolution;
                     resolution.visit_name_sources(record.module, &usage.name, |owner| {
@@ -530,6 +614,43 @@ mod tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     #[test]
+    fn qmatch_negative_prelude_lookup_retains_the_original_reexports() {
+        for (header, expected) in [
+            ("", vec!["gates", "main", "std::prelude"]),
+            ("#![no_implicit_prelude]\n", vec!["main"]),
+        ] {
+            let text =
+                format!("{header}unitary fn original(q:Q<Bit>)->Q<Bit>{{global_phase_eighth(q)}}");
+            let source = project(&[
+                ("main", &text),
+                ("std::prelude", "pub use gates::unused;"),
+                ("gates", "pub unitary fn unused(q:Q<Bit>)->Q<Bit>{q}"),
+                ("unrelated", "pub fn unused(x:Bit)->Bit{x}"),
+            ]);
+            let mut compiler = super::super::snapshot_tests::compiler(&source);
+            let key = compiler
+                .source
+                .resolution
+                .qualified("main::original")
+                .unwrap();
+            let rows = compiler
+                .qmatch_source_rows(key, "main", Span::default(), false)
+                .unwrap();
+            assert_eq!(
+                rows.iter().map(|row| row.0.as_str()).collect::<Vec<_>>(),
+                expected
+            );
+            for row in rows.iter() {
+                assert_eq!(row.1, source.modules[&row.0].source);
+            }
+        }
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
     fn original_closure_keeps_nat_meaning_and_inactive_edges_but_not_unused_imports() {
         let project = project(&[
             ("main", "use phase::turn;use dormant::unused;use unrelated::ignored;
@@ -624,6 +745,7 @@ mod tests {
             types: BTreeSet::new(),
             modules: BTreeSet::new(),
             receipts: BTreeSet::new(),
+            qmatch: false,
         };
         let error = collector
             .root(key, Some(&foreign.source.lexical[&key]))
@@ -725,6 +847,7 @@ mod tests {
                 types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
+                qmatch: false,
             };
             collector.type_root(root).unwrap();
             let result = collector.drain();

@@ -285,7 +285,29 @@ pub(super) fn prepare(
         }
     }
     if target.basis_bits().is_some() {
-        let operation = lower.operation(module, expression, env)?;
+        // Bare arm names get their interface from the original target. Only
+        // constructed arm expressions have an independent body-static plan.
+        let operation = match &expression.kind {
+            StaticOpKind::Name(name) => match lower.retained_bound_operation(module, name)? {
+                Some(bound) => bound,
+                None if lower
+                    .compiler
+                    .locals()
+                    .usage(name)
+                    .static_parameter
+                    .is_some() =>
+                {
+                    return Err(lower.error(
+                        module,
+                        name.span,
+                        ErrorCode::TypeMismatch,
+                        "qmatch arm requires the bound operation for its original static parameter",
+                    ));
+                }
+                None => lower.compiler.provider(module, name, None)?,
+            },
+            _ => lower.operation(module, expression, env)?,
+        };
         if operation.basis != *target
             || operation.codomain != *target
             || operation.effect != Effect::Unitary

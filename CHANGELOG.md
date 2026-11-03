@@ -33,6 +33,9 @@ development milestones from the scope of their evidence.
 - Charge source-row comparisons as they occur. Repeated references to a
   source stop at the first matching module and text. The checked result
   preserves the original order of distinct rows.
+- Resolve bare named arms of nominal selections from their original provider
+  or bound operation. Their source proposals retain the consulted prelude and
+  its original reexport modules.
 - Increase the native source-`qmatch` budget to 13,000,000 work units per
   request. The typed graph check and Rust response reader use the same limit.
 - Check transparent powers of the intrinsic Hadamard and global phase gates

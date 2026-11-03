@@ -374,26 +374,10 @@ impl Frame {
             value,
             declared_effect,
         )?;
-        let mut rows = lower
-            .compiler
-            .retained_ordinary_type_sources(self.key, &name.0, span)?;
-        if self.primitive_prelude {
+        let rows =
             lower
                 .compiler
-                .charge(&name.0, span, rows.iter().map(|row| row.0.len() + 1).sum())?;
-            let mut modules = rows.iter().map(|row| row.0.clone()).collect::<Vec<_>>();
-            modules.push("std::prelude".to_owned());
-            modules.sort_unstable();
-            modules.dedup();
-            rows = lower
-                .compiler
-                .retain_source_modules(&name.0, span, modules)?;
-        }
-        lower.compiler.charge(
-            &name.0,
-            span,
-            rows.iter().map(|row| row.0.len() + row.1.len()).sum(),
-        )?;
+                .qmatch_source_rows(self.key, &name.0, span, self.primitive_prelude)?;
         let sources = rows
             .iter()
             .map(|row| row.as_ref().clone())
