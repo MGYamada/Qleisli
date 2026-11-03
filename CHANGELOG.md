@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Factor the actual complete owner code into a finite target encoding and
+  its ordered spectator coefficients. Arbitrary joint reference amplitudes
+  reconstruct through that same rectangular code at the actual target axes.
+  The original local sector and native arm equation then give its physical
+  action through the target encoding, including padding. Logical target
+  update and whole-caller Gram composition remain pending.
+
 - Relate each finite target's original input/output code to the actual
   rectangular carrier encoding and both native Gram checks. The checked
   local sector acts through those same codes on every physical target row,
