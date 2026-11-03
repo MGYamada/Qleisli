@@ -60,7 +60,7 @@ private def prepare (sourceA sourceB wanted : String) (strict : Bool := false) (
   let catalogue ← GenericCatalogue.read artifact.sources
   let queue ← GenericDutyQueue.read catalogue
   let plan ← Qirf.SourceDutySlots.read queue
-  let expected := if unit then [.unit] else [.bit]
+  let expected : Semantics.FiniteCarrier.Basis := if unit then [.unit] else [.bit]
   let rows ← plan.entries.mapM fun entry =>
     item artifact queue wanted strict expected entry.subject entry.subjectExpectation
   return rows.flatten
