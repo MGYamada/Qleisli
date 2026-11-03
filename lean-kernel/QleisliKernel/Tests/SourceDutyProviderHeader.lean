@@ -23,7 +23,7 @@ private def artifact (name : String := "main::leaf") (sourceIndices : List Nat :
   ⟨#[program],#[⟨[.bit],implementation,.circuit 0,name,"main::leaf",sourceIndices⟩],
     #[("main",text),("spare",spare)],0,none⟩
 
-private def item (artifact : Qirf.Artifact) {catalogue}
+private def item (artifact : Qirf.Artifact) {catalogue : GenericCatalogue.Checked artifact.sources}
     (queue : GenericDutyQueue.Checked catalogue)
     (request : Qirf.RuntimeProviderHeader.Request) (original : GenericDutyQueue.Item catalogue) :
     Qirf.SourceDutySlots.ItemExpectation queue original → WorkM (List (List Nat × Bool × Nat)) :=
