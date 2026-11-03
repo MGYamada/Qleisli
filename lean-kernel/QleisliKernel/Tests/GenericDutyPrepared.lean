@@ -9,7 +9,7 @@ open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Finite
 private def resolutionFresh {sources catalogue owner name original} :
     (entry : GenericCatalogue.Entry (@GenericCatalogue.Checked.toRuntimeChecked sources catalogue) original) →
       @GenericDutyQueue.Resolution sources catalogue owner name original entry → Bool
-  | _,.fresh .. => true
+  | _,.fresh .. | _,.indexed .. => true
   | _,.retained .. => false
 
 private def fresh {sources catalogue record application}
@@ -31,7 +31,7 @@ private def repeated : WorkM (List Bool × List (List Int) × List Nat) := do
     | _ => none
   pure (provenance,actuals,roots)
 
--- The second original application borrows exactly the first lookup receipt.
+-- The second application borrows exactly the first indexed-selection receipt.
 -- Its own Nat map and root/call occurrence remain distinct.
 #guard repeated.run 10000000 |>.1.toOption == some ([true,false],[[1],[2]],[1,2])
 
