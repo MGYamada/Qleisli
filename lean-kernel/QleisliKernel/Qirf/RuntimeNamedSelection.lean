@@ -47,7 +47,7 @@ structure Checked {artifact owner name arguments source request references}
     (named : @RuntimeNamedSelectionSource.Prepared artifact owner name arguments source request references)
     (order : Array Nat) (runtime : RuntimeFamily.Request) where
   root : Validity.Root
-  fresh : RuntimeInterval.Computed (Validity.checkRootFromRoots artifact order named.rows named.roots) root
+  fresh : RuntimeInterval.Computed (Validity.checkRootFromRoots artifact order named.rows named.roots .qmatch) root
   checked : AtRoot named root runtime
   consumed : RuntimeInterval.Computed (readAt named root runtime) checked
 
@@ -58,7 +58,7 @@ caller with an already retained final graph uses readAt instead of a new root.
 def read {artifact owner name arguments source request references}
     (named : @RuntimeNamedSelectionSource.Prepared artifact owner name arguments source request references)
     (order : Array Nat) (runtime : RuntimeFamily.Request) : WorkM (Checked named order runtime) := do
-  let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order named.rows named.roots)
+  let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order named.rows named.roots .qmatch)
   let checked ← NaturalAffine.witness (readAt named root.val runtime)
   return ⟨root.val,by with_reducible exact root.property,checked.val,by with_reducible exact checked.property⟩
 

@@ -10,9 +10,9 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open QleisliKernel.Semantics.ObservingFunction
 open QleisliKernel.Qirf.PureInterval
 
-theorem root_receipts {artifact order extra roots} (root : Validity.Root) (work left : Nat)
-    (ok : (Validity.checkRootFromRoots artifact order extra roots).run work = (.ok root,left)) :
-    ∃ after, (checkGraphReceiptsFromRoots artifact order extra roots).run work =
+theorem root_receipts {artifact order extra roots profile} (root : Validity.Root) (work left : Nat)
+    (ok : (Validity.checkRootFromRoots artifact order extra roots profile).run work = (.ok root,left)) :
+    ∃ after, (checkGraphReceiptsFromRoots artifact order extra roots profile).run work =
       (.ok root.receipts,after) := by
   obtain ⟨receipts,a,hg,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,b,_,h⟩ := bind_success _ _ _ _ _ h
@@ -25,8 +25,8 @@ theorem root_receipts {artifact order extra roots} (root : Validity.Root) (work 
 
 /-- The retained entry and root share their actual computation; a receipt from
 another graph or an arbitrary final vector cannot provide the premise. -/
-theorem realized_snapshot {artifact order extra roots owner selector target}
-    (root : Witness (Validity.checkRootFromRoots artifact order extra roots))
+theorem realized_snapshot {artifact order extra roots owner selector target profile}
+    (root : Witness (Validity.checkRootFromRoots artifact order extra roots profile))
     (bound : SourceArm.Bound artifact owner selector target)
     (checked : SourceArm.Realized artifact root.val.receipts bound) :
     ∃ previous a b c d,

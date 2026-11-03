@@ -30,6 +30,11 @@ development milestones from the scope of their evidence.
   consisting of a single nested selection, both source intervals must identify
   the same Raw instructions. The checker verifies the returned owners in the
   same native graph.
+- Charge source-row comparisons as they occur. Repeated references to a
+  source stop at the first matching module and text. The checked result
+  preserves the original order of distinct rows.
+- Increase the native source-`qmatch` budget to 13,000,000 work units per
+  request. The typed graph check and Rust response reader use the same limit.
 - Check transparent powers of the intrinsic Hadamard and global phase gates
   in the whole-source catalogue. The original count and access demand stay
   attached to the operation, including when the count is zero.

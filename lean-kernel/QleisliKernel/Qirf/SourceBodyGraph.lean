@@ -46,7 +46,7 @@ set_option maxHeartbeats 800000 in
 structure Body {artifact owner name arguments request} (order : Array Nat)
     (headers : Headers artifact owner name arguments request) where
   root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
-  context : SourceBodyContext.Checked headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) root) root.val.program
+  context : SourceBodyContext.Checked headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) .ordinary root) root.val.program
   arms : Witness (headers.discovery.val.arms.mapM fun arm => do
     let body ← @SourceBodyContext.checkArm artifact order (rows headers) (roots headers) root arm
     return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × @SourceBodyContext.ArmChecked artifact order (rows headers) (roots headers) root arm))
@@ -60,7 +60,7 @@ def prepare {artifact owner name arguments request} (order : Array Nat)
     (headers.discovery.val.calls.map fun call => (SourceBodyHeader.roots call.header).length).sum
   exactWork (Exact.charge (5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
   let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
-  let context ← SourceBodyContext.check headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) root) root.val.program
+  let context ← SourceBodyContext.check headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) .ordinary root) root.val.program
   let arms ← NaturalAffine.witness (headers.discovery.val.arms.mapM fun arm => do
     let body ← @SourceBodyContext.checkArm artifact order (rows headers) (roots headers) root arm
     return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × @SourceBodyContext.ArmChecked artifact order (rows headers) (roots headers) root arm))

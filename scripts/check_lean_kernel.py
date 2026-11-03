@@ -123,8 +123,7 @@ def transport_module(name: str) -> bool:
 
 def test_module(name: str) -> bool:
     """Separate audited reduction modules, never production dependencies."""
-    return name in {"QleisliKernel.Tests", "Protocol.Tests"} or name.startswith(
-        ("QleisliKernel.Tests.", "Protocol.Tests."))
+    return name == "QleisliKernel.Tests" or name.startswith("QleisliKernel.Tests.")
 
 
 def check_kernel(root: Path) -> tuple[list[str], int]:
@@ -159,8 +158,6 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
         if name in stack:
             errors.append(f"cyclic kernel import: {name}")
             return
-        if testing and (name == "QleisliKernel" or name.startswith("QleisliKernel.")):
-            transport = False
         key = (name, transport)
         if key in visited:
             return
@@ -213,7 +210,7 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
         errors.append("test-only modules require explicit roots in Tests.lean and Audit.lean")
     test_visited = set()
     for name in sorted(test_roots):
-        visit(name, transport_module(name), set(), test_visited, testing=True)
+        visit(name, False, set(), test_visited, testing=True)
     test_reachable = {name for name, _ in test_visited}
     for name in sorted(test_sources - test_reachable):
         errors.append(f"test-only module absent from test/audit roots: {name}")

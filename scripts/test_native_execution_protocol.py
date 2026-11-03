@@ -4,6 +4,7 @@ Byte comparison is not a source-preservation or simulation-correctness proof.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 import argparse
+from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -112,7 +113,8 @@ class Probe:
             assert result.returncode == 0 and reply.claim in ('accepted', 'pending'), (mode, result)
             assert reply.context.scope == scope, (scope, result)
             if reply.claim == 'accepted':
-                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= 10_000_000, reply
+                work_limit = 13_000_000 if mode == '--qmatch-source-check' else 10_000_000
+                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= work_limit, reply
                 requested = mode in ('--qirf-contract', '--carrier-pure-check',
                                      '--ordinary-root-check', '--qmatch-source-check')
                 assert reply.payload[1] == ('1' if requested else '0'), reply
@@ -188,6 +190,23 @@ def callers(probe):
         probe.check('--qirf-native', envelope('2026', original, graph, wrong, row['indices']), error='decoded_view')
 
 
+def qmatch_work_boundary(probe, original):
+    # Trailing source whitespace leaves every original span and operation
+    # intact. Both the source table and the evidence identity name its bytes.
+    for padding, expected_error in [(13_487, None), (13_488, 'invalid_ir')]:
+        row = deepcopy(original)
+        source = row['artifact']['sources'][0]
+        graph = row['view'][1]
+        for record in [graph[3][0], graph[5][0][4][3][0]]:
+            assert record == ['source', source['path'], source['text']]
+            record[2] += ' ' * padding
+        source['text'] += ' ' * padding
+        data = envelope('2026', inner(row['artifact'], row['request']), qdv(row['view']))
+        reply = probe.check('--qmatch-source-check', data, 'execution', error=expected_error)
+        if expected_error is None:
+            assert 10_000_000 < int(reply.payload[0]) <= 13_000_000, reply
+
+
 def qmatch(probe):
     directory = ROOT / 'tests/fixtures/qmatch_v030'
     rows = []
@@ -208,6 +227,8 @@ def qmatch(probe):
             view[1][3].append(['source', 'std::prelude', ''])
         original = inner(row['artifact'], row['request'])
         graph = qdv(row['view'])
+        if row['name'] == 'original-exact-i':
+            qmatch_work_boundary(probe, row)
         error = (None if row['accepted'] else 'decoded_view'
                  if row['error'] == 'decodedView' else ('invalid_ir', 'contract', 'limit'))
         if not row['accepted'] and 'native_code' in row:

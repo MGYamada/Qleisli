@@ -8,6 +8,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf
 open Semantics.Exact Semantics.Finite Semantics.Observation Semantics.ObservingFunction Finite
 
+/-- The checked entry point selects the public allowance. Request bytes
+cannot select a different graph budget. -/
+inductive WorkProfile where
+  | ordinary | qmatch
+
+def WorkProfile.limit : WorkProfile → Nat
+  | .ordinary => 10000000
+  | .qmatch => 13000000
+
 def nodes (artifact : Artifact) : Hierarchical.Graph.Nodes :=
   artifact.programs.map (fun program =>
     (references 65 program.operations).map (artifact.programs.size + ·)) ++
@@ -113,8 +122,8 @@ def sourceUses (artifact : Artifact) (extra : List (String × String)) : Array B
 carrier-only variant binds each extra row to an independently read nominal
 origin; ordinary checking supplies no extra rows. All other gates are shared. -/
 def checkGraphReceiptsFromRoots (artifact : Artifact) (order : Array Nat)
-    (extra : List (String × String)) (roots : List Nat) : WorkM Slots := do
-  guard ((← get) ≤ 10000000) .limit
+    (extra : List (String × String)) (roots : List Nat) (profile : WorkProfile := .ordinary) : WorkM Slots := do
+  guard ((← get) ≤ profile.limit) .limit
   guard (artifact.programs.size + artifact.entries.size ≤ 65536 && artifact.sources.size ≤ 128) .limit
   guard (artifact.sources.all sourceValid && Raw.unique (artifact.sources.toList.map (·.1)))
   guard ((artifact.sources.toList.map (fun source => source.2.utf8ByteSize)).sum ≤ 1048576) .limit
@@ -146,8 +155,8 @@ def checkGraphReceiptsWithSources (artifact : Artifact) (order : Array Nat)
   checkGraphReceiptsFromRoots artifact order extra [artifact.root]
 
 def checkGraphFromRoots (artifact : Artifact) (order : Array Nat)
-    (extra : List (String × String)) (roots : List Nat) : WorkM (List Dependency) := do
-  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots
+    (extra : List (String × String)) (roots : List Nat) (profile : WorkProfile := .ordinary) : WorkM (List Dependency) := do
+  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots profile
   return (before receipts).map Receipt.dependency
 
 /-- Ordinary compatibility wrapper: no typed request can relax this path. -/
@@ -228,7 +237,7 @@ theorem fold_fresh (artifact : Artifact) (nodes : List Nat) (slots final : Slots
     exact .cons _ _ _ _ _ (checkNode_fresh _ _ _ _ _ _ checked) (ih next middle remaining)
 
 theorem checkGraphReceiptsFromRoots_fresh (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (roots : List Nat) (slots : Slots)
-    (work left : Nat) (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok slots,left)) :
+    (work left : Nat) {profile : WorkProfile} (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok slots,left)) :
     CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList slots ∧
       slots.all Option.isSome = true := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
@@ -262,7 +271,7 @@ theorem checkGraphReceipts_fresh (artifact : Artifact) (order : Array Nat) (slot
   exact checkGraphReceipts_freshWithSources artifact order [] slots work left ok
 
 theorem checkGraphReceiptsFromRoots_schedule (artifact : Artifact) (order : Array Nat) (extra : List (String × String)) (roots : List Nat) (slots : Slots)
-    (work left : Nat) (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok slots,left)) :
+    (work left : Nat) {profile : WorkProfile} (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok slots,left)) :
     ∃ schedule, Hierarchical.Graph.check (nodes artifact) roots order = .ok schedule ∧
       schedule.stats.depth ≤ 32 := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok

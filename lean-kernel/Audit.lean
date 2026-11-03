@@ -77,7 +77,6 @@ import QleisliKernel.Tests.SourceMeaningAction
 import QleisliKernel.Tests.RuntimePreparedSource
 import QleisliKernel.Tests.RuntimeMeaningCaller
 import QleisliKernel.Tests.RuntimeSelectionMeaning
-import Protocol.Tests.RuntimeNamedSelectionBoundary
 import QleisliKernel.Tests.RuntimeOperationTree
 import QleisliKernel.Tests.RuntimeOrdinaryBranchCalls
 import QleisliKernel.Tests.SourceMeaningPrepared

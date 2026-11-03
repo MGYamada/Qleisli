@@ -19,6 +19,10 @@ inductive Mode where
   | readout | preparation | carrierPure | ordinaryRoot | runtimeRoot | qmatchSource
   deriving BEq, DecidableEq, Repr
 
+def Mode.workLimit : Mode → Nat
+  | .qmatchSource => QleisliKernel.Qirf.WorkProfile.qmatch.limit
+  | _ => QleisliKernel.Qirf.WorkProfile.ordinary.limit
+
 def Mode.name : Mode → String
   | .ordinary => "--qirf-native"
   | .contract => "--qirf-contract"

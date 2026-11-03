@@ -88,7 +88,7 @@ private def inspect (fault : Fault) : WorkM Summary := do
 
 -- One initial calibrated whole-study budget; every call includes original
 -- discovery, actual caller supplies, headers, one graph and both provider bodies.
-private def run (fault : Fault) := ((inspect fault).run 26000000).1
+private def run (fault : Fault) := ((inspect fault).run 16000000).1
 
 #guard (run .none).toOption == some ([0,1,2,3,4],[(0,true,true),(1,true,true)],[3],true)
 #guard [Fault.falseMeaning,.dormantFalse,.omittedFirst,.omittedSecond].all fun fault =>

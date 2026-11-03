@@ -163,8 +163,8 @@ theorem fresh_prefix_extends {artifact frontNodes suffix previous final}
 /-- The order, graph and frontNodes are all tied to this actual successful checker run.
 No separate graph is reconstructed and no producer-supplied uniqueness assertion
 is accepted. -/
-theorem successful_prefix {artifact order extra roots final work left}
-    (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok final,left))
+theorem successful_prefix {artifact order extra roots final work left profile}
+    (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok final,left))
     (frontNodes suffix : List Nat) (split : order.toList = frontNodes++suffix) :
     ∃ previous,
       CheckedGraph artifact (Array.replicate artifact.entries.size none) frontNodes previous ∧

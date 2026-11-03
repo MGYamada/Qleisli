@@ -299,6 +299,9 @@ reader's explicit scope; selections still require their recursive arm equations.
 This continuation does not enable a native request, handle or broader source
 preservation claim.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
+The native `--qmatch-source-check` mode has a total budget of 13,000,000 work
+units per request. Decoding, source and graph checks, and execution-view
+comparison share that counter. Exhausting it refuses the request.
 The ordinary source-root wrapper retains its original main-only roots and empty
 extra source-query extension.
 

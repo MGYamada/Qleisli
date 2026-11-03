@@ -21,8 +21,8 @@ def Executes (dependencies : List Semantics.Finite.Dependency)
 /-- Source identity and original IR lookup belong to the same realized entry.
 Both implementation and specification use the final root's actual dependencies;
 no independent root, matrix cache or producer-selected history can substitute. -/
-theorem realized_execution {artifact order extra roots owner selector target}
-    (root : Witness (Validity.checkRootFromRoots artifact order extra roots))
+theorem realized_execution {artifact order extra roots owner selector target profile}
+    (root : Witness (Validity.checkRootFromRoots artifact order extra roots profile))
     (bound : SourceArm.Bound artifact owner selector target)
     (checked : SourceArm.Realized artifact root.val.receipts bound) :
     artifact.programs[bound.binding.entry.implementation]? = some checked.receipt.input.implementation ∧

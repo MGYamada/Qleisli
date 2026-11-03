@@ -7,8 +7,8 @@ namespace QleisliKernel.Qirf.ReceiptTransport
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open QleisliKernel.Semantics.ObservingFunction
 
-theorem successful_entry_step {artifact order extra roots final work left} {index : Nat} {receipt : Receipt}
-    (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok final,left))
+theorem successful_entry_step {artifact order extra roots final work left profile} {index : Nat} {receipt : Receipt}
+    (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok final,left))
     (present : final[index]?.join = some receipt) :
     ∃ frontNodes suffix previous next,
       order.toList = frontNodes ++ (artifact.programs.size+index) :: suffix ∧
@@ -35,8 +35,8 @@ theorem successful_entry_step {artifact order extra roots final work left} {inde
 /-- The historical snapshot comes from the actual entry node in the successful
 run. Readiness and extension refer to that same snapshot, rather than separately
 chosen existentials. No equality of the whole dependency vectors is claimed. -/
-theorem successful_entry_origin {artifact order extra roots final work left} {index : Nat} {receipt : Receipt}
-    (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok final,left))
+theorem successful_entry_origin {artifact order extra roots final work left profile} {index : Nat} {receipt : Receipt}
+    (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok final,left))
     (present : final[index]?.join = some receipt) :
     ∃ entry actual previous a b c d,
       artifact.entries[index]? = some entry ∧
@@ -67,8 +67,8 @@ theorem successful_entry_origin {artifact order extra roots final work left} {in
 /-- This is the agreement needed by a later body-preservation bridge. It covers
 both full original operation lists, including references in either branch.
 The theorem does not itself transport all Raw checker computations or matrices. -/
-theorem successful_entry_references {artifact order extra roots final work left} {index : Nat} {receipt : Receipt}
-    (ok : (checkGraphReceiptsFromRoots artifact order extra roots).run work = (.ok final,left))
+theorem successful_entry_references {artifact order extra roots final work left profile} {index : Nat} {receipt : Receipt}
+    (ok : (checkGraphReceiptsFromRoots artifact order extra roots profile).run work = (.ok final,left))
     (present : final[index]?.join = some receipt) :
     ∃ entry actual previous a b c d,
       artifact.entries[index]? = some entry ∧

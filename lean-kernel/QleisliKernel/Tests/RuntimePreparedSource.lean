@@ -8,6 +8,12 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.RuntimePreparedSource
 open QleisliKernel Finite SourceTypes Qirf
 
+-- Both strings identify a source row. Sharing repeated rows preserves the
+-- first occurrence. Each comparison needs enough work for both rows.
+#guard ((SourceRows.retain [("m","aa"),("m","ab"),("m","aa"),("n","aa")]).run 1000).1.toOption ==
+  some [("m","aa"),("m","ab"),("n","aa")]
+#guard ((SourceRows.retain [("m","aa"),("m","ab")]).run 65).1 matches .error (.arithmetic .workLimit)
+
 def source : String := "#![no_implicit_prelude]\nunitary fn sign(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }\nunitary fn keep(q: Q<Bit>) -> Q<Bit> { q }\nmeaning Sign: Bit = reference(sign);\npub unitary fn route(q: Q<Bit>) -> Q<Bit> { checked_op(sign, Sign)(q) }\nfn main() -> Unit { () }\n"
 
 private def falseSource := source.replace "reference(sign)" "reference(keep)"

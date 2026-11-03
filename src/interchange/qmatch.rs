@@ -7,6 +7,9 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
+/// Total work available to one native source-qmatch request.
+pub(crate) const EXACT_WORK_LIMIT: usize = 13_000_000;
+
 mod context;
 pub use context::{BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
 mod operations;

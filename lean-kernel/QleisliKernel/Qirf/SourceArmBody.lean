@@ -15,8 +15,8 @@ def noSelections {sources owner} (events : List (SourceTypes.SourceTrace.Event s
     | .primitive _ | .phase _ => true
     | .selection .. | .named _ | .operation _ => false
 
-structure Checked {artifact order extra roots owner selector target}
-    (root : Witness (Validity.checkRootFromRoots artifact order extra roots))
+structure Checked {artifact order extra roots owner selector target profile}
+    (root : Witness (Validity.checkRootFromRoots artifact order extra roots profile))
     (bound : SourceArm.Bound artifact owner selector target)
     (realized : SourceArm.Realized artifact root.val.receipts bound)
     (positions : List SourceSequence.Position) where
@@ -28,8 +28,8 @@ structure Checked {artifact order extra roots owner selector target}
 /-- Check the original bound declaration and actual entry implementation under
 the same root dependencies. No source text, signature, body or receipt is
 reconstructed, and an unsupported source action refuses without fallback. -/
-def check {artifact order extra roots owner selector target}
-    (root : Witness (Validity.checkRootFromRoots artifact order extra roots))
+def check {artifact order extra roots owner selector target profile}
+    (root : Witness (Validity.checkRootFromRoots artifact order extra roots profile))
     (bound : SourceArm.Bound artifact owner selector target)
     (realized : SourceArm.Realized artifact root.val.receipts bound)
     (positions : List SourceSequence.Position) : WorkM (Checked root bound realized positions) := do
@@ -42,8 +42,8 @@ def check {artifact order extra roots owner selector target}
     return ⟨source,completeActions,body⟩
   else throw .request
 
-theorem Checked.originalSignature {artifact order extra roots owner selector target}
-    {root : Witness (Validity.checkRootFromRoots artifact order extra roots)}
+theorem Checked.originalSignature {artifact order extra roots owner selector target profile}
+    {root : Witness (Validity.checkRootFromRoots artifact order extra roots profile)}
     {bound : SourceArm.Bound artifact owner selector target}
     {realized : SourceArm.Realized artifact root.val.receipts bound} {positions}
     (checked : Checked root bound realized positions) :

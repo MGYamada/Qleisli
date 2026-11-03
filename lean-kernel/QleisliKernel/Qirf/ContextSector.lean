@@ -143,7 +143,7 @@ def roots {artifact owner name requests} (headers : Headers artifact owner name 
 
 structure Body {artifact owner name requests} (order : Array Nat)
     (headers : Headers artifact owner name requests) (positions : List Position) where
-  root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
+  root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers) .qmatch)
   context : Witness (RawTrace.check headers.source.val root.val.dependencies root.val.program positions)
 
 def prepare {artifact owner name requests} (order : Array Nat)
@@ -158,7 +158,7 @@ def prepare {artifact owner name requests} (order : Array Nat)
   let rootCount := 1+headers.sites.foldl (fun count header => count+header.roots.val.length) 0
   exactWork (Exact.charge (4*nodes+5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
   let root ← SourceTypes.NaturalAffine.witness
-    (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
+    (Validity.checkRootFromRoots artifact order (rows headers) (roots headers) .qmatch)
   let context ← SourceTypes.NaturalAffine.witness
     (RawTrace.check headers.source.val root.val.dependencies root.val.program positions)
   return ⟨root,context⟩
@@ -264,7 +264,7 @@ def check (artifact : Artifact) (order : Array Nat) (owner name : String)
 theorem Checked.originalRoot {artifact order owner name positions requests}
     (checked : Checked artifact order owner name positions requests) :
     ∃ work, Validity.SourceRootPostconditionFromRoots artifact order (rows checked.headers)
-      (roots checked.headers) checked.body.root.val work := by
+      (roots checked.headers) checked.body.root.val work .qmatch := by
   obtain ⟨work,left,ran⟩ := checked.body.root.property
   exact ⟨work,Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ ran⟩
 
