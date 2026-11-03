@@ -121,6 +121,18 @@ inductive EligibleEvents {sources caller} (events : List (SourceRuntimeContext.E
   | basisNat (call : SourceRuntimeContext.NamedEvent sources caller)
       (single : events = [.named call]) (actuals : BasisNatActuals call)
 
+/-- Reuse the same original named-argument eligibility in both continuation
+modes. The actual application, closed signature and premise receipts stay on
+this exact event; no alternate source reader or specialization is selected. -/
+private def readNamedEligibility {sources caller} (call : SourceRuntimeContext.NamedEvent sources caller) :
+    WorkM (EligibleEvents [.named call]) := do
+  let names := call.target.signature.staticNames
+  exactWork (Exact.charge (16*((names.map fun name => name.utf8ByteSize+1).sum+names.length+1)))
+  if nongeneric : call.target.signature.staticNames.isEmpty = true then
+    return .named call rfl nongeneric
+  else
+    return .basisNat call rfl (← readBasisNatActuals call)
+
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
 structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
@@ -135,15 +147,10 @@ private def sequenceWithSelected {sources caller event} (selected : @Selected so
   exactWork (Exact.charge (8*(selected.selected.result.events.length+1)))
   match single : selected.selected.result.events with
   | [.named call] =>
-    let names := call.target.signature.staticNames
-    exactWork (Exact.charge (16*((names.map fun name => name.utf8ByteSize+1).sum+names.length+1)))
-    if nongeneric : call.target.signature.staticNames.isEmpty = true then
-      return ⟨selected.selected,selected.original,
-        .named call (by first | exact single | rfl) nongeneric,selected.unchanged⟩
-    else
-      let actuals ← readBasisNatActuals call
-      return ⟨selected.selected,selected.original,
-        .basisNat call (by first | exact single | rfl) actuals,selected.unchanged⟩
+    let eligible ← readNamedEligibility call
+    have original : EligibleEvents selected.selected.result.events := by
+      first | exact single.symm ▸ eligible | exact eligible
+    return ⟨selected.selected,selected.original,original,selected.unchanged⟩
   | _ =>
     match classified : selected.selected.result.events.mapM classifyEvent with
     | .error _ => throw .request
@@ -154,15 +161,16 @@ def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sour
     WorkM (Sequence event) := do
   sequenceWithSelected (← readSelected event)
 
-/-- The bounded mixed path permits one original observing call, without fresh
-owners. Its complete consumed-role list must be the selected source result's
-own list, before the common named step checks the actual child history. -/
+/-- The bounded mixed path permits one original observing call with the same
+nongeneric-or-Basis/Nat argument evidence, without fresh owners. Its complete
+consumed-role list must be the selected source result's own list, before the
+common named step checks the actual child history. -/
 structure Observing {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
   selected : SourceRuntimeTrace.StaticBody event
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
   call : SourceRuntimeContext.NamedEvent sources caller
   single : selected.result.events = [.named call]
-  nongeneric : call.target.signature.staticNames.isEmpty = true
+  eligible : EligibleEvents [.named call]
   effect : call.effect = .observe
   allocated : selected.result.allocated = []
   callAllocated : call.allocated = []
@@ -199,12 +207,13 @@ def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent 
         caller.utf8ByteSize+call.target.resolution.moduleName.utf8ByteSize+
         Raw.OwnerFlow.fields (selected.selected.result.allocated ++ selected.selected.result.consumed ++
           call.allocated ++ call.consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
-      if checked : call.target.signature.staticNames.isEmpty = true ∧ call.effect = .observe ∧
+      if checked : call.effect = .observe ∧
           selected.selected.result.allocated = [] ∧ call.allocated = [] ∧
           selected.selected.result.consumed = call.consumed ∧
           selected.selected.result.nextOrdinal = event.nextOrdinal then
+        let eligible ← readNamedEligibility call
         return .observing ⟨selected.selected,selected.original,call,(by first | exact single | rfl),
-          checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2.1,checked.2.2.2.2.2⟩
+          eligible,checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2⟩
       else throw .request
     | _ => throw .request
 
