@@ -45,6 +45,7 @@ import QleisliKernel.Tests.RuntimeInterval
 import QleisliKernel.Tests.RuntimeOwnerPhis
 import QleisliKernel.Tests.RuntimeSourceBoundary
 import QleisliKernel.Tests.RuntimePrimitiveAction
+import QleisliKernel.Tests.RuntimeStaticPrimitive
 import QleisliKernel.Tests.RuntimeObservationAction
 import QleisliKernel.Tests.GenericTypeTrace
 import QleisliKernel.Tests.GenericBasisInstance

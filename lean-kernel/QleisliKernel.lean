@@ -99,6 +99,7 @@ import QleisliKernel.Qirf.RuntimeOwnerMap
 import QleisliKernel.Qirf.RuntimeOwnerPhis
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimePrimitiveAction
+import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeObservationAction
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
