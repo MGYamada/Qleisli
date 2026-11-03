@@ -197,7 +197,7 @@ private theorem packed_equal (bits low high otherLow otherHigh : Nat)
   · rintro ⟨rfl,rfl⟩
     rfl
 
-private theorem tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
+theorem tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
     (low high logical : Nat) (bound : low < 2^left.bits) :
     scalar (sparseEntry ((Sparse.ofLayout left).tensor (.ofLayout right)) (low+2^left.bits*high) logical) =
       scalar (sparseEntry (.ofLayout left) low (logical % left.labels.length)) *
@@ -214,7 +214,7 @@ private theorem tensor_coefficient (left right : Layout) (valid : LayoutBounds l
       simp only [Sparse.tensor,Sparse.ofLayout,leftRead,rightRead,bind,Option.bind,pure,Option.some.injEq,condition]
       by_cases equalLow : lowCode = low <;> by_cases equalHigh : highCode = high <;> simp [equalLow,equalHigh]
 
-private theorem encoding_coefficient (code : Layout) (physical logical : Nat)
+theorem encoding_coefficient (code : Layout) (physical logical : Nat)
     (rowBound : physical < 2^code.bits) (colBound : logical < code.labels.length) :
     scalar (sparseEntry (.ofLayout code) physical logical) = entry (QleisliKernel.Semantics.FiniteCarrier.encoding code) physical logical :=
   congrArg scalar ((ofLayout_agrees code).encodingEntry physical logical rowBound colBound)
