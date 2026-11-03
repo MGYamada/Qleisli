@@ -201,6 +201,20 @@ def targetFlip {roles state checked} (output : @Frame roles state checked) (targ
   RuntimeTargetDigit.update output target logical
     (1-decode checked.bindings (dimensionAt output.owners) logical target)
 
+/-- A returned source Bit has exactly two logical digits, regardless of its
+position in the caller's mixed-radix order. -/
+theorem bit_digit_lt {roles state checked} (code : @Frame roles state checked)
+    (binding : Binding) (member : binding ∈ checked.bindings) (basis : binding.owner.basis = [.bit])
+    (logical : Nat) (bound : logical < code.code.dimension) :
+    decode checked.bindings (dimensionAt code.owners) logical binding < 2 := by
+  obtain ⟨actual,_read⟩ := lookup_exists code.owners binding member
+  have card : dimensionAt code.owners binding = 2 := by
+    rw [dimensionAt_eq code.owners binding member actual,bit_layout actual basis]
+    rfl
+  rw [← card]
+  apply decode_bound _ _ _ (cards_positive code.owners) _ _ member
+  rwa [frame_volume code]
+
 theorem target_flip_domain
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -223,16 +237,8 @@ theorem target_flip_domain
   have member : wanted ∈ order := selected.1 (by simp [wanted])
   have originalOwners : codes.owners.returned.first.owner = selector ∧ wanted.owner = target := by
     simpa only [List.map_cons,List.map_nil,List.cons.injEq,and_true] using selected.2
-  obtain ⟨actual,_read⟩ := lookup_exists output.owners wanted member
-  have card : cards wanted = 2 := by
-    change dimensionAt output.owners wanted = 2
-    rw [dimensionAt_eq output.owners wanted member actual,
-      bit_layout actual (by rw [originalOwners.2,targetBasis])]
-    rfl
   have logicalBound : logical < volume order cards := by rw [frame_volume output]; exact bound
-  have digitBound : digit < 2 := by
-    rw [← card]
-    exact decode_bound order cards logical (cards_positive output.owners) logicalBound wanted member
+  have digitBound : digit < 2 := bit_digit_lt output wanted member (by rw [originalOwners.2,targetBasis]) logical bound
   have small : 1-digit < 2 := by omega
   have changed := RuntimeTargetDigit.source_target_update frame codes selectorBasis targetBasis literal
     logical (1-digit) bound small
@@ -260,7 +266,7 @@ theorem target_flip_domain
       · rw [if_neg same,read,if_neg same]
     _ = logical := encode_decode order cards logical unique (cards_positive output.owners) logicalBound
 
-private theorem involution_range (size : Nat) (flip : Nat → Nat)
+theorem involution_range (size : Nat) (flip : Nat → Nat)
     (bounded : ∀ logical < size,flip logical < size)
     (inverse : ∀ logical < size,flip (flip logical) = logical) :
     ((List.range size).map flip).Perm (List.range size) := by
@@ -321,7 +327,7 @@ theorem target_flip_references
       rfl
     _ = _ := (permutation.map (fun logical => scalar (output.embedding physical logical)*joint (flip logical) reference)).sum_eq
 
-private theorem update_self {roles state checked} (output : @Frame roles state checked)
+theorem update_self {roles state checked} (output : @Frame roles state checked)
     (wanted : Binding) (logical : Nat) (bound : logical < output.code.dimension) :
     RuntimeTargetDigit.update output wanted logical
       (decode checked.bindings (dimensionAt output.owners) logical wanted) = logical := by

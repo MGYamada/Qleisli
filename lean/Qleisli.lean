@@ -21,6 +21,7 @@ import Qleisli.RuntimeForestRegroup
 import Qleisli.RuntimeTargetDigit
 import Qleisli.RuntimeTargetScatter
 import Qleisli.RuntimeSelectionAction
+import Qleisli.RuntimeSelectionGram
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
 import Qleisli.Raw

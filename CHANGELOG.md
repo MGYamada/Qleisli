@@ -63,6 +63,8 @@ development milestones from the scope of their evidence.
   reference system. Bind circuit-event boundaries to their actual intervals.
   For a literal two-Bit `quantumIf`, both indexed arm equations now give
   the full output action on arbitrary joint caller/reference amplitudes.
+  The two verified arm matrices preserve every reference-pair inner product
+  when applied to the original caller's logical target.
   Complete source/code/Gram composition remains required before the full qmatch
   profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the

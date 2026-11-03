@@ -246,6 +246,83 @@ fn selected_qmatch_keeps_controlled_permutations_after_evidence_preparation() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_applies_distinct_phased_arms_on_reversed_noncontiguous_axes() {
+    use qleisli::contract::exact::{Budget, Exact};
+    use qleisli::contract::{BasisType, Circuit};
+    use qleisli::ir::{RawOp, WireId};
+
+    let source = "#![no_implicit_prelude]
+        unitary fn zero_arm(q:Q<Bit>)->Q<Bit>{phase[3,2](q)}
+        unitary fn one_arm(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(phase[1,2](q))))}
+        pub unitary fn route(t:Q<Bit>,r:Q<Bit>,u:Q<Unit>,s:Q<Bit>)->(Q<Bit>,Q<Bit>,Q<Unit>,Q<Bit>){
+            let(s,t)=qmatch(s,t){0=>zero_arm,1=>one_arm}; (t,r,u,s)}";
+    let accepted = selected_at(source, "main::route");
+    let raw = accepted.program().raw();
+    let [target, spectator, unit, selector] = raw.quantum_inputs.as_slice() else {
+        panic!("original input owners");
+    };
+    assert_eq!(target.wires, [WireId(0)]);
+    assert_eq!(spectator.wires, [WireId(1)]);
+    assert!(unit.wires.is_empty());
+    assert_eq!(selector.wires, [WireId(2)]);
+    let [
+        RawOp::Join {
+            left,
+            right,
+            output: joined,
+        },
+        RawOp::ApplyUnitary {
+            input,
+            output,
+            steps,
+        },
+        RawOp::Split {
+            input: split,
+            left: s,
+            right: t,
+            left_bits: 1,
+        },
+    ] = raw.operations.as_slice()
+    else {
+        panic!("expected the original selection interval");
+    };
+    assert_eq!(
+        (*left, *right, input, output),
+        (selector.token, target.token, joined, split)
+    );
+    assert_eq!(raw.quantum_outputs, [*t, spectator.token, unit.token, *s]);
+    let local = Circuit::new(BasisType::Bits(2), steps.clone())
+        .unwrap()
+        .matrix(&mut Budget::new(100_000))
+        .unwrap();
+    let packed = |n: usize| (n >> 2) + 2 * (n & 1);
+    for col in 0..8 {
+        let (dest, phase) = if col < 4 {
+            (col, 6 * (col & 1))
+        } else {
+            (col ^ 1, 2 * (col & 1))
+        };
+        for row in 0..8 {
+            let actual = if (row ^ col) & 2 == 0 {
+                local.get(packed(row), packed(col)).unwrap()
+            } else {
+                Exact::zero()
+            };
+            let expected = if row == dest {
+                Exact::phase(phase as i32)
+            } else {
+                Exact::zero()
+            };
+            assert_eq!(actual, expected, "column {col}, row {row}");
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_preserves_nominal_targets_and_original_phases() {
     for (declaration, target, bits) in [
         ("pub enum Tri { A,B,C }", "Tri", 2),

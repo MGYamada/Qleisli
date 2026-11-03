@@ -66,6 +66,14 @@ theorem quantumIf_sector {Reference : Type}
     (Qleisli.RuntimeTargetScatter.target_scatter_references frame codes selectorBasis targetBasis literal
       joint physical label row col reference coordinate bounds.1 rowBound small)
 
+/-- The logical two-arm action in the original owner order. -/
+noncomputable def logicalAction {roles state checked} (code : @Frame roles state checked)
+    (selector target : RuntimeOwnerMap.Binding) (zero one : Matrix) {Reference : Type}
+    (joint : Nat → Reference → ℂ) (index : Nat) (reference : Reference) : ℂ :=
+  let digit := Qleisli.MixedRadix.decode checked.bindings (RuntimeOwnerCodeReindex.dimensionAt code.owners) index
+  action (if digit selector = 0 then zero else one)
+    (fun col => joint (RuntimeTargetDigit.update code target index col)) (digit target) reference
+
 /-- On every physical output row, choose the actual indexed arm with the original
 selector digit and apply it at the original target digit. -/
 theorem quantumIf_action {Reference : Type}
@@ -85,14 +93,12 @@ theorem quantumIf_action {Reference : Type}
     (zeroChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (0,zeroArm) zeroLogical)
     (oneChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (1,oneArm) oneLogical)
     (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
-    let digit := Qleisli.MixedRadix.decode codes.owners.transport.after.bindings
-      (RuntimeOwnerCodeReindex.dimensionAt literal.outputCode.owners)
     Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
         (fun input => referenceAction literal.inputCode joint input reference) physical =
-      referenceAction literal.outputCode (fun index ref =>
-        action (if digit index codes.owners.returned.first = 0 then zeroArm else oneArm)
-          (fun col => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second index col))
-          (digit index codes.owners.returned.second) ref) physical reference := by
+      referenceAction literal.outputCode
+        (logicalAction literal.outputCode codes.owners.returned.first codes.owners.returned.second zeroArm oneArm joint)
+        physical reference := by
+  unfold logicalAction
   let packed := gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
   let label := packed % 2
   let row := packed / 2
