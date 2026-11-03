@@ -86,6 +86,15 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
           let nested ← next body.signature body.events body.summary.staticRows bodyRequest.2 true
           return (discovery.append (Discovery.append ⟨header.original.supplied.arguments.sourceRows,header.roots⟩ nested),rest))
           (⟨graph.sourceRows,[]⟩,bodies)
+      let readNamed {caller : String} (event : SourceRuntimeContext.NamedEvent artifact.sources caller)
+          (position : SourceSequence.Position) (calls : List (SourceSequence.Position × Context)) :
+          WorkM (Discovery × List (SourceSequence.Position × Context)) := do
+        let (callPosition,child) :: calls := calls | throw .request
+        guard (callPosition == position && callPosition.offset == event.call.calleeOffset) .request
+        let source ← SourceRuntimeTrace.readNamedBody event
+        let nested ← next source.checked.signature source.checked.events
+          source.checked.summary.staticRows child true
+        return (⟨event.target.sourceRows ++ nested.rows,nested.roots⟩,calls)
       let initial : Discovery := ⟨signature.sourceRows ++ staticRows,[]⟩
       let (initial,bodies) ← if prefixRequired then do
           guard (!signature.operations.hasMeaningRequirements) .request
@@ -119,13 +128,8 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
               (discovery,bodies)
             return (discovery,sites,calls,branches,bodies)
           | .named event =>
-            let (callPosition,child) :: calls := calls | throw .request
-            guard (callPosition == position && callPosition.offset == event.call.calleeOffset) .request
-            let source ← SourceRuntimeTrace.readNamedBody event
-            let nested ← next source.checked.signature source.checked.events
-              source.checked.summary.staticRows child true
-            return (discovery.append ⟨event.target.sourceRows ++ nested.rows,nested.roots⟩,
-              sites,calls,branches,bodies)
+            let (nested,calls) ← readNamed event position calls
+            return (discovery.append nested,sites,calls,branches,bodies)
           | .operation event =>
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position && callPosition.offset == event.call.calleeOffset &&
@@ -164,8 +168,19 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
               sites,calls,branches,bodies)
           | .staticConditional event _ =>
             let source ← RuntimeStaticPrimitive.readSequence event
-            let _ ← source.positions position
-            return (discovery.append ⟨source.sourceRows,[]⟩,sites,calls,branches,bodies)
+            let positions ← source.positions position
+            guard (positions.length == source.selected.result.events.length) .request
+            let initial := discovery.append ⟨source.sourceRows,[]⟩
+            exactWork (Exact.charge (16*(source.selected.result.events.length+initial.rows.length+initial.roots.length+1)))
+            let (discovery,calls) ← (source.selected.result.events.zip positions).foldlM
+              (fun (discovery,calls) (event,position) => do
+                match event with
+                | .named event =>
+                  let (nested,calls) ← readNamed event position calls
+                  return (discovery.append nested,calls)
+                | .primitive _ | .phase _ => return (discovery,calls)
+                | _ => throw .request) (initial,calls)
+            return (discovery,sites,calls,branches,bodies)
           -- Remaining compound forms are not ordinary-if requests. Their
           -- native obligations/context layout must be connected explicitly.
           | .matching .. | .computed .. | .registerPrimitive .. =>

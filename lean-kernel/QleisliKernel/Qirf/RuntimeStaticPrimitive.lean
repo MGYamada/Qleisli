@@ -4,11 +4,12 @@ import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! A transparent static source selection in the same literal runtime block.
-Selected primitive sequences use the one common event step. The exact original
+Selected primitives or one nongeneric named call use the common event step.
+The exact original
 guard and both source arms remain in StaticEvent.generic; this component
 neither grants inactive duties nor invents a runtime condition, phi or child
-context. Source allocation/retirement and nonprimitive selected bodies refuse this
-bounded continuation. Native root, final storage/history and all pending
+context. Source allocation/retirement and other selected bodies refuse this bounded
+continuation. Native root, final storage/history and all pending
 provider/Meaning/path obligations remain separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeStaticPrimitive
@@ -68,13 +69,19 @@ def readSource {sources caller} (event : SourceRuntimeContext.StaticEvent source
   | .ok action => return ⟨selected.selected,selected.original,action,
       (by first | exact classified | rfl),selected.unchanged⟩
 
+/-- Compound primitives and one original nongeneric named call use the
+same common event handler. General compound call partitions remain separate. -/
+inductive EligibleEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) : Type where
+  | primitives (actions : List Action) (classified : events.mapM classifyEvent = .ok actions)
+  | named (call : SourceRuntimeContext.NamedEvent sources caller)
+      (single : events = [.named call]) (nongeneric : call.target.signature.staticNames.isEmpty = true)
+
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
 structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
   selected : SourceRuntimeTrace.StaticBody event
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
-  actions : List Action
-  classified : selected.result.events.mapM classifyEvent = .ok actions
+  eligible : EligibleEvents selected.result.events
   unchanged : selected.result.allocated = [] ∧ selected.result.consumed = [] ∧
     selected.result.nextOrdinal = event.nextOrdinal
 
@@ -82,10 +89,19 @@ def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sour
     WorkM (Sequence event) := do
   let selected ← readSelected event
   exactWork (Exact.charge (8*(selected.selected.result.events.length+1)))
-  match classified : selected.selected.result.events.mapM classifyEvent with
-  | .error _ => throw .request
-  | .ok actions => return ⟨selected.selected,selected.original,actions,
-      (by first | exact classified | rfl),selected.unchanged⟩
+  match single : selected.selected.result.events with
+  | [.named call] =>
+    let names := call.target.signature.staticNames
+    exactWork (Exact.charge (16*((names.map fun name => name.utf8ByteSize+1).sum+names.length+1)))
+    if nongeneric : call.target.signature.staticNames.isEmpty = true then
+      return ⟨selected.selected,selected.original,
+        .named call (by first | exact single | rfl) nongeneric,selected.unchanged⟩
+    else throw .request
+  | _ =>
+    match classified : selected.selected.result.events.mapM classifyEvent with
+    | .error _ => throw .request
+    | .ok actions => return ⟨selected.selected,selected.original,
+        .primitives actions (by first | exact classified | rfl),selected.unchanged⟩
 
 private def selectedRows {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller)
     (selected : SourceRuntimeTrace.StaticBody event) : List (String × String) :=
