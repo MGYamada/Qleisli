@@ -69,8 +69,9 @@ theorem program_execute (dependencies : List Dependency) (body : Program) (value
   cases original : body.operations.foldlM RawTrace.advance initial with
   | none => simp only [RawAction.program,RawTrace.run,initial,original,bind,Option.bind,Option.map_none]
   | some result =>
-    simp only [RawAction.program,RawTrace.run,initial,original,bind,Option.bind,pure,Option.pure_def,
-      Option.map_some,RawTrace.finish,events_append,RawAction.events,List.foldl_cons,List.foldl_nil,finish]
+    simp only [RawAction.program,RawTrace.run,initial,original,bind,Option.bind,pure,
+      Option.map_some,RawTrace.finish,finish]
+    simp only [RawAction.events,List.foldl_append,List.foldl_cons,List.foldl_nil]
 
 /-- Grouping retains the same intermediate interfaces and the first missing
 operand. This is only the unbounded complex action of the actual Raw steps. -/
@@ -82,7 +83,7 @@ theorem execute_chunks (dependencies : List Dependency) (chunks : List (List Op)
   | nil => rfl
   | cons first rest ih =>
     simp only [execute,List.flatten_cons,List.foldlM_append,List.foldlM_cons]
-    cases prefix : first.foldlM (advance dependencies) (state,values) with
+    cases chunkRead : first.foldlM (advance dependencies) (state,values) with
     | none => rfl
     | some next =>
       obtain ⟨nextState,nextValues⟩ := next
@@ -104,7 +105,7 @@ theorem prepared_action {Reference : Type}
   have grouped := execute_chunks root.dependencies
     (checked.result.actions.map RuntimePureComposition.operations)
     (RawTrace.initial composition.raw.inputs) (fun input => joint input reference)
-  simpa only [List.flatten_map] using
+  simpa only [List.flatMap_def] using
     congrArg (fun result => result.map (finish root.dependencies composition.raw)) grouped
 
 #print axioms execute_trace
