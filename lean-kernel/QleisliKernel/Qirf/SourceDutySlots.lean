@@ -474,13 +474,17 @@ def ItemPlan {sources catalogue} (queue : @GenericDutyQueue.Checked sources cata
     (index : Fin queue.items.length) : Type :=
   ItemExpectation queue (queue.items[index.val]'index.isLt)
 
-private def readItem {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue)
-    (index : Fin queue.items.length) : WorkM (ItemPlan queue index) := do
-  match queue.items[index.val]'index.isLt with
+private def readExpectation {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue)
+    (item : Item catalogue) : WorkM (ItemExpectation queue item) := do
+  match item with
   | .demand _ demand => readDemand demand
   | .header _ reference => readHeader queue reference
   | .call .. => pure ()
   | .pendingRecursion .. => throw .request
+
+private def readItem {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue)
+    (index : Fin queue.items.length) : WorkM (ItemPlan queue index) :=
+  readExpectation queue (queue.items[index.val]'index.isLt)
 
 structure Entry {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
   index : Fin queue.items.length
