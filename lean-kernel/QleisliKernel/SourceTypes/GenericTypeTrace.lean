@@ -1256,17 +1256,22 @@ def readBody (sources : Sources) (owner name : String)
   let result ← NaturalAffine.witness (checkTree definition tree)
   pure ⟨owner,name,definition,none,tree,result.val,by with_reducible exact result.property⟩
 
-/-- Reuse only exact original setup. Parsing and symbolic evaluation of this
-body run here, and retain their genuine prepared-reader argument. -/
-def readBodyPrepared {sources context} (prepared : @PreparedDefinitions sources context)
-    (owner name : String) : WorkM (BodyRecord sources) := do
-  let selected ← lookupDefinition prepared owner name
+/-- A retained row needs no second key search. Parsing and symbolic evaluation
+still run here with the same exact-context table as the call reader. -/
+def readBodyDefinition {sources context owner name} (prepared : @PreparedDefinitions sources context)
+    (selected : PreparedDefinition context owner name) : WorkM (BodyRecord sources) := do
   let definition := selected.value
   let table : PreparedDefinitions definition.context := selected.sameContext.symm ▸ prepared
   let tokens := definition.original.envelope.occurrence.body
   let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
   let result ← NaturalAffine.witness (checkTree definition tree (some table))
   pure ⟨owner,name,definition,some table,tree,result.val,by with_reducible exact result.property⟩
+
+
+/-- Arbitrary component selection retains its actual metered key lookup. -/
+def readBodyPrepared {sources context} (prepared : @PreparedDefinitions sources context)
+    (owner name : String) : WorkM (BodyRecord sources) := do
+  readBodyDefinition prepared (← lookupDefinition prepared owner name)
 
 def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : List (BodyRecord sources))
     (helpers : Option (NaturalHelpers.Checked sources) := none)

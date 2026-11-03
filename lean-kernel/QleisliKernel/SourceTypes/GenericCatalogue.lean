@@ -189,7 +189,16 @@ def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources)
     (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (List (BodyRecord sources)) := do
   let context : DefinitionContext sources := ⟨helpers,some originals,modules,meanings⟩
   let prepared ← prepareDefinitions context
-  ids.mapM fun (owner,name) => readBodyPrepared prepared owner name
+  let keys := prepared.entries.map (fun entry => (entry.owner,entry.name))
+  let fields := ((ids ++ keys).map fun (owner,name) => owner.utf8ByteSize+name.utf8ByteSize+2).sum
+  exactWork (Exact.charge (16*(fields+ids.length+keys.length+1)))
+  -- The complete ordered cohort is already present. Check its actual key
+  -- coverage once, then traverse those exact rows without repeated searches.
+  -- RuntimeChecked.identified separately retains the resulting original order.
+  if ids == keys then
+    prepared.entries.mapM fun entry => readBodyDefinition prepared entry.prepared
+  else
+    ids.mapM fun (owner,name) => readBodyPrepared prepared owner name
 
 structure RuntimeChecked (sources : Sources) where
   modules : List Module
