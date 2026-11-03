@@ -23,6 +23,10 @@ private def tokenFields (tokens : List LocatedToken) : Nat :=
 private def nameFields (names : List String) : Nat :=
   (names.map fun name => name.utf8ByteSize+1).sum
 
+private def originalRows {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (headerRows helperRows : List SourceRows.Row) : List SourceRows.Row :=
+  [(state.owner,state.prepared.original.envelope.source)] ++ headerRows ++ helperRows
+
 /-- An actual canonical lookup of the complete supplying original. The Entry
 retains source/declaration/body identity; equality of display names is not the
 authority for selecting a later module's private context. -/
@@ -41,9 +45,17 @@ structure Original {sources} (catalogue : GenericCatalogue.Checked sources)
   helperRows : List SourceRows.Row
   helpersRead : SourceDutySlots.Computed
     (NaturalRows.bindings sources state.owner state.prepared.helpers state.prepared.bindings) helperRows
+  relevance : SourceRows.Retained (originalRows state headerRows helperRows)
+
+def Original.rawRows {sources catalogue state} (original : @Original sources catalogue state) : List SourceRows.Row :=
+  originalRows state original.headerRows original.helperRows
 
 def Original.rows {sources catalogue state} (original : @Original sources catalogue state) : List SourceRows.Row :=
-  [(state.owner,state.prepared.original.envelope.source)] ++ original.headerRows ++ original.helperRows
+  original.relevance.rows
+
+theorem Original.rows_members {sources catalogue state} (original : @Original sources catalogue state)
+    (row : SourceRows.Row) : row ∈ original.rows ↔ row ∈ original.rawRows :=
+  original.relevance.members row
 
 private def readOriginal {sources} (catalogue : GenericCatalogue.Checked sources)
     (state : GenericLexicalNatural.SomeEnvironment sources) : WorkM (Original catalogue state) := do
@@ -62,9 +74,10 @@ private def readOriginal {sources} (catalogue : GenericCatalogue.Checked sources
       canonical.definition.original.envelope.occurrence = written.occurrence then
     let helpers ← NaturalAffine.witness
       (NaturalRows.bindings sources state.owner state.prepared.helpers state.prepared.bindings)
+    let relevance ← SourceRows.read (originalRows state canonical.definition.rows helpers.val)
     return ⟨entry.val,by with_reducible exact entry.property,
       same.1,same.2.1,same.2.2.1,same.2.2.2.1,same.2.2.2.2,canonical.definition.rows,rfl,
-      helpers.val,by with_reducible exact helpers.property⟩
+      helpers.val,by with_reducible exact helpers.property,relevance⟩
   else throw .request
 
 /-- Only the original initial scope is supported here. No value is selected
@@ -121,6 +134,12 @@ private def readSite {sources} (catalogue : GenericCatalogue.Checked sources)
 private def operationOnly (formal : StaticHeaders.Formal) : Bool :=
   match formal.kind with | .operation _ => true | _ => false
 
+private def applicationRows {sources} (application : ApplicationSource sources) (callerRows : List SourceRows.Row)
+    (candidate : CallName.Checked sources application.state.owner application.scope application.written.callee)
+    (targetRows helperRows : List SourceRows.Row) : List SourceRows.Row :=
+  callerRows ++ CallName.sourceRows candidate ++ [(application.owner,application.target.envelope.source)] ++
+    targetRows ++ helperRows
+
 /-- Replay one real original application in its own captured caller scope.
 The existing ApplicationSource/Transport retains the simultaneous Op insertion;
 this value authenticates its source query and relevant headers, not new actuals.
@@ -150,11 +169,21 @@ structure Application {sources} (catalogue : GenericCatalogue.Checked sources)
   helpersRead : SourceDutySlots.Computed
     (NaturalRows.bindings sources application.owner application.transfer.callee.helpers
       application.transfer.callee.bindings) helperRows
+  relevance : SourceRows.Retained (applicationRows application caller.original.rows candidate targetRows helperRows)
+
+def Application.rawRows {sources catalogue application} (checked : @Application sources catalogue application) :
+    List SourceRows.Row :=
+  applicationRows application checked.caller.original.rawRows checked.candidate checked.targetRows checked.helperRows
 
 def Application.rows {sources catalogue application} (checked : @Application sources catalogue application) :
     List SourceRows.Row :=
-  checked.caller.original.rows ++ CallName.sourceRows checked.candidate ++
-    [(application.owner,application.target.envelope.source)] ++ checked.targetRows ++ checked.helperRows
+  checked.relevance.rows
+
+theorem Application.rows_members {sources catalogue application} (checked : @Application sources catalogue application)
+    (row : SourceRows.Row) : row ∈ checked.rows ↔ row ∈ checked.rawRows := by
+  change row ∈ checked.relevance.rows ↔ _
+  rw [checked.relevance.members]
+  simp only [Application.rawRows,applicationRows,List.mem_append,Original.rows_members]
 
 private def readApplication {sources} (catalogue : GenericCatalogue.Checked sources)
     (application : ApplicationSource sources) : WorkM (Application catalogue application) := do
@@ -179,11 +208,13 @@ private def readApplication {sources} (catalogue : GenericCatalogue.Checked sour
                 (GenericCatalogue.lookup catalogue.toRuntimeChecked application.target.envelope)
               let helpers ← NaturalAffine.witness (NaturalRows.bindings sources application.owner
                 application.transfer.callee.helpers application.transfer.callee.bindings)
+              let relevance ← SourceRows.read (applicationRows application caller.original.rows candidate.val
+                target.val.body.definition.rows helpers.val)
               return ⟨caller,noBases,noNaturals,singleOperation,operationKinds,candidate.val,
                 by with_reducible exact candidate.property,resolution,resolved,
                 same.1,same.2.1,same.2.2.1,same.2.2.2,target.val,by with_reducible exact target.property,
                 target.val.body.definition.rows,rfl,
-                helpers.val,by with_reducible exact helpers.property⟩
+                helpers.val,by with_reducible exact helpers.property,relevance⟩
             else throw .request
         else throw .request
       else throw .request
@@ -200,6 +231,19 @@ def Applications.rows {sources catalogue applications} :
     @Applications sources catalogue applications → List SourceRows.Row
   | .nil => []
   | .cons checked tail => checked.rows ++ tail.rows
+
+def Applications.rawRows {sources catalogue applications} :
+    @Applications sources catalogue applications → List SourceRows.Row
+  | .nil => []
+  | .cons checked tail => checked.rawRows ++ tail.rawRows
+
+theorem Applications.rows_members {sources catalogue applications}
+    (checked : @Applications sources catalogue applications) (row : SourceRows.Row) :
+    row ∈ checked.rows ↔ row ∈ checked.rawRows := by
+  induction checked with
+  | nil => rfl
+  | cons head tail ih =>
+    simp only [Applications.rows,Applications.rawRows,List.mem_append,Application.rows_members,ih]
 
 private def readApplications {sources} (catalogue : GenericCatalogue.Checked sources) :
     (applications : List (ApplicationSource sources)) → WorkM (Applications catalogue applications)
@@ -231,10 +275,22 @@ structure Checked {sources catalogue record invocation demand view}
   nongeneric : provider.signature.original.parsedHeader.staticTokens.isNone = true
   singleton : provider.closed.data.description.nodes = [.provider provider.owner provider.name [] [] []]
   rootNode : provider.closed.data.description.root = 0
+  relevance : SourceRows.Retained (supplier.original.rows ++ duty.rows ++ calls.rows)
+
+def Checked.rawRows {sources catalogue record invocation demand view provider}
+    (checked : @Checked sources catalogue record invocation demand view provider) : List SourceRows.Row :=
+  checked.supplier.original.rawRows ++ checked.duty.rawRows ++ checked.calls.rawRows
 
 def Checked.rows {sources catalogue record invocation demand view provider}
     (checked : @Checked sources catalogue record invocation demand view provider) : List SourceRows.Row :=
-  checked.supplier.original.rows ++ checked.duty.rows ++ checked.calls.rows
+  checked.relevance.rows
+
+theorem Checked.rows_members {sources catalogue record invocation demand view provider}
+    (checked : @Checked sources catalogue record invocation demand view provider) (row : SourceRows.Row) :
+    row ∈ checked.rows ↔ row ∈ checked.rawRows := by
+  change row ∈ checked.relevance.rows ↔ _
+  rw [checked.relevance.members]
+  simp only [Checked.rawRows,List.mem_append,Original.rows_members,Applications.rows_members]
 
 /-- Explicit bounded bare-source branch. No failed strict preparation is caught
 or retried. In particular f[] is not a bare name, even with no closed actuals.
@@ -257,8 +313,12 @@ def read {sources catalogue record invocation demand view}
               provider.closed.data.description.root = 0 then
             exactWork (Exact.charge (16*(invocation.depth+1)))
             let calls ← readApplications catalogue invocation.applications
+            -- Compare each authenticated part once, then retain only its
+            -- compact exact relevance rows. Every source/query/transport
+            -- receipt remains above; semantic occurrences are never deduped.
+            let relevance ← SourceRows.read (supplier.original.rows ++ duty.rows ++ calls.rows)
             return ⟨supplier,supplyingRoot,duty,dutyRecord,demand.transported.receipt,rfl,calls,
-              noGroup,bare,leaf.1,leaf.2.1,leaf.2.2.1,leaf.2.2.2.1,leaf.2.2.2.2.1,leaf.2.2.2.2.2.1,leaf.2.2.2.2.2.2⟩
+              noGroup,bare,leaf.1,leaf.2.1,leaf.2.2.1,leaf.2.2.2.1,leaf.2.2.2.2.1,leaf.2.2.2.2.2.1,leaf.2.2.2.2.2.2,relevance⟩
           else throw .request
         else throw .request
       else throw .request

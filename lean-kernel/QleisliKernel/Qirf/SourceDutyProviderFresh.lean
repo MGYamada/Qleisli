@@ -181,6 +181,18 @@ def Provenance.rows {sources catalogue record invocation demand view provider} :
   | .fresh _ => []
   | .bare eligible => eligible.rows
 
+def Provenance.rawRows {sources catalogue record invocation demand view provider} :
+    @Provenance sources catalogue record invocation demand view provider → List SourceRows.Row
+  | .fresh _ => []
+  | .bare eligible => eligible.rawRows
+
+theorem Provenance.rows_members {sources catalogue record invocation demand view provider}
+    (provenance : @Provenance sources catalogue record invocation demand view provider) (row : SourceRows.Row) :
+    row ∈ provenance.rows ↔ row ∈ provenance.rawRows := by
+  cases provenance with
+  | fresh _ => rfl
+  | bare eligible => exact eligible.rows_members row
+
 structure Checked {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) where
   provenance : Provenance provider

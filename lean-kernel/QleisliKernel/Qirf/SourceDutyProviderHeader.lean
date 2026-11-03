@@ -37,6 +37,22 @@ def Binding.rawRows {artifact catalogue record invocation demand view provider p
     [(supplier.state.owner,supplier.state.prepared.original.envelope.source)] ++ supplier.rows ++
     CallName.sourceRows provider.candidate ++ prepared.provenance.rows ++ binding.header.rows
 
+/-- All pre-compaction source/query rows remain covered. Retained provenance
+parts avoid repeating their raw row-byte comparisons at each later header.
+The bodies, actual queries and source occurrences themselves stay unchanged.
+-/
+def Binding.originalRows {artifact catalogue record invocation demand view provider prepared request}
+    (binding : @Binding artifact catalogue record invocation demand view provider prepared request) : List SourceRows.Row :=
+  let supplier := provider.supplier.origin
+  demand.source.original.sourceRows ++
+    [(supplier.state.owner,supplier.state.prepared.original.envelope.source)] ++ supplier.rows ++
+    CallName.sourceRows provider.candidate ++ prepared.provenance.rawRows ++ binding.header.rows
+
+theorem Binding.rawRows_members {artifact catalogue record invocation demand view provider prepared request}
+    (binding : @Binding artifact catalogue record invocation demand view provider prepared request) (row : SourceRows.Row) :
+    row ∈ binding.rawRows ↔ row ∈ binding.originalRows := by
+  simp only [Binding.rawRows,Binding.originalRows,List.mem_append,SourceDutyProviderFresh.Provenance.rows_members]
+
 /-- Preserve the concrete forward subject's complete root list, including its
 evidence node when present. This does not assert the final graph is checked. -/
 def Binding.roots {artifact catalogue record invocation demand view provider prepared request}
@@ -52,6 +68,11 @@ structure Checked (artifact : Artifact) {catalogue record invocation demand view
 def Checked.rows {artifact catalogue record invocation demand view provider prepared request}
     (checked : @Checked artifact catalogue record invocation demand view provider prepared request) : List SourceRows.Row :=
   checked.relevance.rows
+
+theorem Checked.rows_members {artifact catalogue record invocation demand view provider prepared request}
+    (checked : @Checked artifact catalogue record invocation demand view provider prepared request) (row : SourceRows.Row) :
+    row ∈ checked.rows ↔ row ∈ checked.binding.originalRows := by
+  exact (checked.relevance.members row).trans (checked.binding.rawRows_members row)
 
 def Checked.roots {artifact catalogue record invocation demand view provider prepared request}
     (checked : @Checked artifact catalogue record invocation demand view provider prepared request) : List Nat :=
