@@ -5,10 +5,12 @@ import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! A transparent static source selection in the same literal runtime block.
 Selected primitives or one nongeneric named call use the common event step.
+The mixed continuation separately retains a destructive observing call's exact
+source delta; the pure continuation still requires unchanged ownership.
 The exact original
 guard and both source arms remain in StaticEvent.generic; this component
 neither grants inactive duties nor invents a runtime condition, phi or child
-context. Source allocation/retirement and other selected bodies refuse this bounded
+context. Source allocation and other selected bodies refuse this bounded
 continuation. Native root, final storage/history and all pending
 provider/Meaning/path obligations remain separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -37,6 +39,19 @@ def classify {sources caller} : List (SourceRuntimeContext.Event sources caller)
   | [event] => classifyEvent event
   | _ => .error "compound static continuation uses the common event step"
 
+private structure OriginalSelection {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
+  selected : SourceRuntimeTrace.StaticBody event
+  original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
+
+/-- Both continuation modes authenticate the same original selected body using
+the existing evaluator. Neither mode supplies a replacement source summary. -/
+private def readOriginalSelection {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
+    WorkM (OriginalSelection event) := do
+  let selected ← NaturalAffine.witness (SourceRuntimeTrace.readStaticSource event)
+  exactWork (Exact.charge (32*(selected.val.result.events.length+
+    Raw.OwnerFlow.fields (selected.val.result.allocated ++ selected.val.result.consumed)+1)))
+  return ⟨selected.val,by with_reducible exact selected.property⟩
+
 private structure Selected {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
   selected : SourceRuntimeTrace.StaticBody event
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
@@ -45,12 +60,10 @@ private structure Selected {sources caller} (event : SourceRuntimeContext.Static
 
 private def readSelected {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
     WorkM (Selected event) := do
-  let selected ← NaturalAffine.witness (SourceRuntimeTrace.readStaticSource event)
-  exactWork (Exact.charge (32*(selected.val.result.events.length+
-    Raw.OwnerFlow.fields (selected.val.result.allocated ++ selected.val.result.consumed)+1)))
-  if unchanged : selected.val.result.allocated = [] ∧ selected.val.result.consumed = [] ∧
-      selected.val.result.nextOrdinal = event.nextOrdinal then
-    return ⟨selected.val,by with_reducible exact selected.property,unchanged⟩
+  let selected ← readOriginalSelection event
+  if unchanged : selected.selected.result.allocated = [] ∧ selected.selected.result.consumed = [] ∧
+      selected.selected.result.nextOrdinal = event.nextOrdinal then
+    return ⟨selected.selected,selected.original,unchanged⟩
   else throw .request
 
 structure Source {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
@@ -85,9 +98,8 @@ structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent so
   unchanged : selected.result.allocated = [] ∧ selected.result.consumed = [] ∧
     selected.result.nextOrdinal = event.nextOrdinal
 
-def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
+private def sequenceWithSelected {sources caller event} (selected : @Selected sources caller event) :
     WorkM (Sequence event) := do
-  let selected ← readSelected event
   exactWork (Exact.charge (8*(selected.selected.result.events.length+1)))
   match single : selected.selected.result.events with
   | [.named call] =>
@@ -103,6 +115,64 @@ def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sour
     | .ok actions => return ⟨selected.selected,selected.original,
         .primitives actions (by first | exact classified | rfl),selected.unchanged⟩
 
+def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
+    WorkM (Sequence event) := do
+  sequenceWithSelected (← readSelected event)
+
+/-- The bounded mixed path permits one original observing call, without fresh
+owners. Its complete consumed-role list must be the selected source result's
+own list, before the common named step checks the actual child history. -/
+structure Observing {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
+  selected : SourceRuntimeTrace.StaticBody event
+  original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
+  call : SourceRuntimeContext.NamedEvent sources caller
+  single : selected.result.events = [.named call]
+  nongeneric : call.target.signature.staticNames.isEmpty = true
+  effect : call.effect = .observe
+  allocated : selected.result.allocated = []
+  callAllocated : call.allocated = []
+  consumed : selected.result.consumed = call.consumed
+  ordinal : selected.result.nextOrdinal = event.nextOrdinal
+
+inductive Continuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
+  | unchanged (source : Sequence event)
+  | observing (source : Observing event)
+
+def Continuation.selected {sources caller event} : @Continuation sources caller event → SourceRuntimeTrace.StaticBody event
+  | .unchanged source => source.selected
+  | .observing source => source.selected
+
+def Continuation.original {sources caller event} (source : @Continuation sources caller event) :
+    RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) source.selected :=
+  match source with
+  | .unchanged source => source.original
+  | .observing source => source.original
+
+/-- Used only by discovery and Mode.runtimeBody. Pure checking uses readSequence
+and retains its previous no-consumption contract. No failed read is retried. -/
+def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
+    WorkM (Continuation event) := do
+  let selected ← readOriginalSelection event
+  if unchanged : selected.selected.result.allocated = [] ∧ selected.selected.result.consumed = [] ∧
+      selected.selected.result.nextOrdinal = event.nextOrdinal then
+    return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩)
+  else
+    match single : selected.selected.result.events with
+    | [.named call] =>
+      let names := call.target.signature.staticNames
+      exactWork (Exact.charge (32*((names.map fun name => name.utf8ByteSize+1).sum+names.length+
+        caller.utf8ByteSize+call.target.resolution.moduleName.utf8ByteSize+
+        Raw.OwnerFlow.fields (selected.selected.result.allocated ++ selected.selected.result.consumed ++
+          call.allocated ++ call.consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
+      if checked : call.target.signature.staticNames.isEmpty = true ∧ call.effect = .observe ∧
+          selected.selected.result.allocated = [] ∧ call.allocated = [] ∧
+          selected.selected.result.consumed = call.consumed ∧
+          selected.selected.result.nextOrdinal = event.nextOrdinal then
+        return .observing ⟨selected.selected,selected.original,call,(by first | exact single | rfl),
+          checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2.1,checked.2.2.2.2.2⟩
+      else throw .request
+    | _ => throw .request
+
 private def selectedRows {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller)
     (selected : SourceRuntimeTrace.StaticBody event) : List (String × String) :=
   event.naturals.sourceRows ++ selected.result.staticRows ++
@@ -117,13 +187,15 @@ def Source.sourceRows {sources caller event} (source : @Source sources caller ev
 def Sequence.sourceRows {sources caller event} (source : @Sequence sources caller event) : List (String × String) :=
   selectedRows event source.selected
 
+def Continuation.sourceRows {sources caller event} (source : @Continuation sources caller event) : List (String × String) :=
+  selectedRows event source.selected
+
 /-- Existing zero/single-event intervals keep their original behavior. For
 compound primitives this first eligible decomposition has one literal Raw
 instruction per event; each slice still needs the independent local equation.
 There is no new count maximum and no claim about other equivalent decompositions. -/
-def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)
+private def selectedPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
     (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) := do
-  let events := sequence.selected.result.events
   exactWork (Exact.charge (16*(events.length+1)))
   match events with
   | [] =>
@@ -133,6 +205,14 @@ def Sequence.positions {sources caller event} (sequence : @Sequence sources call
   | _ =>
     guard (parent.count == events.length) .request
     return events.zipIdx.map fun (event,index) => ⟨event.offset,parent.start+index,1⟩
+
+def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)
+    (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) :=
+  selectedPositions sequence.selected.result.events parent
+
+def Continuation.positions {sources caller event} (source : @Continuation sources caller event)
+    (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) :=
+  selectedPositions source.selected.result.events parent
 
 structure Frame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) where
   checked : RuntimeOwnerMap.Checked roles state
@@ -181,6 +261,50 @@ def readAfter {sources caller dependencies program block start count event}
     let frame ← readFrame (event.held ++ valueOwners sequence.selected.result.value ++ owners sequence.selected.result.remaining)
       interval.after after.bindings
     return ⟨same.1,same.2,frame⟩
+  else throw .request
+
+structure ContinuationBefore {sources caller dependencies program block start count event}
+    (source : @Continuation sources caller event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) where
+  ordinal : before.nextOrdinal = event.nextOrdinal
+  frame : Frame (event.held ++ owners event.before) interval.before before.bindings
+
+def readContinuationBefore {sources caller dependencies program block start count event}
+    (source : @Continuation sources caller event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) : WorkM (ContinuationBefore source interval before) := do
+  if ordinal : before.nextOrdinal = event.nextOrdinal then
+    return ⟨ordinal,← readFrame (event.held ++ owners event.before) interval.before before.bindings⟩
+  else throw .request
+
+/-- The mixed exit uses the exact selected source deltas. Issued and retired
+identities include every consumed owner; no live-frame comparison can erase
+that history. The ordinary SSA result remains the actual common step's state. -/
+structure ContinuationAfter {sources caller dependencies program block start count event}
+    (source : @Continuation sources caller event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired : List Owner) where
+  ordinal : after.nextOrdinal = source.selected.result.nextOrdinal
+  issued : after.issued = before.issued ++ source.selected.result.allocated
+  retired : afterRetired = beforeRetired ++ source.selected.result.consumed
+  frame : Frame (event.held ++ valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
+    interval.after after.bindings
+
+def readContinuationAfter {sources caller dependencies program block start count event}
+    (source : @Continuation sources caller event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired : List Owner) :
+    WorkM (ContinuationAfter source interval before after beforeRetired afterRetired) := do
+  exactWork (Exact.charge (32*(Raw.OwnerFlow.fields (before.issued ++ after.issued ++
+    source.selected.result.allocated ++ beforeRetired ++ afterRetired ++ source.selected.result.consumed)+
+    after.nextOrdinal+source.selected.result.nextOrdinal+1)))
+  if history : after.nextOrdinal = source.selected.result.nextOrdinal ∧
+      after.issued = before.issued ++ source.selected.result.allocated ∧
+      afterRetired = beforeRetired ++ source.selected.result.consumed then
+    let frame ← readFrame (event.held ++ valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
+      interval.after after.bindings
+    return ⟨history.1,history.2.1,history.2.2,frame⟩
   else throw .request
 
 inductive Bound {dependencies program} (block : RuntimeInterval.Block dependencies program)

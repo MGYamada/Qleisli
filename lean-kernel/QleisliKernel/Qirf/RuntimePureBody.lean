@@ -425,7 +425,10 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
         (fun state (event,position) => do
           match event with
           | .staticConditional event _ =>
-            let sequence ← RuntimeStaticPrimitive.readSequence event
+            let sequence ← match mode with
+              | .pureBody => return RuntimeStaticPrimitive.Continuation.unchanged
+                  (← RuntimeStaticPrimitive.readSequence event)
+              | .runtimeBody => RuntimeStaticPrimitive.readContinuation event
             let positions ← sequence.positions position
             guard (positions.length == sequence.selected.result.events.length) .request
             let state ← advance state position.start
@@ -433,18 +436,18 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             let interval ← RuntimeInterval.check prepared.block position.start position.count
             let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
             let before : RuntimeStructuralAction.SourceState := {history with bindings}
-            let _ ← RuntimeStaticPrimitive.readBefore sequence interval before
+            let _ ← RuntimeStaticPrimitive.readContinuationBefore sequence interval before
             let count := sequence.selected.result.events.length
-            -- The genuine shared fold appends each primitive island/step to
-            -- the existing prefixes. Charge those copies and all comparisons.
+            -- The genuine shared fold appends the actual pure or mixed steps
+            -- to the existing prefixes. Charge those copies and comparisons.
             exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
               32*(Raw.OwnerFlow.fields retired+1)))
             let initial : LoopState dependencies program prepared.block :=
               (before,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies)
             let result ← (sequence.selected.result.events.zip positions).foldlM step initial
             let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_calls,_sites,_bodies) := result
-            guard (afterCursor == position.start+position.count && afterRetired == retired) .request
-            let _ ← RuntimeStaticPrimitive.readAfter sequence interval before after
+            guard (afterCursor == position.start+position.count) .request
+            let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired
             return result
           | _ => step state (event,position)) (initialHistory,([] : List Owner),initialOrdinary,
             ([] : List (Node dependencies program prepared.block)),([] : List (Step dependencies program prepared.block)),

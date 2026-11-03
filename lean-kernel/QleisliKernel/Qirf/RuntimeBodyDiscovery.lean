@@ -167,7 +167,7 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
             return (discovery.append ⟨CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows,[]⟩,
               sites,calls,branches,bodies)
           | .staticConditional event _ =>
-            let source ← RuntimeStaticPrimitive.readSequence event
+            let source ← RuntimeStaticPrimitive.readContinuation event
             let positions ← source.positions position
             guard (positions.length == source.selected.result.events.length) .request
             let initial := discovery.append ⟨source.sourceRows,[]⟩
