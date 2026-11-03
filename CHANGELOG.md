@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Use one source discovery handler for existing metadata callers and exact
+  source-body plans. Keep original queue coverage, access demands, arm roots
+  and static eligibility. Selected static query rows now follow event order;
+  native caller traversal and complete source acceptance remain separate.
+
 - Factor unchanged discovery data and distinguish supplied metadata from
   genuine source-body views for the forthcoming common staged traversal.
   Existing discovery and native acceptance behavior remain unchanged.
