@@ -18,7 +18,7 @@ theorem step_add (dependencies : List Dependency) (operation : Step)
   simp only [step]
   by_cases disabled : (!enabled controls output) = true
   · simp only [disabled, if_true]
-  · simp only [disabled, if_false]
+  · simp only [disabled, Bool.false_eq_true, if_false]
     cases action with
     | hadamard axis =>
       by_cases high : bit output axis = 1 <;>
@@ -29,11 +29,12 @@ theorem step_add (dependencies : List Dependency) (operation : Step)
       intro input _member
       by_cases selected : permutation[input]? == some (gather output axes)
       · simp only [selected, if_true, add_mul]
-      · simp only [selected, if_false, zero_add]
+      · simp only [selected, Bool.false_eq_true, if_false, zero_add]
     | contract axes index adjoint =>
-      cases dependencies[index]? with
-      | none => simp only [zero_add]
+      cases lookup : dependencies[index]? with
+      | none => simp only [lookup, zero_add]
       | some dependency =>
+        simp only [lookup]
         rw [← List.sum_map_add]
         apply Qleisli.Exact.sum_map_congr
         intro input _member
@@ -47,7 +48,7 @@ theorem step_scale (dependencies : List Dependency) (operation : Step)
   simp only [step]
   by_cases disabled : (!enabled controls output) = true
   · simp only [disabled, if_true]
-  · simp only [disabled, if_false]
+  · simp only [disabled, Bool.false_eq_true, if_false]
     cases action with
     | hadamard axis =>
       by_cases high : bit output axis = 1 <;>
@@ -59,11 +60,12 @@ theorem step_scale (dependencies : List Dependency) (operation : Step)
       by_cases selected : permutation[input]? == some (gather output axes)
       · simp only [selected, if_true]
         ring
-      · simp only [selected, if_false, zero_mul]
+      · simp only [selected, Bool.false_eq_true, if_false, zero_mul]
     | contract axes index adjoint =>
-      cases dependencies[index]? with
-      | none => simp only [zero_mul]
+      cases lookup : dependencies[index]? with
+      | none => simp only [lookup, zero_mul]
       | some dependency =>
+        simp only [lookup]
         rw [← List.sum_map_mul_right]
         apply Qleisli.Exact.sum_map_congr
         intro input _member
