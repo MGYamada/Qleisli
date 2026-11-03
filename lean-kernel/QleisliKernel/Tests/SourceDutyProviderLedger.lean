@@ -179,9 +179,30 @@ private def hasClosedProvider : WorkM Bool := do
     | _ => fun _ => false
   return plan.entries.any fun entry => hasProviders entry.subject entry.subjectExpectation
 
--- Zero power keeps its closed original child, including a specialized provider
--- outside this bare subset. The full ledger fails instead of silently omitting it.
+private def bareOnlyItem (artifact : Artifact) {catalogue : GenericCatalogue.Checked artifact.sources}
+    (queue : GenericDutyQueue.Checked catalogue) (item : GenericDutyQueue.Item catalogue) :
+    SourceDutySlots.ItemExpectation queue item → WorkM Unit :=
+  match item with
+  | .demand _ _ => fun planned => do
+    for provider in planned.providers do
+      let _ ← SourceDutyProviderBody.prepareBare artifact provider.2 (.pure 0,.mk [] [] [] [] [])
+    pure ()
+  | .header .. | .call .. | .pendingRecursion .. => fun _ => pure ()
+
+private def bareOnlyGenericZero : WorkM Unit := do
+  let artifact : Artifact := ⟨#[program false],#[],#[("main",genericZero)],0,none⟩
+  let catalogue ← GenericCatalogue.read artifact.sources
+  let queue ← GenericDutyQueue.read catalogue
+  let plan ← SourceDutySlots.read queue
+  for entry in plan.entries do
+    bareOnlyItem artifact queue entry.subject entry.subjectExpectation
+
+-- Zero power still keeps both actual children. The integrated source-only
+-- ledger now prepares their authenticated Nat applications; body/IR/Meaning
+-- equations are not inferred from this metadata result. The former explicit
+-- Bare-only refusal remains a separately exercised historical subset.
 #guard hasClosedProvider.run 10000000 |>.1.toOption == some true
-#guard (match (sourcePlan genericZero).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard (sourcePlan genericZero).run 10000000 |>.1.toOption == some (2,false,false)
+#guard (match bareOnlyGenericZero.run 10000000 with | (.error .request,_) => true | _ => false)
 
 end QleisliKernel.Tests.SourceDutyProviderLedger
