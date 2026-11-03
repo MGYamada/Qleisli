@@ -209,13 +209,26 @@ def unconsumed {sources catalogue} (item : @Item sources catalogue) : Assessment
 
 structure Entry {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
   index : Fin queue.items.length
+  subject : Item catalogue
+  atIndex : subject = queue.items[index.val]'index.isLt
   assessment : Assessment (queue.items[index.val]'index.isLt)
   original : ∃ before after,
     (inspect (queue.items[index.val]'index.isLt)).run before = (.ok assessment,after)
 
+/-- The stored subject is the exact indexed queue item. Transport changes only
+the dependent type; it does not re-index the linked queue at runtime. -/
+def Entry.subjectAssessment {sources catalogue queue} (entry : @Entry sources catalogue queue) :
+    Assessment entry.subject := entry.atIndex.symm ▸ entry.assessment
+
 def Entry.unconsumed {sources catalogue queue} (entry : @Entry sources catalogue queue) : Bool :=
-  QleisliKernel.Qirf.SourcePendingMeaning.unconsumed
-    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.unconsumed entry.subject entry.subjectAssessment
+
+theorem Entry.unconsumed_original {sources catalogue queue} (entry : @Entry sources catalogue queue) :
+    entry.unconsumed = QleisliKernel.Qirf.SourcePendingMeaning.unconsumed
+      (queue.items[entry.index.val]'entry.index.isLt) entry.assessment := by
+  rcases entry with ⟨index,subject,atIndex,assessment,original⟩
+  cases atIndex
+  rfl
 
 def conditionalKeys {sources catalogue} (item : @Item sources catalogue) : Assessment item → List Key :=
   match item with
@@ -225,8 +238,7 @@ def conditionalKeys {sources catalogue} (item : @Item sources catalogue) : Asses
   | _ => fun _ => []
 
 def Entry.conditionalKeys {sources catalogue queue} (entry : @Entry sources catalogue queue) : List Key :=
-  QleisliKernel.Qirf.SourcePendingMeaning.conditionalKeys
-    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.conditionalKeys entry.subject entry.subjectAssessment
 
 def inactive {sources catalogue} (item : @Item sources catalogue) : Assessment item → Bool :=
   match item with
@@ -235,8 +247,14 @@ def inactive {sources catalogue} (item : @Item sources catalogue) : Assessment i
   | _ => fun _ => false
 
 def Entry.inactive {sources catalogue queue} (entry : @Entry sources catalogue queue) : Bool :=
-  QleisliKernel.Qirf.SourcePendingMeaning.inactive
-    (queue.items[entry.index.val]'entry.index.isLt) entry.assessment
+  QleisliKernel.Qirf.SourcePendingMeaning.inactive entry.subject entry.subjectAssessment
+
+private def retain {sources catalogue queue} (index : Fin queue.items.length)
+    (subject : @Item sources catalogue) (atIndex : subject = queue.items[index.val]'index.isLt)
+    (assessment : Assessment subject)
+    (original : ∃ before after,(inspect subject).run before = (.ok assessment,after)) : Entry queue := by
+  cases atIndex
+  exact ⟨index,_,rfl,assessment,original⟩
 
 structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) where
   queue : GenericDutyQueue.Checked catalogue
@@ -253,11 +271,18 @@ is not an access proof. Recursion with unresolved coverage cannot pass. -/
 def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Checked catalogue) := do
   let queue ← NaturalAffine.witness (GenericDutyQueue.read catalogue)
   let items := queue.val.items
-  exactWork (Exact.charge (16*(catalogue.records.length+items.length+1)^2))
+  -- Convert once and retain each actual subject. Array access, the range/map
+  -- coverage comparison, completeness and withheld checks are linear; there
+  -- is no repeated linked-list index scan. inspect keeps all its own charges.
+  exactWork (Exact.charge (16*(catalogue.records.length+items.length+1)))
+  let indexed := items.toArray
   if complete : queue.val.complete = true then
     let entries ← (List.finRange items.length).mapM fun index => do
-      let assessment ← NaturalAffine.witness (inspect (items[index.val]'index.isLt))
-      return (⟨index,assessment.val,by with_reducible exact assessment.property⟩ : Entry queue.val)
+      let subject := indexed[index.val]'(by simpa only [indexed,List.size_toArray] using index.isLt)
+      have atIndex : subject = items[index.val]'index.isLt := by
+        simp only [subject,indexed,List.getElem_toArray]
+      let assessment ← NaturalAffine.witness (inspect subject)
+      return retain index subject atIndex assessment.val (by with_reducible exact assessment.property)
     if every : entries.map (·.index) = List.finRange queue.val.items.length then
       if withheld : entries.all (fun entry => !entry.unconsumed) = true then
         return ⟨queue.val,by with_reducible exact queue.property,complete,entries,every,withheld⟩

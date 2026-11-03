@@ -8,6 +8,8 @@ import Qleisli.Finite
 import Qleisli.FinitePull
 import Qleisli.FiniteCircuitPull
 import Qleisli.FiniteMatrixPull
+import Qleisli.RawActionLinear
+import Qleisli.FiniteMatrixAction
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport
