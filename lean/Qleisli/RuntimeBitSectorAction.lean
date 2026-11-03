@@ -49,6 +49,35 @@ private theorem bit_action {Reference : Type} {port : Semantics.Raw.Port} {code 
   exact (Qleisli.Exact.sum_map_congr _ _ _ terms).trans
     (Qleisli.Exact.range_delta_sum 2 row (fun col => joint col reference) bound)
 
+/-- The actual indexed sector and the original target owner code supply the
+selector bound and the exact column count used in the logical action. -/
+theorem binding_bounds
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {inputCode outputCode : Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted
+      codes.owners.before codes.owners.transport.after)
+    {label required logical}
+    (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding
+      inputCode outputCode retained.sectors (label,required) logical) :
+    label < 2 ∧ required.cols = 2 := by
+  obtain ⟨sector,found,_map,_same⟩ := Qleisli.NominalSector.logical_binding_map binding
+  have inside := (List.getElem?_eq_some_iff.mp found).1
+  have lengths := QleisliKernel.Exact.listRel_length _ _ _ literal.sectorReference.2.2.2.2.2.2.2
+  rw [lengths,List.length_range] at inside
+  have inputRead : RuntimeInterval.Computed
+      (Carrier.ownerCode [⟨codes.owners.selected.second.port,[.bit]⟩]) inputCode := by
+    simpa only [targetBasis] using codes.inputRead
+  refine ⟨inside,?_⟩
+  have original : logical = required := binding.1
+  rw [← original,binding.2.1,bit_code inputRead]
+  rfl
+
 /-- A nonempty or empty actual local tape acts by its same nominal sector on
 the Bit target slice of the entire source-coded caller state. The full joint
 amplitudes are used directly, including every untouched owner and reference.
@@ -84,12 +113,7 @@ theorem bit_target_sector_references {Reference : Type}
       (Carrier.ownerCode [⟨codes.owners.returned.second.port,[.bit]⟩]) outputCode := by
     simpa only [targetBasis] using codes.outputRead
   have read := literal.sectorReference
-  obtain ⟨sector,found,_map,_same⟩ := Qleisli.NominalSector.logical_binding_map binding
-  have labelBound : label < 2 := by
-    have inside := (List.getElem?_eq_some_iff.mp found).1
-    have lengths := QleisliKernel.Exact.listRel_length _ _ _ read.2.2.2.2.2.2.2
-    rw [lengths,List.length_range] at inside
-    exact inside
+  have labelBound := (binding_bounds frame codes targetBasis literal binding).1
   obtain ⟨before,after,sectorsRead⟩ := read.2.2.2.2.2.2.1
   have valid := (QleisliKernel.FiniteRestriction.readSectors_bound _ _ _ _ _ before after sectorsRead).2.2.1
   have valid : retained.steps.all (QleisliKernel.Finite.stepValid dependencies 2) = true := by

@@ -495,29 +495,23 @@ private theorem two_axis_set (physical first second label row input : Nat) (diff
   rw [RuntimeScatterTransport.scatter_gather physical _ unique,coordinate,write_packed_bit label row input labelBound rowBound] at actual
   simpa only [List.getElem_cons_succ,List.getElem_cons_zero,scatter_one physical second input small] using actual.symm
 
-/-- The original two-returned-port sector slice is precisely replacement of
-the same target's logical digit in the complete caller code. Both source port
-reads, real returned axes and every spectator's retained code remain bound to
-the same Literal. The selector label is unchanged, including reversed axes. -/
-theorem target_scatter_references
-    {Reference : Type} {dependencies program block start count inputs outputs selector target}
+/-- The two returned Bit axes come from their own retained code reads and the
+same complete output-owner map. Actual Raw validity makes the axes distinct;
+no width equality or supplied coordinate identifies either source owner. -/
+theorem returned_bit_axes
+    {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
     {inputCode outputCode}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
     (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
     {selectorBits targetBits retained restricted}
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
-      codes.owners.before codes.owners.transport.after)
-    (joint : Nat → Reference → ℂ) (physical label row input : Nat) (reference : Reference)
-    (coordinate : gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
-      QleisliKernel.FiniteRestriction.pack 1 label row)
-    (labelBound : label < 2) (rowBound : row < 2) (small : input < 2) :
-    referenceAction literal.outputCode joint
-        (scatter physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
-          (QleisliKernel.FiniteRestriction.pack 1 label input)) reference =
-      referenceAction literal.outputCode
-        (fun logical ref => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second logical input) ref)
-        physical reference := by
+      codes.owners.before codes.owners.transport.after) :
+    ∃ firstAxis secondAxis,
+      codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf = [firstAxis] ∧
+      codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf = [secondAxis] ∧
+      forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList = [firstAxis,secondAxis] ∧
+      firstAxis ≠ secondAxis := by
   let output := literal.outputCode
   let order := codes.owners.transport.after.bindings
   let first := codes.owners.returned.first
@@ -561,15 +555,131 @@ theorem target_scatter_references
     change (first.port.wires ++ (second.port.wires ++ [])).map frame.interval.after.quantum.frame.idxOf = _
     rw [List.append_nil,List.map_append,firstAxes,secondAxes]
     rfl
+  exact ⟨firstAxis,secondAxis,firstAxes,secondAxes,axes,differentAxes⟩
+
+/-- The literal returned coordinate has exactly the two actual Bit axes,
+independently of every nominal or zero-width spectator in the complete map. -/
+theorem returned_coordinate_bound
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (physical : Nat) :
+    gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) < 4 := by
+  obtain ⟨firstAxis,secondAxis,_firstAxes,_secondAxes,axes,_different⟩ :=
+    returned_bit_axes frame codes selectorBasis targetBasis literal
+  rw [axes]
+  simpa only [List.length_cons,List.length_nil] using gather_bound physical [firstAxis,secondAxis]
+
+/-- The original two-returned-port sector slice is precisely replacement of
+the same target's logical digit in the complete caller code. Both source port
+reads, real returned axes and every spectator's retained code remain bound to
+the same Literal. The selector label is unchanged, including reversed axes. -/
+theorem target_scatter_references
+    {Reference : Type} {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (joint : Nat → Reference → ℂ) (physical label row input : Nat) (reference : Reference)
+    (coordinate : gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
+      QleisliKernel.FiniteRestriction.pack 1 label row)
+    (labelBound : label < 2) (rowBound : row < 2) (small : input < 2) :
+    referenceAction literal.outputCode joint
+        (scatter physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
+          (QleisliKernel.FiniteRestriction.pack 1 label input)) reference =
+      referenceAction literal.outputCode
+        (fun logical ref => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second logical input) ref)
+        physical reference := by
+  obtain ⟨firstAxis,secondAxis,_firstAxes,secondAxes,axes,differentAxes⟩ :=
+    returned_bit_axes frame codes selectorBasis targetBasis literal
   have physicalEq : scatter physical
       (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
       (QleisliKernel.FiniteRestriction.pack 1 label input) =
-      scatter physical (second.port.wires.map frame.interval.after.quantum.frame.idxOf) input := by
+      scatter physical (codes.owners.returned.second.port.wires.map frame.interval.after.quantum.frame.idxOf) input := by
     rw [axes,secondAxes]
     exact two_axis_set physical firstAxis secondAxis label row input differentAxes (by rw [← axes]; exact coordinate)
       labelBound rowBound small
   rw [physicalEq]
   exact target_set_references frame codes selectorBasis targetBasis literal joint physical input reference small
+
+/-- Nonzero support of the same complete caller code fixes both original
+returned Bit digits at the actual sector coordinate. Every other owner stays
+in the retained mixed-radix order; the target row bound follows from the two
+real returned axes, rather than a supplied spectator-factorization premise. -/
+theorem source_pair_support
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      codes.owners.before codes.owners.transport.after)
+    (physical logical label row : Nat) (bound : logical < literal.outputCode.code.dimension)
+    (coordinate : gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
+      QleisliKernel.FiniteRestriction.pack 1 label row)
+    (labelBound : label < 2) (nonzero : scalar (literal.outputCode.embedding physical logical) ≠ 0) :
+    decode codes.owners.transport.after.bindings (dimensionAt literal.outputCode.owners) logical
+        codes.owners.returned.first = label ∧
+      decode codes.owners.transport.after.bindings (dimensionAt literal.outputCode.owners) logical
+        codes.owners.returned.second = row := by
+  let output := literal.outputCode
+  let order := codes.owners.transport.after.bindings
+  let first := codes.owners.returned.first
+  let second := codes.owners.returned.second
+  have selected := RuntimeSelectionPartition.order_values _ _ _ codes.owners.returned.ordered
+  have members : first ∈ order ∧ second ∈ order := ⟨selected.1 (by simp [first]),selected.1 (by simp [second])⟩
+  have originalOwners : first.owner = selector ∧ second.owner = target := by
+    simpa only [List.map_cons,List.map_nil,List.cons.injEq,and_true] using selected.2
+  have firstBasis : first.owner.basis = [.bit] := by rw [originalOwners.1,selectorBasis]
+  have secondBasis : second.owner.basis = [.bit] := by rw [originalOwners.2,targetBasis]
+  obtain ⟨firstAxis,secondAxis,firstRead,secondRead,axes,_different⟩ :=
+    returned_bit_axes frame codes selectorBasis targetBasis literal
+  have firstAxes : first.port.wires.map frame.interval.after.quantum.frame.idxOf = [firstAxis] := firstRead
+  have secondAxes : second.port.wires.map frame.interval.after.quantum.frame.idxOf = [secondAxis] := secondRead
+  have packed : gather physical [firstAxis,secondAxis] = QleisliKernel.FiniteRestriction.pack 1 label row := by
+    rw [← axes]
+    exact coordinate
+  have localBound : gather physical [firstAxis,secondAxis] < 4 := by
+    rw [← axes]
+    exact returned_coordinate_bound frame codes selectorBasis targetBasis literal physical
+  have rowBound : row < 2 := by
+    rw [packed] at localBound
+    change label+2*row < 4 at localBound
+    omega
+  have firstCoordinate : gather physical (first.port.wires.map frame.interval.after.quantum.frame.idxOf) = label := by
+    have read := RuntimeScatterTransport.gather_at physical [firstAxis,secondAxis] 0 (by simp)
+    rw [packed,QleisliKernel.FiniteRestriction.bit_selector 1 label row 0 (by decide)] at read
+    have low : bit label 0 = label := by simp [bit,Nat.mod_eq_of_lt labelBound]
+    rw [low] at read
+    rw [firstAxes,gather_one]
+    simpa only [List.getElem_cons_zero] using read.symm
+  have secondCoordinate : gather physical (second.port.wires.map frame.interval.after.quantum.frame.idxOf) = row := by
+    have read := RuntimeScatterTransport.gather_at physical [firstAxis,secondAxis] 1 (by simp)
+    have high := QleisliKernel.FiniteRestriction.bit_target 1 label row 0 labelBound
+    simp only [Nat.add_zero] at high
+    rw [packed,high] at read
+    have low : bit row 0 = row := by simp [bit,Nat.mod_eq_of_lt rowBound]
+    rw [low] at read
+    rw [secondAxes,gather_one]
+    simpa only [List.getElem_cons_succ,List.getElem_cons_zero] using read.symm
+  have firstSupport : decode order (dimensionAt output.owners) logical first =
+      gather physical (first.port.wires.map frame.interval.after.quantum.frame.idxOf) := by
+    by_contra different
+    exact nonzero (bit_entry_support output first members.1 firstBasis physical logical bound different)
+  have secondSupport : decode order (dimensionAt output.owners) logical second =
+      gather physical (second.port.wires.map frame.interval.after.quantum.frame.idxOf) := by
+    by_contra different
+    exact nonzero (bit_entry_support output second members.2 secondBasis physical logical bound different)
+  exact ⟨firstSupport.trans firstCoordinate,secondSupport.trans secondCoordinate⟩
 
 #print axioms output_axes_unique
 #print axioms output_owner_axes_disjoint
@@ -578,6 +688,9 @@ theorem target_scatter_references
 #print axioms target_flip_domain
 #print axioms target_flip_references
 #print axioms target_set_references
+#print axioms returned_bit_axes
+#print axioms returned_coordinate_bound
 #print axioms target_scatter_references
+#print axioms source_pair_support
 
 end Qleisli.RuntimeTargetScatter
