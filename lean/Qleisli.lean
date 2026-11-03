@@ -17,6 +17,7 @@ import Qleisli.NominalSectorAction
 import Qleisli.RawActionComposition
 import Qleisli.RuntimeForestProduct
 import Qleisli.RuntimeForestOrderedProduct
+import Qleisli.RuntimeForestRegroup
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport

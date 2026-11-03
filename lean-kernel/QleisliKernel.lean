@@ -123,6 +123,7 @@ import QleisliKernel.Semantics.SourceClassical
 import QleisliKernel.Qirf.SourceClassicalTree
 import QleisliKernel.Qirf.SourceClassicalExecution
 import QleisliKernel.Qirf.SourceMeaningOrdinary
+import QleisliKernel.Qirf.SourceMeaningQuantum
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
 import QleisliKernel.SourceTypes.GenericCatalogueIndex
 import QleisliKernel.SourceTypes.GenericDutyQueue

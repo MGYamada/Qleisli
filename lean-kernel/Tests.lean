@@ -50,6 +50,7 @@ import QleisliKernel.Tests.RuntimeStaticSequence
 import QleisliKernel.Tests.RuntimeStaticNamed
 import QleisliKernel.Tests.RuntimeStaticBasisNatNamed
 import QleisliKernel.Tests.RuntimeStaticObservingNamed
+import QleisliKernel.Tests.RuntimeStaticBasisNatObserving
 import QleisliKernel.Tests.RuntimeObservationAction
 import QleisliKernel.Tests.GenericTypeTrace
 import QleisliKernel.Tests.GenericBasisInstance
@@ -78,6 +79,7 @@ import QleisliKernel.Tests.SourceDutySlots
 import QleisliKernel.Tests.SourceDutyProviderFresh
 import QleisliKernel.Tests.SourceDutyProviderBare
 import QleisliKernel.Tests.SourceDutyProviderBareBody
+import QleisliKernel.Tests.SourceDutyProviderLedger
 import QleisliKernel.Tests.SourceDutyProviderHeader
 import QleisliKernel.Tests.SourceDutyProviderBody
 import QleisliKernel.Tests.GenericCatalogueOriginals
