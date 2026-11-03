@@ -38,6 +38,7 @@ private def item (artifact : Qirf.Artifact) {catalogue : GenericCatalogue.Checke
       let body := prepared.original.body.checked
       let authenticated := match prepared.provenance with
         | .fresh _ => false
+        | .applied _ => false
         | .bare source =>
           source.supplier.original.entry.body.owner == "a" &&
           source.supplier.original.entry.body.name == wanted &&

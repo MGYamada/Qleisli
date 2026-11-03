@@ -57,7 +57,9 @@ theorem Original.rows_members {sources catalogue state} (original : @Original so
     (row : SourceRows.Row) : row ∈ original.rows ↔ row ∈ original.rawRows :=
   original.relevance.members row
 
-private def readOriginal {sources} (catalogue : GenericCatalogue.Checked sources)
+/-- Reusable exact-original authentication; this does not authorize a native
+supplier context without the containing occurrence and transport checks. -/
+def readOriginal {sources} (catalogue : GenericCatalogue.Checked sources)
     (state : GenericLexicalNatural.SomeEnvironment sources) : WorkM (Original catalogue state) := do
   let entry ← NaturalAffine.witness
     (GenericCatalogue.lookup catalogue.toRuntimeChecked state.prepared.original.envelope)
@@ -99,7 +101,9 @@ structure Site {sources} (catalogue : GenericCatalogue.Checked sources)
   inside : tokens.all (fun token => token.span.endByte ≤
     state.prepared.original.envelope.occurrence.closeBrace.span.startByte) = true
 
-private def readSite {sources} (catalogue : GenericCatalogue.Checked sources)
+/-- Authenticate the original initial scope and actual ordered body bytes.
+The bare and explicitly applied preparatory branches use the same reader. -/
+def readSite {sources} (catalogue : GenericCatalogue.Checked sources)
     (state : GenericLexicalNatural.SomeEnvironment sources) (scope : List String)
     (tokens : List LocatedToken) : WorkM (Site catalogue state scope tokens) := do
   let original ← readOriginal catalogue state
@@ -245,7 +249,9 @@ theorem Applications.rows_members {sources catalogue applications}
   | cons head tail ih =>
     simp only [Applications.rows,Applications.rawRows,List.mem_append,Application.rows_members,ih]
 
-private def readApplications {sources} (catalogue : GenericCatalogue.Checked sources) :
+/-- Retain each actual forwarding edge under its original source policy.
+This bounded reader still refuses Basis/Nat/group forwarding edges. -/
+def readApplications {sources} (catalogue : GenericCatalogue.Checked sources) :
     (applications : List (ApplicationSource sources)) → WorkM (Applications catalogue applications)
   | [] => pure .nil
   | application :: rest => do

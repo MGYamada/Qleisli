@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.SourceDutySlots
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.SourceDutyProviderBare
+import QleisliKernel.Qirf.SourceDutyProviderApplied
 
 /-! Fresh original-source provider preparation for one explicit internal case.
 The indexed enclosing original is nongeneric, transport has no call edge, no
@@ -175,16 +176,19 @@ inductive Provenance {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : Type where
   | fresh (eligible : Eligible provider)
   | bare (eligible : SourceDutyProviderBare.Checked provider)
+  | applied (eligible : SourceDutyProviderApplied.Checked provider)
 
 def Provenance.rows {sources catalogue record invocation demand view provider} :
     @Provenance sources catalogue record invocation demand view provider → List SourceRows.Row
   | .fresh _ => []
   | .bare eligible => eligible.rows
+  | .applied eligible => eligible.rows
 
 def Provenance.rawRows {sources catalogue record invocation demand view provider} :
     @Provenance sources catalogue record invocation demand view provider → List SourceRows.Row
   | .fresh _ => []
   | .bare eligible => eligible.rawRows
+  | .applied eligible => eligible.rawRows
 
 theorem Provenance.rows_members {sources catalogue record invocation demand view provider}
     (provenance : @Provenance sources catalogue record invocation demand view provider) (row : SourceRows.Row) :
@@ -192,6 +196,7 @@ theorem Provenance.rows_members {sources catalogue record invocation demand view
   cases provenance with
   | fresh _ => rfl
   | bare eligible => exact eligible.rows_members row
+  | applied eligible => exact eligible.rows_members row
 
 structure Checked {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) where
@@ -237,5 +242,14 @@ def readBare {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
   let eligible ← SourceDutyProviderBare.read provider
   prepare provider (.bare eligible)
+
+/-- Explicit Basis/Nat-source preparation. Every closed actual comes from the
+same checked original supplier application and its retained transport. This
+does not retry a failed strict or bare reader, or consume a body/path/Meaning.
+-/
+def readApplied {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
+  let eligible ← SourceDutyProviderApplied.read provider
+  prepare provider (.applied eligible)
 
 end QleisliKernel.Qirf.SourceDutyProviderFresh

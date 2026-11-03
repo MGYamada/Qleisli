@@ -3,7 +3,8 @@ import QleisliKernel.Qirf.RuntimeProviderPaths
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
 import QleisliKernel.Qirf.RuntimePureBody
 
-/-! Consume bounded nongeneric provider bodies under one retained final graph.
+/-! Consume bounded authenticated provider bodies under one retained final graph.
+Nongeneric and source-bound Basis/Nat applications keep separate eligibility.
 Discovery uses the same original Body/context before that graph. Contributions
 retain their source occurrences in order; rows come only from actual discovery
 and bound source headers. The final graph is supplied with its actual complete
@@ -18,9 +19,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.SourceDutyProviderBody
 open QleisliKernel Finite SourceTypes
 
+inductive Eligibility {artifact catalogue record invocation demand view provider prepared request}
+    (header : @SourceDutyProviderHeader.Checked artifact catalogue record invocation demand view provider prepared request) : Type where
+  | nongeneric (original : header.binding.header.original.supplied.provider.signature.original.parsedHeader.staticTokens.isNone = true)
+  | applied (source : SourceDutyProviderApplied.Checked provider)
+      (sameSource : prepared.provenance = .applied source)
+
 structure Discovered {artifact catalogue record invocation demand view provider prepared request}
     (header : @SourceDutyProviderHeader.Checked artifact catalogue record invocation demand view provider prepared request) where
-  nongeneric : header.binding.header.original.supplied.provider.signature.original.parsedHeader.staticTokens.isNone = true
+  eligibility : Eligibility header
   discovery : RuntimeBodyDiscovery.Discovery
   original : SourceDutySlots.Computed (RuntimeBodyDiscovery.visit artifact 128
     header.binding.header.original.body.checked.signature header.binding.header.original.body.checked.events
@@ -41,13 +48,17 @@ caller checks the graph; unsupported nested forms refuse there. -/
 def discover {artifact catalogue record invocation demand view provider prepared request}
     (header : @SourceDutyProviderHeader.Checked artifact catalogue record invocation demand view provider prepared request) :
     WorkM (Discovered header) := do
-  if nongeneric : header.binding.header.original.supplied.provider.signature.original.parsedHeader.staticTokens.isNone = true then
-    let body := header.binding.header.original.body.checked
-    let discovery ← NaturalAffine.witness
-      (RuntimeBodyDiscovery.visit artifact 128 body.signature body.events body.summary.staticRows request.2 true)
-    let relevance ← SourceRows.read (header.rows ++ discovery.val.rows)
-    return ⟨nongeneric,discovery.val,by with_reducible exact discovery.property,relevance⟩
-  else throw .request
+  let eligibility : Eligibility header ←
+    if nongeneric : header.binding.header.original.supplied.provider.signature.original.parsedHeader.staticTokens.isNone = true then
+      pure (.nongeneric nongeneric)
+    else match provenance : prepared.provenance with
+      | .applied source => pure (.applied source provenance)
+      | .fresh _ | .bare _ => throw .request
+  let body := header.binding.header.original.body.checked
+  let discovery ← NaturalAffine.witness
+    (RuntimeBodyDiscovery.visit artifact 128 body.signature body.events body.summary.staticRows request.2 true)
+  let relevance ← SourceRows.read (header.rows ++ discovery.val.rows)
+  return ⟨eligibility,discovery.val,by with_reducible exact discovery.property,relevance⟩
 
 /-- A source contribution can only contain an actually discovered bound
 provider. There is no arbitrary source-row list or numeric body-count input. -/
@@ -90,6 +101,31 @@ def prepareBare (artifact : Artifact) {catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
     (request : RuntimeProviderHeader.Request) : WorkM (BarePrepared artifact provider request) := do
   let prepared ← NaturalAffine.witness (SourceDutyProviderFresh.readBare provider)
+  let header ← NaturalAffine.witness (SourceDutyProviderHeader.read artifact prepared.val request)
+  let source ← NaturalAffine.witness (discover header.val)
+  return ⟨prepared.val,by with_reducible exact prepared.property,
+    header.val,by with_reducible exact header.property,source.val,by with_reducible exact source.property⟩
+
+/-- The Basis/Nat path retains the exact source-selected original and uses
+the same discovery and same-final-root body consumer as the bare path. -/
+structure AppliedPrepared (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) where
+  prepared : SourceDutyProviderFresh.Checked provider
+  preparedRead : SourceDutySlots.Computed (SourceDutyProviderFresh.readApplied provider) prepared
+  header : SourceDutyProviderHeader.Checked artifact prepared request
+  headerRead : SourceDutySlots.Computed (SourceDutyProviderHeader.read artifact prepared request) header
+  source : Discovered header
+  discovered : SourceDutySlots.Computed (discover header) source
+
+def AppliedPrepared.contribution {artifact catalogue record invocation demand view provider request}
+    (prepared : @AppliedPrepared artifact catalogue record invocation demand view provider request) : Contribution artifact :=
+  .provider prepared.source
+
+def prepareApplied (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) : WorkM (AppliedPrepared artifact provider request) := do
+  let prepared ← NaturalAffine.witness (SourceDutyProviderFresh.readApplied provider)
   let header ← NaturalAffine.witness (SourceDutyProviderHeader.read artifact prepared.val request)
   let source ← NaturalAffine.witness (discover header.val)
   return ⟨prepared.val,by with_reducible exact prepared.property,
