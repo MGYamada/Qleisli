@@ -22,7 +22,7 @@ private def nameFields (names : List String) : Nat :=
 def basisNat (formal : StaticHeaders.Formal) : Bool :=
   match formal.kind with | .basis | .natural => true | .operation _ => false
 
-private def matches {sources} (origin : Origin sources) (application : ApplicationSource sources) : Bool :=
+private def applicationMatches {sources} (origin : Origin sources) (application : ApplicationSource sources) : Bool :=
   application.tokens == origin.tokens && application.scope == origin.scope &&
     application.state.owner == origin.state.owner && application.state.name == origin.state.name
 
@@ -72,7 +72,7 @@ structure Checked {sources catalogue record invocation demand view}
     [.provider provider.owner provider.name provider.bases provider.naturals []]
   rootNode : provider.closed.data.description.root = 0
   application : ApplicationSource sources
-  selected : supplier.original.entry.body.outcome.applications.filter (matches provider.supplier.origin) = [application]
+  selected : supplier.original.entry.body.outcome.applications.filter (applicationMatches provider.supplier.origin) = [application]
   sameTokens : application.tokens = provider.supplier.origin.tokens
   sameScope : application.scope = provider.supplier.origin.scope
   sameOwner : application.state.owner = provider.supplier.origin.state.owner
@@ -140,7 +140,7 @@ def read {sources catalogue record invocation demand view}
                   nameFields application.scope+nameFields provider.supplier.origin.scope+
                   application.state.owner.utf8ByteSize+application.state.name.utf8ByteSize+
                   provider.supplier.origin.state.owner.utf8ByteSize+provider.supplier.origin.state.name.utf8ByteSize+4).sum+1)))
-              match selected : applications.filter (matches provider.supplier.origin) with
+              match selected : applications.filter (applicationMatches provider.supplier.origin) with
               | [application] =>
                 let original := provider.supplier.origin.state.prepared.original.envelope
                 let target := provider.signature.original
