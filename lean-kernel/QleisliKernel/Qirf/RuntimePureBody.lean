@@ -425,10 +425,11 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
         (fun state (event,position) => do
           match event with
           | .staticConditional event _ =>
-            let sequence ← match mode with
-              | .pureBody => return RuntimeStaticPrimitive.Continuation.unchanged
-                  (← RuntimeStaticPrimitive.readSequence event)
-              | .runtimeBody => RuntimeStaticPrimitive.readContinuation event
+            let sequence : RuntimeStaticPrimitive.Continuation event ← (match mode with
+              | .pureBody => do
+                  let source ← RuntimeStaticPrimitive.readSequence event
+                  pure (.unchanged source)
+              | .runtimeBody => RuntimeStaticPrimitive.readContinuation event)
             let positions ← sequence.positions position
             guard (positions.length == sequence.selected.result.events.length) .request
             let state ← advance state position.start
