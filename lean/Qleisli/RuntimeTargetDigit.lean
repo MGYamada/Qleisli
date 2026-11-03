@@ -22,6 +22,32 @@ def update {roles state checked} (frame : @Frame roles state checked) (target : 
   encode checked.bindings (dimensionAt frame.owners) fun binding =>
     if binding = target then replacement else decode checked.bindings (dimensionAt frame.owners) logical binding
 
+/-- Write one in-range logical digit in the original caller order. Every
+other owner's nominal digit stays the same, including dimension-one owners. -/
+theorem update_digits {roles state checked} (frame : @Frame roles state checked)
+    (target : Binding) (logical replacement : Nat) (bound : logical < frame.code.dimension)
+    (small : replacement < dimensionAt frame.owners target) :
+    update frame target logical replacement < frame.code.dimension ∧
+    ∀ binding ∈ checked.bindings,
+      decode checked.bindings (dimensionAt frame.owners) (update frame target logical replacement) binding =
+        if binding = target then replacement else decode checked.bindings (dimensionAt frame.owners) logical binding := by
+  let order := checked.bindings
+  let cards := dimensionAt frame.owners
+  let digits := decode order cards logical
+  let changed := fun binding => if binding = target then replacement else digits binding
+  have logicalBound : logical < volume order cards := by rwa [frame_volume frame]
+  have bounds : ∀ binding ∈ order,changed binding < cards binding := by
+    intro binding member
+    by_cases same : binding = target
+    · subst binding
+      simpa only [changed,if_pos rfl] using small
+    · simpa only [changed,if_neg same] using
+        decode_bound order cards logical (cards_positive frame.owners) logicalBound binding member
+  constructor
+  · rw [← frame_volume frame]
+    exact encode_bound order cards changed bounds
+  · exact decode_encode order cards changed bounds
+
 private theorem bit_card {bindings} (owners : OwnerCodes bindings) (binding : Binding)
     (member : binding ∈ bindings) (basis : binding.owner.basis = [.bit]) :
     dimensionAt owners binding = 2 := by
@@ -89,18 +115,8 @@ theorem source_target_update
   have logicalBound : logical < volume order cards := by rw [frame_volume output]; exact bound
   have digitBounds : ∀ binding ∈ order,digits binding < cards binding :=
     decode_bound order cards logical positive logicalBound
-  have changedBounds : ∀ binding ∈ order,changed binding < cards binding := by
-    intro binding member
-    by_cases same : binding = second
-    · subst binding
-      simpa only [changed,if_pos rfl,secondCard] using small
-    · simpa only [changed,if_neg same] using digitBounds binding member
-  have updateBound : update output second logical replacement < output.code.dimension := by
-    rw [← frame_volume output]
-    exact encode_bound order cards changed changedBounds
-  have updateDigits : ∀ binding ∈ order,
-      decode order cards (update output second logical replacement) binding = changed binding :=
-    decode_encode order cards changed changedBounds
+  have ⟨updateBound,updateDigits⟩ := update_digits output second logical replacement bound
+    (by change replacement < cards second; rwa [secondCard])
   have newEncoding : regroupIndex output wanted (update output second logical replacement) =
       encode wanted cards changed := by
     apply encode_congr

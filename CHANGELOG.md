@@ -70,6 +70,9 @@ development milestones from the scope of their evidence.
   The two verified arm matrices preserve every reference-pair inner product
   when applied to the original caller's logical target. The selection node
   retains the source layout reads that determine both arm positions.
+  For general finite carriers, a nonzero owner-code coefficient identifies
+  the physical label of its original logical digit. Padding rows have zero
+  coefficient, including when other owners share the caller's state.
   Complete source/code/Gram composition remains required before the full qmatch
   profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the
