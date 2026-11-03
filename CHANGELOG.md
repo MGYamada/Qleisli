@@ -58,7 +58,9 @@ development milestones from the scope of their evidence.
   work order. For a checked Bit selection, replacing the returned target digit
   stays inside the caller's logical dimension and preserves every other digit,
   including a zero-width Unit owner's digit.
-  Bind circuit-event boundaries to their actual original intervals.
+  Flipping the returned target wire acts on that same logical digit for
+  arbitrary joint amplitudes with a reference system. Bind circuit-event
+  boundaries to their actual original intervals.
   Complete source/code/Gram composition remains required before the full qmatch
   profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the
