@@ -18,8 +18,13 @@ private def namedEffects {dependencies program block} :
   | .named _ _ body _ _ _ _ => [body.checked.signature.original.parsedHeader.effect]
   | _ => []
 
+private def namedNaturals {dependencies program block} :
+    RuntimePureBody.Node dependencies program block → List (List (String × Nat))
+  | .named _ _ body _ _ _ _ => [body.checked.signature.arguments.naturals]
+  | _ => []
+
 private def actual (n exponent : Nat) (wrongOwner parentAsCall callerAsCallee publicObserve genericLeaf : Bool) :
-    WorkM (List Nat × List Nat × List Nat × Nat × List (Option Semantics.Raw.Effect)) := do
+    WorkM (List Nat × List Nat × List Nat × Nat × List (Option Semantics.Raw.Effect) × List (List (String × Nat))) := do
   let text := if publicObserve then source.replace "unitary fn leaf" "pub observe fn leaf" else source
   let text := if genericLeaf then
     (text.replace "fn leaf(q" "fn leaf[const m:Nat](q").replace "else{leaf(q)}" "else{leaf[0](q)}" else text
@@ -53,21 +58,23 @@ private def actual (n exponent : Nat) (wrongOwner parentAsCall callerAsCallee pu
   let checked ← RuntimePureBody.checkPrepared artifact fresh.root body fresh.root.program context inputs.owners.bindings prepared
   return (checked.result.history.issued.map (·.ordinal),checked.result.bindings.map (·.owner.ordinal),
     checked.result.bindings.map (·.port.token),checked.result.actions.length,
-    checked.result.actions.flatMap namedEffects)
+    checked.result.actions.flatMap namedEffects,checked.result.actions.flatMap namedNaturals)
 
-#guard (actual 0 4 false false false false false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[1,0],0,[])
-#guard (actual 1 4 false false false false false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[2,0],1,[some .unitary])
+#guard (actual 0 4 false false false false false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[1,0],0,[],[])
+#guard (actual 1 4 false false false false false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[2,0],1,[some .unitary],[[]])
 #guard (match (actual 1 0 false false false false false).run 10000000 with | (.error _,_) => true | _ => false)
 #guard (match (actual 1 4 true false false false false).run 10000000 with | (.error _,_) => true | _ => false)
 #guard (match (actual 1 4 false true false false false).run 10000000 with | (.error .request,_) => true | _ => false)
 #guard (match (actual 1 4 false false true false false).run 10000000 with | (.error .request,_) => true | _ => false)
 
--- This bounded continuation does not erase even an unused original formal.
-#guard (match (actual 1 4 false false false false true).run 10000000 with | (.error .request,_) => true | _ => false)
+-- The typed Basis/Nat continuation retains even this unused original actual
+-- in the same body that the ordinary named reader actually checked.
+#guard (actual 1 4 false false false false true).run 10000000 |>.1.toOption ==
+  some ([0,1],[1,0],[2,0],1,[some .unitary],[[ ("m",0) ]])
 
 -- Same-original-module inference is precise, while the callee's exported
 -- Observe annotation stays intact in the retained original named body.
-#guard (actual 1 4 false false false true false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[2,0],1,[some .observe])
+#guard (actual 1 4 false false false true false).run 10000000 |>.1.toOption == some ([0,1],[1,0],[2,0],1,[some .observe],[[]])
 
 private def externalObserve : WorkM Unit := do
   let text := "#![no_implicit_prelude]\n" ++
