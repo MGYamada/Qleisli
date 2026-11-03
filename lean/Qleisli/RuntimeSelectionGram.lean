@@ -9,22 +9,29 @@ open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct Qleisli.MixedRadix
 open Qleisli.RuntimeTargetScatter Qleisli.RuntimeSelectionAction
 open RuntimeForestCode RuntimeOwnerCodeReindex
 
-/-- Sum a local conservation law over both orientations of each target pair. -/
-private theorem sum_pairs (size : Nat) (flip : Nat → Nat) (f g : Nat → ℂ)
-    (perm : ((List.range size).map flip).Perm (List.range size))
-    (pair : ∀ i < size, f i + f (flip i) = g i + g (flip i)) :
-    ((List.range size).map f).sum = ((List.range size).map g).sum := by
-  have same (h : Nat → ℂ) : ((List.range size).map (fun i => h (flip i))).sum =
-      ((List.range size).map h).sum := by
+/-- Sum the same local conservation law over both orientations of each pair,
+on an explicit finite domain. It also applies to typed logical ordinals. -/
+theorem sum_pairs_of_perm {α : Type} (indices : List α) (flip : α → α) (f g : α → ℂ)
+    (perm : (indices.map flip).Perm indices)
+    (pair : ∀ i ∈ indices, f i + f (flip i) = g i + g (flip i)) :
+    (indices.map f).sum = (indices.map g).sum := by
+  have same (h : α → ℂ) : (indices.map (fun i => h (flip i))).sum =
+      (indices.map h).sum := by
     simpa only [List.map_map,Function.comp_def] using (perm.map h).sum_eq
-  have both := Qleisli.Exact.sum_map_congr (List.range size) _ _
-    (fun i member => pair i (List.mem_range.mp member))
+  have both := Qleisli.Exact.sum_map_congr indices _ _ pair
   rw [List.sum_map_add,List.sum_map_add,same f,same g] at both
   linear_combination (norm := ring) (1/2 : ℂ) * both
 
+/-- Sum a local conservation law over both orientations of each target pair. -/
+theorem sum_pairs (size : Nat) (flip : Nat → Nat) (f g : Nat → ℂ)
+    (perm : ((List.range size).map flip).Perm (List.range size))
+    (pair : ∀ i < size, f i + f (flip i) = g i + g (flip i)) :
+    ((List.range size).map f).sum = ((List.range size).map g).sum :=
+  sum_pairs_of_perm (List.range size) flip f g perm (fun i member => pair i (List.mem_range.mp member))
+
 /-- The actual native logical-binding receipt supplies both the Gram check and
 the product dimensions for this two-row action. -/
-private theorem arm_pair {inputCode outputCode physical label required logical}
+theorem arm_pair {inputCode outputCode physical label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode physical (label,required) logical)
     (columns : required.cols = 2) {R S : Type}
     (left : Nat → R → ℂ) (right : Nat → S → ℂ) (r : R) (s : S) :

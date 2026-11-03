@@ -19,7 +19,7 @@ open QleisliKernel.FiniteRestriction (pack)
 open QleisliKernel.Qirf QleisliKernel.Qirf.RuntimeForestCode
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct
 
-private theorem bit_code {port : Semantics.Raw.Port} {code : Matrix}
+theorem bit_code {port : Semantics.Raw.Port} {code : Matrix}
     (read : RuntimeInterval.Computed (Carrier.ownerCode [⟨port,[.bit]⟩]) code) :
     code = QleisliKernel.Semantics.FiniteCarrier.encoding ⟨1,[0,1]⟩ := by
   obtain ⟨work,left,ran⟩ := read

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that an exhaustive source-ordered `qmatch` with a finite selector
+  and a Bit target preserves logical inner products with an arbitrary
+  external reference. Each original ordinal selects its own arm, including
+  when the selector encoding has unused physical labels.
+
 - Follow original imports from the modules a nominal `qmatch` consulted.
   The native checker verifies exact source text, keeps reexports reachable
   from the bundled prelude, and rejects unrelated modules. Row comparisons
