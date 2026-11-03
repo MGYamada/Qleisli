@@ -18,6 +18,35 @@ private def adapt {α : Type} (action : Except String α) : Finite.WorkM α :=
 private def environmentCells (environment : Environment) : Nat :=
   (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+2).sum
 
+/-- Original syntax/type setup for one exact checked signature. This retains
+only the successful original parser/type-reader evidence, never a closed body
+outcome or native result. Instantiation, catalogue and supplier context are
+fixed by the signature index and the actual readWithTree witness. -/
+structure OriginalSetup {sources owner name} (signature : Signature sources owner name) where
+  tree : SourceSyntax.Tree signature.original.occurrence.body
+  parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
+    signature.original.occurrence.body = .ok tree
+  generic : GenericTypeTrace.Checked signature.original
+  genericRead : ∃ before after,
+    (GenericTypeTrace.readWithTree signature.instantiation tree
+      (signature.operations.catalogue.map (·.modulesContext))
+      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
+
+private def readOriginalSetup {sources owner name} (signature : Signature sources owner name) :
+    Finite.WorkM (OriginalSetup signature) := do
+  let tokens := signature.original.occurrence.body
+  match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
+  | .error _ => throw .request
+  | .ok tree =>
+    let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
+      (signature.operations.catalogue.map (·.modulesContext))
+      (signature.operations.catalogue.map (·.meaningsContext)))
+    return ⟨tree,parsed,generic.val,by with_reducible exact generic.property⟩
+
+def originalSetup {sources owner name signature} (summary : @Summary sources owner name signature) :
+    OriginalSetup signature :=
+  ⟨summary.tree,summary.parsed,summary.generic,summary.genericRead⟩
+
 private def callFrame {sources owner name} (signature : Signature sources owner name) : SourceCallStack.Frame :=
   ⟨owner,name,signature.arguments.naturals,!signature.original.parsedHeader.ordinaryOnly⟩
 
@@ -609,9 +638,10 @@ def quantumUse {sources owner name} (signature : Signature sources owner name)
 /-- Original guarded decrease is checked at each self-call occurrence before
 this concrete specialization stack. Mutual and repeated instances refuse;
 the existing depth capacity is independent of a caller expression's tokens. -/
-def readNested (sources : Sources) : (fuel : Nat) → (active : List SourceCallStack.Frame) →
-    {owner name : String} → (signature : Signature sources owner name) → Finite.WorkM (Evaluated signature) :=
-  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ previous active {_ _} signature => do
+def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List SourceCallStack.Frame) →
+    {owner name : String} → (signature : Signature sources owner name) →
+    Option (OriginalSetup signature) → Finite.WorkM (Evaluated signature) :=
+  Nat.rec (fun _ {_ _} _ _ => throw .limit) (fun _ previous active {_ _} signature provided => do
     let frame := callFrame signature
     let _ ← SourceCallStack.read active frame
     let tokens := signature.original.occurrence.body
@@ -628,84 +658,97 @@ def readNested (sources : Sources) : (fuel : Nat) → (active : List SourceCallS
         | .error _ => throw .request
         | .ok initial =>
           Finite.guard (initial.all fun cell => !signature.staticNames.contains cell.name) .request
-          match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
-          | .error _ => throw .request
-          | .ok tree =>
-            let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-              (signature.operations.catalogue.map (·.modulesContext))
-              (signature.operations.catalogue.map (·.meaningsContext)))
-            Finite.guard (!signature.original.parsedHeader.ordinaryOnly || !generic.val.quantumUse) .request
-            Finite.guard (!signature.original.parsedHeader.ordinaryOnly || generic.val.recursiveCalls.isEmpty) .request
-            Finite.guard (!signature.original.declaration.isPublic || !generic.val.quantumUse ||
-              signature.original.parsedHeader.effect.isSome) .request
-            let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
-              if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
-                pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
-              else throw .request
-            let basis ← SourceBasisBindings.prepare signature.instantiation generic.val.basisObligations
-            let computed ← SourceComputedBindings.prepare signature.instantiation generic.val.computedObligations
-            let naturals ← signature.naturals
-            let (result,_) ← evalWithReader signature generic.val basis computed
-              (fun callee => do return (← previous (frame :: active) callee).summary)
-              (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
-              nextOwner initial tree {}
-            let basisCovered : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true) ←
-              if covered : basis.covered (result.events.flatMap Event.basisOffsets) = true then
-                pure (⟨covered⟩ : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true))
-              else throw .request
-            let computedCovered : PLift (computed.covered (result.events.flatMap Event.computedOffsets) = true) ←
-              if covered : computed.covered (result.events.flatMap Event.computedOffsets) = true then
-                pure (⟨covered⟩ : PLift (computed.covered (result.events.flatMap Event.computedOffsets) = true))
-              else throw .request
-            Finite.exactWork (Exact.charge (32*(result.events.length+1)^2+
-              32*(result.allocated.length+1)+SourceTrace.Meter.tokenFields tokens+
-              SourceTrace.Meter.permutationWork (owners initial ++ result.allocated)
-                (valueOwners result.value ++ result.consumed)+
-              16*(SourceTrace.Meter.tokenFields tokens+valueFields result.value+
-                (signature.result.tree.map fun atom => match atom with
-                  | .quantum => 1
-                  | .finite finite => Raw.OwnerFlow.fields [⟨0,[finite]⟩]).sum+1)))
-            if complete : owners result.remaining = [] then
-              if balanced : (owners initial ++ result.allocated).Perm (valueOwners result.value ++ result.consumed) then
-                if typed : typeOf result.value = signature.result.tree then
-                  if issued : result.allocated.map (·.ordinal) =
-                      (List.range result.allocated.length).map (nextOwner+·) then
-                    if ordinalCount : result.nextOrdinal = nextOwner+result.allocated.length then
-                      Finite.guard (result.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets tokens) .request
-                      Finite.guard (decide ((QuantumSequence.originalOffsets tokens).Nodup)) .request
-                      Finite.guard ((result.events.flatMap Event.qmatchOffsets).length ≤ 128) .limit
-                      let calls ← adapt tree.calls
-                      Finite.guard (result.events.flatMap Event.callOffsets == calls) .request
-                      Finite.guard (decide calls.Nodup) .request
-                      if asserted : SourceEffect.permits signature.original.parsedHeader.effect
-                          (inferredEffect result.events) = true then
-                        Finite.guard (!signature.original.parsedHeader.ordinaryOnly ||
-                          !quantumUse signature result.events) .request
-                        if publicQuantum : signature.original.declaration.isPublic = true →
-                            quantumUse signature result.events = true →
-                            signature.original.parsedHeader.effect.isSome = true then
-                          let staticRows ← SourceTrace.retainStaticRows (generic.val.sourceRows ++ result.staticRows)
-                          let summary : Summary signature :=
-                            ⟨patterns,parameters,parameterValues,nextOwner,nextOrdinary,valuesRead,
-                            initial,seeded,tree,parsed,generic.val,by with_reducible exact generic.property,
-                            originalAsserted.down,basis,computed,result.value,result.remaining,result.allocated,
-                            result.consumed,result.nextOrdinal,issued,ordinalCount,complete,balanced,typed,
-                            inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum,
-                            staticRows⟩
-                          return ⟨summary,result.events,rfl,basisCovered.down,computedCovered.down⟩
-                        else throw .request
+          let setup ← match provided with
+            | some setup => pure setup
+            | none => readOriginalSetup signature
+          let tree := setup.tree
+          let generic := setup.generic
+          Finite.guard (!signature.original.parsedHeader.ordinaryOnly || !generic.quantumUse) .request
+          Finite.guard (!signature.original.parsedHeader.ordinaryOnly || generic.recursiveCalls.isEmpty) .request
+          Finite.guard (!signature.original.declaration.isPublic || !generic.quantumUse ||
+            signature.original.parsedHeader.effect.isSome) .request
+          let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true) ←
+            if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true then
+              pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true))
+            else throw .request
+          let basis ← SourceBasisBindings.prepare signature.instantiation generic.basisObligations
+          let computed ← SourceComputedBindings.prepare signature.instantiation generic.computedObligations
+          let naturals ← signature.naturals
+          let (result,_) ← evalWithReader signature generic basis computed
+            (fun callee => do return (← previous (frame :: active) callee none).summary)
+            (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
+            nextOwner initial tree {}
+          let basisCovered : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true) ←
+            if covered : basis.covered (result.events.flatMap Event.basisOffsets) = true then
+              pure (⟨covered⟩ : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true))
+            else throw .request
+          let computedCovered : PLift (computed.covered (result.events.flatMap Event.computedOffsets) = true) ←
+            if covered : computed.covered (result.events.flatMap Event.computedOffsets) = true then
+              pure (⟨covered⟩ : PLift (computed.covered (result.events.flatMap Event.computedOffsets) = true))
+            else throw .request
+          Finite.exactWork (Exact.charge (32*(result.events.length+1)^2+
+            32*(result.allocated.length+1)+SourceTrace.Meter.tokenFields tokens+
+            SourceTrace.Meter.permutationWork (owners initial ++ result.allocated)
+              (valueOwners result.value ++ result.consumed)+
+            16*(SourceTrace.Meter.tokenFields tokens+valueFields result.value+
+              (signature.result.tree.map fun atom => match atom with
+                | .quantum => 1
+                | .finite finite => Raw.OwnerFlow.fields [⟨0,[finite]⟩]).sum+1)))
+          if complete : owners result.remaining = [] then
+            if balanced : (owners initial ++ result.allocated).Perm (valueOwners result.value ++ result.consumed) then
+              if typed : typeOf result.value = signature.result.tree then
+                if issued : result.allocated.map (·.ordinal) =
+                    (List.range result.allocated.length).map (nextOwner+·) then
+                  if ordinalCount : result.nextOrdinal = nextOwner+result.allocated.length then
+                    Finite.guard (result.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets tokens) .request
+                    Finite.guard (decide ((QuantumSequence.originalOffsets tokens).Nodup)) .request
+                    Finite.guard ((result.events.flatMap Event.qmatchOffsets).length ≤ 128) .limit
+                    let calls ← adapt tree.calls
+                    Finite.guard (result.events.flatMap Event.callOffsets == calls) .request
+                    Finite.guard (decide calls.Nodup) .request
+                    if asserted : SourceEffect.permits signature.original.parsedHeader.effect
+                        (inferredEffect result.events) = true then
+                      Finite.guard (!signature.original.parsedHeader.ordinaryOnly ||
+                        !quantumUse signature result.events) .request
+                      if publicQuantum : signature.original.declaration.isPublic = true →
+                          quantumUse signature result.events = true →
+                          signature.original.parsedHeader.effect.isSome = true then
+                        let staticRows ← SourceTrace.retainStaticRows (generic.sourceRows ++ result.staticRows)
+                        let summary : Summary signature :=
+                          ⟨patterns,parameters,parameterValues,nextOwner,nextOrdinary,valuesRead,
+                          initial,seeded,tree,setup.parsed,generic,setup.genericRead,
+                          originalAsserted.down,basis,computed,result.value,result.remaining,result.allocated,
+                          result.consumed,result.nextOrdinal,issued,ordinalCount,complete,balanced,typed,
+                          inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum,
+                          staticRows⟩
+                        return ⟨summary,result.events,rfl,basisCovered.down,computedCovered.down⟩
                       else throw .request
                     else throw .request
                   else throw .request
                 else throw .request
               else throw .request
-            else throw .request)
+            else throw .request
+          else throw .request)
+
+/-- The fresh public source-body wrapper retains its original action identity.
+Only explicitly supplied exact setup evidence takes the separate path above. -/
+def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.Frame)
+    {owner name : String} (signature : Signature sources owner name) : Finite.WorkM (Evaluated signature) :=
+  readNestedWithSetup sources fuel active signature none
+
+inductive Traversal {sources owner name} (signature : Signature sources owner name)
+    (evaluated : Evaluated signature) : Type where
+  | fresh (original : ∃ before after,
+      (readNested sources (SourceTrace.sourceFuel sources) [] signature).run before = (.ok evaluated,after)) :
+      Traversal signature evaluated
+  | prepared (setup : OriginalSetup signature) (original : ∃ before after,
+      (readNestedWithSetup sources (SourceTrace.sourceFuel sources) [] signature (some setup)).run before =
+        (.ok evaluated,after)) : Traversal signature evaluated
 
 structure Checked (sources : Sources) (owner name : String) where
   signature : Signature sources owner name
   evaluated : Evaluated signature
-  traversed : ∃ before after,
-    (readNested sources (SourceTrace.sourceFuel sources) [] signature).run before = (.ok evaluated,after)
+  traversed : Traversal signature evaluated
 
 def Checked.summary {sources owner name} (checked : Checked sources owner name) : Summary checked.signature :=
   checked.evaluated.summary
@@ -723,7 +766,19 @@ def readBodyWithSignature {sources owner name} (signature : Signature sources ow
     Finite.WorkM (Body signature) := do
   let summary ← NaturalAffine.witness (readNested sources (SourceTrace.sourceFuel sources) [] signature)
   let checked : Checked sources owner name :=
-    ⟨signature,summary.val,by with_reducible exact summary.property⟩
+    ⟨signature,summary.val,.fresh (by with_reducible exact summary.property)⟩
+  return ⟨checked,rfl⟩
+
+/-- Reuse only an actual original setup for this identical signature. Closed
+body evaluation, recursion/stack checks, owner history, effects, row relevance
+and every finite basis/computed coverage check all run again. The retained
+traversal records this real prepared invocation, not a fictitious fresh run. -/
+def readBodyWithOriginalSetup {sources owner name} (signature : Signature sources owner name)
+    (setup : OriginalSetup signature) : Finite.WorkM (Body signature) := do
+  let evaluated ← NaturalAffine.witness
+    (readNestedWithSetup sources (SourceTrace.sourceFuel sources) [] signature (some setup))
+  let checked : Checked sources owner name :=
+    ⟨signature,evaluated.val,.prepared setup (by with_reducible exact evaluated.property)⟩
   return ⟨checked,rfl⟩
 
 def readWithSignature {sources owner name} (signature : Signature sources owner name) :
@@ -739,7 +794,7 @@ same reader and its own nested source coordinates. No flattened event list or
 caller-supplied history can stand in for that independent traversal. -/
 def readNamedBody {sources caller} (event : NamedEvent sources caller) :
     Finite.WorkM (Body event.target.signature) := do
-  let body ← readBodyWithSignature event.target.signature
+  let body ← readBodyWithOriginalSetup event.target.signature (originalSetup event.canonical)
   let checked := body.checked
   Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
     valueFields event.canonical.value+checked.events.length+

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reuse a named callee's original parsed and typed setup for its exact
+  signature. The closed call still evaluates its source tree and checks
+  owner returns, quantum use and effects against the original summary.
+
 - Prove during traversal that the work list covers every selected source
   and import. The native graph can use the exact reached module rows without
   a second pass over original source text. Its work bound counts both graph
