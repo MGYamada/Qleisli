@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.GenericCatalogue
+import QleisliKernel.SourceTypes.GenericCatalogueIndex
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
 
 /-! Source-indexed expansion of finite original operation duties.
@@ -56,13 +57,23 @@ def ApplicationAt.id {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) : SourceId :=
   ⟨record.val,application.index.val⟩
 
-/-- One genuine original-to-record lookup. Reuse retains this actual run;
-its source identity is the complete immutable original, not a name or result. -/
+/-- Lookup evidence distinguishes an actual fresh catalogue lookup from
+selection through the exact retained ordered source index. -/
+inductive LookupEvidence {sources} (catalogue : GenericCatalogue.Checked sources) {owner name}
+    (original : OrdinarySignature.Original sources owner name) :
+    GenericCatalogue.Entry catalogue.toRuntimeChecked original → Type where
+  | fresh (entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original)
+      (computed : ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before =
+        (.ok entry,after)) : LookupEvidence catalogue original entry
+  | indexed (index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked)
+      (selection : GenericCatalogueIndex.Selection index original)
+      (computed : ∃ before after,(GenericCatalogueIndex.read index original).run before = (.ok selection,after)) :
+      LookupEvidence catalogue original selection.entry
+
 structure OriginalLookup {sources} (catalogue : GenericCatalogue.Checked sources) (owner name : String) where
   original : OrdinarySignature.Original sources owner name
   entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original
-  computed : ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before =
-    (.ok entry,after)
+  evidence : LookupEvidence catalogue original entry
 
 inductive Resolution {sources} (catalogue : GenericCatalogue.Checked sources) {owner name}
     (original : OrdinarySignature.Original sources owner name) :
@@ -70,15 +81,19 @@ inductive Resolution {sources} (catalogue : GenericCatalogue.Checked sources) {o
   | fresh (entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original)
       (computed : ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before =
         (.ok entry,after)) : Resolution catalogue original entry
+  | indexed (index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked)
+      (selection : GenericCatalogueIndex.Selection index original)
+      (computed : ∃ before after,(GenericCatalogueIndex.read index original).run before = (.ok selection,after)) :
+      Resolution catalogue original selection.entry
   | retained (lookup : OriginalLookup catalogue owner name) (same : lookup.original = original) :
       Resolution catalogue original (same ▸ lookup.entry)
 
-theorem Resolution.computed {sources catalogue owner name original entry}
-    (resolution : @Resolution sources catalogue owner name original entry) :
-    ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before = (.ok entry,after) := by
+def Resolution.evidence {sources catalogue owner name original entry}
+    (resolution : @Resolution sources catalogue owner name original entry) : LookupEvidence catalogue original entry := by
   cases resolution with
-  | fresh _ computed => exact computed
-  | retained lookup same => cases same; exact lookup.computed
+  | fresh entry computed => exact .fresh entry computed
+  | indexed index selection computed => exact .indexed index selection computed
+  | retained lookup same => cases same; exact lookup.evidence
 
 structure Target {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) where
@@ -86,12 +101,11 @@ structure Target {sources catalogue record}
   resolution : Resolution catalogue application.original.target.envelope entry
   substitution : GenericOperationSubstitute.Prepared application.original
 
-/-- This accessor exposes the retained actual lookup run, without asserting
-that a shared lookup ran again at the current preparation occurrence. -/
-theorem Target.resolved {sources catalogue record application}
+/-- Expose exactly the actual source lookup or indexed-selection receipt. An
+indexed or retained route does not claim the old fresh lookup executed. -/
+def Target.lookupEvidence {sources catalogue record application}
     (target : @Target sources catalogue record application) :
-    ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope).run before =
-      (.ok target.entry,after) := target.resolution.computed
+    LookupEvidence catalogue application.original.target.envelope target.entry := target.resolution.evidence
 
 def readTarget {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) : WorkM (Target application) := do
@@ -303,6 +317,7 @@ structure PreparedRecord {sources} (catalogue : GenericCatalogue.Checked sources
   every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index)
 
 private def prepareApplication {sources catalogue record}
+    (index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked)
     (application : @ApplicationAt sources catalogue record) (cache : List (PackedTarget catalogue)) :
     WorkM (PreparedApplication catalogue record × List (PackedTarget catalogue)) := do
   match ← findTarget catalogue application.original.owner application.original.name cache with
@@ -312,46 +327,54 @@ private def prepareApplication {sources catalogue record}
     let target : Target application := ⟨reused.entry,reused.resolution,substitution⟩
     return (⟨application,target,reused.headers,reused.originalHeaders⟩,cache)
   | none =>
-    let target ← readTarget application
+    let selection ← NaturalAffine.witness (GenericCatalogueIndex.read index application.original.target.envelope)
+    let substitution ← GenericOperationSubstitute.prepare application.original
+    let target : Target application :=
+      ⟨selection.val.entry,.indexed index selection.val (by with_reducible exact selection.property),substitution⟩
     reserveActivities (activities catalogue target.entry.index)
     let cached : CanonicalTarget catalogue application.original.owner application.original.name :=
-      ⟨⟨application.original.target.envelope,target.entry,target.resolved⟩,
+      ⟨⟨application.original.target.envelope,target.entry,target.lookupEvidence⟩,
         headerDuties catalogue target.entry.index,rfl⟩
     exactWork (Exact.charge (8*(cache.length+1)))
     return (⟨application,target,cached.headers,cached.originalHeaders⟩,
       cache ++ [⟨application.original.owner,application.original.name,cached⟩])
 
 private def prepareRecord {sources} (catalogue : GenericCatalogue.Checked sources)
+    (index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked)
     (record : RecordIndex catalogue) (cache : List (PackedTarget catalogue)) :
     WorkM (PreparedRecord catalogue record × List (PackedTarget catalogue)) := do
   reserveActivities (activities catalogue record)
   let (calls,cache) ← (originalApplications catalogue record).foldlM (fun (calls,cache) application => do
-    let (prepared,next) ← prepareApplication application cache
+    let (prepared,next) ← prepareApplication index application cache
     return (calls ++ [prepared],next)) ([],cache)
   if every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index) then
     return (⟨calls,every⟩,cache)
   else throw .request
 
-structure PreparedRow {sources} (catalogue : GenericCatalogue.Checked sources) where
+structure PreparedRow {sources} (catalogue : GenericCatalogue.Checked sources)
+    (index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked) where
   record : RecordIndex catalogue
   before : List (PackedTarget catalogue)
   value : PreparedRecord catalogue record
   after : List (PackedTarget catalogue)
-  computed : ∃ work left,(prepareRecord catalogue record before).run work = (.ok (value,after),left)
+  computed : ∃ work left,(prepareRecord catalogue index record before).run work = (.ok (value,after),left)
 
 structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) where
-  records : List (PreparedRow catalogue)
+  index : GenericCatalogueIndex.Prepared catalogue.toRuntimeChecked
+  indexed : ∃ before after,(GenericCatalogueIndex.prepare catalogue.toRuntimeChecked).run before = (.ok index,after)
+  records : List (PreparedRow catalogue index)
   every : records.map (·.record) = List.finRange catalogue.records.length
 
 private def prepare {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Prepared catalogue) := do
   exactWork (Exact.charge (16*(catalogue.records.length+1)^2))
+  let index ← NaturalAffine.witness (GenericCatalogueIndex.prepare catalogue.toRuntimeChecked)
   let (_cache,records) ← (List.finRange catalogue.records.length).foldlM (fun (cache,records) record => do
-    let value ← NaturalAffine.witness (prepareRecord catalogue record cache)
-    let row : PreparedRow catalogue :=
+    let value ← NaturalAffine.witness (prepareRecord catalogue index.val record cache)
+    let row : PreparedRow catalogue index.val :=
       ⟨record,cache,value.val.1,value.val.2,by with_reducible exact value.property⟩
     return (value.val.2,records ++ [row])) ([],[])
   if every : records.map (·.record) = List.finRange catalogue.records.length then
-    return ⟨records,every⟩
+    return ⟨index.val,by with_reducible exact index.property,records,every⟩
   else throw .request
 
 private def preparedRecord {sources catalogue} (prepared : @Prepared sources catalogue)
