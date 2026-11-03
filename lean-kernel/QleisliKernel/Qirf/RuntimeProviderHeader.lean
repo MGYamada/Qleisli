@@ -16,6 +16,7 @@ abbrev Request := SourceProviderSubject.Subject × RuntimeContextRequest.Context
 structure Original {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (index : Nat) where
   supplied : StaticOperation.ProviderInstance graph index
+  suppliedRead : RuntimeInterval.Computed (StaticOperation.argumentsAt graph index) supplied
   runtime : SourceRuntimeContext.CoreBinding supplied.provider.signature supplied.context supplied.arguments
   body : SourceRuntimeTrace.Body runtime.signature
   traversed : RuntimeInterval.Computed (SourceRuntimeTrace.readBodyWithSignature runtime.signature) body
@@ -23,10 +24,10 @@ structure Original {sources context description}
 def readOriginal {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (index : Nat) :
     WorkM (Original graph index) := do
-  let supplied ← StaticOperation.argumentsAt graph index
-  let runtime ← SourceRuntimeContext.fromQuantumCore supplied.provider.signature supplied.context supplied.arguments
+  let supplied ← NaturalAffine.witness (StaticOperation.argumentsAt graph index)
+  let runtime ← SourceRuntimeContext.fromQuantumCore supplied.val.provider.signature supplied.val.context supplied.val.arguments
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature runtime.signature)
-  return ⟨supplied,runtime,body.val,by with_reducible exact body.property⟩
+  return ⟨supplied.val,by with_reducible exact supplied.property,runtime,body.val,by with_reducible exact body.property⟩
 
 structure Header (artifact : Artifact) {context description}
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (index : Nat) (request : Request) where
