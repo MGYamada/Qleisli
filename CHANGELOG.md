@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove during traversal that the work list covers every selected source
+  and import. The native graph can use the exact reached module rows without
+  a second pass over original source text. Its work bound counts both graph
+  coverage checks on those rows.
+
 - Adopt a single ceiling of 20,000,000 exact-work units for ordinary and
   source-`qmatch` checks. Rust and the native Lean checker use the same
   budget across each request. Compilations charge all native receipts

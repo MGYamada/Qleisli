@@ -62,111 +62,129 @@ theorem Module.rows_rooted {sources catalogue seeds} (entry : @Module sources ca
 
 private def bytes (row : Row) : Nat := row.1.utf8ByteSize + row.2.utf8ByteSize
 
-private def seen {sources catalogue seeds} (row : Row) (modules : List (@Module sources catalogue seeds)) : WorkM Bool :=
-  modules.anyM fun entry => SourceRows.equal row entry.row
-
 private def readModule {sources} (catalogue : GenericCatalogue.Checked sources) {seeds}
-    (current : Pending catalogue seeds) : WorkM (Module catalogue seeds) := do
+    (current : Pending catalogue seeds) : WorkM {entry : Module catalogue seeds // entry.row = current.row} := do
   let original ← NaturalAffine.witness (SourceModules.lookup catalogue.modulesContext current.row.1)
   exactWork (Exact.charge (8*(bytes current.row+current.row.1.utf8ByteSize+original.val.source.utf8ByteSize+1)))
   if same : current.row = (current.row.1,original.val.source) then
     exactWork (Exact.charge (16*(catalogue.auxiliary.length+1)))
     let available := imports catalogue
     -- Only owner keys are compared by the filter. Full source comparisons are
-    -- charged separately above and by the row retainer below.
+    -- charged separately above and when consulting the visited modules.
     exactWork (Exact.charge (8*((available.map fun edge => edge.owner.utf8ByteSize+1).sum+
       (available.length+1)*(current.row.1.utf8ByteSize+1)+1)))
     let selected := available.filter (·.owner == current.row.1)
-    pure ⟨current.row.1,original.val,by with_reducible exact original.property,
-      same ▸ current.rooted,selected,rfl⟩
+    pure ⟨⟨current.row.1,original.val,by with_reducible exact original.property,
+      same ▸ current.rooted,selected,rfl⟩,same.symm⟩
   else throw .request
 
 private def children {sources catalogue seeds} (entry : @Module sources catalogue seeds) : List (Pending catalogue seeds) :=
   entry.rows.attach.map fun row => ⟨row.val,entry.rows_rooted row.val row.property⟩
 
-private def visit {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) :
-    Nat → List (Pending catalogue seeds) → List (Module catalogue seeds) → WorkM (List (Module catalogue seeds)) :=
-  Nat.rec (fun pending selected => if pending.isEmpty then pure selected else throw .limit)
-    (fun _ next pending selected => do
-      exactWork (Exact.charge (8*(pending.length+selected.length+1)))
-      match pending with
-      | [] => pure selected
-      | current :: rest =>
-        if ← seen current.row selected then next rest selected else
-          let entry ← readModule catalogue current
-          let more := children entry
-          exactWork (Exact.charge (8*(rest.length+more.length+selected.length+1)))
-          next (rest ++ more) (selected ++ [entry]))
+/-- Every original seed and every import discovered so far is either
+already validated against its original module or still on the work list. -/
+private def Covered {sources catalogue seeds} (modules : List (@Module sources catalogue seeds))
+    (pending : List (Pending catalogue seeds)) : Prop :=
+  ∀ row, row ∈ seeds ++ modules.flatMap Module.rows →
+    row ∈ modules.map Module.row ∨ row ∈ pending.map Pending.row
 
-def rawRows {sources catalogue seeds} (modules : List (@Module sources catalogue seeds)) : List Row :=
-  seeds ++ modules.flatMap (·.rows)
-
-structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) where
+structure Closure {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) where
   modules : List (Module catalogue seeds)
-  traversal : ∃ before after,
-    (visit catalogue seeds (seeds.length+((imports catalogue).map fun edge => edge.rows.length).sum+1)
-      (seeds.attach.map fun row => ⟨row.val,Rooted.seed row.property⟩) []).run before = (.ok modules,after)
-  relevance : SourceRows.Retained (rawRows modules)
-  complete : relevance.rows.all (fun row => modules.any (fun entry => row == entry.row)) = true
+  complete : ∀ row, row ∈ seeds ++ modules.flatMap Module.rows → row ∈ modules.map Module.row
 
-def Checked.rows {sources catalogue seeds} (checked : @Checked sources catalogue seeds) : List Row :=
-  checked.relevance.rows
+private theorem skipCovered {sources catalogue seeds} {current : @Pending sources catalogue seeds}
+    {rest checked} (invariant : Covered checked (current :: rest))
+    (known : current.row ∈ checked.map Module.row) : Covered checked rest := by
+  intro row member
+  rcases invariant row member with done | pending
+  · exact Or.inl done
+  · rcases List.mem_cons.mp pending with same | waiting
+    · exact Or.inl (same ▸ known)
+    · exact Or.inr waiting
 
-theorem Checked.seeds_retained {sources catalogue seeds} (checked : @Checked sources catalogue seeds)
-    (row : Row) (member : row ∈ seeds) : row ∈ checked.rows :=
-  (checked.relevance.members row).mpr (List.mem_append.mpr (.inl member))
+private theorem addCovered {sources catalogue seeds} {current : @Pending sources catalogue seeds}
+    {rest checked} (invariant : Covered checked (current :: rest)) (entry : Module catalogue seeds)
+    (same : entry.row = current.row) : Covered (checked ++ [entry]) (rest ++ children entry) := by
+  intro row member
+  simp only [List.flatMap_append,List.flatMap_cons,List.flatMap_nil,List.append_nil,
+    List.map_append,List.map_cons,List.map_nil,List.mem_append,List.mem_cons,List.not_mem_nil,
+    or_false] at member ⊢
+  have prior (old : row ∈ seeds ++ checked.flatMap Module.rows) :
+      (row ∈ checked.map Module.row ∨ row = entry.row) ∨
+      (row ∈ rest.map Pending.row ∨ row ∈ (children entry).map Pending.row) := by
+    rcases invariant row old with done | waiting
+    · exact Or.inl (Or.inl done)
+    · rcases List.mem_cons.mp waiting with first | later
+      · exact Or.inl (Or.inr (first.trans same.symm))
+      · exact Or.inr (Or.inl later)
+  rcases member with seed | old | child
+  · exact prior (List.mem_append_left _ seed)
+  · exact prior (List.mem_append_right _ old)
+  · exact Or.inr (Or.inr (by simpa [children,List.map_map,Function.comp_def] using child))
 
-theorem Checked.rows_rooted {sources catalogue seeds} (checked : @Checked sources catalogue seeds)
-    (row : Row) (member : row ∈ checked.rows) : Rooted catalogue seeds row := by
-  have raw := (checked.relevance.members row).mp member
-  rcases List.mem_append.mp raw with seed | imported
-  · exact .seed seed
-  · obtain ⟨entry,present,member⟩ := List.mem_flatMap.mp imported
-    exact entry.rows_rooted row member
+private def finish {sources catalogue seeds} (checked : List (@Module sources catalogue seeds))
+    (invariant : Covered checked []) : Closure catalogue seeds :=
+  ⟨checked,by intro row h; simpa using invariant row h⟩
 
-/-- Every output row was processed as its complete, exact original module.
-Combined with Module.allImports this includes every import of every reachable
-module, while rows unrelated to the consulted seeds have no Rooted derivation. -/
-theorem Checked.everyRow {sources catalogue seeds} (checked : @Checked sources catalogue seeds)
-    (row : Row) (member : row ∈ checked.rows) :
-    ∃ entry ∈ checked.modules,row = entry.row := by
-  have covered := (List.all_eq_true.mp checked.complete) row member
-  obtain ⟨entry,present,same⟩ := List.any_eq_true.mp covered
-  exact ⟨entry,present,beq_iff_eq.mp same⟩
+private def visit {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) :
+    Nat → (pending : List (Pending catalogue seeds)) → (checked : List (Module catalogue seeds)) →
+      Covered checked pending → WorkM (Closure catalogue seeds) :=
+  Nat.rec (fun pending checked => match pending with
+      | [] => fun invariant => pure (finish checked invariant)
+      | _ :: _ => fun _ => throw .limit)
+    (fun _ next pending checked invariant => do
+      exactWork (Exact.charge (8*(pending.length+checked.length+1)))
+      match pending with
+      | [] => pure (finish checked invariant)
+      | current :: rest =>
+        let keys := checked.map Module.row
+        let test ← NaturalAffine.witness (SourceRows.contains current.row keys)
+        match found : test.val with
+        | true =>
+          have known : current.row ∈ keys := by
+            obtain ⟨before,after,read⟩ := test.property
+            have yes := (SourceRows.contains_value current.row keys before after test.val read).symm.trans found
+            obtain ⟨key,member,equal⟩ := List.any_eq_true.mp yes
+            exact (beq_iff_eq.mp equal) ▸ member
+          next rest checked (skipCovered invariant known)
+        | false =>
+          let entry ← readModule catalogue current
+          let more := children entry.val
+          exactWork (Exact.charge (8*(rest.length+more.length+checked.length+1)))
+          next (rest ++ more) (checked ++ [entry.val]) (addCovered invariant entry.val entry.property))
 
-/-- Check coverage against the modules reached by the original import traversal.
-Each candidate is compared using its module name before reading source bytes. -/
-private def covered (available : List Row) (rows : List Row) : WorkM Bool :=
-  rows.allM fun row => SourceRows.contains row available
-
-private theorem covered_value (available rows : List Row) (before after : Nat) (answer : Bool)
-    (ran : (covered available rows).run before = (.ok answer,after)) :
-    answer = rows.all (fun row => available.any (row == ·)) := by
-  induction rows generalizing before with
-  | nil => exact (pure_success true _ _ _ ran).1
-  | cons row rest ih =>
-    obtain ⟨found,middle,test,tail⟩ := bind_success _ _ before after answer ran
-    have same := SourceRows.contains_value row available before middle found test
-    cases found with
-    | true => simpa [List.all_cons,← same] using ih middle tail
-    | false => simpa [List.all_cons,← same] using (pure_success false _ _ _ tail).1
-
-def read {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) :
-    WorkM (Checked catalogue seeds) := do
+private def start {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) :
+    WorkM (Closure catalogue seeds) := do
   exactWork (Exact.charge (16*(catalogue.auxiliary.length+seeds.length+1)))
   let fuel := seeds.length+((imports catalogue).map fun edge => edge.rows.length).sum+1
   exactWork (Exact.charge (8*(fuel+1)))
-  let modules ← NaturalAffine.witness (visit catalogue seeds fuel
-    (seeds.attach.map fun row => ⟨row.val,Rooted.seed row.property⟩) [])
-  let relevance ← SourceRows.read (rawRows (seeds := seeds) modules.val)
-  let available : List Row := modules.val.map Module.row
-  let checked ← NaturalAffine.witness (α := Bool) (covered available relevance.rows)
-  match complete : checked.val with
-  | true =>
-    pure ⟨modules.val,by with_reducible exact modules.property,relevance,by
-      obtain ⟨before,after,ran⟩ := checked.property
-      have members := (covered_value available relevance.rows before after checked.val ran).symm.trans complete
-      simpa only [available,List.any_map,Function.comp_def] using members⟩
-  | false => throw .request
+  visit catalogue seeds fuel (seeds.attach.map fun row => ⟨row.val,Rooted.seed row.property⟩) [] (by
+    intro row member
+    right
+    simpa [List.map_map,Function.comp_def] using member)
+
+structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row)
+    extends Closure catalogue seeds where
+  traversal : ∃ before after,(start catalogue seeds).run before = (.ok toClosure,after)
+
+def Checked.rows {sources catalogue seeds} (checked : @Checked sources catalogue seeds) : List Row :=
+  checked.modules.map Module.row
+
+theorem Checked.everyRow {sources catalogue seeds} (checked : @Checked sources catalogue seeds)
+    (row : Row) (member : row ∈ checked.rows) :
+    ∃ entry ∈ checked.modules,row = entry.row := by
+  obtain ⟨entry,present,same⟩ := List.mem_map.mp member
+  exact ⟨entry,present,same.symm⟩
+
+theorem Checked.rows_rooted {sources catalogue seeds} (checked : @Checked sources catalogue seeds)
+    (row : Row) (member : row ∈ checked.rows) : Rooted catalogue seeds row := by
+  obtain ⟨entry,_,rfl⟩ := checked.everyRow row member
+  exact entry.rooted
+
+def read {sources} (catalogue : GenericCatalogue.Checked sources) (seeds : List Row) :
+    WorkM (Checked catalogue seeds) := do
+  let result ← NaturalAffine.witness (start catalogue seeds)
+  exactWork (Exact.charge (8*(result.val.modules.length+1)))
+  pure ⟨result.val,by with_reducible exact result.property⟩
 
 end QleisliKernel.SourceTypes.SourceImportRows

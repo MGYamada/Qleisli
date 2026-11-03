@@ -29,6 +29,13 @@ private def read (sources : Sources) (seeds : List SourceTypes.SourceRows.Row) :
 #guard ((read sources [("main",main),("main",main)]).run 10000000).1.toOption ==
   some (["main","bridge","leaf"],["main","bridge","leaf"])
 
+-- Repeated seeds and transitive imports of an already processed module must
+-- still check the bytes attached to every occurrence.
+#guard ((read sources [("leaf",leaf),("main",main)]).run 10000000).1.toOption ==
+  some (["leaf","main","bridge"],["leaf","main","bridge"])
+#guard (match (read sources [("leaf",leaf),("leaf",leaf ++ " ")]).run 10000000 with
+  | (.error .request,_) => true | _ => false)
+
 -- Full original source identity and the real import visibility gates remain.
 #guard (match (read sources [("main",main ++ " ")]).run 10000000 with
   | (.error .request,_) => true | _ => false)

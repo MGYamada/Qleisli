@@ -169,16 +169,21 @@ structure Body {artifact owner name requests} (order : Array Nat)
 def prepare {artifact owner name requests} (order : Array Nat)
     (headers : Headers artifact owner name requests) (positions : List Position) :
     WorkM (Body order headers positions) := do
-  let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  let nodes := headers.sites.foldl (fun count header =>
-    count+Carrier.sourceNodes header.request.attached header.request.required) 0
-  let rowCount := headers.source.val.sourceRows.length+
-    (headers.source.val.result.events.flatMap eventRows).length+nodes+
-    headers.sites.foldl (fun count header => count+header.rows.val.length) 0
+  let original := artifact.sources.toList
+  let relevant := rows headers
+  let rowBytes := fun (row : String × String) => row.1.utf8ByteSize + row.2.utf8ByteSize
+  let originalBytes := (original.map rowBytes).sum
+  let relevantBytes := (relevant.map rowBytes).sum
+  -- The graph and its root both check source usage. Bound every pair in
+  -- each pass, including both complete byte strings and the table walks.
+  -- The import traversal already checked the original queries in the header.
+  let comparisons := (originalBytes+original.length)*relevant.length + relevantBytes*original.length
+  let references := artifact.entries.size + (artifact.entries.toList.map fun entry => entry.sources.length).sum
   let rootCount := 1+headers.sites.foldl (fun count header => count+header.roots.val.length) 0
-  exactWork (Exact.charge (4*nodes+5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
+  exactWork (Exact.charge (2*(comparisons+references+original.length+relevant.length+1) +
+    originalBytes+relevantBytes+16*rootCount^2))
   let root ← SourceTypes.NaturalAffine.witness
-    (Validity.checkRootFromRoots artifact order (rows headers) (roots headers) .qmatch)
+    (Validity.checkRootFromRoots artifact order relevant (roots headers) .qmatch)
   let context ← SourceTypes.NaturalAffine.witness
     (RawTrace.check headers.source.val root.val.dependencies root.val.program positions)
   return ⟨root,context⟩
