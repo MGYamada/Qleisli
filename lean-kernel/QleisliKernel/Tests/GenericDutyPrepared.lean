@@ -6,11 +6,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.GenericDutyPrepared
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Finite
 
+private def resolutionFresh {sources catalogue owner name original} :
+    (entry : GenericCatalogue.Entry (@GenericCatalogue.Checked.toRuntimeChecked sources catalogue) original) →
+      @GenericDutyQueue.Resolution sources catalogue owner name original entry → Bool
+  | _,.fresh .. => true
+  | _,.retained .. => false
+
 private def fresh {sources catalogue record application}
     (target : @GenericDutyQueue.Target sources catalogue record application) : Bool :=
-  match target.resolution with
-  | .fresh .. => true
-  | .retained .. => false
+  resolutionFresh target.entry target.resolution
 
 private def repeated : WorkM (List Bool × List (List Int) × List Nat) := do
   let source := "#![no_implicit_prelude]\n" ++
