@@ -148,10 +148,10 @@ private def readEventEligibility {sources caller} (event : SourceRuntimeContext.
     WorkM (EligibleEvents [event]) := do
   match event with
   | .named call => readNamedEligibility call
-  | _ =>
-    match classified : classifyEvent event with
+  | other =>
+    match classified : classifyEvent other with
     | .error _ => throw .request
-    | .ok action => return .primitive event action (by first | exact classified | rfl)
+    | .ok action => return .primitive other action (by first | exact classified | rfl)
 
 private def readEventList {sources caller} : (events : List (SourceRuntimeContext.Event sources caller)) →
     WorkM (EligibleEvents events)
@@ -167,18 +167,14 @@ step for every event; it never retries a failed source or callee reader. -/
 private def readEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) :
     WorkM (EligibleEvents events) := do
   exactWork (Exact.charge (8*(events.length+1)))
-  match single : events with
-  | [.named call] =>
-    let eligible ← readNamedEligibility call
-    have original : EligibleEvents events := by
-      first | exact single.symm ▸ eligible | exact eligible
-    return original
-  | _ =>
-    match classified : events.mapM classifyEvent with
+  match events with
+  | [.named call] => readNamedEligibility call
+  | others =>
+    match classified : others.mapM classifyEvent with
     | .ok actions => return .primitives actions (by first | exact classified | rfl)
     | .error _ =>
-      exactWork (Exact.charge (16*(events.length+1)))
-      readEventList events
+      exactWork (Exact.charge (16*(others.length+1)))
+      readEventList others
 
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
