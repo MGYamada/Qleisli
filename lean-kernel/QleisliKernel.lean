@@ -114,6 +114,7 @@ import QleisliKernel.Qirf.SourceClassicalTree
 import QleisliKernel.Qirf.SourceClassicalExecution
 import QleisliKernel.Qirf.SourceMeaningOrdinary
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
+import QleisliKernel.SourceTypes.GenericCatalogueIndex
 import QleisliKernel.SourceTypes.GenericDutyQueue
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Qirf.RuntimeOrdinarySSA
