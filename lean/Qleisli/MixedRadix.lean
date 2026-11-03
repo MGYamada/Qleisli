@@ -84,8 +84,7 @@ theorem decode_encode {α : Type} [DecidableEq α] (order : List α) (cards digi
   induction order with
   | nil => intro _bounds wanted member; cases member
   | cons head rest ih =>
-    intro bounds
-    intro wanted member
+    intro bounds wanted member
     change (if head = wanted then (digits head+cards head*encode rest cards digits) % cards head else
       decode rest cards ((digits head+cards head*encode rest cards digits) / cards head) wanted) = digits wanted
     by_cases same : head = wanted
