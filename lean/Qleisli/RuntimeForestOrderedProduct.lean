@@ -16,16 +16,16 @@ open QleisliKernel.Qirf QleisliKernel.Qirf.RuntimeForestCode
 open Qleisli.Semantics.Exact
 open Qleisli.RuntimeForestProduct
 
-def layouts {bindings : RuntimeOwnerMap.Map} : OwnerCodes bindings → List Layout
+noncomputable def layouts {bindings : RuntimeOwnerMap.Map} : OwnerCodes bindings → List Layout
   | .nil => []
   | .cons first rest => first.layout :: layouts rest
 
 /-- A reference layout used only in the erased structural proof. The executable
 code coordinates and coefficient product below do not allocate this label list. -/
-def layoutProduct {bindings : RuntimeOwnerMap.Map} (owners : OwnerCodes bindings) : Layout :=
+noncomputable def layoutProduct {bindings : RuntimeOwnerMap.Map} (owners : OwnerCodes bindings) : Layout :=
   (layouts owners).foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton
 
-def sparseProduct {bindings : RuntimeOwnerMap.Map} : OwnerCodes bindings → Sparse
+noncomputable def sparseProduct {bindings : RuntimeOwnerMap.Map} : OwnerCodes bindings → Sparse
   | .nil => Sparse.singleton
   | .cons first rest => (Sparse.ofLayout first.layout).tensor (sparseProduct rest)
 

@@ -9,6 +9,7 @@ import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.Qirf.RuntimeSourceBoundary
 import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
+import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.OperationIRMeaning
 import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.SourceTypes.QuantumArms
@@ -318,6 +319,38 @@ abbrev Island (dependencies : List Semantics.Finite.Dependency) :=
   (program : Semantics.Observation.Program) ×
     (block : RuntimeInterval.Block dependencies program) × Node dependencies program block
 
+/-- The enclosing Lean definition fixes the graph consumer. Failure never
+selects another mode, and no untrusted context field chooses a continuation. -/
+inductive OperationMode (artifact : Artifact) (root : Validity.Root) where
+  | strict
+  | extended (continuation : RuntimeGraphOperation.Consumption artifact root (Island root.dependencies))
+
+def OperationMode.Receipt {artifact root} : OperationMode artifact root → Type
+  | .strict => Empty
+  | .extended continuation => RuntimeGraphOperation.CheckedReceipt continuation
+
+def OperationMode.takeReferences {artifact root} (mode : OperationMode artifact root) (explicit : Bool)
+    (references : List (List (List RuntimeProviderHeader.Request))) :
+    WorkM (List (List RuntimeProviderHeader.Request) × List (List (List RuntimeProviderHeader.Request))) := do
+  match mode with
+  | .strict =>
+    if explicit then
+      let group :: remaining := references | throw .request
+      guard group.isEmpty .request
+      return ([],remaining)
+    else
+      guard references.isEmpty .request
+      return ([],[])
+  | .extended _ =>
+    let group :: remaining := references | throw .request
+    return (group,remaining)
+
+def OperationMode.checkSignature {artifact root} (mode : OperationMode artifact root) {owner name}
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name) : WorkM Unit :=
+  match mode with
+  | .strict => guard (!signature.operations.hasMeaningRequirements) .request
+  | .extended _ => guard signature.operations.rootRequirements.isEmpty .request
+
 /-- Every recursive arm remains indexed by its genuine literal block. A whole
 function is wrapped with its existing Prepared object only at the public edge. -/
 structure BlockResult (dependencies : List Semantics.Finite.Dependency)
@@ -351,11 +384,13 @@ def Result.islands {dependencies program} (result : Result dependencies program)
 /-- One state and one event handler are shared by enclosing and selected
 static sequences. Context cursors and source history are never reconstructed. -/
 abbrev LoopState (dependencies : List Semantics.Finite.Dependency)
-    (program : Semantics.Observation.Program) (block : RuntimeInterval.Block dependencies program) :=
+    (program : Semantics.Observation.Program) (block : RuntimeInterval.Block dependencies program)
+    (Receipt : Type := Empty) :=
   RuntimeStructuralAction.SourceState × List Owner × RuntimeOrdinaryBody.State ×
     List (Node dependencies program block) × List (Step dependencies program block) × List (Island dependencies) ×
     Nat × List (Position × Context) × List RuntimeContextRequest.Site ×
-    List (Position × Context × Context) × List RuntimeProviderHeader.Request
+    List (Position × Context × Context) × List RuntimeProviderHeader.Request ×
+    List (List (List RuntimeProviderHeader.Request)) × List Receipt
 
 private def reordered (roles : List Owner) (state : Raw.Observation.State) (bindings : Map) :
     WorkM (RuntimeOwnerMap.Checked roles state) := do
@@ -369,17 +404,18 @@ private def singletonOrdinary (value : Value) : Bool := (ordinary value).all fun
 blocks. Source scopes supply original outcomes; only the genuine Block supplies
 native operations, scope and issuance history. No alternative body evaluator,
 shortened program or invented signature is used for a branch. -/
-def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBoundary →
+def runBlockUsing (artifact : Artifact) (root : Validity.Root) (operationMode : OperationMode artifact root) :
+    Nat → Mode → OutputBoundary →
     {rootOwner rootName owner name : String} →
     SourceRuntimeScope.Subject artifact.sources owner name →
     RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name →
     (program : Semantics.Observation.Program) → Context → RuntimeStructuralAction.SourceState →
     RuntimeOrdinaryBody.State → (block : RuntimeInterval.Block root.dependencies program) →
-    WorkM (BlockResult root.dependencies program block) :=
+    WorkM (BlockResult root.dependencies program block × List operationMode.Receipt) :=
   Nat.rec (fun _ _ {_ _ _ _} _ _ _ _ _ _ _ => throw .limit)
     (fun _ next mode outputBoundary {rootOwner rootName owner name} source path program request initialHistory initialOrdinary block => do
       let dependencies := root.dependencies
-      guard (!source.signature.operations.hasMeaningRequirements) .request
+      operationMode.checkSignature source.signature
       match mode with
       | .pureBody =>
         guard (source.effect == .unitary && singletonOrdinary source.value &&
@@ -394,59 +430,70 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
       let initialHistory := {initialHistory with bindings := initial.bindings}
       let checkOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
-          (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
-          WorkM (Semantics.Exact.Matrix × List (Island dependencies)) := do
-        let paths ← RuntimeOperationPaths.read graph root requested requests
-        let children ← paths.bodies.mapM fun {_} {headerRequest} header _ native => do
-          let body := header.original.body
-          let canonical := body.checked.summary.parameterValues.flatMap valueOwners
-          let owner := (⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩ :
-            Semantics.CarrierInterface.Owner)
-          let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
-          let prepared ← RuntimeInterval.prepare dependencies native.ir.original.program
-          let initial : RuntimeStructuralAction.SourceState :=
-            ⟨bindings,canonical,body.checked.summary.nextOwner⟩
-          let checked ← next .pureBody .rootOrder (.whole body) (.root body)
-            native.ir.original.program headerRequest.2 initial {} prepared.block
-          pure checked.islands
-        let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
-        pure (logical,children.flatten)
+          (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request)
+          (references : List (List RuntimeProviderHeader.Request)) :
+          WorkM (Semantics.Exact.Matrix × List (Island dependencies) × List operationMode.Receipt) := do
+        match operationMode with
+        | .extended continuation =>
+          let call : RuntimeGraphOperation.Request artifact := ⟨context,description,graph,requested,requests,references⟩
+          let checked ← NaturalAffine.witness (continuation.read call)
+          let receipt : RuntimeGraphOperation.CheckedReceipt continuation :=
+            ⟨call,checked.val,by with_reducible exact checked.property⟩
+          return (continuation.action checked.val,continuation.obligations checked.val,[receipt])
+        | .strict =>
+          guard references.isEmpty .request
+          let paths ← RuntimeOperationPaths.read graph root requested requests
+          let children ← paths.bodies.mapM fun {_} {headerRequest} header _ native => do
+            let body := header.original.body
+            let canonical := body.checked.summary.parameterValues.flatMap valueOwners
+            let owner := (⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩ :
+              Semantics.CarrierInterface.Owner)
+            let bindings ← RuntimeSourceBoundary.bindings canonical [owner]
+            let prepared ← RuntimeInterval.prepare dependencies native.ir.original.program
+            let initial : RuntimeStructuralAction.SourceState :=
+              ⟨bindings,canonical,body.checked.summary.nextOwner⟩
+            let (checked,_) ← next .pureBody .rootOrder (.whole body) (.root body)
+              native.ir.original.program headerRequest.2 initial {} prepared.block
+            pure checked.islands
+          let logical ← OperationIRMeaning.compute graph paths.bodies.logicals
+          pure (logical,children.flatten,[])
       let consumeOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
-          (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
-          WorkM (Semantics.Exact.Matrix × List (Island dependencies) × List RuntimeProviderHeader.Request) := do
+          (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request)
+          (references : List (List (List RuntimeProviderHeader.Request))) (explicit : Bool) :
+          WorkM (Semantics.Exact.Matrix × List (Island dependencies) × List RuntimeProviderHeader.Request ×
+            List (List (List RuntimeProviderHeader.Request)) × List operationMode.Receipt) := do
         let occurrences ← StaticOperation.readOccurrences description
         let count := (RuntimeProviderHeaders.providerIndices description occurrences).length
         guard (count ≤ requests.length) .request
-        let (logical,checked) ← checkOperation graph requested (requests.take count)
-        pure (logical,checked,requests.drop count)
-      let required := fun (argument : String) => match source.signature.instantiation with
-        | .closed _ => OperationAccess.empty
-        | .static _ environment _ =>
-          (⟨environment.numeric.original.header.access.contains (.applicable,argument),
-            environment.numeric.original.header.access.contains (.adjointable,argument),
-            environment.numeric.original.header.access.contains (.controllable,argument)⟩ : StaticOperation.Paths)
+        let (group,references) ← operationMode.takeReferences explicit references
+        let (logical,checked,receipts) ← checkOperation graph requested (requests.take count) group
+        pure (logical,checked,requests.drop count,references,receipts)
       let actuals ← if source.prefixRequired then
         RuntimeProviderHeaders.originalActuals source.signature.operations else pure []
-      let (obligations,bodies) ← actuals.foldlM
-        (fun (obligations,bodies) actual => do
-          let (_,checked,rest) ← consumeOperation actual.2.graph (required actual.1.1) bodies
-          pure (obligations ++ checked,rest)) ([],request.bodies)
+      let (obligations,bodies,references,receipts) ← actuals.foldlM
+        (fun (obligations,bodies,references,receipts) actual => do
+          exactWork (Exact.charge (receipts.length+1))
+          let (_,checked,rest,references,performed) ← consumeOperation actual.2.graph
+            (RuntimeGraphOperation.required source.signature actual.1.1) bodies references (!request.references.isEmpty)
+          pure (obligations ++ checked,rest,references,receipts ++ performed))
+          ([],request.bodies,request.references,([] : List operationMode.Receipt))
       exactWork (Exact.charge (32*(source.events.length+request.positions.length+request.calls.length+1)^2))
       guard (request.positions.map (·.offset) == source.events.map SourceRuntimeContext.Event.offset) .request
-      let advance : LoopState dependencies program block → Nat →
-          WorkM (LoopState dependencies program block) :=
-        fun (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies) start => do
+      let advance : LoopState dependencies program block operationMode.Receipt → Nat →
+          WorkM (LoopState dependencies program block operationMode.Receipt) :=
+        fun (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies,references,receipts) start => do
           guard (cursor ≤ start) .request
           if cursor == start then
-            return (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies)
+            return (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies,references,receipts)
           else
             let gap ← RuntimeOrdinaryBody.readGap block cursor (start-cursor) history ordinary
-            return (history,retired,gap.ssa,actions,steps ++ [.gap gap],obligations,start,calls,sites,branches,bodies)
-      let step : LoopState dependencies program block →
+            return (history,retired,gap.ssa,actions,steps ++ [.gap gap],obligations,start,calls,sites,branches,bodies,references,receipts)
+      let step : LoopState dependencies program block operationMode.Receipt →
           (SourceRuntimeContext.Event artifact.sources owner × Position) →
-            WorkM (LoopState dependencies program block) := fun state (event,position) => do
-          let (history,retired,ordinary,actions,steps,obligations,_cursor,calls,sites,branches,bodies) ← advance state position.start
+            WorkM (LoopState dependencies program block operationMode.Receipt) := fun state (event,position) => do
+          let (history,retired,ordinary,actions,steps,obligations,_cursor,calls,sites,branches,bodies,references,receipts) ← advance state position.start
+          exactWork (Exact.charge (receipts.length+references.length+1))
           let interval ← RuntimeInterval.check block position.start position.count
           let callerFrame ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
           let bindings := callerFrame.bindings
@@ -466,22 +513,22 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
               let action ← RuntimeStructuralAction.read block position.start position.count event before
               let node : Node dependencies program block := .structural action
               return (action.after,retired ++ action.inputRoles,ordinary,actions ++ [node],steps ++ [.pure node],
-                obligations,position.start+position.count,calls,sites,branches,bodies)
+                obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts)
             else if observing then
               match mode with
               | .pureBody => throw .request
               | .runtimeBody =>
                 let action ← RuntimeOrdinaryBody.readObservation path event block position before ordinary
                 return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
-                  obligations,position.start+position.count,calls,sites,branches,bodies)
+                  obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts)
             else do
               let (after,node) ← primitiveAt interval history callerFrame (.primitive event)
               return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-                obligations,position.start+position.count,calls,sites,branches,bodies)
+                obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts)
           | .phase event =>
             let (after,node) ← primitiveAt interval history callerFrame (.phase event)
             return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-              obligations,position.start+position.count,calls,sites,branches,bodies)
+              obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts)
           | .named event =>
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position) .request
@@ -503,14 +550,14 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
                 let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
                 let childHistory : RuntimeStructuralAction.SourceState :=
                   ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
-                let nested ← next .pureBody .localScope (.whole original) childPath frame.program child childHistory
+                let (nested,childReceipts) ← next .pureBody .localScope (.whole original) childPath frame.program child childHistory
                   ordinary frame.prepared.block
                 let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
                   event before nested.history nested.retired original.checked.summary.value
                 let node : Node dependencies program block := .named event frame original
                   (by with_reducible exact originalRead.property) frame.prepared.block boundary (Nodes.ofList nested.actions)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
-                  obligations ++ nested.obligations,position.start+position.count,calls,sites,branches,bodies)
+                  obligations ++ nested.obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts ++ childReceipts)
               | .runtimeBody =>
                 let frame ← RuntimeCallScope.read block position.start position.count
                   (inputs.map (·.token)) ordinary event.effect
@@ -519,14 +566,14 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
                 let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
                 let childHistory : RuntimeStructuralAction.SourceState :=
                   ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
-                let nested ← next .runtimeBody .localScope (.whole original) childPath frame.program child childHistory
+                let (nested,childReceipts) ← next .runtimeBody .localScope (.whole original) childPath frame.program child childHistory
                   frame.visible.ssa frame.prepared.block
                 let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
                   event before nested.history nested.retired original.checked.summary.value
                 let step : Step dependencies program block := .named event frame original
                   (by with_reducible exact originalRead.property) frame.prepared.block boundary nested.ordinary (Steps.ofList nested.steps)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions,steps ++ [step],
-                  obligations ++ nested.obligations,position.start+position.count,calls,sites,branches,bodies)
+                  obligations ++ nested.obligations,position.start+position.count,calls,sites,branches,bodies,references,receipts ++ childReceipts)
             else throw .request
           | .conditional event _ _ =>
             match mode with
@@ -542,14 +589,15 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
                   .arm event sameName selected.bodies selected.original true
                 let elseSource : SourceRuntimeScope.Subject artifact.sources owner name :=
                   .arm event sameName selected.bodies selected.original false
-                let left ← next .runtimeBody .frame thenSource path program thenContext before ordinary actual.thenBlock
-                let right ← next .runtimeBody .frame elseSource path program elseContext before ordinary actual.elseBlock
+                let (left,leftReceipts) ← next .runtimeBody .frame thenSource path program thenContext before ordinary actual.thenBlock
+                let (right,rightReceipts) ← next .runtimeBody .frame elseSource path program elseContext before ordinary actual.elseBlock
                 let action ← RuntimeBranchAction.read path event selected actual before left.history right.history
                   ordinary left.ordinary right.ordinary
+                exactWork (Exact.charge (leftReceipts.length+1))
                 let branchStep : Step dependencies program block := .conditional path event selected actual
                   (by with_reducible exact actualRead.property) action (Steps.ofList left.steps) (Steps.ofList right.steps)
                 return (action.next,retired ++ action.retired,action.ordinaryAfter,actions,steps ++ [branchStep],
-                  obligations ++ left.islands ++ right.islands,position.start+position.count,calls,sites,branches,bodies)
+                  obligations ++ left.islands ++ right.islands,position.start+position.count,calls,sites,branches,bodies,references,receipts ++ leftReceipts ++ rightReceipts)
               else throw .request
           | .operation event =>
             let owners ← readOwners
@@ -558,26 +606,31 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position && child.positions.isEmpty && child.sites.isEmpty &&
               child.calls.isEmpty && child.branches.isEmpty) .request
-            let (expected,children) ← checkOperation event.operation.graph OperationAccess.applicable child.bodies
+            let (expected,children,remaining,remainingReferences,performed) ← consumeOperation
+              event.operation.graph OperationAccess.applicable child.bodies child.references (!child.references.isEmpty)
+            guard (remaining.isEmpty && remainingReferences.isEmpty) .request
             let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
             pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-              obligations ++ children,position.start+position.count,calls,sites,branches,bodies)
+              obligations ++ children,position.start+position.count,calls,sites,branches,bodies,references,receipts ++ performed)
           | .selection _ parsed _ selector target scope naturals .. =>
             let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
             let site :: sites := sites | throw .request
             guard (site.position == position) .request
             let table ← QuantumArms.readArmsWithInstantiation source.signature.original source.signature.instantiation
               source.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
-            let (node,checked,bodies) ← selectionNode artifact interval callerFrame owners selector target table
-              site (([] : List (Island dependencies)),bodies) fun _ arm (checked,bodies) => do
-                let (logical,children,rest) ← consumeOperation arm.operation.graph OperationAccess.controllable bodies
-                return (logical,checked ++ children,rest)
+            let (node,checked,bodies,references,receipts) ← selectionNode artifact interval callerFrame owners selector target table
+              site (([] : List (Island dependencies)),bodies,references,receipts)
+              fun _ arm (checked,bodies,references,receipts) => do
+                exactWork (Exact.charge (receipts.length+1))
+                let (logical,children,rest,references,performed) ← consumeOperation
+                  arm.operation.graph OperationAccess.controllable bodies references (!request.references.isEmpty)
+                return (logical,checked ++ children,rest,references,receipts ++ performed)
             pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
-              obligations ++ checked,position.start+position.count,calls,sites,branches,bodies)
+              obligations ++ checked,position.start+position.count,calls,sites,branches,bodies,references,receipts)
           | _ =>
             let _ ← readOwners
             throw .request
-      let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies) ←
+      let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies,references,receipts) ←
         (source.events.zip request.positions).foldlM
         (fun state (event,position) => do
           match event with
@@ -588,7 +641,7 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
                   pure (.unchanged source)
               | .runtimeBody => RuntimeStaticPrimitive.readContinuation event)
             let state ← advance state position.start
-            let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies) := state
+            let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies,references,receipts) := state
             let positions ← sequence.positions position (calls.map (·.1))
             guard (positions.length == sequence.selected.result.events.length) .request
             let interval ← RuntimeInterval.check block position.start position.count
@@ -600,17 +653,17 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
             -- to the existing prefixes. Charge those copies and comparisons.
             exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
               32*(Raw.OwnerFlow.fields retired+1)))
-            let initial : LoopState dependencies program block :=
-              (before,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies)
+            let initial : LoopState dependencies program block operationMode.Receipt :=
+              (before,retired,ordinary,actions,steps,obligations,cursor,calls,sites,branches,bodies,references,receipts)
             let result ← (sequence.selected.result.events.zip positions).foldlM step initial
-            let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_calls,_sites,_branches,_bodies) := result
+            let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_calls,_sites,_branches,_bodies,_references,_receipts) := result
             guard (afterCursor == position.start+position.count) .request
             let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired
             return result
           | _ => step state (event,position)) (initialHistory,([] : List Owner),initialOrdinary,
             ([] : List (Node dependencies program block)),([] : List (Step dependencies program block)),
-            obligations,0,request.calls,request.sites,request.branches,bodies)
-      guard (cursor ≤ block.operations.length && calls.isEmpty && sites.isEmpty && branches.isEmpty && bodies.isEmpty) .request
+            obligations,0,request.calls,request.sites,request.branches,bodies,references,receipts)
+      guard (cursor ≤ block.operations.length && calls.isEmpty && sites.isEmpty && branches.isEmpty && bodies.isEmpty && references.isEmpty) .request
       let (ordinary,steps) ← if cursor == block.operations.length then pure (ordinary,steps) else do
         let gap ← RuntimeOrdinaryBody.readGap block cursor (block.operations.length-cursor) history ordinary
         pure (gap.ssa,steps ++ [.gap gap])
@@ -626,7 +679,19 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
         | .rootOrder => outputs.map (·.token) == program.outputs
         | .localScope => decide ((outputs.map (·.token)).Perm program.outputs)
         | .frame => true) .request
-      return ⟨{history with bindings},retired,actions,steps,ordinary,obligations⟩)
+      return (⟨{history with bindings},retired,actions,steps,ordinary,obligations⟩,receipts))
+
+/-- Strict callers use the same loop with no Meaning continuation. -/
+def runBlock (artifact : Artifact) (root : Validity.Root) (fuel : Nat) (mode : Mode) (outputBoundary : OutputBoundary)
+    {rootOwner rootName owner name : String}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    (program : Semantics.Observation.Program) (request : Context) (initialHistory : RuntimeStructuralAction.SourceState)
+    (initialOrdinary : RuntimeOrdinaryBody.State) (block : RuntimeInterval.Block root.dependencies program) :
+    WorkM (BlockResult root.dependencies program block) := do
+  let (result,_) ← runBlockUsing artifact root .strict fuel mode outputBoundary source path program request
+    initialHistory initialOrdinary block
+  return result
 
 /-- Whole-body callers retain the same exact Body, Prepared object and public
 run interface. The shared block walk also owns all recursive branch/call steps. -/

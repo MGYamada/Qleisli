@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
+import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.GenericCatalogue
@@ -53,58 +54,105 @@ private def ordinaryRows (sources : Sources) : Nat → {owner : String} →
           source.checked.summary.staticRows ++ children
       | _ => throw .request) [] )
 
-/-- The containing prefix is present once for a function body. Branch children
-inherit it; operation-application children have their own tree and no invented
-function prefix. Every provider occurrence consumes one body slot, even when
-its descriptor node or supplied evidence index repeats. -/
-def visit (artifact : Artifact) : Nat → {owner name : String} →
+inductive OperationMode (artifact : Artifact) where
+  | strict
+  | extended (continuation : RuntimeGraphOperation.Preparation artifact)
+
+def OperationMode.Receipt {artifact} : OperationMode artifact → Type
+  | .strict => Empty
+  | .extended continuation => RuntimeGraphOperation.PreparedReceipt continuation
+
+def OperationMode.takeReferences {artifact} (mode : OperationMode artifact) (explicit : Bool)
+    (references : List (List (List BodyRequest))) :
+    WorkM (List (List BodyRequest) × List (List (List BodyRequest))) := do
+  match mode with
+  | .strict =>
+    if explicit then
+      let group :: remaining := references | throw .request
+      guard group.isEmpty .request
+      return ([],remaining)
+    else
+      guard references.isEmpty .request
+      return ([],[])
+  | .extended _ =>
+    let group :: remaining := references | throw .request
+    return (group,remaining)
+
+def OperationMode.checkSignature {artifact} (mode : OperationMode artifact) {owner name}
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name) : WorkM Unit :=
+  match mode with
+  | .strict => guard (!signature.operations.hasMeaningRequirements) .request
+  | .extended _ => guard signature.operations.rootRequirements.isEmpty .request
+
+/-- One source traversal owns every original event and context cursor. The
+fixed enclosing reader chooses strict graph discovery or a typed continuation;
+a failed continuation never retries through another reader. -/
+def visitUsing (artifact : Artifact) (operationMode : OperationMode artifact) : Nat → {owner name : String} →
     SourceRuntimeContext.Signature artifact.sources owner name →
     List (SourceRuntimeContext.Event artifact.sources owner) → List (String × String) →
-    Context → Bool → WorkM Discovery :=
+    Context → Bool → WorkM (Discovery × List operationMode.Receipt) :=
   Nat.rec (fun {_ _} _ _ _ _ _ => throw .limit)
     (fun _ next {_ _} signature events staticRows request prefixRequired => do
       guard (request.positions.length ≤ 4096 && request.sites.length ≤ 128 &&
-        request.calls.length ≤ 4096 && request.branches.length ≤ 4096 && request.bodies.length ≤ 4096) .limit
+        request.calls.length ≤ 4096 && request.branches.length ≤ 4096 && request.bodies.length ≤ 4096 &&
+        request.references.length ≤ 4096) .limit
       exactWork (Exact.charge (32*(events.length+request.positions.length+request.sites.length+
-        request.calls.length+request.branches.length+request.bodies.length+1)^2))
+        request.calls.length+request.branches.length+request.bodies.length+request.references.length+1)^2))
       guard (request.positions.map (·.offset) == events.map SourceRuntimeContext.Event.offset) .request
       let readOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
-          (bodies : List BodyRequest) : WorkM (Discovery × List BodyRequest) := do
-        -- The final Meaning evaluator is not supplied by graph metadata.
-        guard (!graph.hasMeaningRequirements) .request
+          (requested : StaticOperation.Paths) (bodies : List BodyRequest)
+          (references : List (List (List BodyRequest))) (explicit : Bool) :
+          WorkM (Discovery × List BodyRequest × List (List (List BodyRequest)) × List operationMode.Receipt) := do
         let occurrences ← StaticOperation.readOccurrences description
-        let indices := occurrences.filter fun index => match description.nodes[index]? with
-          | some (.provider ..) => true
-          | _ => false
-        exactWork (Exact.charge (16*(indices.length+bodies.length+1)))
-        indices.foldlM (fun (discovery,bodies) index => do
-          let bodyRequest :: rest := bodies | throw .request
-          let header ← RuntimeProviderHeader.read artifact graph index bodyRequest
-          guard (!header.original.supplied.arguments.hasMeaningRequirements) .request
-          let body := header.original.body.checked
-          let nested ← next body.signature body.events body.summary.staticRows bodyRequest.2 true
-          return (discovery.append (Discovery.append ⟨header.original.supplied.arguments.sourceRows,header.roots⟩ nested),rest))
-          (⟨graph.sourceRows,[]⟩,bodies)
+        let indices := RuntimeProviderHeaders.providerIndices description occurrences
+        guard (indices.length ≤ bodies.length) .request
+        let implementations := bodies.take indices.length
+        let (group,references) ← operationMode.takeReferences explicit references
+        match operationMode with
+        | .extended continuation =>
+          let call : RuntimeGraphOperation.Request artifact := ⟨context,description,graph,requested,implementations,group⟩
+          let checked ← NaturalAffine.witness (continuation.read call)
+          let receipt : RuntimeGraphOperation.PreparedReceipt continuation :=
+            ⟨call,checked.val,by with_reducible exact checked.property⟩
+          return (⟨continuation.rows checked.val,continuation.roots checked.val⟩,
+            bodies.drop indices.length,references,[receipt])
+        | .strict =>
+          guard (!graph.hasMeaningRequirements) .request
+          exactWork (Exact.charge (16*(indices.length+bodies.length+1)))
+          let (discovery,remaining) ← indices.foldlM (fun (discovery,bodies) index => do
+            let bodyRequest :: rest := bodies | throw .request
+            let header ← RuntimeProviderHeader.read artifact graph index bodyRequest
+            guard (!header.original.supplied.arguments.hasMeaningRequirements) .request
+            let body := header.original.body.checked
+            let (nested,_) ← next body.signature body.events body.summary.staticRows bodyRequest.2 true
+            return (discovery.append (Discovery.append ⟨header.original.supplied.arguments.sourceRows,header.roots⟩ nested),rest))
+            (⟨graph.sourceRows,[]⟩,bodies)
+          return (discovery,remaining,references,[])
       let readNamed {caller : String} (event : SourceRuntimeContext.NamedEvent artifact.sources caller)
           (position : SourceSequence.Position) (calls : List (SourceSequence.Position × Context)) :
-          WorkM (Discovery × List (SourceSequence.Position × Context)) := do
+          WorkM (Discovery × List (SourceSequence.Position × Context) × List operationMode.Receipt) := do
         let (callPosition,child) :: calls := calls | throw .request
         guard (callPosition == position && callPosition.offset == event.call.calleeOffset) .request
         let source ← SourceRuntimeTrace.readNamedBody event
-        let nested ← next source.checked.signature source.checked.events
+        let (nested,receipts) ← next source.checked.signature source.checked.events
           source.checked.summary.staticRows child true
-        return (⟨event.target.sourceRows ++ nested.rows,nested.roots⟩,calls)
+        return (⟨event.target.sourceRows ++ nested.rows,nested.roots⟩,calls,receipts)
       let initial : Discovery := ⟨signature.sourceRows ++ staticRows,[]⟩
-      let (initial,bodies) ← if prefixRequired then do
-          guard (!signature.operations.hasMeaningRequirements) .request
+      let (initial,bodies,references,receipts) ← if prefixRequired then do
+          operationMode.checkSignature signature
           let actuals ← RuntimeProviderHeaders.originalActuals signature.operations
-          actuals.foldlM (fun (discovery,bodies) actual => do
-            let (prepared,rest) ← readOperation actual.2.graph bodies
-            return (discovery.append prepared,rest)) (initial,request.bodies)
-        else pure (initial,request.bodies)
-      let (discovery,sites,calls,branches,bodies) ←
-        (events.zip request.positions).foldlM (fun (discovery,sites,calls,branches,bodies) (event,position) => do
+          actuals.foldlM (fun (discovery,bodies,references,receipts) actual => do
+            exactWork (Exact.charge (receipts.length+1))
+            let (prepared,rest,references,checked) ← readOperation actual.2.graph
+              (RuntimeGraphOperation.required signature actual.1.1) bodies references (!request.references.isEmpty)
+            return (discovery.append prepared,rest,references,receipts ++ checked))
+            (initial,request.bodies,request.references,([] : List operationMode.Receipt))
+        else pure (initial,request.bodies,request.references,([] : List operationMode.Receipt))
+      let (discovery,sites,calls,branches,bodies,references,receipts) ←
+        (events.zip request.positions).foldlM
+          (fun (discovery,sites,calls,branches,bodies,references,receipts) (event,position) => do
+          exactWork (Exact.charge (receipts.length+references.length+1))
           match event with
           | .selection _ parsed _ selector target scope naturals .. =>
             let site :: sites := sites | throw .request
@@ -119,74 +167,86 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
               site.attached.publicEffect == .unitary && site.required.publicEffect == .unitary) .request
             let discovery := discovery.append ⟨Carrier.sourceRows site.attached site.required ++
               table.arms.flatMap (·.sourceRows),[]⟩
-            let (discovery,bodies) ← (table.arms.zip site.arms).foldlM
-              (fun (discovery,bodies) (arm,subject) => do
+            let (discovery,bodies,references,receipts) ← (table.arms.zip site.arms).foldlM
+              (fun (discovery,bodies,references,receipts) (arm,subject) => do
+                exactWork (Exact.charge (receipts.length+1))
                 let _ ← lift (readOption artifact.programs[subject.implementation]?)
                 let _ ← lift (readOption artifact.programs[subject.controlled]?)
-                let (prepared,rest) ← readOperation arm.operation.graph bodies
-                return (discovery.append (prepared.append ⟨[],[subject.implementation,subject.controlled]⟩),rest))
-              (discovery,bodies)
-            return (discovery,sites,calls,branches,bodies)
+                let (prepared,rest,references,checked) ← readOperation arm.operation.graph
+                  OperationAccess.controllable bodies references (!request.references.isEmpty)
+                return (discovery.append (prepared.append ⟨[],[subject.implementation,subject.controlled]⟩),
+                  rest,references,receipts ++ checked)) (discovery,bodies,references,receipts)
+            return (discovery,sites,calls,branches,bodies,references,receipts)
           | .named event =>
-            let (nested,calls) ← readNamed event position calls
-            return (discovery.append nested,sites,calls,branches,bodies)
+            let (nested,calls,checked) ← readNamed event position calls
+            return (discovery.append nested,sites,calls,branches,bodies,references,receipts ++ checked)
           | .operation event =>
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position && callPosition.offset == event.call.calleeOffset &&
               child.positions.isEmpty && child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty) .request
-            let (nested,rest) ← readOperation event.operation.graph child.bodies
-            guard rest.isEmpty .request
+            let (nested,rest,remaining,checked) ← readOperation event.operation.graph
+              OperationAccess.applicable child.bodies child.references (!child.references.isEmpty)
+            guard (rest.isEmpty && remaining.isEmpty) .request
             return (discovery.append ⟨event.operation.rows ++ event.naturals.sourceRows ++ nested.rows,nested.roots⟩,
-              sites,calls,branches,bodies)
+              sites,calls,branches,bodies,references,receipts ++ checked)
           | .conditional event _ _ =>
             let (branchPosition,left,right) :: branches := branches | throw .request
             guard (branchPosition == position && branchPosition.offset == event.written.parts.keyword.span.startByte) .request
             let source ← SourceRuntimeTrace.readBranchSource event
-            let left ← next signature source.thenResult.events source.thenResult.staticRows left false
-            let right ← next signature source.elseResult.events source.elseResult.staticRows right false
+            let (left,leftReceipts) ← next signature source.thenResult.events source.thenResult.staticRows left false
+            let (right,rightReceipts) ← next signature source.elseResult.events source.elseResult.staticRows right false
+            exactWork (Exact.charge (leftReceipts.length+1))
             return (discovery.append (Discovery.append ⟨event.naturals.sourceRows,[]⟩ (left.append right)),
-              sites,calls,branches,bodies)
+              sites,calls,branches,bodies,references,receipts ++ leftReceipts ++ rightReceipts)
           | .transform event =>
             let (callPosition,child) :: calls := calls | throw .request
             guard (callPosition == position && callPosition.offset == event.call.calleeOffset &&
-              child.positions.isEmpty && child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty) .request
+              child.positions.isEmpty && child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty &&
+              child.references.isEmpty) .request
             let [(subject,body)] := child.bodies | throw .request
             let roots ← subjectRoots artifact subject
             let source ← SourceRuntimeTrace.readTransformBody event
-            let nested ← next source.checked.signature source.checked.events source.checked.summary.staticRows body true
+            let (nested,checked) ← next source.checked.signature source.checked.events source.checked.summary.staticRows body true
             return (discovery.append ⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++ nested.rows,
-              roots ++ nested.roots⟩,sites,calls,branches,bodies)
+              roots ++ nested.roots⟩,sites,calls,branches,bodies,references,receipts ++ checked)
           | .basis event =>
             let source ← SourceRuntimeTrace.readBasisSource event
             let rows ← ordinaryRows artifact.sources 128 source.events
             return (discovery.append ⟨event.staticRows ++ source.staticRows ++ rows,[]⟩,
-              sites,calls,branches,bodies)
+              sites,calls,branches,bodies,references,receipts)
           | .primitive event =>
-            return (discovery.append ⟨CallName.sourceRows event.candidate,[]⟩,sites,calls,branches,bodies)
+            return (discovery.append ⟨CallName.sourceRows event.candidate,[]⟩,sites,calls,branches,bodies,references,receipts)
           | .phase event =>
             return (discovery.append ⟨CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows,[]⟩,
-              sites,calls,branches,bodies)
+              sites,calls,branches,bodies,references,receipts)
           | .staticConditional event _ =>
             let source ← RuntimeStaticPrimitive.readContinuation event
             let positions ← source.positions position (calls.map (·.1))
             guard (positions.length == source.selected.result.events.length) .request
             let initial := discovery.append ⟨source.sourceRows,[]⟩
             exactWork (Exact.charge (16*(source.selected.result.events.length+initial.rows.length+initial.roots.length+1)))
-            let (discovery,calls) ← (source.selected.result.events.zip positions).foldlM
-              (fun (discovery,calls) (event,position) => do
+            let (discovery,calls,receipts) ← (source.selected.result.events.zip positions).foldlM
+              (fun (discovery,calls,receipts) (event,position) => do
+                exactWork (Exact.charge (receipts.length+1))
                 match event with
                 | .named event =>
-                  let (nested,calls) ← readNamed event position calls
-                  return (discovery.append nested,calls)
-                | .primitive _ | .phase _ => return (discovery,calls)
-                | _ => throw .request) (initial,calls)
-            return (discovery,sites,calls,branches,bodies)
-          -- Remaining compound forms are not ordinary-if requests. Their
-          -- native obligations/context layout must be connected explicitly.
-          | .matching .. | .computed .. | .registerPrimitive .. =>
-            throw .request) (initial,request.sites,request.calls,request.branches,bodies)
-      guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty) .request
-      return discovery)
+                  let (nested,calls,checked) ← readNamed event position calls
+                  return (discovery.append nested,calls,receipts ++ checked)
+                | .primitive _ | .phase _ => return (discovery,calls,receipts)
+                | _ => throw .request) (initial,calls,receipts)
+            return (discovery,sites,calls,branches,bodies,references,receipts)
+          | .matching .. | .computed .. | .registerPrimitive .. => throw .request)
+          (initial,request.sites,request.calls,request.branches,bodies,references,receipts)
+      guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty && references.isEmpty) .request
+      return (discovery,receipts))
+
+/-- Existing source callers retain the strict continuation and return type. -/
+def visit (artifact : Artifact) (fuel : Nat) {owner name : String}
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name)
+    (events : List (SourceRuntimeContext.Event artifact.sources owner)) (staticRows : List (String × String))
+    (request : Context) (prefixRequired : Bool) : WorkM Discovery := do
+  let (discovery,_) ← visitUsing artifact .strict fuel signature events staticRows request prefixRequired
+  return discovery
 
 /-- One selected original signature and indexed body, under the exact supplied
 catalogue. Both source entry points use this executable reader; no alternate

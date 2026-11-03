@@ -13,10 +13,24 @@ def volume {α : Type} (order : List α) (cards : α → Nat) : Nat := (order.ma
 def encode {α : Type} (order : List α) (cards digits : α → Nat) : Nat :=
   order.foldr (fun entry tail => digits entry+cards entry*tail) 0
 
-def decode {α : Type} [DecidableEq α] : List α → (α → Nat) → Nat → α → Nat
-  | [],_,_,_ => 0
-  | entry::rest,cards,logical,wanted =>
-    if entry = wanted then logical % cards entry else decode rest cards (logical / cards entry) wanted
+/-- The explicit recursor visits exactly the original list length. It keeps
+this coordinate function executable without generated partial recursion. -/
+def decode {α : Type} [DecidableEq α] (order : List α) (cards : α → Nat) (logical : Nat) (wanted : α) : Nat :=
+  let visit : Nat → List α → Nat → Nat :=
+    Nat.rec (motive := fun _ => List α → Nat → Nat)
+      (fun _ _ => 0)
+      (fun _ next remaining value => match remaining with
+        | [] => 0
+        | entry::rest => if entry = wanted then value % cards entry else next rest (value / cards entry))
+  visit order.length order logical
+
+theorem decode_nil {α : Type} [DecidableEq α] (cards : α → Nat) (logical : Nat) (wanted : α) :
+    decode [] cards logical wanted = 0 := rfl
+
+theorem decode_cons {α : Type} [DecidableEq α] (entry : α) (rest : List α)
+    (cards : α → Nat) (logical : Nat) (wanted : α) :
+    decode (entry::rest) cards logical wanted =
+      if entry = wanted then logical % cards entry else decode rest cards (logical / cards entry) wanted := rfl
 
 def recode {α : Type} [DecidableEq α] (original grouped : List α) (cards : α → Nat) (logical : Nat) : Nat :=
   encode grouped cards (decode original cards logical)
@@ -49,7 +63,7 @@ theorem encode_bound {α : Type} (order : List α) (cards digits : α → Nat) :
 
 theorem decode_head {α : Type} [DecidableEq α] (entry : α) (rest : List α) (cards : α → Nat) (logical : Nat) :
     decode (entry::rest) cards logical entry = logical % cards entry := by
-  rw [decode,if_pos rfl]
+  rw [decode_cons,if_pos rfl]
 
 theorem decode_bound {α : Type} [DecidableEq α] (order : List α) (cards : α → Nat) :
     ∀ logical, (∀ entry ∈ order,0 < cards entry) → logical < volume order cards →
@@ -67,7 +81,7 @@ theorem decode_bound {α : Type} [DecidableEq α] (order : List α) (cards : α 
         · exact False.elim (same equal.symm)
         · exact later
       have tailBound : logical / cards head < volume rest cards := Nat.div_lt_of_lt_mul bound
-      rw [decode,if_neg same]
+      rw [decode_cons,if_neg same]
       exact ih _ (fun value present => positive value (List.mem_cons_of_mem _ present)) tailBound entry later
 
 private theorem radix_mod (low high card : Nat) (bound : low < card) :
@@ -118,7 +132,7 @@ theorem encode_decode {α : Type} [DecidableEq α] (order : List α) (cards : α
       have different : head ≠ entry := by
         intro equal
         exact separate.1 (equal.symm ▸ member)
-      rw [decode,if_neg different]
+      rw [decode_cons,if_neg different]
     change decode (head::rest) cards logical head+cards head*encode rest cards (decode (head::rest) cards logical) = logical
     rw [decode_head,tailEqual,ih _ separate.2
       (fun entry member => positive entry (List.mem_cons_of_mem _ member)) tailBound]

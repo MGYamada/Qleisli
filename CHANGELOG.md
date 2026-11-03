@@ -6,18 +6,29 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
-- Factor the actual complete owner code into a finite target encoding and
-  its ordered spectator coefficients. Arbitrary joint reference amplitudes
-  reconstruct through that same rectangular code at the actual target axes.
-  The original local sector and native arm equation then give its physical
-  action through the target encoding, including padding. Logical target
-  update and whole-caller Gram composition remain pending.
+- Check ordinary observing calls before and after a coherent selection through
+  the common original body walk. Typed operation continuations retain actual
+  provider, access and Meaning computations under the same fresh native root.
+  Complete hidden histories, measurement call paths and held Unit owners stay
+  explicit. Source mutations of measurement targets, XOR, phase and call order
+  refuse even when their typed Raw controls pass. Constructed-arm work costs,
+  all-original duty discharge and public v5 dispatch remain separate work.
 
-- Relate each finite target's original input/output code to the actual
-  rectangular carrier encoding and both native Gram checks. The checked
-  local sector acts through those same codes on every physical target row,
-  retaining Unit phases and record padding. Whole-caller fibre and Gram
-  transport remain pending.
+- Remove three compiler-generated partial declarations from the finite-target
+  proof closure. Mixed-radix decoding uses an explicit total recursor over the
+  exact original list length; erased reference products remain noncomputable.
+  The logical definitions and existing coordinate theorems are preserved.
+
+- Connect a checked selection's physical action and logical inner product
+  to the complete caller code for arbitrary finite targets. The proof uses
+  the actual rectangular input/output encodings, original target digit and
+  each arm's native equation and Gram receipt. It retains Unit phases,
+  nominal record padding, selector ordinals and arbitrary entangled
+  references. Target-row sums use the retained logical cardinality, without
+  assuming that it equals physical width. Composing these typed laws through
+  complete source calls and enabling public v5 dispatch remain separate work.
+  An indexed native witness retains the same node's literal-read computation;
+  its original lowering shape remains an explicit theorem premise.
 
 - Connect the checked ordered named-call intervals to the original Raw
   program through the shared literal partition. Their physical actions

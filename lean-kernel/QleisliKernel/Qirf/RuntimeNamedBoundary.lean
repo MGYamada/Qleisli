@@ -47,6 +47,7 @@ structure Checked {dependencies program sources caller block start count}
   afterIssued : after.issued = before.issued ++ event.allocated
   afterOrdinal : after.nextOrdinal = before.nextOrdinal+event.allocated.length
   afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
+  sameAfter : afterFrame.bindings = after.bindings
 
 def read {dependencies program sources caller block start count}
     (interval : @RuntimeInterval.Checked dependencies program block start count) (inputs : List Nat)
@@ -77,9 +78,9 @@ def read {dependencies program sources caller block start count}
                 let bindings := before.bindings.filter (fun binding => !event.inputOwners.contains binding.owner) ++ mapped
                 let after : SourceState := ⟨bindings,before.issued ++ event.allocated,
                   before.nextOrdinal+event.allocated.length⟩
-                let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) interval.after after.bindings
+                let afterFrame ← RuntimeOwnerMap.checkBindings (after.bindings.map (·.owner)) interval.after after.bindings
                 return ⟨issued,liveIssued,fresh,completeHistory.down,completeRetired.down,result.down,mapped,mappedRead,
-                  resultOwners,returned,rfl,atExit,spectators,after,rfl,rfl,rfl,afterFrame⟩
+                  resultOwners,returned,rfl,atExit,spectators,after,rfl,rfl,rfl,afterFrame.val,afterFrame.property⟩
               else throw .request
             else throw .request
           else throw .request

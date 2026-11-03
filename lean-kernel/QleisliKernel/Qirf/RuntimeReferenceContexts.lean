@@ -49,4 +49,15 @@ def ordered (context : Context) : WorkM Unit := do
   exactWork (Exact.charge (16*(context.calls.length+1)))
   context.calls.forM fun (_,child) => call child
 
+/-- The common runtime loop consumes each genuine body's own prefix and event
+groups. Named and branch children have their own cursors; provider and Meaning
+reference leaves still use the original strict no-groups contract. This plain
+data walk provides no source, access, Meaning or execution evidence. -/
+def runtime : Nat → Context → WorkM Unit :=
+  Nat.rec (fun _ => throw .limit) (fun _ visit context => do
+    selectionLeaves context
+    exactWork (Exact.charge (16*(context.calls.length+context.branches.length+1)))
+    context.calls.forM fun (_,child) => visit child
+    context.branches.forM fun (_,first,second) => do visit first; visit second)
+
 end QleisliKernel.Qirf.RuntimeReferenceContexts

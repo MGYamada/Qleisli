@@ -92,7 +92,7 @@ theorem coefficients_factors {originalBindings} (original : OwnerCodes originalB
         exact separate.1 (equal.symm ▸ member)
       have digitEqual : decode (binding::bindings) (dimensionAt original) logical value =
           decode bindings (dimensionAt original) (logical / dimensionAt original binding) value := by
-        rw [decode,if_neg different]
+        rw [decode_cons,if_neg different]
       rw [digitEqual]
     have tailEqual := (ih _ (fun {_} member => subset (List.mem_cons_of_mem _ member)) separate.2 tailBound).trans tailFactors
     change entry (QleisliKernel.Semantics.FiniteCarrier.encoding first.layout)

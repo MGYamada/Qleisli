@@ -4,6 +4,7 @@ import Protocol.ExecutionView.QmatchV5
 import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import QleisliKernel.Qirf.RuntimeNamedCalls
 import QleisliKernel.Qirf.RuntimeNamedCallsComposition
+import QleisliKernel.Qirf.RuntimeBodyOperations
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
 
@@ -577,5 +578,216 @@ private def orderedCallStudy (fault : OrderedCallFault) :=
 #guard ((orderedCallRaw .none).run WorkProfile.qmatch.limit).1.toOption == some [8,5,7]
 #guard ((orderedCallRaw .wrongOrder).run WorkProfile.qmatch.limit).1.toOption == some [8,5,7]
 #guard ((orderedCallRaw .omittedUnit).run WorkProfile.qmatch.limit).1 matches .error .invalid
+
+end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+
+
+namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+open Lean QleisliKernel Finite SourceTypes Qirf
+
+-- These maintained cases follow the separately preserved first observations.
+-- All source/body preparation and checking below share the public counter.
+private structure ObservingPayload where
+  artifact : Artifact
+  rootArtifact : Artifact
+  order : Array Nat
+  rootOrder : Array Nat
+  context : Context
+  runtime : RuntimeFamily.Request
+
+private def observingHistoryCounts {sources : Sources} {owner name : String}
+    {signature : SourceRuntimeContext.Signature sources owner name}
+    {dependencies : List Semantics.Finite.Dependency} {program : Semantics.Observation.Program}
+    {body : SourceRuntimeTrace.Body signature} {prepared : RuntimeInterval.Prepared dependencies program}
+    {runtime : RuntimeFamily.Request} {inputs : RuntimeSourceBoundary.Inputs body prepared runtime.inputStorage}
+    {initial : RuntimeOrdinaryInputs.Checked body prepared runtime inputs}
+    {ssa : RuntimeOrdinaryBody.State} {bindings : RuntimeOwnerMap.Map} : Nat →
+    ({assignments : List (List Bool)} →
+      @RuntimeOrdinaryHistories.Rows sources owner name signature dependencies program body prepared runtime inputs
+        initial ssa bindings assignments → List Nat) :=
+  Nat.rec (fun {_} _ => []) (fun _ next {_} rows => match rows with
+    | .nil => [] | .cons head tail => head.histories.length :: next tail)
+private def observingPlainSource : String := "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nunitary fn choose(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    qmatch(s,q){0=>keep,1=>sign}\n}\nobserve fn read(q:Q<Bit>)->Bit{measure_z(q)}\nobserve fn before(c:Bit,r:Q<Bit>)->Bit{\n    let a=read(r);\n    c xor a\n}\nobserve fn after(c:Bit,q:Q<Bit>)->Bit{\n    let b=read(q);\n    c xor b\n}\npub observe fn route(c:Bit,u:Q<Unit>,r:Q<Bit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,Q<Bit>,Bit){\n    let c=before(c,r);\n    let (s,q)=choose(s,q);\n    let b=after(c,q);\n    (u,s,b)\n}\n"
+private def observingComposedSource : String := "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Identity:Bit=reference(keep);\nmeaning Sign:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {\n    qmatch(s,q){0=>keep,1=>checked_op(U,Identity)}\n}\nobserve fn read(q:Q<Bit>)->Bit{measure_z(q)}\nobserve fn before(c:Bit,r:Q<Bit>)->Bit{\n    let a=read(r);\n    c xor a\n}\nobserve fn after(c:Bit,q:Q<Bit>)->Bit{\n    let b=read(q);\n    c xor b\n}\npub observe fn route(c:Bit,u:Q<Unit>,r:Q<Bit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,Q<Bit>,Bit){\n    let c=before(c,r);\n    let (s,q)=choose[then_op(sign,sign)](s,q);\n    let b=after(c,q);\n    (u,s,b)\n}\n"
+
+private def observingOrder (artifact : Artifact) (roots : List Nat) : WorkM (Array Nat) := do
+  let nodes := Qirf.nodes artifact
+  let visit : Nat → Nat → (Array Nat × Array Nat) → Except Finite.Error (Array Nat × Array Nat) :=
+    Nat.rec (fun _ _ => throw .limit) (fun _ recurse index (colors,order) => do
+      let some color := colors[index]? | throw .invalid
+      if color == 2 then return (colors,order)
+      if color == 1 then throw .invalid
+      let (colors,order) ← (Hierarchical.Graph.dependencies nodes index).foldlM
+        (fun state child => recurse child state) (colors.set! index 1,order)
+      return (colors.set! index 2,order.push index))
+  let (_,order) ← lift (roots.foldlM (fun state root => visit 33 root state)
+    (Array.replicate nodes.size 0,#[]))
+  pure order
+
+/-- Fresh untrusted proposals from the frozen observing-before/after sources.
+The seed bytes are shared above; every native/source result is checked anew. -/
+private def observingPayload (composed : Bool) (wrongOwner wrongXor : Bool := false) : WorkM ObservingPayload := do
+  let (seed,_originalOrder) ← Protocol.Qirf.readAll artifactBytes
+  let seedRequest ← Protocol.QmatchV5.readRequest requestBytes
+  let [(_,selection)] := seedRequest.context.calls | throw .request
+  let [site] := selection.sites | throw .request
+  let text := if composed then observingComposedSource else observingPlainSource
+  let tokens ← lift ((lexLocated text).mapError fun _ => .request)
+  let [_,chooseCall] := tokens.filter (·.text == "choose") | throw .request
+  let [_,beforeCall] := tokens.filter (·.text == "before") | throw .request
+  let [_,afterCall] := tokens.filter (·.text == "after") | throw .request
+  let [_,firstRead,lastRead] := tokens.filter (·.text == "read") | throw .request
+  let [measure] := tokens.filter (·.text == "measure_z") | throw .request
+  let [phase] := tokens.filter (·.text == "phase") | throw .request
+  let [qmatch] := tokens.filter (·.text == "qmatch") | throw .request
+  let some original := seed.programs[0]? | throw .request
+  let [join,.pure (.applyUnitary input output [first,second]),split] := original.operations | throw .request
+  let [selector,target] := original.inputs | throw .request
+  let selectionOps := [join,.pure (.applyUnitary input output (if composed then [first,second] else [first])),split]
+  let unit : Semantics.Raw.Port := ⟨6,[],0⟩
+  let r : Semantics.Raw.Port := ⟨7,[2],1⟩
+  let firstMeasured := if wrongOwner then 1 else 7
+  let lastMeasured := if wrongOwner then 7 else 5
+  let operations : List Semantics.Observation.Op :=
+    [.measure firstMeasured 1,if wrongXor then .and 0 1 2 else .xor 0 1 2] ++ selectionOps ++
+    [.measure lastMeasured 3,.xor 2 3 4]
+  let program : Semantics.Observation.Program :=
+    ⟨unit :: r :: original.inputs,[0],operations,[6,4],[4],.observe⟩
+  -- The plain controlled sign is the same literal one-step controlled body;
+  -- the composed reference/action uses both actual sign occurrences.
+  let some controlled := seed.programs[7]? | throw .request
+  let controlled := {controlled with operations := selectionOps}
+  let programs := if composed then seed.programs.set! 0 program
+    else ((seed.programs.toList.take 6).toArray.set! 0 program).push controlled
+  let artifact := {seed with programs,sources := #[("main",text)]}
+  -- Ordinary RuntimeFamily has only the main root, so its independent Raw
+  -- control must carry no unrelated arm/reference subjects. It retains exactly
+  -- the same root body, evidence and complete original source/request bytes.
+  -- This control is never passed to the common source-body continuation.
+  let rootArtifact := {artifact with programs := (seed.programs.toList.take 3).toArray.set! 0 program}
+  let localSite : RuntimeContextRequest.Site := {site with
+    position := ⟨qmatch.span.startByte,0,3⟩,
+    arms := if composed then site.arms else [⟨3,4⟩,⟨1,6⟩]}
+  let phaseBody : Context := .mk [⟨phase.span.startByte,0,1⟩] [] [] [] []
+  let empty : Context := .mk [] [] [] [] []
+  let child : Context := if composed then
+      .withReferences [localSite.position] [localSite] [] [] selection.bodies selection.references
+    else .withReferences [localSite.position] [localSite] [] []
+      [(.pure 5,empty),(.function 0,phaseBody)] [[],[]]
+  let leaf : Context := .mk [⟨measure.span.startByte,0,1⟩] [] [] [] []
+  let before : Context := .mk [⟨firstRead.span.startByte,0,1⟩] [] [(⟨firstRead.span.startByte,0,1⟩,leaf)] [] []
+  let after : Context := .mk [⟨lastRead.span.startByte,0,1⟩] [] [(⟨lastRead.span.startByte,0,1⟩,leaf)] [] []
+  let p : SourceSequence.Position := ⟨beforeCall.span.startByte,0,2⟩
+  let q : SourceSequence.Position := ⟨chooseCall.span.startByte,2,3⟩
+  let s : SourceSequence.Position := ⟨afterCall.span.startByte,5,2⟩
+  let context : Context := .mk [p,q,s] [] [(p,before),(q,child),(s,after)] [] []
+  let runtime : RuntimeFamily.Request := ⟨.exported,"main","route",
+    [Semantics.RuntimeType.ordinary [.bit],Semantics.RuntimeType.owner [.unit],Semantics.RuntimeType.owner [.bit],
+      Semantics.RuntimeType.owner [.bit],Semantics.RuntimeType.owner [.bit]],
+    [[.ordinary [.bit] (.bit 0)],[.quantum ⟨unit,[.unit]⟩],[.quantum ⟨r,[.bit]⟩],
+      [.quantum ⟨selector,[.bit]⟩],[.quantum ⟨target,[.bit]⟩]],
+    [[false],[true]],
+    Semantics.RuntimeType.tuple 3 [Semantics.RuntimeType.owner [.unit],Semantics.RuntimeType.owner [.bit],
+      Semantics.RuntimeType.ordinary [.bit]],
+    [.tuple 3,.quantum ⟨unit,[.unit]⟩,.quantum ⟨⟨4,[0],1⟩,[.bit]⟩,.ordinary [.bit] (.bit 4)],.observe,{}⟩
+  let roots := if composed then [artifact.root,5,3,4,6,7,8,9] else [artifact.root,5,3,4,1,7,6]
+  let order ← observingOrder artifact roots
+  let rootOrder ← observingOrder rootArtifact [rootArtifact.root]
+  return ⟨artifact,rootArtifact,order,rootOrder,context,runtime⟩
+
+
+private def observingTypedRoot (p : ObservingPayload) : WorkM Nat := do
+  let checked ← RuntimeFamily.check p.rootArtifact p.rootOrder p.runtime
+  return (OrdinaryDomain.assignments checked.domain).length
+
+private def observingRuntime (p : ObservingPayload) : WorkM
+    (List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat) := do
+  let prepared ← RuntimeBodyOperations.prepare p.artifact "main" "route" {} p.context
+  let checked ← RuntimeBodyOperations.read prepared p.order p.runtime
+  let result := checked.checked.result
+  return (result.history.issued.map (·.ordinal),result.retired.map (·.ordinal),
+    result.history.bindings.map (·.port.token),observingHistoryCounts 3 checked.checked.ordinary.rows,
+    result.ordinary.measurements.map (fun measurement =>
+      (measurement.owner.ordinal,measurement.origin.offset,measurement.calls.map (·.offset))),
+    result.steps.length,checked.checked.receipts.length,(prepared.source.pending.entries.filter (·.unconsumed)).length)
+
+
+private inductive ObservingFault where
+  | correct | wrongMeasurementOwner | wrongXor | contextOrder | omittedUnitOwner | wrongSelectedPhase
+  | extraReference | missingReference
+  deriving BEq, Repr
+
+/-- Change untrusted data only. Original source, expected owners/results and
+complete runtime input rows remain unchanged for every observingMutation. -/
+private def observingMutation (p : ObservingPayload) (fault : ObservingFault) : WorkM ObservingPayload := do
+  let some original := p.artifact.programs[0]? | throw .request
+  let [first,xor,.pure (.join left right joined),action,split,last,result] := original.operations | throw .request
+  let erasedAction := match action with
+    | .pure (.applyUnitary input output _) => Semantics.Observation.Op.pure (.applyUnitary input output [])
+    | other => other
+  let operations := match fault with
+    | .wrongMeasurementOwner => [.measure right 1,xor,.pure (.join left 7 joined),action,split,last,result]
+    | .wrongXor => [first,.and 0 1 2,.pure (.join left right joined),action,split,last,result]
+    | .wrongSelectedPhase => [first,xor,.pure (.join left right joined),erasedAction,split,last,result]
+    | _ => original.operations
+  let keptInputs := if fault == .omittedUnitOwner then original.inputs.filter (·.token != 6) else original.inputs
+  let keptOutputs := if fault == .omittedUnitOwner then original.outputs.filter (· != 6) else original.outputs
+  let program : Semantics.Observation.Program :=
+    {original with operations := operations, inputs := keptInputs, outputs := keptOutputs}
+  let calls ← if fault == .extraReference || fault == .missingReference then do
+      let [(before,first),(choose,child),(after,last)] := p.context.calls | throw .request
+      let references := if fault == .extraReference then child.references ++ [[]] else child.references.dropLast
+      let child := RuntimeContextRequest.Context.withReferences child.positions child.sites child.calls child.branches
+        child.bodies references
+      pure [(before,first),(choose,child),(after,last)]
+    else pure (if fault == .contextOrder then p.context.calls.reverse else p.context.calls)
+  let context := RuntimeContextRequest.Context.withReferences p.context.positions p.context.sites calls
+    p.context.branches p.context.bodies p.context.references
+  let artifact := {p.artifact with programs := p.artifact.programs.set! 0 program}
+  let rootArtifact := if fault == .wrongSelectedPhase then
+      {p.rootArtifact with programs := #[program], entries := #[]}
+    else {p.rootArtifact with programs := p.rootArtifact.programs.set! 0 program}
+  let rootOrder := if fault == .wrongSelectedPhase then #[0] else p.rootOrder
+  return {p with context := context, artifact := artifact, rootArtifact := rootArtifact, rootOrder := rootOrder}
+
+private def observingRaw (p : ObservingPayload) : WorkM (List Nat × List Nat) := do
+  let dependencies ← Qirf.checkGraphWithSources p.rootArtifact p.rootOrder p.rootArtifact.sources.toList
+  let some program := p.rootArtifact.programs[0]? | throw .request
+  let _ ← Raw.Observation.verify dependencies program
+  let histories ← p.runtime.inputRows.mapM fun row => do
+    let checked ← Raw.Instrument.reconstruct dependencies program row
+    pure checked.histories.length
+  pure (histories,program.outputs)
+
+
+private def observingStudy (composed : Bool) (fault : ObservingFault) :=
+  (do
+    let proposal ← observingPayload composed
+    let proposal ← observingMutation proposal fault
+    observingRuntime proposal).run WorkProfile.qmatch.limit |>.1
+
+private def observingRawStudy (fault : ObservingFault) :=
+  (do
+    let proposal ← observingPayload false
+    let proposal ← observingMutation proposal fault
+    let raw ← observingRaw proposal
+    let rows ← observingTypedRoot proposal
+    pure (raw,rows)).run WorkProfile.qmatch.limit |>.1
+
+#guard (observingStudy false .correct).toOption == some
+  ([0,1,2,3],[1,3],[6,4],[4,4],[(1,231,[488,295]),(3,231,[538,367])],3,2,0)
+#guard observingStudy false .wrongMeasurementOwner matches .error .invalid
+#guard observingStudy false .wrongXor matches .error .equation
+#guard observingStudy false .wrongSelectedPhase matches .error .equation
+#guard [ObservingFault.contextOrder,.omittedUnitOwner,.extraReference,.missingReference].all fun fault =>
+  match observingStudy false fault with | .error .request => true | _ => false
+
+-- Raw/type/history validity alone cannot bind the original source. The phase
+-- mutation's compact Raw control keeps its exact root and removes newly
+-- unreachable auxiliary nodes; the full source graph keeps every original arm.
+#guard [ObservingFault.correct,.wrongMeasurementOwner,.wrongXor,.contextOrder,
+    .extraReference,.missingReference,.wrongSelectedPhase].all fun fault =>
+  (observingRawStudy fault).toOption == some (([4,4],[6,4]),2)
+#guard observingRawStudy .omittedUnitOwner matches .error .request
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
