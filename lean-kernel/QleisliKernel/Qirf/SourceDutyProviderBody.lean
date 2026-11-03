@@ -65,6 +65,9 @@ def Contribution.roots {artifact} : Contribution artifact → List Nat
 /-- This is a retained graph computation, not a graph checker. Its rows and
 roots are derived from the complete ordered contribution list. The list does
 not assert coverage of other catalogue duties, which remain mandatory elsewhere.
+This provider-only graph still needs composition with genuinely retained
+selected-root/body-discovery rows and roots for a whole runtime route. Omitted
+selected-root dependencies gain no relevance or authorization here.
 Only graph root indices are shared; body occurrences are never deduplicated. -/
 structure Final (artifact : Artifact) where
   contributions : List (Contribution artifact)
