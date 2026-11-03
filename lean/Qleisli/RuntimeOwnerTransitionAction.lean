@@ -86,7 +86,8 @@ private theorem resolve_result (state : QleisliKernel.Raw.Observation.State) (ce
       have same : binding = ⟨role,port⟩ := (pure_success _ _ _ _ returned).1
       subst binding
       have sameBits : port.bits = bits := beq_iff_eq.mp (guard_success _ _ _ _ guardRead).1
-      have sameToken : port.token = token := beq_iff_eq.mp (List.find?_some found)
+      have sameToken : port.token = token := beq_iff_eq.mp
+        (List.find?_some (p := fun candidate : QleisliKernel.Semantics.Raw.Port => candidate.token == token) found)
       exact ⟨by simp only [sameToken,sameBits],List.mem_of_find?_eq_some found⟩
 
 private theorem resolved_origins (state : QleisliKernel.Raw.Observation.State) (cells : RawOwnerFlow.Frame) :
@@ -240,7 +241,8 @@ theorem empty_embedding {dependencies program block start}
   subst right
   change sparseEntry input.code (Semantics.Finite.gather physical (forestAxes interval.before.quantum.frame before.bindings)) logical =
     sparseEntry output.code (Semantics.Finite.gather physical (forestAxes interval.after.quantum.frame transport.after.bindings)) logical
-  have sameFrame := congrArg (fun state : QleisliKernel.Raw.Observation.State => state.quantum.frame) (empty_state interval)
+  have sameFrame : interval.after.quantum.frame = interval.before.quantum.frame :=
+    congrArg (fun state : QleisliKernel.Raw.Observation.State => state.quantum.frame) (empty_state interval)
   rw [bindings,sameFrame]
   unfold sparseEntry
   rw [leftSame.labels logical,rightSame.labels logical]

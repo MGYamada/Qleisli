@@ -172,6 +172,53 @@ theorem literal_partition
       (checked.selection.selected ++ complement before.bindings checked.selection.selected).Perm before.bindings :=
   selection_partition frame before checked.selection checked.selectedPorts
 
+private theorem find_port (live : List Semantics.Raw.Port) (port : Semantics.Raw.Port)
+    (unique : (live.map (·.token)).Nodup) (present : port ∈ live) :
+    live.find? (fun p => p.token == port.token) = some port := by
+  induction live with
+  | nil => cases present
+  | cons first rest ih =>
+    have distinct := List.nodup_cons.mp unique
+    rcases List.mem_cons.mp present with same | member
+    · subst first
+      simp
+    · have different : first.token ≠ port.token := by
+        intro equal
+        apply distinct.1
+        change first.token ∈ rest.map (·.token)
+        rw [equal]
+        exact List.mem_map_of_mem member
+      have skip : (first.token == port.token) = false :=
+        Bool.eq_false_iff.mpr (fun equal => different (beq_iff_eq.mp equal))
+      simpa only [List.find?, skip] using ih distinct.2 member
+
+private theorem pair_ports {roles state requested} (caller : RuntimeOwnerMap.Checked roles state)
+    (pair : RuntimeOwnerTransition.Pair requested caller.bindings) :
+    PureInterval.ports state [pair.first.port.token,pair.second.port.token] =
+      some [pair.first.port,pair.second.port] := by
+  have contained := (order_values _ _ _ pair.ordered).1
+  have live (b : Binding) (h : b ∈ [pair.first,pair.second]) : b.port ∈ state.quantum.live :=
+    caller.complete.mem_iff.mp (List.mem_map_of_mem (contained h))
+  have distinct : (state.quantum.live.map (·.token)).Nodup :=
+    (caller.complete.map (fun p => p.token)).nodup_iff.mp
+      (by simpa only [List.map_map, Function.comp_def] using caller.tokensDistinct)
+  have first := find_port _ _ distinct (live pair.first (by simp))
+  have second := find_port _ _ distinct (live pair.second (by simp))
+  simp [PureInterval.ports, PureInterval.portsOf, List.mapM_cons, first, second]
+
+/-- The ports used in the local sector are the original source-role lookups
+on both sides, down to the wire vectors and tokens of zero-width owners. -/
+theorem source_ports {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) :
+    frame.selected = [source.selected.first.port,source.selected.second.port] ∧
+    frame.returned = [source.returned.first.port,source.returned.second.port] := by
+  have entry := congrArg (PureInterval.ports frame.interval.before) source.inputTokens
+  have exit := congrArg (PureInterval.ports frame.interval.after) source.outputTokens
+  exact ⟨Option.some.inj (frame.atEntry.symm.trans (entry.trans (pair_ports source.before source.selected))),
+    Option.some.inj (frame.atExit.symm.trans (exit.trans (pair_ports source.transport.after source.returned)))⟩
+
+#print axioms source_ports
 #print axioms interval_selected_tokens
 #print axioms order_values
 #print axioms literal_partition
