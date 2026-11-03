@@ -525,7 +525,8 @@ private def readExpectation {sources catalogue queue} (indexed : @Indexed source
 private def readItem {sources catalogue queue} (indexed : @Indexed sources catalogue queue)
     (index : Fin queue.items.length) : WorkM (ItemPlan queue index) := do
   let expectation ← readExpectation indexed (indexed.at index)
-  return indexed.at_original index ▸ expectation
+  return (show ItemExpectation queue (queue.items[index.val]'index.isLt) from
+    indexed.at_original index ▸ expectation)
 
 structure Entry {sources catalogue queue} (indexed : @Indexed sources catalogue queue) where
   index : Fin queue.items.length
