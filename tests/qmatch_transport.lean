@@ -1,6 +1,7 @@
 import Lean
 import Protocol.ExecutionView.CheckedQmatch
 import Protocol.ExecutionView.QmatchV5
+import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
 
@@ -362,5 +363,85 @@ private def viewSize (fault : Fault) : WorkM Nat := do
 #guard [Fault.falseMeaning,.changedControlled].all fun fault =>
   match ((viewSize fault).run WorkProfile.qmatch.limit).1 with | .error .equation => true | _ => false
 #guard ((viewSize .heldUnit).run WorkProfile.qmatch.limit).1 matches .error (.arithmetic .workLimit)
+
+end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+
+namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+open QleisliKernel Finite SourceTypes Qirf
+
+private inductive SurroundingFault where
+  | none | wrongOrder | omittedUnit | wrongCallStart | wrongReturn | incompatible | nestedReferences
+  deriving BEq
+
+private def surroundingRoute := "pub unitary fn route(u:Q<Unit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,(Q<Bit>,Q<Bit>)){\n    let q=phase[1,1](q);\n    let (s,q)=choose[then_op(sign,sign)](s,q);\n    let q=h(q);\n    (u,(s,q))\n}\n"
+
+/-- A plain proposal from the one retained packet. Every result is freshly
+source/IR checked below; this transformation contributes no authority. -/
+private def surroundingProposal (artifact : Artifact) (request : Request) (fault : SurroundingFault) :
+    Except String (Artifact × Request) := do
+  let some row := artifact.sources[0]? | throw "missing original main"
+  let before :: _ := row.2.splitOn "pub unitary fn route" | throw "missing original route"
+  let text := before ++ surroundingRoute
+  let some caller := artifact.programs[0]? | throw "missing caller"
+  let [.pure (.join _ _ _),.pure (.applyUnitary _ _ steps),.pure (.split _ _ _ leftBits)] := caller.operations
+    | throw "unexpected original joined caller"
+  let some sign := artifact.programs[1]? | throw "missing original sign"
+  let [.pure (.applyUnitary _ _ phaseSteps)] := sign.operations | throw "unexpected original sign"
+  let unitPort : Semantics.Raw.Port := ⟨8,[],0⟩
+  let first : Semantics.Observation.Op := if fault == .wrongOrder then .pure (.gate .h 1 2)
+    else .pure (.applyUnitary 1 2 phaseSteps)
+  let last : Semantics.Observation.Op := if fault == .wrongOrder then .pure (.applyUnitary 6 7 phaseSteps)
+    else .pure (.gate .h 6 7)
+  let caller := {caller with inputs := unitPort :: caller.inputs, operations := [first,.pure (.join 0 2 3),.pure (.applyUnitary 3 4 steps),.pure (.split 4 5 6 leftBits),last], outputs := if fault == .omittedUnit then [5,7] else [8,5,7]}
+  let artifact := {artifact with sources := #[(row.1,text)], programs := artifact.programs.set! 0 caller}
+  let [(_,child)] := request.context.calls | throw "missing original call"
+  let [site] := child.sites | throw "missing original selection"
+  let interface : Semantics.CarrierInterface.Interface := ⟨[⟨⟨0,[0],1⟩,[.bit]⟩,⟨⟨2,[1],1⟩,[.bit]⟩],[⟨⟨5,[0],1⟩,[.bit]⟩,⟨⟨6,[1],1⟩,[.bit]⟩],.unitary⟩
+  let site := {site with attached := interface, required := interface}
+  let bodies ← if fault == .nestedReferences then do
+    let (subject,body) :: rest := child.bodies | throw "missing original provider body"
+    let body := RuntimeContextRequest.Context.withReferences body.positions body.sites body.calls body.branches body.bodies [[]]
+    pure ((subject,body) :: rest)
+  else pure child.bodies
+  let child := RuntimeContextRequest.Context.withReferences child.positions [site] child.calls child.branches bodies child.references
+  let callPosition : Position := ⟨468,if fault == .wrongCallStart then 0 else 1,3⟩
+  let context := RuntimeContextRequest.Context.withReferences [⟨439,0,1⟩,callPosition,⟨511,4,1⟩] [] [(callPosition,child)] [] [] request.context.references
+  let unitTree := Semantics.RuntimeType.owner [.unit]
+  let returned : Semantics.Raw.Port := ⟨if fault == .wrongReturn then 6 else 7,[1],1⟩
+  let runtime := {request.runtime with parameters := unitTree :: request.runtime.parameters, inputStorage := [.quantum ⟨unitPort,[.unit]⟩] :: request.runtime.inputStorage, result := Semantics.RuntimeType.tuple 2 [unitTree,request.runtime.result], storage := [.tuple 2,.quantum ⟨unitPort,[.unit]⟩,.tuple 2,.quantum ⟨⟨5,[0],1⟩,[.bit]⟩,.quantum ⟨returned,[.bit]⟩]}
+  let runtime := if fault == .incompatible then {runtime with declarationName := "choose"} else runtime
+  return (artifact,{request with context := context, runtime := runtime})
+
+private def surroundingInspect (fault : SurroundingFault) : WorkM (List Nat × List Nat × Nat) := do
+  let (artifact,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,request) ← lift ((surroundingProposal artifact original fault).mapError fun _ => .invalid)
+  let checked ← Protocol.QmatchV5.readNamedOccurrence artifact order request
+  return (checked.result.checked.after.history.issued.map (·.ordinal),
+    checked.result.checked.finalBindings.map (·.port.token),checked.result.checked.nodes.length)
+
+private def surroundingStudy (fault : SurroundingFault) := (surroundingInspect fault).run 20000000 |>.1
+
+-- Full original source and child intervals, plus all header/arm/Meaning reads.
+#guard (surroundingStudy .none).toOption == some ([0,1,2],[8,5,7],3)
+-- Both orders are structurally valid Raw. Exact original local equations
+-- distinguish H Z from Z H, retaining phase rather than just channel equality.
+#guard surroundingStudy .wrongOrder matches .error .equation
+#guard surroundingStudy .omittedUnit matches .error .invalid
+#guard [SurroundingFault.wrongCallStart,.wrongReturn,.incompatible,.nestedReferences].all fun fault =>
+  match surroundingStudy fault with | .error .request => true | _ => false
+-- The supported component still does not fit the actual public allowance.
+#guard ((surroundingInspect .none).run WorkProfile.qmatch.limit).1 matches .error (.arithmetic .workLimit)
+
+-- The separate original singleton binding must keep refusing this source;
+-- the new reader is never tried as an automatic fallback.
+private def originalSingletonSurrounding : WorkM Unit := do
+  let (artifact,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,request) ← lift ((surroundingProposal artifact original .none).mapError fun _ => .invalid)
+  let _ ← Protocol.QmatchV5.readNamed artifact order request
+  return ()
+
+#guard (originalSingletonSurrounding.run 20000000).1 matches .error .request
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary

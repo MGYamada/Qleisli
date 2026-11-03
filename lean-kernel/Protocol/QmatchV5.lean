@@ -1,6 +1,7 @@
 import Protocol.Carrier
 import Protocol.RuntimeRoot
 import QleisliKernel.Qirf.RuntimeNamedSelection
+import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.Qirf.RuntimeContextRequest
@@ -235,6 +236,27 @@ def Request.checkNamedReferenceContexts (request : Request) : WorkM Unit := do
       exactWork (Exact.charge (16*(leaves.length+1)))
       leaves.forM fun (_,body) => noReferenceGroups 129 body
 
+/-- Shared typed preparation for the distinct singleton and surrounding-call
+readers. Both retain the same compatibility, complete reference-context check
+and genuine original-source invocation; neither reader is a fallback. -/
+structure PreparedNamedSource (artifact : Qirf.Artifact) (request : Request) where
+  compatible : request.compatible = true
+  referenceContexts : Qirf.RuntimeInterval.Computed request.checkNamedReferenceContexts ()
+  source : Qirf.RuntimeBodyDiscovery.PreparedSource artifact request.source.moduleName
+    request.source.functionName request.source.arguments
+  sourceRead : Qirf.RuntimeInterval.Computed (Qirf.RuntimeBodyDiscovery.prepareSource artifact
+    request.source.moduleName request.source.functionName request.source.arguments) source
+
+def prepareNamedSource (artifact : Qirf.Artifact) (request : Request) : WorkM (PreparedNamedSource artifact request) := do
+  if bound : request.compatible = true then
+    let contexts ← SourceTypes.NaturalAffine.witness request.checkNamedReferenceContexts
+    let source ← SourceTypes.NaturalAffine.witness (Qirf.RuntimeBodyDiscovery.prepareSource artifact
+      request.source.moduleName request.source.functionName request.source.arguments)
+    have unit : contexts.val = () := by cases contexts.val; rfl
+    return ⟨bound,by with_reducible simpa only [unit] using contexts.property,
+      source.val,by with_reducible exact source.property⟩
+  else throw .request
+
 /-- One original named call and its returned qmatch interval under the exact
 decoded request. Catalogue-wide discharge and public execution remain separate. -/
 structure Named (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) where
@@ -253,17 +275,34 @@ structure Named (artifact : Qirf.Artifact) (order : Array Nat) (request : Reques
 
 def readNamed (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) :
     WorkM (Named artifact order request) := do
-  if bound : request.compatible = true then
-    let contexts ← SourceTypes.NaturalAffine.witness request.checkNamedReferenceContexts
-    let source ← SourceTypes.NaturalAffine.witness (Qirf.RuntimeBodyDiscovery.prepareSource artifact
-      request.source.moduleName request.source.functionName request.source.arguments)
-    let named ← SourceTypes.NaturalAffine.witness
-      (Qirf.RuntimeNamedSelectionSource.prepare source.val request.context request.namedReferences)
-    let result ← SourceTypes.NaturalAffine.witness
-      (Qirf.RuntimeNamedSelection.read named.val order request.combinedRuntime)
-    have unit : contexts.val = () := by cases contexts.val; rfl
-    return ⟨bound,by with_reducible simpa only [unit] using contexts.property,source.val,by with_reducible exact source.property,
-      named.val,by with_reducible exact named.property,result.val,by with_reducible exact result.property⟩
-  else throw .request
+  let source ← prepareNamedSource artifact request
+  let named ← SourceTypes.NaturalAffine.witness
+    (Qirf.RuntimeNamedSelectionSource.prepare source.source request.context request.namedReferences)
+  let result ← SourceTypes.NaturalAffine.witness
+    (Qirf.RuntimeNamedSelection.read named.val order request.combinedRuntime)
+  return ⟨source.compatible,source.referenceContexts,source.source,source.sourceRead,
+    named.val,by with_reducible exact named.property,result.val,by with_reducible exact result.property⟩
+
+/-- An original named selection with genuine before/after primitive events.
+The former singleton source/result binding above remains distinct and strict.
+This internal preparation issues no accepted handle or dispatcher decision. -/
+structure NamedOccurrence (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) where
+  preparation : PreparedNamedSource artifact request
+  occurrence : Qirf.RuntimeNamedSelectionOccurrence.Prepared preparation.source request.context
+  prepared : Qirf.RuntimeInterval.Computed
+    (Qirf.RuntimeNamedSelectionOccurrence.prepare preparation.source request.context) occurrence
+  result : Qirf.RuntimeNamedSelectionSurroundings.Checked occurrence order request.combinedRuntime
+  checked : Qirf.RuntimeInterval.Computed
+    (Qirf.RuntimeNamedSelectionSurroundings.read occurrence order request.combinedRuntime) result
+
+def readNamedOccurrence (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) :
+    WorkM (NamedOccurrence artifact order request) := do
+  let source ← prepareNamedSource artifact request
+  let occurrence ← SourceTypes.NaturalAffine.witness
+    (Qirf.RuntimeNamedSelectionOccurrence.prepare source.source request.context)
+  let result ← SourceTypes.NaturalAffine.witness
+    (Qirf.RuntimeNamedSelectionSurroundings.read occurrence.val order request.combinedRuntime)
+  return ⟨source,occurrence.val,by with_reducible exact occurrence.property,
+    result.val,by with_reducible exact result.property⟩
 
 end QleisliKernel.Protocol.QmatchV5

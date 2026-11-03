@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check primitive actions before and after a named call containing a
+  `qmatch` against their original source positions and contiguous caller IR.
+  The internal v5 reader checks the returned owner order, including held
+  zero-width owners. The three-event example exceeds the public work limit.
+
 - Traverse original expressions, source calls and operation duties with total
   Lean functions. The ordinary-expression evaluator and its call-site
   transport share a structural recursion principle. Their equations preserve
