@@ -193,7 +193,7 @@ def callers(probe):
 def qmatch_work_boundary(probe, original):
     # Trailing source whitespace leaves every original span and operation
     # intact. Both the source table and the evidence identity name its bytes.
-    for padding, expected_error in [(13_487, None), (13_488, 'invalid_ir')]:
+    for padding, expected_error in [(13_487, None), (13_488, 'limit')]:
         row = deepcopy(original)
         source = row['artifact']['sources'][0]
         graph = row['view'][1]

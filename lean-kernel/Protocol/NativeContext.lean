@@ -276,6 +276,7 @@ structure Reply where
 
 def Mode.errorCode : Mode → Gate.Error → String
   | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
+  | .qmatchSource, .native (.arithmetic .workLimit) => "limit"
   | _, error => Native.errorCode error
 
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=
