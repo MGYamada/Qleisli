@@ -202,6 +202,9 @@ structure Meaning {sources catalogue record invocation}
     demand.source.original.origin.scope tokens
   queried : Computed (SourceMeaning.select sources demand.source.original.origin.state.owner
     demand.source.original.origin.scope tokens) selected
+  -- These metadata equalities do not bind the full fresh graph to the
+  -- original request graph under the retained simultaneous substitutions.
+  -- Reference bodies, phase and composed nodes still require graph transfer.
   sameRequest : request.caller = some demand.source.original.origin.state.owner ∧
     selected.resolution.moduleName = request.moduleName ∧
     selected.resolution.declaration.name = request.declarationName ∧ selected.queryRows = request.queryRows
@@ -329,6 +332,7 @@ inductive Pending where
   | forwardProviderBody (path : List Nat)
   | providerPaths (path : List Nat) (requested : OperationPaths.Paths)
   | meaningInstancePorts
+  | meaningGraphBinding
   | meaningEquation
   | forwardReferenceBody (index : Nat)
   | classicalReferenceRows (index : Nat)
@@ -378,7 +382,8 @@ private def readDemand {sources catalogue record invocation}
     let pending := providers.flatMap (fun provider =>
       [Pending.supplierInstance provider.1.path,.forwardProviderBody provider.1.path] ++
         (if provider.1.requested.any then [.providerPaths provider.1.path provider.1.requested] else [])) ++
-      (match demand.source.original.requirement with | .meaning _ => [.meaningInstancePorts] | .access _ => []) ++
+      (match demand.source.original.requirement with
+        | .meaning _ => [.meaningInstancePorts,.meaningGraphBinding] | .access _ => []) ++
       (if rootClosed then meaning.referenceIndices.map Pending.forwardReferenceBody ++
         meaning.classicalIndices.map Pending.classicalReferenceRows ++
           (match demand.source.original.requirement with | .meaning _ => [.meaningEquation] | .access _ => []) else []) ++
