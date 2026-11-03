@@ -128,7 +128,7 @@ inductive ItemPrepared (artifact : Artifact) {catalogue : GenericCatalogue.Check
   | header {record} (invocation : Invocation catalogue record) (reference : HeaderReference invocation)
       (link : SourceDutySlots.HeaderLink queue reference) : ItemPrepared artifact queue (.header invocation reference) link
   | call {record} (invocation : Invocation catalogue record) (application : ApplicationAt catalogue record)
-      (target : Target application) : ItemPrepared artifact queue (.call invocation application target) ()
+      (target : GenericDutyQueue.Target application) : ItemPrepared artifact queue (.call invocation application target) ()
 
 /-- Only the concrete providers contribute here. The typed header/application
 constructors above preserve all original identities but introduce no extra slot.
