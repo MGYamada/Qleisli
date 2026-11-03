@@ -10,19 +10,18 @@ inductive Access where
   | forward | adjoint | controlled
   deriving BEq, DecidableEq, Repr
 
-inductive Leaf : List LocatedToken → Type where
-  | named {tokens} (written : StaticApplication.Syntax tokens) : Leaf tokens
-  | power {tokens} (call : CallSyntax.Checked tokens) (child count : CallSyntax.Argument)
+/-- A provider and the inner-to-outer exponents derived from its original tokens. -/
+inductive Original : List LocatedToken → Sigma StaticApplication.Syntax → List CallSyntax.Argument → Prop where
+  | named {tokens} (written : StaticApplication.Syntax tokens) : Original tokens ⟨tokens,written⟩ []
+  | power {tokens base counts} (call : CallSyntax.Checked tokens) (child count : CallSyntax.Argument)
       (name : call.call.callee.map (·.text) = ["power"])
-      (arguments : call.call.arguments = [child,count]) (inner : Leaf child.tokens) : Leaf tokens
+      (arguments : call.call.arguments = [child,count]) (inner : Original child.tokens base counts) :
+      Original tokens base (counts ++ [count])
 
-def Leaf.base {tokens} : Leaf tokens → Sigma StaticApplication.Syntax
-  | .named written => ⟨_,written⟩
-  | .power _ _ _ _ _ inner => inner.base
-
-def Leaf.counts {tokens} : Leaf tokens → List CallSyntax.Argument
-  | .named _ => []
-  | .power _ _ count _ _ inner => inner.counts ++ [count]
+structure Leaf (tokens : List LocatedToken) where
+  base : Sigma StaticApplication.Syntax
+  counts : List CallSyntax.Argument
+  original : Original tokens base counts
 
 private def readLeaf : Nat → (tokens : List LocatedToken) → Except String (Leaf tokens) :=
   Nat.rec (fun _ => throw "runtime transform source depth") (fun _ recurse tokens => do
@@ -30,10 +29,14 @@ private def readLeaf : Nat → (tokens : List LocatedToken) → Except String (L
       let call ← CallSyntax.read tokens
       if name : call.call.callee.map (·.text) = ["power"] then
         match arguments : call.call.arguments with
-        | [child,count] => return .power call child count name arguments (← recurse child.tokens)
+        | [child,count] => do
+          let inner ← recurse child.tokens
+          return ⟨inner.base,inner.counts ++ [count],.power call child count name arguments inner.original⟩
         | _ => throw "runtime transparent power arity"
       else throw "runtime transform child is not a named provider or transparent power"
-    else return .named (← StaticApplication.readSyntax tokens))
+    else
+      let written ← StaticApplication.readSyntax tokens
+      return ⟨⟨tokens,written⟩,[],.named written⟩)
 
 inductive Checked (tokens : List LocatedToken) where
   | power (call : CallSyntax.Checked tokens) (name : call.call.callee.map (·.text) = ["power"])

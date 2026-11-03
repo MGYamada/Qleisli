@@ -43,114 +43,129 @@ theorem expressionTransport_reference (values : Valuation) (site : Site)
     (inputs : List (Semantics.FiniteCarrier.Basis × Expression)) (expression result : Expression)
     (transported : SourceRuntimeValues.expressionTransport site owners inputs expression = .ok result) :
     evaluate values result = evaluate (calledValuation values site owners inputs) expression := by
-  induction expression generalizing result with
-  | input ordinal =>
+  induction expression generalizing result
+  all_goals
+    rw [SourceRuntimeValues.expressionTransport_unfold] at transported
+    dsimp only [SourceRuntimeValues.transportStep] at transported
+    conv => rhs; rw [evaluate_unfold]
+    dsimp only [evaluateStep]
+  case input ordinal =>
     cases selected : inputs[ordinal]? with
-    | none => simp [SourceRuntimeValues.expressionTransport,selected] at transported
+    | none => simp [selected] at transported
     | some input =>
       obtain ⟨basis,actual⟩ := input
-      simp only [SourceRuntimeValues.expressionTransport,selected] at transported
+      simp only [selected] at transported
       cases transported
-      simp only [evaluate,calledValuation,selected,bind,Option.bind]
-  | basisInput ordinal =>
+      simp only [calledValuation,selected,bind,Option.bind]
+  case basisInput ordinal =>
     cases transported
+    rw [evaluate_unfold]
     rfl
-  | unit => cases transported; rfl
-  | bit bit => cases transported; rfl
-  | ordinal ordinal => cases transported; rfl
-  | measured origin calls owner =>
+  case unit => cases transported; rw [evaluate_unfold]; rfl
+  case bit bit => cases transported; rw [evaluate_unfold]; rfl
+  case ordinal ordinal => cases transported; rw [evaluate_unfold]; rfl
+  case measured origin calls owner =>
     cases found : SourceRuntimeValues.mappedOwner owners owner with
     | error error =>
-      simp only [SourceRuntimeValues.expressionTransport,found] at transported
+      simp only [found] at transported
       change (Except.error error : Except String Expression) = .ok result at transported
       cases transported
     | ok actual =>
-      simp only [SourceRuntimeValues.expressionTransport,found] at transported
+      simp only [found] at transported
       cases transported
-      simp only [evaluate,calledValuation,found]
-  | project value ordinal _ih =>
+      rw [evaluate_unfold]
+      simp only [evaluateStep,calledValuation,found]
+  case project value ordinal _ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
     | error error =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       change (Except.error error : Except String Expression) = .ok result at transported
       cases transported
     | ok actual =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       cases transported
+      rw [evaluate_unfold]
       rfl
-  | field stride dimension value ih =>
+  case field stride dimension value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
     | error error =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       change (Except.error error : Except String Expression) = .ok result at transported
       cases transported
     | ok actual =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       cases transported
-      simp only [evaluate,ih actual read]
-  | equalsOrdinal ordinal value ih =>
+      rw [evaluate_unfold]
+      simp only [evaluateStep,ih actual read]
+  case equalsOrdinal ordinal value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
     | error error =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       change (Except.error error : Except String Expression) = .ok result at transported
       cases transported
     | ok actual =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       cases transported
-      simp only [evaluate,ih actual read]
-  | not value ih =>
+      rw [evaluate_unfold]
+      simp only [evaluateStep,ih actual read]
+  case not value ih =>
     cases read : SourceRuntimeValues.expressionTransport site owners inputs value with
     | error error =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       change (Except.error error : Except String Expression) = .ok result at transported
       cases transported
     | ok actual =>
-      simp only [SourceRuntimeValues.expressionTransport,read] at transported
+      simp only [read] at transported
       cases transported
-      simp only [evaluate,ih actual read]
-  | combine stride first second firstIH secondIH =>
+      rw [evaluate_unfold]
+      simp only [evaluateStep,ih actual read]
+  case combine stride first second firstIH secondIH =>
     cases firstRead : SourceRuntimeValues.expressionTransport site owners inputs first with
-    | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
+    | error error => simp [firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
+      | error error => simp [firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
-        simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
+        simp only [firstRead,secondRead] at transported
         cases transported
-        simp only [evaluate,firstIH a firstRead,secondIH b secondRead]
-  | xor first second firstIH secondIH =>
+        rw [evaluate_unfold]
+        simp only [evaluateStep,firstIH a firstRead,secondIH b secondRead]
+  case xor first second firstIH secondIH =>
     cases firstRead : SourceRuntimeValues.expressionTransport site owners inputs first with
-    | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
+    | error error => simp [firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
+      | error error => simp [firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
-        simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
+        simp only [firstRead,secondRead] at transported
         cases transported
-        simp only [evaluate,firstIH a firstRead,secondIH b secondRead]
-  | and first second firstIH secondIH =>
+        rw [evaluate_unfold]
+        simp only [evaluateStep,firstIH a firstRead,secondIH b secondRead]
+  case and first second firstIH secondIH =>
     cases firstRead : SourceRuntimeValues.expressionTransport site owners inputs first with
-    | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,bind,Except.bind] at transported
+    | error error => simp [firstRead,bind,Except.bind] at transported
     | ok a =>
       cases secondRead : SourceRuntimeValues.expressionTransport site owners inputs second with
-      | error error => simp [SourceRuntimeValues.expressionTransport,firstRead,secondRead,bind,Except.bind] at transported
+      | error error => simp [firstRead,secondRead,bind,Except.bind] at transported
       | ok b =>
-        simp only [SourceRuntimeValues.expressionTransport,firstRead,secondRead] at transported
+        simp only [firstRead,secondRead] at transported
         cases transported
-        simp only [evaluate,firstIH a firstRead,secondIH b secondRead]
-  | choose condition thenValue elseValue conditionIH thenIH elseIH =>
+        rw [evaluate_unfold]
+        simp only [evaluateStep,firstIH a firstRead,secondIH b secondRead]
+  case choose condition thenValue elseValue conditionIH thenIH elseIH =>
     cases conditionRead : SourceRuntimeValues.expressionTransport site owners inputs condition with
-    | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,bind,Except.bind] at transported
+    | error error => simp [conditionRead,bind,Except.bind] at transported
     | ok selected =>
       cases thenRead : SourceRuntimeValues.expressionTransport site owners inputs thenValue with
-      | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,bind,Except.bind] at transported
+      | error error => simp [conditionRead,thenRead,bind,Except.bind] at transported
       | ok a =>
         cases elseRead : SourceRuntimeValues.expressionTransport site owners inputs elseValue with
-        | error error => simp [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,elseRead,bind,Except.bind] at transported
+        | error error => simp [conditionRead,thenRead,elseRead,bind,Except.bind] at transported
         | ok b =>
-          simp only [SourceRuntimeValues.expressionTransport,conditionRead,thenRead,elseRead] at transported
+          simp only [conditionRead,thenRead,elseRead] at transported
           cases transported
-          simp only [evaluate,conditionIH selected conditionRead,thenIH a thenRead,elseIH b elseRead]
+          rw [evaluate_unfold]
+          simp only [evaluateStep,conditionIH selected conditionRead,thenIH a thenRead,elseIH b elseRead]
 
 theorem readAtom_sound (values : Valuation) (atom : Atom) (result : ResultAtom)
     (read : readAtom values atom = .ok result) : AtomEvaluates values atom result := by

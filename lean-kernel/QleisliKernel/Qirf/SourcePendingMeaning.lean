@@ -15,9 +15,13 @@ open GenericOperation GenericDutyQueue GenericOperationSubstitute Semantics.Sour
 
 private def snapshots {sources applications original result}
     (receipt : @Transport sources applications original result) : List Description :=
-  match receipt with
-  | .identity source => [source.description]
-  | .step _ _ source _ next => source.description :: snapshots next
+  let visit : Nat → {applications : List (ApplicationSource sources)} →
+      {original result : GenericOperationSubstitute.Subject sources} →
+      Transport applications original result → List Description :=
+    Nat.rec (fun {_ _ _} _ => []) (fun _ next {_ _ _} receipt => match receipt with
+      | .identity source => [source.description]
+      | .step _ _ source _ tail => source.description :: next tail)
+  visit (applications.length+1) receipt
 
 private def isNatural : Key → Bool
   | .natural _ => true
@@ -47,10 +51,10 @@ private def readDependency {sources catalogue record invocation}
         return some ⟨index,keys,(by first | exact original | rfl),natural⟩
       else return none) none
 
-private def transportedValues {sources} : List (ApplicationSource sources) → Valuation → Valuation
-  | [],values => values
-  | application :: rest,values =>
-    NaturalSubstitute.replacementValues application.naturalActuals (transportedValues rest values)
+private def transportedValues {sources} (applications : List (ApplicationSource sources))
+    (values : Valuation) : Valuation :=
+  applications.foldr (fun application values =>
+    NaturalSubstitute.replacementValues application.naturalActuals values) values
 
 structure TransferredForm {sources} (applications : List (ApplicationSource sources)) (original : Form) where
   form : Form
@@ -58,34 +62,43 @@ structure TransferredForm {sources} (applications : List (ApplicationSource sour
 
 private def transferForm {sources} (frame : NaturalFrames.Frame)
     (applications : List (ApplicationSource sources)) (original : Form) :
-    WorkM (TransferredForm applications original) := do
-  match applications with
-  | [] => return ⟨original,by intro values; rfl⟩
-  | application :: rest =>
-    exactWork (Exact.charge (16*(Meter.frame frame+Meter.frame (calleeFrame application)+1)))
-    guard (frame.binders == (calleeFrame application).binders) .request
-    let _ ← GenericOperationSubstitute.readContext application
-    let substituted ← NaturalSubstitute.substitute (callerFrame application).binders.length
-      original application.naturalActuals
-    let next ← transferForm (callerFrame application) rest substituted.form
-    return ⟨next.form,by
-      intro values
-      rw [next.correct,substituted.correct]
-      rfl⟩
+    WorkM (TransferredForm applications original) :=
+  let visit : Nat → NaturalFrames.Frame → (applications : List (ApplicationSource sources)) → (original : Form) →
+      WorkM (TransferredForm applications original) :=
+    Nat.rec (fun _ _ _ => throw .limit) (fun _ next frame applications original => do
+      match applications with
+      | [] => return ⟨original,by intro values; rfl⟩
+      | application :: rest =>
+        exactWork (Exact.charge (16*(Meter.frame frame+Meter.frame (calleeFrame application)+1)))
+        guard (frame.binders == (calleeFrame application).binders) .request
+        let _ ← GenericOperationSubstitute.readContext application
+        let substituted ← NaturalSubstitute.substitute (callerFrame application).binders.length
+          original application.naturalActuals
+        let transferred ← next (callerFrame application) rest substituted.form
+        return ⟨transferred.form,by
+          intro values
+          rw [transferred.correct,substituted.correct]
+          rfl⟩)
+  visit (applications.length+1) frame applications original
 
-private def refute : (alternatives : List (List Form)) →
-    WorkM (Option (NaturalPredicates.Established (∀ values,¬Satisfies alternatives values)))
-  | [] => return some ⟨by simp [Satisfies]⟩
-  | rows :: rest => do
-    let some first ← NaturalConstraints.check rows | return none
-    let some remaining ← refute rest | return none
-    return some ⟨by
-      intro values possible
-      rcases possible with ⟨branch,member,held⟩
-      rcases List.mem_cons.mp member with head | tail
-      · subst branch
-        exact first.witness values held
-      · exact remaining.proof values ⟨branch,tail,held⟩⟩
+private def refute (alternatives : List (List Form)) :
+    WorkM (Option (NaturalPredicates.Established (∀ values,¬Satisfies alternatives values))) :=
+  let visit : Nat → (alternatives : List (List Form)) →
+      WorkM (Option (NaturalPredicates.Established (∀ values,¬Satisfies alternatives values))) :=
+    Nat.rec (fun _ => throw .limit) (fun _ next alternatives => do
+      match alternatives with
+      | [] => return some ⟨by simp [Satisfies]⟩
+      | rows :: rest => do
+        let some first ← NaturalConstraints.check rows | return none
+        let some remaining ← next rest | return none
+        return some ⟨by
+          intro values possible
+          rcases possible with ⟨branch,member,held⟩
+          rcases List.mem_cons.mp member with head | tail
+          · subst branch
+            exact first.witness values held
+          · exact remaining.proof values ⟨branch,tail,held⟩⟩)
+  visit (alternatives.length+1) alternatives
 
 structure GuardSource (sources : Sources) where
   state : GenericLexicalNatural.SomeEnvironment sources
@@ -93,11 +106,15 @@ structure GuardSource (sources : Sources) where
   tokens : List LocatedToken
   applications : List (ApplicationSource sources)
 
-private def callGuards {sources catalogue record} : @Invocation sources catalogue record → List (GuardSource sources)
-  | .root _ => []
-  | .call parent application _ =>
-    ⟨application.original.state,application.original.scope,application.original.tokens,
-      parent.applications.reverse⟩ :: callGuards parent
+private def callGuards {sources catalogue record}
+    (invocation : @Invocation sources catalogue record) : List (GuardSource sources) :=
+  let visit : Nat → {record : RecordIndex catalogue} → Invocation catalogue record → List (GuardSource sources) :=
+    Nat.rec (fun {_} _ => []) (fun _ next {_} invocation => match invocation with
+      | .root _ => []
+      | .call parent application _ =>
+        ⟨application.original.state,application.original.scope,application.original.tokens,
+          parent.applications.reverse⟩ :: next parent)
+  visit (invocation.applications.length+1) invocation
 
 private def guardSources {sources catalogue record invocation}
     (demand : @Demand sources catalogue record invocation) : List (GuardSource sources) :=

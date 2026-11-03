@@ -45,13 +45,15 @@ theorem One.sound {left right phi reference actual} (one : One left right phi)
     have same : bit = value := Option.some.inj
       (present.symm.trans (RuntimeOrdinarySSA.lookup_reference _ _ _ _ _ executed))
     subst value
-    simp [One.expression,Semantics.SourceOrdinary.evaluate,conditionComputed,computed,bitValue]
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
+    simp [One.expression,Semantics.SourceOrdinary.evaluateStep,conditionComputed,computed,bitValue]
   | true =>
     obtain ⟨bit,present,computed⟩ := agrees phi.thenId one.thenValue.expression one.thenValue.member
     have same : bit = value := Option.some.inj
       (present.symm.trans (RuntimeOrdinarySSA.lookup_reference _ _ _ _ _ executed))
     subst value
-    simp [One.expression,Semantics.SourceOrdinary.evaluate,conditionComputed,computed,bitValue]
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
+    simp [One.expression,Semantics.SourceOrdinary.evaluateStep,conditionComputed,computed,bitValue]
 
 structure Bound {sources caller dependencies program block offset}
     (source : SourceRuntimeContext.BranchEvent sources caller)

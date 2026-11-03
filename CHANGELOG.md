@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Traverse original expressions, source calls and operation duties with total
+  Lean functions. The ordinary-expression evaluator and its call-site
+  transport share a structural recursion principle. Their equations preserve
+  the selected branch and the original measurement history.
 - Check a direct `checked_op` caller and a complete `qmatch` interval with
   plain or directly refined provider arms against one Lean dependency graph.
   Each indexed arm retains its original body, exact Meaning, controlled

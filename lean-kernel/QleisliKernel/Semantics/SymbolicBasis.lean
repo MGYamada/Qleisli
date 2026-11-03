@@ -30,12 +30,20 @@ def Atom.evaluate (parameters : Parameters) (values : SourceAffine.Valuation) : 
     let value := width.evaluate values
     if 0 ≤ value then some [.bits value.toNat] else none
 
-def evaluate (parameters : Parameters) (values : SourceAffine.Valuation) : Code → Option FiniteCarrier.Basis
-  | [] => some []
-  | atom :: rest => do
-    let head ← atom.evaluate parameters values
-    let tail ← evaluate parameters values rest
-    pure (head ++ tail)
+def evaluate (parameters : Parameters) (values : SourceAffine.Valuation) (code : Code) : Option FiniteCarrier.Basis := do
+  let parts ← code.mapM (Atom.evaluate parameters values)
+  return parts.flatten
+
+@[simp] theorem evaluate_nil (parameters : Parameters) (values : SourceAffine.Valuation) :
+    evaluate parameters values [] = some [] := rfl
+
+@[simp] theorem evaluate_cons (parameters : Parameters) (values : SourceAffine.Valuation) (atom : Atom) (rest : Code) :
+    evaluate parameters values (atom :: rest) = (do
+      let head ← atom.evaluate parameters values
+      let tail ← evaluate parameters values rest
+      pure (head ++ tail)) := by
+  simp only [evaluate,List.mapM_cons]
+  cases atom.evaluate parameters values <;> cases rest.mapM (Atom.evaluate parameters values) <;> rfl
 
 theorem evaluate_append (parameters : Parameters) (values : SourceAffine.Valuation) (left right : Code) :
     evaluate parameters values (left ++ right) = (do
@@ -45,7 +53,7 @@ theorem evaluate_append (parameters : Parameters) (values : SourceAffine.Valuati
   induction left with
   | nil => simp [evaluate]
   | cons atom rest ih =>
-    simp only [List.cons_append,evaluate,ih]
+    simp only [List.cons_append,evaluate_cons,ih]
     cases atom.evaluate parameters values <;> cases evaluate parameters values rest <;>
       cases evaluate parameters values right <;> simp [List.append_assoc]
 

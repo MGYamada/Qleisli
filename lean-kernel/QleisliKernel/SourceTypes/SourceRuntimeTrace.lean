@@ -609,11 +609,9 @@ def quantumUse {sources owner name} (signature : Signature sources owner name)
 /-- Original guarded decrease is checked at each self-call occurrence before
 this concrete specialization stack. Mutual and repeated instances refuse;
 the existing depth capacity is independent of a caller expression's tokens. -/
-def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.Frame)
-    {owner name : String} (signature : Signature sources owner name) : Finite.WorkM (Evaluated signature) :=
-  match fuel with
-  | 0 => throw .limit
-  | fuel+1 => do
+def readNested (sources : Sources) : (fuel : Nat) → (active : List SourceCallStack.Frame) →
+    {owner name : String} → (signature : Signature sources owner name) → Finite.WorkM (Evaluated signature) :=
+  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ previous active {_ _} signature => do
     let frame := callFrame signature
     let _ ← SourceCallStack.read active frame
     let tokens := signature.original.occurrence.body
@@ -648,7 +646,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.F
             let computed ← SourceComputedBindings.prepare signature.instantiation generic.val.computedObligations
             let naturals ← signature.naturals
             let (result,_) ← evalWithReader signature generic.val basis computed
-              (fun callee => do return (← readNested sources fuel (frame :: active) callee).summary)
+              (fun callee => do return (← previous (frame :: active) callee).summary)
               (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
               nextOwner initial tree {}
             let basisCovered : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true) ←
@@ -701,8 +699,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.F
                   else throw .request
                 else throw .request
               else throw .request
-            else throw .request
-termination_by fuel
+            else throw .request)
 
 structure Checked (sources : Sources) (owner name : String) where
   signature : Signature sources owner name

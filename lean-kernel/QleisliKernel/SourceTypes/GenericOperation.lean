@@ -244,19 +244,24 @@ private def readBasisAtom (atom : Atom) : WorkM (BasisClosed [atom]) := do
     let constant ← readConstant width
     return ⟨[.bits constant.value],by
       intro parameters values
-      simp only [Semantics.SymbolicBasis.evaluate,Atom.evaluate,constant.correct]
+      simp only [Semantics.SymbolicBasis.evaluate_cons,Semantics.SymbolicBasis.evaluate_nil,Atom.evaluate,constant.correct]
       simp⟩
 
-def readBasis : (code : Code) → WorkM (BasisClosed code)
-  | [] => pure ⟨[],by intros; rfl⟩
-  | atom :: rest => do
-    let first ← readBasisAtom atom
-    let tail ← readBasis rest
-    return ⟨first.value ++ tail.value,by
-      intro parameters values
-      have same := Semantics.SymbolicBasis.evaluate_append parameters values [atom] rest
-      rw [first.correct,tail.correct] at same
-      exact same⟩
+def readBasis (code : Code) : WorkM (BasisClosed code) :=
+  (Nat.rec (motive := fun fuel => (code : Code) → code.length ≤ fuel → WorkM (BasisClosed code))
+    (fun code bound => match code with
+      | [] => pure ⟨[],by intros; rfl⟩
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next code bound => match code with
+      | [] => pure ⟨[],by intros; rfl⟩
+      | atom :: rest => do
+        let first ← readBasisAtom atom
+        let tail ← next rest (Nat.le_of_succ_le_succ bound)
+        return ⟨first.value ++ tail.value,by
+          intro parameters values
+          have same := Semantics.SymbolicBasis.evaluate_append parameters values [atom] rest
+          rw [first.correct,tail.correct] at same
+          exact same⟩) code.length) code (Nat.le_refl _)
 
 structure NaturalCertificate where
   form : Form

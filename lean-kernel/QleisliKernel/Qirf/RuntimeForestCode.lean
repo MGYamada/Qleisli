@@ -269,12 +269,18 @@ inductive OwnerCodes : Map → Type where
   | cons {binding bindings} (first : OwnerCode binding) (rest : OwnerCodes bindings) :
       OwnerCodes (binding::bindings)
 
-private def readOwners : (bindings : Map) → WorkM (OwnerCodes bindings)
-  | [] => pure .nil
-  | binding::bindings => do
-    let layout ← SourceTypes.NaturalAffine.witness (Carrier.readOwner ⟨binding.port,binding.owner.basis⟩)
-    let rest ← readOwners bindings
-    pure (.cons ⟨layout.val,by with_reducible exact layout.property⟩ rest)
+private def readOwners (bindings : Map) : WorkM (OwnerCodes bindings) :=
+  (Nat.rec (motive := fun fuel => (bindings : Map) → bindings.length ≤ fuel → WorkM (OwnerCodes bindings))
+    (fun bindings bound => match bindings with
+      | [] => pure .nil
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next bindings bound => match bindings with
+      | [] => pure .nil
+      | binding :: rest => do
+        let layout ← SourceTypes.NaturalAffine.witness (Carrier.readOwner ⟨binding.port,binding.owner.basis⟩)
+        let tail ← next rest (Nat.le_of_succ_le_succ bound)
+        pure (.cons ⟨layout.val,by with_reducible exact layout.property⟩ tail))
+    bindings.length) bindings (Nat.le_refl _)
 
 structure Frame {roles : List Owner} {state : RuntimeOwnerMap.State}
     (checked : RuntimeOwnerMap.Checked roles state) where

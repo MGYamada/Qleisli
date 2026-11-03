@@ -16,10 +16,13 @@ structure Phi where
 instance : BEq Phi where
   beq first second := decide (first = second)
 
-private def choose (condition : Expression) : List (Nat × Expression) → Expression
-  | [] => .unit
-  | [(_,value)] => value
-  | (ordinal,value) :: rest => .choose (.equalsOrdinal ordinal condition) value (choose condition rest)
+private def choose (condition : Expression) (values : List (Nat × Expression)) : Expression :=
+  match values.foldr (fun (ordinal,value) rest =>
+    some (match rest with
+      | none => value
+      | some tail => .choose (.equalsOrdinal ordinal condition) value tail)) (none : Option Expression) with
+  | none => .unit
+  | some expression => expression
 
 def merge (condition : Expression) (ordinals : List Nat) (arms : List Value) (nextOrdinal : Nat) :
     Except String (Value × List Phi) := do

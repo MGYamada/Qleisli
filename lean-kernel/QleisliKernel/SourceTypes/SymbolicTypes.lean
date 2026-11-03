@@ -46,7 +46,7 @@ private def closedLoop (variables : Nat) :
       let remaining ← next rest
       pure ⟨head.atom :: remaining.code,by
         intro parameters values
-        simp [evaluate,head.correct,remaining.correct]⟩)
+        simp [head.correct,remaining.correct]⟩)
 
 /-- Lift an independently checked closed type without changing its meaning.
 No nominal origin, tuple node or zero-width field is replaced by bit width. -/
@@ -129,7 +129,7 @@ private def equateLoop {sources : Sources} (state : GenericLexicalNatural.SomeEn
       let remaining ← next rest tail
       pure ⟨by
         intro values held parameters
-        simp only [evaluate,head.proof values held parameters,remaining.proof values held parameters]⟩
+        simp only [evaluate_cons,head.proof values held parameters,remaining.proof values held parameters]⟩
     | _,_ => throw .request)
 
 def equate {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
@@ -227,12 +227,12 @@ private def substituteAtom (variables : Nat) (bases : List (Parameter × Code)) 
     | some (_,code) => pure ⟨code,by
       intro parameters values
       cases computed : evaluate parameters values code <;>
-        simp [evaluate,Atom.evaluate,replacementParameters,found,computed]⟩
+        simp [Atom.evaluate,replacementParameters,found,computed]⟩
   | .bits width =>
     let result ← NaturalSubstitute.substitute variables width naturals
     pure ⟨[.bits result.form],by
       intro parameters values
-      simp only [evaluate,Atom.evaluate,result.correct values]⟩
+      simp only [evaluate_cons,evaluate_nil,Atom.evaluate,result.correct values]⟩
 
 private def substituteLoop (variables : Nat) (bases : List (Parameter × Code)) (naturals : List Form) :
     Nat → (original : Code) → WorkM (Substituted bases naturals original) :=

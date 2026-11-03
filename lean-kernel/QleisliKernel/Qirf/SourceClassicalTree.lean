@@ -247,56 +247,58 @@ No symbolic source Value, execution result or cached map participates. -/
 def readFunction {sources} (catalogue : GenericCatalogue.Checked sources) (fuel : Nat)
     (active : List (String × String)) (owner name caller : String) (state : State catalogue)
     (retained : Option (RetainedSignature catalogue owner name caller) := none) :
-    WorkM (State catalogue × Nat) := do
-  match fuel with
-  | 0 => throw .limit
-  | fuel+1 =>
-    guard (!active.contains (owner,name)) .request
-    let signatureAction : WorkM (RetainedSignature catalogue owner name caller) :=
-      match retained with
-      | some signature => pure signature
-      | none => NaturalAffine.witness (SourceRuntimeContext.readSignature sources owner name {}
-          (.source caller) (some catalogue))
-    let signature ← signatureAction
-    guard (signature.val.original.declaration.isPublic || caller == owner) .request
-    let inferred ← GenericCatalogue.lookup catalogue.toRuntimeChecked signature.val.original
-    guard (SourceEffect.visible caller owner signature.val.original.declaration.isPublic
-      signature.val.original.parsedHeader.effect inferred.inferred.inferredEffect == .unitary) .request
-    let externalPermission := caller != owner && signature.val.original.declaration.isPublic &&
-      !signature.val.original.parsedHeader.ordinaryOnly && signature.val.original.parsedHeader.effect.isSome
-    guard (!externalPermission && !inferred.inferred.quantumUse) .request
-    let tokens := signature.val.original.occurrence.body
-    exactWork (Exact.charge (32*(SourceTrace.Meter.tokenFields tokens+1)))
-    match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
-    | .error _ => throw .request
-    | .ok tree =>
-      match parameters : QuantumOperands.parameterPatterns signature.val.original with
+    WorkM (State catalogue × Nat) :=
+  let traverse : Nat → (active : List (String × String)) → (owner name caller : String) →
+      State catalogue → Option (RetainedSignature catalogue owner name caller) → WorkM (State catalogue × Nat) :=
+    Nat.rec (motive := fun _ => (active : List (String × String)) → (owner name caller : String) →
+        State catalogue → Option (RetainedSignature catalogue owner name caller) → WorkM (State catalogue × Nat))
+      (fun _ _ _ _ _ _ => (throw Finite.Error.limit : WorkM (State catalogue × Nat))) (fun _ previous active owner name caller state retained => do
+      guard (!active.contains (owner,name)) .request
+      let signatureAction : WorkM (RetainedSignature catalogue owner name caller) :=
+        match retained with
+        | some signature => pure signature
+        | none => NaturalAffine.witness (SourceRuntimeContext.readSignature sources owner name {}
+            (.source caller) (some catalogue))
+      let signature ← signatureAction
+      guard (signature.val.original.declaration.isPublic || caller == owner) .request
+      let inferred ← GenericCatalogue.lookup catalogue.toRuntimeChecked signature.val.original
+      guard (SourceEffect.visible caller owner signature.val.original.declaration.isPublic
+        signature.val.original.parsedHeader.effect inferred.inferred.inferredEffect == .unitary) .request
+      let externalPermission := caller != owner && signature.val.original.declaration.isPublic &&
+        !signature.val.original.parsedHeader.ordinaryOnly && signature.val.original.parsedHeader.effect.isSome
+      guard (!externalPermission && !inferred.inferred.quantumUse) .request
+      let tokens := signature.val.original.occurrence.body
+      exactWork (Exact.charge (32*(SourceTrace.Meter.tokenFields tokens+1)))
+      match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
       | .error _ => throw .request
-      | .ok rawPatterns =>
-        match patternsRead : rawPatterns.mapM pattern with
+      | .ok tree =>
+        match parameters : QuantumOperands.parameterPatterns signature.val.original with
         | .error _ => throw .request
-        | .ok patterns =>
-          match inputRead : (signature.val.parameters.map (·.tree)).mapM ordinaryBasis with
+        | .ok rawPatterns =>
+          match patternsRead : rawPatterns.mapM pattern with
           | .error _ => throw .request
-          | .ok inputs =>
-            match outputRead : ordinaryBasis signature.val.result.tree with
+          | .ok patterns =>
+            match inputRead : (signature.val.parameters.map (·.tree)).mapM ordinaryBasis with
             | .error _ => throw .request
-            | .ok output =>
-              let environment ← adapt (parameterTypes patterns inputs)
-              let naturals ← signature.val.naturals
-              let (built,root,basis) ← readTree catalogue signature.val
-                (fun calleeOwner calleeName callingModule state =>
-                  readFunction catalogue fuel ((owner,name)::active) calleeOwner calleeName callingModule state)
-                (tokens.length+1) naturals environment tree ⟨state,[],[]⟩
-              guard (basis == output) .request
-              let function : Semantics.SourceClassical.Function := ⟨inputs,output,patterns,built.nodes,root⟩
-              let original : Original catalogue owner name caller :=
-                ⟨signature.val,by with_reducible exact signature.property,tree,parsed,rawPatterns,parameters,
-                  patterns,patternsRead,inputs,inputRead,output,outputRead⟩
-              let definition : Definition catalogue :=
-                ⟨owner,name,caller,original,function,signature.val.sourceRows ++ naturals.sourceRows ++ built.rows⟩
-              return (⟨built.state.definitions ++ [definition]⟩,built.state.definitions.length)
-termination_by fuel
+            | .ok inputs =>
+              match outputRead : ordinaryBasis signature.val.result.tree with
+              | .error _ => throw .request
+              | .ok output =>
+                let environment ← adapt (parameterTypes patterns inputs)
+                let naturals ← signature.val.naturals
+                let (built,root,basis) ← readTree catalogue signature.val
+                  (fun calleeOwner calleeName callingModule state =>
+                    previous ((owner,name)::active) calleeOwner calleeName callingModule state none)
+                  (tokens.length+1) naturals environment tree ⟨state,[],[]⟩
+                guard (basis == output) .request
+                let function : Semantics.SourceClassical.Function := ⟨inputs,output,patterns,built.nodes,root⟩
+                let original : Original catalogue owner name caller :=
+                  ⟨signature.val,by with_reducible exact signature.property,tree,parsed,rawPatterns,parameters,
+                    patterns,patternsRead,inputs,inputRead,output,outputRead⟩
+                let definition : Definition catalogue :=
+                  ⟨owner,name,caller,original,function,signature.val.sourceRows ++ naturals.sourceRows ++ built.rows⟩
+                return (⟨built.state.definitions ++ [definition]⟩,built.state.definitions.length))
+  traverse fuel active owner name caller state retained
 
 structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) (owner name caller : String) where
   retained : Option (RetainedSignature catalogue owner name caller)

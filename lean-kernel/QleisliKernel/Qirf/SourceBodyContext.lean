@@ -113,11 +113,10 @@ def walkCalls {artifact} (root : Validity.Root) {nodes : List Nat}
     (fresh : CheckedGraph artifact (Array.replicate artifact.entries.size none) nodes root.receipts) :
     Nat → {owner name : String} → {source : SourceTrace.Checked artifact.sources owner name} →
     (request : Context) → {program : Semantics.Observation.Program} →
-    RawTrace.Checked source root.dependencies program request.positions → WorkM Unit
-  | 0,_,_,_,request,_,trace => do
+    RawTrace.Checked source root.dependencies program request.positions → WorkM Unit :=
+  Nat.rec (fun {_ _} {_} request {_} trace => do
     let calls ← collectCalls trace.sites
-    guard (calls.isEmpty && request.calls.isEmpty) .limit
-  | fuel+1,_,_,_,request,_,trace => do
+    guard (calls.isEmpty && request.calls.isEmpty) .limit) (fun _ next {_ _} {_} request {_} trace => do
     let calls ← collectCalls trace.sites
     exactWork (Exact.charge (16*(calls.length+request.calls.length+1)))
     guard (calls.length == request.calls.length) .request
@@ -125,8 +124,8 @@ def walkCalls {artifact} (root : Validity.Root) {nodes : List Nat}
       guard (site.position == requested.1) .request
       let child ← SourceBodyHeader.readCall artifact site.event requested
       let checkedBody ← checkLocal child.header root fresh site.action.program
-      walkCalls root fresh fuel child.request checkedBody.trace.val
-    return ()
+      next child.request checkedBody.trace.val
+    return ())
 
 structure Checked {artifact owner name source request}
     (header : @SourceBodyHeader.Header artifact owner name source request) (root : Validity.Root)

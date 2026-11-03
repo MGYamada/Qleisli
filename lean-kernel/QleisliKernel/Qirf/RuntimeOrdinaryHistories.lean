@@ -27,31 +27,33 @@ private def outputOrdinal (values : Values) (basis : Semantics.FiniteCarrier.Bas
   guard (layout.labels[ordinal]? == some code) .equation
   return ordinal
 
-private def result (bindings : RuntimeOwnerMap.Map) (reference : Valuation) (values : Values) :
-    Stored → SourceValue → WorkM SourceValue
-  | [],source => return source
-  | stored :: rest,source => do
-    exactWork (Exact.charge (32*(SourceRuntimeValues.valueFields source+bindings.length+values.length+1)))
-    match stored with
-    | .tuple arity =>
-      let .tuple sourceArity :: source := source | throw .request
-      guard (sourceArity == arity) .request
-      result bindings reference values rest source
-    | .quantum owner =>
-      let .owner role :: source := source | throw .request
-      let some binding := RuntimeOwnerMap.byOwner bindings role | throw .request
-      guard (binding.owner == role && binding.port == owner.port && role.basis == owner.basis) .request
-      result bindings reference values rest source
-    | .ordinary basis storage =>
-      let (subtree,source) ← lift ((SourceRuntimeValues.splitValue source).mapError fun _ => .request)
-      let (actual,expression) ← lift ((SourceRuntimeNominalValue.collapse subtree).mapError fun _ => .request)
-      guard (actual == basis) .request
-      let actual ← outputOrdinal values basis storage
-      exactWork (Exact.charge (32*(SourceRuntimeValues.expressionSize expression+
-        SourceRuntimeValues.expressionFields expression+1)*(values.length+1)))
-      let expected ← lift (readOption (Semantics.SourceOrdinary.evaluate reference expression))
-      guard (expected == actual) .equation
-      result bindings reference values rest source
+private def result (bindings : RuntimeOwnerMap.Map) (reference : Valuation) (values : Values)
+    (stored : Stored) : SourceValue → WorkM SourceValue :=
+  WellFounded.fix (measure (fun current : Stored => current.length)).wf
+    (C := fun _ => SourceValue → WorkM SourceValue) (fun current => match current with
+      | [] => fun _ source => pure source
+      | stored :: rest => fun visit source => do
+        exactWork (Exact.charge (32*(SourceRuntimeValues.valueFields source+bindings.length+values.length+1)))
+        match stored with
+        | .tuple arity =>
+          let .tuple sourceArity :: source := source | throw .request
+          guard (sourceArity == arity) .request
+          visit rest (by decreasing_tactic) source
+        | .quantum owner =>
+          let .owner role :: source := source | throw .request
+          let some binding := RuntimeOwnerMap.byOwner bindings role | throw .request
+          guard (binding.owner == role && binding.port == owner.port && role.basis == owner.basis) .request
+          visit rest (by decreasing_tactic) source
+        | .ordinary basis storage =>
+          let (subtree,source) ← lift ((SourceRuntimeValues.splitValue source).mapError fun _ => .request)
+          let (actual,expression) ← lift ((SourceRuntimeNominalValue.collapse subtree).mapError fun _ => .request)
+          guard (actual == basis) .request
+          let actual ← outputOrdinal values basis storage
+          exactWork (Exact.charge (32*(SourceRuntimeValues.expressionSize expression+
+            SourceRuntimeValues.expressionFields expression+1)*(values.length+1)))
+          let expected ← lift (readOption (Semantics.SourceOrdinary.evaluate reference expression))
+          guard (expected == actual) .equation
+          visit rest (by decreasing_tactic) source) stored
 
 def checkResult (bindings : RuntimeOwnerMap.Map) (reference : Valuation) (values : Values)
     (source : SourceValue) (stored : Stored) : WorkM Unit := do
@@ -75,16 +77,19 @@ inductive Histories (inputs : List Nat) (ssa : RuntimeOrdinaryBody.State)
       Histories inputs ssa bindings source stored (history :: rest)
 
 def readHistories (inputs : List Nat) (ssa : RuntimeOrdinaryBody.State)
-    (bindings : RuntimeOwnerMap.Map) (source : SourceValue) (stored : Stored) :
-    (histories : List Raw.StreamedInstrument.History) → WorkM (Histories inputs ssa bindings source stored histories)
-  | [] => return .nil
-  | history :: rest => do
-    let reference := RuntimeOrdinaryBody.valuation inputs ssa.measurements history.values
-    let agreement ← RuntimeOrdinarySSA.readAgreement reference history.values ssa.table
-    let output ← NaturalAffine.witness (checkResult bindings reference history.values source stored)
-    have unit : output.val = () := by cases output.val; rfl
-    let tail ← readHistories inputs ssa bindings source stored rest
-    return .cons ⟨agreement,by with_reducible simpa only [unit] using output.property⟩ tail
+    (bindings : RuntimeOwnerMap.Map) (source : SourceValue) (stored : Stored)
+    (histories : List Raw.StreamedInstrument.History) : WorkM (Histories inputs ssa bindings source stored histories) :=
+  WellFounded.fix (measure (fun current : List Raw.StreamedInstrument.History => current.length)).wf
+    (C := fun current => WorkM (Histories inputs ssa bindings source stored current))
+    (fun current => match current with
+      | [] => fun _ => pure .nil
+      | history :: rest => fun visit => do
+        let reference := RuntimeOrdinaryBody.valuation inputs ssa.measurements history.values
+        let agreement ← RuntimeOrdinarySSA.readAgreement reference history.values ssa.table
+        let output ← NaturalAffine.witness (checkResult bindings reference history.values source stored)
+        have unit : output.val = () := by cases output.val; rfl
+        let tail ← visit rest (by decreasing_tactic)
+        return .cons ⟨agreement,by with_reducible simpa only [unit] using output.property⟩ tail) histories
 
 structure Row {sources owner name signature dependencies program body prepared runtime inputs}
     (initial : @RuntimeOrdinaryInputs.Checked sources owner name signature dependencies program body prepared runtime inputs)
@@ -106,20 +111,22 @@ inductive Rows {sources owner name signature dependencies program body prepared 
 
 def readRows {sources owner name signature dependencies program body prepared runtime inputs}
     (initial : @RuntimeOrdinaryInputs.Checked sources owner name signature dependencies program body prepared runtime inputs)
-    (ssa : RuntimeOrdinaryBody.State) (bindings : RuntimeOwnerMap.Map) :
-    (assignments : List (List Bool)) → WorkM (Rows initial ssa bindings assignments)
-  | [] => return .nil
-  | assignment :: rest => do
-    let input ← RuntimeOrdinaryInputs.readRow initial assignment
-    let histories ← NaturalAffine.witness
-      (Raw.StreamedInstrument.run dependencies 65 prepared.whole.prepared.events
-        (Raw.StreamedInstrument.initial (program.classicalInputs.zip assignment)))
-    if nonempty : histories.val.isEmpty = false then
-      let checked ← readHistories input.ordinals ssa bindings (RuntimeSourceBoundary.summary body).value
-        runtime.storage histories.val
-      let tail ← readRows initial ssa bindings rest
-      return .cons ⟨input,histories.val,by with_reducible exact histories.property,nonempty,checked⟩ tail
-    else throw .equation
+    (ssa : RuntimeOrdinaryBody.State) (bindings : RuntimeOwnerMap.Map) (assignments : List (List Bool)) :
+    WorkM (Rows initial ssa bindings assignments) :=
+  WellFounded.fix (measure (fun current : List (List Bool) => current.length)).wf
+    (C := fun current => WorkM (Rows initial ssa bindings current)) (fun current => match current with
+      | [] => fun _ => pure .nil
+      | assignment :: rest => fun visit => do
+        let input ← RuntimeOrdinaryInputs.readRow initial assignment
+        let histories ← NaturalAffine.witness
+          (Raw.StreamedInstrument.run dependencies 65 prepared.whole.prepared.events
+            (Raw.StreamedInstrument.initial (program.classicalInputs.zip assignment)))
+        if nonempty : histories.val.isEmpty = false then
+          let checked ← readHistories input.ordinals ssa bindings (RuntimeSourceBoundary.summary body).value
+            runtime.storage histories.val
+          let tail ← visit rest (by decreasing_tactic)
+          return .cons ⟨input,histories.val,by with_reducible exact histories.property,nonempty,checked⟩ tail
+        else throw .equation) assignments
 
 structure Checked {sources owner name signature dependencies program body prepared runtime inputs}
     (initial : @RuntimeOrdinaryInputs.Checked sources owner name signature dependencies program body prepared runtime inputs)

@@ -152,6 +152,7 @@ theorem Definition.sound {table raw source reference actual}
   | constant bit =>
     have same : value = bit := (pure_success _ _ _ _ executed).1
     subst value
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
     rfl
   | not input operand =>
     obtain ⟨bit,present,computed⟩ := agrees input operand.expression operand.member
@@ -163,7 +164,8 @@ theorem Definition.sound {table raw source reference actual}
     subst actualBit
     have result : value = !bit := (pure_success _ _ _ _ finish).1
     subst value
-    cases bit <;> simp [Semantics.SourceOrdinary.evaluate,computed,bitValue]
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
+    cases bit <;> simp [Semantics.SourceOrdinary.evaluateStep,computed,bitValue]
   | xor leftId rightId first second =>
     obtain ⟨leftBit,leftPresent,leftComputed⟩ := agrees leftId first.expression first.member
     obtain ⟨rightBit,rightPresent,rightComputed⟩ := agrees rightId second.expression second.member
@@ -180,8 +182,9 @@ theorem Definition.sound {table raw source reference actual}
     subst actualRight
     have result : value = (leftBit != rightBit) := (pure_success _ _ _ _ finish).1
     subst value
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
     cases leftBit <;> cases rightBit <;>
-      simp [Semantics.SourceOrdinary.evaluate,leftComputed,rightComputed,bitValue]
+      simp [Semantics.SourceOrdinary.evaluateStep,leftComputed,rightComputed,bitValue]
   | and leftId rightId first second =>
     obtain ⟨leftBit,leftPresent,leftComputed⟩ := agrees leftId first.expression first.member
     obtain ⟨rightBit,rightPresent,rightComputed⟩ := agrees rightId second.expression second.member
@@ -198,8 +201,9 @@ theorem Definition.sound {table raw source reference actual}
     subst actualRight
     have result : value = (leftBit && rightBit) := (pure_success _ _ _ _ finish).1
     subst value
+    rw [Semantics.SourceOrdinary.evaluate_unfold]
     cases leftBit <;> cases rightBit <;>
-      simp [Semantics.SourceOrdinary.evaluate,leftComputed,rightComputed,bitValue]
+      simp [Semantics.SourceOrdinary.evaluateStep,leftComputed,rightComputed,bitValue]
 
 def instruction (raw : RawExpression) (output : Nat) : Instruction :=
   match raw with
@@ -247,13 +251,16 @@ inductive Sequence : Table → List Instruction → Table → Type where
   | cons {table operation operations after} (head : Action table operation)
       (tail : Sequence head.after operations after) : Sequence table (operation :: operations) after
 
-def readOps : (operations : List Instruction) → (table : Table) →
-    WorkM ((after : Table) × Sequence table operations after)
-  | [],table => return ⟨table,.nil table⟩
-  | operation :: operations,table => do
-    let head ← readAction table operation
-    let tail ← readOps operations head.after
-    return ⟨tail.1,.cons head tail.2⟩
+def readOps (operations : List Instruction) : (table : Table) →
+    WorkM ((after : Table) × Sequence table operations after) :=
+  WellFounded.fix (measure (fun current : List Instruction => sizeOf current)).wf
+    (C := fun current => (table : Table) → WorkM ((after : Table) × Sequence table current after))
+    (fun current => match current with
+      | [] => fun _ table => pure ⟨table,.nil table⟩
+      | operation :: operations => fun visit table => do
+        let head ← readAction table operation
+        let tail ← visit operations (by decreasing_tactic) head.after
+        return ⟨tail.1,.cons head tail.2⟩) operations
 
 def classicalOnly : Instruction → Bool
   | .constant .. | .not .. | .xor .. | .and .. => true

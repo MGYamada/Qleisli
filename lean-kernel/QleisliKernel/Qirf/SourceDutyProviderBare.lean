@@ -231,15 +231,37 @@ inductive Applications {sources} (catalogue : GenericCatalogue.Checked sources) 
   | cons {application rest} (checked : Application catalogue application)
       (tail : Applications catalogue rest) : Applications catalogue (application :: rest)
 
-def Applications.rows {sources catalogue applications} :
-    @Applications sources catalogue applications → List SourceRows.Row
-  | .nil => []
-  | .cons checked tail => checked.rows ++ tail.rows
+def Applications.rows {sources catalogue applications}
+    (checked : @Applications sources catalogue applications) : List SourceRows.Row :=
+  let visit : Nat → {applications : List (ApplicationSource sources)} →
+      Applications catalogue applications → List SourceRows.Row :=
+    Nat.rec (fun {_} _ => []) (fun _ next {_} applications => match applications with
+      | .nil => []
+      | .cons checked tail => checked.rows ++ next tail)
+  visit applications.length checked
 
-def Applications.rawRows {sources catalogue applications} :
-    @Applications sources catalogue applications → List SourceRows.Row
-  | .nil => []
-  | .cons checked tail => checked.rawRows ++ tail.rawRows
+def Applications.rawRows {sources catalogue applications}
+    (checked : @Applications sources catalogue applications) : List SourceRows.Row :=
+  let visit : Nat → {applications : List (ApplicationSource sources)} →
+      Applications catalogue applications → List SourceRows.Row :=
+    Nat.rec (fun {_} _ => []) (fun _ next {_} applications => match applications with
+      | .nil => []
+      | .cons checked tail => checked.rawRows ++ next tail)
+  visit applications.length checked
+
+theorem Applications.rows_nil {sources} (catalogue : GenericCatalogue.Checked sources) :
+    (Applications.nil : Applications catalogue []).rows = [] := rfl
+
+theorem Applications.rows_cons {sources catalogue application rest}
+    (head : @Application sources catalogue application) (tail : Applications catalogue rest) :
+    (Applications.cons head tail).rows = head.rows ++ tail.rows := rfl
+
+theorem Applications.rawRows_nil {sources} (catalogue : GenericCatalogue.Checked sources) :
+    (Applications.nil : Applications catalogue []).rawRows = [] := rfl
+
+theorem Applications.rawRows_cons {sources catalogue application rest}
+    (head : @Application sources catalogue application) (tail : Applications catalogue rest) :
+    (Applications.cons head tail).rawRows = head.rawRows ++ tail.rawRows := rfl
 
 theorem Applications.rows_members {sources catalogue applications}
     (checked : @Applications sources catalogue applications) (row : SourceRows.Row) :
@@ -247,18 +269,22 @@ theorem Applications.rows_members {sources catalogue applications}
   induction checked with
   | nil => rfl
   | cons head tail ih =>
-    simp only [Applications.rows,Applications.rawRows,List.mem_append,Application.rows_members,ih]
+    simp only [Applications.rows_cons,Applications.rawRows_cons,List.mem_append,Application.rows_members,ih]
 
 /-- Retain each actual forwarding edge under its original source policy.
 This bounded reader still refuses Basis/Nat/group forwarding edges. -/
-def readApplications {sources} (catalogue : GenericCatalogue.Checked sources) :
-    (applications : List (ApplicationSource sources)) → WorkM (Applications catalogue applications)
-  | [] => pure .nil
-  | application :: rest => do
-    exactWork (Exact.charge 8)
-    let checked ← readApplication catalogue application
-    let tail ← readApplications catalogue rest
-    return .cons checked tail
+def readApplications {sources} (catalogue : GenericCatalogue.Checked sources)
+    (applications : List (ApplicationSource sources)) : WorkM (Applications catalogue applications) :=
+  let visit : Nat → (applications : List (ApplicationSource sources)) → WorkM (Applications catalogue applications) :=
+    Nat.rec (fun _ => throw .limit) (fun _ next applications => do
+      match applications with
+      | [] => pure .nil
+      | application :: rest => do
+        exactWork (Exact.charge 8)
+        let checked ← readApplication catalogue application
+        let tail ← next rest
+        return .cons checked tail)
+  visit (applications.length+1) applications
 
 structure Checked {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : Type where

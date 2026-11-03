@@ -1391,19 +1391,34 @@ inductive AllInferred {sources} (records : List (BodyRecord sources)) : List (Bo
   | cons {body rest} (head : Inferred records body) (tail : AllInferred records rest) : AllInferred records (body :: rest)
 
 private def inferAllPrepared {sources} (records : List (BodyRecord sources))
-    (prepared : SourceEffectClosure.Prepared (effectEntries records)) :
-    (pending : List (BodyRecord sources)) → WorkM (AllInferred records pending)
-  | [] => pure .nil
-  | body :: rest => do pure (.cons (← inferPrepared records prepared body) (← inferAllPrepared records prepared rest))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (pending : List (BodyRecord sources)) :
+    WorkM (AllInferred records pending) :=
+  (Nat.rec (motive := fun fuel => (pending : List (BodyRecord sources)) → pending.length ≤ fuel →
+      WorkM (AllInferred records pending))
+    (fun pending bound => match pending with
+      | [] => pure .nil
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next pending bound => match pending with
+      | [] => pure .nil
+      | body :: rest => do
+        pure (.cons (← inferPrepared records prepared body) (← next rest (Nat.le_of_succ_le_succ bound))))
+    pending.length) pending (Nat.le_refl _)
 
 private def inferAllCohort {sources} (records : List (BodyRecord sources))
-    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (cohort : SourceEffectClosure.Cohort prepared) :
-    (pending : List (BodyRecord sources)) → SourceEffectClosure.Closures prepared (pending.map BodyRecord.id) →
-      WorkM (AllInferred records pending)
-  | [],.nil => pure .nil
-  | body :: rest,.cons head tail => do
-    pure (.cons (← inferClosure records prepared (some cohort) body head)
-      (← inferAllCohort records prepared cohort rest tail))
+    (prepared : SourceEffectClosure.Prepared (effectEntries records)) (cohort : SourceEffectClosure.Cohort prepared)
+    (pending : List (BodyRecord sources)) (values : SourceEffectClosure.Closures prepared (pending.map BodyRecord.id)) :
+    WorkM (AllInferred records pending) :=
+  (Nat.rec (motive := fun fuel => (pending : List (BodyRecord sources)) → pending.length ≤ fuel →
+      SourceEffectClosure.Closures prepared (pending.map BodyRecord.id) → WorkM (AllInferred records pending))
+    (fun pending bound actual => match pending,actual with
+      | [],.nil => pure .nil
+      | _ :: rest,.cons .. => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next pending bound actual => match pending,actual with
+      | [],.nil => pure .nil
+      | body :: rest,.cons head tail => do
+        pure (.cons (← inferClosure records prepared (some cohort) body head)
+          (← next rest (Nat.le_of_succ_le_succ bound) tail)))
+    pending.length) pending (Nat.le_refl _) values
 
 /-- Every original body root is checked once in its ordered cohort. Each Need
 still performs its own exact-root lookup and effect/classical guard. Arbitrary
@@ -1425,12 +1440,18 @@ def inferAll {sources} (records : List (BodyRecord sources))
       inferAllCohort records prepared cohort (first :: rest) cells
     else inferAllPrepared records prepared (first :: rest)
 
-def AllInferred.get {sources} {records : List (BodyRecord sources)} :
-    {pending : List (BodyRecord sources)} → AllInferred records pending → (index : Fin pending.length) →
-      Inferred records (pending[index.val]'index.isLt)
-  | [],.nil,index => False.elim (Nat.not_lt_zero index.val index.isLt)
-  | _ :: _,.cons head _,⟨0,_⟩ => head
-  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,Nat.lt_of_succ_lt_succ bound⟩
+def AllInferred.get {sources} {records : List (BodyRecord sources)} {pending : List (BodyRecord sources)}
+    (values : AllInferred records pending) (index : Fin pending.length) :
+    Inferred records (pending[index.val]'index.isLt) :=
+  (Nat.rec (motive := fun index => (pending : List (BodyRecord sources)) → AllInferred records pending →
+      (bound : index < pending.length) → Inferred records (pending[index]'bound))
+    (fun pending actual bound => match pending,actual with
+      | [],.nil => False.elim (Nat.not_lt_zero 0 bound)
+      | _ :: _,.cons head _ => head)
+    (fun index next pending actual bound => match pending,actual with
+      | [],.nil => False.elim (Nat.not_lt_zero (index+1) bound)
+      | _ :: rest,.cons _ tail => next rest tail (Nat.lt_of_succ_lt_succ bound))
+    index.val) pending values index.isLt
 
 def Inferred.inferredEffect {sources records body} (inferred : @Inferred sources records body) : Semantics.Raw.Effect :=
   inferred.closure.inferred

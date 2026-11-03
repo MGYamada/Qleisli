@@ -79,18 +79,23 @@ theorem Covers.literal {dependencies program block nodes}
     (nodes.flatMap operations).map Semantics.Observation.Op.pure = block.operations := by
   simpa only [List.drop_length,List.append_nil,List.drop_zero] using cover.literalRemaining
 
-private def readCover {dependencies program block} :
-    (nodes : List (Node dependencies program block)) → (cursor : Nat) →
-    WorkM (PLift (Covers cursor nodes block.operations.length))
-  | [],cursor =>
-    if finished : cursor = block.operations.length then
-      pure ⟨by simpa only [finished] using (Covers.nil (block := block) cursor)⟩
-    else throw .request
-  | node::nodes,cursor => do
-    if atCursor : (region node).start = cursor then
-      let rest ← readCover nodes (cursor+(region node).count)
-      return ⟨.cons atCursor rest.down⟩
-    else throw .request
+private def readCover {dependencies program block}
+    (nodes : List (Node dependencies program block)) (cursor : Nat) :
+    WorkM (PLift (Covers cursor nodes block.operations.length)) :=
+  let visit : Nat → (nodes : List (Node dependencies program block)) → (cursor : Nat) →
+      WorkM (PLift (Covers cursor nodes block.operations.length)) :=
+    Nat.rec (fun _ _ => throw .limit) (fun _ next nodes cursor => do
+      match nodes with
+      | [] =>
+        if finished : cursor = block.operations.length then
+          pure ⟨by simpa only [finished] using (Covers.nil (block := block) cursor)⟩
+        else throw .request
+      | node :: nodes =>
+        if atCursor : (region node).start = cursor then
+          let rest ← next nodes (cursor+(region node).count)
+          return ⟨.cons atCursor rest.down⟩
+        else throw .request)
+  visit (nodes.length+1) nodes cursor
 
 structure Partition {dependencies program} (block : RuntimeInterval.Block dependencies program)
     (nodes : List (Node dependencies program block)) : Type where

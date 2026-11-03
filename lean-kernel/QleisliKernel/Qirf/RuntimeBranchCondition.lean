@@ -11,10 +11,13 @@ open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes RuntimeOrdinar
 abbrev Path := RuntimeOrdinaryBody.CallPath
 abbrev Measurement := RuntimeOrdinaryBody.Measurement
 
-def rootEntries {sources rootOwner rootName owner name} :
-    Path sources rootOwner rootName owner name → List (Semantics.FiniteCarrier.Basis × Expression)
-  | .root body => body.checked.summary.parameterValues.flatMap SourceRuntimeValues.ordinary
-  | .named _ _ _ parent => rootEntries parent
+def rootEntries {sources rootOwner rootName owner name}
+    (path : Path sources rootOwner rootName owner name) : List (Semantics.FiniteCarrier.Basis × Expression) :=
+  WellFounded.fix (measure (fun packed : RuntimeOrdinaryBody.CallPath.Packed sources rootOwner rootName =>
+      sizeOf packed.2.2)).wf (C := fun _ => List (Semantics.FiniteCarrier.Basis × Expression))
+    (fun packed => match packed with
+      | ⟨_,_,.root body⟩ => fun _ => body.checked.summary.parameterValues.flatMap SourceRuntimeValues.ordinary
+      | ⟨_,_,.named _ _ _ parent⟩ => fun visit => visit ⟨_,_,parent⟩ (by decreasing_tactic)) ⟨owner,name,path⟩
 
 structure Inputs {sources rootOwner rootName owner name}
     (path : Path sources rootOwner rootName owner name) where
@@ -41,20 +44,18 @@ def readInputs {sources rootOwner rootName owner name}
 
 /-- No new measurement-count maximum is introduced. The actual row generation
 reserves its copies before each doubling and stops on the existing work error. -/
-def bitRows : Nat → List (List Bool)
-  | 0 => [[]]
-  | count+1 => (bitRows count).flatMap fun row => [false :: row,true :: row]
+def bitRows : Nat → List (List Bool) :=
+  Nat.rec [[]] (fun _ previous => previous.flatMap fun row => [false :: row,true :: row])
 
-private def readBitRows : (count : Nat) → WorkM {rows : List (List Bool) // rows = bitRows count}
-  | 0 => pure ⟨[[]],rfl⟩
-  | count+1 => do
-    let previous ← readBitRows count
+private def readBitRows : (count : Nat) → WorkM {rows : List (List Bool) // rows = bitRows count} :=
+  Nat.rec (pure ⟨[[]],rfl⟩) (fun count previous => do
+    let previous ← previous
     exactWork (Exact.charge (32*(count+2)*(previous.val.length+1)))
-    return ⟨previous.val.flatMap (fun row => [false :: row,true :: row]),by rw [previous.property]; rfl⟩
+    return ⟨previous.val.flatMap (fun row => [false :: row,true :: row]),by rw [previous.property]; rfl⟩)
 
 theorem bitRows_complete (bits : List Bool) : bits ∈ bitRows bits.length := by
   induction bits with
-  | nil => simp [bitRows]
+  | nil => exact List.mem_cons_self
   | cons bit bits ih =>
     apply List.mem_flatMap.mpr
     refine ⟨bits,ih,?_⟩

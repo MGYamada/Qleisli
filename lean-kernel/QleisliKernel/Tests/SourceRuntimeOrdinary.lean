@@ -23,6 +23,12 @@ private def owner : Semantics.SourceOwners.Owner := ⟨2,[.bit]⟩
 #guard evaluate (values [5]) (.field 2 3 (.input 0)) = some 2
 #guard evaluate (values [1]) (.field 0 2 (.input 0)) = none
 
+-- A flat source can produce a chain deeper than the parser's nesting limit.
+private def negations : Expression := (List.range 129).foldl (fun e _ => .not e) (.bit false)
+#guard evaluate values negations = some 1
+#guard (SourceRuntimeValues.expressionSize negations,SourceRuntimeValues.expressionFields negations) = (130,130)
+#guard (SourceRuntimeValues.expressionTransport site [] [] negations).toOption = some negations
+
 private def result : Value :=
   [.tuple 3,.ordinary [.bit] (.input 0),.ordinary [.bits 0] (.ordinal 0),.owner owner]
 #guard (QleisliKernel.SourceTypes.SourceRuntimeOrdinary.extract (values [1]) result).toOption =

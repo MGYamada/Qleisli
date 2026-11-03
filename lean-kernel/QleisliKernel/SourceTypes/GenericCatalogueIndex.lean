@@ -63,17 +63,16 @@ def Selection.entry {sources catalogue prepared owner name original}
 
 private def search {sources catalogue owner name} (prepared : @Prepared sources catalogue)
     (original : OrdinarySignature.Original sources owner name) :
-    List (Fin prepared.rows.size) → WorkM (Selection prepared original)
-  | [] => throw .request
-  | index :: rest => do
-    let row := prepared.rows[index.val]'index.isLt
-    exactWork (Exact.charge (16*(row.owner.utf8ByteSize+row.name.utf8ByteSize+
-      owner.utf8ByteSize+name.utf8ByteSize+8)))
-    if sameOwner : row.owner = owner then
-      if sameName : row.name = name then
-        return ⟨index,sameOwner,sameName,(row.at sameOwner sameName).original.sameSource original⟩
-      else search prepared original rest
-    else search prepared original rest
+    List (Fin prepared.rows.size) → WorkM (Selection prepared original) :=
+  List.foldr (fun index next => do
+      let row := prepared.rows[index.val]'index.isLt
+      exactWork (Exact.charge (16*(row.owner.utf8ByteSize+row.name.utf8ByteSize+
+        owner.utf8ByteSize+name.utf8ByteSize+8)))
+      if sameOwner : row.owner = owner then
+        if sameName : row.name = name then
+          return ⟨index,sameOwner,sameName,(row.at sameOwner sameName).original.sameSource original⟩
+        else next
+      else next) (throw .request)
 
 def read {sources catalogue owner name} (prepared : @Prepared sources catalogue)
     (original : OrdinarySignature.Original sources owner name) : WorkM (Selection prepared original) := do

@@ -150,18 +150,20 @@ private def readArguments {functions} (metadata : Metadata functions) (arguments
   guard (bases.all stored.contains) .request
 
 private def readList {α β : Type} (reference : α → Except String β)
-    (action : (value : α) → WorkM (Result (reference value))) :
-    (values : List α) → WorkM (Result (values.mapM reference))
-  | [] => pure ⟨[],rfl⟩
-  | first :: rest => do
-    exactWork (Exact.charge 32)
-    let head ← action first
-    let tail ← readList reference action rest
-    return ⟨head.val :: tail.val,by
-      simp only [List.mapM_cons]
-      exact (bindResult head (fun value => do
-        let rest ← rest.mapM reference
-        pure (value :: rest))).trans (bindResult tail (fun rest => .ok (head.val :: rest)))⟩
+    (action : (value : α) → WorkM (Result (reference value))) (values : List α) :
+    WorkM (Result (values.mapM reference)) :=
+  WellFounded.fix (measure (fun current : List α => current.length)).wf
+    (C := fun current => WorkM (Result (current.mapM reference))) (fun current => match current with
+      | [] => fun _ => pure ⟨[],rfl⟩
+      | first :: rest => fun visit => do
+        exactWork (Exact.charge 32)
+        let head ← action first
+        let tail ← visit rest (by decreasing_tactic)
+        return ⟨head.val :: tail.val,by
+          simp only [List.mapM_cons]
+          exact (bindResult head (fun value => do
+            let rest ← rest.mapM reference
+            pure (value :: rest))).trans (bindResult tail (fun rest => .ok (head.val :: rest)))⟩) values
 
 /-- Each recursive call carries the exact independent child equation. The
 reservation covers the literal node lookup, complete current value frame,

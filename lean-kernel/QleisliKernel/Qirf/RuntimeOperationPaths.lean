@@ -67,21 +67,31 @@ searches by name, descriptor, width or matrix to recover a supplying context. -/
 def Bound.mapM {artifact : Artifact} {context description graph root} {α : Type}
     (visit : {index : Nat} → {request : Request} →
       (header : @RuntimeProviderHeader.Header artifact context description graph index request) →
-      (demand : StaticOperation.Paths) → RuntimeProviderPaths.Checked header root demand → WorkM α) :
-    {demands : List (Nat × StaticOperation.Paths)} → {indices : List Nat} → {requests : List Request} →
-    {headers : RuntimeProviderHeaders.Reads artifact graph indices requests} →
-    Bound graph root demands headers → WorkM (List α)
-  | _,_,_,_,.nil => pure []
-  | _,_,_,_,.cons (header := header) (demand := demand) head rest => do
-    let first ← visit header demand head
-    let tail ← rest.mapM visit
-    return first :: tail
+      (demand : StaticOperation.Paths) → RuntimeProviderPaths.Checked header root demand → WorkM α)
+    {demands : List (Nat × StaticOperation.Paths)} {indices : List Nat} {requests : List Request}
+    {headers : RuntimeProviderHeaders.Reads artifact graph indices requests}
+    (bound : Bound graph root demands headers) : WorkM (List α) :=
+  let collect : Nat → {demands : List (Nat × StaticOperation.Paths)} → {indices : List Nat} →
+      {requests : List Request} → {headers : RuntimeProviderHeaders.Reads artifact graph indices requests} →
+      Bound graph root demands headers → WorkM (List α) :=
+    Nat.rec (fun {_ _ _ _} _ => pure []) (fun _ next {_ _ _ _} bound => do
+      match bound with
+      | .nil => pure []
+      | .cons (header := header) (demand := demand) head rest => do
+        let first ← visit header demand head
+        let values ← next rest
+        return first :: values)
+  collect requests.length bound
 
 def Bound.logicals {artifact : Artifact} {context description graph root demands indices requests headers}
     (bound : @Bound artifact context description graph root demands indices requests headers) : List Semantics.Exact.Matrix :=
-  match bound with
-  | .nil => []
-  | .cons head rest => head.ir.original.prepared.equations.action :: rest.logicals
+  let visit : Nat → {demands : List (Nat × StaticOperation.Paths)} → {indices : List Nat} →
+      {requests : List Request} → {headers : RuntimeProviderHeaders.Reads artifact graph indices requests} →
+      Bound graph root demands headers → List Semantics.Exact.Matrix :=
+    Nat.rec (fun {_ _ _ _} _ => []) (fun _ next {_ _ _ _} bound => match bound with
+      | .nil => []
+      | .cons head rest => head.ir.original.prepared.equations.action :: next rest)
+  visit requests.length bound
 
 theorem Bound.allOccurrences {artifact : Artifact} {context description graph root demands indices requests headers}
     (bound : @Bound artifact context description graph root demands indices requests headers) :

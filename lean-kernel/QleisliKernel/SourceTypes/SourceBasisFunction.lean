@@ -23,22 +23,23 @@ def boundValue (basis : Basis) : Except String (Value × List Basis) := do
   return (value,(ordinary value).map Prod.fst)
 
 private def freeVariables (inputTypes boundTypes : List Basis) : Expression →
-    Except String (List (Expression × Basis))
-  | .input ordinal => do
-    let some basis := inputTypes[ordinal]? | throw "unknown captured ordinary input"
-    return [(.input ordinal,basis)]
-  | .basisInput ordinal => do
-    let some _ := boundTypes[ordinal]? | throw "unknown coherent basis input"
-    return []
-  | expression@(.measured ..) => pure [(expression,[.bit])]
-  | .unit | .bit _ | .ordinal _ => pure []
-  | .project .. => throw "coherent nominal field projection needs its original field contract"
-  | .not value | .field _ _ value | .equalsOrdinal _ value => freeVariables inputTypes boundTypes value
-  | .xor first second | .and first second | .combine _ first second => do
-    return (← freeVariables inputTypes boundTypes first) ++ (← freeVariables inputTypes boundTypes second)
-  | .choose condition thenValue elseValue => do
-    return (← freeVariables inputTypes boundTypes condition) ++
-      (← freeVariables inputTypes boundTypes thenValue) ++ (← freeVariables inputTypes boundTypes elseValue)
+    Except String (List (Expression × Basis)) :=
+  Semantics.SourceOrdinary.Expression.descend (motive := fun _ => Except String (List (Expression × Basis)))
+    (fun e => match e with
+    | .input ordinal => fun _ => do
+      let some basis := inputTypes[ordinal]? | throw "unknown captured ordinary input"
+      return [(.input ordinal,basis)]
+    | .basisInput ordinal => fun _ => do
+      let some _ := boundTypes[ordinal]? | throw "unknown coherent basis input"
+      return []
+    | expression@(.measured ..) => fun _ => pure [(expression,[.bit])]
+    | .unit | .bit _ | .ordinal _ => fun _ => pure []
+    | .project .. => fun _ => throw "coherent nominal field projection needs its original field contract"
+    | .not x | .field _ _ x | .equalsOrdinal _ x => fun child => child x (by decreasing_tactic)
+    | .xor a b | .and a b | .combine _ a b => fun child => do
+      return (← child a (by decreasing_tactic)) ++ (← child b (by decreasing_tactic))
+    | .choose c t f => fun child => do
+      return (← child c (by decreasing_tactic)) ++ (← child t (by decreasing_tactic)) ++ (← child f (by decreasing_tactic)))
 
 private def labels (bases : List Basis) (bits : List Bool) : Except String (List Nat) := do
   let (values,rest) ← bases.foldlM (fun (values,rest) basis => do

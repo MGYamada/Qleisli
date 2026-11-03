@@ -21,27 +21,47 @@ inductive Labels (sources : Sources) (caller : String) (scope : List String) (ba
   | cons {arm rest} (label : Label sources caller scope basis arm)
       (tail : Labels sources caller scope basis rest) : Labels sources caller scope basis (arm :: rest)
 
-def Labels.ordinals {sources caller scope basis} :
-    {arms : List SourceMatchSyntax.Arm} → Labels sources caller scope basis arms → List Nat
-  | _,.nil => []
-  | _,.cons label rest => label.reference.ordinal :: rest.ordinals
+def Labels.ordinals {sources caller scope basis} {arms : List SourceMatchSyntax.Arm}
+    (labels : Labels sources caller scope basis arms) : List Nat :=
+  (Nat.rec (motive := fun fuel => (arms : List SourceMatchSyntax.Arm) → arms.length ≤ fuel →
+      Labels sources caller scope basis arms → List Nat)
+    (fun _ bound actual => match actual with
+      | .nil => []
+      | @Labels.cons _ _ _ _ _ rest _ _ => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next _ bound actual => match actual with
+      | .nil => []
+      | .cons label rest => label.reference.ordinal :: next _ (Nat.le_of_succ_le_succ bound) rest)
+    arms.length) arms (Nat.le_refl _) labels
 
-def Labels.sourceRows {sources caller scope basis} :
-    {arms : List SourceMatchSyntax.Arm} → Labels sources caller scope basis arms → List (String × String)
-  | _,.nil => []
-  | _,.cons label rest => label.rows ++ rest.sourceRows
+def Labels.sourceRows {sources caller scope basis} {arms : List SourceMatchSyntax.Arm}
+    (labels : Labels sources caller scope basis arms) : List (String × String) :=
+  (Nat.rec (motive := fun fuel => (arms : List SourceMatchSyntax.Arm) → arms.length ≤ fuel →
+      Labels sources caller scope basis arms → List (String × String))
+    (fun _ bound actual => match actual with
+      | .nil => []
+      | @Labels.cons _ _ _ _ _ rest _ _ => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next _ bound actual => match actual with
+      | .nil => []
+      | .cons label rest => label.rows ++ next _ (Nat.le_of_succ_le_succ bound) rest)
+    arms.length) arms (Nat.le_refl _) labels
 
 private def readLabels (sources : Sources) (caller : String) (helpers : List NaturalHelpers.Entry)
-    (scope : List String) (basis : Basis) :
-    (arms : List SourceMatchSyntax.Arm) → WorkM (Labels sources caller scope basis arms)
-  | [] => pure .nil
-  | arm :: rest => do
-    let reference ← SourceNominal.readVariant sources caller scope arm.label
-    if sameType : reference.nominal.query.basis = basis then
-      let rows ← NaturalRows.typeRead sources caller helpers scope
-        (arm.label.typeTokens.map (·.text)) reference.nominal.query
-      return .cons ⟨reference,sameType,rows⟩ (← readLabels sources caller helpers scope basis rest)
-    else throw .request
+    (scope : List String) (basis : Basis) (arms : List SourceMatchSyntax.Arm) :
+    WorkM (Labels sources caller scope basis arms) :=
+  (Nat.rec (motive := fun fuel => (arms : List SourceMatchSyntax.Arm) → arms.length ≤ fuel →
+      WorkM (Labels sources caller scope basis arms))
+    (fun arms bound => match arms with
+      | [] => pure .nil
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next arms bound => match arms with
+      | [] => pure .nil
+      | arm :: rest => do
+        let reference ← SourceNominal.readVariant sources caller scope arm.label
+        if sameType : reference.nominal.query.basis = basis then
+          let rows ← NaturalRows.typeRead sources caller helpers scope
+            (arm.label.typeTokens.map (·.text)) reference.nominal.query
+          return .cons ⟨reference,sameType,rows⟩ (← next rest (Nat.le_of_succ_le_succ bound))
+        else throw .request) arms.length) arms (Nat.le_refl _)
 
 structure Checked (sources : Sources) (caller : String) (scope : List String)
     {tokens : List LocatedToken} (written : SourceMatchSyntax.Checked tokens) (basis : Basis) where

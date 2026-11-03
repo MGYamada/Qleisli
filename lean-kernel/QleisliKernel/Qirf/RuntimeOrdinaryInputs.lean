@@ -21,43 +21,48 @@ def codeBit (labels : List Nat) (coordinate : Nat) (logical : Expression) : Expr
   labels.zipIdx.foldr (fun (code,ordinal) rest =>
     .choose (.equalsOrdinal ordinal logical) (.bit ((code / 2^coordinate) % 2 == 1)) rest) (.bit false)
 
-private def align (bindings : RuntimeOwnerMap.Map) :
-    Stored → SourceRuntimeValues.Value → WorkM (Table × SourceRuntimeValues.Value)
-  | [],source => return ([],source)
-  | stored :: rest,source => do
-    exactWork (Exact.charge (32*(SourceRuntimeValues.valueFields source+bindings.length+1)))
-    match stored with
-    | .tuple arity =>
-      let .tuple sourceArity :: source := source | throw .request
-      guard (sourceArity == arity) .request
-      align bindings rest source
-    | .quantum owner =>
-      let .owner role :: source := source | throw .request
-      let some binding := RuntimeOwnerMap.byOwner bindings role | throw .request
-      guard (binding.owner == role && binding.port == owner.port && role.basis == owner.basis) .request
-      align bindings rest source
-    | .ordinary basis storage =>
-      let (subtree,source) ← lift ((SourceRuntimeValues.splitValue source).mapError fun _ => .request)
-      let (actual,logical) ← lift ((SourceRuntimeNominalValue.collapse subtree).mapError fun _ => .request)
-      guard (actual == basis) .request
-      let layout ← FiniteCarrier.read basis
-      let ids ← OrdinaryFamily.storageIds [storage]
-      guard (ids.length == layout.bits) .request
-      exactWork (Exact.charge (32*(layout.labels.length+1)*(layout.bits+1)*
-        (SourceRuntimeValues.expressionFields logical+SourceRuntimeValues.expressionSize logical+1)))
-      let current := ids.zipIdx.map fun (id,coordinate) => (id,codeBit layout.labels coordinate logical)
-      let (tail,source) ← align bindings rest source
-      return (current ++ tail,source)
+private def align (bindings : RuntimeOwnerMap.Map) (stored : Stored) :
+    SourceRuntimeValues.Value → WorkM (Table × SourceRuntimeValues.Value) :=
+  WellFounded.fix (measure (fun current : Stored => sizeOf current)).wf
+    (C := fun _ => SourceRuntimeValues.Value → WorkM (Table × SourceRuntimeValues.Value))
+    (fun current => match current with
+      | [] => fun _ source => pure ([],source)
+      | stored :: rest => fun visit source => do
+        exactWork (Exact.charge (32*(SourceRuntimeValues.valueFields source+bindings.length+1)))
+        match stored with
+        | .tuple arity =>
+          let .tuple sourceArity :: source := source | throw .request
+          guard (sourceArity == arity) .request
+          visit rest (by decreasing_tactic) source
+        | .quantum owner =>
+          let .owner role :: source := source | throw .request
+          let some binding := RuntimeOwnerMap.byOwner bindings role | throw .request
+          guard (binding.owner == role && binding.port == owner.port && role.basis == owner.basis) .request
+          visit rest (by decreasing_tactic) source
+        | .ordinary basis storage =>
+          let (subtree,source) ← lift ((SourceRuntimeValues.splitValue source).mapError fun _ => .request)
+          let (actual,logical) ← lift ((SourceRuntimeNominalValue.collapse subtree).mapError fun _ => .request)
+          guard (actual == basis) .request
+          let layout ← FiniteCarrier.read basis
+          let ids ← OrdinaryFamily.storageIds [storage]
+          guard (ids.length == layout.bits) .request
+          exactWork (Exact.charge (32*(layout.labels.length+1)*(layout.bits+1)*
+            (SourceRuntimeValues.expressionFields logical+SourceRuntimeValues.expressionSize logical+1)))
+          let current := ids.zipIdx.map fun (id,coordinate) => (id,codeBit layout.labels coordinate logical)
+          let (tail,source) ← visit rest (by decreasing_tactic) source
+          return (current ++ tail,source)) stored
 
-def alignInputs (bindings : RuntimeOwnerMap.Map) :
-    List SourceRuntimeValues.Value → List Stored → WorkM Table
-  | [],[] => pure []
-  | source :: sources,stored :: stores => do
-    let (current,rest) ← align bindings stored source
-    guard rest.isEmpty .request
-    let tail ← alignInputs bindings sources stores
-    return current ++ tail
-  | _,_ => throw .request
+def alignInputs (bindings : RuntimeOwnerMap.Map) (sources : List SourceRuntimeValues.Value) :
+    List Stored → WorkM Table :=
+  WellFounded.fix (measure (fun current : List SourceRuntimeValues.Value => sizeOf current)).wf
+    (C := fun _ => List Stored → WorkM Table) (fun current => match current with
+      | [] => fun _ stores => match stores with | [] => pure [] | _ => throw .request
+      | source :: sources => fun visit stores => do
+        let stored :: stores := stores | throw .request
+        let (current,rest) ← align bindings stored source
+        guard rest.isEmpty .request
+        let tail ← visit sources (by decreasing_tactic) stores
+        return current ++ tail) sources
 
 structure Field (entry : Basis × Expression) where
   ordinal : Nat
@@ -74,18 +79,20 @@ def readFields (entries : List (Basis × Expression)) : WorkM Fields :=
       return ⟨entry,⟨index,seeded,layout.val,by with_reducible exact layout.property⟩⟩
     else throw .request
 
-def decode : Fields → List Bool → WorkM (List Nat)
-  | [],bits => do
-    guard bits.isEmpty .request
-    pure []
-  | field :: fields,bits => do
-    exactWork (Exact.charge (32*(field.2.layout.labels.length+bits.length+1)))
-    guard (field.2.layout.bits ≤ bits.length) .request
-    let code := Semantics.OrdinaryValue.littleEndian (bits.take field.2.layout.bits)
-    let ordinal := field.2.layout.labels.idxOf code
-    guard (field.2.layout.labels[ordinal]? == some code) .equation
-    let tail ← decode fields (bits.drop field.2.layout.bits)
-    return ordinal :: tail
+def decode (fields : Fields) : List Bool → WorkM (List Nat) :=
+  WellFounded.fix (measure (fun current : Fields => sizeOf current)).wf
+    (C := fun _ => List Bool → WorkM (List Nat)) (fun current => match current with
+      | [] => fun _ bits => do
+        guard bits.isEmpty .request
+        pure []
+      | field :: fields => fun visit bits => do
+        exactWork (Exact.charge (32*(field.2.layout.labels.length+bits.length+1)))
+        guard (field.2.layout.bits ≤ bits.length) .request
+        let code := Semantics.OrdinaryValue.littleEndian (bits.take field.2.layout.bits)
+        let ordinal := field.2.layout.labels.idxOf code
+        guard (field.2.layout.labels[ordinal]? == some code) .equation
+        let tail ← visit fields (by decreasing_tactic) (bits.drop field.2.layout.bits)
+        return ordinal :: tail) fields
 
 structure Checked {sources owner name signature dependencies program}
     (body : @SourceRuntimeTrace.Body sources owner name signature)

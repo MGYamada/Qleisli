@@ -55,9 +55,8 @@ def Header.roots {artifact context description graph index request}
 /-- Relevance follows the actual original queries. Nested named/basis/transform
 body queries and selection leaves must still be recursively discovered by the
 complete worklist before the final graph is checked. -/
-def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources caller → List (String × String)
-  | 0,_ => []
-  | fuel+1,event => match event with
+def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources caller → List (String × String) :=
+  Nat.rec (fun _ => []) (fun _ next event => match event with
     | .primitive event => CallName.sourceRows event.candidate
     | .phase event => CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows
     | .selection _ _ _ _ _ _ naturals .. => naturals.sourceRows
@@ -65,17 +64,17 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
     | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
     | .basis event => event.staticRows
     | .conditional event left right => event.naturals.sourceRows ++ event.thenArm.staticRows ++
-        event.elseArm.staticRows ++ left.flatMap (eventRows fuel) ++ right.flatMap (eventRows fuel)
+        event.elseArm.staticRows ++ left.flatMap next ++ right.flatMap next
     | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
         event.counts.flatMap (·.checked.rows)
     | .staticConditional event children => event.generic.sourceRows ++
-        event.selection.naturals.sourceRows ++ event.selected.2.staticRows ++ children.flatMap (eventRows fuel)
+        event.selection.naturals.sourceRows ++ event.selected.2.staticRows ++ children.flatMap next
     | .matching event children => event.generic.sourceRows ++ event.naturals.sourceRows ++
         event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows) ++
-        children.flatMap (fun arm => arm.flatMap (eventRows fuel))
+        children.flatMap (fun arm => arm.flatMap next)
     | .computed event children => event.generic.sourceRows ++
-        (SourceRuntimeContext.Event.computed event children).staticRows ++ children.flatMap (eventRows fuel)
-    | .registerPrimitive event => (SourceRuntimeContext.Event.registerPrimitive event).staticRows
+        (SourceRuntimeContext.Event.computed event children).staticRows ++ children.flatMap next
+    | .registerPrimitive event => (SourceRuntimeContext.Event.registerPrimitive event).staticRows)
 
 def Header.rows {artifact context description graph index request}
     (header : @Header artifact context description graph index request) : List (String × String) :=

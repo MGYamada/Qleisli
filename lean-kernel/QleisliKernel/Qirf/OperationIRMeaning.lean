@@ -89,15 +89,14 @@ def readNode {sources} (metadata : StaticOperation.Result sources) (node : Node)
 
 private def visit {sources context description}
     (graph : StaticOperation.CheckedGraph sources context description) (providers : List Matrix) :
-    Nat → Nat → Nat → WorkM (Matrix × Nat)
-  | 0,_,_ => throw .limit
-  | fuel+1,index,nextProvider => do
+    Nat → Nat → Nat → WorkM (Matrix × Nat) :=
+  Nat.rec (fun _ _ => throw .limit) (fun _ next index nextProvider => do
     let node ← lift (readOption description.nodes[index]?)
     let metadata ← lift (readOption graph.results[index]?)
     let (children,nextProvider) ← node.children.foldlM (fun (children,nextProvider) child => do
-      let (value,nextProvider) ← visit graph providers fuel child nextProvider
+      let (value,nextProvider) ← next child nextProvider
       return (children ++ [value],nextProvider)) ([],nextProvider)
-    readNode metadata node children providers nextProvider
+    readNode metadata node children providers nextProvider)
 
 /-- Every child edge is visited, including shared DAG children, providers in a
 zero power and every unused formal actual. The existing 4096-node TREE profile

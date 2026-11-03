@@ -53,16 +53,15 @@ def site (value : Protocol.QmatchV5.Site) : Value := record "qmatch-site"
   [CheckedCarrier.typedInterface value.attached,CheckedCarrier.typedInterface value.required,
     position value.position,.array (value.arms.map arm)]
 
-def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value
-  | 0,_ => throw .limit
-  | fuel+1,.mk positions sites calls branches bodies => do
+def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value :=
+  Nat.rec (fun _ => throw .limit) (fun _ readChild (.mk positions sites calls branches bodies) => do
     Finite.exactWork (Exact.charge (16*(positions.length+sites.length+calls.length+branches.length+bodies.length+1)))
     let calls ← calls.mapM fun (location,body) => do
-      return record "source-call" [position location,← context fuel body]
+      return record "source-call" [position location,← readChild body]
     let branches ← branches.mapM fun (location,whenTrue,whenFalse) => do
-      return record "source-branch" [position location,← context fuel whenTrue,← context fuel whenFalse]
-    let bodies ← bodies.mapM fun (subject,body) => do return record "source-body" [provider subject,← context fuel body]
-    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies]
+      return record "source-branch" [position location,← readChild whenTrue,← readChild whenFalse]
+    let bodies ← bodies.mapM fun (subject,body) => do return record "source-body" [provider subject,← readChild body]
+    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies])
 
 def runtime (request : Qirf.RuntimeFamily.Request) : Finite.WorkM Value := do
   return record "source-runtime" (← CheckedRuntimeRoot.requestDescription request)

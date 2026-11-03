@@ -80,15 +80,21 @@ def check (artifact : Artifact) {context description}
 
 def Reads.rows {artifact context description graph indices requests}
     (read : @Reads artifact context description graph indices requests) : List (String × String) :=
-  match read with
-  | .nil => []
-  | .cons header _ rest => header.rows ++ rest.rows
+  let visit : Nat → {indices : List Nat} → {requests : List Request} →
+      Reads artifact graph indices requests → List (String × String) :=
+    Nat.rec (fun {_ _} _ => []) (fun _ next {_ _} read => match read with
+      | .nil => []
+      | .cons header _ rest => header.rows ++ next rest)
+  visit indices.length read
 
 def Reads.roots {artifact context description graph indices requests}
     (read : @Reads artifact context description graph indices requests) : List Nat :=
-  match read with
-  | .nil => []
-  | .cons header _ rest => header.roots ++ rest.roots
+  let visit : Nat → {indices : List Nat} → {requests : List Request} →
+      Reads artifact graph indices requests → List Nat :=
+    Nat.rec (fun {_ _} _ => []) (fun _ next {_ _} read => match read with
+      | .nil => []
+      | .cons header _ rest => header.roots ++ next rest)
+  visit indices.length read
 
 theorem Reads.count {artifact context description graph indices requests}
     (read : @Reads artifact context description graph indices requests) : indices.length = requests.length := by

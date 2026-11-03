@@ -207,9 +207,11 @@ def readRows {sources catalogue reference original basis}
 
 def Rows.targets {sources catalogue reference original basis inputs labels}
     (rows : @Rows sources catalogue reference original basis inputs labels) : List Nat :=
-  match rows with
-  | .nil => []
-  | .cons head tail => head.output.ordinal :: tail.targets
+  let visit : Nat → {labels : List Nat} → Rows inputs labels → List Nat :=
+    Nat.rec (fun {_} _ => []) (fun _ next {_} rows => match rows with
+      | .nil => []
+      | .cons head tail => head.output.ordinal :: next tail)
+  visit labels.length rows
 
 theorem Rows.count {sources catalogue reference original basis inputs labels}
     (rows : @Rows sources catalogue reference original basis inputs labels) : rows.targets.length = labels.length := by

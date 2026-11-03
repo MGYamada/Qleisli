@@ -138,9 +138,8 @@ private def site (value : Json) : WorkM Site := do
   guard (0 < arms.size && arms.size ≤ 64) .limit
   return ⟨attached,required,position,← adapt (arms.toList.mapM arm)⟩
 
-private def context : Nat → Json → WorkM Context
-  | 0,_ => throw .limit
-  | fuel+1,value => do
+private def context : Nat → Json → WorkM Context :=
+  Nat.rec (fun _ => throw .limit) (fun _ readChild value => do
     let positions ← adapt ((← adapt (field value "positions")).getArr?)
     let sites ← adapt ((← adapt (field value "sites")).getArr?)
     let calls ← adapt ((← adapt (field value "calls")).getArr?)
@@ -155,7 +154,7 @@ private def context : Nat → Json → WorkM Context
       let position ← adapt (position (← adapt (field value "position")))
       let body ← adapt (field value "body")
       adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
-      return (position,← context fuel body)
+      return (position,← readChild body)
     let branches ← branches.toList.mapM fun value => do
       adapt (Carrier.fields value ["position","then","else"])
       let location ← adapt (position (← adapt (field value "position")))
@@ -163,14 +162,14 @@ private def context : Nat → Json → WorkM Context
       let whenFalse ← adapt (field value "else")
       adapt (Carrier.fields whenTrue ["positions","sites","calls","branches","bodies"])
       adapt (Carrier.fields whenFalse ["positions","sites","calls","branches","bodies"])
-      return (location,← context fuel whenTrue,← context fuel whenFalse)
+      return (location,← readChild whenTrue,← readChild whenFalse)
     let bodies ← bodies.toList.mapM fun value => do
       adapt (Carrier.fields value ["subject","body"])
       let subject ← adapt (provider (← adapt (field value "subject")))
       let body ← adapt (field value "body")
       adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
-      return (subject,← context fuel body)
-    return .mk positions sites calls branches bodies
+      return (subject,← readChild body)
+    return .mk positions sites calls branches bodies)
 
 def decode (value : Json) : WorkM Request := do
   adapt (Carrier.fields value ["format","version","profile","source","runtime","positions","sites","calls","branches","bodies"])

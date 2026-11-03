@@ -123,24 +123,69 @@ inductive Invocation {sources} (catalogue : GenericCatalogue.Checked sources) :
       (application : ApplicationAt catalogue record) (target : Target application) :
       Invocation catalogue target.entry.index
 
-def Invocation.id {sources catalogue record} : @Invocation sources catalogue record → InstanceId
-  | .root original => ⟨original.val,[]⟩
-  | .call caller application _ =>
-    let parent := caller.id
-    ⟨parent.root,parent.calls ++ [application.id]⟩
+private abbrev InvocationPacket {sources} (catalogue : GenericCatalogue.Checked sources) :=
+  Σ record : RecordIndex catalogue, Invocation catalogue record
 
-def Invocation.depth {sources catalogue record} : @Invocation sources catalogue record → Nat
-  | .root _ => 0
-  | .call caller _ _ => caller.depth+1
+private def invocationFold {sources catalogue} {Result : Type}
+    (root : RecordIndex catalogue → Result)
+    (call : {record : RecordIndex catalogue} → Invocation catalogue record →
+      (application : ApplicationAt catalogue record) → Target application → Result → Result)
+    {record} (invocation : @Invocation sources catalogue record) : Result :=
+  WellFounded.fix (measure (fun packet : InvocationPacket catalogue => sizeOf packet.2)).wf
+    (C := fun _ => Result)
+    (fun packet visit => match packet with
+      | ⟨_,.root original⟩ => root original
+      | ⟨_,.call caller application target⟩ =>
+        call caller application target (visit ⟨_,caller⟩ (by decreasing_tactic))) ⟨record,invocation⟩
+
+private theorem invocationFold_root {sources catalogue} {Result : Type}
+    (root : RecordIndex catalogue → Result)
+    (call : {record : RecordIndex catalogue} → Invocation catalogue record →
+      (application : ApplicationAt catalogue record) → Target application → Result → Result)
+    (record : RecordIndex catalogue) :
+    invocationFold (sources := sources) root call (.root record) = root record :=
+  WellFounded.fix_eq _ _ _
+
+private theorem invocationFold_call {sources catalogue} {Result : Type}
+    (root : RecordIndex catalogue → Result)
+    (call : {record : RecordIndex catalogue} → Invocation catalogue record →
+      (application : ApplicationAt catalogue record) → Target application → Result → Result)
+    {record} (caller : @Invocation sources catalogue record) (application : ApplicationAt catalogue record)
+    (target : Target application) :
+    invocationFold root call (.call caller application target) =
+      call caller application target (invocationFold root call caller) :=
+  WellFounded.fix_eq _ _ _
+
+def Invocation.id {sources catalogue record} (invocation : @Invocation sources catalogue record) : InstanceId :=
+  invocationFold (fun original => ⟨original.val,[]⟩)
+    (fun _ application _ parent => ⟨parent.root,parent.calls ++ [application.id]⟩) invocation
+
+def Invocation.depth {sources catalogue record} (invocation : @Invocation sources catalogue record) : Nat :=
+  invocationFold (fun _ => 0) (fun _ _ _ parent => parent+1) invocation
 
 def Invocation.applications {sources catalogue record} :
-    @Invocation sources catalogue record → List (ApplicationSource sources)
-  | .root _ => []
-  | .call caller application _ => caller.applications ++ [application.original]
+    @Invocation sources catalogue record → List (ApplicationSource sources) :=
+  invocationFold (fun _ => []) (fun _ application _ parent => parent ++ [application.original])
 
-def Invocation.records {sources catalogue record} : @Invocation sources catalogue record → List Nat
-  | .root original => [original.val]
-  | .call caller _ target => caller.records ++ [target.entry.index.val]
+def Invocation.records {sources catalogue record} : @Invocation sources catalogue record → List Nat :=
+  invocationFold (fun original => [original.val]) (fun _ _ target parent => parent ++ [target.entry.index.val])
+
+private theorem applications_root {sources catalogue} (record : RecordIndex catalogue) :
+    (Invocation.root (sources := sources) record).applications = [] := invocationFold_root _ _ _
+
+private theorem applications_call {sources catalogue record} (caller : @Invocation sources catalogue record)
+    (application : ApplicationAt catalogue record) (target : Target application) :
+    (Invocation.call caller application target).applications = caller.applications ++ [application.original] :=
+  invocationFold_call _ _ _ _ _
+
+theorem Invocation.applications_nil_of_depth_zero {sources catalogue record}
+    (invocation : @Invocation sources catalogue record) (atRoot : invocation.depth = 0) :
+    invocation.applications = [] := by
+  cases invocation with
+  | root => exact applications_root _
+  | call parent application target =>
+    rw [Invocation.depth, invocationFold_call] at atRoot
+    exact (Nat.succ_ne_zero _ atRoot).elim
 
 /-- The list index is the exact original application chain; there is no
 name/descriptor lookup or successful-subject cache at replay. -/
@@ -153,12 +198,18 @@ inductive PreparedChain {sources} : List (ApplicationSource sources) → Type wh
 
 def Invocation.prepared {sources catalogue record}
     (invocation : @Invocation sources catalogue record) : PreparedChain invocation.applications.reverse :=
-  match invocation with
-  | .root _ => .nil
-  | .call parent application target => by
-    change PreparedChain ((parent.applications ++ [application.original]).reverse)
-    rw [List.reverse_append]
-    exact .cons application.original target.substitution parent.applications.reverse parent.prepared
+  WellFounded.fix (measure (fun packet : InvocationPacket catalogue => sizeOf packet.2)).wf
+    (C := fun packet => PreparedChain packet.2.applications.reverse)
+    (fun packet visit => match packet with
+      | ⟨_,.root original⟩ => by
+        change PreparedChain ((Invocation.root (sources := sources) (catalogue := catalogue) original).applications.reverse)
+        rw [applications_root]
+        exact .nil
+      | ⟨_,.call parent application target⟩ => by
+        change PreparedChain ((Invocation.call parent application target).applications.reverse)
+        rw [applications_call,List.reverse_append]
+        exact .cons application.original target.substitution parent.applications.reverse
+          (visit ⟨_,parent⟩ (by decreasing_tactic))) ⟨record,invocation⟩
 
 /-- Substitutions run from the innermost original callee toward the root.
 Inserted caller Op actuals are left untouched by each simultaneous step. -/
@@ -176,22 +227,34 @@ structure Transported {sources} (applications : List (ApplicationSource sources)
   receipt : Transport applications original subject
 
 def readTransport {sources} (applications : List (ApplicationSource sources)) (original : Subject sources) :
-    WorkM (Transported applications original) := do
-  match applications with
-  | [] => return ⟨original,.identity original⟩
-  | application :: rest =>
-    let checked ← GenericOperationSubstitute.read application original.description original.suppliers
-    let next ← readTransport rest checked.result.subject
-    return ⟨next.subject,.step application rest original checked next.receipt⟩
+    WorkM (Transported applications original) :=
+  (Nat.rec (motive := fun fuel => (applications : List (ApplicationSource sources)) → applications.length ≤ fuel →
+      (original : Subject sources) → WorkM (Transported applications original))
+    (fun applications bound original => match applications with
+      | [] => pure ⟨original,.identity original⟩
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ visit applications bound original => match applications with
+      | [] => pure ⟨original,.identity original⟩
+      | application :: rest => do
+        let checked ← GenericOperationSubstitute.read application original.description original.suppliers
+        let next ← visit rest (Nat.le_of_succ_le_succ bound) checked.result.subject
+        return ⟨next.subject,.step application rest original checked next.receipt⟩)
+    applications.length) applications (Nat.le_refl _) original
 
 def readPreparedTransport {sources applications} (chain : @PreparedChain sources applications)
-    (original : Subject sources) : WorkM (Transported applications original) := do
-  match chain with
-  | .nil => return ⟨original,.identity original⟩
-  | .cons application prepared rest tail =>
-    let checked ← GenericOperationSubstitute.readWithPrepared prepared original.description original.suppliers
-    let next ← readPreparedTransport tail checked.result.subject
-    return ⟨next.subject,.step application rest original checked next.receipt⟩
+    (original : Subject sources) : WorkM (Transported applications original) :=
+  (Nat.rec (motive := fun fuel => (applications : List (ApplicationSource sources)) → applications.length ≤ fuel →
+      PreparedChain applications → (original : Subject sources) → WorkM (Transported applications original))
+    (fun applications bound actual original => match applications,actual with
+      | [],.nil => pure ⟨original,.identity original⟩
+      | _ :: rest,.cons .. => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ visit applications bound actual original => match applications,actual with
+      | [],.nil => pure ⟨original,.identity original⟩
+      | _ :: _,.cons application prepared rest tail => do
+        let checked ← GenericOperationSubstitute.readWithPrepared prepared original.description original.suppliers
+        let next ← visit rest (Nat.le_of_succ_le_succ bound) tail checked.result.subject
+        return ⟨next.subject,.step application rest original checked next.receipt⟩)
+    applications.length) applications (Nat.le_refl _) chain original
 
 structure Demand {sources catalogue record} (invocation : @Invocation sources catalogue record) where
   source : DutyAt catalogue record
@@ -284,19 +347,18 @@ private def PackedTarget.at {sources catalogue owner name} (packed : @PackedTarg
   exact value
 
 private def findTarget {sources} (catalogue : GenericCatalogue.Checked sources) (owner name : String) :
-    List (PackedTarget catalogue) → WorkM (Option (CanonicalTarget catalogue owner name))
-  | [] => do
-    exactWork (Exact.charge 1)
-    return none
-  | packed :: rest => do
+    List (PackedTarget catalogue) → WorkM (Option (CanonicalTarget catalogue owner name)) :=
+  List.foldr (fun packed next => do
     -- The actual algorithm visits only this search prefix. Charge both full
     -- keys before comparison; no whole catalogue or source snapshot is read.
     exactWork (Exact.charge (16*(packed.owner.utf8ByteSize+packed.name.utf8ByteSize+
       owner.utf8ByteSize+name.utf8ByteSize+5)))
     if sameOwner : packed.owner = owner then
       if sameName : packed.name = name then return some (packed.at sameOwner sameName)
-      else findTarget catalogue owner name rest
-    else findTarget catalogue owner name rest
+      else next
+    else next) (do
+      exactWork (Exact.charge 1)
+      return none)
 
 private structure ReusedTarget {sources} (catalogue : GenericCatalogue.Checked sources) {owner name}
     (original : OrdinarySignature.Original sources owner name) where

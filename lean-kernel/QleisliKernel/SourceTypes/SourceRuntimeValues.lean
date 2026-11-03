@@ -182,58 +182,65 @@ def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := 
   if actual.basis != owner.basis then throw "runtime call owner nominal type"
   return actual
 
-def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) :
-    Expression → Except String Expression
-  | .input ordinal => do
+def transportStep (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) : (e : Expression) →
+    ((child : Expression) → sizeOf child < sizeOf e → Except String Expression) → Except String Expression
+  | .input ordinal, _ => do
     let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
     return actual
-  | .basisInput ordinal => pure (.basisInput ordinal)
-  | .unit => pure .unit
-  | .bit value => pure (.bit value)
-  | .ordinal value => pure (.ordinal value)
-  | .measured origin calls owner => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
-  | .project value ordinal => do return .project (← expressionTransport site actuals ordinary value) ordinal
-  | .combine stride first second => do
-    return .combine stride (← expressionTransport site actuals ordinary first)
-      (← expressionTransport site actuals ordinary second)
-  | .field stride dimension receiver => do
-    return .field stride dimension (← expressionTransport site actuals ordinary receiver)
-  | .equalsOrdinal ordinal value =>
-    return .equalsOrdinal ordinal (← expressionTransport site actuals ordinary value)
-  | .not value => do return .not (← expressionTransport site actuals ordinary value)
-  | .xor first second => do
-    let first ← expressionTransport site actuals ordinary first
-    let second ← expressionTransport site actuals ordinary second
+  | .basisInput ordinal, _ => pure (.basisInput ordinal)
+  | .unit, _ => pure .unit
+  | .bit value, _ => pure (.bit value)
+  | .ordinal value, _ => pure (.ordinal value)
+  | .measured origin calls owner, _ => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
+  | .project value ordinal, child => do return .project (← child value (by decreasing_tactic)) ordinal
+  | .combine stride first second, child => do
+    return .combine stride (← child first (by decreasing_tactic))
+      (← child second (by decreasing_tactic))
+  | .field stride dimension receiver, child => do
+    return .field stride dimension (← child receiver (by decreasing_tactic))
+  | .equalsOrdinal ordinal value, child =>
+    return .equalsOrdinal ordinal (← child value (by decreasing_tactic))
+  | .not value, child => do return .not (← child value (by decreasing_tactic))
+  | .xor first second, child => do
+    let first ← child first (by decreasing_tactic)
+    let second ← child second (by decreasing_tactic)
     return .xor first second
-  | .and first second => do
-    let first ← expressionTransport site actuals ordinary first
-    let second ← expressionTransport site actuals ordinary second
+  | .and first second, child => do
+    let first ← child first (by decreasing_tactic)
+    let second ← child second (by decreasing_tactic)
     return .and first second
-  | .choose condition thenValue elseValue => do
-    return .choose (← expressionTransport site actuals ordinary condition)
-      (← expressionTransport site actuals ordinary thenValue)
-      (← expressionTransport site actuals ordinary elseValue)
+  | .choose condition thenValue elseValue, child => do
+    return .choose (← child condition (by decreasing_tactic))
+      (← child thenValue (by decreasing_tactic))
+      (← child elseValue (by decreasing_tactic))
 
-/-- Size is derived from actual expression structure; the 65 source nesting
-bound cannot accidentally cap long flat helper/call chains during transport. -/
-def expressionSize : Expression → Nat
-  | .project value _ | .field _ _ value | .equalsOrdinal _ value | .not value => 1+expressionSize value
-  | .xor first second | .and first second | .combine _ first second => 1+expressionSize first+expressionSize second
-  | .choose condition thenValue elseValue =>
-    1+expressionSize condition+expressionSize thenValue+expressionSize elseValue
-  | _ => 1
+def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) : Expression → Except String Expression :=
+  Semantics.SourceOrdinary.Expression.descend (transportStep site actuals ordinary)
+
+theorem expressionTransport_unfold (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) (e : Expression) :
+    expressionTransport site actuals ordinary e = transportStep site actuals ordinary e (fun child _ => expressionTransport site actuals ordinary child) :=
+  Semantics.SourceOrdinary.Expression.descend_eq _ e
+
+/-- Measure the same original tree for structural size and source-byte work.
+No source nesting bound caps a longer flat chain of calls or helpers. -/
+private def expressionWeight (leaf : Expression → Nat) : Expression → Nat :=
+  Semantics.SourceOrdinary.Expression.descend (motive := fun _ => Nat) (fun e => match e with
+    | .project x _ | .field _ _ x | .equalsOrdinal _ x | .not x => fun child =>
+      1 + child x (by decreasing_tactic)
+    | .xor a b | .and a b | .combine _ a b => fun child =>
+      1 + child a (by decreasing_tactic) + child b (by decreasing_tactic)
+    | .choose c t f => fun child =>
+      1 + child c (by decreasing_tactic) + child t (by decreasing_tactic) + child f (by decreasing_tactic)
+    | value => fun _ => leaf value)
+
+def expressionSize : Expression → Nat := expressionWeight (fun _ => 1)
 
 def siteFields (site : Site) : Nat :=
   site.moduleName.utf8ByteSize+site.functionName.utf8ByteSize+2
 
-def expressionFields : Expression → Nat
-  | .measured origin calls owner =>
-    1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
-  | .project value _ | .field _ _ value | .equalsOrdinal _ value | .not value => 1+expressionFields value
-  | .xor first second | .and first second | .combine _ first second => 1+expressionFields first+expressionFields second
-  | .choose condition thenValue elseValue =>
-    1+expressionFields condition+expressionFields thenValue+expressionFields elseValue
-  | _ => 1
+def expressionFields : Expression → Nat := expressionWeight (fun
+  | .measured origin calls owner => 1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
+  | _ => 1)
 
 def valueFields (value : Value) : Nat := value.foldl (fun count atom => count+match atom with
   | .owner owner => Raw.OwnerFlow.fields [owner]

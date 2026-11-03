@@ -148,16 +148,28 @@ inductive Closures {entries : List Entry} (prepared : Prepared entries) : List D
   | cons {root roots} (head : Closure prepared root) (tail : Closures prepared roots) :
       Closures prepared (root :: roots)
 
-def readClosures {entries : List Entry} (prepared : Prepared entries) :
-    (roots : List DefId) → WorkM (Closures prepared roots)
-  | [] => pure .nil
-  | root :: roots => do pure (.cons (← readClosure prepared root) (← readClosures prepared roots))
+def readClosures {entries : List Entry} (prepared : Prepared entries) (roots : List DefId) :
+    WorkM (Closures prepared roots) :=
+  (Nat.rec (motive := fun fuel => (roots : List DefId) → roots.length ≤ fuel → WorkM (Closures prepared roots))
+    (fun roots bound => match roots with
+      | [] => pure .nil
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next roots bound => match roots with
+      | [] => pure .nil
+      | root :: rest => do pure (.cons (← readClosure prepared root) (← next rest (Nat.le_of_succ_le_succ bound))))
+    roots.length) roots (Nat.le_refl _)
 
-def Closures.get {entries prepared} : {roots : List DefId} → @Closures entries prepared roots →
-    (index : Fin roots.length) → Closure prepared (roots[index.val]'index.isLt)
-  | [],.nil,index => False.elim (Nat.not_lt_zero index.val index.isLt)
-  | _ :: _,.cons head _,⟨0,_⟩ => head
-  | _ :: _,.cons _ tail,⟨index+1,bound⟩ => tail.get ⟨index,Nat.lt_of_succ_lt_succ bound⟩
+def Closures.get {entries prepared} {roots : List DefId} (values : @Closures entries prepared roots)
+    (index : Fin roots.length) : Closure prepared (roots[index.val]'index.isLt) :=
+  (Nat.rec (motive := fun index => (roots : List DefId) → Closures prepared roots →
+      (bound : index < roots.length) → Closure prepared (roots[index]'bound))
+    (fun roots actual bound => match roots,actual with
+      | [],.nil => False.elim (Nat.not_lt_zero 0 bound)
+      | _ :: _,.cons head _ => head)
+    (fun index next roots actual bound => match roots,actual with
+      | [],.nil => False.elim (Nat.not_lt_zero (index+1) bound)
+      | _ :: rest,.cons _ tail => next rest tail (Nat.lt_of_succ_lt_succ bound))
+    index.val) roots values index.isLt
 
 /-- Original entry identities are already unique. This ordered cohort checks
 each of their roots once; it does not normalize any source/provider occurrence. -/

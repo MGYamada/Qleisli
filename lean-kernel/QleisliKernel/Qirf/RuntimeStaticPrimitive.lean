@@ -153,13 +153,17 @@ private def readEventEligibility {sources caller} (event : SourceRuntimeContext.
     | .error _ => throw .request
     | .ok action => return .primitive other action (by first | exact classified | rfl)
 
-private def readEventList {sources caller} : (events : List (SourceRuntimeContext.Event sources caller)) →
-    WorkM (EligibleEvents events)
-  | [] => pure (.primitives [] rfl)
-  | first :: rest => do
-    let head ← readEventEligibility first
-    let tail ← readEventList rest
-    return .cons head tail
+private def readEventList {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) :
+    WorkM (EligibleEvents events) :=
+  let visit : Nat → (events : List (SourceRuntimeContext.Event sources caller)) → WorkM (EligibleEvents events) :=
+    Nat.rec (fun _ => throw .limit) (fun _ next events => do
+      match events with
+      | [] => pure (.primitives [] rfl)
+      | first :: rest => do
+        let head ← readEventEligibility first
+        let tail ← next rest
+        return .cons head tail)
+  visit (events.length+1) events
 
 /-- Keep the existing empty, primitive-only and singleton-call paths. A mixed
 list uses one structural eligibility traversal, followed by the common native

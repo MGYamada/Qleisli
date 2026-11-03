@@ -27,24 +27,32 @@ inductive CallPath (sources : Sources) (rootOwner rootName : String) : String �
       (parent : CallPath sources rootOwner rootName caller event.target.callerName) :
       CallPath sources rootOwner rootName event.target.resolution.moduleName event.target.resolution.declaration.name
 
+/-- Pack only the existing indices for the erased structural descent proof.
+No runtime depth, fuel, cached body or alternate source path is introduced. -/
+abbrev CallPath.Packed (sources : Sources) (rootOwner rootName : String) :=
+  Σ owner : String, Σ name : String, CallPath sources rootOwner rootName owner name
+
 def callSite {sources caller} (event : SourceRuntimeContext.NamedEvent sources caller) :
     Semantics.SourceOrdinary.Site := ⟨caller,event.target.callerName,event.call.calleeOffset⟩
 
 def CallPath.transport {sources rootOwner rootName owner name}
     (path : CallPath sources rootOwner rootName owner name) (expression : Expression) : Except String Expression :=
-  match path with
-  | .root _ => pure expression
-  | .named event _ _ parent => do
-    let lifted ← SourceRuntimeValues.expressionTransport
-      (callSite event) event.ownerMap
-      (event.arguments.flatMap SourceRuntimeValues.ordinary) expression
-    parent.transport lifted
+  WellFounded.fix (measure (fun packed : CallPath.Packed sources rootOwner rootName => sizeOf packed.2.2)).wf
+    (C := fun _ => Expression → Except String Expression) (fun packed => match packed with
+      | ⟨_,_,.root _⟩ => fun _ expression => pure expression
+      | ⟨_,_,.named event _ _ parent⟩ => fun visit expression => do
+        let lifted ← SourceRuntimeValues.expressionTransport
+          (callSite event) event.ownerMap
+          (event.arguments.flatMap SourceRuntimeValues.ordinary) expression
+        visit ⟨_,_,parent⟩ (by decreasing_tactic) lifted) ⟨owner,name,path⟩ expression
 
-def CallPath.fields {sources rootOwner rootName owner name} : CallPath sources rootOwner rootName owner name → Nat
-  | .root _ => 0
-  | .named event _ _ parent => parent.fields+1+
-      event.target.callerName.utf8ByteSize+event.target.resolution.moduleName.utf8ByteSize+
-      (event.arguments.map SourceRuntimeValues.valueFields).sum+Raw.OwnerFlow.fields event.ownerMap
+def CallPath.fields {sources rootOwner rootName owner name} (path : CallPath sources rootOwner rootName owner name) : Nat :=
+  WellFounded.fix (measure (fun packed : CallPath.Packed sources rootOwner rootName => sizeOf packed.2.2)).wf
+    (C := fun _ => Nat) (fun packed => match packed with
+      | ⟨_,_,.root _⟩ => fun _ => 0
+      | ⟨_,_,.named event _ _ parent⟩ => fun visit => visit ⟨_,_,parent⟩ (by decreasing_tactic)+1+
+          event.target.callerName.utf8ByteSize+event.target.resolution.moduleName.utf8ByteSize+
+          (event.arguments.map SourceRuntimeValues.valueFields).sum+Raw.OwnerFlow.fields event.ownerMap) ⟨owner,name,path⟩
 
 structure Measurement where
   origin : Semantics.SourceOrdinary.Site

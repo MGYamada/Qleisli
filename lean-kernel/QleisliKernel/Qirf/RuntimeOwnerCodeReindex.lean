@@ -12,10 +12,23 @@ open RuntimeOwnerMap (Binding Map)
 open RuntimeForestCode
 
 def lookup {bindings : Map} (owners : OwnerCodes bindings) (wanted : Binding) : Option (OwnerCode wanted) :=
-  match owners with
-  | .nil => none
-  | @OwnerCodes.cons binding _ first rest =>
-    if same : binding = wanted then some (same ▸ first) else lookup rest wanted
+  (Nat.rec (motive := fun fuel => (bindings : Map) → bindings.length ≤ fuel →
+      OwnerCodes bindings → (wanted : Binding) → Option (OwnerCode wanted))
+    (fun _ bound actual _ => match actual with
+      | .nil => none
+      | @OwnerCodes.cons _ rest _ _ => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next _ bound actual wanted => match actual with
+      | .nil => none
+      | @OwnerCodes.cons binding rest first tail =>
+        if same : binding = wanted then some (same ▸ first)
+        else next rest (Nat.le_of_succ_le_succ bound) tail wanted)
+    bindings.length) bindings (Nat.le_refl _) owners wanted
+
+theorem lookup_nil (wanted : Binding) : lookup .nil wanted = none := rfl
+
+theorem lookup_cons {binding bindings} (first : OwnerCode binding) (rest : OwnerCodes bindings) (wanted : Binding) :
+    lookup (.cons first rest) wanted =
+      if same : binding = wanted then some (same ▸ first) else lookup rest wanted := rfl
 
 theorem lookup_exists {bindings} (owners : OwnerCodes bindings) (wanted : Binding) :
     wanted ∈ bindings → ∃ retained,lookup owners wanted = some retained := by
@@ -25,13 +38,13 @@ theorem lookup_exists {bindings} (owners : OwnerCodes bindings) (wanted : Bindin
     intro member
     by_cases same : binding = wanted
     · subst wanted
-      exact ⟨first,by simp [lookup]⟩
+      exact ⟨first,by rw [lookup_cons]; exact dif_pos rfl⟩
     · have later : wanted ∈ bindings := by
         rcases List.mem_cons.mp member with equal | later
         · exact False.elim (same equal.symm)
         · exact later
       obtain ⟨retained,ran⟩ := ih later
-      exact ⟨retained,by simpa only [lookup,dif_neg same] using ran⟩
+      exact ⟨retained,by rw [lookup_cons,dif_neg same]; exact ran⟩
 
 /-- Missing source identity has dimension zero, never a fabricated singleton.
 The equality below is used only after an actual retained lookup succeeds. -/
@@ -47,12 +60,25 @@ theorem dimensionAt_eq {bindings} (owners : OwnerCodes bindings) (wanted : Bindi
   obtain ⟨retained,ran⟩ := lookup_exists owners wanted member
   simp only [dimensionAt,ran,Option.map_some,Option.getD_some,layout_unique retained actual]
 
-def reindex {bindings} (owners : OwnerCodes bindings) : (wanted : Map) → Option (OwnerCodes wanted)
-  | [] => some .nil
-  | binding::rest => do
-    let first ← lookup owners binding
-    let tail ← reindex owners rest
-    pure (.cons first tail)
+def reindex {bindings} (owners : OwnerCodes bindings) (wanted : Map) : Option (OwnerCodes wanted) :=
+  (Nat.rec (motive := fun fuel => (wanted : Map) → wanted.length ≤ fuel → Option (OwnerCodes wanted))
+    (fun wanted bound => match wanted with
+      | [] => some .nil
+      | _ :: rest => False.elim (Nat.not_succ_le_zero rest.length bound))
+    (fun _ next wanted bound => match wanted with
+      | [] => some .nil
+      | binding :: rest => do
+        let first ← lookup owners binding
+        let tail ← next rest (Nat.le_of_succ_le_succ bound)
+        pure (.cons first tail)) wanted.length) wanted (Nat.le_refl _)
+
+theorem reindex_nil {bindings} (owners : OwnerCodes bindings) : reindex owners [] = some .nil := rfl
+
+theorem reindex_cons {bindings} (owners : OwnerCodes bindings) (binding : Binding) (rest : Map) :
+    reindex owners (binding::rest) = (do
+      let first ← lookup owners binding
+      let tail ← reindex owners rest
+      pure (.cons first tail)) := rfl
 
 theorem reindex_exists {bindings} (owners : OwnerCodes bindings) (wanted : Map) :
     wanted ⊆ bindings → ∃ retained,reindex owners wanted = some retained := by
@@ -62,7 +88,7 @@ theorem reindex_exists {bindings} (owners : OwnerCodes bindings) (wanted : Map) 
     intro subset
     obtain ⟨first,firstRead⟩ := lookup_exists owners binding (subset (List.mem_cons_self))
     obtain ⟨tail,tailRead⟩ := ih (fun {_} member => subset (List.mem_cons_of_mem _ member))
-    exact ⟨.cons first tail,by simp only [reindex,firstRead,tailRead,bind,Option.bind,pure]⟩
+    exact ⟨.cons first tail,by simp only [reindex_cons,firstRead,tailRead,bind,Option.bind,pure]⟩
 
 structure Retained {bindings} (owners : OwnerCodes bindings) (wanted : Map) where
   codes : OwnerCodes wanted

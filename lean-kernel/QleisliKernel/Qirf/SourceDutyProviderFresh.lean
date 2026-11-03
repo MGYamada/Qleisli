@@ -23,19 +23,13 @@ open GenericOperation GenericOperationSubstitute GenericDutyQueue
 private def enclosing {sources catalogue} (record : @RecordIndex sources catalogue) : GenericTypeTrace.BodyRecord sources :=
   catalogue.records[record.val]'record.isLt
 
-private theorem applications_nil {sources catalogue record} (invocation : @Invocation sources catalogue record)
-    (root : invocation.depth = 0) : invocation.applications = [] := by
-  cases invocation with
-  | root _ => rfl
-  | call parent application target => simp [Invocation.depth] at root
-
 private theorem identity_subject {sources original result} (transport : @Transport sources [] original result) :
     result = original := by cases transport; rfl
 
 private theorem original_subject {sources catalogue record invocation}
     (demand : @Demand sources catalogue record invocation) (root : invocation.depth = 0) :
     demand.transported.subject = ⟨demand.source.original.subject,demand.source.original.suppliers⟩ := by
-  have noApplications := applications_nil invocation root
+  have noApplications := invocation.applications_nil_of_depth_zero root
   have identity : Transport [] ⟨demand.source.original.subject,demand.source.original.suppliers⟩
       demand.transported.subject := by
     simpa only [noApplications,List.reverse_nil] using demand.transported.receipt

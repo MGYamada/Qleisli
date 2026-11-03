@@ -418,12 +418,10 @@ reject cycles before they can become a fuel/work-exhaustion observation. -/
 def sourceFuel (sources : Sources) : Nat :=
   (sources.toList.map fun row => row.2.utf8ByteSize+1).sum+1
 
-def readNested (sources : Sources) (fuel : Nat) (active : List (String × String))
-    {owner name : String} (signature : QuantumSignature.Checked sources owner name) :
+def readNested (sources : Sources) : (fuel : Nat) → (active : List (String × String)) →
+    {owner name : String} → (signature : QuantumSignature.Checked sources owner name) →
     Finite.WorkM (SourceCalls.Canonical signature) :=
-  match fuel with
-  | 0 => throw .limit
-  | fuel+1 => do
+  Nat.rec (fun _ {_ _} _ => throw .limit) (fun _ previous active {owner name} signature => do
     Finite.exactWork (Exact.charge (8*(Meter.nameFields (active.flatMap fun (a,b) => [a,b])+
       owner.utf8ByteSize+name.utf8ByteSize+1)))
     Finite.guard (!(active.contains (owner,name))) .request
@@ -454,7 +452,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
             pure none
             else Option.some <$> PhaseApplication.prepareWithSignature signature
           let (result,_) ← evalWithReader sources owner
-            (fun callee => readNested sources fuel ((owner,name) :: active) callee) (some ⟨name,signature⟩)
+            (fun callee => previous ((owner,name) :: active) callee) (some ⟨name,signature⟩)
             (tokens.length+1) naturals []
             (signature.staticNames ++ initial.map (·.name)) initial tree {}
           Finite.exactWork (Exact.charge (8*(Meter.tokenFields tokens+result.value.length+
@@ -483,8 +481,7 @@ def readNested (sources : Sources) (fuel : Nat) (active : List (String × String
                 else throw .request
               else throw .request
             else throw .request
-          else throw .request
-termination_by fuel
+          else throw .request)
 
 /-- Prepare static helpers once only when the original body contains static
 syntax. Plain primitive bodies retain their existing lookup/work path. Aliases

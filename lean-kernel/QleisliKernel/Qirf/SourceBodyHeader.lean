@@ -95,39 +95,37 @@ structure Discovery (artifact : Artifact) where
 accepted. Each child is derived from its parent original occurrence. -/
 def discover (artifact : Artifact) : Nat → {owner name : String} →
     {source : SourceTrace.Checked artifact.sources owner name} → {request : Context} →
-    Header source request → WorkM (Discovery artifact)
-  | 0,_,_,source,request,header => do
+    Header source request → WorkM (Discovery artifact) :=
+  Nat.rec (fun {_ _} {source} {request} header => do
     guard (request.bodies.isEmpty && request.calls.isEmpty && (bindings header).isEmpty &&
       (source.result.events.filterMap named).isEmpty) .limit
-    return ⟨[],[]⟩
-  | fuel+1,_,_,source,request,header => do
+    return ⟨[],[]⟩) (fun _ next {_ _} {source} {request} header => do
     let subjects := bindings header
     let events := source.result.events.filterMap named
     exactWork (Exact.charge (16*(subjects.length+events.length+request.bodies.length+request.calls.length+1)))
     guard (subjects.length == request.bodies.length && events.length == request.calls.length) .request
     let arms ← (subjects.zip request.bodies).mapM fun (subject,body) => readArm artifact subject.bound body
     let calls ← (events.zip request.calls).mapM fun (event,body) => readCall artifact event body
-    let armDescendants ← arms.mapM fun arm => discover artifact fuel arm.header
-    let callDescendants ← calls.mapM fun call => discover artifact fuel call.header
+    let armDescendants ← arms.mapM fun arm => next arm.header
+    let callDescendants ← calls.mapM fun call => next call.header
     return ⟨arms ++ armDescendants.flatMap (·.arms) ++ callDescendants.flatMap (·.arms),
-      calls ++ armDescendants.flatMap (·.calls) ++ callDescendants.flatMap (·.calls)⟩
+      calls ++ armDescendants.flatMap (·.calls) ++ callDescendants.flatMap (·.calls)⟩)
 
 /-- A request has one child for every immediate arm occurrence in source order.
 The recursion consumes the bounded request depth; repeated evidence indices
 still take this complete path with their own original signature and actuals. -/
 def descendants (artifact : Artifact) : Nat → {owner name : String} →
     {source : SourceTrace.Checked artifact.sources owner name} → {request : Context} →
-    Header source request → WorkM (List (Arm artifact))
-  | 0,_,_,_,request,header => do
+    Header source request → WorkM (List (Arm artifact)) :=
+  Nat.rec (fun {_ _} {_} {request} header => do
     guard request.bodies.isEmpty .limit
     guard (bindings header).isEmpty .limit
-    return []
-  | fuel+1,_,_,_,request,header => do
+    return []) (fun _ next {_ _} {_} {request} header => do
     let subjects := bindings header
     exactWork (Exact.charge (8*(subjects.length+request.bodies.length+1)))
     guard (subjects.length == request.bodies.length) .request
     let children ← (subjects.zip request.bodies).mapM fun (subject,body) => readArm artifact subject.bound body
-    let rest ← children.mapM fun child => descendants artifact fuel child.header
-    return children ++ rest.flatten
+    let rest ← children.mapM fun child => next child.header
+    return children ++ rest.flatten)
 
 end QleisliKernel.Qirf.SourceBodyHeader
