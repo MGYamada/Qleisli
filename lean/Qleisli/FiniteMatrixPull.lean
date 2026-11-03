@@ -34,7 +34,7 @@ private theorem basis_meaning (dimension column input : Nat) (bound : column < d
       (fun row => if row == column then Scalar.one else Scalar.zero))[input]?.getD Scalar.zero) =
         if input = column then (1 : ℂ) else 0 := by
   by_cases before : input < dimension
-  · simp only [List.getElem?_map, List.getElem?_range, before, if_true,
+  · simp only [List.getElem?_map, List.getElem?_range, before,
       Option.map_some, Option.getD_some]
     by_cases same : input = column
     · simp [same, Exact.scalar_one_meaning]
@@ -43,7 +43,7 @@ private theorem basis_meaning (dimension column input : Nat) (bound : column < d
       intro same
       subst input
       exact before bound
-    simp [List.getElem?_map, List.getElem?_range, before, different, Exact.scalar_zero_meaning]
+    simp [before, different, Exact.scalar_zero_meaning]
 
 end MatrixPull
 
