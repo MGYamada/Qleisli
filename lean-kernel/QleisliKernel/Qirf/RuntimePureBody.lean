@@ -39,6 +39,17 @@ def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.
   let ordered ← RuntimeOwnerMap.order roles bindings
   return ordered.map (·.port)
 
+/-- The sector equations use the encodings read from the actual target owner
+at entry and return. Matching dimensions alone would also admit zero codes. -/
+structure SelectionCodes {dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (inputs outputs : List Nat) (selector target : Owner) (inputCode outputCode : Semantics.Exact.Matrix) where
+  owners : RuntimeOwnerTransition.Selection interval inputs outputs [selector,target]
+  inputRead : RuntimeInterval.Computed
+    (Carrier.ownerCode [⟨owners.selected.second.port,target.basis⟩]) inputCode
+  outputRead : RuntimeInterval.Computed
+    (Carrier.ownerCode [⟨owners.returned.second.port,target.basis⟩]) outputCode
+
 mutual
 inductive Node (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
@@ -70,8 +81,8 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
         (RuntimePureInterval.fragment frame.selected frame.operations outputs)) physical)
       (action : CodeSpace.Map inputCode outputCode physical) (equation : action.logical = expected) : Node dependencies program block
   | selection {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
-      {start count inputs outputs roles}
-      (frame : RuntimePureInterval.Checked block 2 start count inputs outputs roles)
+      {start count inputs outputs} {selector target : Owner}
+      (frame : RuntimePureInterval.Checked block 2 start count inputs outputs [selector,target])
       (selectorBits targetBits : Nat) (restriction : Raw.Sector.Retained)
       (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
         (RuntimePureInterval.fragment frame.selected frame.operations outputs)) restriction)
@@ -79,7 +90,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (expected logical : List Semantics.Exact.Matrix)
       (equations : RuntimeInterval.Computed
         (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical)
-      (owners : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) : Node dependencies program block
+      (codes : SelectionCodes frame.interval inputs outputs selector target inputCode outputCode) : Node dependencies program block
 
 inductive Nodes (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
@@ -385,8 +396,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             let expectedInterface : Semantics.CarrierInterface.Interface :=
               ⟨[⟨si,selector.basis⟩,⟨ti,target.basis⟩],[⟨so,selector.basis⟩,⟨to,target.basis⟩],.unitary⟩
             guard (site.attached == expectedInterface && site.required == expectedInterface) .request
-            let inputCode ← Carrier.ownerCode [⟨ti,target.basis⟩]
-            let outputCode ← Carrier.ownerCode [⟨to,target.basis⟩]
+            let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨ti,target.basis⟩])
+            let outputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨to,target.basis⟩])
             let selectorLayout ← FiniteCarrier.read selector.basis
             let targetLayout ← FiniteCarrier.read target.basis
             let (meanings,checked,bodies) ← (table.arms.zip site.arms).foldlM
@@ -394,7 +405,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
                 let (logical,children,rest) ← consumeOperation arm.operation.graph OperationAccess.controllable bodies
                 let reference : SectorArm.Reference := ⟨arm.label.ordinal,target.basis,.unitary,
                   subject.implementation,subject.controlled⟩
-                let actual ← SectorArm.read artifact dependencies target.basis targetLayout.bits inputCode outputCode reference
+                let actual ← SectorArm.read artifact dependencies target.basis targetLayout.bits inputCode.val outputCode.val reference
                 exactWork (Exact.charge (logical.entries.length+actual.logical.entries.length+1))
                 guard (actual.logical == logical) .equation
                 pure (meanings ++ [(arm.label.ordinal,logical)],checked ++ children,rest)) ([],[],bodies)
@@ -405,13 +416,15 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             let frame := attached.val
             let sourcePorts : RuntimeOwnerTransition.Selection interval [si.token,ti.token] [so.token,to.token] [selector,target] :=
               ⟨_,callerFrame,owners,entry,exit,rfl,rfl⟩
+            let codes : SelectionCodes interval [si.token,ti.token] [so.token,to.token] selector target inputCode.val outputCode.val :=
+              ⟨sourcePorts,by with_reducible exact inputCode.property,by with_reducible exact outputCode.property⟩
             let restriction ← NaturalAffine.witness (Raw.Sector.read dependencies [.bits selectorLayout.bits]
               [.bits targetLayout.bits] (RuntimePureInterval.fragment frame.selected frame.operations [so.token,to.token]))
-            let logical ← NaturalAffine.witness (NominalSector.checkLogicals inputCode outputCode restriction.val.sectors
+            let logical ← NaturalAffine.witness (NominalSector.checkLogicals inputCode.val outputCode.val restriction.val.sectors
               selectorLayout.labels expected)
             let node : Node dependencies program prepared.block := .selection frame selectorLayout.bits targetLayout.bits restriction.val
-              (by with_reducible exact restriction.property) inputCode outputCode selectorLayout.labels expected logical.val
-              (by with_reducible exact logical.property) (attached.property.symm ▸ sourcePorts)
+              (by with_reducible exact restriction.property) inputCode.val outputCode.val selectorLayout.labels expected logical.val
+              (by with_reducible exact logical.property) (attached.property.symm ▸ codes)
             pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ checked,position.start+position.count,calls,sites,bodies)
           | _ =>

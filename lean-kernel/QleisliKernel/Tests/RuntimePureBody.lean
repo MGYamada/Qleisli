@@ -62,8 +62,9 @@ private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat
     ((ArmBody.interface).inputs.map fun owner => [.quantum owner])
   let actual ← Qirf.RuntimePureBody.check artifact fresh.root actualBody fresh.root.program context inputs.owners.bindings
   let _ ← RuntimePureComposition.prepare artifact fresh.root actualBody context inputs.owners.bindings actual
-  let [.selection frame selectorBits targetBits retained restricted _ _ _ _ _ _ owners] := actual.result.actions
+  let [.selection frame selectorBits targetBits retained restricted _ _ _ _ _ _ codes] := actual.result.actions
     | throw .request
+  let owners := codes.owners
   let localAction ← RuntimeLocalEvents.readSource frame selectorBits targetBits retained restricted owners
   return (localAction.traceResult.events.length,
     owners.transport.after.bindings.map fun b => (b.owner.ordinal,b.port.token))
