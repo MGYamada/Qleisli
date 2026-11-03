@@ -56,20 +56,49 @@ def ApplicationAt.id {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) : SourceId :=
   ⟨record.val,application.index.val⟩
 
+/-- One genuine original-to-record lookup. Reuse retains this actual run;
+its source identity is the complete immutable original, not a name or result. -/
+structure OriginalLookup {sources} (catalogue : GenericCatalogue.Checked sources) (owner name : String) where
+  original : OrdinarySignature.Original sources owner name
+  entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original
+  computed : ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before =
+    (.ok entry,after)
+
+inductive Resolution {sources} (catalogue : GenericCatalogue.Checked sources) {owner name}
+    (original : OrdinarySignature.Original sources owner name) :
+    GenericCatalogue.Entry catalogue.toRuntimeChecked original → Type where
+  | fresh (entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original)
+      (computed : ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before =
+        (.ok entry,after)) : Resolution catalogue original entry
+  | retained (lookup : OriginalLookup catalogue owner name) (same : lookup.original = original) :
+      Resolution catalogue original (same ▸ lookup.entry)
+
+theorem Resolution.computed {sources catalogue owner name original entry}
+    (resolution : @Resolution sources catalogue owner name original entry) :
+    ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked original).run before = (.ok entry,after) := by
+  cases resolution with
+  | fresh _ computed => exact computed
+  | retained lookup same => cases same; exact lookup.computed
+
 structure Target {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) where
   entry : GenericCatalogue.Entry catalogue.toRuntimeChecked application.original.target.envelope
-  resolved : ∃ before after,
-    (GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope).run before =
-      (.ok entry,after)
+  resolution : Resolution catalogue application.original.target.envelope entry
   substitution : GenericOperationSubstitute.Prepared application.original
+
+/-- This accessor exposes the retained actual lookup run, without asserting
+that a shared lookup ran again at the current preparation occurrence. -/
+theorem Target.resolved {sources catalogue record application}
+    (target : @Target sources catalogue record application) :
+    ∃ before after,(GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope).run before =
+      (.ok target.entry,after) := target.resolution.computed
 
 def readTarget {sources catalogue record}
     (application : @ApplicationAt sources catalogue record) : WorkM (Target application) := do
   let target ← NaturalAffine.witness
     (GenericCatalogue.lookup catalogue.toRuntimeChecked application.original.target.envelope)
   let substitution ← GenericOperationSubstitute.prepare application.original
-  return ⟨target.val,by with_reducible exact target.property,substitution⟩
+  return ⟨target.val,.fresh target.val (by with_reducible exact target.property),substitution⟩
 
 /-- The indices, original occurrences and exact target-original receipts are
 retained at every edge. Module/name strings are never used as instance IDs. -/
@@ -223,27 +252,92 @@ structure PreparedApplication {sources} (catalogue : GenericCatalogue.Checked so
   headers : List (DutyAt catalogue target.entry.index)
   originalHeaders : headers = headerDuties catalogue target.entry.index
 
+structure CanonicalTarget {sources} (catalogue : GenericCatalogue.Checked sources) (owner name : String) where
+  lookup : OriginalLookup catalogue owner name
+  headers : List (DutyAt catalogue lookup.entry.index)
+  originalHeaders : headers = headerDuties catalogue lookup.entry.index
+
+structure PackedTarget {sources} (catalogue : GenericCatalogue.Checked sources) where
+  owner : String
+  name : String
+  value : CanonicalTarget catalogue owner name
+
+private def PackedTarget.at {sources catalogue owner name} (packed : @PackedTarget sources catalogue)
+    (sameOwner : packed.owner = owner) (sameName : packed.name = name) : CanonicalTarget catalogue owner name := by
+  rcases packed with ⟨_,_,value⟩
+  cases sameOwner
+  cases sameName
+  exact value
+
+private def findTarget {sources} (catalogue : GenericCatalogue.Checked sources) (owner name : String) :
+    List (PackedTarget catalogue) → WorkM (Option (CanonicalTarget catalogue owner name))
+  | [] => do
+    exactWork (Exact.charge 1)
+    return none
+  | packed :: rest => do
+    -- The actual algorithm visits only this search prefix. Charge both full
+    -- keys before comparison; no whole catalogue or source snapshot is read.
+    exactWork (Exact.charge (16*(packed.owner.utf8ByteSize+packed.name.utf8ByteSize+
+      owner.utf8ByteSize+name.utf8ByteSize+5)))
+    if sameOwner : packed.owner = owner then
+      if sameName : packed.name = name then return some (packed.at sameOwner sameName)
+      else findTarget catalogue owner name rest
+    else findTarget catalogue owner name rest
+
+private structure ReusedTarget {sources} (catalogue : GenericCatalogue.Checked sources) {owner name}
+    (original : OrdinarySignature.Original sources owner name) where
+  entry : GenericCatalogue.Entry catalogue.toRuntimeChecked original
+  resolution : Resolution catalogue original entry
+  headers : List (DutyAt catalogue entry.index)
+  originalHeaders : headers = headerDuties catalogue entry.index
+
+private def reuseTarget {sources catalogue owner name} (cached : @CanonicalTarget sources catalogue owner name)
+    (original : OrdinarySignature.Original sources owner name) : ReusedTarget catalogue original := by
+  have same := cached.lookup.original.sameSource original
+  cases same
+  exact ⟨cached.lookup.entry,.retained cached.lookup rfl,cached.headers,cached.originalHeaders⟩
+
 structure PreparedRecord {sources} (catalogue : GenericCatalogue.Checked sources)
     (record : RecordIndex catalogue) where
   calls : List (PreparedApplication catalogue record)
   every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index)
 
-private def prepareRecord {sources} (catalogue : GenericCatalogue.Checked sources)
-    (record : RecordIndex catalogue) : WorkM (PreparedRecord catalogue record) := do
-  reserveActivities (activities catalogue record)
-  let calls ← (originalApplications catalogue record).mapM fun application => do
+private def prepareApplication {sources catalogue record}
+    (application : @ApplicationAt sources catalogue record) (cache : List (PackedTarget catalogue)) :
+    WorkM (PreparedApplication catalogue record × List (PackedTarget catalogue)) := do
+  match ← findTarget catalogue application.original.owner application.original.name cache with
+  | some cached =>
+    let reused := reuseTarget cached application.original.target.envelope
+    let substitution ← GenericOperationSubstitute.prepare application.original
+    let target : Target application := ⟨reused.entry,reused.resolution,substitution⟩
+    return (⟨application,target,reused.headers,reused.originalHeaders⟩,cache)
+  | none =>
     let target ← readTarget application
     reserveActivities (activities catalogue target.entry.index)
-    return (⟨application,target,headerDuties catalogue target.entry.index,rfl⟩ :
-      PreparedApplication catalogue record)
+    let cached : CanonicalTarget catalogue application.original.owner application.original.name :=
+      ⟨⟨application.original.target.envelope,target.entry,target.resolved⟩,
+        headerDuties catalogue target.entry.index,rfl⟩
+    exactWork (Exact.charge (8*(cache.length+1)))
+    return (⟨application,target,cached.headers,cached.originalHeaders⟩,
+      cache ++ [⟨application.original.owner,application.original.name,cached⟩])
+
+private def prepareRecord {sources} (catalogue : GenericCatalogue.Checked sources)
+    (record : RecordIndex catalogue) (cache : List (PackedTarget catalogue)) :
+    WorkM (PreparedRecord catalogue record × List (PackedTarget catalogue)) := do
+  reserveActivities (activities catalogue record)
+  let (calls,cache) ← (originalApplications catalogue record).foldlM (fun (calls,cache) application => do
+    let (prepared,next) ← prepareApplication application cache
+    return (calls ++ [prepared],next)) ([],cache)
   if every : calls.map (·.application.index) = (originalApplications catalogue record).map (·.index) then
-    return ⟨calls,every⟩
+    return (⟨calls,every⟩,cache)
   else throw .request
 
 structure PreparedRow {sources} (catalogue : GenericCatalogue.Checked sources) where
   record : RecordIndex catalogue
+  before : List (PackedTarget catalogue)
   value : PreparedRecord catalogue record
-  computed : ∃ before after,(prepareRecord catalogue record).run before = (.ok value,after)
+  after : List (PackedTarget catalogue)
+  computed : ∃ work left,(prepareRecord catalogue record before).run work = (.ok (value,after),left)
 
 structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) where
   records : List (PreparedRow catalogue)
@@ -251,9 +345,11 @@ structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) wher
 
 private def prepare {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Prepared catalogue) := do
   exactWork (Exact.charge (16*(catalogue.records.length+1)^2))
-  let records ← (List.finRange catalogue.records.length).mapM fun record => do
-    let value ← NaturalAffine.witness (prepareRecord catalogue record)
-    return (⟨record,value.val,by with_reducible exact value.property⟩ : PreparedRow catalogue)
+  let (_cache,records) ← (List.finRange catalogue.records.length).foldlM (fun (cache,records) record => do
+    let value ← NaturalAffine.witness (prepareRecord catalogue record cache)
+    let row : PreparedRow catalogue :=
+      ⟨record,cache,value.val.1,value.val.2,by with_reducible exact value.property⟩
+    return (value.val.2,records ++ [row])) ([],[])
   if every : records.map (·.record) = List.finRange catalogue.records.length then
     return ⟨records,every⟩
   else throw .request
