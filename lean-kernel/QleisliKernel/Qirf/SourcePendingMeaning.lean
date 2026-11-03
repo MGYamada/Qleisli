@@ -277,7 +277,7 @@ def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Check
   exactWork (Exact.charge (16*(catalogue.records.length+items.length+1)))
   let indexed := items.toArray
   if complete : queue.val.complete = true then
-    let entries ← (List.finRange items.length).mapM fun index => do
+    let entries ← (List.finRange items.length).mapM fun (index : Fin items.length) => do
       let subject := indexed[index.val]'(by simpa only [indexed,List.size_toArray] using index.isLt)
       have atIndex : subject = items[index.val]'index.isLt := by
         simp only [subject,indexed,List.getElem_toArray]
