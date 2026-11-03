@@ -109,6 +109,7 @@ import QleisliKernel.Qirf.RuntimeForestCode
 import QleisliKernel.Qirf.RuntimeCoefficientTransport
 import QleisliKernel.Qirf.RuntimeScatterTransport
 import QleisliKernel.Qirf.RuntimeLocalEvents
+import QleisliKernel.Qirf.SourceDutySlots
 import QleisliKernel.Semantics.SourceClassical
 import QleisliKernel.Qirf.SourceClassicalTree
 import QleisliKernel.Qirf.SourceClassicalExecution
