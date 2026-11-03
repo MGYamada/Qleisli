@@ -103,6 +103,142 @@ fn retained_frame_keeps_original_ordinary_input_ids() {
     assert!(lower.compiler.instrument_evidence.is_empty());
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn named_call_keeps_its_literal_qmatch_and_each_supplied_provider() {
+    use crate::frontend::compile::{lower::lower_function, snapshot_tests::compiler};
+    use crate::interchange::qmatch::{OperationNode as Node, OriginalBody};
+
+    let source = "#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Identity:Bit=reference(keep);
+meaning Sign:Bit=reference(sign);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {
+    qmatch(s,q){0=>keep,1=>checked_op(U,Identity)}
+}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    choose[then_op(sign,sign)](s,q)
+}
+";
+    let project = project(source);
+    let mut compiler = compiler(&project);
+    for name in ["main::keep", "main::sign"] {
+        let key = compiler.source.resolution.qualified(name).unwrap();
+        let program = lower_function(&mut compiler, &key).unwrap();
+        compiler.checked.insert(key, program);
+    }
+    let meaning = compiler
+        .source
+        .resolution
+        .qualified("main::Identity")
+        .unwrap();
+    compiler.compile_meaning(&meaning).unwrap();
+    let route = compiler.source.resolution.qualified("main::route").unwrap();
+    compiler.force_typed_root = true;
+    compiler.selected_entry = Some(route);
+    let program = lower_function(&mut compiler, &route).unwrap();
+    let caller = program.source_context().unwrap();
+    let [(call, body)] = caller.calls.as_slice() else {
+        panic!("expected the original named call")
+    };
+    assert_eq!(call.offset as usize, source.find("choose[then_op").unwrap());
+    let [(formal, actual)] = body.supplies.as_slice() else {
+        panic!("callee's original Op actual")
+    };
+    assert_eq!(formal, "U");
+    assert!(matches!(
+        actual.description.nodes.as_slice(),
+        [
+            Node::Provider { .. },
+            Node::Provider { .. },
+            Node::Then(0, 1)
+        ]
+    ));
+    let [site] = body.selections.as_slice() else {
+        panic!("missing the original Bit selection in its callee: {body:?}")
+    };
+    assert_eq!(
+        site.position.offset as usize,
+        source.find("qmatch(s,q)").unwrap()
+    );
+    assert_eq!((site.position.start, site.position.count), (0, call.count));
+    let [plain, refined] = site.arms.as_slice() else {
+        panic!("written arms")
+    };
+    let plain = plain.operation.as_ref().unwrap();
+    assert!(
+        matches!(plain.description.nodes.as_slice(), [Node::Provider { function, .. }] if function == "keep")
+    );
+    let supplied = refined.operation.as_ref().unwrap();
+    assert!(
+        matches!(supplied.description.nodes.as_slice(), [
+        Node::Provider { function: first, .. }, Node::Provider { function: second, .. },
+        Node::Then(0,1), Node::Formal { function, ordinal: 0, operations, .. },
+        Node::Requested { child: 3, function: meaning, .. }
+    ] if first == "sign" && second == "sign" && function == "choose" && operations == &[("U".into(), 2)] && meaning == "Identity"),
+        "original operation graph: {:?}",
+        supplied.description
+    );
+    assert!(matches!(
+        supplied.bodies.as_slice(),
+        [OriginalBody::Function { .. }, OriginalBody::Function { .. }]
+    ));
+    let [group] = supplied.meaning_references.as_slice() else {
+        panic!("one original requested Meaning")
+    };
+    assert!(
+        matches!(group.as_slice(), [OriginalBody::Pure { program, .. }] if program.raw().operations.is_empty())
+    );
+    let (artifact, request) = crate::interchange::qmatch::v5::proposal(
+        program.raw(),
+        Arc::new(program.runtime_result().unwrap().clone()),
+        caller,
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    let bytes = request.encode().unwrap();
+    let view = compiler
+        .kernel
+        .qmatch_context_view(&artifact, &bytes)
+        .unwrap();
+    assert!(view.starts_with(b"QDV1"));
+    assert_eq!(
+        crate::interchange::qmatch::v5::Request::decode(&bytes).unwrap(),
+        request
+    );
+    let [call] = request.context.calls.as_slice() else {
+        panic!("one original caller interval")
+    };
+    assert_eq!(call.body.bodies.len(), 5);
+    let [actual, keep, refined] = call.body.references.as_slice() else {
+        panic!("one prefix graph and two original arms")
+    };
+    assert!(actual.is_empty() && keep.is_empty());
+    assert!(matches!(refined.as_slice(), [leaves] if leaves.len()==1));
+    let mut regrouped = request.clone();
+    regrouped.context.calls[0].body.references.swap(0, 2);
+    assert_ne!(
+        view,
+        compiler
+            .kernel
+            .qmatch_context_view(&artifact, &regrouped.encode().unwrap())
+            .unwrap()
+    );
+    let mut missing = request.clone();
+    missing.context.calls[0].body.references[2][0].clear();
+    assert!(
+        compiler
+            .kernel
+            .qmatch_context_view(&artifact, &missing.encode().unwrap())
+            .is_err()
+    );
+}
+
 #[test]
 fn empty_ordinary_ssa_keeps_zero_width_owner_and_source_gate() {
     let project = project(

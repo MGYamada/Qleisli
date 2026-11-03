@@ -35,6 +35,31 @@ fn expected(text: &str) -> Vec<u8> {
 }
 
 #[test]
+fn original_meaning_groups_preserve_empty_and_repeated_quantum_references() {
+    let leaf = data::BodyRequest {
+        subject: data::ProviderSubject::Pure { program: 8 },
+        body: Default::default(),
+    };
+    let mut value = data::Context {
+        references: vec![vec![], vec![vec![leaf.clone(), leaf.clone()]]],
+        ..Default::default()
+    };
+    let reference =
+        r#"["source-body",["qmatch-pure-provider",8],["source-context",[],[],[],[],[],[]]]"#;
+    let original = write(|w| context(w, &value));
+    assert_eq!(
+        original,
+        expected(&format!(
+            r#"["source-context",[],[],[],[],[],[[],[[{reference},{reference}]]]]"#
+        ))
+    );
+    value.references[1] = vec![vec![leaf.clone()], vec![leaf.clone()]];
+    assert_ne!(original, write(|w| context(w, &value)));
+    value.references = vec![vec![vec![leaf.clone(), leaf]], vec![]];
+    assert_ne!(original, write(|w| context(w, &value)));
+}
+
+#[test]
 fn equal_subject_indices_keep_both_original_occurrences_in_exact_order() {
     let mut value = data::Context::default();
     for offset in [101, 202] {
@@ -55,8 +80,8 @@ fn equal_subject_indices_keep_both_original_occurrences_in_exact_order() {
         actual,
         expected(
             r#"["source-context",[],[],[],[],[
-      ["source-body",["qmatch-function-provider",7],["source-context",[["source-interval",101,0,0]],[],[],[],[]]],
-      ["source-body",["qmatch-function-provider",7],["source-context",[["source-interval",202,0,0]],[],[],[],[]]]]]"#
+      ["source-body",["qmatch-function-provider",7],["source-context",[["source-interval",101,0,0]],[],[],[],[],[]]],
+      ["source-body",["qmatch-function-provider",7],["source-context",[["source-interval",202,0,0]],[],[],[],[],[]]]],[]]"#
         )
     );
     let mut swapped = value.clone();
@@ -94,8 +119,8 @@ fn both_branch_paths_and_zero_count_call_positions_participate_in_view() {
         actual,
         expected(
             r#"["source-context",[],[],[
-      ["source-call",["source-interval",17,0,0],["source-context",[],[],[],[],[]]]],[
-      ["source-branch",["source-interval",31,0,1],["source-context",[],[],[],[],[]],["source-context",[],[],[],[],[]]]],[]]"#
+      ["source-call",["source-interval",17,0,0],["source-context",[],[],[],[],[],[]]]],[
+      ["source-branch",["source-interval",31,0,1],["source-context",[],[],[],[],[],[]],["source-context",[],[],[],[],[],[]]]],[],[]]"#
         )
     );
     value.branches[0].else_body.positions.push(data::Position {

@@ -24,6 +24,15 @@ development milestones from the scope of their evidence.
   at both occurrences and compares their composition with the written Meaning.
   A false Meaning inside a zero power is rejected at the indexed arm. The
   selected CLI still requires transport for a named callee's operation arguments.
+- Retain a named callee's actual operation arguments, each written arm and
+  the quantum references of each Meaning in the original lowering. The
+  internal v5 comparison includes the ordered reference groups. For a caller
+  consisting of a single nested selection, both source intervals must identify
+  the same Raw instructions. The checker verifies the returned owners in the
+  same native graph.
+- Check transparent powers of the intrinsic Hadamard and global phase gates
+  in the whole-source catalogue. The original count and access demand stay
+  attached to the operation, including when the count is zero.
 - Check ordinary `if` branches that call pure functions and preserve their
   input owners. The shared traversal verifies each condition over the
   original input and measurement histories and checks the simultaneous

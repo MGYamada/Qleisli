@@ -17,9 +17,9 @@ pub mod v5;
 /// and carrier-sector check. A physical signature is not a nominal contract.
 pub(crate) enum ArmBody {
     Evidence(std::sync::Arc<crate::contract::FunctionEvidence>),
-    /// A direct language primitive is a concrete program, not a source
-    /// function provider. Its original operation tree has no body slots.
-    Primitive(crate::ir::RawProgram),
+    /// The standalone forward circuit of an original primitive or operation tree.
+    /// The complete source request separately checks each original provider.
+    Program(crate::ir::RawProgram),
     Physical {
         bits: u32,
         raw: crate::ir::RawProgram,
@@ -30,7 +30,6 @@ pub(crate) enum ArmBody {
 pub(crate) struct ArmSubject {
     pub body: ArmBody,
     pub controlled: crate::ir::RawProgram,
-    pub context: std::sync::Arc<ContextSubject>,
     pub operation: Option<std::sync::Arc<OperationSubject>>,
 }
 
@@ -48,15 +47,27 @@ pub(crate) enum OriginalBody {
     },
 }
 
+impl OriginalBody {
+    pub(crate) fn context(&self) -> &std::sync::Arc<ContextSubject> {
+        match self {
+            Self::Function { context, .. } | Self::Pure { context, .. } => context,
+        }
+    }
+}
+
 pub(crate) struct OperationSubject {
     pub description: Description,
     pub bodies: Vec<OriginalBody>,
+    /// One group per original Meaning obligation, containing the actual quantum
+    /// reference bodies in source order. Classical leaves need no program slot.
+    pub meaning_references: Vec<Vec<OriginalBody>>,
 }
 
 /// Original lowering coordinates retained alongside the exact prepared body.
 /// Encoding derives all graph indices afresh from these actual arm subjects.
 #[derive(Default)]
 pub(crate) struct ContextSubject {
+    pub supplies: Vec<(String, OperationSubject)>,
     pub positions: Vec<Position>,
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
@@ -130,10 +141,10 @@ pub(crate) fn proposal(
         for arm in selection.arms {
             let evidence = match &arm.body {
                 ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
-                ArmBody::Primitive(_) => {
+                ArmBody::Program(_) => {
                     return Err(Error::new(
                         "unsupported",
-                        "direct primitive qmatch arms require the complete v5 source gate",
+                        "standalone qmatch arm programs require the complete v5 source gate",
                     ));
                 }
                 ArmBody::Physical {

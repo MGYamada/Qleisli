@@ -3,6 +3,38 @@
 use super::*;
 use crate::interchange::{execution_view, json};
 
+/// These saved vectors predate required implicit-prelude lookup evidence.
+/// Supply the isolated empty module in both the proposal and its independent
+/// literal view, retaining the original source bytes, positions and mutations.
+fn with_test_prelude(mut row: json::Value) -> json::Value {
+    use json::Value::{Array, Object, String as Text};
+    let Object(fields) = &mut row else {
+        panic!("fixture row")
+    };
+    let Some(Object(artifact)) = fields.get_mut("artifact") else {
+        panic!("fixture artifact")
+    };
+    let Some(Array(sources)) = artifact.get_mut("sources") else {
+        panic!("artifact sources")
+    };
+    sources.push(json::Value::object([
+        ("path", Text("std::prelude".into())),
+        ("text", Text(String::new())),
+    ]));
+    if let Some(Array(view)) = fields.get_mut("view") {
+        if let Some(Array(graph)) = view.get_mut(1) {
+            if let Some(Array(sources)) = graph.get_mut(3) {
+                sources.push(Array(vec![
+                    Text("source".into()),
+                    Text("std::prelude".into()),
+                    Text(String::new()),
+                ]));
+            }
+        }
+    }
+    row
+}
+
 fn cases() -> json::Value {
     let scalar = json::parse(include_bytes!(
         "../../../../tests/fixtures/qmatch_v030/execution-cases.json"
@@ -25,6 +57,7 @@ fn cases() -> json::Value {
         .chain(nominal.field("cases").unwrap().array().unwrap())
         .chain(body.field("cases").unwrap().array().unwrap())
         .cloned()
+        .map(with_test_prelude)
         .collect();
     json::Value::object([("cases", json::Value::Array(rows))])
 }
@@ -169,7 +202,7 @@ fn proposal_roots_do_not_relax_ordinary_reachability_or_hide_unrelated_nodes() {
             // Only the fresh original-source gate decides relevance. The
             // untrusted complete proposal grants no local acceptance handle.
             let prepared = prepare(subject, &request).unwrap();
-            assert_eq!(prepared.decoded.sources.len(), 2);
+            assert_eq!(prepared.decoded.sources.len(), 3);
         }
     }
 }
@@ -239,7 +272,15 @@ fn full_source_frames_require_fresh_native_source_body_control_and_qdv_checks() 
         "../../../../tests/fixtures/qmatch_v030/frame-execution-cases.json"
     ))
     .unwrap();
-    for row in fixture.field("cases").unwrap().array().unwrap() {
+    for row in fixture
+        .field("cases")
+        .unwrap()
+        .array()
+        .unwrap()
+        .iter()
+        .cloned()
+        .map(with_test_prelude)
+    {
         let name = row.field("name").unwrap().text().unwrap();
         let artifact = json::encode(row.field("artifact").unwrap()).unwrap();
         let request = json::encode(row.field("request").unwrap()).unwrap();

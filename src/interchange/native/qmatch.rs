@@ -48,6 +48,35 @@ fn prepare(subject: Arc<Subject>, request: &Request) -> Result<Prepared> {
 }
 
 impl Kernel {
+    /// Construct the comparison from the actual decoded graph and complete
+    /// original-context request. Execution requires a separate native decision.
+    pub(crate) fn qmatch_context_view(
+        &self,
+        artifact: &[u8],
+        request_bytes: &[u8],
+    ) -> Result<Vec<u8>> {
+        use crate::interchange::{QmatchSource, decode_subject_with_runtime, qmatch::v5};
+        let subject = self.subject(artifact, Some(request_bytes))?;
+        let request = v5::Request::decode(subject.request.as_deref().expect("context request"))?;
+        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+        let decoded = Arc::new(decode_subject_with_runtime(
+            &subject,
+            &mut budget,
+            None,
+            None,
+            Some(QmatchSource::Context(&request)),
+            None,
+        )?);
+        let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
+        let prepared = Prepared {
+            subject,
+            decoded,
+            derived_effect,
+            output_ports,
+        };
+        crate::interchange::execution_view::finite::qmatch_v5::complete(prepared.graph(), &request)
+    }
+
     /// Fresh execution-only checking of the internal named-arm source profile.
     /// A missing/incompatible/failed checker refuses without an old-mode retry.
     pub fn check_qmatch_source(&self, artifact: &[u8], request: &[u8]) -> Result<QmatchChecked> {

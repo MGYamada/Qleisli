@@ -910,7 +910,8 @@ private def runtimeTransform {sources} (reader : DefinitionReader sources)
   let rows := counts.map (·.2)
   match candidate.decision with
   | .primitive _ _ _ _ _ _ kind _ =>
-    guard (written.counts.isEmpty && (kind == .h || kind == .globalPhaseEighth)) .request
+    let .name _ := base.2 | throw .request
+    guard (kind == .h || kind == .globalPhaseEighth) .request
     let (control,target) ← if written.access == .controlled then
         match arguments with
         | [[.owner control],[.owner target]] =>
@@ -920,7 +921,19 @@ private def runtimeTransform {sources} (reader : DefinitionReader sources)
       else match arguments with | [[.owner target]] => pure (none,target) | _ => throw .request
     if kind == .h then GenericValues.expect state [.owner target] [.owner [.fixed .bit]]
     let value := match control with | none => [.owner target] | some control => [.tuple 2,.owner control,.owner target]
-    pure {value,remaining,quantumUse := true,rows := rows.flatten ++ CallName.sourceRows candidate}
+    let sourceRows := rows.flatten ++ CallName.sourceRows candidate
+    if counts.isEmpty then return {value,remaining,quantumUse := true,rows := sourceRows}
+    let origin ← GenericOperation.readOrigin state scope tokens sourceRows
+    let primitive : OperationDescription.Primitive := if kind == .h then .h else .globalPhaseEighth
+    let leaf := GenericOperation.Description.singleton (StaticHeaders.frame state.prepared.original) (.primitive primitive target)
+    let subject := counts.foldl (fun op (count,_) => op.unary (fun child => .power child count)) leaf
+    let requested : OperationPaths.Paths := match written.access with
+      | .forward => ⟨true,false,false⟩
+      | .adjoint => ⟨false,true,false⟩
+      | .controlled => ⟨false,false,true⟩
+    pure {
+      value,remaining,quantumUse := true,rows := sourceRows,
+      activities := [.duty ⟨origin,subject,.access requested,.runtimeTransform,[],[],none⟩]}
   | _ =>
     let some resolution := CallName.candidateResolution candidate | throw .request
     let application ← instantiateWithReader state scope base.2 resolution.moduleName resolution.declaration.name

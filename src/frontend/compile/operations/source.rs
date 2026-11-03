@@ -11,6 +11,7 @@ struct Instance<'a> {
     bases: Vec<(String, Vec<crate::interchange::carrier::Atom>)>,
     naturals: Vec<(String, u32)>,
     operations: Vec<(String, &'a Operation)>,
+    meanings: Vec<Key>,
 }
 
 enum Finish<'a> {
@@ -31,6 +32,59 @@ enum Task<'a> {
 }
 
 impl Compiler<'_> {
+    pub(in crate::frontend::compile) fn original_pure_body(
+        &mut self,
+        definition: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<OriginalBody, CompileError> {
+        let body = self.checked.get(&definition).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "missing original quantum body",
+            )
+        })?;
+        let work = 16 + total_size(body.output_ports().iter().map(|port| port.wires.len() + 3));
+        self.charge(module, span, work)?;
+        let program = self.checked[&definition].clone();
+        let context = program.source_context().cloned().ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "missing original quantum body context",
+            )
+        })?;
+        Ok(OriginalBody::Pure { program, context })
+    }
+
+    fn original_meaning_references(
+        &mut self,
+        meaning: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<Vec<OriginalBody>, CompileError> {
+        let declared = self.meanings.get(&meaning).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "missing original Meaning declaration",
+            )
+        })?;
+        self.charge(module, span, declared.target.cells().saturating_mul(2) + 1)?;
+        let leaves: Vec<_> = self.meanings[&meaning]
+            .target
+            .reference_occurrences()
+            .collect();
+        leaves
+            .into_iter()
+            .map(|key| self.original_pure_body(key, module, span))
+            .collect()
+    }
+
     fn source_description_instance<'a>(
         &mut self,
         definition: Key,
@@ -71,6 +125,7 @@ impl Compiler<'_> {
             bases: Vec::new(),
             naturals: Vec::new(),
             operations: Vec::new(),
+            meanings: Vec::new(),
         };
         for (ordinal, parameter) in declaration.static_params.iter().enumerate() {
             let formal = &self.source.interfaces[&definition].statics[ordinal];
@@ -139,6 +194,13 @@ impl Compiler<'_> {
                     result.naturals.push((parameter.name.text.clone(), value));
                 }
                 StaticParamKind::Operation { .. } => {
+                    if let StaticKind::Operation {
+                        meaning: Some(meaning),
+                        ..
+                    } = self.source.interfaces[&definition].statics[ordinal].kind
+                    {
+                        result.meanings.push(meaning);
+                    }
                     let operation = instance.operations.get(&key).ok_or_else(|| {
                         self.error(
                             module,
@@ -167,6 +229,31 @@ impl Compiler<'_> {
             }
         }
         Ok(result)
+    }
+
+    /// Original function-level Op supplies, including unused formals. A branch
+    /// shares its enclosing function's supplies and introduces no new ones.
+    pub(in crate::frontend::compile) fn qmatch_supplies(
+        &mut self,
+        key: Key,
+        module: &str,
+        span: Span,
+    ) -> Result<Vec<(String, OperationSubject)>, CompileError> {
+        let Some(current) = self
+            .concrete_context
+            .current
+            .as_ref()
+            .filter(|i| !i.operations.is_empty())
+            .cloned()
+        else {
+            return Ok(Vec::new());
+        };
+        let table = Arc::clone(&self.source.lexical[&key]);
+        self.source_description_instance(key, Some(&current), &table, module, span)?
+            .operations
+            .into_iter()
+            .map(|(name, actual)| Ok((name, self.qmatch_operation_subject(actual, module, span)?)))
+            .collect()
     }
 
     pub(in crate::frontend::compile) fn qmatch_operation_application(
@@ -211,6 +298,7 @@ impl Compiler<'_> {
         let mut stack = Vec::new();
         let mut nodes = Vec::new();
         let mut bodies = Vec::new();
+        let mut meaning_references = Vec::new();
         let mut entered = 0usize;
         while let Some(task) = pending.pop() {
             self.charge(module, span, 8)?;
@@ -332,6 +420,17 @@ impl Compiler<'_> {
                     }
                 }
                 Task::Leave(finish, count) => {
+                    match &finish {
+                        Finish::Provider(shape, ..) | Finish::Formal(shape, _) => {
+                            for &meaning in &shape.meanings {
+                                meaning_references
+                                    .push(self.original_meaning_references(meaning, module, span)?);
+                            }
+                        }
+                        Finish::Requested(meaning) => meaning_references
+                            .push(self.original_meaning_references(*meaning, module, span)?),
+                        _ => {}
+                    }
                     if stack.len() < count || nodes.len() >= MAX_TREE_NODES {
                         return Err(self.error(
                             module,
@@ -428,6 +527,8 @@ impl Compiler<'_> {
                     let mut index = nodes.len() as u32;
                     nodes.push(node);
                     if let Some(meaning) = requested {
+                        meaning_references
+                            .push(self.original_meaning_references(meaning, module, span)?);
                         if nodes.len() >= MAX_TREE_NODES {
                             return Err(self.error(
                                 module,
@@ -461,6 +562,7 @@ impl Compiler<'_> {
         Ok(OperationSubject {
             description: Description { nodes, root: *root },
             bodies,
+            meaning_references,
         })
     }
 }

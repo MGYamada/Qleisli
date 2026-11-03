@@ -26,19 +26,37 @@ structure Site where
 -- Recursive data stays plain. Readers and walkers use explicit total fuel;
 -- no generated partial equality or printing helper is part of this contract.
 inductive Context where
-  | mk (positions : List SourceSequence.Position) (sites : List Site)
+  | withReferences (positions : List SourceSequence.Position) (sites : List Site)
       (calls : List (SourceSequence.Position × Context))
       (branches : List (SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context))
+      (references : List (List (List (Provider × Context))))
+
+/-- Construct a local context with no transported Meaning groups. The wire
+decoder requires the reference field even when its value is empty. -/
+def Context.mk (positions : List SourceSequence.Position) (sites : List Site)
+    (calls : List (SourceSequence.Position × Context))
+    (branches : List (SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context)) : Context :=
+  .withReferences positions sites calls branches bodies []
 
 def Context.positions : Context → List SourceSequence.Position
-  | .mk positions _ _ _ _ => positions
+  | .withReferences positions _ _ _ _ _ => positions
 def Context.sites : Context → List Site
-  | .mk _ sites _ _ _ => sites
+  | .withReferences _ sites _ _ _ _ => sites
 def Context.calls : Context → List (SourceSequence.Position × Context)
-  | .mk _ _ calls _ _ => calls
+  | .withReferences _ _ calls _ _ _ => calls
 def Context.branches : Context → List (SourceSequence.Position × Context × Context)
-  | .mk _ _ _ branches _ => branches
+  | .withReferences _ _ _ branches _ _ => branches
 def Context.bodies : Context → List (Provider × Context)
-  | .mk _ _ _ _ bodies => bodies
+  | .withReferences _ _ _ _ bodies _ => bodies
+
+/-- One group list per original operation graph. Each group supplies the
+quantum leaves of one original Meaning in written order. -/
+def Context.references : Context → List (List (List (Provider × Context)))
+  | .withReferences _ _ _ _ _ references => references
+
+/-- Preserve the original request while passing the remaining provider slots
+to the body after its original function-level operation supplies. -/
+def Context.withBodies (context : Context) (bodies : List (Provider × Context)) : Context :=
+  .withReferences context.positions context.sites context.calls context.branches bodies context.references
 
 end QleisliKernel.Qirf.RuntimeContextRequest

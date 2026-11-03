@@ -71,7 +71,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
         bindings: BTreeMap::new(),
     };
     for arm in &selection.arms {
-        let (body, context, steps, operation) = prepare(
+        let (body, steps, operation) = prepare(
             &mut lower,
             "main",
             &arm.operation,
@@ -80,7 +80,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
             &Env::new(),
         )
         .expect("untrusted direct primitive preparation");
-        let ArmBody::Primitive(raw) = body else {
+        let ArmBody::Program(raw) = body else {
             panic!("primitive became a function provider")
         };
         assert_eq!(raw.quantum_inputs.len(), 1);
@@ -96,13 +96,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
             }]
         );
         assert!(operation.bodies.is_empty());
-        assert!(
-            context.positions.is_empty()
-                && context.selections.is_empty()
-                && context.calls.is_empty()
-                && context.branches.is_empty()
-                && context.operation.is_none()
-        );
+
         assert_eq!(steps.len(), 1);
         assert_eq!(
             steps[0].controls,

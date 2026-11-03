@@ -833,7 +833,7 @@ impl Compiler<'_> {
             ),
             sources,
         );
-        let mut evidence = if let Some(meaning) = meaning {
+        let evidence = if let Some(meaning) = meaning {
             let target = &self.meanings[&meaning];
             if let Ok(finite) = target.target.finite() {
                 MeaningEvidence::check_retained_with_kernel(
@@ -869,7 +869,6 @@ impl Compiler<'_> {
             .map_err(|error| error.error)
         }
         .map_err(|error| self.op_error(module, span, error))?;
-        Arc::make_mut(&mut evidence).retain_source_context(program.source_context().cloned());
         let operation = Operation {
             basis,
             codomain,

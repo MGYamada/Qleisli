@@ -30,6 +30,9 @@ pub struct Context {
     pub calls: Vec<Call>,
     pub branches: Vec<Branch>,
     pub bodies: Vec<BodyRequest>,
+    /// For each original arm or operation application, one quantum-body list
+    /// per Meaning obligation. Source order and empty groups are significant.
+    pub references: Vec<Vec<Vec<BodyRequest>>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -60,6 +63,7 @@ impl Context {
         charge(remaining, self.calls.len().saturating_mul(160))?;
         charge(remaining, self.branches.len().saturating_mul(192))?;
         charge(remaining, self.bodies.len().saturating_mul(64))?;
+        charge(remaining, self.references.len().saturating_mul(32))?;
         for site in &self.sites {
             interface_storage(&site.attached, remaining)?;
             interface_storage(&site.required, remaining)?;
@@ -81,10 +85,19 @@ impl Context {
         for body in &self.bodies {
             body.body.bounded(depth + 1, remaining)?;
         }
+        for operation in &self.references {
+            charge(remaining, operation.len().saturating_mul(32))?;
+            for group in operation {
+                charge(remaining, group.len().saturating_mul(64))?;
+                for leaf in group {
+                    leaf.body.bounded(depth + 1, remaining)?;
+                }
+            }
+        }
         Ok(())
     }
 
-    pub(super) fn fields(&self) -> [(String, Value); 5] {
+    pub(super) fn fields(&self) -> [(String, Value); 6] {
         [
             (
                 "positions".into(),
@@ -106,6 +119,26 @@ impl Context {
                 "bodies".into(),
                 Value::Array(self.bodies.iter().map(BodyRequest::encode).collect()),
             ),
+            (
+                "references".into(),
+                Value::Array(
+                    self.references
+                        .iter()
+                        .map(|operation| {
+                            Value::Array(
+                                operation
+                                    .iter()
+                                    .map(|group| {
+                                        Value::Array(
+                                            group.iter().map(BodyRequest::encode).collect(),
+                                        )
+                                    })
+                                    .collect(),
+                            )
+                        })
+                        .collect(),
+                ),
+            ),
         ]
     }
 
@@ -114,7 +147,14 @@ impl Context {
     }
 
     pub(super) fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
-        value.fields(&["positions", "sites", "calls", "branches", "bodies"])?;
+        value.fields(&[
+            "positions",
+            "sites",
+            "calls",
+            "branches",
+            "bodies",
+            "references",
+        ])?;
         Self::decode_fields(value, depth, remaining)
     }
 
@@ -131,6 +171,7 @@ impl Context {
         let calls = value.field("calls")?.array()?;
         let branches = value.field("branches")?.array()?;
         let bodies = value.field("bodies")?.array()?;
+        let references = value.field("references")?.array()?;
         if sites.len() > 128 {
             return Err(Error::limit("qmatch sequence capacity"));
         }
@@ -139,6 +180,7 @@ impl Context {
         charge(remaining, calls.len().saturating_mul(160))?;
         charge(remaining, branches.len().saturating_mul(192))?;
         charge(remaining, bodies.len().saturating_mul(64))?;
+        charge(remaining, references.len().saturating_mul(32))?;
         Ok(Self {
             positions: positions
                 .iter()
@@ -159,6 +201,24 @@ impl Context {
             bodies: bodies
                 .iter()
                 .map(|body| BodyRequest::decode(body, depth + 1, remaining))
+                .collect::<Result<_>>()?,
+            references: references
+                .iter()
+                .map(|operation| {
+                    let groups = operation.array()?;
+                    charge(remaining, groups.len().saturating_mul(32))?;
+                    groups
+                        .iter()
+                        .map(|group| {
+                            let leaves = group.array()?;
+                            charge(remaining, leaves.len().saturating_mul(64))?;
+                            leaves
+                                .iter()
+                                .map(|leaf| BodyRequest::decode(leaf, depth + 1, remaining))
+                                .collect::<Result<_>>()
+                        })
+                        .collect::<Result<_>>()
+                })
                 .collect::<Result<_>>()?,
         })
     }

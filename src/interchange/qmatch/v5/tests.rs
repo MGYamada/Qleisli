@@ -2,7 +2,8 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 
-const EMPTY: &str = r#"{"positions":[],"sites":[],"calls":[],"branches":[],"bodies":[]}"#;
+const EMPTY: &str =
+    r#"{"positions":[],"sites":[],"calls":[],"branches":[],"bodies":[],"references":[]}"#;
 const RUNTIME: &str = r#"{"format":"qleisli.runtime-root-request","version":2,"profile":"finite-runtime-root-v2",
  "selection":"internal","module":"m","declaration":"f","static_bases":[],"static_naturals":[],
  "parameters":[],"input_storage":[],"input_rows":[[]],"result":[{"tag":"finite","atom":{"tag":"unit"}}],
@@ -14,7 +15,7 @@ fn value() -> Value {
       "runtime":{RUNTIME},
       "positions":[],"sites":[],"calls":[],"branches":[],"bodies":[
        {{"subject":{{"kind":"function","evidence":7}},"body":{EMPTY}}},
-       {{"subject":{{"kind":"pure","program":9}},"body":{EMPTY}}}]}}"#).as_bytes()).unwrap()
+       {{"subject":{{"kind":"pure","program":9}},"body":{EMPTY}}}],"references":[]}}"#).as_bytes()).unwrap()
 }
 
 fn object(value: &mut Value) -> &mut std::collections::BTreeMap<String, Value> {
@@ -54,7 +55,7 @@ fn unified_body_subject_variants_are_exact_and_old_profiles_refuse() {
             "{extra}"
         );
     }
-    for missing in ["runtime", "calls", "branches", "bodies"] {
+    for missing in ["runtime", "calls", "branches", "bodies", "references"] {
         let mut changed = value();
         object(&mut changed).remove(missing);
         assert!(

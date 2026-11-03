@@ -69,18 +69,25 @@ impl Target {
         }
     }
     pub(super) fn references(&self) -> BTreeSet<DefId> {
+        self.reference_occurrences().collect()
+    }
+
+    /// Quantum reference leaves in written composition/tensor order, including repeats.
+    pub(super) fn reference_occurrences(&self) -> impl Iterator<Item = DefId> + '_ {
         let mut pending = vec![self];
-        let mut references = BTreeSet::new();
-        while let Some(target) = pending.pop() {
-            match target.node.as_ref() {
-                Node::Reference(id) => {
-                    references.insert(*id);
+        std::iter::from_fn(move || {
+            while let Some(target) = pending.pop() {
+                match target.node.as_ref() {
+                    Node::Reference(id) => return Some(*id),
+                    Node::Compose(first, second) | Node::Tensor(first, second) => {
+                        pending.push(second);
+                        pending.push(first);
+                    }
+                    Node::Monomial(_) => {}
                 }
-                Node::Compose(a, b) | Node::Tensor(a, b) => pending.extend([a, b]),
-                Node::Monomial(_) => {}
             }
-        }
-        references
+            None
+        })
     }
     pub(super) fn compose(&self, next: &Self) -> Result<Self, ContractError> {
         if self.codomain != next.signature {

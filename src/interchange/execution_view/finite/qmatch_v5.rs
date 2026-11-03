@@ -115,7 +115,7 @@ fn position(view: &mut View<'_>, value: &data::Position) -> Result<()> {
 }
 
 fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
-    view.record("source-context", 5, |w| {
+    view.record("source-context", 6, |w| {
         w.list(&value.positions, position)?;
         w.list(&value.sites, |w, site| {
             w.record("qmatch-site", 4, |w| {
@@ -143,19 +143,24 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
                 context(w, &branch.else_body)
             })
         })?;
-        w.list(&value.bodies, |w, body| {
-            w.record("source-body", 2, |w| {
-                match &body.subject {
-                    data::ProviderSubject::Function { evidence } => {
-                        w.record("qmatch-function-provider", 1, |w| w.n(*evidence as usize))
-                    }
-                    data::ProviderSubject::Pure { program } => {
-                        w.record("qmatch-pure-provider", 1, |w| w.n(*program as usize))
-                    }
-                }?;
-                context(w, &body.body)
-            })
+        w.list(&value.bodies, body)?;
+        w.list(&value.references, |w, groups| {
+            w.list(groups, |w, leaves| w.list(leaves, body))
         })
+    })
+}
+
+fn body(view: &mut View<'_>, value: &data::BodyRequest) -> Result<()> {
+    view.record("source-body", 2, |w| {
+        match &value.subject {
+            data::ProviderSubject::Function { evidence } => {
+                w.record("qmatch-function-provider", 1, |w| w.n(*evidence as usize))
+            }
+            data::ProviderSubject::Pure { program } => {
+                w.record("qmatch-pure-provider", 1, |w| w.n(*program as usize))
+            }
+        }?;
+        context(w, &value.body)
     })
 }
 

@@ -1,5 +1,6 @@
 import Protocol.Carrier
 import Protocol.RuntimeRoot
+import QleisliKernel.Qirf.RuntimeNamedSelection
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.Qirf.RuntimeContextRequest
@@ -138,6 +139,15 @@ private def site (value : Json) : WorkM Site := do
   guard (0 < arms.size && arms.size ≤ 64) .limit
   return ⟨attached,required,position,← adapt (arms.toList.mapM arm)⟩
 
+private def contextFields := ["positions","sites","calls","branches","bodies","references"]
+
+private def readBody (readChild : Json → WorkM Context) (value : Json) : WorkM (Provider × Context) := do
+  adapt (Carrier.fields value ["subject","body"])
+  let subject ← adapt (provider (← adapt (field value "subject")))
+  let body ← adapt (field value "body")
+  adapt (Carrier.fields body contextFields)
+  return (subject,← readChild body)
+
 private def context : Nat → Json → WorkM Context :=
   Nat.rec (fun _ => throw .limit) (fun _ readChild value => do
     let positions ← adapt ((← adapt (field value "positions")).getArr?)
@@ -145,34 +155,37 @@ private def context : Nat → Json → WorkM Context :=
     let calls ← adapt ((← adapt (field value "calls")).getArr?)
     let branches ← adapt ((← adapt (field value "branches")).getArr?)
     let bodies ← adapt ((← adapt (field value "bodies")).getArr?)
+    let references ← adapt ((← adapt (field value "references")).getArr?)
     guard (sites.size ≤ 128) .limit
-    exactWork (Exact.charge (16*(positions.size+sites.size+calls.size+branches.size+bodies.size+1)))
+    exactWork (Exact.charge (16*(positions.size+sites.size+calls.size+branches.size+bodies.size+references.size+1)))
     let positions ← adapt (positions.toList.mapM position)
     let sites ← sites.toList.mapM site
     let calls ← calls.toList.mapM fun value => do
       adapt (Carrier.fields value ["position","body"])
       let position ← adapt (position (← adapt (field value "position")))
       let body ← adapt (field value "body")
-      adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
+      adapt (Carrier.fields body contextFields)
       return (position,← readChild body)
     let branches ← branches.toList.mapM fun value => do
       adapt (Carrier.fields value ["position","then","else"])
       let location ← adapt (position (← adapt (field value "position")))
       let whenTrue ← adapt (field value "then")
       let whenFalse ← adapt (field value "else")
-      adapt (Carrier.fields whenTrue ["positions","sites","calls","branches","bodies"])
-      adapt (Carrier.fields whenFalse ["positions","sites","calls","branches","bodies"])
+      adapt (Carrier.fields whenTrue contextFields)
+      adapt (Carrier.fields whenFalse contextFields)
       return (location,← readChild whenTrue,← readChild whenFalse)
-    let bodies ← bodies.toList.mapM fun value => do
-      adapt (Carrier.fields value ["subject","body"])
-      let subject ← adapt (provider (← adapt (field value "subject")))
-      let body ← adapt (field value "body")
-      adapt (Carrier.fields body ["positions","sites","calls","branches","bodies"])
-      return (subject,← readChild body)
-    return .mk positions sites calls branches bodies)
+    let bodies ← bodies.toList.mapM (readBody readChild)
+    let references ← references.toList.mapM fun operation => do
+      let groups ← adapt operation.getArr?
+      exactWork (Exact.charge (16*(groups.size+1)))
+      groups.toList.mapM fun group => do
+        let leaves ← adapt group.getArr?
+        exactWork (Exact.charge (16*(leaves.size+1)))
+        leaves.toList.mapM (readBody readChild)
+    return .withReferences positions sites calls branches bodies references)
 
 def decode (value : Json) : WorkM Request := do
-  adapt (Carrier.fields value ["format","version","profile","source","runtime","positions","sites","calls","branches","bodies"])
+  adapt (Carrier.fields value (["format","version","profile","source","runtime"] ++ contextFields))
   guard (← adapt (do return (← (← field value "format").getStr?) == "qleisli.qmatch-request" &&
     (← number (← field value "version")) == 5 && (← (← field value "profile").getStr?) == profile)) .request
   let source ← adapt (source (← adapt (field value "source")))
@@ -193,5 +206,64 @@ def readRequest (bytes : ByteArray) : WorkM Request := do
     let some text := String.fromUTF8? bytes | throw "invalid qmatch request UTF-8"
     FiniteCodec.parseWithDepth text 128)
   decode value
+
+/-- The named caller reader checks that this is the unique original call. -/
+def Request.namedReferences (request : Request) :=
+  match request.context.calls with
+  | [(_,child)] => child.references
+  | _ => []
+
+/-- The named selection consumes its own prefix and arm groups. Nested
+provider bodies use the existing reader for implementations without separate
+Meaning groups. Reject any additional references in those bodies. -/
+private def noReferenceGroups : Nat → Context → WorkM Unit :=
+  Nat.rec (fun _ => throw .limit) (fun _ visit context => do
+    exactWork (Exact.charge (16*(context.calls.length+context.branches.length+context.bodies.length+1)))
+    guard context.references.isEmpty .request
+    context.calls.forM fun (_,child) => visit child
+    context.branches.forM fun (_,first,second) => do visit first; visit second
+    context.bodies.forM fun (_,child) => visit child)
+
+def Request.checkNamedReferenceContexts (request : Request) : WorkM Unit := do
+  guard request.context.references.isEmpty .request
+  let [(_,child)] := request.context.calls | throw .request
+  exactWork (Exact.charge (16*(child.bodies.length+child.references.length+1)))
+  child.bodies.forM fun (_,body) => noReferenceGroups 129 body
+  child.references.forM fun groups => do
+    exactWork (Exact.charge (16*(groups.length+1)))
+    groups.forM fun leaves => do
+      exactWork (Exact.charge (16*(leaves.length+1)))
+      leaves.forM fun (_,body) => noReferenceGroups 129 body
+
+/-- One original named call and its returned qmatch interval under the exact
+decoded request. Catalogue-wide discharge and public execution remain separate. -/
+structure Named (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) where
+  compatible : request.compatible = true
+  referenceContexts : Qirf.RuntimeInterval.Computed request.checkNamedReferenceContexts ()
+  source : Qirf.RuntimeBodyDiscovery.PreparedSource artifact request.source.moduleName
+    request.source.functionName request.source.arguments
+  sourceRead : Qirf.RuntimeInterval.Computed (Qirf.RuntimeBodyDiscovery.prepareSource artifact
+    request.source.moduleName request.source.functionName request.source.arguments) source
+  named : Qirf.RuntimeNamedSelectionSource.Prepared source request.context request.namedReferences
+  prepared : Qirf.RuntimeInterval.Computed
+    (Qirf.RuntimeNamedSelectionSource.prepare source request.context request.namedReferences) named
+  result : Qirf.RuntimeNamedSelection.Checked named order request.combinedRuntime
+  checked : Qirf.RuntimeInterval.Computed
+    (Qirf.RuntimeNamedSelection.read named order request.combinedRuntime) result
+
+def readNamed (artifact : Qirf.Artifact) (order : Array Nat) (request : Request) :
+    WorkM (Named artifact order request) := do
+  if bound : request.compatible = true then
+    let contexts ← SourceTypes.NaturalAffine.witness request.checkNamedReferenceContexts
+    let source ← SourceTypes.NaturalAffine.witness (Qirf.RuntimeBodyDiscovery.prepareSource artifact
+      request.source.moduleName request.source.functionName request.source.arguments)
+    let named ← SourceTypes.NaturalAffine.witness
+      (Qirf.RuntimeNamedSelectionSource.prepare source.val request.context request.namedReferences)
+    let result ← SourceTypes.NaturalAffine.witness
+      (Qirf.RuntimeNamedSelection.read named.val order request.combinedRuntime)
+    have unit : contexts.val = () := by cases contexts.val; rfl
+    return ⟨bound,by with_reducible simpa only [unit] using contexts.property,source.val,by with_reducible exact source.property,
+      named.val,by with_reducible exact named.property,result.val,by with_reducible exact result.property⟩
+  else throw .request
 
 end QleisliKernel.Protocol.QmatchV5

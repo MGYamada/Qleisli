@@ -21,7 +21,9 @@ pub struct Request {
     pub context: Context,
 }
 
+mod producer;
 mod runtime;
+pub(crate) use producer::proposal;
 
 impl Source {
     fn bounded(&self, remaining: &mut usize) -> Result<()> {
@@ -72,6 +74,59 @@ impl Source {
 }
 
 impl Request {
+    /// Collect reachability roots from independently typed program/evidence
+    /// indices. Ordered occurrences still participate separately in the QDV.
+    pub(in crate::interchange) fn graph_roots(
+        &self,
+        root: usize,
+        programs: usize,
+        evidence: usize,
+    ) -> Result<Vec<usize>> {
+        use super::ProviderSubject;
+        self.bounded()?;
+        let program = |index: u32| {
+            let index = index as usize;
+            if index < programs {
+                Ok(index)
+            } else {
+                Err(Error::format("missing original qmatch program"))
+            }
+        };
+        let mut roots = std::collections::BTreeSet::from([root]);
+        let mut contexts = vec![&self.context];
+        while let Some(context) = contexts.pop() {
+            for arm in context.sites.iter().flat_map(|site| &site.arms) {
+                roots.insert(program(arm.implementation)?);
+                roots.insert(program(arm.controlled)?);
+            }
+            for body in context
+                .bodies
+                .iter()
+                .chain(context.references.iter().flatten().flatten())
+            {
+                let index = match body.subject {
+                    ProviderSubject::Pure { program: index } => program(index)?,
+                    ProviderSubject::Function { evidence: index }
+                        if (index as usize) < evidence =>
+                    {
+                        programs + index as usize
+                    }
+                    ProviderSubject::Function { .. } => {
+                        return Err(Error::format("missing original qmatch evidence"));
+                    }
+                };
+                roots.insert(index);
+                contexts.push(&body.body);
+            }
+            contexts.extend(context.calls.iter().map(|call| &call.body));
+            for branch in &context.branches {
+                contexts.push(&branch.then_body);
+                contexts.push(&branch.else_body);
+            }
+        }
+        Ok(roots.into_iter().collect())
+    }
+
     pub(in crate::interchange) fn bounded(&self) -> Result<()> {
         let mut remaining = json::MAX_BYTES;
         self.source.bounded(&mut remaining)?;
@@ -112,6 +167,7 @@ impl Request {
             "calls",
             "branches",
             "bodies",
+            "references",
         ])?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
             || value.field("version")?.number()? != 5

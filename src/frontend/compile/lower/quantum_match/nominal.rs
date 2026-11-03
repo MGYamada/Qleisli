@@ -9,11 +9,13 @@ use crate::interchange::qmatch::{
 };
 
 mod arms;
+pub(super) use arms::builtin_arm;
 #[cfg(test)]
 mod tests;
 
 pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
+    supplies: Vec<(String, crate::interchange::qmatch::OperationSubject)>,
     inputs: Vec<Owner>,
     classical_inputs: Vec<ClassicalId>,
     start: usize,
@@ -219,6 +221,7 @@ impl Frame {
         });
         Ok(Some(Self {
             key,
+            supplies: lower.compiler.qmatch_supplies(key, &name.0, span)?,
             inputs,
             classical_inputs,
             start: lower.raw.operations.len(),
@@ -241,6 +244,7 @@ impl Frame {
     pub(in crate::frontend::compile::lower) fn branch_frame(&self) -> Self {
         Self {
             key: self.key,
+            supplies: Vec::new(),
             inputs: Vec::new(),
             // A branch inherits bindings and is not a standalone call scope.
             classical_inputs: Vec::new(),
@@ -290,6 +294,7 @@ impl Frame {
             })
             .collect::<Result<Vec<_>, CompileError>>()?;
         Ok(Arc::new(ContextSubject {
+            supplies: self.supplies,
             positions: self.positions,
             selections,
             calls: self.calls,
@@ -305,6 +310,17 @@ impl Frame {
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
+        if !self.source_gate && !self.selections.is_empty() {
+            let module = lower
+                .compiler
+                .source
+                .resolution
+                .declaration(self.key)
+                .name
+                .0
+                .clone();
+            return self.branch_subject(lower, &module).map(Some);
+        }
         if self.source_gate && self.contains_selections && !self.branches.is_empty() {
             let name = lower
                 .compiler
@@ -320,6 +336,7 @@ impl Frame {
         let selections = self.selections;
         if selections.is_empty() {
             return Ok(Some(Arc::new(ContextSubject {
+                supplies: self.supplies,
                 positions: self.positions,
                 selections: Vec::new(),
                 calls: self.calls,
@@ -482,6 +499,7 @@ impl Frame {
             })
             .collect::<Result<Vec<_>, CompileError>>()?;
         Ok(Some(Arc::new(ContextSubject {
+            supplies: self.supplies,
             positions: self.positions,
             selections,
             calls: self.calls,
@@ -860,7 +878,7 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        let (subject, context, mut body, original) = arms::prepare(
+        let (subject, mut body, original) = arms::prepare(
             lower,
             module,
             &arm.operation,
@@ -877,7 +895,6 @@ pub(super) fn emit(
         arms.push(ArmSubject {
             body: subject,
             controlled: controlled(body.clone(), target_bits),
-            context,
             operation: Some(original),
         });
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
@@ -900,31 +917,48 @@ pub(super) fn emit(
             "qmatch requires every exact enum label",
         ));
     }
-    let inputs = vec![
-        owner(lower, module, span, &selector)?,
-        owner(lower, module, span, &target)?,
-    ];
+    apply_selection(
+        lower,
+        module,
+        span,
+        selection.keyword.start,
+        [selector, target],
+        steps,
+        arms,
+    )
+}
+
+/// Retain the same original source event and literal interval for each lowering profile.
+pub(super) fn apply_selection(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    offset: usize,
+    [selector, target]: [Value; 2],
+    steps: Vec<CircuitStep>,
+    arms: Vec<ArmSubject>,
+) -> Result<Value, CompileError> {
+    let frame_start = lower.nominal_qmatch.as_ref().map(|frame| frame.start);
+    let inputs = if frame_start.is_some() {
+        vec![
+            owner(lower, module, span, &selector)?,
+            owner(lower, module, span, &target)?,
+        ]
+    } else {
+        Vec::new()
+    };
     let start = lower.raw.operations.len();
     let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
     let slot = lower.quantum(module, span, &joined, false)?;
     lower.apply_circuit(slot, steps);
     let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+    let Some(frame_start) = frame_start else {
+        return Ok(result);
+    };
     let selected_outputs = outputs(lower, module, span, &result)?;
     let count = lower.raw.operations.len() - start;
-    let relative = start
-        - lower
-            .nominal_qmatch
-            .as_ref()
-            .expect("checked original frame")
-            .start;
-    let position = position(
-        lower,
-        module,
-        span,
-        selection.keyword.start,
-        relative,
-        count,
-    )?;
+    let relative = start - frame_start;
+    let position = position(lower, module, span, offset, relative, count)?;
     lower.compiler.charge(module, span, 4)?;
     let frame = lower
         .nominal_qmatch
@@ -932,7 +966,7 @@ pub(super) fn emit(
         .expect("checked original frame");
     frame.selections.push(Selection {
         span,
-        offset: selection.keyword.start,
+        offset,
         arms,
         inputs,
         outputs: selected_outputs,

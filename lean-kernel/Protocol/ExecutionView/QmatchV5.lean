@@ -54,14 +54,21 @@ def site (value : Protocol.QmatchV5.Site) : Value := record "qmatch-site"
     position value.position,.array (value.arms.map arm)]
 
 def context : Nat → Protocol.QmatchV5.Context → Finite.WorkM Value :=
-  Nat.rec (fun _ => throw .limit) (fun _ readChild (.mk positions sites calls branches bodies) => do
-    Finite.exactWork (Exact.charge (16*(positions.length+sites.length+calls.length+branches.length+bodies.length+1)))
+  Nat.rec (fun _ => throw .limit) (fun _ readChild (.withReferences positions sites calls branches bodies references) => do
+    Finite.exactWork (Exact.charge (16*(positions.length+sites.length+calls.length+branches.length+bodies.length+references.length+1)))
     let calls ← calls.mapM fun (location,body) => do
       return record "source-call" [position location,← readChild body]
     let branches ← branches.mapM fun (location,whenTrue,whenFalse) => do
       return record "source-branch" [position location,← readChild whenTrue,← readChild whenFalse]
-    let bodies ← bodies.mapM fun (subject,body) => do return record "source-body" [provider subject,← readChild body]
-    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies])
+    let bodyValue := fun (subject,body) => do return record "source-body" [provider subject,← readChild body]
+    let bodies ← bodies.mapM bodyValue
+    let references ← references.mapM fun groups => do
+      Finite.exactWork (Exact.charge (16*(groups.length+1)))
+      let groups ← groups.mapM fun leaves => do
+        Finite.exactWork (Exact.charge (16*(leaves.length+1)))
+        return Value.array (← leaves.mapM bodyValue)
+      return Value.array groups
+    return record "source-context" [.array (positions.map position),.array (sites.map site),.array calls,.array branches,.array bodies,.array references])
 
 def runtime (request : Qirf.RuntimeFamily.Request) : Finite.WorkM Value := do
   return record "source-runtime" (← CheckedRuntimeRoot.requestDescription request)

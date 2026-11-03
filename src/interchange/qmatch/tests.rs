@@ -457,7 +457,6 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
                     declared_effect: Effect::Unitary,
                 };
                 ArmSubject {
-                    context: Arc::new(ContextSubject::default()),
                     body: ArmBody::Physical {
                         bits: 2,
                         raw,
@@ -529,7 +528,10 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
                 arms,
                 position: position.clone(),
             }],
-            &[("main".into(), source.into())],
+            &[
+                ("main".into(), source.into()),
+                ("std::prelude".into(), String::new()),
+            ],
         )
         .unwrap();
         kernel.check_qmatch_source(&artifact, &request)
@@ -635,7 +637,10 @@ fn physical_arm_proposals_require_full_nominal_code_and_actual_control() {
                     arms: &sequence_arms,
                 },
             ],
-            &[("main".into(), sequence_source.clone())],
+            &[
+                ("main".into(), sequence_source.clone()),
+                ("std::prelude".into(), String::new()),
+            ],
         )
         .unwrap()
     };

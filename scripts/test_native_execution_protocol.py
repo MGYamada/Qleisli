@@ -199,6 +199,13 @@ def qmatch(probe):
         assert len(cases) == count
         rows.extend(cases)
     for row in rows:
+        # Run the saved source and literal QDV in the same isolated prelude
+        # environment. Preserve all original offsets and malformed view fields.
+        row['artifact']['sources'].append({'path': 'std::prelude', 'text': ''})
+        view = row['view']
+        if (isinstance(view, list) and len(view) > 1 and isinstance(view[1], list)
+                and len(view[1]) > 3 and isinstance(view[1][3], list)):
+            view[1][3].append(['source', 'std::prelude', ''])
         original = inner(row['artifact'], row['request'])
         graph = qdv(row['view'])
         error = (None if row['accepted'] else 'decoded_view'

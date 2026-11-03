@@ -203,7 +203,6 @@ pub struct FunctionEvidence {
     proof_identity: Arc<()>,
     subject: Arc<crate::interchange::native::Subject>,
     snapshot_key: Arc<[u8]>,
-    source_context: Option<Arc<crate::interchange::qmatch::ContextSubject>>,
 }
 
 // Proof dependencies are issued identities, not recursively expanded trees.
@@ -370,7 +369,6 @@ impl FunctionEvidence {
             proof_identity: Arc::new(()),
             subject: Arc::clone(subject),
             snapshot_key,
-            source_context: None,
         })
     }
 
@@ -388,21 +386,6 @@ impl FunctionEvidence {
 
     pub(crate) fn snapshot_key(&self) -> &Arc<[u8]> {
         &self.snapshot_key
-    }
-
-    pub(crate) fn source_context(
-        &self,
-    ) -> Option<&Arc<crate::interchange::qmatch::ContextSubject>> {
-        self.source_context.as_ref()
-    }
-
-    /// Retain coordinates emitted with the exact implementation used to make
-    /// this evidence. The enclosing native source gate checks them afresh.
-    pub(crate) fn retain_source_context(
-        &mut self,
-        context: Option<Arc<crate::interchange::qmatch::ContextSubject>>,
-    ) {
-        self.source_context = context;
     }
 
     pub fn checker(&self) -> &std::path::Path {

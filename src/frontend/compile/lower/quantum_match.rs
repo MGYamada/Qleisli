@@ -217,6 +217,7 @@ impl Lowerer<'_, '_> {
         let target_basis = self.raw.registers[&target_slot].basis.clone();
         let mut expectations = vec![None; count];
         let mut steps = Vec::new();
+        let mut arms = Vec::new();
         for arm in &selection.arms {
             let QuantumLabel::Ordinal(label) = &arm.label else {
                 return Err(self.error(
@@ -235,7 +236,7 @@ impl Lowerer<'_, '_> {
                     "qmatch ordinal is duplicated or outside the selector domain",
                 ));
             }
-            let (mut body, already_controlled, expected) = match &arm.operation.kind {
+            let (mut body, already_controlled, expected, operation) = match &arm.operation.kind {
                 StaticOpKind::Name(name) => {
                     let operation =
                         self.operation_steps(module, name, &target_basis, env, Access::Controlled)?;
@@ -248,6 +249,7 @@ impl Lowerer<'_, '_> {
                         body,
                         controlled,
                         self.target_meaning(module, name, &target_basis)?,
+                        None,
                     )
                 }
                 _ => {
@@ -265,7 +267,7 @@ impl Lowerer<'_, '_> {
                     }
                     let body =
                         operation.steps(module, arm.span, Access::Controlled, self.compiler)?;
-                    (body, true, operation.meaning.clone())
+                    (body, true, operation.meaning.clone(), Some(operation))
                 }
             };
             let expected = expected.ok_or_else(|| {
@@ -276,6 +278,17 @@ impl Lowerer<'_, '_> {
                     "qmatch requires each arm's independently obtained exact meaning",
                 )
             })?;
+            if self.nominal_qmatch.is_some() {
+                arms.push(nominal::builtin_arm(
+                    self,
+                    module,
+                    &arm.operation,
+                    &target_basis,
+                    operation.as_ref(),
+                    &body,
+                    already_controlled,
+                )?);
+            }
             self.compiler.charge(
                 module,
                 span,
@@ -325,10 +338,14 @@ impl Lowerer<'_, '_> {
             span,
             total_size(circuit.steps().iter().map(super::super::circuit::size)),
         )?;
-        let joined =
-            self.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
-        let slot = self.quantum(module, span, &joined, false)?;
-        self.apply_circuit(slot, circuit.steps().to_vec());
-        self.primitive_call(module, span, PrimitiveId::Split, vec![joined])
+        nominal::apply_selection(
+            self,
+            module,
+            span,
+            selection.keyword.start,
+            [selector, target],
+            circuit.steps().to_vec(),
+            arms,
+        )
     }
 }
