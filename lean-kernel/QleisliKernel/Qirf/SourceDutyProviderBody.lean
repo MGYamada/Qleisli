@@ -78,6 +78,7 @@ structure Checked {artifact catalogue record invocation demand view provider pre
     (source : @Discovered artifact catalogue record invocation demand view provider prepared request header)
     (root : Validity.Root) where
   paths : RuntimeProviderPaths.Checked header.binding.header root view.requested
+  pathRead : SourceDutySlots.Computed (RuntimeProviderPaths.read header.binding.header root view.requested) paths
   sameProgram : paths.ir.original.program = header.binding.program
   initial : RuntimeOwnerMap.Map
   initialRead : SourceDutySlots.Computed (RuntimeSourceBoundary.bindings
@@ -92,18 +93,19 @@ structure Checked {artifact catalogue record invocation demand view provider pre
 private def consume {artifact catalogue record invocation demand view provider prepared request header}
     (source : @Discovered artifact catalogue record invocation demand view provider prepared request header)
     (root : Validity.Root) : WorkM (Checked source root) := do
-  let paths ← RuntimeProviderPaths.read header.binding.header root view.requested
-  have sameProgram : paths.ir.original.program = header.binding.program :=
-    Option.some.inj (paths.ir.original.original.symm.trans header.binding.originalProgram)
+  let paths ← NaturalAffine.witness (RuntimeProviderPaths.read header.binding.header root view.requested)
+  let native := paths.val
+  have sameProgram : native.ir.original.program = header.binding.program :=
+    Option.some.inj (native.ir.original.original.symm.trans header.binding.originalProgram)
   let body := header.binding.header.original.body
   let roles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
   let owner : Semantics.CarrierInterface.Owner :=
-    ⟨paths.ir.original.prepared.ports.input,paths.ir.original.prepared.ports.domain⟩
+    ⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩
   let initial ← NaturalAffine.witness (RuntimeSourceBoundary.bindings roles [owner])
-  let prepared ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies paths.ir.original.program)
+  let prepared ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies native.ir.original.program)
   let checked ← NaturalAffine.witness (RuntimePureBody.checkPrepared artifact root body
-    paths.ir.original.program request.2 initial.val prepared.val)
-  return ⟨paths,sameProgram,initial.val,by with_reducible exact initial.property,
+    native.ir.original.program request.2 initial.val prepared.val)
+  return ⟨paths.val,by with_reducible exact paths.property,sameProgram,initial.val,by with_reducible exact initial.property,
     prepared.val,by with_reducible exact prepared.property,checked.val,by with_reducible exact checked.property⟩
 
 def Result {artifact} (root : Validity.Root) : Contribution artifact → Type
