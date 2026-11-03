@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeCallScope
 import QleisliKernel.Qirf.RuntimeOrdinaryInputs
@@ -87,6 +88,13 @@ end
 
 def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
     Nodes dependencies program block := nodes.foldr Nodes.cons Nodes.nil
+
+def staticNodes {dependencies program block start count} :
+    (action : RuntimeStaticPrimitive.Action) →
+      @RuntimeStaticPrimitive.Bound dependencies program block start count action →
+        List (Node dependencies program block)
+  | _,.identity _ => []
+  | _,.primitive checked => [.primitive checked]
 
 mutual
 /-- The common loop records every actual mixed interval. Pure composition
@@ -290,6 +298,11 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
             let node : Node dependencies program prepared.block := .primitive action
             return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations,position.start+position.count,calls,sites,bodies)
+          | .staticConditional event _ =>
+            let checked ← RuntimeStaticPrimitive.read prepared.block position.start position.count event before after
+            let nodes := staticNodes checked.source.action checked.action
+            return (continued,retired,ordinary,actions ++ nodes,steps ++ nodes.map Step.pure,
               obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
             let (callPosition,child) :: calls := calls | throw .request

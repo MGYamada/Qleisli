@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeProviderHeader
 import QleisliKernel.Qirf.RuntimeProviderHeaders
+import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.GenericCatalogue
 import QleisliKernel.Qirf.SourcePendingMeaning
@@ -161,9 +162,12 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
           | .phase event =>
             return (discovery.append ⟨CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows,[]⟩,
               sites,calls,branches,bodies)
-          -- Neither form is an original ordinary-if request. Their inactive
+          | .staticConditional event _ =>
+            let source ← RuntimeStaticPrimitive.readSource event
+            return (discovery.append ⟨source.sourceRows,[]⟩,sites,calls,branches,bodies)
+          -- Remaining compound forms are not ordinary-if requests. Their
           -- native obligations/context layout must be connected explicitly.
-          | .staticConditional .. | .matching .. | .computed .. | .registerPrimitive .. =>
+          | .matching .. | .computed .. | .registerPrimitive .. =>
             throw .request) (initial,request.sites,request.calls,request.branches,bodies)
       guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty) .request
       return discovery)
