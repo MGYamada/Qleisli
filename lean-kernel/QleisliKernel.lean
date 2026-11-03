@@ -109,6 +109,7 @@ import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeBodyPlan
 import QleisliKernel.Qirf.RuntimeBodyPlanReaders
+import QleisliKernel.Qirf.RuntimeBodyQueries
 import QleisliKernel.Qirf.RuntimeDiscoveryScope
 import QleisliKernel.Qirf.RuntimeDiscoveryTraversal
 import QleisliKernel.Qirf.RuntimeForestCode

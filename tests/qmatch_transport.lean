@@ -722,13 +722,18 @@ complete runtime input rows remain unchanged for every observingMutation. -/
 private def observingMutation (p : ObservingPayload) (fault : ObservingFault) : WorkM ObservingPayload := do
   let some original := p.artifact.programs[0]? | throw .request
   let [first,xor,.pure (.join left right joined),action,split,last,result] := original.operations | throw .request
-  let erasedAction := match action with
-    | .pure (.applyUnitary input output _) => Semantics.Observation.Op.pure (.applyUnitary input output [])
+  let phaseFault := match action with
+    | .pure (.applyUnitary input output steps) =>
+      -- Erasing both signs would preserve the constructed identity. One
+      -- independent literal controlled sign changes its exact relative phase.
+      let wrong := if steps.length > 1 then
+        [(⟨[⟨0,true⟩],.monomial [1] [0,1] [0,4]⟩ : Semantics.Finite.Step)] else []
+      Semantics.Observation.Op.pure (.applyUnitary input output wrong)
     | other => other
   let operations := match fault with
     | .wrongMeasurementOwner => [.measure right 1,xor,.pure (.join left 7 joined),action,split,last,result]
     | .wrongXor => [first,.and 0 1 2,.pure (.join left right joined),action,split,last,result]
-    | .wrongSelectedPhase => [first,xor,.pure (.join left right joined),erasedAction,split,last,result]
+    | .wrongSelectedPhase => [first,xor,.pure (.join left right joined),phaseFault,split,last,result]
     | _ => original.operations
   let keptInputs := if fault == .omittedUnitOwner then original.inputs.filter (·.token != 6) else original.inputs
   let keptOutputs := if fault == .omittedUnitOwner then original.outputs.filter (· != 6) else original.outputs
@@ -766,9 +771,9 @@ private def observingStudy (composed : Bool) (fault : ObservingFault) :=
     let proposal ← observingMutation proposal fault
     observingRuntime proposal).run WorkProfile.qmatch.limit |>.1
 
-private def observingRawStudy (fault : ObservingFault) :=
+private def observingRawStudy (composed : Bool) (fault : ObservingFault) :=
   (do
-    let proposal ← observingPayload false
+    let proposal ← observingPayload composed
     let proposal ← observingMutation proposal fault
     let raw ← observingRaw proposal
     let rows ← observingTypedRoot proposal
@@ -776,18 +781,29 @@ private def observingRawStudy (fault : ObservingFault) :=
 
 #guard (observingStudy false .correct).toOption == some
   ([0,1,2,3],[1,3],[6,4],[4,4],[(1,231,[488,295]),(3,231,[538,367])],3,2,0)
+#guard (observingStudy true .correct).toOption == some
+  ([0,1,2,3],[1,3],[6,4],[4,4],[(1,382,[639,446]),(3,382,[709,518])],3,3,1)
 #guard observingStudy false .wrongMeasurementOwner matches .error .invalid
 #guard observingStudy false .wrongXor matches .error .equation
 #guard observingStudy false .wrongSelectedPhase matches .error .equation
 #guard [ObservingFault.contextOrder,.omittedUnitOwner,.extraReference,.missingReference].all fun fault =>
   match observingStudy false fault with | .error .request => true | _ => false
+#guard observingStudy true .wrongMeasurementOwner matches .error .invalid
+#guard observingStudy true .wrongXor matches .error .equation
+#guard observingStudy true .wrongSelectedPhase matches .error .equation
+#guard [ObservingFault.contextOrder,.omittedUnitOwner,.extraReference,.missingReference].all fun fault =>
+  match observingStudy true fault with | .error .request => true | _ => false
 
 -- Raw/type/history validity alone cannot bind the original source. The phase
 -- mutation's compact Raw control keeps its exact root and removes newly
 -- unreachable auxiliary nodes; the full source graph keeps every original arm.
 #guard [ObservingFault.correct,.wrongMeasurementOwner,.wrongXor,.contextOrder,
     .extraReference,.missingReference,.wrongSelectedPhase].all fun fault =>
-  (observingRawStudy fault).toOption == some (([4,4],[6,4]),2)
-#guard observingRawStudy .omittedUnitOwner matches .error .request
+  (observingRawStudy false fault).toOption == some (([4,4],[6,4]),2)
+#guard [ObservingFault.correct,.wrongMeasurementOwner,.wrongXor,.contextOrder,
+    .extraReference,.missingReference,.wrongSelectedPhase].all fun fault =>
+  (observingRawStudy true fault).toOption == some (([4,4],[6,4]),2)
+#guard observingRawStudy false .omittedUnitOwner matches .error .request
+#guard observingRawStudy true .omittedUnitOwner matches .error .request
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary

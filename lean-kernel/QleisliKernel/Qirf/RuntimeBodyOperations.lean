@@ -80,13 +80,17 @@ structure Prepared (artifact : Artifact) (owner name : String) (arguments : Stat
     (request : Context) where
   source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments
   referenceContexts : RuntimeInterval.Computed (RuntimeReferenceContexts.runtime 129 request) ()
-  discovery : RuntimeBodyDiscovery.Discovery
-  receipts : List (RuntimeGraphOperation.PreparedReceipt (preparation artifact source.catalogue))
-  discovered : RuntimeInterval.Computed
-    (RuntimeBodyDiscovery.visitUsing artifact (.extended (preparation artifact source.catalogue)) 128
-      source.signature source.body.checked.events source.body.checked.summary.staticRows request true)
-    (discovery,receipts)
-  relevance : SourceRows.Retained ([(owner,source.signature.original.source)] ++ discovery.rows)
+  planned : RuntimeBodyDiscovery.Planned (preparation artifact source.catalogue) (.whole source.body) request
+  relevance : SourceRows.Retained ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+
+def Prepared.discovery {artifact owner name arguments request}
+    (prepared : Prepared artifact owner name arguments request) : RuntimeBodyDiscovery.Discovery :=
+  prepared.planned.discovery
+
+def Prepared.receipts {artifact owner name arguments request}
+    (prepared : Prepared artifact owner name arguments request) :
+    List (RuntimeGraphOperation.PreparedReceipt (preparation artifact prepared.source.catalogue)) :=
+  prepared.planned.receipts
 
 def Prepared.rows {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) : List SourceRows.Row := prepared.relevance.rows
@@ -103,12 +107,9 @@ def prepare (artifact : Artifact) (owner name : String) (arguments : StaticTypes
   let source ← RuntimeBodyDiscovery.prepareSource artifact owner name arguments
   let references ← NaturalAffine.witness (RuntimeReferenceContexts.runtime 129 request)
   have unit : references.val = () := by cases references.val; rfl
-  let discovered ← NaturalAffine.witness
-    (RuntimeBodyDiscovery.visitUsing artifact (.extended (preparation artifact source.catalogue)) 128
-      source.signature source.body.checked.events source.body.checked.summary.staticRows request true)
-  let relevance ← SourceRows.read ([(owner,source.signature.original.source)] ++ discovered.val.1.rows)
-  return ⟨source,by with_reducible simpa only [unit] using references.property,
-    discovered.val.1,discovered.val.2,by with_reducible exact discovered.property,relevance⟩
+  let planned ← RuntimeBodyDiscovery.visitPlanned (preparation artifact source.catalogue) (.whole source.body) request
+  let relevance ← SourceRows.read ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+  return ⟨source,by with_reducible simpa only [unit] using references.property,planned,relevance⟩
 
 def initialHistory {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) {root : Validity.Root}
@@ -129,10 +130,11 @@ structure AtRoot {artifact owner name arguments request}
   initial : RuntimeOrdinaryInputs.Checked prepared.source.body native runtime inputs
   initialRead : RuntimeInterval.Computed (RuntimeOrdinaryInputs.read prepared.source.body native runtime inputs) initial
   result : RuntimePureBody.BlockResult root.dependencies root.program native.block
-  receipts : List (RuntimeGraphOperation.CheckedReceipt (consumption artifact prepared.source.catalogue root))
+  receipts : List (RuntimeGraphOperation.StagedReceipt (stagedConsumption artifact prepared.source.catalogue root))
   traversed : RuntimeInterval.Computed
-    (RuntimePureBody.runBlockUsing artifact root (.extended (consumption artifact prepared.source.catalogue root))
-      128 .runtimeBody .rootOrder (.whole prepared.source.body) (.root prepared.source.body) root.program request
+    (RuntimePureBody.runBlockPlanned artifact root (preparation artifact prepared.source.catalogue)
+      (stagedConsumption artifact prepared.source.catalogue root)
+      128 .runtimeBody .rootOrder (.whole prepared.source.body) (.root prepared.source.body) root.program request prepared.planned.plan
       (initialHistory prepared native runtime inputs) initial.ssa native.block) (result,receipts)
   owners : RuntimeOwnerMap.Checked (SourceRuntimeValues.valueOwners (RuntimeSourceBoundary.summary prepared.source.body).value)
     native.whole.state
@@ -159,8 +161,9 @@ def readAt {artifact owner name arguments request}
     let inputs ← NaturalAffine.witness (RuntimeSourceBoundary.readInputs prepared.source.body native.val runtime.inputStorage)
     let initial ← NaturalAffine.witness (RuntimeOrdinaryInputs.read prepared.source.body native.val runtime inputs.val)
     let checked ← NaturalAffine.witness
-      (RuntimePureBody.runBlockUsing artifact root (.extended (consumption artifact prepared.source.catalogue root))
-        128 .runtimeBody .rootOrder (.whole prepared.source.body) (.root prepared.source.body) root.program request
+      (RuntimePureBody.runBlockPlanned artifact root (preparation artifact prepared.source.catalogue)
+      (stagedConsumption artifact prepared.source.catalogue root)
+        128 .runtimeBody .rootOrder (.whole prepared.source.body) (.root prepared.source.body) root.program request prepared.planned.plan
         (initialHistory prepared native.val runtime inputs.val) initial.val.ssa native.val.block)
     let result := checked.val.1
     let owners ← NaturalAffine.witness (RuntimeOwnerMap.check

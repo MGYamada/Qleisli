@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Consume exact original body plans in the common native runtime handler,
+  reusing graph preparations under the same final root. Keep interval, owner,
+  effect, SSA, hidden-history and return checks, with pending source duties
+  explicit. Public v5 dispatch and complete source composition remain open.
+
 - Use one source discovery handler for existing metadata callers and exact
   source-body plans. Keep original queue coverage, access demands, arm roots
   and static eligibility. Selected static query rows now follow event order;
