@@ -146,6 +146,15 @@ def Result.bindings {dependencies program} (result : Result dependencies program
 def Result.islands {dependencies program} (result : Result dependencies program) : List (Island dependencies) :=
   result.actions.map (fun node => ⟨program,result.prepared.block,node⟩) ++ result.obligations
 
+
+/-- One state and one event handler are shared by enclosing and selected
+static sequences. Context cursors and source history are never reconstructed. -/
+abbrev LoopState (dependencies : List Semantics.Finite.Dependency)
+    (program : Semantics.Observation.Program) (block : RuntimeInterval.Block dependencies program) :=
+  RuntimeStructuralAction.SourceState × List Owner × RuntimeOrdinaryBody.State ×
+    List (Node dependencies program block) × List (Step dependencies program block) × List (Island dependencies) ×
+    Nat × List (Position × Context) × List RuntimeContextRequest.Site × List RuntimeProviderHeader.Request
+
 /-- Literal Raw transport determines each token's opaque source role. Width or
 wire equality never chooses between owners, including separate Unit owners. -/
 private def transition {dependencies program block start count}
@@ -242,13 +251,19 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
           pure (obligations ++ checked,rest)) ([],request.bodies)
       exactWork (Exact.charge (32*(source.events.length+request.positions.length+request.calls.length+1)^2))
       guard (request.positions.map (·.offset) == source.events.map SourceRuntimeContext.Event.offset) .request
-      let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) ←
-        (source.events.zip request.positions).foldlM
-        (fun (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) (event,position) => do
-          guard (cursor ≤ position.start) .request
-          let (ordinary,steps) ← if cursor == position.start then pure (ordinary,steps) else do
-            let gap ← RuntimeOrdinaryBody.readGap prepared.block cursor (position.start-cursor) history ordinary
-            pure (gap.ssa,steps ++ [.gap gap])
+      let advance : LoopState dependencies program prepared.block → Nat →
+          WorkM (LoopState dependencies program prepared.block) :=
+        fun (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) start => do
+          guard (cursor ≤ start) .request
+          if cursor == start then
+            return (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies)
+          else
+            let gap ← RuntimeOrdinaryBody.readGap prepared.block cursor (start-cursor) history ordinary
+            return (history,retired,gap.ssa,actions,steps ++ [.gap gap],obligations,start,calls,sites,bodies)
+      let step : LoopState dependencies program prepared.block →
+          (SourceRuntimeContext.Event artifact.sources owner × Position) →
+            WorkM (LoopState dependencies program prepared.block) := fun state (event,position) => do
+          let (history,retired,ordinary,actions,steps,obligations,_cursor,calls,sites,bodies) ← advance state position.start
           let interval ← RuntimeInterval.check prepared.block position.start position.count
           let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
           let before : RuntimeStructuralAction.SourceState := {history with bindings}
@@ -298,11 +313,6 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
             let node : Node dependencies program prepared.block := .primitive action
             return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-              obligations,position.start+position.count,calls,sites,bodies)
-          | .staticConditional event _ =>
-            let checked ← RuntimeStaticPrimitive.read prepared.block position.start position.count event before after
-            let nodes := staticNodes checked.source.action checked.action
-            return (continued,retired,ordinary,actions ++ nodes,steps ++ nodes.map Step.pure,
               obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
             let (callPosition,child) :: calls := calls | throw .request
@@ -409,7 +419,34 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               (by with_reducible exact logical.property)
             pure (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ checked,position.start+position.count,calls,sites,bodies)
-          | _ => throw .request) (initialHistory,([] : List Owner),initialOrdinary,
+          | _ => throw .request
+      let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) ←
+        (source.events.zip request.positions).foldlM
+        (fun state (event,position) => do
+          match event with
+          | .staticConditional event _ =>
+            let sequence ← RuntimeStaticPrimitive.readSequence event
+            let positions ← sequence.positions position
+            guard (positions.length == sequence.selected.result.events.length) .request
+            let state ← advance state position.start
+            let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) := state
+            let interval ← RuntimeInterval.check prepared.block position.start position.count
+            let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+            let before : RuntimeStructuralAction.SourceState := {history with bindings}
+            let _ ← RuntimeStaticPrimitive.readBefore sequence interval before
+            let count := sequence.selected.result.events.length
+            -- The genuine shared fold appends each primitive island/step to
+            -- the existing prefixes. Charge those copies and all comparisons.
+            exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
+              32*(Raw.OwnerFlow.fields retired+1)))
+            let initial : LoopState dependencies program prepared.block :=
+              (before,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies)
+            let result ← (sequence.selected.result.events.zip positions).foldlM step initial
+            let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_calls,_sites,_bodies) := result
+            guard (afterCursor == position.start+position.count && afterRetired == retired) .request
+            let _ ← RuntimeStaticPrimitive.readAfter sequence interval before after
+            return result
+          | _ => step state (event,position)) (initialHistory,([] : List Owner),initialOrdinary,
             ([] : List (Node dependencies program prepared.block)),([] : List (Step dependencies program prepared.block)),
             obligations,0,request.calls,request.sites,bodies)
       guard (cursor ≤ program.operations.length && calls.isEmpty && sites.isEmpty && bodies.isEmpty) .request

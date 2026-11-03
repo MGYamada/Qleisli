@@ -163,7 +163,8 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
             return (discovery.append ⟨CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows,[]⟩,
               sites,calls,branches,bodies)
           | .staticConditional event _ =>
-            let source ← RuntimeStaticPrimitive.readSource event
+            let source ← RuntimeStaticPrimitive.readSequence event
+            let _ ← source.positions position
             return (discovery.append ⟨source.sourceRows,[]⟩,sites,calls,branches,bodies)
           -- Remaining compound forms are not ordinary-if requests. Their
           -- native obligations/context layout must be connected explicitly.
