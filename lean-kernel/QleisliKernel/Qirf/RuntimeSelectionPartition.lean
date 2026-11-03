@@ -105,7 +105,7 @@ private theorem nodup_perm {α : Type} [DecidableEq α] (first : List α) : ∀ 
       cases impossible
   | cons head first ih =>
     intro second firstUnique secondUnique members
-    obtain ⟨before,after,equal⟩ := List.mem_split ((members head).mp (List.mem_cons_self))
+    obtain ⟨before,after,equal⟩ := List.append_of_mem ((members head).mp (List.mem_cons_self))
     subst second
     have moved : (before ++ head::after).Perm (head::(before ++ after)) := List.perm_middle
     have remaining := List.nodup_cons.mp (moved.nodup secondUnique)
