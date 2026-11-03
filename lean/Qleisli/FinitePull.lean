@@ -33,7 +33,7 @@ private theorem bit_ext (left right : Nat)
 
 private theorem bit_zero (label bits axis : Nat) (bound : label < 2^bits)
     (outside : bits ≤ axis) : bit label axis = 0 := by
-  have power : 2^bits ≤ 2^axis := by gcongr
+  have power : 2^bits ≤ 2^axis := by gcongr <;> norm_num
   simp [bit, Nat.div_eq_of_lt (Nat.lt_of_lt_of_le bound power)]
 
 private theorem bound_of_bits (label bits : Nat)
@@ -115,10 +115,12 @@ private theorem scatter_equal (label row output : Nat) (axes : List Nat)
   · intro same
     subst row
     exact ⟨gather_scatter label output axes unique bound, by
-      rw [scatter_overwrite, Scatter.scatter_gather label axes unique]⟩
+      rw [scatter_overwrite label output (gather label axes) axes unique,
+        Scatter.scatter_gather label axes unique]⟩
   · rintro ⟨coordinate, original⟩
     conv_rhs => rw [original]
-    rw [scatter_overwrite, ← coordinate, Scatter.scatter_gather row axes unique]
+    rw [scatter_overwrite row (gather label axes) output axes unique,
+      ← coordinate, Scatter.scatter_gather row axes unique]
 
 private theorem enabled_scatter (controls : List Control) (label value : Nat) (axes : List Nat)
     (outside : ∀ control ∈ controls, control.index ∉ axes) :
@@ -126,7 +128,9 @@ private theorem enabled_scatter (controls : List Control) (label value : Nat) (a
   induction controls with
   | nil => rfl
   | cons control controls ih =>
-    simp only [enabled, List.all_cons]
+    change (((bit (scatter label axes value) control.index == 1) == control.whenOne) &&
+      enabled controls (scatter label axes value)) =
+        (((bit label control.index == 1) == control.whenOne) && enabled controls label)
     rw [Scatter.scatter_outside label value control.index axes (outside control (by simp)),
       ih (fun c present => outside c (by simp [present]))]
 
@@ -190,6 +194,10 @@ private theorem sum_flatMap {α : Type} (items : List α) (f : α → List ℂ) 
   | nil => rfl
   | cons item items ih => simp [ih]
 
+private theorem factor_ite (p q : Prop) [Decidable p] [Decidable q] (a b : ℂ) :
+    (if p ∧ q then a*b else 0) = if q then a*(if p then b else 0) else 0 := by
+  by_cases first : p <;> by_cases second : q <;> simp [first, second]
+
 private theorem active_contributions (dependencies : List Dependency) (bits : Nat) (step : Step)
     (valid : stepValid dependencies bits step = true) (label row : Nat) (value : Scalar)
     (nonzero : value ≠ Scalar.zero) (active : enabled step.controls label = true) :
@@ -235,14 +243,26 @@ private theorem active_contributions (dependencies : List Dependency) (bits : Na
       rw [highScatter] at highRow
       by_cases spectator : label = scatter row [axis] (gather label [axis])
       · have lowIff : row = low ↔ bit row axis = 0 := by
-          simpa only [gathered, spectator, and_true] using lowRow
+          constructor
+          · intro same
+            simpa only [gathered] using (lowRow.mp same).1
+          · intro coordinate
+            exact lowRow.mpr ⟨by simpa only [gathered] using coordinate, spectator⟩
         have highIff : row = high ↔ bit row axis = 1 := by
-          simpa only [gathered, spectator, and_true] using highRow
+          constructor
+          · intro same
+            simpa only [gathered] using (highRow.mp same).1
+          · intro coordinate
+            exact highRow.mpr ⟨by simpa only [gathered] using coordinate, spectator⟩
         have selected := mask.mpr spectator
         have inputCases : bit label axis = 0 ∨ bit label axis = 1 := by omega
         have outputCases : bit row axis = 0 ∨ bit row axis = 1 := by omega
-        rcases inputCases with inputZero | inputOne <;> rcases outputCases with outputZero | outputOne <;>
-          simp [targets, kernel, amplitude, gathered, selected, lowIff, highIff, sign, *] <;> ring
+        simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero, targets]
+        rw [if_pos selected]
+        simp only [lowIff, highIff, sign, kernel, gathered]
+        rcases inputCases with inputCoordinate | inputCoordinate <;>
+          rcases outputCases with outputCoordinate | outputCoordinate <;>
+          simp [inputCoordinate, outputCoordinate] <;> dsimp [amplitude] <;> ring
       · have lowNot : row ≠ low := by
           intro same
           exact spectator ((lowRow.mp same).2)
@@ -276,17 +296,19 @@ private theorem active_contributions (dependencies : List Dependency) (bits : Na
       simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero,
         targets, kernel, List.getElem?_eq_getElem inputBound, List.getElem?_eq_getElem phaseBound,
         Option.getD_some]
-      rw [coordinates]
-      by_cases same : gather row axes = output <;>
-        by_cases spectator : label = scatter row axes (gather label axes) <;>
-        simp [same, eq_comm, spectator, mask, output, exponent]
+      change (if row = scatter label axes output then scalar value * Qleisli.Semantics.Finite.phase exponent else 0) =
+        if scatter label axes (gather row axes) = row then
+          scalar value * (if output = gather row axes then Qleisli.Semantics.Finite.phase exponent else 0) else 0
+      have reverse : output = gather row axes ↔ gather row axes = output := eq_comm
+      simp only [coordinates, mask, reverse]
+      exact factor_ite _ _ _ _
   | contract axes index adjoint =>
     have found : ∃ dependency, dependencies[index]? = some dependency ∧
         dependency.meaning.rows = 2^axes.length ∧ dependency.meaning.cols = 2^axes.length := by
       cases lookup : dependencies[index]? with
       | none => simp [stepValid, lookup] at valid
       | some dependency =>
-        refine ⟨dependency, lookup, ?_⟩
+        refine ⟨dependency, rfl, ?_⟩
         simp only [stepValid, lookup, bind, Option.bind, pure, Option.getD_some,
           Bool.and_eq_true, beq_iff_eq] at valid
         tauto
@@ -335,9 +357,12 @@ private theorem active_contributions (dependencies : List Dependency) (bits : Na
         · intro same
           exact ((scatter_equal label row _ axes unique (gather_bound row axes)).mpr ⟨rfl, same⟩).symm
       by_cases spectator : label = scatter row axes (gather label axes)
-      · simp only [spectator, and_true]
+      · have collapse (output : Nat) :
+            (gather row axes = output ∧ label = scatter row axes (gather label axes)) ↔
+              gather row axes = output := ⟨And.left, fun coordinate => ⟨coordinate, spectator⟩⟩
+        simp only [collapse]
         rw [Exact.range_delta_sum _ _ _ (by rw [rows]; exact gather_bound row axes)]
-        simp [targets, kernel, lookup, coefficient, mask, spectator]
+        simp only [targets, if_pos (mask.mpr spectator), kernel, lookup, coefficient]
       · simp [spectator, mask, targets]
 
 private theorem contributions_entry (dependencies : List Dependency) (bits : Nat) (step : Step)
@@ -382,7 +407,9 @@ private theorem terms_length (terms : List (Nat × ℂ)) (values : List ℂ) :
     (terms.foldl Qleisli.Semantics.Finite.addAt values).length = values.length := by
   induction terms generalizing values with
   | nil => rfl
-  | cons term terms ih => simpa [List.foldl_cons, Qleisli.Semantics.Finite.addAt] using ih _
+  | cons term terms ih =>
+    rw [List.foldl_cons, ih (Qleisli.Semantics.Finite.addAt values term)]
+    simp only [Qleisli.Semantics.Finite.addAt, List.length_set]
 
 private theorem terms_entry (terms : List (Nat × ℂ)) (values : List ℂ) (row : Nat)
     (bound : row < values.length) :
@@ -395,7 +422,7 @@ private theorem terms_entry (terms : List (Nat × ℂ)) (values : List ℂ) (row
     by_cases same : row = term.1
     · subst row
       simp [Qleisli.Semantics.Finite.addAt, bound, add_assoc]
-    · simp [Qleisli.Semantics.Finite.addAt, same, Ne.symm same, add_assoc]
+    · simp [Qleisli.Semantics.Finite.addAt, same, Ne.symm same]
 
 private theorem fold_entry (dependencies : List Dependency) (bits : Nat) (step : Step)
     (valid : stepValid dependencies bits step = true) (items : List (Scalar × Nat))
@@ -451,7 +478,8 @@ private theorem sum_fiber (bits row : Nat) (axes : List Nat) (unique : axes.Nodu
     · intro original
       subst label
       exact ⟨gather_scatter row input axes unique inputBound, by
-        rw [scatter_overwrite, Scatter.scatter_gather row axes unique]⟩
+        rw [scatter_overwrite row input (gather row axes) axes unique,
+          Scatter.scatter_gather row axes unique]⟩
   simp_rw [condition, eq_comm (b := scatter row axes input)]
   exact Exact.range_delta_sum _ _ _ physicalBound
 
@@ -549,8 +577,10 @@ theorem applyStep_pull (dependencies : List Dependency) (bits : Nat) (step : Ste
   by_cases active : enabled step.controls row = true
   · simp only [active, Bool.not_true, Bool.false_eq_true, if_false]
     exact Pull.sum_fiber bits row _ (Pull.geometry dependencies bits step valid).1
-      (Pull.geometry dependencies bits step valid).2.1 bound _
-  · have inactive : enabled step.controls row = false := by cases h : enabled step.controls row <;> simp_all
+      (Pull.geometry dependencies bits step valid).2.1 bound
+      (fun label input => scalar (values[label]?.getD Scalar.zero) *
+        Pull.kernel dependencies step.action (gather row (targets step.action)) input)
+  · have inactive : enabled step.controls row = false := Bool.eq_false_iff.mpr active
     simp only [inactive, Bool.not_false, if_true]
     exact Exact.range_delta_sum _ _ _ bound
 
