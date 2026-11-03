@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add the Qleisli Proof & Tactic Library preview in [`qptl/`](qptl/README.md).
+  It provides categorical dagger, isometry and tensor laws, a finite complex
+  matrix model and a structural proof tactic in a standalone Lean package.
 - Check existing finite `phase[j,k]` calls and body-local static Nat aliases
   through the common qmatch source traversal and literal Raw interval gate.
   Retain original helper lookup at each alias initializer, check every ordinary
