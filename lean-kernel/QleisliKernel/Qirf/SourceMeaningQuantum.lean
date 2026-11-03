@@ -54,6 +54,8 @@ private abbrev SameReference {sources caller owner name meaning}
     provider.signature.original.occurrence = reference.signature.original.occurrence ∧
     provider.signature.inputs = reference.signature.inputs ∧
     provider.signature.outputs = reference.signature.outputs ∧
+    reference.signature.inputs = [referenceSite.node.input.basis] ∧
+    reference.signature.outputs = [referenceSite.node.output.basis] ∧
     provider.signature.parts = reference.signature.parts ∧
     provider.signature.staticArguments = ({} : StaticTypes.Arguments) ∧
     reference.signature.staticArguments = ({} : StaticTypes.Arguments) ∧
@@ -86,7 +88,8 @@ def readOriginal (artifact : Artifact) {caller owner name meaning}
     reference.signature.original.source.utf8ByteSize+provider.moduleName.utf8ByteSize+
     provider.declarationName.utf8ByteSize+reference.caller.utf8ByteSize+referenceSite.node.owner.utf8ByteSize+
     Raw.OwnerFlow.fields ((provider.signature.inputs ++ provider.signature.outputs ++
-      reference.signature.inputs ++ reference.signature.outputs).map fun basis => ⟨0,basis⟩)+1)))
+      reference.signature.inputs ++ reference.signature.outputs ++
+      [referenceSite.node.input.basis,referenceSite.node.output.basis]).map fun basis => ⟨0,basis⟩)+1)))
   if bound : SameReference referenceSite original.val then
     return ⟨graph.val,by with_reducible exact graph.property,original.val,
       by with_reducible exact original.property,bound⟩
