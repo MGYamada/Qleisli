@@ -183,7 +183,7 @@ def readSource {dependencies program block start count inputs outputs roles}
       (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
     (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) :
     WorkM (Literal frame selectorBits targetBits retained restricted source.before source.transport.after) := do
-  let selected := [source.selected.first,source.selected.second]
+  let selected := source.selected.toList
   let wireCount := source.selected.first.port.wires.length+source.selected.second.port.wires.length
   exactWork (Exact.charge (4*(wireCount+1)*(wireCount+frame.interval.before.quantum.frame.length+1)))
   if distinct : (RuntimeForestCode.forestAxes frame.interval.before.quantum.frame selected).Nodup then

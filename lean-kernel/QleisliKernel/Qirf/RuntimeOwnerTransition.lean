@@ -49,6 +49,8 @@ structure Pair (roles : List RuntimeOwnerMap.Owner) (bindings : Map) where
   second : Binding
   ordered : RuntimeInterval.Computed (RuntimeOwnerMap.order roles bindings) [first,second]
 
+abbrev Pair.toList {roles bindings} (pair : Pair roles bindings) : Map := [pair.first,pair.second]
+
 def readPair (roles : List RuntimeOwnerMap.Owner) (bindings : Map) : WorkM (Pair roles bindings) := do
   let ordered ← NaturalAffine.witness (RuntimeOwnerMap.order roles bindings)
   match found : ordered.val with

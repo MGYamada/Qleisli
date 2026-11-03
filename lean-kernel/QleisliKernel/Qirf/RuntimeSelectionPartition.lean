@@ -218,6 +218,31 @@ theorem source_ports {dependencies program block start count inputs outputs role
   exact ⟨Option.some.inj (frame.atEntry.symm.trans (entry.trans (pair_ports source.before source.selected))),
     Option.some.inj (frame.atExit.symm.trans (exit.trans (pair_ports source.transport.after source.returned)))⟩
 
+/-- The actual pure-program output check supplies distinct returned tokens.
+This includes separate zero-width owners. -/
+private theorem output_tokens {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    outputs.Nodup := by
+  obtain ⟨work,left,ran⟩ := frame.pureRead
+  have prepared := (Raw.Pure.verify_conditions _ _ _ work left ran).1
+  obtain ⟨_,_,_,_,valid,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
+  simp only [Raw.outputValid, Bool.and_eq_true, RuntimePureInterval.fragment] at valid
+  exact Raw.Ownership.unique_nodup outputs valid.1.1.1.1
+
+/-- Gather the two source returns first and keep their spectators in the
+original output order. Every original binding occurs exactly once. -/
+theorem source_output_partition {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) :
+    (source.returned.toList ++ complement source.transport.after.bindings source.returned.toList).Perm
+      source.transport.after.bindings := by
+  have distinct := output_tokens frame
+  rw [source.outputTokens] at distinct
+  apply partition_perm _ _ (nodup_of_tokens _ source.transport.after.tokensDistinct)
+  · exact nodup_of_tokens _ distinct
+  · exact (order_values _ _ _ source.returned.ordered).1
+
+#print axioms source_output_partition
 #print axioms source_ports
 #print axioms interval_selected_tokens
 #print axioms order_values

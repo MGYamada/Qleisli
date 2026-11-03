@@ -240,6 +240,29 @@ theorem literal_correspondence
     regroup_inverse checked.inputCode _ partition logical bound,
     regroup_sparse_entry checked.inputCode _ codes partition physical logical bound⟩
 
+/-- Regroup the authentic output frame for all joint reference states. The
+retained codes are chosen once by the original owner lookup, even when the
+selected owners or spectators have equal width. -/
+theorem source_output_action {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    (output : RuntimeForestCode.Frame source.transport.after) :
+    let wanted := source.returned.toList ++ RuntimeSelectionPartition.complement
+      source.transport.after.bindings source.returned.toList
+    ∃ retained : Retained output.owners wanted, ∀ (Reference : Type)
+      (joint : Nat → Reference → ℂ) (physical : Nat) (ref : Reference),
+      referenceAction output joint physical ref =
+        ((List.range output.code.dimension).map fun logical =>
+          coefficients frame.interval.after.quantum.frame retained.codes physical
+            (regroupIndex output wanted logical)*joint logical ref).sum := by
+  let wanted := source.returned.toList ++ RuntimeSelectionPartition.complement
+    source.transport.after.bindings source.returned.toList
+  have permutation := RuntimeSelectionPartition.source_output_partition frame source
+  obtain ⟨codes,found⟩ := reindex_exists output.owners wanted permutation.subset
+  exact ⟨⟨codes,found⟩,fun _ joint physical ref => regroup_action output wanted ⟨codes,found⟩
+    permutation joint physical ref⟩
+
+#print axioms source_output_action
 #print axioms regroup_inverse
 #print axioms regroup_reverse
 #print axioms regroup_sparse_entry
