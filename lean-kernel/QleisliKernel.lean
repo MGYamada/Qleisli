@@ -116,6 +116,7 @@ import QleisliKernel.Qirf.SourceDutyProviderBare
 import QleisliKernel.Qirf.SourceDutyProviderHeader
 import QleisliKernel.Qirf.SourceDutyProviderBody
 import QleisliKernel.Qirf.RuntimeForestFactorization
+import QleisliKernel.Qirf.RuntimeSelectionPartition
 import QleisliKernel.Semantics.SourceClassical
 import QleisliKernel.Qirf.SourceClassicalTree
 import QleisliKernel.Qirf.SourceClassicalExecution

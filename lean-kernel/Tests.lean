@@ -77,6 +77,7 @@ import QleisliKernel.Tests.SourcePendingMeaning
 import QleisliKernel.Tests.SourceDutySlots
 import QleisliKernel.Tests.SourceDutyProviderFresh
 import QleisliKernel.Tests.SourceDutyProviderBare
+import QleisliKernel.Tests.SourceDutyProviderBareBody
 import QleisliKernel.Tests.SourceDutyProviderHeader
 import QleisliKernel.Tests.SourceDutyProviderBody
 import QleisliKernel.Tests.GenericCatalogueOriginals
