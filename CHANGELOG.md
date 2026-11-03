@@ -41,7 +41,10 @@ development milestones from the scope of their evidence.
   retaining exact nominal trees, wire order, zero-width owners and actual
   primitive/structural equations. Add reference-indexed lazy coefficient
   transport for arbitrary ordered frame axes without changing sum, failure or
-  work order. Bind circuit-event boundaries to their actual original intervals.
+  work order. For a checked Bit selection, replacing the returned target digit
+  stays inside the caller's logical dimension and preserves every other digit,
+  including a zero-width Unit owner's digit.
+  Bind circuit-event boundaries to their actual original intervals.
   Complete source/code/Gram composition remains required before the full qmatch
   profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the
