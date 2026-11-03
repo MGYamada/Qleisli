@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add source-indexed staging data for exact original bodies, event positions,
+  context queues and prepared operation graphs. Native consumers still owe
+  their existing checks; these data grant no acceptance or execution handle.
+
 - Retain the caller's exact checked declaration catalogue while preparing
   quantum Meaning references. Reference-specific source, type, visibility and
   effect checks, original body reads and the final native root stay explicit.

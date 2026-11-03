@@ -42,6 +42,26 @@ structure CheckedReceipt {artifact root Obligation}
   evidence : continuation.Evidence request
   consumed : RuntimeInterval.Computed (continuation.read request) evidence
 
+/-- The exact source-preparation value is an index of the final-root reader.
+No descriptor comparison or graph transport selects a prepared value. -/
+structure StagedConsumption {artifact : Artifact} (preparation : Preparation artifact)
+    (root : Validity.Root) (Obligation : Type) where
+  Evidence : (request : Request artifact) → preparation.Evidence request → Type
+  read : (request : Request artifact) → (prepared : preparation.Evidence request) →
+    WorkM (Evidence request prepared)
+  action : {request : Request artifact} → {prepared : preparation.Evidence request} →
+    Evidence request prepared → Semantics.Exact.Matrix
+  obligations : {request : Request artifact} → {prepared : preparation.Evidence request} →
+    Evidence request prepared → List Obligation
+
+structure StagedReceipt {artifact preparation root Obligation}
+    (continuation : @StagedConsumption artifact preparation root Obligation) where
+  request : Request artifact
+  prepared : preparation.Evidence request
+  preparedRead : RuntimeInterval.Computed (preparation.read request) prepared
+  evidence : continuation.Evidence request prepared
+  consumed : RuntimeInterval.Computed (continuation.read request prepared) evidence
+
 /-- Prefix access follows the original mixed header, including unused actuals.
 Available capabilities do not sharpen a written formal's demands. -/
 def required {sources owner name} (signature : SourceRuntimeContext.Signature sources owner name)

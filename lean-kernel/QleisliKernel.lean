@@ -107,6 +107,7 @@ import QleisliKernel.Qirf.RuntimeBodyDiscovery
 import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Qirf.RuntimeBodyOperations
+import QleisliKernel.Qirf.RuntimeBodyPlan
 import QleisliKernel.Qirf.RuntimeForestCode
 import QleisliKernel.Qirf.RuntimeCoefficientTransport
 import QleisliKernel.Qirf.RuntimeScatterTransport
