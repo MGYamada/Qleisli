@@ -11,6 +11,7 @@ import Qleisli.FiniteMatrixPull
 import Qleisli.RawActionLinear
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawActionLocality
+import Qleisli.CodeSpaceAction
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport
