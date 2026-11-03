@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeSelectionPartition
+import QleisliKernel.Qirf.RuntimeForestFactorization
 
 /-! Constructive reindexing of the same retained owner-code receipts. Exact
 Binding equality retains source ordinal, full nominal tree, port token and
@@ -24,7 +25,7 @@ theorem lookup_exists {bindings} (owners : OwnerCodes bindings) (wanted : Bindin
     intro member
     by_cases same : binding = wanted
     · subst wanted
-      exact ⟨first,by simp only [lookup,dif_pos rfl]⟩
+      exact ⟨first,by simp [lookup]⟩
     · have later : wanted ∈ bindings := by
         rcases List.mem_cons.mp member with equal | later
         · exact False.elim (same equal.symm)
@@ -60,7 +61,7 @@ theorem reindex_exists {bindings} (owners : OwnerCodes bindings) (wanted : Map) 
   | cons binding rest ih =>
     intro subset
     obtain ⟨first,firstRead⟩ := lookup_exists owners binding (subset (List.mem_cons_self))
-    obtain ⟨tail,tailRead⟩ := ih (fun member => subset (List.mem_cons_of_mem _ member))
+    obtain ⟨tail,tailRead⟩ := ih (fun {_} member => subset (List.mem_cons_of_mem _ member))
     exact ⟨.cons first tail,by simp only [reindex,firstRead,tailRead,bind,Option.bind,pure]⟩
 
 structure Retained {bindings} (owners : OwnerCodes bindings) (wanted : Map) where
