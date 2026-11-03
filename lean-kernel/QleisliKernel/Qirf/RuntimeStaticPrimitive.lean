@@ -4,7 +4,8 @@ import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! A transparent static source selection in the same literal runtime block.
-Selected primitives or one nongeneric named call use the common event step.
+Selected primitives or one named call with closed Basis/Nat actuals use the
+common event step.
 The mixed continuation separately retains a destructive observing call's exact
 source delta; the pure continuation still requires unchanged ownership.
 The exact original
@@ -82,12 +83,43 @@ def readSource {sources caller} (event : SourceRuntimeContext.StaticEvent source
   | .ok action => return ⟨selected.selected,selected.original,action,
       (by first | exact classified | rfl),selected.unchanged⟩
 
-/-- Compound primitives and one original nongeneric named call use the
-same common event handler. General compound call partitions remain separate. -/
+def basisNatFormals (formals : List StaticHeaders.Formal) : Bool :=
+  formals.all fun formal => match formal.kind with
+    | .basis | .natural => true
+    | .operation _ => false
+
+/-- The exact original application already retains ordered actuals and their
+original premise transfer. Its same selected signature retains checked Basis
+values and closed Nat premises. These additional proofs bound this continuation
+to Basis/Nat formals; they neither reconstruct those receipts nor grant an
+operation actual, body equation, public effect or native capability. -/
+structure BasisNatActuals {sources caller} (call : SourceRuntimeContext.NamedEvent sources caller) where
+  applicationKinds : basisNatFormals call.target.actuals.target.header.formals = true
+  signatureKinds : basisNatFormals call.target.signature.checked.environment.numeric.original.header.formals = true
+  noOperations : call.target.signature.arguments.operations = []
+
+private def readBasisNatActuals {sources caller} (call : SourceRuntimeContext.NamedEvent sources caller) :
+    WorkM (BasisNatActuals call) := do
+  -- Only the two retained formal-kind lists and the operation-list constructor
+  -- are examined here. All actual parsing/substitution/body checks remain with
+  -- their original readers, independently for this occurrence.
+  exactWork (Exact.charge (16*(call.target.actuals.target.header.formals.length+
+    call.target.signature.checked.environment.numeric.original.header.formals.length+1)))
+  if checked : basisNatFormals call.target.actuals.target.header.formals = true ∧
+      basisNatFormals call.target.signature.checked.environment.numeric.original.header.formals = true ∧
+      call.target.signature.arguments.operations = [] then
+    return ⟨checked.1,checked.2.1,checked.2.2⟩
+  else throw .request
+
+/-- Compound primitives and one original named call use the same common event
+handler. Closed Basis/Nat instances retain their original application receipts;
+general operation actuals and compound call partitions remain separate. -/
 inductive EligibleEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) : Type where
   | primitives (actions : List Action) (classified : events.mapM classifyEvent = .ok actions)
   | named (call : SourceRuntimeContext.NamedEvent sources caller)
       (single : events = [.named call]) (nongeneric : call.target.signature.staticNames.isEmpty = true)
+  | basisNat (call : SourceRuntimeContext.NamedEvent sources caller)
+      (single : events = [.named call]) (actuals : BasisNatActuals call)
 
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
@@ -108,7 +140,10 @@ private def sequenceWithSelected {sources caller event} (selected : @Selected so
     if nongeneric : call.target.signature.staticNames.isEmpty = true then
       return ⟨selected.selected,selected.original,
         .named call (by first | exact single | rfl) nongeneric,selected.unchanged⟩
-    else throw .request
+    else
+      let actuals ← readBasisNatActuals call
+      return ⟨selected.selected,selected.original,
+        .basisNat call (by first | exact single | rfl) actuals,selected.unchanged⟩
   | _ =>
     match classified : selected.selected.result.events.mapM classifyEvent with
     | .error _ => throw .request
