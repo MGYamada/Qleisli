@@ -124,6 +124,37 @@ private def collect (artifact : Artifact) (catalogue : GenericCatalogue.Checked 
   guard (implementations.isEmpty && references.isEmpty) .request
   return rev.reverse
 
+/-- Graph-only preparation is shared by a genuine runtime operation and an
+indexed original coherent arm. The graph itself carries its source/supplier
+receipts; this value does not invent an enclosing source occurrence. -/
+structure GraphPrepared (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
+    (implementations : List Request) (references : List (List Request)) where
+  order : List Nat
+  ordered : RuntimeInterval.Computed (StaticOperation.readOccurrences description) order
+  occurrences : List (Occurrence artifact catalogue graph order)
+  collected : RuntimeInterval.Computed (collect artifact catalogue graph order implementations references) occurrences
+  every : occurrences.map (·.ordinal) = List.finRange order.length
+
+def GraphPrepared.rows {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) : List SourceRows.Row :=
+  graph.sourceRows ++ prepared.occurrences.flatMap Occurrence.rows
+
+def GraphPrepared.roots {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) : List Nat :=
+  prepared.occurrences.flatMap Occurrence.roots
+
+def prepareGraph (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
+    (implementations : List Request) (references : List (List Request)) :
+    WorkM (GraphPrepared artifact catalogue graph implementations references) := do
+  let order ← NaturalAffine.witness (StaticOperation.readOccurrences description)
+  let occurrences ← NaturalAffine.witness (collect artifact catalogue graph order.val implementations references)
+  if every : occurrences.val.map (·.ordinal) = List.finRange order.val.length then
+    return ⟨order.val,by with_reducible exact order.property,occurrences.val,
+      by with_reducible exact occurrences.property,every⟩
+  else throw .request
+
 structure Prepared (artifact : Artifact) {owner name arguments}
     (source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments) (request : Context)
     (references : List (List Request)) where
@@ -199,6 +230,13 @@ def prepare (artifact : Artifact) {owner name arguments}
     | _ => throw .request
   else throw .request
 
+/-- Reuse the actual operation preparation without rereading any header,
+source body, occurrence or Meaning graph. This projection changes no work. -/
+def Prepared.asGraph {artifact owner name arguments source request references}
+    (prepared : @Prepared artifact owner name arguments source request references) :
+    GraphPrepared artifact source.catalogue prepared.event.operation.graph prepared.implementation.bodies references :=
+  ⟨prepared.order,prepared.ordered,prepared.occurrences,prepared.collected,prepared.every⟩
+
 private def directShape (description : OperationDescription.Description) : Bool :=
   description.root == 1 && match description.nodes with
     | [.provider ..,.requested child _ _] => child == 0
@@ -208,30 +246,30 @@ private def directShape (description : OperationDescription.Description) : Bool 
 request. Equal names, matrices or widths cannot select a different provider.
 The general preparation above remains usable data for other shapes; they do
 not acquire this bounded direct-provider continuation by coincidence. -/
-structure Direct {artifact owner name arguments source request references}
-    (prepared : @Prepared artifact owner name arguments source request references) where
-  providerOccurrence : Occurrence artifact source.catalogue prepared.event.operation.graph prepared.order
-  meaningOccurrence : Occurrence artifact source.catalogue prepared.event.operation.graph prepared.order
+structure GraphDirect {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) where
+  providerOccurrence : Occurrence artifact catalogue graph prepared.order
+  meaningOccurrence : Occurrence artifact catalogue graph prepared.order
   original : prepared.occurrences = [providerOccurrence,meaningOccurrence]
-  provider : Provider artifact prepared.event.operation.graph providerOccurrence.index
+  provider : Provider artifact graph providerOccurrence.index
   present : providerOccurrence.provider = some provider
-  requirement : Requirement artifact source.catalogue meaningOccurrence.result
+  requirement : Requirement artifact catalogue meaningOccurrence.result
   required : meaningOccurrence.requirements = [requirement]
-  shape : directShape prepared.event.operation.description = true
+  shape : directShape description = true
   providerIndex : providerOccurrence.index = 0
   meaningIndex : meaningOccurrence.index = 1
   subject : requirement.subject = providerOccurrence.index
   noEarlierMeaning : providerOccurrence.requirements.isEmpty = true
   noOtherProvider : meaningOccurrence.provider.isNone = true
 
-def readDirect {artifact owner name arguments source request references}
-    (prepared : @Prepared artifact owner name arguments source request references) : WorkM (Direct prepared) := do
-  exactWork (Exact.charge (16*(prepared.event.operation.description.nodes.length+prepared.occurrences.length+1)))
+def readGraphDirect {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) : WorkM (GraphDirect prepared) := do
+  exactWork (Exact.charge (16*(description.nodes.length+prepared.occurrences.length+1)))
   match original : prepared.occurrences with
   | [providerOccurrence,meaningOccurrence] =>
     match present : providerOccurrence.provider,required : meaningOccurrence.requirements with
     | some provider,[requirement] =>
-      if supported : directShape prepared.event.operation.description = true ∧ providerOccurrence.index = 0 ∧
+      if supported : directShape description = true ∧ providerOccurrence.index = 0 ∧
           meaningOccurrence.index = 1 ∧ requirement.subject = providerOccurrence.index ∧
           providerOccurrence.requirements.isEmpty = true ∧ meaningOccurrence.provider.isNone = true then
         return ⟨providerOccurrence,meaningOccurrence,original,provider,present,requirement,required,
@@ -239,6 +277,13 @@ def readDirect {artifact owner name arguments source request references}
       else throw .request
     | _,_ => throw .request
   | _ => throw .request
+
+abbrev Direct {artifact owner name arguments source request references}
+    (prepared : @Prepared artifact owner name arguments source request references) := GraphDirect prepared.asGraph
+
+def readDirect {artifact owner name arguments source request references}
+    (prepared : @Prepared artifact owner name arguments source request references) : WorkM (Direct prepared) :=
+  readGraphDirect prepared.asGraph
 
 /-- The caller, every forward provider and every original Meaning reference
 are discovered before this single actual graph computation. No provider gets
@@ -258,13 +303,14 @@ def prepareRoot {artifact owner name arguments source request references}
 /-- A same-root direct-provider/M equation receipt. The original canonical
 queue is still retained on source.pending; this is not complete catalogue
 coverage or a caller IR derivation, and supplies no execution authority. -/
-structure Checked {artifact owner name arguments source request references}
-    (prepared : @Prepared artifact owner name arguments source request references) (root : Validity.Root) where
-  direct : Direct prepared
-  directRead : RuntimeInterval.Computed (readDirect prepared) direct
-  access : OperationAccess.CheckedOccurrences prepared.event.operation.graph OperationAccess.applicable
+structure GraphChecked {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references)
+    (root : Validity.Root) (requested : StaticOperation.Paths) where
+  direct : GraphDirect prepared
+  directRead : RuntimeInterval.Computed (readGraphDirect prepared) direct
+  access : OperationAccess.CheckedOccurrences graph requested
   accessRead : RuntimeInterval.Computed
-    (OperationAccess.checkOccurrences prepared.event.operation.graph OperationAccess.applicable) access
+    (OperationAccess.checkOccurrences graph requested) access
   demandedProvider : StaticOperation.Provider artifact.sources
   demand : StaticOperation.Paths
   originalDemand : access.providers = [(direct.providerOccurrence.index,demandedProvider,demand)]
@@ -275,12 +321,12 @@ structure Checked {artifact owner name arguments source request references}
   equation : SourceMeaningAction.ProviderEquation subject specification
   compared : RuntimeInterval.Computed (SourceMeaningAction.compareProvider subject specification) (⟨equation⟩ : PLift _)
 
-def read {artifact owner name arguments source request references}
-    (prepared : @Prepared artifact owner name arguments source request references) (root : Validity.Root) :
-    WorkM (Checked prepared root) := do
-  let direct ← NaturalAffine.witness (readDirect prepared)
+def readGraph {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references)
+    (root : Validity.Root) (requested : StaticOperation.Paths) : WorkM (GraphChecked prepared root requested) := do
+  let direct ← NaturalAffine.witness (readGraphDirect prepared)
   let access ← NaturalAffine.witness
-    (OperationAccess.checkOccurrences prepared.event.operation.graph OperationAccess.applicable)
+    (OperationAccess.checkOccurrences graph requested)
   match demands : access.val.providers with
   | [(index,demandedProvider,demand)] =>
     if same : index = direct.val.providerOccurrence.index then
@@ -294,5 +340,71 @@ def read {artifact owner name arguments source request references}
         by with_reducible exact equation.property⟩
     else throw .request
   | _ => throw .request
+
+private def plainShape (description : OperationDescription.Description) : Bool :=
+  description.root == 0 && match description.nodes with | [.provider ..] => true | _ => false
+
+/-- Plain providers use the same actual graph/header/body path without an
+invented Meaning assertion. Their absence of local requests is checked. -/
+structure GraphPlain {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) where
+  occurrence : Occurrence artifact catalogue graph prepared.order
+  original : prepared.occurrences = [occurrence]
+  provider : Provider artifact graph occurrence.index
+  present : occurrence.provider = some provider
+  shape : plainShape description = true
+  index : occurrence.index = 0
+  noRequirements : occurrence.requirements.isEmpty = true
+  noMeaning : graph.hasMeaningRequirements = false
+
+def readGraphPlain {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references) :
+    WorkM (GraphPlain prepared) := do
+  exactWork (Exact.charge (16*(description.nodes.length+prepared.occurrences.length+1)))
+  match original : prepared.occurrences with
+  | [occurrence] =>
+    match present : occurrence.provider with
+    | some provider =>
+      if supported : plainShape description = true ∧ occurrence.index = 0 ∧
+          occurrence.requirements.isEmpty = true ∧ graph.hasMeaningRequirements = false then
+        return ⟨occurrence,original,provider,present,supported.1,supported.2.1,supported.2.2.1,supported.2.2.2⟩
+      else throw .request
+    | none => throw .request
+  | _ => throw .request
+
+structure PlainChecked {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references)
+    (root : Validity.Root) (requested : StaticOperation.Paths) where
+  direct : GraphPlain prepared
+  directRead : RuntimeInterval.Computed (readGraphPlain prepared) direct
+  access : OperationAccess.CheckedOccurrences graph requested
+  accessRead : RuntimeInterval.Computed (OperationAccess.checkOccurrences graph requested) access
+  demandedProvider : StaticOperation.Provider artifact.sources
+  demand : StaticOperation.Paths
+  originalDemand : access.providers = [(direct.occurrence.index,demandedProvider,demand)]
+  subject : RuntimeProviderAction.Checked direct.provider.header root demand
+  subjectRead : RuntimeInterval.Computed (RuntimeProviderAction.read direct.provider.header root demand) subject
+
+def readPlain {artifact catalogue context description graph implementations references}
+    (prepared : @GraphPrepared artifact catalogue context description graph implementations references)
+    (root : Validity.Root) (requested : StaticOperation.Paths) : WorkM (PlainChecked prepared root requested) := do
+  let direct ← NaturalAffine.witness (readGraphPlain prepared)
+  let access ← NaturalAffine.witness (OperationAccess.checkOccurrences graph requested)
+  match demands : access.val.providers with
+  | [(index,demandedProvider,demand)] =>
+    if same : index = direct.val.occurrence.index then
+      let subject ← NaturalAffine.witness (RuntimeProviderAction.read direct.val.provider.header root demand)
+      return ⟨direct.val,by with_reducible exact direct.property,access.val,by with_reducible exact access.property,
+        demandedProvider,demand,by simpa only [same] using demands,subject.val,by with_reducible exact subject.property⟩
+    else throw .request
+  | _ => throw .request
+
+abbrev Checked {artifact owner name arguments source request references}
+    (prepared : @Prepared artifact owner name arguments source request references) (root : Validity.Root) :=
+  GraphChecked prepared.asGraph root OperationAccess.applicable
+
+def read {artifact owner name arguments source request references}
+    (prepared : @Prepared artifact owner name arguments source request references) (root : Validity.Root) :
+    WorkM (Checked prepared root) := readGraph prepared.asGraph root OperationAccess.applicable
 
 end QleisliKernel.Qirf.RuntimePreparedOperation

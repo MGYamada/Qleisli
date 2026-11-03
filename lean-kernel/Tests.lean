@@ -74,7 +74,10 @@ import QleisliKernel.Tests.GenericDutyQueue
 import QleisliKernel.Tests.GenericDutyPrepared
 import QleisliKernel.Tests.SourceMeaningOrdinary
 import QleisliKernel.Tests.SourceMeaningAction
+import QleisliKernel.Tests.RuntimePreparedSource
 import QleisliKernel.Tests.RuntimeMeaningCaller
+import QleisliKernel.Tests.RuntimeSelectionMeaning
+import QleisliKernel.Tests.RuntimeOrdinaryBranchCalls
 import QleisliKernel.Tests.SourceMeaningPrepared
 import QleisliKernel.Tests.SourceClassicalExecution
 import QleisliKernel.Tests.SourcePendingMeaning

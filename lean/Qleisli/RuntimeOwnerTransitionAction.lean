@@ -1,15 +1,17 @@
 import Qleisli.RuntimeForestProduct
+import Qleisli.RuntimeBitSectorAction
 import Qleisli.Semantics.RawAction
 import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimeSelectionPartition
 import QleisliKernel.Qirf.RuntimeSelectionWires
 
-/-! A concrete mathematical consumer of the original owner-transition receipt.
-For an empty interval, its actual seed/resolve/reorder execution preserves every
-source owner and port, including zero-width spectators. The complete sparse
-code then intertwines the actual empty Raw action and logical identity on every
-joint reference family. This supplies no nontrivial gate/sector/Gram theorem,
-bounded availability, new checker or accepted handle.
+/-! Concrete mathematical consumers of original owner-transition receipts.
+Empty intervals preserve their full codes. A singleton original quantumIf
+retains every source owner and ordered wire vector across fresh output tokens,
+including separate zero-width spectators. Its checked Bit-sector slice acts on
+the authentic full output frame and arbitrary joint reference amplitudes.
+General multi-step transport, logical target-digit recoding and Gram transfer
+remain separate. No bounded availability, new checker or handle is supplied.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.RuntimeOwnerTransitionAction
@@ -437,9 +439,253 @@ theorem quantumIf_spectators {dependencies program block start count inputs outp
     have equal : old = binding := congrArg₂ Binding.mk sameOwner samePort
     exact equal ▸ oldMember
 
+private theorem owner_ordinals {roles state} (checked : RuntimeOwnerMap.Checked roles state) :
+    (checked.bindings.map (fun binding => binding.owner.ordinal)).Nodup := by
+  have ordered := congrArg (List.map (fun owner : RuntimeOwnerMap.Owner => owner.ordinal)) checked.ordered
+  simp only [List.map_map,Function.comp_def] at ordered
+  rw [ordered]
+  exact checked.ownersDistinct
+
+private theorem wire_map_eq (before : Map) : ∀ after : Map,
+    after.map (·.owner) = before.map (·.owner) →
+    (∀ old ∈ before,∀ current ∈ after,old.owner = current.owner → old.port.wires = current.port.wires) →
+    after.map (fun binding => (binding.owner,binding.port.wires)) =
+      before.map (fun binding => (binding.owner,binding.port.wires)) := by
+  induction before with
+  | nil =>
+    intro after ordered _wires
+    cases after with
+    | nil => rfl
+    | cons first rest => simp at ordered
+  | cons old before ih =>
+    intro after ordered wires
+    cases after with
+    | nil => simp at ordered
+    | cons current after =>
+      have equal : current.owner = old.owner ∧ after.map (·.owner) = before.map (·.owner) := by
+        simpa only [List.map_cons,List.cons.injEq] using ordered
+      have headWire := wires old (List.mem_cons_self) current (List.mem_cons_self) equal.1.symm
+      have tail := ih after equal.2 (fun a member b present same =>
+        wires a (List.mem_cons_of_mem _ member) b (List.mem_cons_of_mem _ present) same)
+      simp only [List.map_cons,equal.1,headWire,tail]
+
+private theorem quantumIf_wires {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf source.selected.first.port.token source.selected.second.port.token
+      source.returned.first.port.token source.returned.second.port.token zero one])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) :
+    source.transport.after.bindings.map (fun binding => (binding.owner,binding.port.wires)) =
+      source.before.bindings.map (fun binding => (binding.owner,binding.port.wires)) := by
+  have selected := (RuntimeSelectionPartition.order_values _ _ _ source.selected.ordered).1
+  have returned := (RuntimeSelectionPartition.order_values _ _ _ source.returned.ordered).1
+  have boundary := (RuntimeSelectionWires.source_boundary frame source literal).1
+  have pair : (source.returned.first.owner,source.returned.first.port.wires) =
+        (source.selected.first.owner,source.selected.first.port.wires) ∧
+      (source.returned.second.owner,source.returned.second.port.wires) =
+        (source.selected.second.owner,source.selected.second.port.wires) := by
+    simpa only [List.map_cons,List.map_nil,List.cons.injEq,and_true] using boundary
+  apply wire_map_eq source.before.bindings source.transport.after.bindings source.transport.after.ordered
+  intro old oldMember current currentMember sameOwner
+  by_cases first : current.owner = source.selected.first.owner
+  · have currentEq := map_unique (fun binding : Binding => binding.owner.ordinal) _
+      (owner_ordinals source.transport.after) current currentMember
+      source.returned.first (returned (by simp))
+      (congrArg (·.ordinal) (first.trans (congrArg Prod.fst pair.1).symm))
+    have oldEq := map_unique (fun binding : Binding => binding.owner.ordinal) _
+      (owner_ordinals source.before) old oldMember source.selected.first (selected (by simp))
+      (congrArg (·.ordinal) (sameOwner.trans first))
+    rw [currentEq,oldEq]
+    exact (congrArg Prod.snd pair.1).symm
+  · by_cases second : current.owner = source.selected.second.owner
+    · have currentEq := map_unique (fun binding : Binding => binding.owner.ordinal) _
+        (owner_ordinals source.transport.after) current currentMember
+        source.returned.second (returned (by simp))
+        (congrArg (·.ordinal) (second.trans (congrArg Prod.fst pair.2).symm))
+      have oldEq := map_unique (fun binding : Binding => binding.owner.ordinal) _
+        (owner_ordinals source.before) old oldMember source.selected.second (selected (by simp))
+        (congrArg (·.ordinal) (sameOwner.trans second))
+      rw [currentEq,oldEq]
+      exact (congrArg Prod.snd pair.2).symm
+    · have present := quantumIf_spectators frame source zero one original current currentMember first second
+      have equal := map_unique (fun binding : Binding => binding.owner.ordinal) _
+        (owner_ordinals source.before) old oldMember current present (congrArg (·.ordinal) sameOwner)
+      exact congrArg (fun binding : Binding => binding.port.wires) equal
+
+private theorem take_frame {before after : Semantics.RawTrace.Interface} {token port}
+    (ran : Semantics.RawTrace.take before token = some (port,after)) : after.frame = before.frame := by
+  unfold Semantics.RawTrace.take at ran
+  obtain ⟨found,_lookup,returned⟩ := Option.bind_eq_some_iff.mp ran
+  have equal := Option.some.inj returned
+  exact (congrArg (fun pair : Semantics.Raw.Port × Semantics.RawTrace.Interface => pair.2.frame) equal).symm
+
+private theorem quantumIf_step_frame {before after : Semantics.RawTrace.Interface}
+    {control target controlOut targetOut zero one events}
+    (ran : Semantics.RawTrace.step before (.quantumIf control target controlOut targetOut zero one) =
+      some (after,events)) : after.frame = before.frame := by
+  simp only [Semantics.RawTrace.step] at ran
+  obtain ⟨⟨c,next⟩,controlRead,tail⟩ := Option.bind_eq_some_iff.mp ran
+  obtain ⟨⟨t,last⟩,targetRead,returned⟩ := Option.bind_eq_some_iff.mp tail
+  have equal := Option.some.inj returned
+  have same : last.frame = after.frame :=
+    congrArg (fun pair : Semantics.RawTrace.Interface × List Semantics.Raw.Event => pair.1.frame) equal
+  exact same.symm.trans ((take_frame targetRead).trans (take_frame controlRead))
+
+private theorem quantumIf_frame {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf source.selected.first.port.token source.selected.second.port.token
+      source.returned.first.port.token source.returned.second.port.token zero one])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) :
+    frame.interval.after.quantum.frame = frame.interval.before.quantum.frame := by
+  have ran : Semantics.RawTrace.advance
+      ⟨frame.interval.before.quantum.reference,[],frame.interval.before.quantum.frame.length⟩
+      (.quantumIf source.selected.first.port.token source.selected.second.port.token
+        source.returned.first.port.token source.returned.second.port.token zero one) = some literal.traceResult := by
+    simpa only [RuntimeLocalEvents.trace,original,List.foldlM_cons,List.foldlM_nil,bind_pure] using literal.executed
+  unfold Semantics.RawTrace.advance at ran
+  obtain ⟨⟨after,events⟩,stepped,returned⟩ := Option.bind_eq_some_iff.mp ran
+  have equal := Option.some.inj returned
+  have same : after.frame = literal.traceResult.state.frame :=
+    congrArg (fun prepared : Semantics.RawTrace.Prepared => prepared.state.frame) equal
+  have actual := congrArg (fun state : Semantics.RawTrace.Interface => state.frame) literal.afterState
+  exact actual.symm.trans (same.symm.trans (quantumIf_step_frame stepped))
+
+private theorem forest_by_bases (owners : List Semantics.CarrierInterface.Owner) :
+    Semantics.CarrierInterface.forest owners =
+      match owners.map (·.basis) with
+      | [] => [.unit]
+      | [basis] => basis
+      | [first,second] => .pair :: first ++ second
+      | bases => .tuple bases.length :: bases.flatMap id := by
+  cases owners with
+  | nil => rfl
+  | cons first rest => cases rest with
+    | nil => rfl
+    | cons second rest => cases rest with
+      | nil => rfl
+      | cons third rest =>
+        simp only [Semantics.CarrierInterface.forest,List.map_cons,List.length_cons,List.flatMap_cons]
+        rw [List.length_map,List.flatMap_map]
+        rfl
+
+/-- The same nonempty original quantumIf preserves the complete sparse code
+coordinates across fresh output tokens. Every owner remains in original order,
+and zero-width owners retain their separate positions. This is code equality,
+not an assertion that the nonempty quantum action is logical identity. -/
+theorem quantumIf_codes {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf source.selected.first.port.token source.selected.second.port.token
+      source.returned.first.port.token source.returned.second.port.token zero one])
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) :
+    literal.inputCode.code.dimension = literal.outputCode.code.dimension ∧
+      ∀ physical logical,literal.inputCode.embedding physical logical = literal.outputCode.embedding physical logical := by
+  have owners := source.transport.after.ordered
+  have bases := congrArg (List.map (fun owner : RuntimeOwnerMap.Owner => owner.basis)) owners
+  have sameForest : forestBasis source.transport.after.bindings = forestBasis source.before.bindings := by
+    unfold forestBasis
+    rw [forest_by_bases,forest_by_bases]
+    have same : (carrierOwners source.transport.after.bindings).map (·.basis) =
+        (carrierOwners source.before.bindings).map (·.basis) := by
+      simpa only [carrierOwners,List.map_map,Function.comp_def] using bases
+    rw [same]
+  have wires := congrArg (List.flatMap (fun pair : RuntimeOwnerMap.Owner × List Nat => pair.2))
+    (quantumIf_wires frame source zero one original literal)
+  simp only [List.flatMap_map] at wires
+  have actualFrame := quantumIf_frame frame source zero one original literal
+  obtain ⟨left,leftRead,leftSame⟩ := literal.inputCode.originalCode
+  obtain ⟨right,rightRead,rightSame⟩ := literal.outputCode.originalCode
+  rw [sameForest] at rightRead
+  have same : left = right := Option.some.inj (leftRead.symm.trans rightRead)
+  subst right
+  refine ⟨leftSame.dimension.trans rightSame.dimension.symm,?_⟩
+  intro physical logical
+  change sparseEntry literal.inputCode.code
+      (Semantics.Finite.gather physical (forestAxes frame.interval.before.quantum.frame source.before.bindings)) logical =
+    sparseEntry literal.outputCode.code
+      (Semantics.Finite.gather physical (forestAxes frame.interval.after.quantum.frame source.transport.after.bindings)) logical
+  unfold forestAxes
+  rw [actualFrame,wires]
+  unfold sparseEntry
+  rw [leftSame.labels logical,rightSame.labels logical]
+
+/-- The checked relative-phase sector now acts on the authentic full output
+frame's arbitrary joint amplitudes and actual returned ordered axes. The
+logical mixed-radix target-digit update and final Gram transfer are separate;
+this statement supplies no bounded-input success or manufactured access. -/
+theorem bit_target_quantumIf_output {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {inputCode outputCode : Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted codes.owners.before codes.owners.transport.after)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf codes.owners.selected.first.port.token codes.owners.selected.second.port.token
+      codes.owners.returned.first.port.token codes.owners.returned.second.port.token zero one])
+    {label required logical}
+    (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (label,required) logical)
+    (joint : Nat → Reference → ℂ) (physical row : Nat) (reference : Reference)
+    (coordinate : Semantics.Finite.gather physical
+        (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
+      QleisliKernel.FiniteRestriction.pack 1 label row)
+    (rowBound : row < 2) :
+    Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input reference) physical =
+      action required (fun input ref => referenceAction literal.outputCode joint
+        (Semantics.Finite.scatter physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
+          (QleisliKernel.FiniteRestriction.pack 1 label input)) ref) row reference := by
+  have code := quantumIf_codes frame codes.owners zero one original literal
+  have referenceCode : ∀ physical reference,
+      referenceAction literal.inputCode joint physical reference =
+        referenceAction literal.outputCode joint physical reference := by
+    intro physical reference
+    unfold referenceAction
+    rw [code.1]
+    apply Qleisli.Exact.sum_map_congr
+    intro logical _member
+    rw [code.2 physical logical]
+  have selectedPorts := literal.selectedPorts.trans (RuntimeSelectionPartition.source_ports frame codes.owners).1
+  have selectedWires := congrArg (List.flatMap (fun port : Semantics.Raw.Port => port.wires)) selectedPorts
+  have returnedWires := congrArg (List.flatMap (fun pair : RuntimeOwnerMap.Owner × List Nat => pair.2))
+    (RuntimeSelectionWires.source_boundary frame codes.owners literal).1
+  simp only [List.flatMap_map] at selectedWires returnedWires
+  have axes : forestAxes frame.interval.before.quantum.frame literal.selection.selected =
+      forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList := by
+    unfold forestAxes
+    rw [quantumIf_frame frame codes.owners zero one original literal,returnedWires,selectedWires]
+    rfl
+  have inputCoordinate : Semantics.Finite.gather physical
+      (forestAxes frame.interval.before.quantum.frame literal.selection.selected) =
+        QleisliKernel.FiniteRestriction.pack 1 label row := by rw [axes]; exact coordinate
+  have sector := Qleisli.RuntimeBitSectorAction.bit_target_sector_references frame codes targetBasis literal binding
+    joint physical row reference inputCoordinate rowBound
+  rw [axes] at sector
+  calc
+    _ = _ := sector
+    _ = _ := by
+      apply congrArg (fun values : Nat → Reference → ℂ => action required values row reference)
+      funext input ref
+      exact referenceCode _ _
+
 #print axioms empty_bindings
 #print axioms empty_embedding
 #print axioms empty_code_action
 #print axioms quantumIf_spectators
+#print axioms quantumIf_codes
+#print axioms bit_target_quantumIf_output
 
 end Qleisli.RuntimeOwnerTransitionAction

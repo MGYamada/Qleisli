@@ -6,11 +6,17 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
-- Check a single direct `checked_op` caller, its provider body and its declared
-  Meaning against one Lean dependency graph. The exact comparison detects a
-  changed reference or a missing phase in the caller's literal IR. Composed
-  and tensor Meanings preserve source order and use every canonical input of
-  each classical leaf. General arm and catalogue coverage remain open.
+- Check a direct `checked_op` caller and a complete `qmatch` interval with
+  plain or directly refined provider arms against one Lean dependency graph.
+  Each indexed arm retains its original body, exact Meaning, controlled
+  implementation and label. The sector equations detect a phase change in a
+  single arm. Composed and tensor Meanings preserve source order and use
+  every canonical input of each classical leaf. General arm expressions,
+  catalogue discharge and production dispatch remain open.
+- Check ordinary `if` branches that call pure functions and preserve their
+  input owners. The shared traversal verifies each condition over the
+  original input and measurement histories and checks the simultaneous
+  quantum and classical returns from both arms.
 - Preserve original classical-only contracts across module calls when checking
   quantum use. Keep the declared public effect as the external effect bound.
 - Expand original operation duties in source order through checked call-chain

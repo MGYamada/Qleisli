@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.RuntimePreparedOperation
-import QleisliKernel.Qirf.RuntimeStructuredRoot
+import QleisliKernel.Qirf.RuntimeCallerInterval
 
 /-! A quantum-only caller consisting of a single direct checked operation.
 Its original event, provider, Meaning and entire literal caller interval use
@@ -46,24 +46,14 @@ def read {artifact owner name arguments source request references order}
     if unchanged : event.operation.graph.root.input = event.operation.graph.root.output ∧
         event.allocated = [] ∧ event.consumed = [] then
       let operation ← NaturalAffine.witness (RuntimePreparedOperation.read prepared root)
-      let block ← RuntimeInterval.prepare root.dependencies root.program
-      let inputs ← RuntimeSourceBoundary.readInputs source.body block runtime.inputStorage
-      let interval ← RuntimeInterval.check block.block position.start position.count
-      let assigned := inputs.owners.bindings
-      let initial ← RuntimeOwnerMap.checkBindings (assigned.map (·.owner)) interval.before assigned
-      let moved ← RuntimeOwnerTransition.read interval initial.val.bindings
-      let node ← NaturalAffine.witness (RuntimePureBody.operationNode block.block position event.inputOwners
-        initial.val.bindings moved.after.bindings operation.val.subject.action)
-      let finalBindings ← NaturalAffine.witness (RuntimeOwnerMap.order
-        (SourceRuntimeValues.valueOwners source.body.checked.summary.value) moved.after.bindings)
-      let boundary ← NaturalAffine.witness (RuntimeStructuredRoot.readBoundary source.body root block finalBindings.val runtime)
-      if quantumOnly : runtime.inputRows = [[]] ∧ RuntimeFamily.inputValues runtime = [] ∧
-          RuntimeFamily.outputValues runtime = [] then
-        return ⟨operation.val,by with_reducible exact operation.property,covers,unchanged,
-          block,inputs,interval,initial.val,initial.property,moved,node.val,by with_reducible exact node.property,
-          finalBindings.val,by with_reducible exact finalBindings.property,quantumOnly,
-          boundary.val,by with_reducible exact boundary.property⟩
-      else throw .request
+      let ports ← RuntimeCallerInterval.read source.body root position runtime
+      let node ← NaturalAffine.witness (RuntimePureBody.operationNode ports.block.block position event.inputOwners
+        ports.initial.bindings ports.moved.after.bindings operation.val.subject.action)
+      let returned ← RuntimeCallerInterval.finish ports
+      return ⟨operation.val,by with_reducible exact operation.property,covers,unchanged,
+        ports.block,ports.inputs,ports.interval,ports.initial,ports.sameInitial,ports.moved,
+        node.val,by with_reducible exact node.property,returned.finalBindings,returned.finalOrder,
+        returned.quantumOnly,returned.boundary,returned.boundaryRead⟩
     else throw .request
   else throw .request
 

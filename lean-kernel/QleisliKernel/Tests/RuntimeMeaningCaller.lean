@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeMeaningCaller
+import QleisliKernel.Tests.RuntimePreparedSource
 
 /-! Original direct checked operation with independently replaceable caller,
 provider and reference programs. Each run uses one work budget and one graph.
@@ -6,7 +7,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.RuntimeMeaningCaller
 open QleisliKernel Finite SourceTypes Qirf
 
-private def source : String := "#![no_implicit_prelude]\nunitary fn sign(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }\nunitary fn keep(q: Q<Bit>) -> Q<Bit> { q }\nmeaning Sign: Bit = reference(sign);\npub unitary fn route(q: Q<Bit>) -> Q<Bit> { checked_op(sign, Sign)(q) }\nfn main() -> Unit { () }\n"
+private abbrev source := RuntimePreparedSource.source
 private def port (token : Nat) : Semantics.Raw.Port := ⟨token,[0],1⟩
 private def program (op : Option Semantics.Raw.Op) : Semantics.Observation.Program :=
   ⟨[port 0],[],op.toList.map .pure,[if op.isSome then 1 else 0],[],.unitary⟩
