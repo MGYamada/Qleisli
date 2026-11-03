@@ -48,10 +48,7 @@ Meaning-reference computations remain on the same operation receipt; this
 projection is not a claim to enumerate or discharge all semantic obligations. -/
 def Operation.providerIslands {artifact catalogue root call}
     (operation : Operation artifact catalogue root call) : List (RuntimePureBody.Island root.dependencies) :=
-  operation.checked.outcome.records.flatMap fun record =>
-    match record.checked.provider with
-    | .absent _ => []
-    | .present _ _ provider _ => provider.body.result.islands
+  operation.checked.providerIslands
 
 def consumption (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources) (root : Validity.Root) :
     RuntimeGraphOperation.Consumption artifact root (RuntimePureBody.Island root.dependencies) where
@@ -59,6 +56,25 @@ def consumption (artifact : Artifact) (catalogue : GenericCatalogue.Checked arti
   read call := readOperation artifact catalogue root call
   action operation := operation.checked.action
   obligations operation := operation.providerIslands
+
+/-- The source-prepared graph is an exact index, not selected by comparing a
+descriptor or recovering an untyped receipt from a list. Its native tree is
+checked freshly under the enclosing root. -/
+structure StagedOperation (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (call : RuntimeGraphOperation.Request artifact)
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue call.graph call.implementations call.references) where
+  checked : RuntimeOperationTree.Checked prepared root call.requested
+  checkedRead : RuntimeInterval.Computed (RuntimeOperationTree.read prepared root call.requested) checked
+
+def stagedConsumption (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) : RuntimeGraphOperation.StagedConsumption (preparation artifact catalogue)
+      root (RuntimePureBody.Island root.dependencies) where
+  Evidence call prepared := StagedOperation artifact catalogue root call prepared
+  read call prepared := do
+    let checked ← NaturalAffine.witness (RuntimeOperationTree.read prepared root call.requested)
+    return ⟨checked.val,by with_reducible exact checked.property⟩
+  action operation := operation.checked.action
+  obligations operation := operation.checked.providerIslands
 
 structure Prepared (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments)
     (request : Context) where

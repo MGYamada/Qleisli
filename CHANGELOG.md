@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prepare exact graph cuts for original operation formals and selection arms,
+  and retain an indexed continuation that checks their native trees under
+  the final root without preparing the same graphs again. Common body
+  traversal integration remains pending; no acceptance route is enabled.
+
 - Add source-indexed staging data for exact original bodies, event positions,
   context queues and prepared operation graphs. Native consumers still owe
   their existing checks; these data grant no acceptance or execution handle.

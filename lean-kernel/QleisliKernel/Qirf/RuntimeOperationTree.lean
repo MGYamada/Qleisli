@@ -241,6 +241,16 @@ def Checked.action {artifact catalogue context description graph implementations
     (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) : Matrix :=
   checked.value.action
 
+/-- The original provider receipts retain their body islands under this same
+native root. This projection does not discharge the enclosing source duties. -/
+def Checked.providerIslands {artifact catalogue context description graph implementations references prepared root requested}
+    (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) :
+    List (RuntimePureBody.Island root.dependencies) :=
+  checked.outcome.records.flatMap fun record =>
+    match record.checked.provider with
+    | .absent _ => []
+    | .present _ _ provider _ => provider.body.result.islands
+
 /-- Read access and operation occurrences in lockstep under one root. Each
 child consumes its original stack position and retains its own path and Meaning duties. -/
 def read {artifact catalogue context description graph implementations references}
