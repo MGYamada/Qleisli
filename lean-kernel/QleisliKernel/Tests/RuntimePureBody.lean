@@ -37,6 +37,15 @@ private def checked (wrongRole wrongReturn : Bool) : WorkM Nat := do
 #guard (match (checked true false).run 10000000 with | (.error _,_) => true | _ => false)
 #guard (match (checked false true).run 10000000 with | (.error _,_) => true | _ => false)
 
+-- An equal-length, reordered label list cannot have the receipt retained
+-- by a successful Bit selection, even if the proposed matrices are equal.
+example : ¬ Qirf.RuntimePureBody.SelectionLayouts [.bit] [.bit] 1 1 [1,0] := by
+  intro proposed
+  obtain ⟨work,left,ran⟩ := proposed.selectorRead
+  have original := QleisliKernel.FiniteCarrier.read_reference _ _ _ _ ran
+  change some (⟨1,[0,1]⟩ : Semantics.FiniteCarrier.Layout) = some ⟨1,[1,0]⟩ at original
+  cases original
+
 private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat × List (Nat × Nat)) := do
   let artifact := ArmBody.artifact exponent
   let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
@@ -62,7 +71,7 @@ private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat
     ((ArmBody.interface).inputs.map fun owner => [.quantum owner])
   let actual ← Qirf.RuntimePureBody.check artifact fresh.root actualBody fresh.root.program context inputs.owners.bindings
   let _ ← RuntimePureComposition.prepare artifact fresh.root actualBody context inputs.owners.bindings actual
-  let [.selection frame selectorBits targetBits retained restricted _ _ _ _ _ _ codes] := actual.result.actions
+  let [.selection frame selectorBits targetBits retained restricted _ _ _ _ _ _ codes _] := actual.result.actions
     | throw .request
   let owners := codes.owners
   let localAction ← RuntimeLocalEvents.readSource frame selectorBits targetBits retained restricted owners

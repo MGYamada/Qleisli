@@ -307,6 +307,9 @@ selector and target determine which matrix and row act, including when the
 selected wires are reversed or separated by spectators.
 `RuntimeSelectionGram.logical_gram` proves inner-product preservation for
 arbitrary joint caller/reference amplitudes under the same two arm receipts.
+`RuntimeSelectionGram.checked_selection` obtains both receipts and the
+canonical order `[0, 1]` from the source layout reads and the logical
+matrix comparison retained by the native selection node.
 The native `--qmatch-source-check` mode has a total budget of 13,000,000 work
 units per request. Decoding, source and graph checks, and execution-view
 comparison share that counter. Exhausting it returns the native `limit` error.

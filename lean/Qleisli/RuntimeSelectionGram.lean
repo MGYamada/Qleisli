@@ -128,5 +128,43 @@ theorem logical_gram {R S : Type}
     change put i 0 = flip i at opposite
     simpa only [same,opposite,add_comm] using pair
 
+/-- Consume the widths, source labels, checked equations and owner codes
+retained by a native selection node. Both source-ordered matrices and their
+Gram law come from that one node. -/
+theorem checked_selection {R S : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {selectorBits targetBits retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {inputCode outputCode expected logical labels}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (equations : RuntimeInterval.Computed (QleisliKernel.Qirf.NominalSector.checkLogicals
+      inputCode outputCode retained.sectors labels expected) logical)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted codes.owners.before codes.owners.transport.after)
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
+    (joint : Nat → R → ℂ) (other : Nat → S → ℂ) (r : R) (s : S) :
+    ∃ zero one, labels = [0,1] ∧ expected = [zero,one] ∧ logical = [zero,one] ∧
+      let first := codes.owners.returned.first
+      let second := codes.owners.returned.second
+      let output := literal.outputCode
+      (∀ physical, Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input r) physical =
+        referenceAction output (logicalAction output first second zero one joint) physical r) ∧
+      ((List.range output.code.dimension).map (fun i =>
+        star (logicalAction output first second zero one joint i r) *
+        logicalAction output first second zero one other i s)).sum =
+      ((List.range output.code.dimension).map (fun i => star (joint i r)*other i s)).sum := by
+  obtain ⟨sw,tw,labelOrder,zero,one,armOrder,actual,zeroChecked,oneChecked⟩ :=
+    layouts.bit_bindings selectorBasis targetBasis equations
+  subst selectorBits targetBits
+  exact ⟨zero,one,labelOrder,armOrder,actual,
+    fun physical => caller_action frame codes selectorBasis targetBasis literal form
+      zeroChecked oneChecked joint physical r,
+    logical_gram frame codes selectorBasis targetBasis literal zeroChecked oneChecked joint other r s⟩
+
+#print axioms checked_selection
 #print axioms logical_gram
 end Qleisli.RuntimeSelectionGram

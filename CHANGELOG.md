@@ -65,7 +65,8 @@ development milestones from the scope of their evidence.
   full output action on arbitrary joint caller/reference amplitudes for a
   literal `quantumIf` or a `join`, `apply_unitary`, `split` interval.
   The two verified arm matrices preserve every reference-pair inner product
-  when applied to the original caller's logical target.
+  when applied to the original caller's logical target. The selection node
+  retains the source layout reads that determine both arm positions.
   Complete source/code/Gram composition remains required before the full qmatch
   profile can be admitted.
 - Reuse exact original module scans and lexical lookup policy throughout the

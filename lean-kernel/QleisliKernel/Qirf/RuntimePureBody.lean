@@ -41,6 +41,53 @@ def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.
   let ordered ← RuntimeOwnerMap.order roles bindings
   return ordered.map (·.port)
 
+/-- The native reads that supplied both widths and the exact selector label
+order. A caller cannot infer all-arm coverage from the list length alone. -/
+structure SelectionLayouts (selector target : Semantics.FiniteCarrier.Basis)
+    (selectorBits targetBits : Nat) (labels : List Nat) : Prop where
+  selectorRead : RuntimeInterval.Computed (FiniteCarrier.read selector) ⟨selectorBits,labels⟩
+  targetRead : ∃ targetLabels, RuntimeInterval.Computed (FiniteCarrier.read target) ⟨targetBits,targetLabels⟩
+
+/-- On two original Bit ports the same source layout and successful matrix
+checks bind the logical results at 0 and 1, in canonical selector order. -/
+theorem SelectionLayouts.bit_bindings {selector target selectorBits targetBits labels}
+    (layouts : SelectionLayouts selector target selectorBits targetBits labels)
+    (selectorBasis : selector = [.bit]) (targetBasis : target = [.bit])
+    {inputCode outputCode sectors expected logical}
+    (equations : RuntimeInterval.Computed
+      (NominalSector.checkLogicals inputCode outputCode sectors labels expected) logical) :
+    selectorBits = 1 ∧ targetBits = 1 ∧ labels = [0,1] ∧ ∃ zero one,
+      expected = [zero,one] ∧ logical = [zero,one] ∧
+      NominalSector.LogicalBinding inputCode outputCode sectors (0,zero) zero ∧
+      NominalSector.LogicalBinding inputCode outputCode sectors (1,one) one := by
+  obtain ⟨a,b,sel⟩ := layouts.selectorRead
+  obtain ⟨targetLabels,c,d,tgt⟩ := layouts.targetRead
+  have selectorLayout := FiniteCarrier.read_reference _ _ _ _ sel
+  have targetLayout := FiniteCarrier.read_reference _ _ _ _ tgt
+  rw [selectorBasis] at selectorLayout
+  rw [targetBasis] at targetLayout
+  change some (⟨1,[0,1]⟩ : Semantics.FiniteCarrier.Layout) = some ⟨selectorBits,labels⟩ at selectorLayout
+  change some (⟨1,[0,1]⟩ : Semantics.FiniteCarrier.Layout) = some ⟨targetBits,targetLabels⟩ at targetLayout
+  have labelsEq := congrArg Semantics.FiniteCarrier.Layout.labels (Option.some.inj selectorLayout).symm
+  have sBits := congrArg Semantics.FiniteCarrier.Layout.bits (Option.some.inj selectorLayout).symm
+  have tBits := congrArg Semantics.FiniteCarrier.Layout.bits (Option.some.inj targetLayout).symm
+  change labels = [0,1] at labelsEq
+  refine ⟨sBits,tBits,labelsEq,?_⟩
+  obtain ⟨work,left,ran⟩ := equations
+  obtain ⟨count,each⟩ := NominalSector.checkLogicals_bound _ _ _ _ _ _ work left ran
+  rw [labelsEq] at count each
+  have two (xs : List Semantics.Exact.Matrix) (length : xs.length = 2) : ∃ a b,xs = [a,b] :=
+    ⟨_,_,List.eq_getElem_of_length_eq_two xs length⟩
+  obtain ⟨zero,one,rfl⟩ := two expected count
+  have actualCount := QleisliKernel.Exact.listRel_length _ _ _ each
+  obtain ⟨first,second,rfl⟩ := two logical actualCount
+  have boundZero : NominalSector.LogicalBinding inputCode outputCode sectors (0,zero) first := each.1
+  have boundOne : NominalSector.LogicalBinding inputCode outputCode sectors (1,one) second := each.2.1
+  have zeroEq : first = zero := boundZero.1
+  have oneEq : second = one := boundOne.1
+  subst first second
+  exact ⟨zero,one,rfl,rfl,boundZero,boundOne⟩
+
 /-- The sector equations use the encodings read from the actual target owner
 at entry and return. Matching dimensions alone would also admit zero codes. -/
 structure SelectionCodes {dependencies program block start count}
@@ -92,7 +139,8 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (expected logical : List Semantics.Exact.Matrix)
       (equations : RuntimeInterval.Computed
         (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical)
-      (codes : SelectionCodes frame.interval inputs outputs selector target inputCode outputCode) : Node dependencies program block
+      (codes : SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+      (layouts : SelectionLayouts selector.basis target.basis selectorBits targetBits labels) : Node dependencies program block
 
 inductive Nodes (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
@@ -124,6 +172,38 @@ def operationNode {dependencies program} (block : RuntimeInterval.Block dependen
       (by with_reducible exact physical.property) action equation
   else throw .equation
 
+/-- One original owner-preserving primitive in its actual interval. The
+enclosing traversal supplies the current complete history and checked native
+frame. Only the existing h/global-phase/closed-phase cases are handled here;
+this helper does not select source events or provide a whole-body equation. -/
+def primitiveAt {sources caller dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (history : RuntimeStructuralAction.SourceState)
+    (callerFrame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before)
+    (event : SourceRuntimeContext.Event sources caller) :
+    WorkM (RuntimeStructuralAction.SourceState × Node dependencies program block) := do
+  let before : RuntimeStructuralAction.SourceState := {history with bindings := callerFrame.bindings}
+  let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
+  match event with
+  | .primitive event =>
+    guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
+    let [[.owner operand]] := event.arguments | throw .request
+    let kind ← match event.kind with
+      | .h => pure Semantics.PrimitiveOperator.Kind.h
+      | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
+      | _ => throw .request
+    let [input] ← rolePorts [operand] callerFrame.bindings | throw .request
+    let [output] ← rolePorts [operand] owners.after.bindings | throw .request
+    let action ← RuntimePrimitiveAction.check block start count input.token output.token operand kind
+    return ({before with bindings := owners.after.bindings},.primitive action)
+  | .phase event =>
+    let [input] ← rolePorts [event.operand] callerFrame.bindings | throw .request
+    let [output] ← rolePorts [event.operand] owners.after.bindings | throw .request
+    let action ← RuntimePrimitiveAction.check block start count input.token output.token event.operand
+      (.phase event.application.coefficient.exponent)
+    return ({before with bindings := owners.after.bindings},.primitive action)
+  | _ => throw .request
+
 /-- Verify every literal arm and the complete selector partition with the
 actual ordered source owners and their encodings. The enclosing traversal
 supplies a source realization at each index of this exact arm table. -/
@@ -148,8 +228,10 @@ def selectionNode {α : Type} (artifact : Artifact) {dependencies program block 
   guard (site.attached == expectedInterface && site.required == expectedInterface) .request
   let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨ti,target.basis⟩])
   let outputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨to,target.basis⟩])
-  let selectorLayout ← FiniteCarrier.read selector.basis
-  let targetLayout ← FiniteCarrier.read target.basis
+  let selectorRead ← NaturalAffine.witness (FiniteCarrier.read selector.basis)
+  let targetRead ← NaturalAffine.witness (FiniteCarrier.read target.basis)
+  let selectorLayout := selectorRead.val
+  let targetLayout := targetRead.val
   let arms := table.arms.mapFinIdx fun index arm valid => ((⟨index,valid⟩ : Fin table.arms.length),arm)
   let (meanings,remaining) ← (arms.zip site.arms).foldlM
     (fun (meanings,current) ((index,arm),subject) => do
@@ -176,6 +258,8 @@ def selectionNode {α : Type} (artifact : Artifact) {dependencies program block 
   let node : Node dependencies program block := .selection frame selectorLayout.bits targetLayout.bits restriction.val
     (by with_reducible exact restriction.property) inputCode.val outputCode.val selectorLayout.labels expected logical.val
     (by with_reducible exact logical.property) (attached.property.symm ▸ codes)
+    ⟨by with_reducible exact selectorRead.property,
+      ⟨targetLayout.labels,by with_reducible exact targetRead.property⟩⟩
   return (node,remaining)
 
 def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
@@ -391,28 +475,12 @@ def runBlock (artifact : Artifact) (root : Validity.Root) : Nat → Mode → Out
                 return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
                   obligations,position.start+position.count,calls,sites,branches,bodies)
             else do
-              let owners ← readOwners
-              guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
-              let [[.owner operand]] := event.arguments | throw .request
-              let kind ← match event.kind with
-                | .h => pure Semantics.PrimitiveOperator.Kind.h
-                | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
-                | _ => throw .request
-              let [input] ← rolePorts [operand] bindings | throw .request
-              let [output] ← rolePorts [operand] owners.after.bindings | throw .request
-              let action ← RuntimePrimitiveAction.check block position.start position.count
-                input.token output.token operand kind
-              let node : Node dependencies program block := .primitive action
-              return (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              let (after,node) ← primitiveAt interval history callerFrame (.primitive event)
+              return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations,position.start+position.count,calls,sites,branches,bodies)
           | .phase event =>
-            let owners ← readOwners
-            let [input] ← rolePorts [event.operand] bindings | throw .request
-            let [output] ← rolePorts [event.operand] owners.after.bindings | throw .request
-            let action ← RuntimePrimitiveAction.check block position.start position.count
-              input.token output.token event.operand (.phase event.application.coefficient.exponent)
-            let node : Node dependencies program block := .primitive action
-            return (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+            let (after,node) ← primitiveAt interval history callerFrame (.phase event)
+            return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,calls,sites,branches,bodies)
           | .named event =>
             let (callPosition,child) :: calls := calls | throw .request
