@@ -58,6 +58,7 @@ import QleisliKernel.Tests.RuntimeMaterialization
 import QleisliKernel.Tests.RuntimePureBody
 import QleisliKernel.Tests.RuntimeProviderHeaders
 import QleisliKernel.Tests.GenericCatalogue
+import QleisliKernel.Tests.GenericDefinitionPrepared
 import QleisliKernel.Tests.GenericOperation
 import QleisliKernel.Tests.GenericDuties
 import QleisliKernel.Tests.GenericActivities
