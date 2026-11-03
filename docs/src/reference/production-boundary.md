@@ -299,6 +299,14 @@ reader's explicit scope; selections still require their recursive arm equations.
 This continuation does not enable a native request, handle or broader source
 preservation claim.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
+For a Bit selector and a Bit target, `RuntimeSelectionAction.caller_action`
+relates the literal Raw events to both indexed logical arm matrices on the
+complete returned owner code. It covers a single `quantumIf` and the
+compiler's `join`, `apply_unitary`, `split` sequence. The original logical
+selector and target determine which matrix and row act, including when the
+selected wires are reversed or separated by spectators.
+`RuntimeSelectionGram.logical_gram` proves inner-product preservation for
+arbitrary joint caller/reference amplitudes under the same two arm receipts.
 The native `--qmatch-source-check` mode has a total budget of 13,000,000 work
 units per request. Decoding, source and graph checks, and execution-view
 comparison share that counter. Exhausting it returns the native `limit` error.

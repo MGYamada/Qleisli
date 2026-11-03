@@ -61,8 +61,9 @@ development milestones from the scope of their evidence.
   For a Bit selector and target, writing a target coordinate on the returned
   wires updates that same logical digit in every joint amplitude with a
   reference system. Bind circuit-event boundaries to their actual intervals.
-  For a literal two-Bit `quantumIf`, both indexed arm equations now give
-  the full output action on arbitrary joint caller/reference amplitudes.
+  For a Bit selector and a Bit target, both indexed arm equations give the
+  full output action on arbitrary joint caller/reference amplitudes for a
+  literal `quantumIf` or a `join`, `apply_unitary`, `split` interval.
   The two verified arm matrices preserve every reference-pair inner product
   when applied to the original caller's logical target.
   Complete source/code/Gram composition remains required before the full qmatch

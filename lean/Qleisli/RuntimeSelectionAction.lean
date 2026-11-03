@@ -26,9 +26,44 @@ private theorem reference_sum {roles state checked} (code : @Frame roles state c
   intro col _
   exact mul_left_comm _ _ _
 
-/-- The same original quantumIf and its indexed nominal arm act on the logical
+/-- The original selection interval and its indexed nominal arm act on the logical
 target inside the entire returned code. The reference may be entangled with
 any caller owner. The coordinate identifies the physical output sector. -/
+theorem sector_action {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {inputCode outputCode : Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted codes.owners.before codes.owners.transport.after)
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
+    {label required logical}
+    (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (label,required) logical)
+    (joint : Nat → Reference → ℂ) (physical row : Nat) (reference : Reference)
+    (coordinate : gather physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList) =
+      pack 1 label row) (rowBound : row < 2) :
+    Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input reference) physical =
+      referenceAction literal.outputCode (fun index ref =>
+        action required (fun col => joint (RuntimeTargetDigit.update literal.outputCode
+          codes.owners.returned.second index col)) row ref) physical reference := by
+  rw [Qleisli.RuntimeOwnerTransitionAction.bit_target_selection_output frame codes targetBasis literal
+    form binding joint physical row reference coordinate rowBound]
+  let family := fun col index => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second index col)
+  have bounds := Qleisli.RuntimeBitSectorAction.binding_bounds frame codes targetBasis literal binding
+  refine Eq.trans ?_ (reference_sum literal.outputCode required family physical row reference)
+  unfold action
+  apply Qleisli.Exact.sum_map_congr
+  intro col member
+  have small := List.mem_range.mp member
+  rw [bounds.2] at small
+  exact congrArg (fun value : ℂ => entry required row col * value)
+    (Qleisli.RuntimeTargetScatter.target_scatter_references frame codes selectorBasis targetBasis literal
+      joint physical label row col reference coordinate bounds.1 rowBound small)
+
 theorem quantumIf_sector {Reference : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -52,19 +87,8 @@ theorem quantumIf_sector {Reference : Type}
       referenceAction literal.outputCode (fun index ref =>
         action required (fun col => joint (RuntimeTargetDigit.update literal.outputCode
           codes.owners.returned.second index col)) row ref) physical reference := by
-  rw [Qleisli.RuntimeOwnerTransitionAction.bit_target_quantumIf_output frame codes targetBasis literal
-    zero one original binding joint physical row reference coordinate rowBound]
-  let family := fun col index => joint (RuntimeTargetDigit.update literal.outputCode codes.owners.returned.second index col)
-  have bounds := Qleisli.RuntimeBitSectorAction.binding_bounds frame codes targetBasis literal binding
-  refine Eq.trans ?_ (reference_sum literal.outputCode required family physical row reference)
-  unfold action
-  apply Qleisli.Exact.sum_map_congr
-  intro col member
-  have small := List.mem_range.mp member
-  rw [bounds.2] at small
-  exact congrArg (fun value : ℂ => entry required row col * value)
-    (Qleisli.RuntimeTargetScatter.target_scatter_references frame codes selectorBasis targetBasis literal
-      joint physical label row col reference coordinate bounds.1 rowBound small)
+  exact sector_action frame codes selectorBasis targetBasis literal (.quantumIf zero one original)
+    binding joint physical row reference coordinate rowBound
 
 /-- The logical two-arm action in the original owner order. -/
 noncomputable def logicalAction {roles state checked} (code : @Frame roles state checked)
@@ -76,7 +100,7 @@ noncomputable def logicalAction {roles state checked} (code : @Frame roles state
 
 /-- On every physical output row, choose the actual indexed arm with the original
 selector digit and apply it at the original target digit. -/
-theorem quantumIf_action {Reference : Type}
+theorem caller_action {Reference : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
     {retained : Raw.Sector.Retained}
@@ -86,9 +110,7 @@ theorem quantumIf_action {Reference : Type}
     (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
     (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
     (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted codes.owners.before codes.owners.transport.after)
-    (zero one : List Semantics.Raw.UnitaryStep)
-    (original : frame.operations = [.quantumIf codes.owners.selected.first.port.token codes.owners.selected.second.port.token
-      codes.owners.returned.first.port.token codes.owners.returned.second.port.token zero one])
+    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     {zeroArm oneArm zeroLogical oneLogical}
     (zeroChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (0,zeroArm) zeroLogical)
     (oneChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (1,oneArm) oneLogical)
@@ -115,7 +137,7 @@ theorem quantumIf_action {Reference : Type}
     · simpa only [low,if_pos rfl] using zeroChecked
     · have high : label = 1 := by omega
       simpa only [high,Nat.one_ne_zero,if_false] using oneChecked
-  rw [quantumIf_sector frame codes selectorBasis targetBasis literal zero one original checked joint physical row reference coordinate rowBound]
+  rw [sector_action frame codes selectorBasis targetBasis literal form checked joint physical row reference coordinate rowBound]
   unfold referenceAction
   apply Qleisli.Exact.sum_map_congr
   intro index member
@@ -126,6 +148,32 @@ theorem quantumIf_action {Reference : Type}
     dsimp only
     rw [digits.1,digits.2]
 
+theorem quantumIf_action {Reference : Type}
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {retained : Raw.Sector.Retained}
+    {restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits 1] [.bits 1]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained}
+    {inputCode outputCode : Matrix}
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (selectorBasis : selector.basis = [.bit]) (targetBasis : target.basis = [.bit])
+    (literal : RuntimeLocalEvents.Literal frame 1 1 retained restricted codes.owners.before codes.owners.transport.after)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf codes.owners.selected.first.port.token codes.owners.selected.second.port.token
+      codes.owners.returned.first.port.token codes.owners.returned.second.port.token zero one])
+    {zeroArm oneArm zeroLogical oneLogical}
+    (zeroChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (0,zeroArm) zeroLogical)
+    (oneChecked : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (1,oneArm) oneLogical)
+    (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
+    Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
+        (fun input => referenceAction literal.inputCode joint input reference) physical =
+      referenceAction literal.outputCode
+        (logicalAction literal.outputCode codes.owners.returned.first codes.owners.returned.second zeroArm oneArm joint)
+        physical reference := by
+  exact caller_action frame codes selectorBasis targetBasis literal (.quantumIf zero one original)
+    zeroChecked oneChecked joint physical reference
+
+#print axioms caller_action
 #print axioms quantumIf_action
 
 #print axioms quantumIf_sector
