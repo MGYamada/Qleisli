@@ -111,6 +111,8 @@ import QleisliKernel.Qirf.RuntimeScatterTransport
 import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.SourceDutySlots
 import QleisliKernel.Qirf.SourceDutyProviderFresh
+import QleisliKernel.Qirf.SourceDutyProviderHeader
+import QleisliKernel.Qirf.RuntimeForestFactorization
 import QleisliKernel.Semantics.SourceClassical
 import QleisliKernel.Qirf.SourceClassicalTree
 import QleisliKernel.Qirf.SourceClassicalExecution
