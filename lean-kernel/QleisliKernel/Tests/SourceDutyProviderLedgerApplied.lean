@@ -72,7 +72,8 @@ private def describe {artifact : Artifact} (root : Validity.Root)
   match contribution with
   | .provider source => fun checked => describeProvider root source checked
 
-private def actual (b : String) (omitted : Bool := false) (missingBare : Bool := false) :
+private def actual (b : String) (omitted : Bool := false) (missingBare : Bool := false)
+    (incompleteOrder : Bool := false) :
     WorkM (List Address × List Nat × Bool) := do
   let artifact := artifact b omitted
   let catalogue ← GenericCatalogue.read artifact.sources
@@ -85,11 +86,12 @@ private def actual (b : String) (omitted : Bool := false) (missingBare : Bool :=
     ledger.entries.all (fun entry => complete entry.prepared)
   let contributions := ledger.providerContributions
   guard (positions.length == contributions.length) .request
-  let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact #[0]
+  let order := if incompleteOrder then #[0] else #[0,1]
+  let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order
     (contributions.flatMap SourceDutyProviderBody.Contribution.rows)
     ((artifact.root :: contributions.flatMap SourceDutyProviderBody.Contribution.roots).eraseDups))
   let final : SourceDutyProviderBody.Final artifact :=
-    ⟨contributions,#[0],root.val,by with_reducible exact root.property⟩
+    ⟨contributions,order,root.val,by with_reducible exact root.property⟩
   let checked ← SourceDutyProviderBody.read final
   return (positions,checked.entries.map (fun entry =>
     describe final.root (final.contributions[entry.index.val]'entry.index.isLt) entry.result),every)
@@ -112,5 +114,10 @@ private def zeroPair : List Address := [(0,.applied,"stamp",[0,0]),(1,.bare,"kee
 -- A supplied request cannot remove provider ordinal 1. Its actual missing
 -- forward subject refuses instead of constructing a shorter complete ledger.
 #guard (match (actual sourceB false true).run 10000000 with | (.error .request,_) => true | _ => false)
+
+-- Both genuine forward subjects are roots. The original incomplete schedule
+-- is retained as the observed graph-invalid negative, rather than dropping
+-- the identity provider root or granting it authority from the phase root.
+#guard (match (actual unusedB false false true).run 10000000 with | (.error .invalid,_) => true | _ => false)
 
 end QleisliKernel.Tests.SourceDutyProviderLedgerApplied
