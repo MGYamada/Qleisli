@@ -30,11 +30,11 @@ private def pieces : Nat → Nat → List LocatedToken → List LocatedToken →
         else if first.text == "meaning" then
           let (body,ending) := rest.span (·.text != ";")
           let terminator :: tail := ending | throw "missing original Meaning terminator"
-          next 0 [] tail ((headerTokens ++ [first] ++ body ++ [terminator]) :: previous)
+          next 0 [] tail ((headerTokens.reverse ++ [first] ++ body ++ [terminator]) :: previous)
         else if first.text == "{" then next 1 [] rest previous
         else if first.text == "}" then throw "unmatched original source body"
         else if first.text == ";" then next 0 [] rest previous
-        else next 0 (headerTokens ++ [first]) rest previous)
+        else next 0 (first :: headerTokens) rest previous)
 
 def declarations (source : String) : Except String (List (List LocatedToken)) := do
   let tokens ← lexLocated source
@@ -49,8 +49,8 @@ structure Header where
   bodyTokens : List LocatedToken
   body : CallSyntax.Checked bodyTokens
 
-def header (source : String) (declaration : Declaration) (tokens : List LocatedToken) : Except String Header := do
-  let projected ← ModuleHeader.project source tokens
+private def headerProjected (declaration : Declaration) {source tokens}
+    (projected : ModuleHeader.Projection source tokens) : Except String Header := do
   let tokens ← if declaration.isPublic then do
       let (_,rest) ← expect "pub" projected.tokens
       pure rest
@@ -68,6 +68,24 @@ def header (source : String) (declaration : Declaration) (tokens : List LocatedT
       let expression ← CallSyntax.read body.dropLast
       return ⟨name,types,ports,portRead,noNestedMeaning,body.dropLast,expression⟩
     else throw "a Meaning declaration cannot have a Meaning refinement"
+
+def header (source : String) (declaration : Declaration) (tokens : List LocatedToken) : Except String Header := do
+  headerProjected declaration (← ModuleHeader.project source tokens)
+
+/-- Every candidate uses the same original located module tokens and checked
+directive. This avoids lexing the complete module again for each Meaning;
+the original public header judgment remains the recorded postcondition. -/
+private def headerKnown (source : String) (declaration : Declaration) (tokens moduleTokens : List LocatedToken)
+    (lexed : lexLocated source = .ok moduleTokens) (disabled : Bool)
+    (policy : ModuleHeader.policyTokens (moduleTokens.map (·.text)) = .ok disabled) : Except String Header := do
+  headerProjected declaration (← ModuleHeader.projectKnown source tokens moduleTokens lexed disabled policy)
+
+private theorem header_known (source : String) (declaration : Declaration) (tokens moduleTokens : List LocatedToken)
+    (lexed : lexLocated source = .ok moduleTokens) (disabled : Bool)
+    (policy : ModuleHeader.policyTokens (moduleTokens.map (·.text)) = .ok disabled) :
+    header source declaration tokens = headerKnown source declaration tokens moduleTokens lexed disabled policy := by
+  unfold header headerKnown
+  rw [ModuleHeader.project_known source tokens moduleTokens lexed disabled policy]
 
 structure Original (sources : Sources) (owner name : String) where
   source : String
@@ -89,25 +107,42 @@ def readOriginal (sources : Sources) (owner name : String) : WorkM (Original sou
   | .error _ => throw .request
   | .ok (source,declaration) =>
     if category : declaration.kind = "meaning" then
-      let tokens ← adapt (lexLocated source)
-      exactWork (Exact.charge (32*(tokens.length+1)^2))
-      match readAll : declarations source with
+      match lexed : lexLocated source with
       | .error _ => throw .request
-      | .ok all =>
-        let candidates := all.filter fun tokens => (header source declaration tokens).isOk
-        match selected : candidates with
-        | [tokens] =>
-          have present : tokens ∈ all := by
-            have member : tokens ∈ candidates := by rw [selected]; exact List.mem_cons_self
-            exact (List.mem_filter.mp member).1
-          match reading : header source declaration tokens with
+      | .ok moduleTokens =>
+        exactWork (Exact.charge (64*((moduleTokens.map fun token => token.text.utf8ByteSize+1).sum+1)))
+        match policy : ModuleHeader.policyTokens (moduleTokens.map (·.text)) with
+        | .error _ => throw .request
+        | .ok disabled =>
+          match readAll : pieces (moduleTokens.length+1) 0 [] moduleTokens [] with
           | .error _ => throw .request
-          | .ok parsed =>
-            if bytes : LocatedFacts.checkOrdered source.toUTF8 0 tokens = true then
-              return ⟨source,declaration,bound,category,tokens,parsed,reading,⟨all,readAll,present⟩,
-                LocatedFacts.checkOrdered_sound _ _ _ bytes⟩
-            else throw .request
-        | _ => throw .request
+          | .ok all =>
+            -- Header accumulation is reversed and every candidate projects the
+            -- already checked module stream. Reserve the actual local token/byte
+            -- scans, rather than a quadratic source scan for every header.
+            exactWork (Exact.charge (64*((all.flatten.map fun token => token.text.utf8ByteSize+1).sum+all.length+1)))
+            let candidates := all.filter fun candidate =>
+              (headerKnown source declaration candidate moduleTokens lexed disabled policy).isOk
+            match selected : candidates with
+            | [tokens] =>
+              have present : tokens ∈ all := by
+                have member : tokens ∈ candidates := by rw [selected]; exact List.mem_cons_self
+                exact (List.mem_filter.mp member).1
+              match reading : headerKnown source declaration tokens moduleTokens lexed disabled policy with
+              | .error _ => throw .request
+              | .ok parsed =>
+                if bytes : LocatedFacts.checkOrdered source.toUTF8 0 tokens = true then
+                  have originalReading : header source declaration tokens = .ok parsed := by
+                    rw [header_known source declaration tokens moduleTokens lexed disabled policy]
+                    exact reading
+                  have originalAll : declarations source = .ok all := by
+                    unfold declarations
+                    rw [lexed]
+                    exact readAll
+                  return ⟨source,declaration,bound,category,tokens,parsed,originalReading,⟨all,originalAll,present⟩,
+                    LocatedFacts.checkOrdered_sound _ _ _ bytes⟩
+                else throw .request
+            | _ => throw .request
     else throw .request
 
 structure QuantumReference (sources : Sources) where

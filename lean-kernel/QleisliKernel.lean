@@ -128,6 +128,7 @@ import QleisliKernel.Qirf.RuntimeMeaningCaller
 import QleisliKernel.Qirf.RuntimeSelectionMeaning
 import QleisliKernel.Qirf.RuntimeNamedSelection
 import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
+import QleisliKernel.Qirf.RuntimeNamedCalls
 import QleisliKernel.Qirf.RuntimeSelectionWires
 import QleisliKernel.SourceTypes.GenericOperationSubstitute
 import QleisliKernel.SourceTypes.GenericCatalogueIndex

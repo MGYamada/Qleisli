@@ -2,6 +2,7 @@ import Lean
 import Protocol.ExecutionView.CheckedQmatch
 import Protocol.ExecutionView.QmatchV5
 import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
+import QleisliKernel.Qirf.RuntimeNamedCalls
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
 
@@ -350,9 +351,11 @@ private def study (fault : Fault) := (inspect artifactBytes requestBytes fault).
 #guard [Fault.falseMeaning,.changedControlled].all fun fault =>
   match (study fault).1 with | .error .equation => true | _ => false
 
--- Keep the original refusal under the former 10M allowance.
+-- The saved former-10M refusals remain authoring history. Shared original
+-- Meaning scans now let both examples fit that allowance; exhaustion itself
+-- must still refuse without a counter reset or an alternate checker.
 #guard [Fault.none,.heldUnit].all fun fault =>
-  match (inspect artifactBytes requestBytes fault).run 10000000 with
+  match (inspect artifactBytes requestBytes fault).run 1 with
   | (.error (.arithmetic .workLimit),_) => true
   | _ => false
 
@@ -451,5 +454,117 @@ private def originalSingletonSurrounding : WorkM Unit := do
   return ()
 
 #guard (originalSingletonSurrounding.run 20000000).1 matches .error .request
+
+end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+
+namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+open QleisliKernel Finite SourceTypes Qirf
+
+private inductive OrderedCallFault where
+  | none | wrongOrder | omittedUnit | missingCall | extraCall | reorderedCalls
+  | wrongOffset | childOffset | wrongCursor | wrongReturn | sourceReturnOrder
+  | ordinaryReferences | providerReferences | referenceReferences
+  | ordinaryDescendant | descendantReferences
+  deriving BEq
+
+private def ordinaryCallDeclarations := "unitary fn pre(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\npub unitary fn post(q:Q<Bit>)->Q<Bit>{h(q)}\n"
+
+/-- Derive the frozen three-call authoring program and literal IR from the
+existing packet, preserving every choose header/arm/Meaning occurrence. This
+proposal is plain untrusted data; no original Body or native result is reused.
+Original main.qli SHA256 34b561f7aaea90710dd520bc59dc6895cd57a55b432a6dca2d7e5846a18540b7. -/
+private def orderedCallProposal (artifact : Artifact) (request : Request) (fault : OrderedCallFault) :
+    Except String (Artifact × Request) := do
+  let rawFault := if fault == .wrongOrder then SurroundingFault.wrongOrder
+    else if fault == .omittedUnit then .omittedUnit
+    else if fault == .wrongReturn then .wrongReturn else .none
+  let (artifact,request) ← surroundingProposal artifact request rawFault
+  let some row := artifact.sources[0]? | throw "missing main source"
+  let before :: _ := row.2.splitOn "pub unitary fn route" | throw "missing original route"
+  let route := (surroundingRoute.replace "let q=phase[1,1](q);" "let q=pre(q);").replace
+    "let q=h(q);" "let q=post(q);"
+  let route := if fault == .sourceReturnOrder then route.replace "(u,(s,q))" "(u,(q,s))" else route
+  let nested := fault == .ordinaryDescendant || fault == .descendantReferences
+  let declarations := if nested then ordinaryCallDeclarations.replace "{phase[1,1](q)}" "{sign(q)}"
+    else ordinaryCallDeclarations
+  let text := before ++ declarations ++ route
+  let [(_,selection)] := request.context.calls | throw "missing original selection call"
+  let extra := fun (context : Context) => RuntimeContextRequest.Context.withReferences context.positions context.sites
+    context.calls context.branches context.bodies [[]]
+  let selection ← if fault == .providerReferences then do
+      let (subject,body) :: rest := selection.bodies | throw "missing original provider"
+      pure (selection.withBodies ((subject,extra body) :: rest))
+    else if fault == .referenceReferences then do
+      let [supplied,first,[[(subject,body)]]] := selection.references | throw "missing original reference"
+      pure (RuntimeContextRequest.Context.withReferences selection.positions selection.sites selection.calls selection.branches
+        selection.bodies [supplied,first,[[(subject,extra body)]]])
+    else pure selection
+  let shift := if nested then 6 else 0
+  let prePosition : Position := ⟨531-shift,0,1⟩
+  let selectionPosition : Position := ⟨if fault == .wrongOffset then 302 else 553-shift,
+    if fault == .wrongCursor then 0 else 1,3⟩
+  let postPosition : Position := ⟨596-shift,4,1⟩
+  let pre : Context := .withReferences [⟨if fault == .childOffset then 531 else 384,0,1⟩] [] [] [] [] []
+  let pre := if nested then
+      let inner : Context := .withReferences [⟨95,0,1⟩] [] [] [] []
+        (if fault == .descendantReferences then [[]] else [])
+      RuntimeContextRequest.Context.withReferences pre.positions pre.sites [(⟨384,0,1⟩,inner)] pre.branches pre.bodies pre.references
+    else if fault == .ordinaryReferences then extra pre else pre
+  let post : Context := .withReferences [⟨437-shift,0,1⟩] [] [] [] [] []
+  let calls := if fault == .missingCall then [(selectionPosition,selection),(postPosition,post)]
+    else if fault == .extraCall then [(prePosition,pre),(selectionPosition,selection),(postPosition,post),(postPosition,post)]
+    else if fault == .reorderedCalls then [(selectionPosition,selection),(prePosition,pre),(postPosition,post)]
+    else [(prePosition,pre),(selectionPosition,selection),(postPosition,post)]
+  let context : Context := .withReferences [prePosition,selectionPosition,postPosition] [] calls [] [] []
+  return ({artifact with sources := #[(row.1,text)]},{request with context := context})
+
+private def orderedCallInspect (fault : OrderedCallFault) :
+    WorkM (List Nat × List Nat × List Nat × List Nat × Nat) := do
+  let (decoded,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,request) ← lift ((orderedCallProposal decoded original fault).mapError fun _ => .invalid)
+  guard request.compatible .request
+  let source ← RuntimeBodyDiscovery.prepareSource artifact request.source.moduleName
+    request.source.functionName request.source.arguments
+  let prepared ← RuntimeNamedCallsSource.prepare source request.context
+  let result ← RuntimeNamedCalls.read prepared order request.combinedRuntime
+  let checked := result.checked
+  return (checked.result.history.issued.map (·.ordinal),checked.result.retired.map (·.ordinal),
+    checked.finalBindings.map (·.port.token),
+    checked.result.reverseReceipts.reverse.map (fun receipt => receipt.entry.pair.2.offset),checked.result.cursor)
+
+private def orderedCallRaw (fault : OrderedCallFault) : WorkM (List Nat) := do
+  let (decoded,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,_) ← lift ((orderedCallProposal decoded original fault).mapError fun _ => .invalid)
+  let root ← Validity.checkRootFromRoots artifact order artifact.sources.toList
+    (List.range artifact.programs.size) .qmatch
+  return root.program.outputs
+
+private def orderedCallStudy (fault : OrderedCallFault) :=
+  (orderedCallInspect fault).run WorkProfile.qmatch.limit |>.1
+
+-- The first source preparation alone genuinely spent 21,502,918 units;
+-- its immutable external study remains a failed authoring benchmark. These
+-- strict maintained controls require the actual public allowance throughout,
+-- with no per-stage reset or developmental acceptance guard.
+#guard (orderedCallStudy .none).toOption == some ([0,1,2],[],[8,5,7],[531,553,596],5)
+#guard orderedCallStudy .wrongOrder matches .error .equation
+#guard orderedCallStudy .omittedUnit matches .error .invalid
+#guard [OrderedCallFault.missingCall,.extraCall,.reorderedCalls,.wrongOffset,.childOffset,
+    .wrongCursor,.wrongReturn,.sourceReturnOrder,.ordinaryReferences,.providerReferences,
+    .referenceReferences,.descendantReferences].all fun fault =>
+  match orderedCallStudy fault with | .error .request => true | _ => false
+
+-- The ordinary descendant is a real original pre -> sign call, not a dummy
+-- context added under a primitive. Its own missing groups remain admissible;
+-- adding an otherwise ignored empty group at sign must refuse above.
+#guard (orderedCallStudy .ordinaryDescendant).toOption == some ([0,1,2],[],[8,5,7],[525,547,590],5)
+
+-- Both literal orders satisfy Raw independently. The original child body
+-- equations, not Raw validity alone, distinguish Z then H from H then Z.
+#guard ((orderedCallRaw .none).run WorkProfile.qmatch.limit).1.toOption == some [8,5,7]
+#guard ((orderedCallRaw .wrongOrder).run WorkProfile.qmatch.limit).1.toOption == some [8,5,7]
+#guard ((orderedCallRaw .omittedUnit).run WorkProfile.qmatch.limit).1 matches .error .invalid
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary

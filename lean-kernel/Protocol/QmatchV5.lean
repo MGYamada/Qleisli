@@ -5,6 +5,7 @@ import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.StaticTypes
 import QleisliKernel.Qirf.RuntimeContextRequest
+import QleisliKernel.Qirf.RuntimeReferenceContexts
 
 /-! Strict v5 data preparation, paired with the retained Rust request.
 This module issues no handle and has no production dispatcher. The complete
@@ -218,12 +219,7 @@ def Request.namedReferences (request : Request) :=
 provider bodies use the existing reader for implementations without separate
 Meaning groups. Reject any additional references in those bodies. -/
 private def noReferenceGroups : Nat → Context → WorkM Unit :=
-  Nat.rec (fun _ => throw .limit) (fun _ visit context => do
-    exactWork (Exact.charge (16*(context.calls.length+context.branches.length+context.bodies.length+1)))
-    guard context.references.isEmpty .request
-    context.calls.forM fun (_,child) => visit child
-    context.branches.forM fun (_,first,second) => do visit first; visit second
-    context.bodies.forM fun (_,child) => visit child)
+  Qirf.RuntimeReferenceContexts.noGroups
 
 def Request.checkNamedReferenceContexts (request : Request) : WorkM Unit := do
   guard request.context.references.isEmpty .request

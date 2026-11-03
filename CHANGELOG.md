@@ -6,6 +6,18 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check an ordered sequence of original pure calls around a named `qmatch`
+  in one native dependency graph. The internal reader follows each literal
+  interval, carries the complete owner history and checks the original return,
+  including held zero-width owners. Swapped actions, missing calls and stale
+  source positions reject. Reject unused reference groups inside provider,
+  Meaning-reference and ordinary descendant bodies. Public v5 dispatch and
+  general composition remain separate obligations.
+- Read original Meaning headers from one located module token stream. Keep
+  exact directive, declaration and byte-slice checks while avoiding repeated
+  whole-module lexing and quadratic header accumulation. The unchanged
+  `pre; choose; post` study now fits the existing shared work allowance.
+
 - Prove that the physical selector label of an encoded caller value
   identifies exactly one original `qmatch` arm, including when the labels
   have gaps. For a Bit target, the actual Raw action on each supported

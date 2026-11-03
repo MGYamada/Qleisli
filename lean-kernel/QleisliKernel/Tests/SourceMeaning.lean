@@ -17,6 +17,16 @@ private def view (text : String) (name : String := "Identity") :=
 
 #guard view source = some ([.bit],[.bit],1,[("main","keep")])
 
+-- The shared original module scan retains an initial directive, a public
+-- first Meaning and the exact token order across later function bodies.
+private def firstMeaning := "#![no_implicit_prelude]\n// λ original prefix\n" ++
+  "pub meaning Identity:Bit=reference(keep);\n" ++
+  "unitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nmeaning Other:Bit=reference(keep);"
+#guard view firstMeaning = some ([.bit],[.bit],1,[("main","keep")])
+#guard view firstMeaning "Other" = some ([.bit],[.bit],1,[("main","keep")])
+#guard view (firstMeaning ++ " meaning Identity:Bit=reference(keep);") = none
+#guard view (firstMeaning ++ " #![no_implicit_prelude]") = none
+
 #guard (((SourceTypes.SourceMeaning.read #[ ("main",source) ] none "main" "Identity").run 10000000).1.isOk) = false
 
 #guard (view (source ++ " meaning Twice:Bit=compose(Identity,Identity);") "Twice") =

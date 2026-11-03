@@ -44,6 +44,58 @@ def Call.roots {artifact owner name arguments source event position child refere
     (call : @Call artifact owner name arguments source event position child references) : List Nat :=
   call.supplies.roots ++ call.selection.roots
 
+private structure Location {sources owner name}
+    (event : SourceRuntimeContext.NamedEvent sources owner)
+    (position : SourceSequence.Position) : Type where
+  callerName : event.target.callerName = name
+  offset : position.offset = event.call.calleeOffset
+  visibleUnitary : event.effect = .unitary
+
+private def readLocation {sources owner name} (event : SourceRuntimeContext.NamedEvent sources owner)
+    (position : SourceSequence.Position) : WorkM (@Location sources owner name event position) := do
+  exactWork (Exact.charge (16*(name.utf8ByteSize+event.target.callerName.utf8ByteSize+1)))
+  if callerName : event.target.callerName = name then
+    if offset : position.offset = event.call.calleeOffset then
+      if visibleUnitary : event.effect = .unitary then return ⟨callerName,offset,visibleUnitary⟩
+      else throw .request
+    else throw .request
+  else throw .request
+
+private def completeCall {artifact owner name arguments}
+    (source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments)
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner)
+    (member : (.named event : SourceRuntimeContext.Event artifact.sources owner) ∈ source.body.checked.events)
+    (position : SourceSequence.Position) (child : Context) (references : List (List (List Request)))
+    (location : @Location artifact.sources owner name event position)
+    (callee : SourceRuntimeTrace.Body event.target.signature)
+    (calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee) :
+    WorkM (Call source event position child references) := do
+  let supplies ← NaturalAffine.witness (RuntimeNamedSelectionPrefix.prepare source.catalogue
+    callee.checked.signature child.bodies references)
+  let site ← NaturalAffine.witness (RuntimeSelectionSource.readSite callee (supplies.val.siteContext child))
+  let selection ← NaturalAffine.witness
+    (RuntimeSelectionMeaning.prepareSite source.catalogue site.val supplies.val.collection.references)
+  let relevance ← SourceRows.read ([(owner,source.body.checked.signature.original.source)] ++
+    source.signature.sourceRows ++ source.body.checked.summary.staticRows ++ event.target.sourceRows ++
+    supplies.val.rows ++ selection.val.relevance.rows)
+  return ⟨member,location.callerName,location.offset,location.visibleUnitary,callee,calleeRead,
+    supplies.val,by with_reducible exact supplies.property,site.val,by with_reducible exact site.property,
+    selection.val,by with_reducible exact selection.property,relevance⟩
+
+/-- An ordered caller may already own this exact successful callee read.
+Retain that actual receipt rather than rereading or inventing a replacement
+Body. All original supply, site, arm and Meaning preparation still executes. -/
+def prepareCallWithBody {artifact owner name arguments}
+    (source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments)
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner)
+    (member : (.named event : SourceRuntimeContext.Event artifact.sources owner) ∈ source.body.checked.events)
+    (position : SourceSequence.Position) (child : Context) (references : List (List (List Request)))
+    (callee : SourceRuntimeTrace.Body event.target.signature)
+    (calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee) :
+    WorkM (Call source event position child references) := do
+  let location ← readLocation (name := name) event position
+  completeCall source event member position child references location callee calleeRead
+
 /-- Read the callee only through this genuine original occurrence. Header
 actuals and arm contexts remain distinct; no replacement caller is built. -/
 def prepareCall {artifact owner name arguments}
@@ -52,25 +104,9 @@ def prepareCall {artifact owner name arguments}
     (member : (.named event : SourceRuntimeContext.Event artifact.sources owner) ∈ source.body.checked.events)
     (position : SourceSequence.Position) (child : Context) (references : List (List (List Request))) :
     WorkM (Call source event position child references) := do
-  exactWork (Exact.charge (16*(name.utf8ByteSize+event.target.callerName.utf8ByteSize+1)))
-  if callerName : event.target.callerName = name then
-    if offset : position.offset = event.call.calleeOffset then
-      if visibleUnitary : event.effect = .unitary then
-        let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-        let supplies ← NaturalAffine.witness (RuntimeNamedSelectionPrefix.prepare source.catalogue
-          callee.val.checked.signature child.bodies references)
-        let site ← NaturalAffine.witness (RuntimeSelectionSource.readSite callee.val (supplies.val.siteContext child))
-        let selection ← NaturalAffine.witness
-          (RuntimeSelectionMeaning.prepareSite source.catalogue site.val supplies.val.collection.references)
-        let relevance ← SourceRows.read ([(owner,source.body.checked.signature.original.source)] ++
-          source.signature.sourceRows ++ source.body.checked.summary.staticRows ++ event.target.sourceRows ++
-          supplies.val.rows ++ selection.val.relevance.rows)
-        return ⟨member,callerName,offset,visibleUnitary,callee.val,by with_reducible exact callee.property,
-          supplies.val,by with_reducible exact supplies.property,site.val,by with_reducible exact site.property,
-          selection.val,by with_reducible exact selection.property,relevance⟩
-      else throw .request
-    else throw .request
-  else throw .request
+  let location ← readLocation (name := name) event position
+  let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+  completeCall source event member position child references location callee.val (by with_reducible exact callee.property)
 
 structure Prepared {artifact owner name arguments}
     (source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments) (request : Context)
