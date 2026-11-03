@@ -130,17 +130,21 @@ private def c : OperationPaths.Paths := ⟨false,false,true⟩
 #guard (match (actual directA false true true).run 10000000 with
   | (.error .request,_) => true | _ => false)
 
+private def pendingMeaningResult {artifact catalogue queue item planned}
+    (prepared : @SourceDutyProviderLedger.ItemPrepared artifact catalogue queue item planned) : Bool :=
+  match prepared with
+  | .demand _ _ _ source =>
+    source.residual.pending.contains .meaningGraphBinding && source.residual.pending.contains .meaningEquation &&
+      !source.residual.meaning.referenceIndices.isEmpty
+  | _ => false
+
 private def sourcePlan (source : String) : WorkM (Nat × Bool × Bool) := do
   let artifact : Artifact := ⟨#[program false],#[],#[("main",source)],0,none⟩
   let catalogue ← GenericCatalogue.read artifact.sources
   let queue ← GenericDutyQueue.read catalogue
   let plan ← SourceDutySlots.read queue
   let ledger ← SourceDutyProviderLedger.read artifact plan (requests plan false false)
-  let pending := ledger.entries.any fun entry => match entry.prepared with
-    | .demand _ _ _ prepared =>
-      prepared.residual.pending.contains .meaningGraphBinding && prepared.residual.pending.contains .meaningEquation &&
-        !prepared.residual.meaning.referenceIndices.isEmpty
-    | _ => false
+  let pending := ledger.entries.any fun entry => pendingMeaningResult entry.prepared
   return (ledger.providerContributions.length,pending,ledger.entries.isEmpty)
 
 private def pendingMeaning := "#![no_implicit_prelude]\n" ++
