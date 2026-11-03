@@ -29,6 +29,41 @@ private def stringFields (texts : List String) : Nat :=
 private def rowFields (rows : List (String × String)) : Nat :=
   (rows.map fun (owner,source) => owner.utf8ByteSize+source.utf8ByteSize+2).sum
 
+/-- Flatten original roots once. Equality proofs retain the exact queue, while
+the array and finite range avoid repeated root/list traversal at runtime. -/
+structure Indexed {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
+  items : List (Item catalogue)
+  original : items = queue.items
+  array : Array (Item catalogue)
+  converted : array = items.toArray
+  indices : List (Fin queue.items.length)
+  every : indices = List.finRange queue.items.length
+
+def Indexed.at {sources catalogue queue} (indexed : @Indexed sources catalogue queue)
+    (index : Fin queue.items.length) : Item catalogue :=
+  indexed.array[index.val]'(by simpa only [indexed.converted,List.size_toArray,indexed.original] using index.isLt)
+
+theorem Indexed.at_original {sources catalogue queue} (indexed : @Indexed sources catalogue queue)
+    (index : Fin queue.items.length) : indexed.at index = queue.items[index.val]'index.isLt := by
+  simp only [Indexed.at,indexed.converted,List.getElem_toArray,indexed.original]
+
+def Indexed.complete {sources catalogue queue} (indexed : @Indexed sources catalogue queue) : Bool :=
+  !indexed.items.any Item.unresolved
+
+theorem Indexed.complete_original {sources catalogue queue} (indexed : @Indexed sources catalogue queue) :
+    indexed.complete = queue.complete := by
+  simp only [Indexed.complete,indexed.original,GenericDutyQueue.Checked.complete]
+
+private def readIndexed {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) : WorkM (Indexed queue) := do
+  -- Root traversal costs R even when most roots have no activity. The next
+  -- reservation covers N item cells, one array conversion and one index range.
+  exactWork (Exact.charge (16*(queue.roots.length+1)))
+  let items := queue.items
+  exactWork (Exact.charge (32*(items.length+1)))
+  let array := items.toArray
+  let indices := List.finRange items.length
+  return ⟨items,rfl,array,rfl,indices,rfl⟩
+
 structure View (description : Description) where
   index : Nat
   path : List Nat
@@ -441,24 +476,29 @@ private def itemIdentityFields {sources catalogue} : @Item sources catalogue →
   | .call invocation _ _ | .pendingRecursion invocation _ _ _ => invocation.id.calls.length+4
 
 private def readHeader {sources catalogue record invocation}
-    (queue : GenericDutyQueue.Checked catalogue)
+    {queue : GenericDutyQueue.Checked catalogue} (indexed : Indexed queue)
     (reference : @HeaderReference sources catalogue record invocation) : WorkM (HeaderLink queue reference) := do
   -- The two uniqueness scans compare original indexed paths and mixed-formal
-  -- keys. Charge all candidate depths/key bytes, and repeated list indexing;
-  -- no source snapshot, result matrix or supplier function is compared.
-  let fields := (queue.items.map itemIdentityFields).sum
+  -- keys. Retain the conservative scan allowance and all key/depth charges;
+  -- lookups now use the one retained array. No source snapshot, result matrix
+  -- or supplier function is compared.
+  let fields := (indexed.items.map itemIdentityFields).sum
   let referenceFields := invocation.id.calls.length+kindFields reference.header.original.kind+5
-  exactWork (Exact.charge (32*((queue.items.length+1)^2+
-    (queue.items.length+1)*(fields+referenceFields+1))))
-  let callMatch := fun index : Fin queue.items.length => CallMatches reference (queue.items[index.val]'index.isLt)
-  let demandMatch := fun index : Fin queue.items.length => DemandMatches reference (queue.items[index.val]'index.isLt)
-  match uniqueCall : (List.finRange queue.items.length).filter (fun index => decide (callMatch index)) with
+  exactWork (Exact.charge (32*((indexed.items.length+1)^2+
+    (indexed.items.length+1)*(fields+referenceFields+1))))
+  let callMatch := fun index : Fin queue.items.length => CallMatches reference (indexed.at index)
+  let demandMatch := fun index : Fin queue.items.length => DemandMatches reference (indexed.at index)
+  match uniqueCall : indexed.indices.filter (fun index => decide (callMatch index)) with
   | [callIndex] =>
-    match uniqueDemand : (List.finRange queue.items.length).filter (fun index => decide (demandMatch index)) with
+    match uniqueDemand : indexed.indices.filter (fun index => decide (demandMatch index)) with
     | [demandIndex] =>
       if callMatches : callMatch callIndex then
         if demandMatches : demandMatch demandIndex then
-          return ⟨callIndex,demandIndex,callMatches,demandMatches,uniqueCall,uniqueDemand⟩
+          return ⟨callIndex,demandIndex,
+            by simpa only [callMatch,Indexed.at_original] using callMatches,
+            by simpa only [demandMatch,Indexed.at_original] using demandMatches,
+            by simpa only [callMatch,indexed.every,Indexed.at_original] using uniqueCall,
+            by simpa only [demandMatch,indexed.every,Indexed.at_original] using uniqueDemand⟩
         else throw .request
       else throw .request
     | _ => throw .request
@@ -474,26 +514,34 @@ def ItemPlan {sources catalogue} (queue : @GenericDutyQueue.Checked sources cata
     (index : Fin queue.items.length) : Type :=
   ItemExpectation queue (queue.items[index.val]'index.isLt)
 
-private def readExpectation {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue)
+private def readExpectation {sources catalogue queue} (indexed : @Indexed sources catalogue queue)
     (item : Item catalogue) : WorkM (ItemExpectation queue item) := do
   match item with
   | .demand _ demand => readDemand demand
-  | .header _ reference => readHeader queue reference
+  | .header _ reference => readHeader indexed reference
   | .call .. => pure ()
   | .pendingRecursion .. => throw .request
 
-private def readItem {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue)
-    (index : Fin queue.items.length) : WorkM (ItemPlan queue index) :=
-  readExpectation queue (queue.items[index.val]'index.isLt)
+private def readItem {sources catalogue queue} (indexed : @Indexed sources catalogue queue)
+    (index : Fin queue.items.length) : WorkM (ItemPlan queue index) := do
+  let expectation ← readExpectation indexed (indexed.at index)
+  return indexed.at_original index ▸ expectation
 
-structure Entry {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
+structure Entry {sources catalogue queue} (indexed : @Indexed sources catalogue queue) where
   index : Fin queue.items.length
+  subject : Item catalogue
+  atIndex : subject = queue.items[index.val]'index.isLt
   expectation : ItemPlan queue index
-  computed : Computed (readItem queue index) expectation
+  computed : Computed (readItem indexed index) expectation
+
+def Entry.subjectExpectation {sources catalogue queue indexed} (entry : @Entry sources catalogue queue indexed) :
+    ItemExpectation queue entry.subject := entry.atIndex.symm ▸ entry.expectation
 
 structure Plan {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
+  indexed : Indexed queue
+  indexing : Computed (readIndexed queue) indexed
   acyclic : queue.complete = true
-  entries : List (Entry queue)
+  entries : List (Entry indexed)
   every : entries.map (·.index) = List.finRange queue.items.length
 
 structure Address {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) where
@@ -515,20 +563,23 @@ Each address is only a future forward-body expectation, with all pending
 instance, port, path and equation obligations retained by its source entry. -/
 def Plan.bodyOrder {sources catalogue queue} (plan : @Plan sources catalogue queue) : List (Address queue) :=
   plan.entries.flatMap fun entry =>
-    addresses queue entry.index (queue.items[entry.index.val]'entry.index.isLt) entry.expectation
+    addresses queue entry.index entry.subject entry.subjectExpectation
 
 /-- Internal source-derived preparation only. There is intentionally no
 artifact/body-index input, readiness predicate or conversion to acceptance.
 Every supplier-instance, full Meaning port-instance and body/path equation is
 still a mandatory later binding. Existing withholding is left untouched. -/
 def read {sources catalogue} (queue : @GenericDutyQueue.Checked sources catalogue) : WorkM (Plan queue) := do
-  exactWork (Exact.charge (32*(queue.items.length+1)^2))
-  if acyclic : queue.complete = true then
-    let entries ← (List.finRange queue.items.length).mapM fun index => do
-      let expectation ← NaturalAffine.witness (readItem queue index)
-      return (⟨index,expectation.val,by with_reducible exact expectation.property⟩ : Entry queue)
-    if every : entries.map (·.index) = List.finRange queue.items.length then
-      return ⟨acyclic,entries,every⟩
+  let indexed ← NaturalAffine.witness (readIndexed queue)
+  exactWork (Exact.charge (32*(indexed.val.items.length+1)^2))
+  if acyclic : indexed.val.complete = true then
+    let entries ← indexed.val.indices.mapM fun index => do
+      let expectation ← NaturalAffine.witness (readItem indexed.val index)
+      return (⟨index,indexed.val.at index,indexed.val.at_original index,
+        expectation.val,by with_reducible exact expectation.property⟩ : Entry indexed.val)
+    if every : entries.map (·.index) = indexed.val.indices then
+      return ⟨indexed.val,by with_reducible exact indexed.property,
+        by simpa only [Indexed.complete_original] using acyclic,entries,every.trans indexed.val.every⟩
     else throw .request
   else throw .request
 

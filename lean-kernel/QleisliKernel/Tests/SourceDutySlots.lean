@@ -54,9 +54,9 @@ private def inspect (source : String) : WorkM (Nat × Nat × Nat × Nat × Nat) 
   let plan ← Qirf.SourceDutySlots.read queue
   let references := plan.bodyOrder.filter fun address => match address.role with
     | .quantumReference _ => true | _ => false
-  let headers := queue.items.filter fun item => match item with | .header .. => true | _ => false
+  let headers := plan.indexed.items.filter fun item => match item with | .header .. => true | _ => false
   let allPending := plan.entries.flatMap fun entry =>
-    pending queue (queue.items[entry.index.val]'entry.index.isLt) entry.expectation
+    pending queue entry.subject entry.subjectExpectation
   let supplier := allPending.filter fun obligation => match obligation with | .supplierInstance _ => true | _ => false
   let classical := allPending.filter fun obligation => match obligation with | .classicalReferenceRows _ => true | _ => false
   return (references.length,(references.map (·.requirement)).eraseDups.length,
@@ -99,5 +99,16 @@ private def ordinarySeparate : WorkM Bool := do
   let (references,ids,_,suppliers,classical) ← inspect ordinarySource
   return references == 0 && ids == 0 && suppliers > 0 && classical == 1
 #guard ordinarySeparate.run 10000000 |>.1.toOption == some true
+
+private def emptyRoots : WorkM (Nat × Nat × Nat × Nat) := do
+  let source := prelude ++ "classical fn spareA()->Unit{()}\nclassical fn spareB()->Unit{()}\n"
+  let catalogue ← GenericCatalogue.read #[("main",source)]
+  let queue ← GenericDutyQueue.read catalogue
+  let plan ← Qirf.SourceDutySlots.read queue
+  return (queue.roots.length,plan.indexed.items.length,plan.indexed.array.size,plan.entries.length)
+
+-- Empty original roots still belong to the one retained flattening. A zero
+-- item count does not omit those roots from preparation or its traversal cost.
+#guard emptyRoots.run 10000000 |>.1.toOption == some (3,0,0,0)
 
 end QleisliKernel.Tests.SourceDutySlots
