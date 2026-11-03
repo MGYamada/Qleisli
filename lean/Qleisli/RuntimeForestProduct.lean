@@ -245,6 +245,7 @@ private theorem pair_product_coefficient {roles state checked} (frame : @Frame r
         (gather physical (forestAxes state.quantum.frame checked.bindings)) logical := by
     unfold sparseEntry
     rw [coordinates logical]
+    rfl
   change scalar (sparseEntry frame.code (gather physical (forestAxes state.quantum.frame checked.bindings)) logical) = _
   rw [sameCode,packed]
   exact tensor_coefficient left.layout right.layout (owner_bounds left) _ _ logical lowBound
