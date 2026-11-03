@@ -100,6 +100,7 @@ import QleisliKernel.Tests.ContextSectorStages
 import QleisliKernel.Tests.ContextImportRows
 import QleisliKernel.Tests.SourceImportRows
 import QleisliKernel.Tests.SourceTypeSharing
+import QleisliKernel.Tests.SourceSuppliedLeaf
 import QleisliKernel.Tests.ContextSource
 import QleisliKernel.Tests.QuantumSelectionSyntax
 import QleisliKernel.Tests.SourceRuntimeQif

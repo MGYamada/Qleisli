@@ -453,7 +453,7 @@ private def borrowedValue {sources : Sources} (supply : SupplyData sources) (des
   guard (entry.destination < description.nodes.length) .request
   pure (value,context)
 
-def readSuppliedData {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (GraphData sources) := do
+private def readInheritedData {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (GraphData sources) := do
   guard description.complete .request
   let _ ← readOccurrences description
   let plan ← borrowPlan supply description
@@ -476,6 +476,46 @@ def readSuppliedData {sources : Sources} (supply : SupplyData sources) (descript
       else throw .request
     else throw .request
   else throw .request
+
+/-- This exact shape has no child edges or formal occurrence to borrow. The
+original supplying scope still selects the provider's visibility/effect, and
+the common readNode still checks its complete original signature and body
+inference. General graphs retain the inherited traversal below. -/
+def isFreshLeaf (description : Description) : Bool :=
+  match description.nodes,description.root with
+  | [.provider _ _ _ _ []],0 => true
+  | _,_ => false
+
+/-- A constant-size graph driver for one actual source leaf and an already
+checked original catalogue. It performs no supply search, descriptor copying,
+index remapping, linked-list accumulation or pairwise graph comparison. The
+reservation covers the keys/list cells actually inspected by this driver;
+readNode pays for every original type/actual/effect/access check itself. -/
+def readFreshLeafData (sources : Sources) (context : Context)
+    (catalogue : GenericCatalogue.Checked sources) (description : Description) : WorkM (GraphData sources) := do
+  match nodes : description.nodes with
+  | [.provider owner name bases naturals []] =>
+    if atRoot : description.root = 0 then
+      if complete : description.complete = true then
+        let _ ← readOccurrences description
+        exactWork (Exact.charge (64*(owner.utf8ByteSize+name.utf8ByteSize+bases.length+naturals.length+1)))
+        let value ← readNode sources context description [] (.provider owner name bases naturals []) (some catalogue)
+        pure ⟨description,[value],[context],by simp only [nodes,List.length_singleton],
+          by simp only [nodes,List.length_singleton],complete,value,by simp only [atRoot,List.getElem?_cons_zero]⟩
+      else throw .request
+    else throw .request
+  | _ => throw .request
+
+/-- A provider leaf cannot reference any inherited actual. This is a
+structural dispatch, never a retry after a failed reader. The same supplied
+reader receipt retains the complete original instance and every unused actual.
+Cold or non-leaf graphs keep the original general traversal. -/
+def readSuppliedData {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (GraphData sources) :=
+  match supply.catalogue with
+  | some catalogue =>
+    if isFreshLeaf description then readFreshLeafData sources (.source supply.owner) catalogue description
+    else readInheritedData supply description
+  | none => readInheritedData supply description
 
 /-- Actual reader provenance. An inherited read matches complete original
 formal instances; selecting a closure keeps its parent receipts. -/
