@@ -38,7 +38,7 @@ private theorem original_subject {sources catalogue record invocation}
   exact identity_subject identity
 
 structure Eligible {sources catalogue record invocation demand view}
-    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) where
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : Type where
   root : invocation.depth = 0
   identity : demand.transported.subject = ⟨demand.source.original.subject,demand.source.original.suppliers⟩
   noBindings : demand.source.original.bindings.isEmpty = true
@@ -130,7 +130,7 @@ Its core and actual receipts, rather than a reconstructed equal-width header,
 are the source of the retained runtime Body. -/
 structure Identity {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view)
-    (native : StaticOperation.Provider sources) where
+    (native : StaticOperation.Provider sources) : Type where
   moduleName : native.moduleName = provider.owner
   declarationName : native.declarationName = provider.name
   source : native.signature.original.source = provider.signature.original.source
