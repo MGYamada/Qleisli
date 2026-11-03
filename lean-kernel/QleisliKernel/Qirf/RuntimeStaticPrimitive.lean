@@ -93,7 +93,7 @@ original premise transfer. Its same selected signature retains checked Basis
 values and closed Nat premises. These additional proofs bound this continuation
 to Basis/Nat formals; they neither reconstruct those receipts nor grant an
 operation actual, body equation, public effect or native capability. -/
-structure BasisNatActuals {sources caller} (call : SourceRuntimeContext.NamedEvent sources caller) where
+structure BasisNatActuals {sources caller} (call : SourceRuntimeContext.NamedEvent sources caller) : Type where
   applicationKinds : basisNatFormals call.target.actuals.target.header.formals = true
   signatureKinds : basisNatFormals call.target.signature.checked.environment.numeric.original.header.formals = true
   noOperations : call.target.signature.arguments.operations = []
