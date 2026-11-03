@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Relate each finite target's original input/output code to the actual
+  rectangular carrier encoding and both native Gram checks. The checked
+  local sector acts through those same codes on every physical target row,
+  retaining Unit phases and record padding. Whole-caller fibre and Gram
+  transport remain pending.
+
 - Connect the checked ordered named-call intervals to the original Raw
   program through the shared literal partition. Their physical actions
   compose in the original order on every external-reference slice and retain
