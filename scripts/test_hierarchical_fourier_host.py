@@ -231,7 +231,7 @@ def main():
         assert p.returncode==(0 if actual=='pending' else 1)
         if actual=='pending':
             assert 0<int(lines[0])<=2000000
-            assert 0 < int(lines[1]) <= 10000000
+            assert 0 < int(lines[1]) <= 20000000
             assert lines[2]=='1' and lines[4]=='1'
         results.append(dict(case=name,result=actual))
     with tempfile.TemporaryDirectory(prefix='qleisli-fourier-host-') as temp:

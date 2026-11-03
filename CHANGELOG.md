@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Adopt a single ceiling of 20,000,000 exact-work units for ordinary and
+  source-`qmatch` checks. Rust and the native Lean checker use the same
+  budget across each request. Compilations charge all native receipts
+  cumulatively. Update both components together (#461).
 - Prove that an exhaustive source-ordered `qmatch` with a finite selector
   and a Bit target preserves logical inner products with an arbitrary
   external reference. Each original ordinal selects its own arm, including
@@ -20,7 +24,7 @@ development milestones from the scope of their evidence.
 - Check primitive actions before and after a named call containing a
   `qmatch` against their original source positions and contiguous caller IR.
   The internal v5 reader checks the returned owner order, including held
-  zero-width owners. The three-event example exceeds the public work limit.
+  zero-width owners. The three-event example uses one shared work counter.
 
 - Traverse original expressions, source calls and operation duties with total
   Lean functions. The ordinary-expression evaluator and its call-site
@@ -52,8 +56,8 @@ development milestones from the scope of their evidence.
 - Resolve bare named arms of nominal selections from their original provider
   or bound operation. Their source proposals retain the consulted prelude and
   its original reexport modules.
-- Increase the native source-`qmatch` budget to 13,000,000 work units per
-  request. The typed graph check and Rust response reader use the same limit.
+- The earlier source-`qmatch` profile raised its native ceiling to 13,000,000
+  work units per request. The unified ceiling adopted in #461 supersedes it.
 - Check transparent powers of the intrinsic Hadamard and global phase gates
   in the whole-source catalogue. The original count and access demand stay
   attached to the operation, including when the count is zero.

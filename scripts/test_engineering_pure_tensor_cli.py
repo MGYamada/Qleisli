@@ -74,7 +74,7 @@ def live(cli, kernel):
                 actual=hashlib.sha256(data[s]['actual_artifact'].encode()).hexdigest(),
                 ideal=hashlib.sha256(data[s]['expected_artifact'].encode()).hexdigest()) for s in ('left', 'right')]
             assert report['checker_path'] == str(Path(checker).resolve())
-            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 10_000_000
+            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 20_000_000
             for field in ['source_preservation_verified', 'exact_source_correspondence_verified',
                           'phase_agreement_verified', 'control_access_verified', 'inverse_access_verified',
                           'clean_workspace_verified', 'dirty_workspace_verified', 'resource_bound_verified',

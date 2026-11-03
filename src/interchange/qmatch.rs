@@ -7,9 +7,6 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
-/// Total work available to one native source-qmatch request.
-pub(crate) const EXACT_WORK_LIMIT: usize = 13_000_000;
-
 mod context;
 pub use context::{BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
 mod operations;
@@ -147,7 +144,7 @@ pub(crate) fn proposal(
                 ArmBody::Program(_) => {
                     return Err(Error::new(
                         "unsupported",
-                        "standalone qmatch arm programs require the complete v5 source gate",
+                        "standalone qmatch arm programs require the complete v5 source gate. Wrap the gate in a named unitary function",
                     ));
                 }
                 ArmBody::Physical {

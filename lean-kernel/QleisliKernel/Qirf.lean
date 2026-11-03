@@ -1,3 +1,4 @@
+import QleisliKernel.WorkLimit
 import QleisliKernel.Semantics.Qirf
 import QleisliKernel.Raw.BranchFunction
 import QleisliKernel.Hierarchical.Graph
@@ -13,9 +14,7 @@ cannot select a different graph budget. -/
 inductive WorkProfile where
   | ordinary | qmatch
 
-def WorkProfile.limit : WorkProfile → Nat
-  | .ordinary => 10000000
-  | .qmatch => 13000000
+def WorkProfile.limit (_ : WorkProfile) : Nat := exactWorkLimit
 
 def nodes (artifact : Artifact) : Hierarchical.Graph.Nodes :=
   artifact.programs.map (fun program =>
@@ -306,7 +305,7 @@ theorem checkGraphReceipts_schedule (artifact : Artifact) (order : Array Nat) (s
 including failures and the remaining work budget. -/
 theorem checkGraph_projection (artifact : Artifact) (order : Array Nat) :
     checkGraph artifact order = (do
-      guard ((← get) ≤ 10000000) .limit
+      guard ((← get) ≤ QleisliKernel.exactWorkLimit) .limit
       guard (artifact.programs.size + artifact.entries.size ≤ 65536 && artifact.sources.size ≤ 128) .limit
       guard (artifact.sources.all sourceValid && Raw.unique (artifact.sources.toList.map (·.1)))
       guard ((artifact.sources.toList.map (fun source => source.2.utf8ByteSize)).sum ≤ 1048576) .limit

@@ -62,12 +62,7 @@ fn response_bound(
     let work: usize = work
         .parse()
         .map_err(|_| Error::format("invalid native work count"))?;
-    let limit = if mode == native_context::Mode::QmatchSource {
-        crate::interchange::qmatch::EXACT_WORK_LIMIT
-    } else {
-        crate::contract::DEFAULT_EXACT_WORK
-    };
-    if work > limit || *flag != if requested { "1" } else { "0" } {
+    if work > crate::contract::DEFAULT_EXACT_WORK || *flag != if requested { "1" } else { "0" } {
         return Err(Error::format(
             "native work bound or request coverage disagrees",
         ));
@@ -142,21 +137,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn qmatch_reply_enforces_its_own_work_limit() {
+    fn ordinary_and_qmatch_replies_enforce_the_same_exact_work_limit() {
         use crate::interchange::native_context::Mode;
-        for (work, allowed) in [(10_000_001, true), (13_000_000, true), (13_000_001, false)] {
-            let reply = format!(
-                "qleisli.native-result 3\naccepted\n2026\n{}\n--qmatch-source-check\nexecution\n{work}\n1\n",
-                env!("CARGO_PKG_VERSION")
-            );
-            let result = response_bound(
-                reply.as_bytes(),
-                true,
-                Scope::Execution,
-                crate::edition::Edition::E2026,
-                Mode::QmatchSource,
-            );
-            assert_eq!(result.is_ok(), allowed, "{work}");
+        for mode in [Mode::Ordinary, Mode::QmatchSource] {
+            for (work, allowed) in [(13_000_001, true), (20_000_000, true), (20_000_001, false)] {
+                let reply = format!(
+                    "qleisli.native-result 3\naccepted\n2026\n{}\n{}\nexecution\n{work}\n1\n",
+                    env!("CARGO_PKG_VERSION"),
+                    mode.argument(),
+                );
+                let result = response_bound(
+                    reply.as_bytes(),
+                    true,
+                    Scope::Execution,
+                    crate::edition::Edition::E2026,
+                    mode,
+                );
+                assert_eq!(result.is_ok(), allowed, "{} {work}", mode.argument());
+            }
         }
     }
 
@@ -172,7 +170,7 @@ mod tests {
             "qleisli.engineering-pure-native 1\nengineering-checked\nexecution\n42\n".into(),
             good.replace("result 3", "result 2"),
             good.replace("42", "042"),
-            good.replace("42", "10000001"),
+            good.replace("42", "20000001"),
             good.replace("\n0\n", "\ntrue\n"),
             good.trim_end().to_owned(),
             format!("{good}extra"),

@@ -126,7 +126,7 @@ def main(argv=None):
                                 mode="--qirf-native", scope="inspection")
             if (result.returncode != (0 if accepted else 1) or result.stderr
                     or (reply.claim != "accepted" or len(reply.payload) != 2
-                        or not 0 <= int(reply.payload[0]) <= 10_000_000
+                        or not 0 <= int(reply.payload[0]) <= 20_000_000
                         or reply.payload[1] != "1" if accepted else reply.error != "contract")):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
             logs.append(dict(command=["bin/" + binary.name, "--qirf-native", PRODUCT_VERSION], exit_code=result.returncode,

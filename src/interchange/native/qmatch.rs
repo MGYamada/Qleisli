@@ -1,11 +1,7 @@
 //! One immutable original-source request and compared graph per fresh decision.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
-use crate::interchange::{
-    execution_view::finite::qmatch,
-    native_packet::View,
-    qmatch::{EXACT_WORK_LIMIT, Request},
-};
+use crate::interchange::{execution_view::finite::qmatch, native_packet::View, qmatch::Request};
 
 #[cfg(test)]
 mod tests;
@@ -34,7 +30,7 @@ impl QmatchChecked {
 }
 
 fn prepare(subject: Arc<Subject>, request: &Request) -> Result<Prepared> {
-    let mut budget = crate::contract::exact::Budget::new(EXACT_WORK_LIMIT);
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
     let decoded = Arc::new(super::super::decode_subject_with_types(
         &subject,
         &mut budget,
@@ -62,7 +58,7 @@ impl Kernel {
         use crate::interchange::{QmatchSource, decode_subject_with_runtime, qmatch::v5};
         let subject = self.subject(artifact, Some(request_bytes))?;
         let request = v5::Request::decode(subject.request.as_deref().expect("context request"))?;
-        let mut budget = crate::contract::exact::Budget::new(EXACT_WORK_LIMIT);
+        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
         let decoded = Arc::new(decode_subject_with_runtime(
             &subject,
             &mut budget,

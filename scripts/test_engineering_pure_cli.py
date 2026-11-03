@@ -107,7 +107,7 @@ def live(cli, kernel):
             assert report['ideal_artifact_sha256'] == hashlib.sha256(request['expected_artifact'].encode()).hexdigest()
             assert report['request_sha256'] == hashlib.sha256(request_bytes).hexdigest()
             assert report['checker_path'] == str(Path(checker).resolve())
-            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 10_000_000
+            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 20_000_000
             for name in ['source_preservation_verified', 'exact_source_correspondence_verified',
                          'resource_bound_verified', 'instrument_bound_verified']:
                 assert report[name] is False

@@ -1,3 +1,4 @@
+import QleisliKernel.WorkLimit
 import QleisliKernel.Finite
 import Lean.Data.Json.Parser
 
@@ -147,7 +148,7 @@ private def adapter {α : Type} (result : Except String α) : QleisliKernel.Fini
 coefficient fields are inspected after the four-per-entry charge, as in Rust. -/
 def readMatrixValue (value : Json) : QleisliKernel.Finite.WorkM Matrix := do
   let work ← get
-  QleisliKernel.Finite.guard (work ≤ 10000000) .limit
+  QleisliKernel.Finite.guard (work ≤ QleisliKernel.exactWorkLimit) .limit
   adapter (fields value ["format","version","domain","rows","cols","entries"])
   let profile ← adapter (do
     return (← (← field value "format").getStr?) == "qleisli.finite-matrix" &&
@@ -173,7 +174,7 @@ def readMatrixValue (value : Json) : QleisliKernel.Finite.WorkM Matrix := do
 
 def readMatrix (text : String) : QleisliKernel.Finite.WorkM Matrix := do
   let work ← get
-  QleisliKernel.Finite.guard (work ≤ 10000000) .limit
+  QleisliKernel.Finite.guard (work ≤ QleisliKernel.exactWorkLimit) .limit
   readMatrixValue (← adapter (parse text))
 
 /-- Private experimental prefix bridge; legacy type trees retain all atoms. -/

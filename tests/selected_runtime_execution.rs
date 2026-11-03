@@ -604,8 +604,12 @@ fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
         .unwrap()
         .compile_runtime_with_kernel(&kernel())
         .unwrap_err();
-    assert_eq!(error.code, "type_mismatch");
-    assert!(error.message.contains("wrap the gate"), "{error:?}");
+    assert_eq!(error.code, "unsupported", "{error:?}");
+    assert!(
+        error.message.contains("complete v5 source gate"),
+        "{error:?}"
+    );
+    assert!(error.message.contains("Wrap the gate"), "{error:?}");
 }
 
 #[test]

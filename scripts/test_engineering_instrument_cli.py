@@ -144,7 +144,7 @@ def live(cli, kernel):
             assert report['request_sha256'] == hashlib.sha256(request_bytes).hexdigest()
             assert report['checker_path'] == str(Path(checker).resolve())
             assert report['checker_identity'] == 'unpinned'
-            assert 0 < report['native_exact_work'] <= 10_000_000
+            assert 0 < report['native_exact_work'] <= 20_000_000
             assert report['error_categories'] == {
                 'implementation_distance': 'checked-declared-bound', 'sampling': 'not-claimed',
                 'algorithmic_resolution': 'not-claimed', 'numerical_runtime': 'not-claimed'}

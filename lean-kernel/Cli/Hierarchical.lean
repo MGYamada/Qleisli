@@ -46,7 +46,7 @@ private def runHierarchyMode (mode : CheckedHierarchy.Modes.Mode) (header : Stri
     | .error .limit => return (← failure header "limit")
     | .error _ => return (← failure header "format")
     | .ok bytes => pure bytes
-  let (result,left) := (Native.hierarchy mode bytes).run 10000000
+  let (result,left) := (Native.hierarchy mode bytes).run QleisliKernel.exactWorkLimit
   match result with
   | .error error => failure header (match error with
       | .native error => Protocol.HierarchicalFinite.errorCode error
@@ -54,7 +54,7 @@ private def runHierarchyMode (mode : CheckedHierarchy.Modes.Mode) (header : Stri
   | .ok (scope,checked) =>
     IO.println (header ++ "\npending\n" ++ scope.name)
     IO.println checked.core.visits
-    IO.println (10000000-left)
+    IO.println (QleisliKernel.exactWorkLimit-left)
     IO.println checked.core.requests.size
     for request in checked.core.requests do IO.println request.index
     if mode != .inspect then

@@ -428,7 +428,7 @@ def live(kernel, record=None):
         assert not result.stderr, (name, result)
         if success:
             assert result.returncode == 0 and reply.claim == 'engineering-checked', (name, result)
-            assert len(reply.payload) == 1 and 0 < int(reply.payload[0]) <= 10_000_000, (name, reply)
+            assert len(reply.payload) == 1 and 0 < int(reply.payload[0]) <= 20_000_000, (name, reply)
         else:
             assert result.returncode == 1 and reply.error is not None, (name, result)
             if error:

@@ -76,7 +76,7 @@ def live(cli, kernel):
             assert report['ideal_artifact_sha256'] == digest(data['expected_artifact'].encode())
             assert report['request_sha256'] == digest(request_bytes)
             assert report['checker_path'] == str(Path(checker).resolve())
-            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 10_000_000
+            assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 20_000_000
             assert report['native_check_scope'] == 'canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound'
             assert report['target_capacity'] == dict(max_target_bytes=1024, max_gate_count=8)
             assert report['instrument_bound_verified'] is True and report['target_artifact_bound_verified'] is True

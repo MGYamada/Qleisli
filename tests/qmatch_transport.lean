@@ -39,6 +39,14 @@ private def cases (path : System.FilePath) : IO (Array Json) := do
 
 private def qmatchWork := Protocol.NativeContext.Mode.qmatchSource.workLimit
 
+-- Exercise the production counter on both modes, including a failed debit
+-- after earlier work. No large matrix is needed to reach the numeric boundary.
+#guard [Protocol.NativeContext.Mode.ordinary,.qmatchSource].all fun mode =>
+  mode.workLimit == 20000000 &&
+    (match (Exact.charge 20000000).run mode.workLimit with | (.ok (),0) => true | _ => false) &&
+    (match (do Exact.charge 19999999; Exact.charge 2).run mode.workLimit with
+      | (.error .workLimit,1) => true | _ => false)
+
 -- These retained inputs predate explicit prelude lookup. Add its actual empty
 -- module to the input and the expected source table. All offsets stay original.
 private def fixtureArtifact (artifact : Json) : Except String Json := do
@@ -92,7 +100,7 @@ private def execution (path : System.FilePath) (precise : Bool := false)
         throw (IO.userError ("qmatch original bytes/acceptance mismatch: " ++ name))
       accepts := accepts+1
       let .ok decision := dispatched.1 | throw (IO.userError "qmatch context lost successful input")
-      let lines := Protocol.NativeContext.successLines .qmatchSource decision (10000000-dispatched.2)
+      let lines := Protocol.NativeContext.successLines .qmatchSource decision (qmatchWork-dispatched.2)
       unless lines.take 6 == ["qleisli.native-result 3","accepted","2026",Protocol.productVersion,
           "--qmatch-source-check","execution"] && lines.drop 7 == ["1"] do
         throw (IO.userError "qmatch response lost its actual context/request binding")
@@ -176,9 +184,9 @@ no source proof, accepted result or external study file is a runtime input.
 Each run freshly decodes and reads all original source, the distinct header
 prefix, both arms and Meaning, one graph and the complete named caller return.
 
-The full named case including its execution view uses 12,920,614 work units.
-The source-qmatch budget is 13M. A 16M component study also exercises the
-larger held-owner example and its late rejection paths.
+The first full named run, including its execution view, used 12,920,614
+work units under the former 13M profile. The separate 16M component study
+checks the held-owner example and its late rejection paths.
 Remaining catalogue/global duties and broader source preservation stay open.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
@@ -357,12 +365,12 @@ private def viewSize (fault : Fault) : WorkM Nat := do
   let bytes ← lift ((Protocol.ExecutionView.encode view).mapError fun _ => .request)
   return bytes.size
 
--- The original result, both false equations and the larger over-budget
+-- The original result, both false equations and the larger held-owner
 -- program run from the same public allowance, without a counter refill.
 #guard ((viewSize .none).run WorkProfile.qmatch.limit).1.toOption == some 8288
 #guard [Fault.falseMeaning,.changedControlled].all fun fault =>
   match ((viewSize fault).run WorkProfile.qmatch.limit).1 with | .error .equation => true | _ => false
-#guard ((viewSize .heldUnit).run WorkProfile.qmatch.limit).1 matches .error (.arithmetic .workLimit)
+#guard ((viewSize .heldUnit).run WorkProfile.qmatch.limit).1.isOk
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 
@@ -430,8 +438,8 @@ private def surroundingStudy (fault : SurroundingFault) := (surroundingInspect f
 #guard surroundingStudy .omittedUnit matches .error .invalid
 #guard [SurroundingFault.wrongCallStart,.wrongReturn,.incompatible,.nestedReferences].all fun fault =>
   match surroundingStudy fault with | .error .request => true | _ => false
--- The supported component still does not fit the actual public allowance.
-#guard ((surroundingInspect .none).run WorkProfile.qmatch.limit).1 matches .error (.arithmetic .workLimit)
+-- The entire original source, typed child and caller share one public allowance.
+#guard ((surroundingInspect .none).run WorkProfile.qmatch.limit).1.toOption == some ([0,1,2],[8,5,7],3)
 
 -- The separate original singleton binding must keep refusing this source;
 -- the new reader is never tried as an automatic fallback.

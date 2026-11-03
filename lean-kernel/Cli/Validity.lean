@@ -27,13 +27,13 @@ def runValidity (contract : Bool := false) : IO UInt32 := do
     else
       let result ← Native.ordinary bytes
       return (result.scope,result.requested)
-  let (result,left) := computation.run 10000000
+  let (result,left) := computation.run QleisliKernel.exactWorkLimit
   match result with
   | .error error =>
     IO.println ("qleisli.qirf-native 2\nerror\n" ++ Native.errorCode error)
     return 1
   | .ok (scope,requested) =>
-    IO.println ("qleisli.qirf-native 2\naccepted\n" ++ scope.name ++ "\n" ++ toString (10000000-left) ++
+    IO.println ("qleisli.qirf-native 2\naccepted\n" ++ scope.name ++ "\n" ++ toString (QleisliKernel.exactWorkLimit-left) ++
       "\n" ++ if requested then "1" else "0")
     return 0
 

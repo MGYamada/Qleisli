@@ -17,6 +17,7 @@ from native_packet import envelope, parse_reply, MODES
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/verification_v030/execution-view-binding'
 VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
+EXACT_WORK_LIMIT = 20_000_000
 
 
 def qdv(value):
@@ -113,8 +114,7 @@ class Probe:
             assert result.returncode == 0 and reply.claim in ('accepted', 'pending'), (mode, result)
             assert reply.context.scope == scope, (scope, result)
             if reply.claim == 'accepted':
-                work_limit = 13_000_000 if mode == '--qmatch-source-check' else 10_000_000
-                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= work_limit, reply
+                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= EXACT_WORK_LIMIT, reply
                 requested = mode in ('--qirf-contract', '--carrier-pure-check',
                                      '--ordinary-root-check', '--qmatch-source-check')
                 assert reply.payload[1] == ('1' if requested else '0'), reply
@@ -125,7 +125,7 @@ class Probe:
 
 def check_pending_payload(mode, payload):
     assert len(payload) >= 3 and 0 <= int(payload[0]) <= 2_000_000, payload
-    assert 0 <= int(payload[1]) <= 10_000_000, payload
+    assert 0 <= int(payload[1]) <= EXACT_WORK_LIMIT, payload
     bounds = [100_000]
     if mode != '--hierarchy-pending':
         bounds.append(8 if mode == '--hierarchy-fourier-pending' else 100_000)
@@ -209,11 +209,11 @@ def qmatch_work_boundary(probe, original, base_work):
     extra_work = int(check(64).payload[0]) - base_work
     per_byte, remainder = divmod(extra_work, 64)
     assert per_byte > 0 and remainder == 0
-    inside = (13_000_000 - base_work) // per_byte
+    inside = (EXACT_WORK_LIMIT - base_work) // per_byte
     assert 64 < inside < 65_536
     used = int(check(inside).payload[0])
     assert used == base_work + inside * per_byte
-    assert used <= 13_000_000 < used + per_byte
+    assert used <= EXACT_WORK_LIMIT < used + per_byte
     check(inside + 1, 'limit')
 
 

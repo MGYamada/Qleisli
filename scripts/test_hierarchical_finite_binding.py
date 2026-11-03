@@ -87,7 +87,7 @@ def main():
         lines = reply.payload
         if expected == "pending":
             assert result.returncode == 0 and reply.claim == "pending", (name, lines)
-            assert 36 < int(lines[1]) <= 10_000_000, (name, lines)
+            assert 36 < int(lines[1]) <= 20_000_000, (name, lines)
             assert lines[2:] == ("1", "0", "1", "0"), (name, lines)
         else:
             assert result.returncode == 1 and reply.error == expected, (name, lines)
@@ -175,7 +175,7 @@ def main():
         lines = reply.payload
         if expected == 'pending':
             assert result.returncode == 0 and reply.claim == 'pending', (name, lines)
-            assert 0 < int(lines[1]) <= 10_000_000, (name, lines)
+            assert 0 < int(lines[1]) <= 20_000_000, (name, lines)
         else:
             assert result.returncode == 1 and reply.error == expected, (name, lines)
     # Text-only decoder faults retain a separately valid enclosing boundary.

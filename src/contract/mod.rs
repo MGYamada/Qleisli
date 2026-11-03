@@ -19,7 +19,7 @@ use exact::{Budget, Exact, ExactError, Matrix};
 
 pub const MAX_CONTRACT_BITS: usize = 6;
 pub const MAX_CONTRACT_STEPS: usize = 1024;
-pub const DEFAULT_EXACT_WORK: usize = 10_000_000;
+pub const DEFAULT_EXACT_WORK: usize = 20_000_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ContractError {

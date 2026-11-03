@@ -310,9 +310,12 @@ arbitrary joint caller/reference amplitudes under the same two arm receipts.
 `RuntimeSelectionGram.checked_selection` obtains both receipts and the
 canonical order `[0, 1]` from the source layout reads and the logical
 matrix comparison retained by the native selection node.
-The native `--qmatch-source-check` mode has a total budget of 13,000,000 work
-units per request. Decoding, source and graph checks, and execution-view
-comparison share that counter. Exhausting it returns the native `limit` error.
+Ordinary and source-`qmatch` checks share a public ceiling of 20,000,000
+exact-work units per request. Decoding, source and graph checks, and execution-view
+comparison spend from the same counter. Rust also charges native receipts
+against the remaining exact work of the compilation, across all sites and
+calls. The limit is inclusive. Clients using the previous 10,000,000 or
+13,000,000 ceilings must update the Rust frontend and Lean checker together.
 The ordinary source-root wrapper retains its original main-only roots and empty
 extra source-query extension.
 
@@ -733,7 +736,7 @@ Each distinct compact original/replacement Raw pair requires the existing native
 function-equation check under the input `AcceptedProgram`'s own checker. The
 local comparison retains full scalar phase and ordered control polarities. An
 export retains at most seven complete-body local receipts and shares the
-existing 10,000,000 exact-work budget across all Raw operations. Unavailable
+shared 20,000,000 exact-work budget across all Raw operations. Unavailable
 checking, rejection or exhausted capacity produces no artifact or alternate
 acceptance path. These local equations do not establish general source/export,
 resource or external QIS preservation; the two adopted guarantees and pending
