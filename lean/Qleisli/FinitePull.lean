@@ -584,6 +584,29 @@ theorem applyStep_pull (dependencies : List Dependency) (bits : Nat) (step : Ste
     simp only [inactive, Bool.not_false, if_true]
     exact Exact.range_delta_sum _ _ _ bound
 
+/-- A valid original step reads no amplitude outside its stated physical
+domain. This is equality of total mathematical actions on that domain, not
+equality or totality of bounded coefficient computations. -/
+theorem rawStep_congr (dependencies : List Dependency) (bits : Nat) (step : Step)
+    (left right : Nat → ℂ) (valid : stepValid dependencies bits step = true)
+    (same : ∀ label, label < 2^bits → left label = right label)
+    (row : Nat) (bound : row < 2^bits) :
+    Qleisli.Semantics.RawAction.step dependencies step left row =
+      Qleisli.Semantics.RawAction.step dependencies step right row := by
+  rw [← Pull.kernel_action dependencies bits step valid left row,
+    ← Pull.kernel_action dependencies bits step valid right row]
+  by_cases active : enabled step.controls row = true
+  · simp only [active, Bool.not_true, Bool.false_eq_true, if_false]
+    apply Exact.sum_map_congr
+    intro input _present
+    rw [same (scatter row (targets step.action) input)
+      (Pull.scatter_bound row bits input (targets step.action) bound
+        (Pull.geometry dependencies bits step valid).2.1)]
+  · have inactive : enabled step.controls row = false := Bool.eq_false_iff.mpr active
+    simp only [inactive, Bool.not_false, if_true]
+    exact same row bound
+
 #print axioms applyStep_pull
+#print axioms rawStep_congr
 
 end Qleisli.Finite
