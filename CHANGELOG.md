@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Factor unchanged discovery data and distinguish supplied metadata from
+  genuine source-body views for the forthcoming common staged traversal.
+  Existing discovery and native acceptance behavior remain unchanged.
+
 - Prepare exact graph cuts for original operation formals and selection arms,
   and retain an indexed continuation that checks their native trees under
   the final root without preparing the same graphs again. Common body
