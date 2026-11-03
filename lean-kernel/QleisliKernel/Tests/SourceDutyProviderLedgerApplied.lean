@@ -99,25 +99,30 @@ private def actual (b : String) (omitted : Bool := false) (missingBare : Bool :=
 private def pair : List Address := [(0,.applied,"stamp",[0]),(1,.bare,"keep",[1])]
 private def zeroPair : List Address := [(0,.applied,"stamp",[0,0]),(1,.bare,"keep",[0,1])]
 
+-- One development proof budget covers source discovery, every provider and
+-- the single dependency graph. Individual stages receive the remaining work.
+private def combinedWork : Nat := 13_000_000
+
 -- Mixed source kinds occupy separate original provider ordinals at the formal
 -- A/C duty and each of the two written arm duties. Header links add no copy.
-#guard (actual sourceB).run 10000000 |>.1.toOption ==
+#guard (actual sourceB).run combinedWork |>.1.toOption ==
   some (pair ++ pair ++ pair,[1,0,1,0,1,0],true)
-#guard (actual zeroB).run 10000000 |>.1.toOption ==
+#guard (actual zeroB).run combinedWork |>.1.toOption ==
   some (pair ++ zeroPair ++ zeroPair,[1,0,1,0,1,0],true)
-#guard (actual unusedB).run 10000000 |>.1.toOption == some (pair,[1,0],true)
+#guard (actual unusedB).run combinedWork |>.1.toOption == some (pair,[1,0],true)
 
 -- An inert enclosing execution does not discharge either actual forward body.
-#guard (match (actual zeroB true).run 10000000 with | (.error .equation,_) => true | _ => false)
-#guard (match (actual unusedB true).run 10000000 with | (.error .equation,_) => true | _ => false)
+#guard [sourceB,zeroB,unusedB].all fun b =>
+  match (actual b true).run combinedWork with | (.error .equation,_) => true | _ => false
 
 -- A supplied request cannot remove provider ordinal 1. Its actual missing
 -- forward subject refuses instead of constructing a shorter complete ledger.
-#guard (match (actual sourceB false true).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard [sourceB,zeroB,unusedB].all fun b =>
+  match (actual b false true).run combinedWork with | (.error .request,_) => true | _ => false
 
 -- Both genuine forward subjects are roots. The original incomplete schedule
 -- is retained as the observed graph-invalid negative, rather than dropping
 -- the identity provider root or granting it authority from the phase root.
-#guard (match (actual unusedB false false true).run 10000000 with | (.error .invalid,_) => true | _ => false)
+#guard (match (actual unusedB false false true).run combinedWork with | (.error .invalid,_) => true | _ => false)
 
 end QleisliKernel.Tests.SourceDutyProviderLedgerApplied

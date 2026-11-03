@@ -82,6 +82,7 @@ import QleisliKernel.Tests.SourceDutyProviderBare
 import QleisliKernel.Tests.SourceDutyProviderApplied
 import QleisliKernel.Tests.SourceDutyProviderBareBody
 import QleisliKernel.Tests.SourceDutyProviderLedger
+import QleisliKernel.Tests.SourceDutyProviderLedgerApplied
 import QleisliKernel.Tests.SourceDutyProviderHeader
 import QleisliKernel.Tests.SourceDutyProviderBody
 import QleisliKernel.Tests.GenericCatalogueOriginals
