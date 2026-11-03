@@ -31,6 +31,10 @@ private def control {artifact catalogue owner name offset selector target table 
   match checked with
   | .plain _ actual _ => controlPresent actual.subject.paths
   | .requested _ actual _ => controlPresent actual.subject.paths
+  | .constructed _ actual _ => actual.outcome.records.all fun record =>
+    match record.checked.provider with
+    | .absent _ => true
+    | .present _ _ provider _ => !record.demand.controllable || controlPresent provider.paths
 
 private def inspect (fault : Fault) (onlyPrepare : Bool := false) : WorkM (List Nat) := do
   let z := [.gate .z 0]

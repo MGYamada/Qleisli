@@ -19,6 +19,11 @@ development milestones from the scope of their evidence.
   each constructed arm's own controlled-operation plan. The selected CLI
   checks the direct example through its finite runtime request. Complete
   catalogue discharge and the v5 source-preservation path remain open.
+- Check the complete operation supplied to a `qmatch` arm through a formal
+  parameter. For `then_op(sign,sign)`, Lean checks the controlled implementation
+  at both occurrences and compares their composition with the written Meaning.
+  A false Meaning inside a zero power is rejected at the indexed arm. The
+  selected CLI still requires transport for a named callee's operation arguments.
 - Check ordinary `if` branches that call pure functions and preserve their
   input owners. The shared traversal verifies each condition over the
   original input and measurement histories and checks the simultaneous
