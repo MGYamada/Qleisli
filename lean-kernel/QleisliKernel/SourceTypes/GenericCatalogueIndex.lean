@@ -25,7 +25,9 @@ private def readRow {sources} (catalogue : GenericCatalogue.RuntimeChecked sourc
 
 private def readRows {sources} (catalogue : GenericCatalogue.RuntimeChecked sources) :
     WorkM (Array (Row catalogue)) := do
-  exactWork (Exact.charge (16*(catalogue.records.length+1)))
+  -- readRow selects from the retained List at each ordinal. Charge that
+  -- complete quadratic construction here, independently of any caller meter.
+  exactWork (Exact.charge (16*(catalogue.records.length+1)^2))
   return (← (List.finRange catalogue.records.length).mapM (readRow catalogue)).toArray
 
 structure Prepared {sources} (catalogue : GenericCatalogue.RuntimeChecked sources) where

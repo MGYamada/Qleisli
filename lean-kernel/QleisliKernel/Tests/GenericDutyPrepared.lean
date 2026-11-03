@@ -6,15 +6,15 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Tests.GenericDutyPrepared
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Finite
 
-private def resolutionFresh {sources catalogue owner name original} :
+private def resolutionInitial {sources catalogue owner name original} :
     (entry : GenericCatalogue.Entry (@GenericCatalogue.Checked.toRuntimeChecked sources catalogue) original) →
       @GenericDutyQueue.Resolution sources catalogue owner name original entry → Bool
   | _,.fresh .. | _,.indexed .. => true
   | _,.retained .. => false
 
-private def fresh {sources catalogue record application}
+private def initialSelection {sources catalogue record application}
     (target : @GenericDutyQueue.Target sources catalogue record application) : Bool :=
-  resolutionFresh target.entry target.resolution
+  resolutionInitial target.entry target.resolution
 
 private def repeated : WorkM (List Bool × List (List Int) × List Nat) := do
   let source := "#![no_implicit_prelude]\n" ++
@@ -23,7 +23,7 @@ private def repeated : WorkM (List Bool × List (List Int) × List Nat) := do
     "unitary fn second(q:Q<Bit>)->Q<Bit>{leaf[2](q)}"
   let catalogue ← GenericCatalogue.read #[("main",source)]
   let queue ← GenericDutyQueue.read catalogue
-  let provenance := queue.prepared.records.flatMap fun row => row.value.calls.map (fun call => fresh call.target)
+  let provenance := queue.prepared.records.flatMap fun row => row.value.calls.map (fun call => initialSelection call.target)
   let actuals := queue.prepared.records.flatMap fun row => row.value.calls.map fun call =>
     call.application.original.naturalActuals.map (·.constant)
   let roots := queue.items.filterMap fun item => match item with
@@ -43,7 +43,7 @@ private def differentModules : WorkM (List Bool × Nat) := do
     ("right","#![no_implicit_prelude]\npub unitary fn leaf(q:Q<Bit>)->Q<Bit>{q}")]
   let catalogue ← GenericCatalogue.read sources
   let queue ← GenericDutyQueue.read catalogue
-  let provenance := queue.prepared.records.flatMap fun row => row.value.calls.map (fun call => fresh call.target)
+  let provenance := queue.prepared.records.flatMap fun row => row.value.calls.map (fun call => initialSelection call.target)
   let targets := queue.prepared.records.flatMap fun row => row.value.calls.map (fun call => call.target.entry.index.val)
   pure (provenance,targets.eraseDups.length)
 
