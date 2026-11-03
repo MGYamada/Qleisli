@@ -5,6 +5,7 @@ import Qleisli.Resource
 import Qleisli.Exact
 import Qleisli.ExactMatrix
 import Qleisli.Finite
+import Qleisli.FinitePull
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport
