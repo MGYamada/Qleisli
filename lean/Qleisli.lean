@@ -6,6 +6,7 @@ import Qleisli.Exact
 import Qleisli.ExactMatrix
 import Qleisli.Finite
 import Qleisli.FinitePull
+import Qleisli.FiniteCircuitPull
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport

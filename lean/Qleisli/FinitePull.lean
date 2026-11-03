@@ -262,7 +262,7 @@ private theorem active_contributions (dependencies : List Dependency) (bits : Na
         simp only [lowIff, highIff, sign, kernel, gathered]
         rcases inputCases with inputCoordinate | inputCoordinate <;>
           rcases outputCases with outputCoordinate | outputCoordinate <;>
-          simp [inputCoordinate, outputCoordinate] <;> dsimp [amplitude] <;> ring
+          simp [inputCoordinate, outputCoordinate] <;> dsimp [amplitude]
       · have lowNot : row ≠ low := by
           intro same
           exact spectator ((lowRow.mp same).2)
