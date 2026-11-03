@@ -33,7 +33,7 @@ private theorem bit_ext (left right : Nat)
 
 private theorem bit_zero (label bits axis : Nat) (bound : label < 2^bits)
     (outside : bits ≤ axis) : bit label axis = 0 := by
-  have power : 2^bits ≤ 2^axis := by gcongr <;> norm_num
+  have power : 2^bits ≤ 2^axis := by gcongr; norm_num
   simp [bit, Nat.div_eq_of_lt (Nat.lt_of_lt_of_le bound power)]
 
 private theorem bound_of_bits (label bits : Nat)
@@ -295,7 +295,7 @@ private theorem active_contributions (dependencies : List Dependency) (bits : Na
           exact ((scatter_equal label row _ axes unique (gather_bound row axes)).mpr ⟨rfl, same⟩).symm
       simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero,
         targets, kernel, List.getElem?_eq_getElem inputBound, List.getElem?_eq_getElem phaseBound,
-        Option.getD_some]
+        Option.getD_some, Option.some.injEq]
       change (if row = scatter label axes output then scalar value * Qleisli.Semantics.Finite.phase exponent else 0) =
         if scatter label axes (gather row axes) = row then
           scalar value * (if output = gather row axes then Qleisli.Semantics.Finite.phase exponent else 0) else 0
