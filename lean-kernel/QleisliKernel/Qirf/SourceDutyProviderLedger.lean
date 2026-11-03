@@ -55,14 +55,67 @@ def ItemRequests {sources} {catalogue : GenericCatalogue.Checked sources}
 abbrev Requests {sources catalogue queue} (plan : @SourceDutySlots.Plan sources catalogue queue) :=
   (entry : SourceDutySlots.Entry plan.indexed) → ItemRequests queue entry.subject entry.subjectExpectation
 
+inductive Branch where
+  | bare
+  | applied
+  deriving BEq, DecidableEq, Repr
+
+/-- The original retained source syntax selects the explicit preparation.
+No caller flag, closed type coincidence or failed reader chooses a branch. -/
+def branchOf {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : Branch :=
+  match provider.written with | .name _ => .bare | .application _ => .applied
+
+inductive Preparation (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) : Type where
+  | bare (original : branchOf provider = .bare)
+      (prepared : SourceDutyProviderBody.BarePrepared artifact provider request)
+      (computed : SourceDutySlots.Computed (SourceDutyProviderBody.prepareBare artifact provider request) prepared)
+  | applied (original : branchOf provider = .applied)
+      (prepared : SourceDutyProviderBody.AppliedPrepared artifact provider request)
+      (computed : SourceDutySlots.Computed (SourceDutyProviderBody.prepareApplied artifact provider request) prepared)
+
+def Preparation.branch {artifact catalogue record invocation demand view provider request} :
+    @Preparation artifact catalogue record invocation demand view provider request → Branch
+  | .bare .. => .bare
+  | .applied .. => .applied
+
+theorem Preparation.originalBranch {artifact catalogue record invocation demand view provider request}
+    (prepared : @Preparation artifact catalogue record invocation demand view provider request) :
+    prepared.branch = branchOf provider := by
+  cases prepared with
+  | bare original _ _ => exact original.symm
+  | applied original _ _ => exact original.symm
+
+def Preparation.contribution {artifact catalogue record invocation demand view provider request} :
+    @Preparation artifact catalogue record invocation demand view provider request → SourceDutyProviderBody.Contribution artifact
+  | .bare _ prepared _ => prepared.contribution
+  | .applied _ prepared _ => prepared.contribution
+
+/-- Both branches retain their actual source/header/discovery runs. Any
+unsupported concrete provider refuses in its selected branch; errors never
+retry another preparation and no source occurrence is omitted. -/
+def readPreparation (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) : WorkM (Preparation artifact provider request) := do
+  exactWork (Exact.charge 4)
+  match original : branchOf provider with
+  | .bare =>
+    let prepared ← NaturalAffine.witness (SourceDutyProviderBody.prepareBare artifact provider request)
+    return .bare original prepared.val (by with_reducible exact prepared.property)
+  | .applied =>
+    let prepared ← NaturalAffine.witness (SourceDutyProviderBody.prepareApplied artifact provider request)
+    return .applied original prepared.val (by with_reducible exact prepared.property)
+
 structure ProviderPrepared (artifact : Artifact) {catalogue record invocation demand}
     (planned : @SourceDutySlots.DemandPlan artifact.sources catalogue record invocation demand) where
   index : Fin planned.providers.length
   provider : Sigma (SourceDutySlots.Provider demand)
   atIndex : provider = planned.providers[index.val]'index.isLt
   request : RuntimeProviderHeader.Request
-  prepared : SourceDutyProviderBody.BarePrepared artifact provider.2 request
-  computed : SourceDutySlots.Computed (SourceDutyProviderBody.prepareBare artifact provider.2 request) prepared
+  prepared : Preparation artifact provider.2 request
+  computed : SourceDutySlots.Computed (readPreparation artifact provider.2 request) prepared
 
 def ProviderPrepared.contribution {artifact catalogue record invocation demand planned}
     (source : @ProviderPrepared artifact catalogue record invocation demand planned) :
@@ -111,7 +164,7 @@ private def readDemand (artifact : Artifact) {catalogue record invocation demand
     let provider := indexed.val.at index
     have atIndex := indexed.val.at_original index
     let request := requests index provider atIndex
-    let prepared ← NaturalAffine.witness (SourceDutyProviderBody.prepareBare artifact provider.2 request)
+    let prepared ← NaturalAffine.witness (readPreparation artifact provider.2 request)
     return (⟨index,provider,atIndex,request,prepared.val,by with_reducible exact prepared.property⟩ :
       ProviderPrepared artifact planned)
   if every : providers.map (·.index) = indexed.val.indices then
