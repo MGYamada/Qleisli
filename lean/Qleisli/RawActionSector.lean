@@ -22,6 +22,7 @@ theorem hadamard_pack (selector low high axis : Nat) (bound : low < 2^selector)
   have lowEq := low_pack selector low high axis bound
   have highEq := high_pack selector low high axis bound
   rw [lowEq] at highEq
+  rw [bit_target selector low high axis bound] at lowEq
   simp only [Protected.gate, bit_target selector low high axis bound, slice]
   rw [lowEq, highEq]
 
