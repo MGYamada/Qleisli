@@ -62,6 +62,39 @@ def Contribution.rows {artifact} : Contribution artifact → List SourceRows.Row
 def Contribution.roots {artifact} : Contribution artifact → List Nat
   | .provider source => source.roots
 
+/-- One original bare provider occurrence prepared for the existing body
+consumer. These are actual source/header/discovery runs, not a producer slot
+count or a proof of the remaining body, path or Meaning equations. -/
+structure BarePrepared (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) where
+  prepared : SourceDutyProviderFresh.Checked provider
+  preparedRead : SourceDutySlots.Computed (SourceDutyProviderFresh.readBare provider) prepared
+  header : SourceDutyProviderHeader.Checked artifact prepared request
+  headerRead : SourceDutySlots.Computed (SourceDutyProviderHeader.read artifact prepared request) header
+  source : Discovered header
+  discovered : SourceDutySlots.Computed (discover header) source
+
+/-- Preserve this exact occurrence when assembling the ordered contribution
+list before the one final graph. No equal-name/matrix/body sharing is implied.
+-/
+def BarePrepared.contribution {artifact catalogue record invocation demand view provider request}
+    (prepared : @BarePrepared artifact catalogue record invocation demand view provider request) : Contribution artifact :=
+  .provider prepared.source
+
+/-- The explicit authenticated bare branch, bound to its requested forward
+subject and original context. The same retained Body is discovered once; it is
+not reread under a later callee module. Final graph checking and the unchanged
+per-occurrence path/body consumer remain the caller's next stages. -/
+def prepareBare (artifact : Artifact) {catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider artifact.sources catalogue record invocation demand view)
+    (request : RuntimeProviderHeader.Request) : WorkM (BarePrepared artifact provider request) := do
+  let prepared ← NaturalAffine.witness (SourceDutyProviderFresh.readBare provider)
+  let header ← NaturalAffine.witness (SourceDutyProviderHeader.read artifact prepared.val request)
+  let source ← NaturalAffine.witness (discover header.val)
+  return ⟨prepared.val,by with_reducible exact prepared.property,
+    header.val,by with_reducible exact header.property,source.val,by with_reducible exact source.property⟩
+
 /-- This is a retained graph computation, not a graph checker. Its rows and
 roots are derived from the complete ordered contribution list. The list does
 not assert coverage of other catalogue duties, which remain mandatory elsewhere.
