@@ -42,7 +42,7 @@ private theorem indexed_sector {dependencies selector target steps sectors label
 
 /-- Encode each target slice independently. The selector and untouched reference
 may be entangled with that target and with each other. -/
-def encodedTargets {Reference : Type} (selector : Nat) (inputCode : Matrix)
+noncomputable def encodedTargets {Reference : Type} (selector : Nat) (inputCode : Matrix)
     (joint : Nat → Nat → Reference → ℂ) : Nat → Reference → ℂ :=
   fun coordinate reference => action inputCode (joint (coordinate % 2^selector))
     (coordinate / 2^selector) reference
