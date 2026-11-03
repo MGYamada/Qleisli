@@ -52,7 +52,7 @@ theorem owner_volume {originalBindings} (original : OwnerCodes originalBindings)
     change dimensionAt original binding*volume bindings (dimensionAt original) =
       first.layout.labels.length*(sparseProduct rest).dimension
     rw [dimensionAt_eq original binding (subset (List.mem_cons_self)) first,
-      ih (fun member => subset (List.mem_cons_of_mem _ member))]
+      ih (fun {_} member => subset (List.mem_cons_of_mem _ member))]
 
 theorem coefficients_factors {originalBindings} (original : OwnerCodes originalBindings) (frame : List Nat)
     {bindings} (owners : OwnerCodes bindings) (physical : Nat) : ∀ logical,
@@ -94,7 +94,7 @@ theorem coefficients_factors {originalBindings} (original : OwnerCodes originalB
           decode bindings (dimensionAt original) (logical / dimensionAt original binding) value := by
         rw [decode,if_neg different]
       rw [digitEqual]
-    have tailEqual := (ih _ (fun member => subset (List.mem_cons_of_mem _ member)) separate.2 tailBound).trans tailFactors
+    have tailEqual := (ih _ (fun {_} member => subset (List.mem_cons_of_mem _ member)) separate.2 tailBound).trans tailFactors
     change entry (QleisliKernel.Semantics.FiniteCarrier.encoding first.layout)
       (gather physical (binding.port.wires.map frame.idxOf)) (logical % first.layout.labels.length) *
         coefficients frame rest physical (logical / first.layout.labels.length) = _
@@ -103,7 +103,7 @@ theorem coefficients_factors {originalBindings} (original : OwnerCodes originalB
 
 theorem frame_volume {roles state checked} (frame : @Frame roles state checked) :
     volume checked.bindings (dimensionAt frame.owners) = frame.code.dimension :=
-  (owner_volume frame.owners frame.owners (fun member => member)).trans
+  (owner_volume frame.owners frame.owners (fun {_} member => member)).trans
     ((product_agrees frame.owners).dimension.trans (frame_product_agrees frame).dimension.symm)
 
 private theorem frame_unique {roles state checked} (_frame : @Frame roles state checked) : checked.bindings.Nodup :=
@@ -172,7 +172,7 @@ theorem regroup_coefficient {roles state checked} (frame : @Frame roles state ch
         decode checked.bindings (dimensionAt frame.owners) logical binding :=
     decode_encode wanted _ _ digits
   have originalFactors := coefficients_factors frame.owners state.quantum.frame frame.owners physical logical
-    (fun member => member) (frame_unique frame) originalBound
+    (fun {_} member => member) (frame_unique frame) originalBound
   have newFactors := coefficients_factors frame.owners state.quantum.frame retained.codes physical _
     permutation.subset (permutation.symm.nodup (frame_unique frame)) newBound
   calc
