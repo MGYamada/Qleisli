@@ -35,7 +35,7 @@ def Binding.rawRows {artifact catalogue record invocation demand view provider p
   let supplier := provider.supplier.origin
   demand.source.original.sourceRows ++
     [(supplier.state.owner,supplier.state.prepared.original.envelope.source)] ++ supplier.rows ++
-    CallName.sourceRows provider.candidate ++ binding.header.rows
+    CallName.sourceRows provider.candidate ++ prepared.provenance.rows ++ binding.header.rows
 
 /-- Preserve the concrete forward subject's complete root list, including its
 evidence node when present. This does not assert the final graph is checked. -/

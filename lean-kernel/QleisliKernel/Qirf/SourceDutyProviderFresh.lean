@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.SourceDutySlots
 import QleisliKernel.Qirf.RuntimeProviderHeader
+import QleisliKernel.Qirf.SourceDutyProviderBare
 
 /-! Fresh original-source provider preparation for one explicit internal case.
 The indexed enclosing original is nongeneric, transport has no call edge, no
@@ -11,6 +12,8 @@ refuse this preparation; they retain their separate pending continuation.
 The resulting graph, ProviderInstance and exact source body are checked source
 metadata. Native interval/code/effect/J/C/M equations and full original Meaning
 graph transfer remain mandatory; no artifact, final root or handle is read.
+The separate readBare entry uses its own authenticated bare-source provenance;
+the strict reader never retries failed eligibility through that branch.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SourceDutyProviderFresh
 open QleisliKernel Finite SourceTypes
@@ -168,35 +171,59 @@ private def readIdentity {sources catalogue record invocation demand view}
       same.2.2.2.2.2.2.2.2.2.1,same.2.2.2.2.2.2.2.2.2.2⟩
   else throw .request
 
+inductive Provenance {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : Type where
+  | fresh (eligible : Eligible provider)
+  | bare (eligible : SourceDutyProviderBare.Checked provider)
+
+def Provenance.rows {sources catalogue record invocation demand view provider} :
+    @Provenance sources catalogue record invocation demand view provider → List SourceRows.Row
+  | .fresh _ => []
+  | .bare eligible => eligible.rows
+
 structure Checked {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) where
-  eligible : Eligible provider
-  graph : StaticOperation.CheckedGraph sources (.source (enclosing record).owner) provider.closed.data.description
-  graphRead : SourceDutySlots.Computed (StaticOperation.check sources (.source (enclosing record).owner)
+  provenance : Provenance provider
+  graph : StaticOperation.CheckedGraph sources (.source provider.supplier.origin.state.owner) provider.closed.data.description
+  graphRead : SourceDutySlots.Computed (StaticOperation.check sources (.source provider.supplier.origin.state.owner)
     provider.closed.data.description (some catalogue)) graph
   original : RuntimeProviderHeader.Original graph provider.closed.data.description.root
   originalRead : SourceDutySlots.Computed (RuntimeProviderHeader.readOriginal graph provider.closed.data.description.root) original
   identity : Identity provider original.supplied.provider
-  context : original.supplied.context = .source (enclosing record).owner
+  context : original.supplied.context = .source provider.supplier.origin.state.owner
   noActualChildren : original.supplied.arguments.actuals.isEmpty = true
 
-/-- Source preparation only. This function does not mutate the source slot
-plan or consume any pending native body, access, Meaning graph or IR equation. -/
-def read {sources catalogue record invocation demand view}
-    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
-  let eligible ← readEligible provider
-  let graph ← NaturalAffine.witness (StaticOperation.check sources (.source (enclosing record).owner)
+private def prepare {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view)
+    (provenance : Provenance provider) : WorkM (Checked provider) := do
+  let graph ← NaturalAffine.witness (StaticOperation.check sources (.source provider.supplier.origin.state.owner)
     provider.closed.data.description (some catalogue))
   let original ← NaturalAffine.witness (RuntimeProviderHeader.readOriginal graph.val provider.closed.data.description.root)
   let identity ← readIdentity provider original.val.supplied.provider
-  exactWork (Exact.charge (16*((enclosing record).owner.utf8ByteSize+
+  exactWork (Exact.charge (16*(provider.supplier.origin.state.owner.utf8ByteSize+
     (match original.val.supplied.context with | .external => 0 | .source owner => owner.utf8ByteSize)+
     original.val.supplied.arguments.actuals.length+1)))
-  if context : original.val.supplied.context = .source (enclosing record).owner then
+  if context : original.val.supplied.context = .source provider.supplier.origin.state.owner then
     if noActualChildren : original.val.supplied.arguments.actuals.isEmpty = true then
-      return ⟨eligible,graph.val,by with_reducible exact graph.property,
+      return ⟨provenance,graph.val,by with_reducible exact graph.property,
         original.val,by with_reducible exact original.property,identity,context,noActualChildren⟩
     else throw .request
   else throw .request
+
+/-- The original strict source preparation remains a separate entry. It does
+not mutate the plan or consume any native body/access/Meaning/IR obligation. -/
+def read {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
+  let eligible ← readEligible provider
+  prepare provider (.fresh eligible)
+
+/-- Explicit bare-source preparation with authenticated supplier-original and
+actual Transport receipts. Failure is not retried through the strict reader.
+No body/path/Meaning equation or final native graph is supplied by provenance.
+-/
+def readBare {sources catalogue record invocation demand view}
+    (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
+  let eligible ← SourceDutyProviderBare.read provider
+  prepare provider (.bare eligible)
 
 end QleisliKernel.Qirf.SourceDutyProviderFresh
