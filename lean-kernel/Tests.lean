@@ -48,6 +48,7 @@ import QleisliKernel.Tests.RuntimePrimitiveAction
 import QleisliKernel.Tests.RuntimeStaticPrimitive
 import QleisliKernel.Tests.RuntimeStaticSequence
 import QleisliKernel.Tests.RuntimeStaticNamed
+import QleisliKernel.Tests.RuntimeStaticBasisNatNamed
 import QleisliKernel.Tests.RuntimeStaticObservingNamed
 import QleisliKernel.Tests.RuntimeObservationAction
 import QleisliKernel.Tests.GenericTypeTrace
