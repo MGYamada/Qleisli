@@ -243,7 +243,8 @@ def read {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view) : WorkM (Checked provider) := do
   let supplier ← readSite catalogue provider.supplier.origin.state provider.supplier.origin.scope provider.supplier.origin.tokens
   let duty ← readOriginal catalogue demand.source.original.origin.state
-  exactWork (Exact.charge (32*(invocation.depth+provider.closed.data.description.nodes.length+
+  exactWork (Exact.charge (32*(provider.owner.utf8ByteSize+provider.name.utf8ByteSize+
+    invocation.depth+provider.closed.data.description.nodes.length+
     provider.signature.original.occurrence.header.length+provider.signature.staticArguments.bases.length+
     provider.signature.staticArguments.naturals.length+provider.signature.staticArguments.operations.length+1)))
   if supplyingRoot : supplier.original.entry.index.val = invocation.id.root then
