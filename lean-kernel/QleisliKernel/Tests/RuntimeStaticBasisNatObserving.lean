@@ -5,7 +5,15 @@ The caller forwards its original opaque Basis formal and preserves a distinct
 Unit spectator. A=Unit has one physical qubit; A=Bit has two for the genuine
 equal-width consumed-owner mutant. Each real body graph uses fixed 10M work.
 No result below is a native execution handle or a full instrument proof.
-Strict positive guards retain the complete first experiment and fixed budget.
+The informed first authoring benchmark charged producer source/body reads and
+native checking together and exhausted its 10M counter. That failure remains
+in the immutable first observers, diagnostics and earlier test commits. These
+maintained runtime guards instead test the actual native boundary: plain
+untrusted proposal construction precedes REAL prepareRuntime at fresh 10M.
+No producer signature, Body, proof, result or work state crosses as authority.
+The same source, corrected local IR and strict semantic oracles are retained;
+this does not reclassify the combined benchmark as passing. The three original
+source-metadata probes below remain separate source-only observations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.RuntimeStaticBasisNatObserving
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf
@@ -65,9 +73,17 @@ private def namedActuals {dependencies program block} (basis : Semantics.FiniteC
       decide (body.checked.signature.arguments.bases = [("A",basis)]),body.checked.signature.original.parsedHeader.effect)]
   | _ => []
 
-private def actual (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fault) :
-    WorkM (List Nat × List Nat × Nat × List Nat × List Nat × List (Nat × Nat) × List Nat × Bool × Bool ×
-      List (List (String × Nat) × Bool × Option Semantics.Raw.Effect) × Nat × Nat) := do
+private structure Payload where
+  artifact : Qirf.Artifact
+  context : RuntimeContextRequest.Context
+  runtime : RuntimeFamily.Request
+
+-- This is the same plain literal payload whose complete recognized fields
+-- were compared with the original producer in the independent native-only
+-- observer. All twelve producer-success comparisons returned some true; the
+-- two invalid-source producer refusals supplied no equality claim. Lexing
+-- contributes untrusted byte coordinates only; native reads them independently.
+private def literal (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fault) : Except String Payload := do
   let current := text fault
   let basis : Semantics.FiniteCarrier.Basis := if twoBits then [.bit] else [.unit]
   let unit : Semantics.Raw.Port := ⟨0,[],0⟩
@@ -76,41 +92,51 @@ private def actual (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fa
   let chosen := if wrongConsumed then a else q
   let returned := if wrongConsumed then q else a
   let output := if fault == .inverted then 5 else 4
-  -- applyUnitary's circuit uses local port coordinates. The separate corrected
-  -- first observer verifies both two-Bit Raw candidates with this local axis.
   let operations : List Semantics.Observation.Op :=
-    [.pure (.applyUnitary chosen.token 3
-      [⟨[],.monomial [0] [0,1] [0,exponent]⟩])] ++
+    [.pure (.applyUnitary chosen.token 3 [⟨[],.monomial [0] [0,1] [0,exponent]⟩])] ++
     (if fault == .missingMeasurement then [.discard 3,.constant false 4] else [.measure 3 4]) ++
     (if fault == .inverted then [.not 4 5] else [])
   let program : Semantics.Observation.Program := ⟨[unit,a,q],[],operations,[returned.token,0],[output],.observe⟩
   let artifact : Qirf.Artifact := ⟨#[program],#[],#[("main",current),("helpers",helper)],0,none⟩
-  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" (arguments n twoBits)
-  let body ← SourceRuntimeTrace.readBodyWithSignature signature
-  let [.staticConditional event _] := body.checked.events | throw .request
-  let selected ← SourceRuntimeTrace.readStaticSource event
-  let [.named call] := selected.result.events | throw .request
-  let callee ← SourceRuntimeTrace.readNamedBody call
-  let [.phase phase,.primitive measured] := callee.checked.events | throw .request
-  let [inactive] := (if event.selection.selected then event.elseCalls else event.thenCalls) | throw .request
-  let parent : SourceSequence.Position := ⟨event.written.parts.keyword.span.startByte,0,operations.length⟩
+  let tokens ← lexLocated current
+  let some keyword := tokens.find? (·.text == "if") | throw "missing original if"
+  let [_declaration,thenCall,elseCall] := tokens.filter (·.text == "read") | throw "original read occurrence count"
+  let some phase := tokens.find? (·.text == "phase") | throw "missing original phase"
+  let some measure := tokens.find? (·.text == "measure_z") | throw "missing original measurement"
+  let selected := if n == 0 then thenCall.span.startByte else elseCall.span.startByte
+  let other := if n == 0 then elseCall.span.startByte else thenCall.span.startByte
+  let parent : SourceSequence.Position := ⟨keyword.span.startByte,0,operations.length⟩
   let position : SourceSequence.Position :=
-    ⟨if fault == .parentOffset then parent.offset else if fault == .otherArm then inactive else call.call.calleeOffset,
-      0,operations.length⟩
-  let phasePosition : SourceSequence.Position := ⟨phase.call.calleeOffset,0,1⟩
+    ⟨if fault == .parentOffset then parent.offset else if fault == .otherArm then other else selected,0,operations.length⟩
+  let phasePosition : SourceSequence.Position := ⟨phase.span.startByte,0,1⟩
   let measurePosition : SourceSequence.Position :=
-    ⟨if fault == .childOffset then call.call.calleeOffset else measured.call.calleeOffset,1,1⟩
+    ⟨if fault == .childOffset then selected else measure.span.startByte,1,1⟩
   let context : RuntimeContextRequest.Context := .mk [parent] []
     [(position,.mk [phasePosition,measurePosition] [] [] [] [])] [] []
   let runtime : RuntimeFamily.Request :=
-    ⟨.exported,"main","route",signature.parameters.map (·.tree),
-      [[.quantum ⟨unit,[.unit]⟩],[.quantum ⟨a,basis⟩],[.quantum ⟨q,[.bit]⟩]],[[]],signature.result.tree,
+    ⟨.exported,"main","route",[Semantics.RuntimeType.owner [.unit],Semantics.RuntimeType.owner basis,
+        Semantics.RuntimeType.owner [.bit]],
+      [[.quantum ⟨unit,[.unit]⟩],[.quantum ⟨a,basis⟩],[.quantum ⟨q,[.bit]⟩]],[[]],
+      Semantics.RuntimeType.tuple 3 [Semantics.RuntimeType.ordinary [.bit],Semantics.RuntimeType.owner basis,
+        Semantics.RuntimeType.owner [.unit]],
       [.tuple 3,.ordinary [.bit] (.bit output),.quantum ⟨returned,basis⟩,.quantum ⟨unit,[.unit]⟩],
       .observe,arguments n twoBits⟩
-  let checked ← RuntimeBodyGraph.prepareRuntime artifact #[0] "main" "route" (arguments n twoBits) context runtime
+  return ⟨artifact,context,runtime⟩
+
+private abbrev NativeSummary :=
+  List Nat × List Nat × Nat × List Nat × List Nat × List (Nat × Nat) × List Nat × Bool × Bool ×
+    List (List (String × Nat) × Bool × Option Semantics.Raw.Effect) × Nat × Nat
+
+private def native (payload : Payload) : WorkM NativeSummary := do
+  let checked ← RuntimeBodyGraph.prepareRuntime payload.artifact #[0] "main" "route"
+    payload.runtime.staticArguments payload.context payload.runtime
+  -- Only inspect the native result and plain request fields after checking.
+  let [("A",basis)] := payload.runtime.staticArguments.bases | throw .request
+  let [(position,child)] := payload.context.calls | throw .request
+  let [_phase,measure] := child.positions | throw .request
   let measurements := checked.derivation.result.ordinary.measurements
-  let origin : Semantics.SourceOrdinary.Site := ⟨"main","read",measured.call.calleeOffset⟩
-  let callSite : Semantics.SourceOrdinary.Site := ⟨"main","route",call.call.calleeOffset⟩
+  let origin : Semantics.SourceOrdinary.Site := ⟨"main","read",measure.offset⟩
+  let callSite : Semantics.SourceOrdinary.Site := ⟨"main","route",position.offset⟩
   return (checked.derivation.result.history.issued.map (·.ordinal),checked.derivation.result.retired.map (·.ordinal),
     checked.derivation.result.history.nextOrdinal,checked.derivation.result.bindings.map (·.owner.ordinal),
     checked.derivation.result.bindings.map (·.port.token),
@@ -121,16 +147,19 @@ private def actual (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fa
     checked.derivation.result.steps.flatMap (namedActuals basis),
     checked.derivation.result.actions.length,checked.derivation.result.steps.length)
 
-private def expected (k : Nat) :
-    List Nat × List Nat × Nat × List Nat × List Nat × List (Nat × Nat) × List Nat × Bool × Bool ×
-      List (List (String × Nat) × Bool × Option Semantics.Raw.Effect) × Nat × Nat :=
+-- The producer is outside this run. Only the real native component starts its
+-- own fixed counter, as at the production trust boundary; it resets no state.
+private def actual (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fault) :
+    Except String (Except Finite.Error NativeSummary × Nat) := do
+  let payload ← literal n exponent twoBits wrongConsumed fault
+  pure ((native payload).run 10000000)
+
+private def accepted {α : Type} (attempt : Except String (Except Error α × Nat)) : Option α :=
+  match attempt with | .ok (.ok value,_) => some value | _ => none
+
+private def expected (k : Nat) : NativeSummary :=
   ([0,1,2],[2],3,[1,0],[1,0],[(2,1)],[2],true,true,
     [([("j",1),("k",k),("unused",1)],true,some .observe)],0,1)
-
-private def refused {α : Type} (action : WorkM α) : Bool :=
-  match action.run 10000000 with
-  | (.error .request,_) | (.error .invalid,_) | (.error .equation,_) => true
-  | _ => false
 
 -- Exact original mixed ordinals, forwarded Basis and consumed roles already
 -- succeeded in the first observer, independently of runtime continuation.
@@ -141,26 +170,26 @@ private def refused {α : Type} (action : WorkM α) : Bool :=
 #guard (sourceCalls 1 true).run 10000000 |>.1.toOption == some (false,[2],3,
   [("A",0),("j",1),("k",2),("unused",3)],[("j",1),("k",1),("unused",1)],true)
 
--- Every correct route must run the complete common body/history gate under the
--- original budget. A work-limit refusal cannot satisfy a positive guard.
-#guard (actual 0 4 false false .none).run 10000000 |>.1.toOption == some (expected 1)
-#guard (actual 1 4 false false .none).run 10000000 |>.1.toOption == some (expected 1)
-#guard (match (actual 1 4 false false .inverted).run 10000000 with | (.error .equation,_) => true | _ => false)
-#guard (match (actual 1 0 false false .none).run 10000000 with | (.error .equation,_) => true | _ => false)
-#guard (actual 1 2 false false .denominator).run 10000000 |>.1.toOption == some (expected 2)
-#guard (match (actual 1 4 false false .denominator).run 10000000 with | (.error .equation,_) => true | _ => false)
-#guard (match (actual 1 4 false false .missingMeasurement).run 10000000 with | (.error .request,_) => true | _ => false)
-#guard (match (actual 1 4 false false .parentOffset).run 10000000 with | (.error .request,_) => true | _ => false)
-#guard (match (actual 1 4 false false .childOffset).run 10000000 with | (.error .request,_) => true | _ => false)
-#guard (match (actual 1 4 false false .otherArm).run 10000000 with | (.error .request,_) => true | _ => false)
+-- Every correct route runs the complete common native body/history gate at
+-- 10M after plain proposal construction. Work-limit refusal cannot pass.
+#guard accepted (actual 0 4 false false .none) == some (expected 1)
+#guard accepted (actual 1 4 false false .none) == some (expected 1)
+#guard (match actual 1 4 false false .inverted with | .ok (.error .equation,_) => true | _ => false)
+#guard (match actual 1 0 false false .none with | .ok (.error .equation,_) => true | _ => false)
+#guard accepted (actual 1 2 false false .denominator) == some (expected 2)
+#guard (match actual 1 4 false false .denominator with | .ok (.error .equation,_) => true | _ => false)
+#guard (match actual 1 4 false false .missingMeasurement with | .ok (.error .request,_) => true | _ => false)
+#guard (match actual 1 4 false false .parentOffset with | .ok (.error .request,_) => true | _ => false)
+#guard (match actual 1 4 false false .childOffset with | .ok (.error .request,_) => true | _ => false)
+#guard (match actual 1 4 false false .otherArm with | .ok (.error .request,_) => true | _ => false)
 
 -- Original inactive-arm premises and effects remain mandatory.
-#guard (match (actual 0 4 false false .unusedElse).run 10000000 with | (.error .request,_) => true | _ => false)
-#guard (match (actual 1 4 false false .unitaryHeader).run 10000000 with | (.error .request,_) => true | _ => false)
+#guard (match actual 0 4 false false .unusedElse with | .ok (.error .request,_) => true | _ => false)
+#guard (match actual 1 4 false false .unitaryHeader with | .ok (.error .request,_) => true | _ => false)
 
 -- Two distinct Bit owners may have the same width. Only the original q role
 -- is consumed; a still-valid Raw mutant measuring a must not change that map.
-#guard (actual 1 4 true false .none).run 10000000 |>.1.toOption == some (expected 1)
-#guard refused (actual 1 4 true true .none)
+#guard accepted (actual 1 4 true false .none) == some (expected 1)
+#guard (match actual 1 4 true true .none with | .ok (.error .invalid,_) => true | _ => false)
 
 end QleisliKernel.Tests.RuntimeStaticBasisNatObserving
