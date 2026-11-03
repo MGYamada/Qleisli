@@ -13,6 +13,7 @@ import Qleisli.FiniteMatrixAction
 import Qleisli.RawActionLocality
 import Qleisli.CodeSpaceAction
 import Qleisli.RawActionSector
+import Qleisli.NominalSectorAction
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport
