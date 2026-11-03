@@ -2,7 +2,7 @@ import QleisliKernel.Qirf.RuntimeNamedSelection
 import Protocol.Qirf
 import Protocol.QmatchV5
 
-/-! Original named choose[then_op(sign,sign)] around its genuine joined Raw
+/-! Transport regression for the original named choose[then_op(sign,sign)] around its joined Raw
 selection. Literal plain data is retained from the real Rust artifact/request;
 no source proof, accepted result or external study file is a runtime input.
 Each run freshly decodes and reads all original source, the distinct header

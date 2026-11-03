@@ -116,6 +116,19 @@ class RuntimeSourcePolicy(unittest.TestCase):
         self.assertTrue(any("test-only modules require explicit roots" in error for error in self.errors()))
         self.assertTrue(any("test-only module absent from test/audit roots" in error for error in self.errors()))
 
+    def test_transport_tests_can_decode_but_cannot_grant_transport_to_kernel_tests(self):
+        self.write("Tests.lean", "import Protocol.Tests.Packet\n")
+        self.write("Audit.lean", "import QleisliKernel\nimport Main\nimport Protocol.Tests.Packet\n")
+        self.write("Protocol/Tests/Packet.lean", "import Protocol\nimport QleisliKernel.Tests.Core\n")
+        self.write("QleisliKernel/Tests/Core.lean", "import QleisliKernel.Check\n")
+        self.assertEqual(self.errors(), [])
+        self.write("QleisliKernel/Tests/Core.lean", "import Protocol\n")
+        self.assertIn("pure kernel imports transport module: Protocol", self.errors())
+        self.write("QleisliKernel/Tests/Core.lean", "import QleisliKernel.Check\n")
+        self.write("Protocol.lean", "import Protocol.Tests.Packet\n")
+        self.assertIn("production module imports test-only module: Protocol -> Protocol.Tests.Packet",
+                      self.errors())
+
     def test_test_closure_keeps_pure_import_restrictions_and_cycle_detection(self):
         self.separate_tests()
         for dependency in ["Main", "Protocol", "Lean", "Lean.Data.Json", "Mathlib",

@@ -308,10 +308,11 @@ production-wide QS, PR or RS.
 
 ## Progressive test-oriented CI (#223)
 
-Lean reduction helpers may live under `QleisliKernel.Tests`. Their explicit
+Pure Lean reduction helpers live under `QleisliKernel.Tests`. Tests that decode
+actual protocol bytes can use `Protocol.Tests`. Their explicit
 roots must match in `Tests.lean` and `Audit.lean`, and every test module must
-be reachable from those roots. Production modules cannot import this namespace;
-test reachability cannot satisfy a production module's root requirement. The
+be reachable from those roots. Production imports must exclude both test
+namespaces. Each production module must be reachable from a production root. The
 same source restrictions and compiled ownership audit cover test declarations,
 including private and generated helpers. Test sources use kernel-checked
 reductions rather than `#eval` or native proof evaluation.
