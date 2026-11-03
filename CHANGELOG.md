@@ -10,6 +10,8 @@ development milestones from the scope of their evidence.
   identifies exactly one original `qmatch` arm, including when the labels
   have gaps. For a Bit target, the actual Raw action on each supported
   selector label agrees with that arm on the complete caller and reference.
+  A three-variant source test checks every physical output coefficient for
+  each valid input, including zero amplitude on the unused selector label.
 
 - Recheck a closed `qmatch` function's original tree in its verified
   declaration catalogue. The checker inspects the actual tree, preserves

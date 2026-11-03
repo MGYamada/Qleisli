@@ -323,6 +323,81 @@ fn selected_qmatch_applies_distinct_phased_arms_on_reversed_noncontiguous_axes()
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_binds_three_phased_arms_and_keeps_padding_dark() {
+    use qleisli::contract::exact::{Budget, Exact};
+    use qleisli::contract::{BasisType, Circuit};
+    use qleisli::ir::RawOp;
+
+    let source = r#"#![no_implicit_prelude]
+pub enum Tri { First, Middle, Last }
+unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+unitary fn turn(q:Q<Bit>)->Q<Bit>{phase[3,2](q)}
+unitary fn flip(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}
+pub unitary fn keep(s:Q<Tri>,q:Q<Bit>)->(Q<Tri>,Q<Bit>){
+    qmatch(s,q){Tri::Last=>flip,Tri::First=>idle,Tri::Middle=>turn}}
+"#;
+    let accepted = selected(source);
+    let raw = accepted.program().raw();
+    let [
+        RawOp::Join {
+            left,
+            right,
+            output: joined,
+        },
+        RawOp::ApplyUnitary {
+            input,
+            output,
+            steps,
+        },
+        RawOp::Split {
+            input: split,
+            left: selector,
+            right: target,
+            left_bits: 2,
+        },
+    ] = raw.operations.as_slice()
+    else {
+        panic!("expected the complete two-wire selector and Bit target interval")
+    };
+    assert_eq!(
+        (*left, *right),
+        (raw.quantum_inputs[0].token, raw.quantum_inputs[1].token)
+    );
+    assert_eq!((input, output), (joined, split));
+    assert_eq!(raw.quantum_outputs, [*selector, *target]);
+    let matrix = Circuit::new(BasisType::Bits(3), steps.clone())
+        .unwrap()
+        .matrix(&mut Budget::new(100_000))
+        .unwrap();
+
+    // Tri occupies the two low wires. Only its three legal inputs have a
+    // source meaning. Check every output, including the unused fourth label.
+    for bit in 0..2 {
+        for label in 0..3 {
+            let col = label + 4 * bit;
+            let dest = if label == 2 { col ^ 4 } else { col };
+            let phase = if label == 1 && bit == 1 { 6 } else { 0 };
+            for row in 0..8 {
+                let expected = if row == dest {
+                    Exact::phase(phase)
+                } else {
+                    Exact::zero()
+                };
+                assert_eq!(
+                    matrix.get(row, col),
+                    Some(expected),
+                    "row {row}, column {col}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_preserves_nominal_targets_and_original_phases() {
     for (declaration, target, bits) in [
         ("pub enum Tri { A,B,C }", "Tri", 2),

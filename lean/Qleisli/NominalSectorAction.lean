@@ -28,7 +28,7 @@ theorem logical_binding_map {inputCode outputCode : Matrix} {physical : List Mat
   exact ⟨sector,found,⟨logical,⟨physicalShape.1,physicalShape.2.1.symm.trans outputShape.2.1⟩,
     ⟨columns,rows⟩,⟨actual,a,b,c,d,left,right⟩⟩,rfl⟩
 
-private theorem indexed_sector {dependencies selector target steps sectors label sector}
+theorem indexed_sector {dependencies selector target steps sectors label sector}
     (bindings : QleisliKernel.Exact.ListRel
       (SectorEvaluationBinding dependencies selector target steps) (List.range (2^selector)) sectors)
     (found : sectors[label]? = some sector) :

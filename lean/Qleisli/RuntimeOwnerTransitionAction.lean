@@ -910,6 +910,42 @@ inductive SelectionForm {dependencies program block start count inputs outputs r
         .split applied source.returned.first.port.token source.returned.second.port.token leftBits])
 
 /-! Both original Raw shapes transport the complete input code to the returned axes. -/
+/-- Both authentic original Raw forms retain the same complete code. -/
+theorem selection_form_codes
+    {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) (form : SelectionForm frame source) :
+    literal.inputCode.code.dimension = literal.outputCode.code.dimension ∧
+      ∀ p i,literal.inputCode.embedding p i = literal.outputCode.embedding p i := by
+  cases form with
+  | quantumIf zero one original => exact quantumIf_codes frame source zero one original literal
+  | joined j a n steps original => exact joinApplySplit_codes frame source j a n steps original literal
+
+/-- Both authentic original forms identify selected and returned axis order. -/
+theorem selection_form_axes
+    {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    {selectorBits targetBits retained restricted}
+    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) (form : SelectionForm frame source) :
+    forestAxes frame.interval.before.quantum.frame literal.selection.selected =
+      forestAxes frame.interval.after.quantum.frame source.returned.toList := by
+  cases form with
+  | joined j a n steps original => exact joinApplySplit_axes frame source j a n steps original literal
+  | quantumIf zero one original =>
+    have selectedPorts := literal.selectedPorts.trans (RuntimeSelectionPartition.source_ports frame source).1
+    have selectedWires := congrArg (List.flatMap (fun port : Semantics.Raw.Port => port.wires)) selectedPorts
+    have returnedWires := congrArg (List.flatMap (fun pair : RuntimeOwnerMap.Owner × List Nat => pair.2))
+      (RuntimeSelectionWires.source_boundary frame source literal).1
+    simp only [List.flatMap_map] at selectedWires returnedWires
+    unfold forestAxes
+    rw [quantumIf_frame frame source zero one original literal,returnedWires,selectedWires]
+    rfl
+
 theorem bit_target_selection_output {Reference : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -933,11 +969,7 @@ theorem bit_target_selection_output {Reference : Type}
       action required (fun input ref => referenceAction literal.outputCode joint
         (Semantics.Finite.scatter physical (forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList)
           (QleisliKernel.FiniteRestriction.pack selectorBits label input)) ref) row reference := by
-  have code : literal.inputCode.code.dimension = literal.outputCode.code.dimension ∧
-      ∀ p i,literal.inputCode.embedding p i = literal.outputCode.embedding p i := by
-    cases form with
-    | quantumIf zero one original => exact quantumIf_codes frame codes.owners zero one original literal
-    | joined j a n steps original => exact joinApplySplit_codes frame codes.owners j a n steps original literal
+  have code := selection_form_codes frame codes.owners literal form
   have referenceCode : ∀ physical reference,
       referenceAction literal.inputCode joint physical reference =
         referenceAction literal.outputCode joint physical reference := by
@@ -947,19 +979,7 @@ theorem bit_target_selection_output {Reference : Type}
     apply Qleisli.Exact.sum_map_congr
     intro logical _member
     rw [code.2 physical logical]
-  have axes : forestAxes frame.interval.before.quantum.frame literal.selection.selected =
-      forestAxes frame.interval.after.quantum.frame codes.owners.returned.toList := by
-    cases form with
-    | joined j a n steps original => exact joinApplySplit_axes frame codes.owners j a n steps original literal
-    | quantumIf zero one original =>
-      have selectedPorts := literal.selectedPorts.trans (RuntimeSelectionPartition.source_ports frame codes.owners).1
-      have selectedWires := congrArg (List.flatMap (fun port : Semantics.Raw.Port => port.wires)) selectedPorts
-      have returnedWires := congrArg (List.flatMap (fun pair : RuntimeOwnerMap.Owner × List Nat => pair.2))
-        (RuntimeSelectionWires.source_boundary frame codes.owners literal).1
-      simp only [List.flatMap_map] at selectedWires returnedWires
-      unfold forestAxes
-      rw [quantumIf_frame frame codes.owners zero one original literal,returnedWires,selectedWires]
-      rfl
+  have axes := selection_form_axes frame codes.owners literal form
   have inputCoordinate : Semantics.Finite.gather physical
       (forestAxes frame.interval.before.quantum.frame literal.selection.selected) =
         QleisliKernel.FiniteRestriction.pack selectorBits label row := by rw [axes]; exact coordinate
