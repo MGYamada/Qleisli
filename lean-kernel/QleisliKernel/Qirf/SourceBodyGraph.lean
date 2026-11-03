@@ -6,7 +6,7 @@ a second root, stale receipt, reconstructed source or replacement dependency.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SourceBodyGraph
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Qirf Finite
-open PureInterval (Witness)
+open QleisliKernel.Qirf.PureInterval (Witness)
 abbrev Context := SourceContextRequest.Context
 
 structure Headers (artifact : Artifact) (owner name : String)
@@ -40,13 +40,16 @@ def roots {artifact owner name arguments request}
     headers.discovery.val.arms.flatMap (fun arm => SourceBodyHeader.roots arm.header) ++
     headers.discovery.val.calls.flatMap (fun call => SourceBodyHeader.roots call.header)).eraseDups
 
+-- Elaborating the dependent projections for this one shared root exceeds the
+-- default 200k heartbeats. This limit applies only to the structure declaration.
+set_option maxHeartbeats 800000 in
 structure Body {artifact owner name arguments request} (order : Array Nat)
     (headers : Headers artifact owner name arguments request) where
   root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
-  context : SourceBodyContext.Checked headers.header root.val (SelectionContract.rootFresh root) root.val.program
+  context : SourceBodyContext.Checked headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) root) root.val.program
   arms : Witness (headers.discovery.val.arms.mapM fun arm => do
-    let body ← SourceBodyContext.checkArm root arm
-    return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × SourceBodyContext.ArmChecked root arm))
+    let body ← @SourceBodyContext.checkArm artifact order (rows headers) (roots headers) root arm
+    return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × @SourceBodyContext.ArmChecked artifact order (rows headers) (roots headers) root arm))
 
 def prepare {artifact owner name arguments request} (order : Array Nat)
     (headers : Headers artifact owner name arguments request) : WorkM (Body order headers) := do
@@ -57,10 +60,10 @@ def prepare {artifact owner name arguments request} (order : Array Nat)
     (headers.discovery.val.calls.map fun call => (SourceBodyHeader.roots call.header).length).sum
   exactWork (Exact.charge (5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
   let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
-  let context ← SourceBodyContext.check headers.header root.val (SelectionContract.rootFresh root) root.val.program
+  let context ← SourceBodyContext.check headers.header root.val (@SelectionContract.rootFresh artifact order (rows headers) (roots headers) root) root.val.program
   let arms ← NaturalAffine.witness (headers.discovery.val.arms.mapM fun arm => do
-    let body ← SourceBodyContext.checkArm root arm
-    return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × SourceBodyContext.ArmChecked root arm))
+    let body ← @SourceBodyContext.checkArm artifact order (rows headers) (roots headers) root arm
+    return (⟨arm,body⟩ : (arm : SourceBodyHeader.Arm artifact) × @SourceBodyContext.ArmChecked artifact order (rows headers) (roots headers) root arm))
   return ⟨root,context,arms⟩
 
 structure Checked (artifact : Artifact) (order : Array Nat) (owner name : String)
