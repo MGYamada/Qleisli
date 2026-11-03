@@ -1,5 +1,6 @@
 import Qleisli.Semantics.RawAction
 import QleisliKernel.Qirf.RuntimePureComposition
+import QleisliKernel.Qirf.RuntimeNamedCallsComposition
 
 /-! Derived sequential evaluation of the existing independent Raw action.
 The actual original step reader and its literal event lists determine every
@@ -89,6 +90,23 @@ theorem execute_chunks (dependencies : List Dependency) (chunks : List (List Op)
       obtain ⟨nextState,nextValues⟩ := next
       simpa only [execute,bind,Option.bind] using ih nextState nextValues
 
+/-- The common literal partition composes the actual original Raw program
+on each joint reference slice, retaining its final physical output order. -/
+theorem original_action {Reference : Type} {root block nodes}
+    (composition : RuntimePureComposition.Original root block nodes)
+    (joint : Nat → Reference → ℂ) (reference : Reference) :
+    RawAction.program root.dependencies composition.raw (fun input => joint input reference) =
+      ((nodes.map RuntimePureComposition.operations).foldlM
+        (fun state chunk => execute root.dependencies chunk state.1 state.2)
+        (RawTrace.initial composition.raw.inputs,fun input => joint input reference)).map
+          (finish root.dependencies composition.raw) := by
+  rw [program_execute,composition.operations]
+  have grouped := execute_chunks root.dependencies
+    (nodes.map RuntimePureComposition.operations)
+    (RawTrace.initial composition.raw.inputs) (fun input => joint input reference)
+  simpa only [List.flatMap_def] using
+    congrArg (fun result => result.map (finish root.dependencies composition.raw)) grouped
+
 /-- Actual checked source intervals compose the SAME original pure Raw root,
 including its real final permutation, on every joint reference slice. The
 local typed forest-code/action/Gram obligations are not assumed or discharged. -/
@@ -101,15 +119,30 @@ theorem prepared_action {Reference : Type}
         (fun state chunk => execute root.dependencies chunk state.1 state.2)
         (RawTrace.initial composition.raw.inputs,fun input => joint input reference)).map
           (finish root.dependencies composition.raw) := by
-  rw [program_execute,composition.operations]
-  have grouped := execute_chunks root.dependencies
-    (checked.result.actions.map RuntimePureComposition.operations)
-    (RawTrace.initial composition.raw.inputs) (fun input => joint input reference)
-  simpa only [List.flatMap_def] using
-    congrArg (fun result => result.map (finish root.dependencies composition.raw)) grouped
+  exact original_action
+    (⟨composition.partition,composition.raw,composition.original,composition.operations⟩ :
+      RuntimePureComposition.Original root checked.result.prepared.block checked.result.actions)
+    joint reference
+
+/-- The same physical action theorem applies to the actual ordered named
+call receipts. It proves no equality between their unresolved typed source
+operators; each callee/code/Gram obligation retains its separate scope. -/
+theorem ordered_calls_action {Reference : Type}
+    {artifact owner name arguments source request prepared root runtime}
+    (calls : @RuntimeNamedCalls.AtRoot artifact owner name arguments source request prepared root runtime)
+    (composition : RuntimeNamedCallsComposition.Checked calls)
+    (joint : Nat → Reference → ℂ) (reference : Reference) :
+    RawAction.program root.dependencies composition.raw (fun input => joint input reference) =
+      ((calls.result.nodes.map RuntimePureComposition.operations).foldlM
+        (fun state chunk => execute root.dependencies chunk state.1 state.2)
+        (RawTrace.initial composition.raw.inputs,fun input => joint input reference)).map
+          (finish root.dependencies composition.raw) :=
+  original_action composition joint reference
 
 #print axioms execute_trace
 #print axioms program_execute
 #print axioms prepared_action
+#print axioms original_action
+#print axioms ordered_calls_action
 
 end Qleisli.RawActionComposition

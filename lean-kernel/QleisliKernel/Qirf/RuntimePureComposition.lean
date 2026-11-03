@@ -125,6 +125,51 @@ theorem executeChunks (chunks : List (List Semantics.Raw.Op)) (initial : Semanti
     | none => rfl
     | some next => simpa only [bind,Option.bind] using ih next
 
+/-- One literal partition of the actual original pure root. This shared
+component contains no source substitution, owner transfer or operator claim;
+each source reader retains those separate obligations in its own receipts. -/
+structure Original (root : Validity.Root)
+    (block : RuntimeInterval.Block root.dependencies root.program)
+    (nodes : List (Node root.dependencies root.program block)) where
+  partition : Partition block nodes
+  raw : Semantics.Raw.Program
+  original : Sector.project root.program = some raw
+  operations : raw.operations = nodes.flatMap RuntimePureComposition.operations
+
+def readOriginal (root : Validity.Root) {block : RuntimeInterval.Block root.dependencies root.program}
+    (nodes : List (Node root.dependencies root.program block)) : WorkM (Original root block nodes) := do
+  let partition ← readPartition nodes
+  exactWork (Exact.charge (32*(root.program.operations.length+root.program.inputs.length+
+    root.program.outputs.length+nodes.length+1)))
+  match original : Sector.project root.program with
+  | none => throw .request
+  | some raw =>
+    if operations : raw.operations = nodes.flatMap RuntimePureComposition.operations then
+      return ⟨partition,raw,original,operations⟩
+    else throw .request
+
+theorem Original.originalRoot {root block nodes} (original : Original root block nodes) :
+    root.program = Semantics.Ownership.pureProgram original.raw :=
+  (Sector.project_bound _ _ original.original).1
+
+theorem Original.orderedExecution {root block nodes} (original : Original root block nodes)
+    (state : Semantics.RawTrace.Prepared) :
+    original.raw.operations.foldlM Semantics.RawTrace.advance state =
+      (nodes.map RuntimePureComposition.operations).foldlM
+        (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state) state := by
+  rw [original.operations]
+  exact executeChunks (nodes.map RuntimePureComposition.operations) state
+
+theorem Original.orderedRootTrace {root block nodes} (original : Original root block nodes) :
+    Semantics.RawTrace.run original.raw = (do
+      let state := Semantics.RawTrace.initial original.raw.inputs
+      let final ← (nodes.map RuntimePureComposition.operations).foldlM
+        (fun state chunk => chunk.foldlM Semantics.RawTrace.advance state)
+        ⟨state,[],state.frame.length⟩
+      pure (Semantics.RawTrace.finish original.raw final)) := by
+  simp only [Semantics.RawTrace.run]
+  rw [original.orderedExecution]
+
 structure Prepared (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (body : @SourceRuntimeTrace.Body artifact.sources owner name signature)
     (request : RuntimeContextRequest.Context) (initial : Map)
@@ -154,32 +199,27 @@ def prepare (artifact : Artifact) (root : Validity.Root) {owner name signature}
     (request : RuntimeContextRequest.Context) (initial : Map)
     (checked : RuntimePureBody.Checked artifact root body root.program request initial) :
     WorkM (Prepared artifact root body request initial checked) := do
-  let partition ← readPartition checked.result.actions
+  let literal ← readOriginal root checked.result.actions
   let inputRoles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
   let outputRoles := SourceRuntimeValues.valueOwners body.checked.summary.value
-  exactWork (Exact.charge (32*(root.program.operations.length+root.program.inputs.length+
-    root.program.outputs.length+checked.result.bindings.length+1)+
+  exactWork (Exact.charge (32*(checked.result.bindings.length+1)+
     16*(Raw.OwnerFlow.fields inputRoles+Raw.OwnerFlow.fields outputRoles+1)*
       (inputRoles.length+outputRoles.length+1)))
-  match original : Sector.project root.program with
-  | none => throw .request
-  | some raw =>
-    if operations : raw.operations = checked.result.actions.flatMap RuntimePureComposition.operations then
-      if issued : checked.result.history.issued = inputRoles ++ body.checked.summary.allocated then
-        if retired : checked.result.retired = body.checked.summary.consumed then
-          if nextOrdinal : checked.result.history.nextOrdinal = body.checked.summary.nextOrdinal then
-            let finalOwners ← RuntimeOwnerMap.check (SourceRuntimeValues.valueOwners body.checked.summary.value)
-              root.checked.state checked.result.bindings
-            let returned ← NaturalAffine.witness (RuntimePureBody.rolePorts
-              (SourceRuntimeValues.valueOwners body.checked.summary.value) checked.result.bindings)
-            if outputOrder : returned.val.map (·.token) = root.program.outputs then
-              return ⟨partition,raw,original,operations,body.checked.summary.balanced,issued,retired,nextOrdinal,
-                finalOwners,returned.val,by with_reducible exact returned.property,outputOrder⟩
-            else throw .request
-          else throw .request
+  if issued : checked.result.history.issued = inputRoles ++ body.checked.summary.allocated then
+    if retired : checked.result.retired = body.checked.summary.consumed then
+      if nextOrdinal : checked.result.history.nextOrdinal = body.checked.summary.nextOrdinal then
+        let finalOwners ← RuntimeOwnerMap.check (SourceRuntimeValues.valueOwners body.checked.summary.value)
+          root.checked.state checked.result.bindings
+        let returned ← NaturalAffine.witness (RuntimePureBody.rolePorts
+          (SourceRuntimeValues.valueOwners body.checked.summary.value) checked.result.bindings)
+        if outputOrder : returned.val.map (·.token) = root.program.outputs then
+          return ⟨literal.partition,literal.raw,literal.original,literal.operations,
+            body.checked.summary.balanced,issued,retired,nextOrdinal,
+            finalOwners,returned.val,by with_reducible exact returned.property,outputOrder⟩
         else throw .request
       else throw .request
     else throw .request
+  else throw .request
 
 theorem Prepared.originalRoot {artifact root owner name signature body request initial checked}
     (prepared : @Prepared artifact root owner name signature body request initial checked) :

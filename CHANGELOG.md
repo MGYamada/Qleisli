@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect the checked ordered named-call intervals to the original Raw
+  program through the shared literal partition. Their physical actions
+  compose in the original order on every external-reference slice and retain
+  the actual final output permutation. Reversed or incomplete partitions
+  refuse. Typed source-operator and Gram composition remain separate work.
+
 - Check an ordered sequence of original pure calls around a named `qmatch`
   in one native dependency graph. The internal reader follows each literal
   interval, carries the complete owner history and checks the original return,

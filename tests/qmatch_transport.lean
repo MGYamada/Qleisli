@@ -3,6 +3,7 @@ import Protocol.ExecutionView.CheckedQmatch
 import Protocol.ExecutionView.QmatchV5
 import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import QleisliKernel.Qirf.RuntimeNamedCalls
+import QleisliKernel.Qirf.RuntimeNamedCallsComposition
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
 
@@ -465,6 +466,7 @@ private inductive OrderedCallFault where
   | wrongOffset | childOffset | wrongCursor | wrongReturn | sourceReturnOrder
   | ordinaryReferences | providerReferences | referenceReferences
   | ordinaryDescendant | descendantReferences
+  | reversedNodes | missingLastNode
   deriving BEq
 
 private def ordinaryCallDeclarations := "unitary fn pre(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\npub unitary fn post(q:Q<Bit>)->Q<Bit>{h(q)}\n"
@@ -529,6 +531,15 @@ private def orderedCallInspect (fault : OrderedCallFault) :
   let prepared ← RuntimeNamedCallsSource.prepare source request.context
   let result ← RuntimeNamedCalls.read prepared order request.combinedRuntime
   let checked := result.checked
+  if fault == .reversedNodes then
+    let _ ← RuntimePureComposition.readOriginal result.root checked.result.nodes.reverse
+    pure ()
+  else if fault == .missingLastNode then
+    let _ ← RuntimePureComposition.readOriginal result.root (checked.result.nodes.take 2)
+    pure ()
+  else
+    let _ ← RuntimeNamedCallsComposition.read checked
+    pure ()
   return (checked.result.history.issued.map (·.ordinal),checked.result.retired.map (·.ordinal),
     checked.finalBindings.map (·.port.token),
     checked.result.reverseReceipts.reverse.map (fun receipt => receipt.entry.pair.2.offset),checked.result.cursor)
@@ -553,7 +564,7 @@ private def orderedCallStudy (fault : OrderedCallFault) :=
 #guard orderedCallStudy .omittedUnit matches .error .invalid
 #guard [OrderedCallFault.missingCall,.extraCall,.reorderedCalls,.wrongOffset,.childOffset,
     .wrongCursor,.wrongReturn,.sourceReturnOrder,.ordinaryReferences,.providerReferences,
-    .referenceReferences,.descendantReferences].all fun fault =>
+    .referenceReferences,.descendantReferences,.reversedNodes,.missingLastNode].all fun fault =>
   match orderedCallStudy fault with | .error .request => true | _ => false
 
 -- The ordinary descendant is a real original pre -> sign call, not a dummy
