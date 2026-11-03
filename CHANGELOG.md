@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Recheck a closed `qmatch` function's original tree in its verified
+  declaration catalogue. The checker inspects the actual tree, preserves
+  callee visibility and effect requirements, and verifies the selected
+  references. A record containing an enum and a Bit now passes the public
+  source check with its exact arm phases.
+
 - Reuse a named callee's original parsed and typed setup for its exact
   signature. The closed call still evaluates its source tree and checks
   owner returns, quantum use and effects against the original summary.

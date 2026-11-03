@@ -5,6 +5,7 @@ import QleisliKernel.SourceTypes.PhaseApplication
 import QleisliKernel.SourceTypes.SourceCalls
 import QleisliKernel.SourceTypes.SourceOperationApplication
 import QleisliKernel.SourceTypes.SourceRows
+import QleisliKernel.SourceTypes.GenericBodyRecheck
 import QleisliKernel.Raw.OwnerFlow
 
 /-! Complete original quantum-body traversal with primitive/qmatch events.
@@ -520,6 +521,37 @@ def eval (sources : Sources) (caller : String) (fuel : Nat) (held : List Owner)
   let (result,_) ← evalCached sources caller fuel held scope environment tree {}
   return result
 
+/-- The catalogue route rechecks the current original tree and all its Needs;
+it retains its real computation instead of inventing a cold discovery run. -/
+inductive OriginalCheck {sources owner name} (original : OrdinarySignature.Original sources owner name) : Type where
+  | fresh (checked : GenericTypeTrace.Checked original) : OriginalCheck original
+  | catalogued (catalogue : GenericCatalogue.Checked sources)
+      (tree : SourceSyntax.Tree original.occurrence.body)
+      (checked : GenericBodyRecheck.Checked catalogue original tree) : OriginalCheck original
+
+def OriginalCheck.inferredEffect {sources owner name original}
+    (checked : @OriginalCheck sources owner name original) : Semantics.Raw.Effect := match checked with
+  | .fresh original => original.inferredEffect
+  | .catalogued _ _ original => original.inferredEffect
+
+def OriginalCheck.sourceRows {sources owner name original}
+    (checked : @OriginalCheck sources owner name original) : List (String × String) := match checked with
+  | .fresh original => original.sourceRows
+  | .catalogued _ _ original => original.sourceRows
+
+def readOriginalCheck {sources owner name} (signature : QuantumSignature.Checked sources owner name)
+    (tree : SourceSyntax.Tree signature.original.occurrence.body) : Finite.WorkM (OriginalCheck signature.original) := do
+  if signature.original.parsedHeader.staticTokens.isNone && signature.original.parsedHeader.requiresTokens.isNone then
+    match signature.operations.catalogue with
+    | some catalogue => return .catalogued catalogue tree (← GenericBodyRecheck.read catalogue signature.original tree)
+    | none => cold
+  else cold
+where
+  cold : Finite.WorkM (OriginalCheck signature.original) := do
+    return .fresh (← GenericTypeTrace.readWithTree signature.instantiation tree
+      (signature.operations.catalogue.map (·.modulesContext))
+      (signature.operations.catalogue.map (·.meaningsContext)))
+
 structure Checked (sources : Sources) (owner name : String) where
   signature : QuantumSignature.Checked sources owner name
   patterns : List (List String)
@@ -529,11 +561,9 @@ structure Checked (sources : Sources) (owner name : String) where
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
-  generic : GenericTypeTrace.Checked signature.original
+  generic : OriginalCheck signature.original
   genericRead : ∃ before after,
-    (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))
-      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
+    (readOriginalCheck signature tree).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   result : Outcome sources owner initial
   traversed : ∃ before after,
@@ -582,9 +612,7 @@ def readWithSignature {sources owner name} (signature : QuantumSignature.Checked
       match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
       | .error _ => throw .request
       | .ok tree =>
-        let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-          (signature.operations.catalogue.map (·.modulesContext))
-          (signature.operations.catalogue.map (·.meaningsContext)))
+        let generic ← NaturalAffine.witness (readOriginalCheck signature tree)
         let originalAsserted : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true) ←
           if asserted : SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true then
             pure (⟨asserted⟩ : PLift (SourceEffect.permits signature.original.parsedHeader.effect generic.val.inferredEffect = true))
