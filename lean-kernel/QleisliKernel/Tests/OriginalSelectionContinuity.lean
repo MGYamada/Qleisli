@@ -32,7 +32,9 @@ def legacyArms (sources : Sources) (owner name : String) (offset : Nat) (selecto
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,by with_reducible exact original.property,
+      return ⟨site,layout.val,.fresh (by
+        have unit : original.val = () := by cases original.val; rfl
+        with_reducible simpa only [unit] using original.property),
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
         arms,same,complete,selectorKind.down⟩
@@ -47,6 +49,6 @@ theorem armsWrapper (sources : Sources) (owner name : String)
     (offset : Nat) (selector target : Basis) :
     QuantumArms.read sources owner name offset selector target =
       legacyArms sources owner name offset selector target := by
-  simp only [QuantumArms.read, QuantumArms.readArms, legacyArms, QuantumMatch.read, bind_assoc]
+  simp only [QuantumArms.read, QuantumArms.readArms, legacyArms, QuantumMatch.read, SourceTypes.readMany, bind_assoc, pure_bind]
 
 end QleisliKernel.Tests.OriginalSelectionContinuity
