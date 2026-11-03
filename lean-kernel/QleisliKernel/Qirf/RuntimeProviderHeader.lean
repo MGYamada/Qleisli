@@ -33,13 +33,21 @@ structure Header (artifact : Artifact) {context description}
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (index : Nat) (request : Request) where
   original : Original graph index
   subject : SourceProviderBinding.Bound artifact original.supplied.provider request.1
+  subjectRead : RuntimeInterval.Computed (SourceProviderBinding.read artifact original.supplied.provider request.1) subject
+
+/-- Bind an artifact subject to the exact already prepared original. No source,
+supplier, argument graph or body is read again at this boundary. -/
+def readWithOriginal (artifact : Artifact) {context description graph index}
+    (original : @Original artifact.sources context description graph index) (request : Request) :
+    WorkM {header : Header artifact graph index request // header.original = original} := do
+  let subject ← NaturalAffine.witness (SourceProviderBinding.read artifact original.supplied.provider request.1)
+  return ⟨⟨original,subject.val,by with_reducible exact subject.property⟩,rfl⟩
 
 def read (artifact : Artifact) {context description}
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (index : Nat) (request : Request) :
     WorkM (Header artifact graph index request) := do
   let original ← readOriginal graph index
-  let subject ← SourceProviderBinding.read artifact original.supplied.provider request.1
-  return ⟨original,subject⟩
+  return (← readWithOriginal artifact original request).val
 
 def Header.roots {artifact context description graph index request}
     (header : @Header artifact context description graph index request) : List Nat := header.subject.roots
