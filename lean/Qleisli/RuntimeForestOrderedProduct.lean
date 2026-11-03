@@ -61,7 +61,7 @@ private theorem tensor_assoc (first second third : Layout) :
     funext low
     rw [Nat.pow_add]
     ring
-  exact congr (congrArg Layout.mk (Nat.add_assoc first.bits second.bits third.bits)) labels
+  exact congrArg₂ Layout.mk (Nat.add_assoc first.bits second.bits third.bits) labels
 
 private theorem foldl_tensor (codes : List Layout) (initial : Layout) :
     codes.foldl tensor initial = tensor initial (codes.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton) := by
@@ -117,7 +117,7 @@ theorem forest_original {bindings} (owners : OwnerCodes bindings) :
             .tuple (firstBinding::secondBinding::thirdBinding::bindings).length ::
               (firstBinding::secondBinding::thirdBinding::bindings).flatMap (fun binding => binding.owner.basis) := by
           simp only [forestBasis,carrierOwners,List.map_cons,QleisliKernel.Semantics.CarrierInterface.forest,
-            List.length_map,List.flatMap_map,Function.comp_def,List.flatMap_cons]
+            List.length_cons,List.length_map,List.flatMap_map,List.flatMap_cons]
         have stackRead :
             ((firstBinding::secondBinding::thirdBinding::bindings).flatMap (fun binding => binding.owner.basis)).foldr
               layoutStep (some []) = some (layouts all) := by
