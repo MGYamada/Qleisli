@@ -11,8 +11,10 @@ development milestones from the scope of their evidence.
   Each indexed arm retains its original body, exact Meaning, controlled
   implementation and label. The sector equations detect a phase change in a
   single arm. Composed and tensor Meanings preserve source order and use
-  every canonical input of each classical leaf. General arm expressions,
-  catalogue discharge and production dispatch remain open.
+  every canonical input of each classical leaf. The Rust frontend retains
+  each constructed arm's own controlled-operation plan. The selected CLI
+  checks the direct example through its finite runtime request. Complete
+  catalogue discharge and the v5 source-preservation path remain open.
 - Check ordinary `if` branches that call pure functions and preserve their
   input owners. The shared traversal verifies each condition over the
   original input and measurement histories and checks the simultaneous

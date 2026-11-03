@@ -15,7 +15,7 @@ use crate::frontend::resolve::locals::{
 mod body_statics;
 mod interface_naturals;
 mod runtime_owners;
-pub(super) use body_statics::expression_natural_roots;
+pub(super) use body_statics::{expression_natural_roots, expression_operations};
 pub(in crate::frontend) use body_statics::{
     BodyStaticKind, BodyStaticOriginal, BodyStaticPlan, original_body_static,
 };

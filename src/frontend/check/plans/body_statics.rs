@@ -52,6 +52,29 @@ pub(in crate::frontend) enum BodyStaticOriginal<'a> {
     Operation(&'a ast::StaticOp),
 }
 
+/// Runtime operation roots which need their own static plan. Bare qmatch
+/// names use the checked basis of the original target.
+pub(in crate::frontend::check) fn expression_operations<E>(
+    parent: &ast::Expr,
+    mut charge: impl FnMut(Span, usize) -> std::result::Result<(), E>,
+) -> std::result::Result<Vec<(&ast::StaticOp, [bool; 3])>, E> {
+    Ok(match &parent.kind {
+        ast::ExprKind::ApplyStatic { operation, .. } => vec![(operation, [true, false, false])],
+        ast::ExprKind::Adjoint { operation, .. } => vec![(operation, [false, true, false])],
+        ast::ExprKind::Controlled { operation, .. } => vec![(operation, [false, false, true])],
+        ast::ExprKind::QuantumMatch(selection) => {
+            charge(parent.span, selection.arms.len())?;
+            selection
+                .arms
+                .iter()
+                .filter(|arm| !matches!(arm.operation.kind, ast::StaticOpKind::Name(_)))
+                .map(|arm| (&arm.operation, [false, false, true]))
+                .collect()
+        }
+        _ => Vec::new(),
+    })
+}
+
 /// Borrow only the plan for this exact original occurrence and collection.
 /// No cloned syntax, span search or other site's static environment is used.
 pub(in crate::frontend) fn original_body_static<'plan, E>(
@@ -138,13 +161,11 @@ pub(in crate::frontend) fn original_body_static<'plan, E>(
             else {
                 refuse!();
             };
-            let (child, demand) = match &parent.kind {
-                ast::ExprKind::ApplyStatic { operation, .. } => (operation, [true, false, false]),
-                ast::ExprKind::Adjoint { operation, .. } => (operation, [false, true, false]),
-                ast::ExprKind::Controlled { operation, .. } => (operation, [false, false, true]),
-                _ => refuse!(),
-            };
-            operation.node == Some(node) && std::ptr::eq(child, original) && requested == &demand
+            let operands = expression_operations(parent, &mut *charge)?;
+            operation.node == Some(node)
+                && operands
+                    .into_iter()
+                    .any(|(child, demand)| std::ptr::eq(child, original) && *requested == demand)
         }
         (
             BodyStaticOriginal::Expression(ast::Expr {
@@ -214,11 +235,6 @@ pub(in crate::frontend::check) fn expression_natural_roots<'a>(
             budget.charge(span, static_args.len())?;
             pending.extend(static_args.iter().rev().map(Pending::Operation));
         }
-        ast::ExprKind::ApplyStatic { operation, .. }
-        | ast::ExprKind::Adjoint { operation, .. }
-        | ast::ExprKind::Controlled { operation, .. } => {
-            pending.push(Pending::Operation(operation))
-        }
         ast::ExprKind::StaticIf { predicate, .. } => {
             budget.charge(span, 2)?;
             roots.extend([&predicate.left, &predicate.right]);
@@ -228,6 +244,13 @@ pub(in crate::frontend::check) fn expression_natural_roots<'a>(
             roots.extend([start, end]);
         }
         _ => {}
+    }
+    for (operation, _) in
+        expression_operations(expression, |span, count| budget.charge(span, count))?
+            .into_iter()
+            .rev()
+    {
+        pending.push(Pending::Operation(operation));
     }
     if let ast::ExprKind::AccessCall { args, .. } = &expression.kind {
         for argument in args {
@@ -323,17 +346,12 @@ impl Validation<'_, '_> {
             ) => {
                 self.operation_at(owner, source, operation, 1)?;
                 let parent = self.expression(owner, *expression, span)?;
-                let (child, demand) = match &parent.kind {
-                    ast::ExprKind::ApplyStatic { operation, .. } => {
-                        (operation, [true, false, false])
-                    }
-                    ast::ExprKind::Adjoint { operation, .. } => (operation, [false, true, false]),
-                    ast::ExprKind::Controlled { operation, .. } => {
-                        (operation, [false, false, true])
-                    }
-                    _ => return Err(self.failure(span)),
-                };
-                if !std::ptr::eq(child, source) || requested != &demand {
+                let operands =
+                    expression_operations(parent, |span, count| self.budget.charge(span, count))?;
+                if !operands
+                    .into_iter()
+                    .any(|(child, demand)| std::ptr::eq(child, source) && *requested == demand)
+                {
                     return Err(self.failure(span));
                 }
             }
@@ -445,17 +463,18 @@ impl Validation<'_, '_> {
                 match original {
                     OriginalNode::Expression(expression) => {
                         let node = index.node_id_expr(expression);
+                        for (operation, _) in expression_operations(expression, |span, count| {
+                            self.budget.charge(span, count)
+                        })? {
+                            self.require_body_site(
+                                plans,
+                                &mut expected,
+                                index.node_id_static_op(operation),
+                                operation.span,
+                                |kind| matches!(kind, BodyStaticKind::Operation { .. }),
+                            )?;
+                        }
                         match &expression.kind {
-                            ast::ExprKind::ApplyStatic { operation, .. }
-                            | ast::ExprKind::Adjoint { operation, .. }
-                            | ast::ExprKind::Controlled { operation, .. } => self
-                                .require_body_site(
-                                    plans,
-                                    &mut expected,
-                                    index.node_id_static_op(operation),
-                                    operation.span,
-                                    |kind| matches!(kind, BodyStaticKind::Operation { .. }),
-                                )?,
                             ast::ExprKind::StaticIf { .. } => self.require_body_site(
                                 plans,
                                 &mut expected,

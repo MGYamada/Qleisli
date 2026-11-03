@@ -6,7 +6,7 @@ realized entry implementation; no replacement root is constructed.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SourceBodyContext
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Qirf Finite
-open PureInterval (Witness)
+open QleisliKernel.Qirf.PureInterval (Witness)
 abbrev Context := SourceContextRequest.Context
 
 def interval {artifact owner name dependencies program positions}

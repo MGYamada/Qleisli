@@ -38,6 +38,38 @@ fn selected(action: &str, path: &Path, entry: &str) -> Command {
     command
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn selected_checked_qmatch_arm_compares_the_original_phase() {
+    let source = "#![no_implicit_prelude]
+        unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+        unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+        meaning Sign:Bit=reference(sign);
+        pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            qmatch(s,q){0=>keep,1=>checked_op(sign,Sign)}
+        }";
+    for (text, valid) in [
+        (source.to_owned(), true),
+        (source.replace("reference(sign)", "reference(keep)"), false),
+    ] {
+        let files = SourceRoot::new(&text);
+        let output = selected("check", &files.0.join("main.qli"), "main::route")
+            .arg(format!("--lean-kernel={}", kernel().display()))
+            .output()
+            .unwrap();
+        let report = result(output, "check", valid);
+        if valid {
+            assert!(report.contains("\"runtime_result_checked\":true"), "{report}");
+        } else {
+            assert!(report.contains("\"code\":\"contract\""), "{report}");
+            assert!(report.contains("exact equation"), "{report}");
+        }
+    }
+}
+
 fn result(output: Output, action: &str, success: bool) -> String {
     assert_eq!(output.status.success(), success, "{output:?}");
     assert!(output.stderr.is_empty(), "{output:?}");

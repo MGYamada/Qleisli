@@ -17,8 +17,8 @@ def callCoordinates (text : String) : Option (Nat × Nat) := do
   let checked ← (CallSyntax.read tokens).toOption
   return (checked.calleeOffset,checked.call.opening.span.startByte)
 
-def observed (text : String) : Option (List Nat × List Nat) :=
-  ((SourceTrace.read (sources text) "main" "route").run 10000000).1.toOption.map
+def observed (text : String) (work : Nat := 10000000) : Option (List Nat × List Nat) :=
+  ((SourceTrace.read (sources text) "main" "route").run work).1.toOption.map
     fun checked => (checked.callOffsets,checked.result.events.map QleisliKernel.Qirf.RawTrace.offset)
 
 /-- Retain the actual previous coordinate from original tokens, including
@@ -28,6 +28,8 @@ def oldOffsets (text : String) : Option (List Nat) :=
     fun checked => checked.result.events.map fun event => match event with
       | .primitive event => event.call.call.opening.span.startByte
       | .phase event => event.call.call.opening.span.startByte
+      | .named event => event.call.call.opening.span.startByte
+      | .operation event => event.call.call.opening.span.startByte
       | .selection event .. => event.parsed.keyword.span.startByte
 
 def checksOffsets (text : String) (program : Observation.Program) (counts offsets : List Nat) : Bool :=
@@ -57,7 +59,8 @@ def controls : List (String × Bool) := [
   ("nested comments retain byte coordinates",observed (single "h /*λ*/ (h(q))") == some ([49,39],[49,39])),
   ("cached same-name calls retain distinct occurrences",
     observed (single "let q=h(q);h(q)") == some ([45,50],[45,50])),
-  ("selection keeps its keyword coordinate",observed mixedSource == some ([135],[135,149])),
+  -- The complete mixed source includes its original bundled prelude resolution.
+  ("selection keeps its keyword coordinate",observed mixedSource 26000000 == some ([135],[135,149])),
   ("literal callee position passes",checksOffsets (single "h(q)") oneH [1] [39]),
   ("UTF8 source position passes",checksOffsets (single "/*λ*/h(q)") oneH [1] [45]),
   ("comment source position passes",checksOffsets (single "h /*λ*/ (q)") oneH [1] [39]),

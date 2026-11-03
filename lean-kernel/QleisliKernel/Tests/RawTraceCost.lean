@@ -3,7 +3,10 @@ import QleisliKernel.Tests.RawTraceTests
 /-! One-bit component measurement, not a native acceptance claim. The
 source reader is evaluated separately at its recorded experimental budget;
 the Raw component is then measured at the actual native work budget and at
-a larger diagnostic-only budget. All first output streams are preserved.
+a larger diagnostic-only budget. Its source preparation really spends over
+10M, so these independent Raw measurements make no combined-budget claim.
+The original source/snapshots and all first output streams are preserved in
+source-raw-cost-current-first and checks/real-full-native-meter-cost-snapshots.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.RawTraceCost
 open QleisliKernel.Qirf
@@ -25,7 +28,7 @@ def measure (work : Nat) : Option (Nat × Nat) :=
     | .error _ => none
     | .ok _ => some (2000000000-left,work-remaining)
 
-#guard measure 10000000 = some (8700614,1136663)
-#guard measure 2000000000 = some (8700614,1136663)
+#guard measure 10000000 = some (20734094,1136663)
+#guard measure 2000000000 = some (20734094,1136663)
 
 end QleisliKernel.Tests.RawTraceCost
