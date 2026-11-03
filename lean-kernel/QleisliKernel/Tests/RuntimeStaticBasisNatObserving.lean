@@ -76,9 +76,11 @@ private def actual (n exponent : Nat) (twoBits wrongConsumed : Bool) (fault : Fa
   let chosen := if wrongConsumed then a else q
   let returned := if wrongConsumed then q else a
   let output := if fault == .inverted then 5 else 4
+  -- applyUnitary's circuit uses local port coordinates. The separate corrected
+  -- first observer verifies both two-Bit Raw candidates with this local axis.
   let operations : List Semantics.Observation.Op :=
     [.pure (.applyUnitary chosen.token 3
-      [⟨[],.monomial chosen.wires [0,1] [0,exponent]⟩])] ++
+      [⟨[],.monomial [0] [0,1] [0,exponent]⟩])] ++
     (if fault == .missingMeasurement then [.discard 3,.constant false 4] else [.measure 3 4]) ++
     (if fault == .inverted then [.not 4 5] else [])
   let program : Semantics.Observation.Program := ⟨[unit,a,q],[],operations,[returned.token,0],[output],.observe⟩
