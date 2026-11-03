@@ -13,7 +13,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 namespace Qleisli.RuntimeOwnerTransitionAction
 open QleisliKernel QleisliKernel.Finite QleisliKernel.Semantics.Exact
-open QleisliKernel.Semantics (RawOwnerFlow)
+open QleisliKernel.Semantics
 open QleisliKernel.Qirf QleisliKernel.Qirf.RuntimeForestCode
 open QleisliKernel.Qirf.RuntimeOwnerMap (Binding Map)
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct
@@ -222,7 +222,7 @@ theorem empty_bindings {dependencies program block start}
     exact sameBinding ▸ oldMember
   have ordinals : (before.bindings.map (fun binding => binding.owner.ordinal)).Nodup := by
     have ordered := congrArg (List.map (fun owner : RuntimeOwnerMap.Owner => owner.ordinal)) before.ordered
-    simp only [List.map_map] at ordered
+    simp only [List.map_map,Function.comp_def] at ordered
     rw [ordered]
     exact before.ownersDistinct
   exact owner_order_eq before.bindings transport.after.bindings ordinals subset transport.after.ordered
@@ -240,7 +240,8 @@ theorem empty_embedding {dependencies program block start}
   subst right
   change sparseEntry input.code (Semantics.Finite.gather physical (forestAxes interval.before.quantum.frame before.bindings)) logical =
     sparseEntry output.code (Semantics.Finite.gather physical (forestAxes interval.after.quantum.frame transport.after.bindings)) logical
-  rw [bindings,empty_state interval]
+  have sameFrame := congrArg (fun state : QleisliKernel.Raw.Observation.State => state.quantum.frame) (empty_state interval)
+  rw [bindings,sameFrame]
   unfold sparseEntry
   rw [leftSame.labels logical,rightSame.labels logical]
 
