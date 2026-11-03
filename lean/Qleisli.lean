@@ -10,6 +10,7 @@ import Qleisli.FiniteCircuitPull
 import Qleisli.FiniteMatrixPull
 import Qleisli.RawActionLinear
 import Qleisli.FiniteMatrixAction
+import Qleisli.RawActionLocality
 import Qleisli.Raw
 import Qleisli.RawUnit
 import Qleisli.RawRepresentationTransport
