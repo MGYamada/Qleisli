@@ -2,6 +2,7 @@ import Qleisli.RuntimeForestProduct
 import Qleisli.Semantics.RawAction
 import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimeSelectionPartition
+import QleisliKernel.Qirf.RuntimeSelectionWires
 
 /-! A concrete mathematical consumer of the original owner-transition receipt.
 For an empty interval, its actual seed/resolve/reorder execution preserves every
@@ -270,8 +271,175 @@ theorem empty_code_action {Reference : Type} {dependencies program block start}
   intro logical _member
   rw [empty_embedding interval input transport output]
 
+private theorem take_fold_first (token : Nat) (values : RawOwnerFlow.Frame) :
+    (values.foldr (fun cell (rest,result) =>
+      (cell :: rest,if cell.1 == token then some (cell.2,rest)
+        else result.map fun (tree,remaining) => (tree,cell :: remaining))) ([],none)).1 = values := by
+  induction values with
+  | nil => rfl
+  | cons first rest ih => exact congrArg (List.cons first) ih
+
+private theorem flow_take_cons (token : Nat) (cell : Nat × RawOwnerFlow.Tree) (rest : RawOwnerFlow.Frame) :
+    RawOwnerFlow.take token (cell::rest) =
+      if cell.1 == token then some (cell.2,rest)
+      else (RawOwnerFlow.take token rest).map fun (tree,remaining) => (tree,cell::remaining) := by
+  simp only [RawOwnerFlow.take,List.foldr_cons,take_fold_first]
+
+private theorem flow_take_origins (token : Nat) (initial : RawOwnerFlow.Frame) :
+    ∀ tree remaining, RawOwnerFlow.take token initial = some (tree,remaining) →
+      (token,tree) ∈ initial ∧ remaining ⊆ initial := by
+  induction initial with
+  | nil => intro tree remaining ran; cases ran
+  | cons first rest ih =>
+    intro tree remaining ran
+    rw [flow_take_cons] at ran
+    split at ran
+    · rename_i selected
+      have equal := Option.some.inj ran
+      have same : (token,tree) = first :=
+        Prod.ext (beq_iff_eq.mp selected).symm (congrArg Prod.fst equal).symm
+      refine ⟨List.mem_cons.mpr (Or.inl same),?_⟩
+      intro value member
+      have restEq : rest = remaining := congrArg Prod.snd equal
+      rw [← restEq] at member
+      exact List.mem_cons_of_mem _ member
+    · obtain ⟨⟨other,tail⟩,taken,equal⟩ := Option.map_eq_some_iff.mp ran
+      have origins := ih other tail taken
+      have sameTree : other = tree := congrArg Prod.fst equal
+      rw [sameTree] at origins
+      refine ⟨List.mem_cons_of_mem _ origins.1,?_⟩
+      intro value member
+      have restEq : first::tail = remaining := congrArg Prod.snd equal
+      rw [← restEq] at member
+      rcases List.mem_cons.mp member with same | later
+      · exact List.mem_cons.mpr (Or.inl same)
+      · exact List.mem_cons_of_mem _ (origins.2 later)
+
+private theorem move_pair_origins (initial final : RawOwnerFlow.Frame)
+    (a b aOut bOut : Nat)
+    (ran : RawOwnerFlow.moveMany [⟨a,aOut⟩,⟨b,bOut⟩] initial = some final) :
+    ∃ left right, (a,left) ∈ initial ∧ (b,right) ∈ initial ∧
+      ∀ cell ∈ final, cell = (aOut,left) ∨ cell = (bOut,right) ∨ cell ∈ initial := by
+  unfold RawOwnerFlow.moveMany at ran
+  obtain ⟨⟨values,remaining⟩,taken,inserted⟩ := Option.bind_eq_some_iff.mp ran
+  have taking : (do
+      let (left,next) ← RawOwnerFlow.take a initial
+      let (right,last) ← RawOwnerFlow.take b next
+      pure ([(bOut,right),(aOut,left)],last)) = some (values,remaining) := by
+    simpa only [List.foldlM_cons,List.foldlM_nil,bind_assoc,pure_bind] using taken
+  obtain ⟨⟨left,next⟩,leftTaken,tail⟩ := Option.bind_eq_some_iff.mp taking
+  obtain ⟨⟨right,last⟩,rightTaken,returned⟩ := Option.bind_eq_some_iff.mp tail
+  have valuesEq := Option.some.inj returned
+  have sameValues : [(bOut,right),(aOut,left)] = values := congrArg Prod.fst valuesEq
+  have sameRemaining : last = remaining := congrArg Prod.snd valuesEq
+  rw [← sameValues,← sameRemaining] at inserted
+  have putting : (do
+      let next ← RawOwnerFlow.put bOut right last
+      RawOwnerFlow.put aOut left next) = some final := by
+    simpa only [List.foldlM_cons,List.foldlM_nil,bind_pure] using inserted
+  obtain ⟨middle,rightPut,leftPut⟩ := Option.bind_eq_some_iff.mp putting
+  have rightAdded := put_result bOut right last middle rightPut
+  have leftAdded := put_result aOut left middle final leftPut
+  have leftOrigins := flow_take_origins a initial left next leftTaken
+  have rightOrigins := flow_take_origins b next right last rightTaken
+  refine ⟨left,right,leftOrigins.1,leftOrigins.2 rightOrigins.1,?_⟩
+  intro cell member
+  rw [leftAdded,rightAdded] at member
+  rcases List.mem_cons.mp member with same | later
+  · exact Or.inl same
+  · rcases List.mem_cons.mp later with same | earlier
+    · exact Or.inr (Or.inl same)
+    · exact Or.inr (Or.inr (leftOrigins.2 (rightOrigins.2 earlier)))
+
+/-- One original Raw quantumIf cannot reassign an untouched source owner to
+another spectator port. This consumes its actual whole-frame owner-flow run,
+not just the unchanged unlabelled spectator-port set. Every empty owner counts.
+The singleton-operation hypothesis is explicit; arbitrary multi-step fragments
+still require their owner-flow frame-extension proof. -/
+theorem quantumIf_spectators {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    (zero one : List Semantics.Raw.UnitaryStep)
+    (original : frame.operations = [.quantumIf source.selected.first.port.token source.selected.second.port.token
+      source.returned.first.port.token source.returned.second.port.token zero one]) :
+    ∀ binding ∈ source.transport.after.bindings,
+      binding.owner ≠ source.selected.first.owner → binding.owner ≠ source.selected.second.owner →
+        binding ∈ source.before.bindings := by
+  obtain ⟨operations,initial,final,moved,parsed,seeded,flow,resolved,reordered⟩ := source.transport.flow
+  have operationsEq : operations = [.quantumIf source.selected.first.port.token source.selected.second.port.token
+      source.returned.first.port.token source.returned.second.port.token zero one] := by
+    rw [frame.literal,original] at parsed
+    simpa [Sector.pureOps,Sector.pureOp] using parsed.symm
+  subst operations
+  have moving : RawOwnerFlow.moveMany
+      [⟨source.selected.first.port.token,source.returned.first.port.token⟩,
+       ⟨source.selected.second.port.token,source.returned.second.port.token⟩] initial = some final := by
+    simpa only [List.foldlM_cons,List.foldlM_nil,RawOwnerFlow.step,bind_pure] using flow
+  obtain ⟨left,right,leftOrigin,rightOrigin,origins⟩ := move_pair_origins _ _ _ _ _ _ moving
+  have selectedSubset := (RuntimeSelectionPartition.order_values _ _ _ source.selected.ordered).1
+  have firstMember : source.selected.first ∈ source.before.bindings := selectedSubset (by simp)
+  have secondMember : source.selected.second ∈ source.before.bindings := selectedSubset (by simp)
+  have initialTree (old : Binding) (member : old ∈ source.before.bindings) (tree : RawOwnerFlow.Tree)
+      (present : (old.port.token,tree) ∈ initial) : tree = .owner old.owner old.port.bits := by
+    obtain ⟨binding,inside,same⟩ := seed_origins _ _ seeded _ present
+    have sameToken : binding.port.token = old.port.token := (congrArg Prod.fst same).symm
+    have equal := map_unique (fun value : Binding => value.port.token) _ source.before.tokensDistinct
+      binding inside old member sameToken
+    simpa only [equal,seedCell] using congrArg Prod.snd same
+  have leftTree := initialTree _ firstMember left leftOrigin
+  have rightTree := initialTree _ secondMember right rightOrigin
+  have movedSubset := (RuntimeSelectionPartition.order_values _ _ _ reordered).1
+  have afterTokens : (frame.interval.after.quantum.live.map (·.token)).Nodup :=
+    (source.transport.after.complete.map (·.token)).nodup
+      (by simpa only [List.map_map] using source.transport.after.tokensDistinct)
+  intro binding member notFirst notSecond
+  obtain ⟨work,leftWork,ran⟩ := resolved
+  obtain ⟨cell,present,origin,newLive⟩ := resolved_origins _ _ moved work leftWork ran binding (movedSubset member)
+  rcases origins cell present with first | second | unchanged
+  · have trees := congrArg Prod.snd (first.symm.trans origin)
+    rw [leftTree] at trees
+    exact False.elim (notFirst (RawOwnerFlow.Tree.owner.inj trees).1.symm)
+  · have trees := congrArg Prod.snd (second.symm.trans origin)
+    rw [rightTree] at trees
+    exact False.elim (notSecond (RawOwnerFlow.Tree.owner.inj trees).1.symm)
+  · obtain ⟨old,oldMember,seedOrigin⟩ := seed_origins _ _ seeded cell unchanged
+    have sameCell := seedOrigin.symm.trans origin
+    have sameToken : old.port.token = binding.port.token := congrArg Prod.fst sameCell
+    have sameOwner : old.owner = binding.owner :=
+      (RawOwnerFlow.Tree.owner.inj (congrArg Prod.snd sameCell)).1
+    have differentFirst : old.port.token ≠ source.selected.first.port.token := by
+      intro equal
+      have same := map_unique (fun value : Binding => value.port.token) _ source.before.tokensDistinct
+        old oldMember _ firstMember equal
+      exact notFirst (sameOwner.symm.trans (congrArg Binding.owner same))
+    have differentSecond : old.port.token ≠ source.selected.second.port.token := by
+      intro equal
+      have same := map_unique (fun value : Binding => value.port.token) _ source.before.tokensDistinct
+        old oldMember _ secondMember equal
+      exact notSecond (sameOwner.symm.trans (congrArg Binding.owner same))
+    have notInput : old.port.token ∉ inputs := by
+      rw [source.inputTokens]
+      intro present
+      rcases List.mem_cons.mp present with first | later
+      · exact differentFirst first
+      · rcases List.mem_cons.mp later with second | impossible
+        · exact differentSecond second
+        · cases impossible
+    have notContains : inputs.contains old.port.token = false :=
+      Bool.eq_false_iff.mpr (fun h => notInput (List.contains_iff_mem.mp h))
+    have oldLive := source.before.complete.mem_iff.mp (List.mem_map.mpr ⟨old,oldMember,rfl⟩)
+    have oldSpectator : old.port ∈ PureInterval.spectators frame.interval.before inputs :=
+      List.mem_filter.mpr ⟨oldLive,by simp only [notContains,Bool.not_false]⟩
+    have oldAfter : old.port ∈ frame.interval.after.quantum.live :=
+      (List.mem_filter.mp (frame.spectators ▸ oldSpectator)).1
+    have samePort := map_unique (fun port : Semantics.Raw.Port => port.token) _ afterTokens
+      old.port oldAfter binding.port newLive sameToken
+    have equal : old = binding := congrArg₂ Binding.mk sameOwner samePort
+    exact equal ▸ oldMember
+
 #print axioms empty_bindings
 #print axioms empty_embedding
 #print axioms empty_code_action
+#print axioms quantumIf_spectators
 
 end Qleisli.RuntimeOwnerTransitionAction

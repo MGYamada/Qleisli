@@ -99,6 +99,29 @@ inductive Nodes (dependencies : List Semantics.Finite.Dependency) :
       (rest : Nodes dependencies program block) : Nodes dependencies program block
 end
 
+/-- Check the literal caller interval on the original owners in their source
+order. The operation graph supplies its independently checked expected action. -/
+def operationNode {dependencies program} (block : RuntimeInterval.Block dependencies program)
+    (position : Position) (roles : List Owner) (before after : Map)
+    (expected : Semantics.Exact.Matrix) : WorkM (Node dependencies program block) := do
+  let inputs ← rolePorts roles before
+  let outputs ← rolePorts roles after
+  let frame ← RuntimePureInterval.check block inputs.length position.start position.count
+    (inputs.map (·.token)) (outputs.map (·.token)) roles
+  let inputCode ← NaturalAffine.witness
+    (Carrier.ownerCode ((frame.selected.zip roles).map fun (port,role) => ⟨port,role.basis⟩))
+  let outputCode ← NaturalAffine.witness
+    (Carrier.ownerCode ((frame.returned.zip roles).map fun (port,role) => ⟨port,role.basis⟩))
+  let physical ← NaturalAffine.witness (Raw.ProtectedEvaluation.reconstruct dependencies
+    (RuntimePureInterval.fragment frame.selected frame.operations (outputs.map (·.token))))
+  let action ← CodeSpace.readMap inputCode.val outputCode.val physical.val
+  exactWork (Exact.charge (action.logical.entries.length+expected.entries.length+1))
+  if equation : action.logical = expected then
+    return .operation frame inputCode.val outputCode.val physical.val expected
+      (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
+      (by with_reducible exact physical.property) action equation
+  else throw .equation
+
 def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies program block)) :
     Nodes dependencies program block := nodes.foldr Nodes.cons Nodes.nil
 
@@ -361,25 +384,9 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             guard (callPosition == position && child.positions.isEmpty && child.sites.isEmpty &&
               child.calls.isEmpty && child.branches.isEmpty) .request
             let (expected,children) ← checkOperation event.operation.graph OperationAccess.applicable child.bodies
-            let inputs ← rolePorts event.inputOwners bindings
-            let outputs ← rolePorts event.inputOwners owners.after.bindings
-            let frame ← RuntimePureInterval.check prepared.block inputs.length position.start position.count
-              (inputs.map (·.token)) (outputs.map (·.token)) event.inputOwners
-            let inputCode ← NaturalAffine.witness
-              (Carrier.ownerCode ((frame.selected.zip event.inputOwners).map fun (port,role) => ⟨port,role.basis⟩))
-            let outputCode ← NaturalAffine.witness
-              (Carrier.ownerCode ((frame.returned.zip event.inputOwners).map fun (port,role) => ⟨port,role.basis⟩))
-            let physical ← NaturalAffine.witness (Raw.ProtectedEvaluation.reconstruct dependencies
-              (RuntimePureInterval.fragment frame.selected frame.operations (outputs.map (·.token))))
-            let action ← CodeSpace.readMap inputCode.val outputCode.val physical.val
-            exactWork (Exact.charge (action.logical.entries.length+expected.entries.length+1))
-            if equation : action.logical = expected then
-              let node : Node dependencies program prepared.block := .operation frame inputCode.val outputCode.val physical.val expected
-                (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
-                (by with_reducible exact physical.property) action equation
-              pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-                obligations ++ children,position.start+position.count,calls,sites,bodies)
-            else throw .equation
+            let node ← operationNode prepared.block position event.inputOwners bindings owners.after.bindings expected
+            pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations ++ children,position.start+position.count,calls,sites,bodies)
           | .selection _ parsed _ selector target scope naturals .. =>
             let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
             let site :: sites := sites | throw .request

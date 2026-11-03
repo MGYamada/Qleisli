@@ -1,6 +1,5 @@
-import QleisliKernel.Qirf.RuntimeProviderPaths
+import QleisliKernel.Qirf.RuntimeProviderAction
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
-import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.SourceDutySlots
 
 /-! Forward quantum-reference bodies of an actual original Meaning graph.
@@ -135,20 +134,9 @@ def prepare (artifact : Artifact) {caller owner name meaning}
 
 def forward : OperationPaths.Paths := ⟨true,false,false⟩
 
-structure Checked {artifact caller owner name meaning referenceSite request}
-    (prepared : @Prepared artifact caller owner name meaning referenceSite request) (root : Validity.Root) where
-  paths : RuntimeProviderPaths.Checked prepared.header.val root forward
-  pathRead : SourceDutySlots.Computed (RuntimeProviderPaths.read prepared.header.val root forward) paths
-  initial : RuntimeOwnerMap.Map
-  initialRead : SourceDutySlots.Computed (RuntimeSourceBoundary.bindings
-    (prepared.header.val.original.body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners)
-    [(⟨paths.ir.original.prepared.ports.input,paths.ir.original.prepared.ports.domain⟩ :
-      Semantics.CarrierInterface.Owner)]) initial
-  interval : RuntimeInterval.Prepared root.dependencies paths.ir.original.program
-  intervalRead : SourceDutySlots.Computed (RuntimeInterval.prepare root.dependencies paths.ir.original.program) interval
-  body : RuntimePureBody.Checked artifact root prepared.header.val.original.body paths.ir.original.program request.2 initial
-  consumed : SourceDutySlots.Computed (RuntimePureBody.checkPrepared artifact root prepared.header.val.original.body
-    paths.ir.original.program request.2 initial interval) body
+abbrev Checked {artifact caller owner name meaning referenceSite request}
+    (prepared : @Prepared artifact caller owner name meaning referenceSite request) (root : Validity.Root) :=
+  RuntimeProviderAction.Checked prepared.header.val root forward
 
 /-- Consume this exact forward reference at the caller's SAME final root.
 Independent original/closed effect gates reject hidden observation. The checked
@@ -156,21 +144,11 @@ body cannot be replaced by a structurally unitary map or matching Gram data.
 The enclosing M consumer still owes its full graph and subject equation. -/
 def read {artifact caller owner name meaning referenceSite request}
     (prepared : @Prepared artifact caller owner name meaning referenceSite request) (root : Validity.Root) :
-    WorkM (Checked prepared root) := do
-  let paths ← NaturalAffine.witness (RuntimeProviderPaths.read prepared.header.val root forward)
-  let native := paths.val.ir.original
-  let body := prepared.header.val.original.body
-  let roles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
-  let owner : Semantics.CarrierInterface.Owner := ⟨native.prepared.ports.input,native.prepared.ports.domain⟩
-  let initial ← NaturalAffine.witness (RuntimeSourceBoundary.bindings roles [owner])
-  let interval ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies native.program)
-  let checked ← NaturalAffine.witness (RuntimePureBody.checkPrepared artifact root body
-    native.program request.2 initial.val interval.val)
-  return ⟨paths.val,by with_reducible exact paths.property,initial.val,by with_reducible exact initial.property,
-    interval.val,by with_reducible exact interval.property,checked.val,by with_reducible exact checked.property⟩
+    WorkM (Checked prepared root) :=
+  RuntimeProviderAction.read prepared.header.val root forward
 
 def Checked.action {artifact caller owner name meaning referenceSite request prepared root}
     (checked : @Checked artifact caller owner name meaning referenceSite request prepared root) : Semantics.Exact.Matrix :=
-  checked.paths.ir.original.prepared.equations.action
+  RuntimeProviderAction.Checked.action checked
 
 end QleisliKernel.Qirf.SourceMeaningQuantum

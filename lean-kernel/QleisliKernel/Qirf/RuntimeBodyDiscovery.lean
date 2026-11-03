@@ -188,6 +188,52 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
       guard (sites.isEmpty && calls.isEmpty && branches.isEmpty && bodies.isEmpty) .request
       return discovery)
 
+/-- One selected original signature and indexed body, under the exact supplied
+catalogue. Both source entry points use this executable reader; no alternate
+source, signature cache or acceptance result is introduced. -/
+structure SelectedSource (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (owner name : String) (arguments : StaticTypes.Arguments) where
+  signature : SourceRuntimeContext.Signature artifact.sources owner name
+  selected : RuntimeInterval.Computed
+    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue)) signature
+  body : SourceRuntimeTrace.Body signature
+  traversed : RuntimeInterval.Computed (SourceRuntimeTrace.readBodyWithSignature signature) body
+
+def readSelectedSource (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (owner name : String) (arguments : StaticTypes.Arguments) :
+    WorkM (SelectedSource artifact catalogue owner name arguments) := do
+  let signature ← NaturalAffine.witness
+    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue))
+  let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature signature.val)
+  return ⟨signature.val,by with_reducible exact signature.property,body.val,by with_reducible exact body.property⟩
+
+/-- Source preparation retains complete original pending assessments. It is
+not a successful strict Source and cannot replace its withheld proof. Actual
+operation/Meaning occurrences remain on this same indexed body for discovery.
+-/
+structure PreparedSource (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) where
+  catalogue : GenericCatalogue.Checked artifact.sources
+  audited : RuntimeInterval.Computed (GenericCatalogue.read artifact.sources) catalogue
+  pending : SourcePendingMeaning.Prepared catalogue
+  pendingRead : RuntimeInterval.Computed (SourcePendingMeaning.prepare catalogue) pending
+  selection : SelectedSource artifact catalogue owner name arguments
+
+def PreparedSource.signature {artifact owner name arguments}
+    (source : PreparedSource artifact owner name arguments) := source.selection.signature
+
+def PreparedSource.body {artifact owner name arguments}
+    (source : PreparedSource artifact owner name arguments) : SourceRuntimeTrace.Body source.signature := source.selection.body
+
+/-- All-original assessment precedes the selected signature/body. This is
+non-accepting preparation: a closed M remains explicit and unconsumed. -/
+def prepareSource (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) :
+    WorkM (PreparedSource artifact owner name arguments) := do
+  let catalogue ← NaturalAffine.witness (GenericCatalogue.read artifact.sources)
+  let pending ← NaturalAffine.witness (SourcePendingMeaning.prepare catalogue.val)
+  let selection ← readSelectedSource artifact catalogue.val owner name arguments
+  return ⟨catalogue.val,by with_reducible exact catalogue.property,
+    pending.val,by with_reducible exact pending.property,selection⟩
+
 structure Source (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments) where
   catalogue : GenericCatalogue.Checked artifact.sources
   audited : RuntimeInterval.Computed (GenericCatalogue.read artifact.sources) catalogue
@@ -203,13 +249,18 @@ def readSource (artifact : Artifact) (owner name : String) (arguments : StaticTy
     WorkM (Source artifact owner name arguments) := do
   let catalogue ← NaturalAffine.witness (GenericCatalogue.read artifact.sources)
   let pending ← NaturalAffine.witness (SourcePendingMeaning.read catalogue.val)
-  let signature ← NaturalAffine.witness
-    (SourceRuntimeContext.readSignature artifact.sources owner name arguments .external (some catalogue.val))
-  let body ← NaturalAffine.witness (SourceRuntimeTrace.readBodyWithSignature signature.val)
+  let selection ← readSelectedSource artifact catalogue.val owner name arguments
   return ⟨catalogue.val,by with_reducible exact catalogue.property,
-    pending.val,by with_reducible exact pending.property,signature.val,
-    by with_reducible exact signature.property,
-    body.val,by with_reducible exact body.property⟩
+    pending.val,by with_reducible exact pending.property,selection.signature,
+    selection.selected,selection.body,selection.traversed⟩
+
+/-- Reuse every actual component of a successful strict read, including the
+assessment preparation retained by that read. This claims no new whole-reader
+run and never reconstructs a source body or canonical queue. -/
+def Source.preparation {artifact owner name arguments} (source : Source artifact owner name arguments) :
+    PreparedSource artifact owner name arguments :=
+  ⟨source.catalogue,source.audited,source.pending.toPrepared,source.pending.preparedRead,
+    ⟨source.signature,source.selected,source.body,source.traversed⟩⟩
 
 structure Headers (artifact : Artifact) (owner name : String) (arguments : StaticTypes.Arguments)
     (request : Context) where

@@ -6,10 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
-- Prepare classical Meaning candidates from complete canonical inputs and
-  compare every row with an independent interpreter of the original source
-  trees and callees. Retain exact nominal types, tuple order and scalar phase;
-  native implementation equations and Meaning admission remain unfinished.
+- Check a single direct `checked_op` caller, its provider body and its declared
+  Meaning against one Lean dependency graph. The exact comparison detects a
+  changed reference or a missing phase in the caller's literal IR. Composed
+  and tensor Meanings preserve source order and use every canonical input of
+  each classical leaf. General arm and catalogue coverage remain open.
 - Preserve original classical-only contracts across module calls when checking
   quantum use. Keep the declared public effect as the external effect bound.
 - Expand original operation duties in source order through checked call-chain

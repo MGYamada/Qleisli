@@ -1,7 +1,6 @@
 import QleisliKernel.Qirf.SourceDutyProviderHeader
-import QleisliKernel.Qirf.RuntimeProviderPaths
+import QleisliKernel.Qirf.RuntimeProviderAction
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
-import QleisliKernel.Qirf.RuntimePureBody
 
 /-! Consume bounded authenticated provider bodies under one retained final graph.
 Nongeneric and source-bound Basis/Nat applications keep separate eligibility.
@@ -165,20 +164,11 @@ structure Checked {artifact catalogue record invocation demand view provider pre
 private def consume {artifact catalogue record invocation demand view provider prepared request header}
     (source : @Discovered artifact catalogue record invocation demand view provider prepared request header)
     (root : Validity.Root) : WorkM (Checked source root) := do
-  let paths ← NaturalAffine.witness (RuntimeProviderPaths.read header.binding.header root view.requested)
-  let native := paths.val
-  have sameProgram : native.ir.original.program = header.binding.program :=
-    Option.some.inj (native.ir.original.original.symm.trans header.binding.originalProgram)
-  let body := header.binding.header.original.body
-  let roles := body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners
-  let owner : Semantics.CarrierInterface.Owner :=
-    ⟨native.ir.original.prepared.ports.input,native.ir.original.prepared.ports.domain⟩
-  let initial ← NaturalAffine.witness (RuntimeSourceBoundary.bindings roles [owner])
-  let prepared ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies native.ir.original.program)
-  let checked ← NaturalAffine.witness (RuntimePureBody.checkPrepared artifact root body
-    native.ir.original.program request.2 initial.val prepared.val)
-  return ⟨paths.val,by with_reducible exact paths.property,sameProgram,initial.val,by with_reducible exact initial.property,
-    prepared.val,by with_reducible exact prepared.property,checked.val,by with_reducible exact checked.property⟩
+  let checked ← RuntimeProviderAction.read header.binding.header root view.requested
+  have sameProgram : checked.paths.ir.original.program = header.binding.program :=
+    Option.some.inj (checked.paths.ir.original.original.symm.trans header.binding.originalProgram)
+  return ⟨checked.paths,checked.pathRead,sameProgram,checked.initial,checked.initialRead,
+    checked.interval,checked.intervalRead,checked.body,checked.consumed⟩
 
 def Result {artifact} (root : Validity.Root) : Contribution artifact → Type
   | .provider source => Checked source root
@@ -188,26 +178,32 @@ private def consumeContribution {artifact} (root : Validity.Root) (contribution 
   match contribution with
   | .provider source => consume source root
 
-structure Entry {artifact} (final : Final artifact) where
-  index : Fin final.contributions.length
-  result : Result final.root (final.contributions[index.val]'index.isLt)
+structure EntryAt {artifact} (contributions : List (Contribution artifact)) (root : Validity.Root) where
+  index : Fin contributions.length
+  result : Result root (contributions[index.val]'index.isLt)
   original : SourceDutySlots.Computed
-    (consumeContribution final.root (final.contributions[index.val]'index.isLt)) result
+    (consumeContribution root (contributions[index.val]'index.isLt)) result
 
-structure All {artifact} (final : Final artifact) where
-  entries : List (Entry final)
-  every : entries.map (·.index) = List.finRange final.contributions.length
+structure AllAt {artifact} (contributions : List (Contribution artifact)) (root : Validity.Root) where
+  entries : List (EntryAt contributions root)
+  every : entries.map (·.index) = List.finRange contributions.length
+
+abbrev Entry {artifact} (final : Final artifact) := EntryAt final.contributions final.root
+abbrev All {artifact} (final : Final artifact) := AllAt final.contributions final.root
 
 /-- Every ordered contribution consumes its own original context/body and its
 unaltered per-occurrence access demand under the exact same final root. Source
 M/full-graph obligations are not consumed or credited by this body result. -/
-def read {artifact} (final : Final artifact) : WorkM (All final) := do
-  exactWork (Exact.charge (32*(final.contributions.length+1)^2))
-  let entries ← (List.finRange final.contributions.length).mapM fun index => do
-    let checked ← NaturalAffine.witness (consumeContribution final.root (final.contributions[index.val]'index.isLt))
-    return (⟨index,checked.val,by with_reducible exact checked.property⟩ : Entry final)
-  if every : entries.map (·.index) = List.finRange final.contributions.length then
+def readAt {artifact} (contributions : List (Contribution artifact)) (root : Validity.Root) :
+    WorkM (AllAt contributions root) := do
+  exactWork (Exact.charge (32*(contributions.length+1)^2))
+  let entries ← (List.finRange contributions.length).mapM fun index => do
+    let checked ← NaturalAffine.witness (consumeContribution root (contributions[index.val]'index.isLt))
+    return (⟨index,checked.val,by with_reducible exact checked.property⟩ : EntryAt contributions root)
+  if every : entries.map (·.index) = List.finRange contributions.length then
     return ⟨entries,every⟩
   else throw .request
+
+def read {artifact} (final : Final artifact) : WorkM (All final) := readAt final.contributions final.root
 
 end QleisliKernel.Qirf.SourceDutyProviderBody

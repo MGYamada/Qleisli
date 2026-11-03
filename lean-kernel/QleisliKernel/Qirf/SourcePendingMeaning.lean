@@ -256,19 +256,21 @@ private def retain {sources catalogue queue} (index : Fin queue.items.length)
   cases atIndex
   exact ⟨index,_,rfl,assessment,original⟩
 
-structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) where
+/-! Complete assessment is reusable preparation, never a Meaning discharge.
+In particular an honest closed request and a false closed request can both be
+present here. The strict reader below still requires the original withheld
+predicate after every original item has been assessed. -/
+structure Prepared {sources} (catalogue : GenericCatalogue.Checked sources) where
   queue : GenericDutyQueue.Checked catalogue
   expanded : ∃ before after,(GenericDutyQueue.read catalogue).run before = (.ok queue,after)
   complete : queue.complete = true
   entries : List (Entry queue)
   every : entries.map (·.index) = List.finRange queue.items.length
-  withheld : entries.all (fun entry => !entry.unconsumed) = true
 
-/-- Both existing preparation entry points use this same complete queue gate.
-Closed M remains withheld pending its actual native equation, including honest
-closed requests. Symbolic deferral is not an M proof, and inactive Nat metadata
-is not an access proof. Recursion with unresolved coverage cannot pass. -/
-def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Checked catalogue) := do
+/-- Retain the same actual canonical queue and every original assessment.
+This entry does not assert that closed Meaning requirements are consumed.
+Unresolved recursive coverage and failed original guard checks still refuse. -/
+def prepare {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Prepared catalogue) := do
   let queue ← NaturalAffine.witness (GenericDutyQueue.read catalogue)
   let items := queue.val.items
   -- Convert once and retain each actual subject. Array access, the range/map
@@ -284,10 +286,21 @@ def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Check
       let assessment ← NaturalAffine.witness (inspect subject)
       return retain index subject atIndex assessment.val (by with_reducible exact assessment.property)
     if every : entries.map (·.index) = List.finRange queue.val.items.length then
-      if withheld : entries.all (fun entry => !entry.unconsumed) = true then
-        return ⟨queue.val,by with_reducible exact queue.property,complete,entries,every,withheld⟩
-      else throw .request
+      return ⟨queue.val,by with_reducible exact queue.property,complete,entries,every⟩
     else throw .request
+  else throw .request
+
+structure Checked {sources} (catalogue : GenericCatalogue.Checked sources) extends Prepared catalogue where
+  preparedRead : ∃ before after,(prepare catalogue).run before = (.ok toPrepared,after)
+  withheld : entries.all (fun entry => !entry.unconsumed) = true
+
+/-- The strict gate has the same original queue/inspection/coverage/withheld
+order and charges. Preparing the reusable data adds no budget reset, body read
+or replacement Meaning authority. A closed request still refuses here. -/
+def read {sources} (catalogue : GenericCatalogue.Checked sources) : WorkM (Checked catalogue) := do
+  let prepared ← NaturalAffine.witness (prepare catalogue)
+  if withheld : prepared.val.entries.all (fun entry => !entry.unconsumed) = true then
+    return ⟨prepared.val,by with_reducible exact prepared.property,withheld⟩
   else throw .request
 
 end QleisliKernel.Qirf.SourcePendingMeaning
