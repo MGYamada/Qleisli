@@ -34,7 +34,8 @@ structure Checked (roles : List Owner) (state : State) where
 
 /-- The full live frame must occur exactly once. Exact ordered source roles
 are an input from the original body continuation, never transport flags. -/
-def check (roles : List Owner) (state : State) (bindings : Map) : WorkM (Checked roles state) := do
+def checkBindings (roles : List Owner) (state : State) (bindings : Map) :
+    WorkM {checked : Checked roles state // checked.bindings = bindings} := do
   guard (roles.length ≤ 128 && state.quantum.live.length ≤ 128 && bindings.length ≤ 128) .limit
   exactWork (Exact.charge (16*(Raw.OwnerFlow.fields roles+1)*(bindings.length+1)+
     64*(roles.length+state.quantum.live.length+bindings.length+1)^2))
@@ -42,11 +43,14 @@ def check (roles : List Owner) (state : State) (bindings : Map) : WorkM (Checked
     if ownersDistinct : (roles.map (·.ordinal)).Nodup then
       if tokensDistinct : (bindings.map (·.port.token)).Nodup then
         if complete : (bindings.map (·.port)).Perm state.quantum.live then
-          return ⟨bindings,ordered,ownersDistinct,tokensDistinct,complete⟩
+          return ⟨⟨bindings,ordered,ownersDistinct,tokensDistinct,complete⟩,rfl⟩
         else throw .request
       else throw .request
     else throw .request
   else throw .request
+
+def check (roles : List Owner) (state : State) (bindings : Map) : WorkM (Checked roles state) :=
+  return (← checkBindings roles state bindings).val
 
 /-- Reorder only by independently derived logical identity. Equal-width ports
 or identical basis trees cannot satisfy a missing owner. -/

@@ -1,3 +1,4 @@
+import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
@@ -77,7 +78,8 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (inputCode outputCode : Semantics.Exact.Matrix) (labels : List Nat)
       (expected logical : List Semantics.Exact.Matrix)
       (equations : RuntimeInterval.Computed
-        (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical) : Node dependencies program block
+        (NominalSector.checkLogicals inputCode outputCode restriction.sectors labels expected) logical)
+      (owners : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) : Node dependencies program block
 
 inductive Nodes (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
@@ -155,26 +157,10 @@ abbrev LoopState (dependencies : List Semantics.Finite.Dependency)
     List (Node dependencies program block) × List (Step dependencies program block) × List (Island dependencies) ×
     Nat × List (Position × Context) × List RuntimeContextRequest.Site × List RuntimeProviderHeader.Request
 
-/-- Literal Raw transport determines each token's opaque source role. Width or
-wire equality never chooses between owners, including separate Unit owners. -/
-private def transition {dependencies program block start count}
-    (interval : @RuntimeInterval.Checked dependencies program block start count) (before : Map) : WorkM Map := do
-  exactWork (Exact.charge (32*(before.length+1)*(block.operations.length+1)))
-  let operations ← lift (readOption (Sector.pureOps ((block.operations.drop start).take count)))
-  let seeded ← lift (readOption (Semantics.RawOwnerFlow.seed (before.map (·.owner)) (before.map (·.port))))
-  let frame ← lift (readOption (operations.foldlM Semantics.RawOwnerFlow.step seeded))
-  frame.mapM fun (token,tree) => do
-    match tree with
-    | .pair .. => throw .request
-    | .owner role bits =>
-      let some port := interval.after.quantum.live.find? (·.token == token) | throw .request
-      guard (port.bits == bits) .request
-      return ⟨role,port⟩
-
-private def reordered (roles : List Owner) (state : Raw.Observation.State) (bindings : Map) : WorkM Map := do
+private def reordered (roles : List Owner) (state : Raw.Observation.State) (bindings : Map) :
+    WorkM (RuntimeOwnerMap.Checked roles state) := do
   let ordered ← RuntimeOwnerMap.order roles bindings
-  let checked ← RuntimeOwnerMap.check roles state ordered
-  return checked.bindings
+  RuntimeOwnerMap.check roles state ordered
 
 private def singletonOrdinary (value : Value) : Bool := (ordinary value).all fun (basis,_) =>
   Semantics.FiniteCarrier.dimension basis == some 1
@@ -211,7 +197,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
         guard (SourceEffect.permits (some program.effect) source.summary.inferredEffect) .request
       let roles := source.summary.parameterValues.flatMap valueOwners
       let initial ← reordered roles prepared.entry initial
-      let initialHistory : RuntimeStructuralAction.SourceState := ⟨initial,roles,source.summary.nextOwner⟩
+      let initialHistory : RuntimeStructuralAction.SourceState := ⟨initial.bindings,roles,source.summary.nextOwner⟩
       let checkOperation {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (requests : List RuntimeProviderHeader.Request) :
@@ -265,7 +251,8 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             WorkM (LoopState dependencies program prepared.block) := fun state (event,position) => do
           let (history,retired,ordinary,actions,steps,obligations,_cursor,calls,sites,bodies) ← advance state position.start
           let interval ← RuntimeInterval.check prepared.block position.start position.count
-          let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+          let callerFrame ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+          let bindings := callerFrame.bindings
           let before : RuntimeStructuralAction.SourceState := {history with bindings}
           let structural := match event with
             | .primitive event => ([.join,.split,.unit,.finish] : List CallName.Primitive).contains event.kind
@@ -273,11 +260,9 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
           let observing := match event with
             | .primitive event => ([.measureZ,.discard] : List CallName.Primitive).contains event.kind
             | _ => false
-          let separatelyBound := structural || observing || match event with | .named _ => true | _ => false
-          let after : Map ← if separatelyBound then pure bindings else do
-            let changed ← transition interval bindings
-            reordered (bindings.map (·.owner)) interval.after changed
-          let continued : RuntimeStructuralAction.SourceState := {before with bindings := after}
+          let readOwners := RuntimeOwnerTransition.read interval callerFrame.bindings
+          let continuation (owners : RuntimeOwnerTransition.Checked interval callerFrame.bindings) :
+              RuntimeStructuralAction.SourceState := {before with bindings := owners.after.bindings}
           match event with
           | .primitive event =>
             if structural then
@@ -293,6 +278,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
                 return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
                   obligations,position.start+position.count,calls,sites,bodies)
             else do
+              let owners ← readOwners
               guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
               let [[.owner operand]] := event.arguments | throw .request
               let kind ← match event.kind with
@@ -300,19 +286,20 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
                 | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
                 | _ => throw .request
               let [input] ← rolePorts [operand] bindings | throw .request
-              let [output] ← rolePorts [operand] after | throw .request
+              let [output] ← rolePorts [operand] owners.after.bindings | throw .request
               let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
                 input.token output.token operand kind
               let node : Node dependencies program prepared.block := .primitive action
-              return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              return (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations,position.start+position.count,calls,sites,bodies)
           | .phase event =>
+            let owners ← readOwners
             let [input] ← rolePorts [event.operand] bindings | throw .request
-            let [output] ← rolePorts [event.operand] after | throw .request
+            let [output] ← rolePorts [event.operand] owners.after.bindings | throw .request
             let action ← RuntimePrimitiveAction.check prepared.block position.start position.count
               input.token output.token event.operand (.phase event.application.coefficient.exponent)
             let node : Node dependencies program prepared.block := .primitive action
-            return (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+            return (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,calls,sites,bodies)
           | .named event =>
             let (callPosition,child) :: calls := calls | throw .request
@@ -356,6 +343,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
                   obligations ++ nested.obligations,position.start+position.count,calls,sites,bodies)
             else throw .request
           | .operation event =>
+            let owners ← readOwners
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
               event.allocated.isEmpty && event.consumed.isEmpty) .request
             let (callPosition,child) :: calls := calls | throw .request
@@ -363,7 +351,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               child.calls.isEmpty && child.branches.isEmpty) .request
             let (expected,children) ← checkOperation event.operation.graph OperationAccess.applicable child.bodies
             let inputs ← rolePorts event.inputOwners bindings
-            let outputs ← rolePorts event.inputOwners after
+            let outputs ← rolePorts event.inputOwners owners.after.bindings
             let frame ← RuntimePureInterval.check prepared.block inputs.length position.start position.count
               (inputs.map (·.token)) (outputs.map (·.token)) event.inputOwners
             let inputCode ← NaturalAffine.witness
@@ -378,17 +366,22 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
               let node : Node dependencies program prepared.block := .operation frame inputCode.val outputCode.val physical.val expected
                 (by with_reducible exact inputCode.property) (by with_reducible exact outputCode.property)
                 (by with_reducible exact physical.property) action equation
-              pure (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations ++ children,position.start+position.count,calls,sites,bodies)
             else throw .equation
           | .selection _ parsed _ selector target scope naturals .. =>
+            let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
             let site :: sites := sites | throw .request
             guard (site.position == position) .request
             let table ← QuantumArms.readArmsWithInstantiation source.signature.original source.signature.instantiation
               source.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
             guard (table.arms.length == site.arms.length) .request
-            let [si,ti] ← rolePorts [selector,target] bindings | throw .request
-            let [so,to] ← rolePorts [selector,target] after | throw .request
+            let entry ← RuntimeOwnerTransition.readPair [selector,target] callerFrame.bindings
+            let exit ← RuntimeOwnerTransition.readPair [selector,target] owners.after.bindings
+            let si := entry.first.port
+            let ti := entry.second.port
+            let so := exit.first.port
+            let to := exit.second.port
             let expectedInterface : Semantics.CarrierInterface.Interface :=
               ⟨[⟨si,selector.basis⟩,⟨ti,target.basis⟩],[⟨so,selector.basis⟩,⟨to,target.basis⟩],.unitary⟩
             guard (site.attached == expectedInterface && site.required == expectedInterface) .request
@@ -408,18 +401,22 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             let expected ← (List.range selectorLayout.labels.length).mapM fun ordinal => do
               let some (_,logical) := meanings.find? (·.1 == ordinal) | throw .request
               pure logical
-            let frame ← RuntimePureInterval.check prepared.block 2 position.start position.count
-              [si.token,ti.token] [so.token,to.token] [selector,target]
+            let attached ← RuntimePureInterval.checkAt interval 2 [si.token,ti.token] [so.token,to.token] [selector,target]
+            let frame := attached.val
+            let sourcePorts : RuntimeOwnerTransition.Selection interval [si.token,ti.token] [so.token,to.token] [selector,target] :=
+              ⟨_,callerFrame,owners,entry,exit,rfl,rfl⟩
             let restriction ← NaturalAffine.witness (Raw.Sector.read dependencies [.bits selectorLayout.bits]
               [.bits targetLayout.bits] (RuntimePureInterval.fragment frame.selected frame.operations [so.token,to.token]))
             let logical ← NaturalAffine.witness (NominalSector.checkLogicals inputCode outputCode restriction.val.sectors
               selectorLayout.labels expected)
             let node : Node dependencies program prepared.block := .selection frame selectorLayout.bits targetLayout.bits restriction.val
               (by with_reducible exact restriction.property) inputCode outputCode selectorLayout.labels expected logical.val
-              (by with_reducible exact logical.property)
-            pure (continued,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              (by with_reducible exact logical.property) (attached.property.symm ▸ sourcePorts)
+            pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ checked,position.start+position.count,calls,sites,bodies)
-          | _ => throw .request
+          | _ =>
+            let _ ← readOwners
+            throw .request
       let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) ←
         (source.events.zip request.positions).foldlM
         (fun state (event,position) => do
@@ -435,7 +432,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
             let state ← advance state position.start
             let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) := state
             let interval ← RuntimeInterval.check prepared.block position.start position.count
-            let bindings ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+            let bindings := (← reordered (history.bindings.map (·.owner)) interval.before history.bindings).bindings
             let before : RuntimeStructuralAction.SourceState := {history with bindings}
             let _ ← RuntimeStaticPrimitive.readContinuationBefore sequence interval before
             let count := sequence.selected.result.events.length
@@ -459,7 +456,7 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
         pure (gap.ssa,steps ++ [.gap gap])
       guard (history.issued == roles ++ source.summary.allocated && retired == source.summary.consumed &&
         history.nextOrdinal == source.summary.nextOrdinal) .request
-      let bindings ← reordered (valueOwners source.summary.value) prepared.whole.state history.bindings
+      let bindings := (← reordered (valueOwners source.summary.value) prepared.whole.state history.bindings).bindings
       let outputs ← rolePorts (valueOwners source.summary.value) bindings
       guard (match outputBoundary with
         | .rootOrder => outputs.map (·.token) == program.outputs

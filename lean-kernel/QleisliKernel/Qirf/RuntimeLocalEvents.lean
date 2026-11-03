@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeScatterTransport
+import QleisliKernel.Qirf.RuntimeOwnerTransition
 
 /-! Literal circuit-event composition in the same original runtime interval.
 The complete source owner maps, ordered selected wires, actual Raw trace and
@@ -171,6 +172,23 @@ def read {dependencies program block start count inputs outputs roles}
             else throw .request
         else throw .request
     else throw .request
+  else throw .request
+
+/-- Interpret a selection from the original body. Its checked caller frame and
+both returned bindings are determined by the source node. -/
+def readSource {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (selectorBits targetBits : Nat) (retained : Raw.Sector.Retained)
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) :
+    WorkM (Literal frame selectorBits targetBits retained restricted source.before source.transport.after) := do
+  let selected := [source.selected.first,source.selected.second]
+  let wireCount := source.selected.first.port.wires.length+source.selected.second.port.wires.length
+  exactWork (Exact.charge (4*(wireCount+1)*(wireCount+frame.interval.before.quantum.frame.length+1)))
+  if distinct : (RuntimeForestCode.forestAxes frame.interval.before.quantum.frame selected).Nodup then
+    read frame selectorBits targetBits retained restricted source.before source.transport.after
+      ⟨roles,selected,source.selected.ordered,distinct⟩
   else throw .request
 
 /-- Concrete event/reference composition for this same literal interval and

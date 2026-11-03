@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimePureBody
+import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Tests.ArmBody
@@ -36,7 +37,7 @@ private def checked (wrongRole wrongReturn : Bool) : WorkM Nat := do
 #guard (match (checked true false).run 10000000 with | (.error _,_) => true | _ => false)
 #guard (match (checked false true).run 10000000 with | (.error _,_) => true | _ => false)
 
-private def selected (exponent : Nat) : WorkM Nat := do
+private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat × List (Nat × Nat)) := do
   let artifact := ArmBody.artifact exponent
   let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
   let body ← SourceRuntimeTrace.readBodyWithSignature signature
@@ -45,7 +46,12 @@ private def selected (exponent : Nat) : WorkM Nat := do
   let some phase := sign.checked.events.head? | throw .request
   let some event := body.checked.events.head? | throw .request
   let position : SourceSequence.Position := ⟨event.offset,0,3⟩
-  let site : RuntimeContextRequest.Site := ⟨ArmBody.interface,ArmBody.interface,position,[⟨3,4⟩,⟨1,2⟩]⟩
+  let interface := ArmBody.interface
+  let proposed := if swapOutputs then
+    let outputs := interface.outputs.zipWith (fun owner other => {owner with port := other.port}) interface.outputs.reverse
+    {interface with outputs}
+  else interface
+  let site : RuntimeContextRequest.Site := ⟨proposed,proposed,position,[⟨3,4⟩,⟨1,2⟩]⟩
   let context : RuntimeContextRequest.Context := .mk [position] [site] [] []
     [(.function 1,.mk [⟨phase.offset,0,1⟩] [] [] [] []),(.function 0,.mk [] [] [] [] [])]
   let headers ← RuntimeBodyDiscovery.readHeaders artifact "main" "route" {} context
@@ -56,9 +62,15 @@ private def selected (exponent : Nat) : WorkM Nat := do
     ((ArmBody.interface).inputs.map fun owner => [.quantum owner])
   let actual ← Qirf.RuntimePureBody.check artifact fresh.root actualBody fresh.root.program context inputs.owners.bindings
   let _ ← RuntimePureComposition.prepare artifact fresh.root actualBody context inputs.owners.bindings actual
-  return actual.result.actions.length
+  let [.selection frame selectorBits targetBits retained restricted _ _ _ _ _ _ owners] := actual.result.actions
+    | throw .request
+  let localAction ← RuntimeLocalEvents.readSource frame selectorBits targetBits retained restricted owners
+  return (localAction.traceResult.events.length,
+    owners.transport.after.bindings.map fun b => (b.owner.ordinal,b.port.token))
 
-#guard (selected 4).run 10000000 |>.1.toOption == some 1
+#guard (selected 4).run 10000000 |>.1.toOption == some (1,[(0,4),(1,5)])
+-- Full port types and Raw are unchanged when the two claimed output tokens are swapped.
+#guard (match (selected 4 true).run 10000000 with | (.error .request,_) => true | _ => false)
 -- The whole main, arm, specification and control agree on the wrong phase.
 -- Every original provider body is nevertheless traversed, so this refuses.
 #guard (match (selected 0).run 10000000 with | (.error .equation,_) => true | _ => false)
@@ -132,5 +144,21 @@ private def namedStructural (omitH wrongJoin wrongReturn : Bool) : WorkM (List N
 #guard (match (namedStructural true false false).run 10000000 with | (.error .equation,_) => true | _ => false)
 #guard (match (namedStructural false true false).run 10000000 with | (.error .request,_) => true | _ => false)
 #guard (match (namedStructural false false true).run 10000000 with | (.error .request,_) => true | _ => false)
+
+/-- A complete source frame includes the Unit spectator even for an empty
+tape. The two active owners keep their identities when CNOT renames its ports. -/
+private def ownerFlow (gate : Bool) : WorkM (List (Nat × Nat)) := do
+  let roles : List RuntimeOwnerMap.Owner := [⟨0,[.bit]⟩,⟨1,[.bit]⟩,⟨2,[.unit]⟩]
+  let ports : List Semantics.Raw.Port := [⟨0,[0],1⟩,⟨1,[1],1⟩,⟨2,[],0⟩]
+  let ops := if gate then [Semantics.Observation.Op.pure (.cnot 0 1 4 5)] else []
+  let program : Semantics.Observation.Program := ⟨ports,[],ops,if gate then [4,5,2] else [0,1,2],[],.unitary⟩
+  let root ← RuntimeInterval.prepare [] program
+  let interval ← RuntimeInterval.check root.block 0 ops.length
+  let before ← RuntimeOwnerMap.check roles interval.before (roles.zipWith (fun owner port => ⟨owner,port⟩) ports)
+  let transport ← RuntimeOwnerTransition.read interval before.bindings
+  return transport.after.bindings.map fun b => (b.owner.ordinal,b.port.token)
+
+#guard (ownerFlow false).run 10000000 |>.1.toOption == some [(0,0),(1,1),(2,2)]
+#guard (ownerFlow true).run 10000000 |>.1.toOption == some [(0,4),(1,5),(2,2)]
 
 end QleisliKernel.Tests.RuntimePureBody
