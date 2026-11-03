@@ -40,10 +40,7 @@ private theorem layoutStep_suffix (atom : Atom) (before after suffix : List Layo
       have same : after = (before.take arity).foldl tensor singleton :: before.drop arity := by
         simpa [layoutStep,arities,tooMany] using read.symm
       subst after
-      change (if arity > (before ++ suffix).length then none else
-        some (((before ++ suffix).take arity).foldl tensor singleton ::
-          (before ++ suffix).drop arity)) = _
-      simp only [if_neg stillBounded,List.take_append_of_le_length bounded,
+      simp only [layoutStep,arities,bind,Option.bind,if_neg stillBounded,List.take_append_of_le_length bounded,
         List.drop_append_of_le_length bounded,List.cons_append]
 
 private theorem layoutFold_suffix (basis : Basis) (before after suffix : List Layout)
@@ -78,7 +75,7 @@ private theorem layoutFold_original (basis : Basis) (code : Layout)
       | nil =>
         have same : first = code := by simpa only [folded,bind,Option.bind,pure,Option.some.injEq] using read
         subst code
-        exact folded
+        rfl
 
 /-- A successful original prefix tree cannot consume a neighbouring owner's
 nodes. It pushes the same layout over every existing continuation stack. -/
@@ -90,7 +87,7 @@ theorem layout_continuation (basis : Basis) (code : Layout)
 
 private theorem singleton_tensor (code : Layout) : tensor singleton code = code := by
   cases code
-  simp [tensor,singleton]
+  simp [Semantics.FiniteCarrier.tensor,Semantics.FiniteCarrier.singleton]
 
 /-- Derive the complete pair's layout from the two original owner reads,
 without assuming a forest equality or identifying owners by their width. -/
@@ -100,6 +97,7 @@ theorem layout_pair_reference (first second : Basis) (left right : Layout)
     Semantics.FiniteCarrier.layout (.pair :: first ++ second) = some (tensor left right) := by
   have firstRead := layout_continuation first left leftRead [right]
   have secondRead := layout_continuation second right rightRead []
+  change Semantics.FiniteCarrier.layout (.pair :: (first ++ second)) = _
   unfold Semantics.FiniteCarrier.layout
   rw [List.foldr_cons,List.foldr_append,secondRead,firstRead]
   simp [layoutStep,children,singleton_tensor]
