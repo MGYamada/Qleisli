@@ -69,7 +69,13 @@ private def zeroSpectator (body : String) : String :=
 #guard view (zeroSpectator "(global_phase_eighth(u),h(q))") = some
   ([⟨"global_phase_eighth",[0],[],[0,1]⟩,⟨"h",[1],[0],[0,1]⟩],[0,1])
 #guard view (single "((h(q)))") = some ([⟨"h",[0],[],[0]⟩],[0])
-#guard view (single "let (q,)=(h(q),);q") = some ([⟨"h",[0],[],[0]⟩],[0])
+-- The original singleton-pattern source and failed positive prediction are
+-- retained in source-raw-full-build-regressions-first. The real shared pattern
+-- parser refuses it at both 2B and 10M, matching Rust's original tuple grammar.
+#guard rejected (single "let (q,)=(h(q),);q")
+-- A separately labelled executable translation keeps a genuine two-field
+-- source pattern; it does not recover invalid syntax by unwrapping an owner.
+#guard view (pair "let (a,b)=(h(a),b);(a,b)") = some ([⟨"h",[0],[],[0,1]⟩],[0,1])
 #guard rejected (single "(h(q),)") -- singleton tuple is not a quantum owner
 #guard rejected (pair "(h(a),h(a))")
 #guard rejected (zeroSpectator "h(q)")

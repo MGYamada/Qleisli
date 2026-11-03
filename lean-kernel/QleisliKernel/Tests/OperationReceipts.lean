@@ -32,7 +32,7 @@ private def forward : Option (List StaticOperation.Context × List (String × Bo
     let naturals ← PhaseApplication.prepareWithSignature bridge
     let call ← adapt (CallSyntax.read bridge.original.occurrence.body)
     let written ← adapt (StaticApplication.readSyntax call.call.callee)
-    let candidate ← CallName.read sources "b" ["U","q"] written.callee
+    let candidate ← CallName.read sources first.resolution.moduleName ["U","q"] written.callee
     let second ← QuantumSignature.selectInstance bridge naturals.helpers.val naturals.environment ["U","q"]
       written candidate naturals.generic
     let last := second.signature

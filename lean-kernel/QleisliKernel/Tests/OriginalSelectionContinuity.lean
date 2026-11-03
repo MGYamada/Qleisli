@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.QuantumArms
 
-/-! Frozen reader algorithms before shared original-witness extraction.
+/-! Compare the inlined original-site reader with the shared extraction.
+Both arm readers apply the Bit-only qif selector rule introduced after extraction.
 No runtime checker imports these test-only baselines.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.OriginalSelectionContinuity
@@ -24,6 +25,7 @@ def legacySite (sources : Sources) (owner name : String) (offset : Nat) :
 def legacyArms (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :
     WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.read sources owner name offset
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
@@ -33,7 +35,7 @@ def legacyArms (sources : Sources) (owner name : String) (offset : Nat) (selecto
       return ⟨site,layout.val,by with_reducible exact original.property,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete⟩
+        arms,same,complete,selectorKind.down⟩
     else throw .request
   else throw .request
 

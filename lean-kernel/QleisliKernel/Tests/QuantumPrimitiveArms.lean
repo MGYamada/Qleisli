@@ -28,4 +28,13 @@ private def arms (source : String) : Option (List (List Node)) :=
 #guard arms ("#![no_implicit_prelude] pub unitary fn choose(s:Q<Bit>,q:Q<Bit>,h:Q<Unit>)->(Q<Bit>,Q<Bit>)" ++
     "{let _=finish(h);qmatch(s,q){0=>h,1=>global_phase_eighth}}") = none
 
+-- A body-local binding remains in scope after the owner is consumed.
+#guard arms ("#![no_implicit_prelude] pub unitary fn choose(s:Q<Bit>,q:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>)" ++
+    "{let h=u;let _=finish(h);qmatch(s,q){0=>h,1=>global_phase_eighth}}") = none
+
+-- Finishing a differently named local leaves the legitimate gate visible.
+#guard arms ("#![no_implicit_prelude] pub unitary fn choose(s:Q<Bit>,q:Q<Bit>,u:Q<Unit>)->(Q<Bit>,Q<Bit>)" ++
+    "{let spare=u;let _=finish(spare);qmatch(s,q){0=>h,1=>global_phase_eighth}}") =
+  some [[.primitive .h [.bit]],[.primitive .globalPhaseEighth [.bit]]]
+
 end QleisliKernel.Tests.QuantumPrimitiveArms

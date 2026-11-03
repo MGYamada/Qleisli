@@ -17,6 +17,9 @@ development milestones from the scope of their evidence.
   input owners. The shared traversal verifies each condition over the
   original input and measurement histories and checks the simultaneous
   quantum and classical returns from both arms.
+- Recover the original lexical scope when inspecting a standalone `qmatch`
+  arm. A consumed argument or local named `h` continues to shadow the
+  primitive gate at the selection site.
 - Preserve original classical-only contracts across module calls when checking
   quantum use. Keep the declared public effect as the external effect bound.
 - Expand original operation duties in source order through checked call-chain

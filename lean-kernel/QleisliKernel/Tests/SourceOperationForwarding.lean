@@ -23,12 +23,26 @@ private def sources (actual : String := "local") : Sources :=
 #guard ((SourceTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.toOption.isNone
 #guard ((SourceRuntimeTrace.read (sources "foreign::conservative") "main" "route").run 2000000000).1.toOption.isNone
 
-private def spectator : Sources :=
+private def unannotatedSpectator : Sources :=
   #[("main","use lib::copy;unitary fn local(q:Q<Bit>)->Q<Bit>{h(q)}pub fn route(c:Bit)->Bit{copy[local](c)}"),
     ("lib","pub fn copy[const U:Op<Bit>](c:Bit)->Bit requires Applicable(U){c}")] ++
     SourceTraceOriginals.bundled
-#guard ((SourceRuntimeTrace.read spectator "main" "route").run 2000000000).1.toOption.map
+
+-- The original public family has quantum use through its Op formal, even
+-- when the runtime result is ordinary and that formal is unused in the body.
+#guard ((SourceRuntimeTrace.read unannotatedSpectator "main" "route").run 2000000000).1.toOption.isNone
+
+private def spectator (parameter : String := "c") : Sources :=
+  #[("main","use lib::copy;unitary fn local(q:Q<Bit>)->Q<Bit>{h(q)}pub unitary fn route(" ++
+      parameter ++ ":Bit)->Bit{copy[local](" ++ parameter ++ ")}"),
+    ("lib","pub unitary fn copy[const U:Op<Bit>](c:Bit)->Bit requires Applicable(U){c}")] ++
+    SourceTraceOriginals.bundled
+#guard ((SourceRuntimeTrace.read (spectator "c") "main" "route").run 2000000000).1.toOption.map
   (fun checked => checked.summary.inferredEffect) = some .unitary
+
+-- A runtime binding named local cannot supply the private function of that
+-- spelling as an operation actual, including an otherwise unused actual.
+#guard ((SourceRuntimeTrace.read (spectator "local") "main" "route").run 2000000000).1.toOption.isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeContext.fromPreparedWithArguments
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeContext.fromQuantumCore

@@ -1,3 +1,4 @@
+import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.StaticSelection
 import QleisliKernel.SourceTypes.PhaseApplication
@@ -244,14 +245,25 @@ def read (sources : Sources) (owner name : String) (offset : Nat) (selector targ
   let original ← OrdinarySignature.readOriginal sources owner name
   readArms original offset selector target
 
-/-- Read the unchanged original site using the same checked caller instance as
-its complete source trace. Supplying no event environment seeds the original
-header actuals; complete source traversal supplies local aliases when present. -/
+/-- A standalone signature lookup must recover the original lexical names at
+the requested event, including binders consumed before the selection. -/
+private def scopeAt {sources owner name} (signature : QuantumSignature.Checked sources owner name)
+    (offset : Nat) : WorkM (List String) := do
+  let runtime ← SourceRuntimeContext.fromQuantumCore signature.toChecked signature.context signature.operations
+  let body ← SourceRuntimeTrace.readBodyWithSignature runtime.signature
+  let some scope := body.checked.events.findSome? (fun
+    | .selection _ parsed _ _ _ scope .. => if parsed.keyword.span.startByte == offset then some scope else none
+    | _ => none) | throw .request
+  return scope
+
+/-- Use the selected caller's header actuals and original lexical scope.
+Complete traversal supplies local aliases. A standalone lookup recovers the
+scope at this byte offset from the same instantiated caller body. -/
 def readArmsWithSignature {sources owner name}
     (signature : QuantumSignature.Checked sources owner name)
     (offset : Nat) (selector target : Basis)
     (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
-    (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
+    (eventScope : Option (List String) := none) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite signature.original offset
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
@@ -259,7 +271,8 @@ def readArmsWithSignature {sources owner name}
   let naturals ← match eventNaturals with
     | some naturals => pure naturals
     | none => PhaseApplication.prepareWithSignature signature
-  let scope := signature.staticNames ++ eventScope
+  let locals ← match eventScope with | some names => pure names | none => scopeAt signature offset
+  let scope := signature.staticNames ++ locals
   let arms ← site.parsed.arms.mapM (readArmWithSignature signature naturals scope selector target)
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
@@ -275,8 +288,8 @@ def readArmsWithInstantiation {sources owner name}
     (originalCaller : OrdinarySignature.Original sources owner name)
     (instantiation : StaticInstantiation.Checked originalCaller) (supply : StaticOperation.Supply instantiation)
     (offset : Nat) (selector target : Basis)
-    (eventNaturals : Option (PhaseApplication.Naturals sources) := none)
-    (eventScope : List String := []) : WorkM (Table sources owner name offset selector target) := do
+    (eventNaturals : Option (PhaseApplication.Naturals sources))
+    (eventScope : List String) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite originalCaller offset
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])

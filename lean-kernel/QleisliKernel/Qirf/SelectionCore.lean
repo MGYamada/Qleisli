@@ -38,6 +38,7 @@ def readHeader (artifact : Artifact) {owner name} (signature : SourceTypes.Quant
     (naturals : Option (SourceTypes.PhaseApplication.Naturals artifact.sources) := none)
     (scope : List String := []) : WorkM (Header artifact signature) := do
   let event := pair.1
+  let scope := event.scope ++ scope
   let request := pair.2
   guard (NominalSector.shape request.attached request.required) .request
   SourceTypes.checkMany artifact.sources (NominalSector.forests request.attached request.required)

@@ -8,16 +8,16 @@ can conflate two original instantiations or skip a statically unused arm.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.SourceBodyHeader
 open QleisliKernel QleisliKernel.SourceTypes QleisliKernel.Qirf Finite
-open PureInterval (Witness)
+open QleisliKernel.Qirf.PureInterval (Witness)
 abbrev Context := SourceContextRequest.Context
 
-structure Header {artifact owner name} (source : SourceTrace.Checked artifact.sources owner name)
+structure Header {artifact : Artifact} {owner name} (source : SourceTrace.Checked artifact.sources owner name)
     (request : Context) where
   sites : List (SelectionCore.Header artifact source.signature)
   everyEvent : sites.map (·.event) = source.result.events.filterMap ContextSector.selection
   everyRequest : sites.map (·.request) = request.sites
 
-def read {artifact owner name} (source : SourceTrace.Checked artifact.sources owner name)
+def read {artifact : Artifact} {owner name} (source : SourceTrace.Checked artifact.sources owner name)
     (request : Context) : WorkM (Header source request) := do
   guard (source.result.events.all fun event => match event with | .operation _ => false | _ => true) .request
   guard (request.sites.length ≤ 128) .limit

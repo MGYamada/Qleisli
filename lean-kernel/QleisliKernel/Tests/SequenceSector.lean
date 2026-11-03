@@ -11,7 +11,7 @@ open Semantics Semantics.Raw Semantics.FiniteCarrier Semantics.CarrierInterface
 open Qirf.SequenceSector
 
 def selection := "qmatch(s,q){Tag::B=>sign,Tag::A=>keep}"
-def text := "// λ qmatch is not a comment site\npub enum Tag{A,B} " ++
+def text := "#![no_implicit_prelude]\n// λ qmatch is not a comment site\npub enum Tag{A,B} " ++
   "unitary fn keep(q:Q<Bit>)->Q<Bit>{q} unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)} " ++
   "pub unitary fn route(s:Q<Tag>,q:Q<Bit>,u:Q<Unit>)->(Q<Unit>,Q<Tag>,Q<Bit>){let(s,q)=" ++ selection ++
   ";let(s,q)=" ++ selection ++ ";(u,s,q)}"
