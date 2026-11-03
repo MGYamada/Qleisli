@@ -63,10 +63,11 @@ private abbrev SameReference {sources caller owner name meaning}
     original.supplied.context = .source reference.caller ∧ reference.caller = referenceSite.node.owner
 
 structure Original (artifact : Artifact) {caller owner name meaning}
-    (referenceSite : @At artifact.sources caller owner name meaning) where
+    (referenceSite : @At artifact.sources caller owner name meaning)
+    (catalogue : Option (GenericCatalogue.Checked artifact.sources) := none) where
   graph : StaticOperation.CheckedGraph artifact.sources (.source referenceSite.reference.caller) (description referenceSite.reference)
   graphRead : SourceDutySlots.Computed
-    (StaticOperation.check artifact.sources (.source referenceSite.reference.caller) (description referenceSite.reference)) graph
+    (StaticOperation.check artifact.sources (.source referenceSite.reference.caller) (description referenceSite.reference) catalogue) graph
   providerSource : RuntimeProviderHeader.Original graph 0
   sourceRead : SourceDutySlots.Computed (RuntimeProviderHeader.readOriginal graph 0) providerSource
   bound : SameReference referenceSite providerSource
@@ -75,12 +76,18 @@ structure Original (artifact : Artifact) {caller owner name meaning}
 readers must retain the exact empty instance; an unused actual cannot disappear
 through this adapter if that syntax is extended later. -/
 def readOriginal (artifact : Artifact) {caller owner name meaning}
-    (referenceSite : @At artifact.sources caller owner name meaning) : WorkM (Original artifact referenceSite) := do
+    (referenceSite : @At artifact.sources caller owner name meaning)
+    (catalogue : Option (GenericCatalogue.Checked artifact.sources) := none) :
+    WorkM (Original artifact referenceSite catalogue) := do
   let graph ← NaturalAffine.witness
-    (StaticOperation.check artifact.sources (.source referenceSite.reference.caller) (description referenceSite.reference))
+    (StaticOperation.check artifact.sources (.source referenceSite.reference.caller) (description referenceSite.reference) catalogue)
   let original ← NaturalAffine.witness (RuntimeProviderHeader.readOriginal graph.val 0)
   let provider := original.val.supplied.provider
   let reference := referenceSite.reference
+  -- The optional catalogue supplies only its exact original-record projection
+  -- after readProvider's unchanged declaration/type/visibility checks. It is
+  -- retained in this reader's type and actual graph computation; it supplies
+  -- neither reference authority nor catalogue-wide source relevance.
   -- Exact source/declaration/occurrence and two-port comparisons examine these
   -- actual bytes/trees. Empty-argument tests only inspect list constructors.
   exactWork (Exact.charge (32*(provider.signature.original.source.utf8ByteSize+
@@ -95,9 +102,10 @@ def readOriginal (artifact : Artifact) {caller owner name meaning}
   else throw .request
 
 structure Prepared (artifact : Artifact) {caller owner name meaning}
-    (referenceSite : @At artifact.sources caller owner name meaning) (request : RuntimeProviderHeader.Request) where
-  original : Original artifact referenceSite
-  originalRead : SourceDutySlots.Computed (readOriginal artifact referenceSite) original
+    (referenceSite : @At artifact.sources caller owner name meaning) (request : RuntimeProviderHeader.Request)
+    (catalogue : Option (GenericCatalogue.Checked artifact.sources) := none) where
+  original : Original artifact referenceSite catalogue
+  originalRead : SourceDutySlots.Computed (readOriginal artifact referenceSite catalogue) original
   header : {header : RuntimeProviderHeader.Header artifact original.graph 0 request //
     header.original = original.providerSource}
   headerRead : SourceDutySlots.Computed
@@ -108,21 +116,22 @@ structure Prepared (artifact : Artifact) {caller owner name meaning}
     header.val.original.body.checked.summary.staticRows request.2 true) discovery
   relevance : SourceRows.Retained (referenceSite.rows ++ header.val.rows ++ discovery.rows)
 
-def Prepared.rows {artifact caller owner name meaning referenceSite request}
-    (prepared : @Prepared artifact caller owner name meaning referenceSite request) : List SourceRows.Row :=
+def Prepared.rows {artifact caller owner name meaning referenceSite request catalogue}
+    (prepared : @Prepared artifact caller owner name meaning referenceSite request catalogue) : List SourceRows.Row :=
   prepared.relevance.rows
 
-def Prepared.roots {artifact caller owner name meaning referenceSite request}
-    (prepared : @Prepared artifact caller owner name meaning referenceSite request) : List Nat :=
+def Prepared.roots {artifact caller owner name meaning referenceSite request catalogue}
+    (prepared : @Prepared artifact caller owner name meaning referenceSite request catalogue) : List Nat :=
   prepared.header.val.roots ++ prepared.discovery.roots
 
 /-- Retain the actual original/reference/header/discovery runs once before the
 enclosing graph. These rows are actual query closures, never catalogue-wide
 relevance or a body equation. No final graph is checked by this function. -/
 def prepare (artifact : Artifact) {caller owner name meaning}
-    (referenceSite : @At artifact.sources caller owner name meaning) (request : RuntimeProviderHeader.Request) :
-    WorkM (Prepared artifact referenceSite request) := do
-  let original ← NaturalAffine.witness (readOriginal artifact referenceSite)
+    (referenceSite : @At artifact.sources caller owner name meaning) (request : RuntimeProviderHeader.Request)
+    (catalogue : Option (GenericCatalogue.Checked artifact.sources) := none) :
+    WorkM (Prepared artifact referenceSite request catalogue) := do
+  let original ← NaturalAffine.witness (readOriginal artifact referenceSite catalogue)
   let header ← NaturalAffine.witness
     (RuntimeProviderHeader.readWithOriginal artifact original.val.providerSource request)
   let body := header.val.val.original.body.checked
@@ -134,21 +143,21 @@ def prepare (artifact : Artifact) {caller owner name meaning}
 
 def forward : OperationPaths.Paths := ⟨true,false,false⟩
 
-abbrev Checked {artifact caller owner name meaning referenceSite request}
-    (prepared : @Prepared artifact caller owner name meaning referenceSite request) (root : Validity.Root) :=
+abbrev Checked {artifact caller owner name meaning referenceSite request catalogue}
+    (prepared : @Prepared artifact caller owner name meaning referenceSite request catalogue) (root : Validity.Root) :=
   RuntimeProviderAction.Checked prepared.header.val root forward
 
 /-- Consume this exact forward reference at the caller's SAME final root.
 Independent original/closed effect gates reject hidden observation. The checked
 body cannot be replaced by a structurally unitary map or matching Gram data.
 The enclosing M consumer still owes its full graph and subject equation. -/
-def read {artifact caller owner name meaning referenceSite request}
-    (prepared : @Prepared artifact caller owner name meaning referenceSite request) (root : Validity.Root) :
+def read {artifact caller owner name meaning referenceSite request catalogue}
+    (prepared : @Prepared artifact caller owner name meaning referenceSite request catalogue) (root : Validity.Root) :
     WorkM (Checked prepared root) :=
   RuntimeProviderAction.read prepared.header.val root forward
 
-def Checked.action {artifact caller owner name meaning referenceSite request prepared root}
-    (checked : @Checked artifact caller owner name meaning referenceSite request prepared root) : Semantics.Exact.Matrix :=
+def Checked.action {artifact caller owner name meaning referenceSite request catalogue prepared root}
+    (checked : @Checked artifact caller owner name meaning referenceSite request catalogue prepared root) : Semantics.Exact.Matrix :=
   RuntimeProviderAction.Checked.action checked
 
 end QleisliKernel.Qirf.SourceMeaningQuantum

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain the caller's exact checked declaration catalogue while preparing
+  quantum Meaning references. Reference-specific source, type, visibility and
+  effect checks, original body reads and the final native root stay explicit.
+
 - Reuse a static quantum core's original checked numeric environment when
   reading its mixed runtime signature. Full type, condition, effect and actual
   comparisons remain fresh; closed cores retain their existing preparation.

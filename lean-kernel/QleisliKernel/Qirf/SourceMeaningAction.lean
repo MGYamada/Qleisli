@@ -40,9 +40,9 @@ inductive Node (artifact : Artifact) (catalogue : GenericCatalogue.Checked artif
   | quantum (reference : SourceMeaning.QuantumReference artifact.sources)
       (found : (meaning.graph.nodes[index]).action = .reference reference)
       (request : RuntimeProviderHeader.Request)
-      (prepared : SourceMeaningQuantum.Prepared artifact ⟨index,reference,found⟩ request)
+      (prepared : SourceMeaningQuantum.Prepared artifact ⟨index,reference,found⟩ request (some catalogue))
       (original : RuntimeInterval.Computed
-        (SourceMeaningQuantum.prepare artifact (meaning := meaning) ⟨index,reference,found⟩ request) prepared)
+        (SourceMeaningQuantum.prepare artifact (meaning := meaning) ⟨index,reference,found⟩ request (some catalogue)) prepared)
   | ordinary (kind : SourceMeaningOrdinary.Kind) (reference : SourceMeaning.ClassicalReference artifact.sources)
       (found : (meaning.graph.nodes[index]).action = classicalAction kind reference)
       (checked : Ordinary catalogue reference kind (meaning.graph.nodes[index]).input.basis)
@@ -77,7 +77,7 @@ private def readNode (artifact : Artifact) (catalogue : GenericCatalogue.Checked
   | .reference reference =>
     let request :: rest := requests | throw .request
     let prepared ← NaturalAffine.witness
-      (SourceMeaningQuantum.prepare artifact (meaning := meaning) ⟨index,reference,found⟩ request)
+      (SourceMeaningQuantum.prepare artifact (meaning := meaning) ⟨index,reference,found⟩ request (some catalogue))
     return (.quantum reference found request prepared.val (by with_reducible exact prepared.property),rest)
   | .permutation reference =>
     return (.ordinary .permutation reference found (← readOrdinary catalogue reference .permutation node.input.basis),requests)
