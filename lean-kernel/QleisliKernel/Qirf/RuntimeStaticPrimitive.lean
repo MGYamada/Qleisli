@@ -4,10 +4,10 @@ import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! A transparent static source selection in the same literal runtime block.
-Selected primitives or one named call with closed Basis/Nat actuals use the
-common event step.
-The mixed continuation separately retains a destructive observing call's exact
-source delta; the pure continuation still requires unchanged ownership.
+Selected primitive and original named events with closed Basis/Nat actuals
+use the same common event step in their original order. Mixed continuations
+retain the complete selected source delta; pure continuations still require
+unchanged ownership.
 The exact original
 guard and both source arms remain in StaticEvent.generic; this component
 neither grants inactive duties nor invents a runtime condition, phi or child
@@ -111,15 +111,26 @@ private def readBasisNatActuals {sources caller} (call : SourceRuntimeContext.Na
     return ⟨checked.1,checked.2.1,checked.2.2⟩
   else throw .request
 
-/-- Compound primitives and one original named call use the same common event
-handler. Closed Basis/Nat instances retain their original application receipts;
-general operation actuals and compound call partitions remain separate. -/
-inductive EligibleEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) : Type where
-  | primitives (actions : List Action) (classified : events.mapM classifyEvent = .ok actions)
-  | named (call : SourceRuntimeContext.NamedEvent sources caller)
-      (single : events = [.named call]) (nongeneric : call.target.signature.staticNames.isEmpty = true)
-  | basisNat (call : SourceRuntimeContext.NamedEvent sources caller)
-      (single : events = [.named call]) (actuals : BasisNatActuals call)
+/-- Eligibility is indexed by the genuine selected event list. Composition
+adds no source event, argument instance or semantic evaluator. Each named leaf
+retains the same original actual receipts; operation actuals and other event
+forms still require their own connection to the common step. -/
+inductive EligibleEvents {sources caller} : List (SourceRuntimeContext.Event sources caller) → Type where
+  | primitives {events : List (SourceRuntimeContext.Event sources caller)} (actions : List Action)
+      (classified : events.mapM classifyEvent = .ok actions) :
+      EligibleEvents events
+  | primitive (event : SourceRuntimeContext.Event sources caller) (action : Action)
+      (classified : classifyEvent event = .ok action) : EligibleEvents [event]
+  | named {events : List (SourceRuntimeContext.Event sources caller)}
+      (call : SourceRuntimeContext.NamedEvent sources caller)
+      (single : events = [.named call]) (nongeneric : call.target.signature.staticNames.isEmpty = true) :
+      EligibleEvents events
+  | basisNat {events : List (SourceRuntimeContext.Event sources caller)}
+      (call : SourceRuntimeContext.NamedEvent sources caller)
+      (single : events = [.named call]) (actuals : BasisNatActuals call) : EligibleEvents events
+  | cons {first : SourceRuntimeContext.Event sources caller} {rest : List (SourceRuntimeContext.Event sources caller)}
+      (head : EligibleEvents [first]) (tail : EligibleEvents rest) :
+      EligibleEvents (first :: rest)
 
 /-- Reuse the same original named-argument eligibility in both continuation
 modes. The actual application, closed signature and premise receipts stay on
@@ -133,6 +144,42 @@ private def readNamedEligibility {sources caller} (call : SourceRuntimeContext.N
   else
     return .basisNat call rfl (← readBasisNatActuals call)
 
+private def readEventEligibility {sources caller} (event : SourceRuntimeContext.Event sources caller) :
+    WorkM (EligibleEvents [event]) := do
+  match event with
+  | .named call => readNamedEligibility call
+  | _ =>
+    match classified : classifyEvent event with
+    | .error _ => throw .request
+    | .ok action => return .primitive event action (by first | exact classified | rfl)
+
+private def readEventList {sources caller} : (events : List (SourceRuntimeContext.Event sources caller)) →
+    WorkM (EligibleEvents events)
+  | [] => pure (.primitives [] rfl)
+  | first :: rest => do
+    let head ← readEventEligibility first
+    let tail ← readEventList rest
+    return .cons head tail
+
+/-- Keep the existing empty, primitive-only and singleton-call paths. A mixed
+list uses one structural eligibility traversal, followed by the common native
+step for every event; it never retries a failed source or callee reader. -/
+private def readEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) :
+    WorkM (EligibleEvents events) := do
+  exactWork (Exact.charge (8*(events.length+1)))
+  match single : events with
+  | [.named call] =>
+    let eligible ← readNamedEligibility call
+    have original : EligibleEvents events := by
+      first | exact single.symm ▸ eligible | exact eligible
+    return original
+  | _ =>
+    match classified : events.mapM classifyEvent with
+    | .ok actions => return .primitives actions (by first | exact classified | rfl)
+    | .error _ =>
+      exactWork (Exact.charge (16*(events.length+1)))
+      readEventList events
+
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
 structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
@@ -144,55 +191,52 @@ structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent so
 
 private def sequenceWithSelected {sources caller event} (selected : @Selected sources caller event) :
     WorkM (Sequence event) := do
-  exactWork (Exact.charge (8*(selected.selected.result.events.length+1)))
-  match single : selected.selected.result.events with
-  | [.named call] =>
-    let eligible ← readNamedEligibility call
-    have original : EligibleEvents selected.selected.result.events := by
-      first | exact single.symm ▸ eligible | exact eligible
-    return ⟨selected.selected,selected.original,original,selected.unchanged⟩
-  | _ =>
-    match classified : selected.selected.result.events.mapM classifyEvent with
-    | .error _ => throw .request
-    | .ok actions => return ⟨selected.selected,selected.original,
-        .primitives actions (by first | exact classified | rfl),selected.unchanged⟩
+  let eligible ← readEvents selected.selected.result.events
+  return ⟨selected.selected,selected.original,eligible,selected.unchanged⟩
 
 def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
     WorkM (Sequence event) := do
   sequenceWithSelected (← readSelected event)
 
-/-- The bounded mixed path permits one original observing call with the same
-nongeneric-or-Basis/Nat argument evidence, without fresh owners. Its complete
-consumed-role list must be the selected source result's own list, before the
-common named step checks the actual child history. -/
-structure Observing {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
+private def eventAllocated {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
+  | .named call => call.allocated
+  | _ => []
+
+private def eventConsumed {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
+  | .named call => call.consumed
+  | _ => []
+
+/-- A general selected event sequence keeps the exact aggregate source delta.
+Only the already connected primitive/named leaves are eligible. No fresh owner
+is admitted here; all source consumption is accounted for by the genuine
+named steps, with their original effects and complete child histories. -/
+structure Events {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) : Type where
   selected : SourceRuntimeTrace.StaticBody event
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
-  call : SourceRuntimeContext.NamedEvent sources caller
-  single : selected.result.events = [.named call]
-  eligible : EligibleEvents [.named call]
-  effect : call.effect = .observe
+  eligible : EligibleEvents selected.result.events
   allocated : selected.result.allocated = []
-  callAllocated : call.allocated = []
-  consumed : selected.result.consumed = call.consumed
+  noEventAllocation : selected.result.events.flatMap eventAllocated = []
+  consumed : selected.result.consumed = selected.result.events.flatMap eventConsumed
   ordinal : selected.result.nextOrdinal = event.nextOrdinal
 
 inductive Continuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
   | unchanged (source : Sequence event)
-  | observing (source : Observing event)
+  | events (source : Events event)
 
 def Continuation.selected {sources caller event} : @Continuation sources caller event → SourceRuntimeTrace.StaticBody event
   | .unchanged source => source.selected
-  | .observing source => source.selected
+  | .events source => source.selected
 
 def Continuation.original {sources caller event} (source : @Continuation sources caller event) :
     RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) source.selected :=
   match source with
   | .unchanged source => source.original
-  | .observing source => source.original
+  | .events source => source.original
 
 /-- Used only by discovery and Mode.runtimeBody. Pure checking uses readSequence
-and retains its previous no-consumption contract. No failed read is retried. -/
+and retains its no-consumption contract. The mixed path uses the same original
+selection reader and common event handlers, without a combination-specific
+source evaluator or a public-effect refinement. -/
 def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
     WorkM (Continuation event) := do
   let selected ← readOriginalSelection event
@@ -200,22 +244,25 @@ def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent 
       selected.selected.result.nextOrdinal = event.nextOrdinal then
     return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩)
   else
-    match single : selected.selected.result.events with
-    | [.named call] =>
-      let names := call.target.signature.staticNames
-      exactWork (Exact.charge (32*((names.map fun name => name.utf8ByteSize+1).sum+names.length+
-        caller.utf8ByteSize+call.target.resolution.moduleName.utf8ByteSize+
-        Raw.OwnerFlow.fields (selected.selected.result.allocated ++ selected.selected.result.consumed ++
-          call.allocated ++ call.consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
-      if checked : call.effect = .observe ∧
-          selected.selected.result.allocated = [] ∧ call.allocated = [] ∧
-          selected.selected.result.consumed = call.consumed ∧
-          selected.selected.result.nextOrdinal = event.nextOrdinal then
-        let eligible ← readNamedEligibility call
-        return .observing ⟨selected.selected,selected.original,call,(by first | exact single | rfl),
-          eligible,checked.1,checked.2.1,checked.2.2.1,checked.2.2.2.1,checked.2.2.2.2⟩
-      else throw .request
-    | _ => throw .request
+    let events := selected.selected.result.events
+    let allocated := events.flatMap eventAllocated
+    let consumed := events.flatMap eventConsumed
+    let namedFields := (events.map fun event => match event with
+      | .named call =>
+        let names := call.target.signature.staticNames
+        (names.map fun name => name.utf8ByteSize+1).sum+names.length+
+          caller.utf8ByteSize+call.target.resolution.moduleName.utf8ByteSize
+      | _ => 1).sum
+    exactWork (Exact.charge (32*(namedFields+events.length+
+      Raw.OwnerFlow.fields (selected.selected.result.allocated ++ selected.selected.result.consumed ++
+        allocated ++ consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
+    if checked : selected.selected.result.allocated = [] ∧ allocated = [] ∧
+        selected.selected.result.consumed = consumed ∧
+        selected.selected.result.nextOrdinal = event.nextOrdinal then
+      let eligible ← readEvents events
+      return .events ⟨selected.selected,selected.original,eligible,checked.1,
+        checked.2.1,checked.2.2.1,checked.2.2.2⟩
+    else throw .request
 
 private def selectedRows {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller)
     (selected : SourceRuntimeTrace.StaticBody event) : List (String × String) :=
@@ -234,29 +281,52 @@ def Sequence.sourceRows {sources caller event} (source : @Sequence sources calle
 def Continuation.sourceRows {sources caller event} (source : @Continuation sources caller event) : List (String × String) :=
   selectedRows event source.selected
 
-/-- Existing zero/single-event intervals keep their original behavior. For
-compound primitives this first eligible decomposition has one literal Raw
-instruction per event; each slice still needs the independent local equation.
-There is no new count maximum and no claim about other equivalent decompositions. -/
+/-- The interval partition is source ordered and contiguous. For compound
+lists each primitive owns one instruction, while every named leaf takes its
+exact next interval from the existing ordered call context. Those contexts
+are consumed independently by discovery and the common named step. Remaining
+calls belong to later enclosing events and are not consumed by this reader. -/
+private def compoundPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
+    (parent : SourceSequence.Position) (calls : List SourceSequence.Position) :
+    WorkM (List SourceSequence.Position) := do
+  let finish := parent.start+parent.count
+  let (reversed,cursor,_) ← events.foldlM (fun (positions,cursor,calls) event => do
+    match event with
+    | .named _ =>
+      let position :: calls := calls | throw .request
+      guard (position.offset == event.offset && position.start == cursor &&
+        position.start+position.count ≤ finish) .request
+      return (position :: positions,position.start+position.count,calls)
+    | .primitive _ | .phase _ =>
+      guard (cursor+1 ≤ finish) .request
+      return (⟨event.offset,cursor,1⟩ :: positions,cursor+1,calls)
+    | _ => throw .request) (([] : List SourceSequence.Position),parent.start,calls)
+  guard (cursor == finish) .request
+  return reversed.reverse
+
+/-- Existing zero/single-event intervals retain their original whole slice.
+Compound source lists use the same literal parent and existing call intervals;
+other equivalent native decompositions are not inferred from widths or counts. -/
 private def selectedPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
-    (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) := do
-  exactWork (Exact.charge (16*(events.length+1)))
+    (parent : SourceSequence.Position) (calls : List SourceSequence.Position) :
+    WorkM (List SourceSequence.Position) := do
+  exactWork (Exact.charge (16*(events.length+calls.length+1)))
   match events with
   | [] =>
     guard (parent.count == 0) .request
     return []
   | [event] => return [⟨event.offset,parent.start,parent.count⟩]
-  | _ =>
-    guard (parent.count == events.length) .request
-    return events.zipIdx.map fun (event,index) => ⟨event.offset,parent.start+index,1⟩
+  | _ => compoundPositions events parent calls
 
 def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)
-    (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) :=
-  selectedPositions sequence.selected.result.events parent
+    (parent : SourceSequence.Position) (calls : List SourceSequence.Position := []) :
+    WorkM (List SourceSequence.Position) :=
+  selectedPositions sequence.selected.result.events parent calls
 
 def Continuation.positions {sources caller event} (source : @Continuation sources caller event)
-    (parent : SourceSequence.Position) : WorkM (List SourceSequence.Position) :=
-  selectedPositions source.selected.result.events parent
+    (parent : SourceSequence.Position) (calls : List SourceSequence.Position := []) :
+    WorkM (List SourceSequence.Position) :=
+  selectedPositions source.selected.result.events parent calls
 
 structure Frame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) where
   checked : RuntimeOwnerMap.Checked roles state

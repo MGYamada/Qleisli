@@ -168,7 +168,7 @@ def visit (artifact : Artifact) : Nat → {owner name : String} →
               sites,calls,branches,bodies)
           | .staticConditional event _ =>
             let source ← RuntimeStaticPrimitive.readContinuation event
-            let positions ← source.positions position
+            let positions ← source.positions position (calls.map (·.1))
             guard (positions.length == source.selected.result.events.length) .request
             let initial := discovery.append ⟨source.sourceRows,[]⟩
             exactWork (Exact.charge (16*(source.selected.result.events.length+initial.rows.length+initial.roots.length+1)))

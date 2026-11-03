@@ -427,10 +427,10 @@ def run (artifact : Artifact) (root : Validity.Root) : Nat → Mode → OutputBo
                   let source ← RuntimeStaticPrimitive.readSequence event
                   pure (.unchanged source)
               | .runtimeBody => RuntimeStaticPrimitive.readContinuation event)
-            let positions ← sequence.positions position
-            guard (positions.length == sequence.selected.result.events.length) .request
             let state ← advance state position.start
             let (history,retired,ordinary,actions,steps,obligations,cursor,calls,sites,bodies) := state
+            let positions ← sequence.positions position (calls.map (·.1))
+            guard (positions.length == sequence.selected.result.events.length) .request
             let interval ← RuntimeInterval.check prepared.block position.start position.count
             let bindings := (← reordered (history.bindings.map (·.owner)) interval.before history.bindings).bindings
             let before : RuntimeStructuralAction.SourceState := {history with bindings}
