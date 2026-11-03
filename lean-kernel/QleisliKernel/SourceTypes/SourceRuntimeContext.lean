@@ -108,12 +108,32 @@ structure CoreBinding {sources owner name} (core : QuantumSignatureCore.Checked 
   sameContext : signature.context = context
   sameActuals : HEq signature.operations.actuals supply.actuals
 
+/-- A static core already retains the independently checked original numeric
+environment, including every actual and ordered premise. Read the full mixed
+types and conditions from that exact environment rather than preparing it a
+second time. A closed core has no such environment and keeps its original
+preparation path. Neither branch substitutes an operation graph or supplier. -/
+private def runtimeFromCore {sources owner name}
+    (core : QuantumSignatureCore.Checked sources owner name)
+    (catalogue : Option (GenericCatalogue.Checked sources)) :
+    Finite.WorkM (StaticRuntimeSignature.Checked sources owner name core.staticArguments) := do
+  match original : core.instantiation with
+  | .closed _ =>
+    StaticRuntimeSignature.prepareWithArguments sources owner name core.staticArguments
+      (catalogue.map (·.originals)) (catalogue.map (·.helpers))
+  | .static arguments environment _ =>
+    let checked ← StaticRuntimeSignature.fromEnvironment environment
+    have sameArguments : core.staticArguments = arguments := by
+      change StaticInstantiation.Checked.arguments core.instantiation = arguments
+      rw [original]
+      rfl
+    return sameArguments.symm ▸ checked
+
 def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked sources owner name)
     (context : StaticOperation.Context)
     (supply : StaticOperation.ArgumentsCheckedWithInstantiation core.instantiation context) :
     Finite.WorkM (CoreBinding core context supply) := do
-  let checked ← StaticRuntimeSignature.prepareWithArguments sources owner name core.staticArguments
-    (supply.catalogue.map (·.originals)) (supply.catalogue.map (·.helpers))
+  let checked ← runtimeFromCore core supply.catalogue
   let prepared ← fromPreparedWithArguments checked context supply.actuals supply.catalogue
   let signature := prepared.signature
   Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+

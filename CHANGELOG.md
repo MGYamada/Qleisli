@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reuse a static quantum core's original checked numeric environment when
+  reading its mixed runtime signature. Full type, condition, effect and actual
+  comparisons remain fresh; closed cores retain their existing preparation.
+
 - Check ordinary observing calls before and after a coherent selection through
   the common original body walk. Typed operation continuations retain actual
   provider, access and Meaning computations under the same fresh native root.
