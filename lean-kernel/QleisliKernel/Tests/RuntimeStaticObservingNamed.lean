@@ -130,7 +130,9 @@ private def expected : Observation := ⟨[0,1],[1],2,[0],[0],0,1,[1],[1],true,[2
 -- same widths. Only the original consumed-owner identity is admissible.
 #guard (actual 1 .none true false).run 10000000 |>.1.toOption ==
   some ⟨[0,1,2],[2],3,[1,0],[1,0],0,1,[2],[1],true,[2]⟩
-#guard (match (actual 1 .none true true).run 10000000 with | (.error .request,_) => true | _ => false)
+-- The genuine child scope contains only the source-selected Bit. The swapped
+-- token is absent there, so the observed native scope diagnostic is invalid.
+#guard (match (actual 1 .none true true).run 10000000 with | (.error .invalid,_) => true | _ => false)
 
 private def pureContinuation (sequence : Bool) : WorkM Unit := do
   let signature ← SourceRuntimeContext.readSignature #[("main",source)] "main" "route" {naturals := [("n",1)]}
