@@ -12,20 +12,38 @@ abbrev Row := String × String
 
 private def bytes (row : Row) : Nat := row.1.utf8ByteSize + row.2.utf8ByteSize
 
-/-- Charge the exact two rows before comparing their owner and source. -/
-private def contains (row : Row) (seen : List Row) : WorkM Bool :=
-  seen.anyM fun head => do
-    exactWork (Exact.charge (8 * (bytes row + bytes head + 1)))
-    return row == head
+/-- Distinct module names decide row inequality before either source body is
+compared. Repeated names still require an exact byte-for-byte source match. -/
+def equal (row head : Row) : WorkM Bool := do
+  exactWork (Exact.charge (8 * (row.1.utf8ByteSize + head.1.utf8ByteSize + 1)))
+  if row.1 == head.1 then
+    exactWork (Exact.charge (8 * (row.2.utf8ByteSize + head.2.utf8ByteSize + 1)))
+    return row.2 == head.2
+  return false
 
-private theorem contains_value (row : Row) (seen : List Row) (before after : Nat) (answer : Bool)
+theorem equal_value (row head : Row) (before after : Nat) (answer : Bool)
+    (ran : (equal row head).run before = (.ok answer,after)) : answer = (row == head) := by
+  obtain ⟨_,paid,_,rest⟩ := bind_success _ _ before after answer ran
+  change answer = ((row.1 == head.1) && (row.2 == head.2))
+  by_cases same : (row.1 == head.1) = true
+  · simp only [same,if_true,Bool.true_and] at rest ⊢
+    obtain ⟨_,middle,_,returned⟩ := bind_success _ _ paid after answer rest
+    exact (pure_success _ _ _ _ returned).1
+  · simp only [same] at rest
+    have no : (row.1 == head.1) = false := Bool.eq_false_iff.mpr same
+    rw [no,Bool.false_and]
+    exact (pure_success false _ _ _ rest).1
+
+def contains (row : Row) (seen : List Row) : WorkM Bool :=
+  seen.anyM (equal row)
+
+theorem contains_value (row : Row) (seen : List Row) (before after : Nat) (answer : Bool)
     (ran : (contains row seen).run before = (.ok answer,after)) : answer = seen.any (row == ·) := by
   induction seen generalizing before with
   | nil => exact (pure_success false answer before after ran).1
   | cons head tail ih =>
     obtain ⟨found,middle,test,rest⟩ := bind_success _ _ before after answer ran
-    obtain ⟨_,paid,_,returned⟩ := bind_success _ _ before middle found test
-    have equal := (pure_success (row == head) found paid middle returned).1
+    have equal := equal_value row head before middle found test
     cases found with
     | true => simpa [List.any_cons,← equal] using (pure_success true answer middle after rest).1
     | false => simpa [List.any_cons,← equal] using ih middle rest

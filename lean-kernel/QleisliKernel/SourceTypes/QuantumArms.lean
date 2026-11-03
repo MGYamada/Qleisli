@@ -212,7 +212,7 @@ judgment. Current native admission also requires QuantumSequence.read. -/
 structure Table (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) where
   site : QuantumMatch.Site sources owner name offset
   layout : Semantics.FiniteCarrier.Layout
-  originalTypes : ∃ before after, (SourceTypes.checkMany sources [selector,target]).run before = (.ok (),after)
+  originalTypes : SourceTypes.ManyRead sources [selector,target]
   selectorLayout : Semantics.FiniteCarrier.layout selector = some layout
   arms : List (BoundArm sources owner selector target)
   originalArms : arms.map (·.written) = site.parsed.arms
@@ -227,13 +227,13 @@ def readArms {sources owner name}
     WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite originalCaller offset
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
-  let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
+  let original ← SourceTypes.readMany sources [selector,target]
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,by with_reducible exact original.property,
+      return ⟨site,layout.val,original,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
         arms,same,complete,selectorKind.down⟩
@@ -266,7 +266,8 @@ def readArmsWithSignature {sources owner name}
     (eventScope : Option (List String) := none) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite signature.original offset
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
-  let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
+  let original ← SourceTypes.readMany sources [selector,target]
+    (signature.operations.catalogue.map (·.helpers))
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let naturals ← match eventNaturals with
     | some naturals => pure naturals
@@ -277,7 +278,7 @@ def readArmsWithSignature {sources owner name}
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,by with_reducible exact original.property,
+      return ⟨site,layout.val,original,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
         arms,same,complete,selectorKind.down⟩
@@ -292,7 +293,8 @@ def readArmsWithInstantiation {sources owner name}
     (eventScope : List String) : WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.readSite originalCaller offset
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
-  let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
+  let original ← SourceTypes.readMany sources [selector,target]
+    (supply.arguments.catalogue.map (·.helpers))
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let naturals ← match eventNaturals with
     | some naturals => pure naturals
@@ -303,7 +305,7 @@ def readArmsWithInstantiation {sources owner name}
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
-      pure ⟨site,layout.val,by with_reducible exact original.property,
+      pure ⟨site,layout.val,original,
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
         arms,same,complete,selectorKind.down⟩

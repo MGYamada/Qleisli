@@ -190,10 +190,10 @@ def callers(probe):
         probe.check('--qirf-native', envelope('2026', original, graph, wrong, row['indices']), error='decoded_view')
 
 
-def qmatch_work_boundary(probe, original):
-    # Trailing source whitespace leaves every original span and operation
-    # intact. Both the source table and the evidence identity name its bytes.
-    for padding, expected_error in [(13_487, None), (13_488, 'limit')]:
+def qmatch_work_boundary(probe, original, base_work):
+    # Trailing whitespace changes source-byte work while preserving every
+    # original span and operation. Update both copies of the source identity.
+    def check(padding, error=None):
         row = deepcopy(original)
         source = row['artifact']['sources'][0]
         graph = row['view'][1]
@@ -202,9 +202,19 @@ def qmatch_work_boundary(probe, original):
             record[2] += ' ' * padding
         source['text'] += ' ' * padding
         data = envelope('2026', inner(row['artifact'], row['request']), qdv(row['view']))
-        reply = probe.check('--qmatch-source-check', data, 'execution', error=expected_error)
-        if expected_error is None:
-            assert 10_000_000 < int(reply.payload[0]) <= 13_000_000, reply
+        return probe.check('--qmatch-source-check', data, 'execution', error=error)
+
+    # Measure this executable's cost per byte on the same tiny circuit.
+    # The public allowance is fixed even as the source-reading algorithm improves.
+    extra_work = int(check(64).payload[0]) - base_work
+    per_byte, remainder = divmod(extra_work, 64)
+    assert per_byte > 0 and remainder == 0
+    inside = (13_000_000 - base_work) // per_byte
+    assert 64 < inside < 65_536
+    used = int(check(inside).payload[0])
+    assert used == base_work + inside * per_byte
+    assert used <= 13_000_000 < used + per_byte
+    check(inside + 1, 'limit')
 
 
 def qmatch(probe):
@@ -227,15 +237,15 @@ def qmatch(probe):
             view[1][3].append(['source', 'std::prelude', ''])
         original = inner(row['artifact'], row['request'])
         graph = qdv(row['view'])
-        if row['name'] == 'original-exact-i':
-            qmatch_work_boundary(probe, row)
         error = (None if row['accepted'] else 'decoded_view'
                  if row['error'] == 'decodedView' else ('invalid_ir', 'contract', 'limit'))
         if not row['accepted'] and 'native_code' in row:
             assert row['native_code'] in ('equation', 'request', 'decodedView')
             error = 'decoded_view' if row['native_code'] == 'decodedView' else 'contract'
-        probe.check('--qmatch-source-check', envelope('2026', original, graph),
-                    'execution', error=error)
+        reply = probe.check('--qmatch-source-check', envelope('2026', original, graph),
+                            'execution', error=error)
+        if row['name'] == 'original-exact-i':
+            qmatch_work_boundary(probe, row, int(reply.payload[0]))
         if row['accepted']:
             probe.check('--qmatch-source-check', envelope('2026', original), error='format')
             probe.check('--qmatch-source-check', envelope('2026', original, graph, qdv([])),

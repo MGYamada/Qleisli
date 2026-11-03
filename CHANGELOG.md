@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Follow original imports from the modules a nominal `qmatch` consulted.
+  The native checker verifies exact source text, keeps reexports reachable
+  from the bundled prelude, and rejects unrelated modules. Row comparisons
+  check module names before reading source text. Each arm still checks its
+  own owner types using the original catalogue's verified natural helpers.
+
 - Check primitive actions before and after a named call containing a
   `qmatch` against their original source positions and contiguous caller IR.
   The internal v5 reader checks the returned owner order, including held

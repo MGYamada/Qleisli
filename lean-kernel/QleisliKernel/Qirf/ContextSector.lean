@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RawTrace
 import QleisliKernel.Qirf.SelectionCore
 import QleisliKernel.Qirf.SourcePendingMeaning
+import QleisliKernel.SourceTypes.SourceImportRows
 
 /-! Complete source events, literal Raw intervals and original qmatch equations.
 Primitive events remain alongside all original selections.
@@ -43,29 +44,6 @@ def readSource (sources : Sources) (owner name : String) : WorkM (SourceTrace.Ch
     signature.original.parsedHeader.requiresTokens.isNone) .request
   let body ← SourceTrace.readWithSignature signature
   return body.checked
-
-structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
-  source : Witness (readSource artifact.sources owner name)
-  sites : List (SelectionCore.Header artifact source.val.signature)
-  everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection
-  everyRequest : sites.map (·.request) = requests
-
-def readHeaders (artifact : Artifact) (owner name : String) (requests : List Request) :
-    WorkM (Headers artifact owner name requests) := do
-  guard (0 < requests.length && requests.length ≤ 128) .limit
-  let source ← SourceTypes.NaturalAffine.witness (readSource artifact.sources owner name)
-  guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request
-  let events := source.val.result.events.filterMap selectionData
-  exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
-    64*(events.map fun event => SourceSequence.eventFields event.1).sum))
-  guard (events.length == requests.length) .request
-  let sites ← (events.zip requests).mapM fun (event,request) =>
-    SelectionCore.readHeader artifact source.val.signature (event.1,request) event.2.1 event.2.2
-  if everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection then
-    if everyRequest : sites.map (·.request) = requests then
-      return ⟨source,sites,everyEvent,everyRequest⟩
-    else throw .request
-  else throw .request
 
 /-- Every retained absence lookup still names exactly one original module row. -/
 theorem lookupRow {sources owner name} (lookup : SourceLookup.Checked sources owner name) :
@@ -132,11 +110,53 @@ def eventRows {sources owner} : SourceTrace.Event sources owner → List (String
       event.target.selected.actuals.actuals.flatMap StaticApplication.Actual.sourceRows
   | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
 
+/-- Exactly the selected source, event, carrier and arm query rows. Global
+catalogue validation supplies no rows to this seed list. -/
+def queriedRows {artifact owner name} (source : SourceTrace.Checked artifact.sources owner name)
+    (sites : List (SelectionCore.Header artifact source.signature)) : List (String × String) :=
+  source.sourceRows ++ source.result.events.flatMap eventRows ++
+    sites.flatMap fun header =>
+      Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
+
+structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
+  source : Witness (readSource artifact.sources owner name)
+  sites : List (SelectionCore.Header artifact source.val.signature)
+  everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection
+  everyRequest : sites.map (·.request) = requests
+  catalogue : GenericCatalogue.Checked artifact.sources
+  sameCatalogue : source.val.signature.operations.catalogue = some catalogue
+  relevance : SourceImportRows.Checked catalogue (queriedRows source.val sites)
+
+def readHeaders (artifact : Artifact) (owner name : String) (requests : List Request) :
+    WorkM (Headers artifact owner name requests) := do
+  guard (0 < requests.length && requests.length ≤ 128) .limit
+  let source ← SourceTypes.NaturalAffine.witness (readSource artifact.sources owner name)
+  guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request
+  let events := source.val.result.events.filterMap selectionData
+  exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
+    64*(events.map fun event => SourceSequence.eventFields event.1).sum))
+  guard (events.length == requests.length) .request
+  let sites ← (events.zip requests).mapM fun (event,request) =>
+    SelectionCore.readHeader artifact source.val.signature (event.1,request) event.2.1 event.2.2
+  if everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection then
+    if everyRequest : sites.map (·.request) = requests then
+      match sameCatalogue : source.val.signature.operations.catalogue with
+      | none => throw .request
+      | some catalogue =>
+        let relevance ← SourceImportRows.read catalogue (queriedRows source.val sites)
+        return ⟨source,sites,everyEvent,everyRequest,catalogue,sameCatalogue,relevance⟩
+    else throw .request
+  else throw .request
+
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
-  headers.source.val.sourceRows ++
-    headers.source.val.result.events.flatMap eventRows ++
-    headers.sites.flatMap fun header =>
-    Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
+  headers.relevance.rows
+
+/-- Added import rows have an actual retained import-query path from these
+selected original reads. No unrelated catalogue module is a relevance seed. -/
+theorem rows_rooted {artifact owner name requests} (headers : Headers artifact owner name requests)
+    (row : String × String) (member : row ∈ rows headers) :
+    SourceImportRows.Rooted headers.catalogue (queriedRows headers.source.val headers.sites) row :=
+  headers.relevance.rows_rooted row member
 
 def roots {artifact owner name requests} (headers : Headers artifact owner name requests) : List Nat :=
   (artifact.root :: headers.sites.flatMap (·.roots.val)).eraseDups

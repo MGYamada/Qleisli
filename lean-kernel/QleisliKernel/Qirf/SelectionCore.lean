@@ -41,7 +41,8 @@ def readHeader (artifact : Artifact) {owner name} (signature : SourceTypes.Quant
   let scope := event.scope ++ scope
   let request := pair.2
   guard (NominalSector.shape request.attached request.required) .request
-  SourceTypes.checkMany artifact.sources (NominalSector.forests request.attached request.required)
+  let _ ← SourceTypes.readMany artifact.sources (NominalSector.forests request.attached request.required)
+    (signature.operations.catalogue.map (·.helpers))
   exactWork (Exact.charge (16*(SourceSequence.eventFields event+signature.original.source.utf8ByteSize+1)))
   match portsRead : NominalSector.ports request.required with
   | none => throw .request

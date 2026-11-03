@@ -306,6 +306,35 @@ def checkMany (sources : Sources) (forests : List Basis) : Finite.WorkM Unit := 
   let helpers ← sourceHelpers sources
   forests.forM (checkBasis helpers sources)
 
+/-- Share only the complete original helper audit for these exact sources.
+Every forest still runs its own prefix validation, nominal reconstruction,
+field arithmetic, resolution and exact source/tree comparisons. -/
+def checkManyWithCheckedHelpers (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (forests : List Basis) : Finite.WorkM Unit := do
+  sourceBounds sources
+  forests.forM (checkBasis helpers.entries sources)
+
+/-- A prepared helper route retains its actual invocation; it is not reported
+as an execution of the fresh helper-preparation path. -/
+inductive ManyRead (sources : Sources) (forests : List Basis) : Type where
+  | fresh (read : ∃ before after,(checkMany sources forests).run before = (.ok (),after)) :
+      ManyRead sources forests
+  | prepared (helpers : NaturalHelpers.Checked sources)
+      (read : ∃ before after,(checkManyWithCheckedHelpers sources helpers forests).run before = (.ok (),after)) :
+      ManyRead sources forests
+
+def readMany (sources : Sources) (forests : List Basis)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) : Finite.WorkM (ManyRead sources forests) := do
+  match helpers with
+  | none =>
+    let checked ← NaturalAffine.witness (checkMany sources forests)
+    have same : checked.val = () := by cases checked.val; rfl
+    pure (.fresh (by with_reducible simpa only [same] using checked.property))
+  | some helpers =>
+    let checked ← NaturalAffine.witness (checkManyWithCheckedHelpers sources helpers forests)
+    have same : checked.val = () := by cases checked.val; rfl
+    pure (.prepared helpers (by with_reducible simpa only [same] using checked.property))
+
 private theorem load_value (sources : Sources) (moduleName name : String)
     (result : String × Declaration) (work left : Nat)
     (ok : (load sources moduleName name).run work = (.ok result,left)) :

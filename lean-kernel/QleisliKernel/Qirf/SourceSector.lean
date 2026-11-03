@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.SourceArm
 import QleisliKernel.SourceTypes.QuantumBody
+import QleisliKernel.SourceTypes.SourceRows
 import QleisliKernel.Semantics.RawOwnerFlow
 import QleisliKernel.Raw.OwnerFlow
 
@@ -76,31 +77,43 @@ theorem CanonicalOperands.publicUnitary {sources owner name offset selector targ
   · simp [absent] at present
   · exact exactEffect
 
+def rawSourceRowsWithSignature {sources owner name offset selector target}
+    (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
+    (signature : SourceTypes.QuantumSignature.Checked sources owner name) : List (String × String) :=
+  (owner,table.site.original.source) :: table.arms.flatMap (·.sourceRows) ++ signature.sourceRows
+
 def sourceRowsWithSignature {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
     (signature : SourceTypes.QuantumSignature.Checked sources owner name) : List (String × String) :=
-  ((owner,table.site.original.source) :: table.arms.flatMap (·.sourceRows) ++
-    signature.sourceRows).eraseDups
+  (rawSourceRowsWithSignature table signature).eraseDups
 
 def sourceRows {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
     (operands : CanonicalOperands table.site selector target) : List (String × String) :=
   sourceRowsWithSignature table operands.read.signature
 
-/-- Count borrowed provenance paths before allocating or deduplicating rows.
-Every string compared is bounded by the original source table; the quadratic
-charge precedes construction. Source queries do not cover unused helper rows. -/
-def readRowsWithSignature {sources owner name offset selector target}
+/-- Count borrowed provenance paths, then compare the actual original rows.
+The retained union charges every visited row and exact byte comparison instead
+of multiplying unrelated loaded source bytes by a worst-case path square.
+No query, provider occurrence or semantic obligation is deduplicated here. -/
+def readRetainedRowsWithSignature {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
-    (signature : SourceTypes.QuantumSignature.Checked sources owner name) : WorkM (List (String × String)) := do
+    (signature : SourceTypes.QuantumSignature.Checked sources owner name) :
+    WorkM (SourceTypes.SourceRows.Retained (rawSourceRowsWithSignature table signature)) := do
   guard (sources.size ≤ 128) .limit
   let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
   let count := 2 + table.arms.foldl (fun total arm => total+armRowCount arm) 0 +
     (signature.parameterReads ++ signature.resultReads).foldl
       (fun total ty => total+typeRowCount ty) 0
-  exactWork (Exact.charge (8*(bytes+sources.size+1)*(count+1)^2))
-  return sourceRowsWithSignature table signature
+  exactWork (Exact.charge (8*(count+1)))
+  SourceTypes.SourceRows.read (rawSourceRowsWithSignature table signature)
+
+def readRowsWithSignature {sources owner name offset selector target}
+    (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
+    (signature : SourceTypes.QuantumSignature.Checked sources owner name) : WorkM (List (String × String)) := do
+  let retained ← readRetainedRowsWithSignature table signature
+  return retained.rows
 
 def readRows {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
@@ -178,10 +191,8 @@ theorem readRows_value {sources owner name offset selector target}
     (operands : CanonicalOperands table.site selector target)
     (rows : List (String × String)) (work left : Nat)
     (ok : (readRows table operands).run work = (.ok rows,left)) : rows = sourceRows table operands := by
-  obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,w₂,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
-  exact (pure_success _ _ _ _ h).1
+  obtain ⟨retained,middle,_,returned⟩ := bind_success _ _ _ _ _ ok
+  exact (pure_success _ _ _ _ returned).1.trans retained.canonical
 
 theorem sourceRows_only {sources owner name offset selector target}
     (table : SourceTypes.QuantumArms.Table sources owner name offset selector target)
@@ -189,7 +200,7 @@ theorem sourceRows_only {sources owner name offset selector target}
     (row : String × String) (member : row ∈ sourceRows table operands) :
     row = (owner,table.site.original.source) ∨ (∃ arm ∈ table.arms, row ∈ arm.sourceRows) ∨
       row ∈ operands.read.signature.sourceRows := by
-  simpa only [sourceRows,sourceRowsWithSignature,List.mem_eraseDups,List.mem_cons,List.mem_append,List.mem_flatMap,or_assoc] using member
+  simpa only [sourceRows,sourceRowsWithSignature,rawSourceRowsWithSignature,List.mem_eraseDups,List.mem_cons,List.mem_append,List.mem_flatMap,or_assoc] using member
 
 
 structure Postcondition (artifact : Artifact) (order : Array Nat) (attached required : Interface)
