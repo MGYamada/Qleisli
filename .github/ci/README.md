@@ -43,6 +43,11 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
+The `changes` job checks schema and admitted-guarantee source identities before
+scheduling executable validation. Stale records fail this inexpensive gate
+before Rust, native and distribution builds start. The independent
+`current-proof-records` workflow can still regenerate and verify those records.
+
 Cargo builds and documents without a native checker. Ordinary Rust tests that
 need it use `cfg_attr(not(qleisli_native_tests), ignore = ...)`, with the explicit
 `native-kernel gate: requires QLEISLI_KERNEL` reason. `build.rs` enables only this

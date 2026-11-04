@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Detect stale schema and scoped-guarantee source records before scheduling
+  Rust, native and distribution CI builds.
+
 - Import the experimental RInfScalar Julia reference and both existing test
   suites into `julia/src/` and `julia/test/`. Keep arithmetic unchanged, adapt
   include paths and run the suites through the shared Julia test entry point.
