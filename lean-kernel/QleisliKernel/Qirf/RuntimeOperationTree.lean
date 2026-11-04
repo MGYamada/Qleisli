@@ -275,4 +275,53 @@ def read {artifact catalogue context description graph implementations reference
     else throw .request
   else throw .request
 
+private theorem walk_occurrences {artifact catalogue context description graph order}
+    (root : Validity.Root)
+    (occurrences : List (@RuntimePreparedOperation.Occurrence artifact catalogue context description graph order))
+    (demands : List (Nat × StaticOperation.Paths)) (before : List Value)
+    (outcome : @Outcome artifact catalogue context description graph order root)
+    (computed : RuntimeInterval.Computed (walk root occurrences demands before) outcome) :
+    outcome.records.map (·.occurrence) = occurrences := by
+  induction occurrences generalizing demands before outcome with
+  | nil =>
+    obtain ⟨work,left,ran⟩ := computed
+    rw [walk,WellFounded.fix_eq] at ran
+    cases demands with
+    | nil =>
+      have same : outcome = ⟨before,[]⟩ := (pure_success _ _ _ _ ran).1
+      rw [same]
+      rfl
+    | cons first rest => cases ran
+  | cons occurrence rest ih =>
+    obtain ⟨work,left,ran⟩ := computed
+    rw [walk,WellFounded.fix_eq] at ran
+    cases demands with
+    | nil => cases ran
+    | cons pair demands =>
+      obtain ⟨index,demand⟩ := pair
+      dsimp only at ran
+      by_cases same : index = occurrence.index
+      · rw [dif_pos same] at ran
+        obtain ⟨checked,middle,_stepRead,tail⟩ := bind_success _ _ _ _ _ ran
+        obtain ⟨tailOutcome,last,tailRead,returned⟩ := bind_success _ _ _ _ _ tail
+        change (walk root rest demands checked.val.after).run middle = (.ok tailOutcome,last) at tailRead
+        have original := ih demands checked.val.after tailOutcome ⟨middle,last,tailRead⟩
+        have sameOutcome := (pure_success _ _ _ _ returned).1
+        rw [sameOutcome]
+        change occurrence :: tailOutcome.records.map (·.occurrence) = occurrence :: rest
+        exact congrArg (List.cons occurrence) original
+      · rw [dif_neg same] at ran
+        cases ran
+
+/-- The actual traversal retains the exact prepared occurrence at every record
+position, including all dependent graph, provider and Meaning metadata. This
+follows from the successful walk itself, rather than ordinal coverage or an
+assumed membership/order relation. The native reader is unchanged. -/
+theorem Checked.occurrences {artifact catalogue context description graph implementations references prepared root requested}
+    (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) :
+    checked.outcome.records.map (·.occurrence) = prepared.occurrences :=
+  walk_occurrences root prepared.occurrences checked.access.demands [] checked.outcome checked.traversed
+
+#print axioms Checked.occurrences
+
 end QleisliKernel.Qirf.RuntimeOperationTree

@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Validate operation-tree matrix dimensions after every constructor (#462),
+  including supplied provider and formal maps. Prove the actual successful
+  evaluator retains both carrier reads and exact logical dimensions. Preserve
+  full phase, rectangular ports and occurrence accounting under the same work
+  cap. Retain original checked-operation markers and mixed actual sources from
+  the shared source traversal, and exact native child-edge occurrences. These
+  records do not discharge original Meaning duties or source preservation.
+
 - Connect the same original source selection and retained sector to exact
   caller/local traces and coefficient evaluation, without assuming complete
   caller-forest code availability. Derive its existing Literal when original

@@ -157,6 +157,7 @@ import QleisliKernel.Qirf.RuntimeMaterialization
 import QleisliKernel.Qirf.RuntimeProviderPaths
 import QleisliKernel.Qirf.RuntimeOperationPaths
 import QleisliKernel.Qirf.OperationIRMeaning
+import QleisliKernel.Qirf.RuntimeOperationOccurrenceTree
 import QleisliKernel.Qirf.SourceContextRequest
 import QleisliKernel.Qirf.SourceBodyHeader
 import QleisliKernel.Qirf.SourceBodyContext

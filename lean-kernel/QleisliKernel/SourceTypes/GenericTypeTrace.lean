@@ -525,10 +525,11 @@ private def operationWithModules {sources : Sources} (reader : DefinitionReader 
         let _ ← SymbolicTypes.equate state child.input input.code
         let _ ← SymbolicTypes.equate state child.output output.code
         let origin := {origin with rows := child.rows ++ selected.request.sourceRows}
+        let subject := child.subject.unary (fun index =>
+          .requested index selected.request.moduleName selected.request.declarationName)
         pure {child with
           meanings := child.meanings ++ [selected.request],rows := child.rows ++ selected.queryRows,
-          subject := child.subject.unary (fun index =>
-            .requested index selected.request.moduleName selected.request.declarationName),origin,
+          subject,origin,suppliers := child.suppliers ++ [(subject.root,origin)],
           activities := child.activities ++ [.duty ⟨origin,child.subject,.meaning selected.request,.checkedMeaning,[],child.suppliers,none⟩]}
       | _,_ => throw .request
     else

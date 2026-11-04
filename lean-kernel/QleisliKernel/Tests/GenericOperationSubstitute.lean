@@ -110,4 +110,73 @@ private def inactiveForm : WorkM (Int × List Int × String) := do
 -- prematurely closing -1 or using the guard to erase a fixed independent M.
 #guard inactiveForm.run 10000000 |>.1.toOption == some (-1,[],"middle")
 
+-- These are metadata controls, not a Meaning equation, DutyAt/Invocation link,
+-- native occurrence association or accepted-handle test. The first source is
+-- preserved externally under generics-agent-first/meaning-marker-retention-first.
+private def markerSource := sourcePrelude ++
+  "unitary fn outer[const V:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(V){invoke[V](q)}\n" ++
+  "unitary fn middle[const W:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(W){outer[power(then_op(checked_op(W,Identity),checked_op(W,Identity)),0)](q)}\n" ++
+  "unitary fn caller[const W:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(W){middle[W](q)}"
+
+private abbrev Marker := Nat × Nat × String × String × List String × List String
+
+private def requestedMarkers {sources} (subject : Subject sources) : List Marker :=
+  subject.suppliers.filterMap fun (index,origin) => match subject.description.nodes[index]? with
+    | some (.requested ..) => some (index,origin.offset,origin.state.owner,origin.state.name,
+        origin.scope,origin.tokens.map (·.text))
+    | _ => none
+
+private structure MarkerControls where
+  sourceMarkers : List Marker
+  insertedMarkers : List Marker
+  forwardedMarkers : List Marker
+  insertionSteps : Nat
+  remainingKeys : List Key
+  root : Nat
+  childIndices : List (List Nat)
+  childDuties : List (Nat × List GenericOperation.Node × List Nat)
+  deriving BEq
+
+private def markerControls : WorkM MarkerControls := do
+  let catalogue ← GenericCatalogue.read #[("main",markerSource)]
+  let some outer := catalogue.records.find? (·.name == "outer") | throw .request
+  let some middle := catalogue.records.find? (·.name == "middle") | throw .request
+  let some caller := catalogue.records.find? (·.name == "caller") | throw .request
+  let some templateApplication := outer.outcome.applications.find? (·.name == "invoke") | throw .request
+  let some template := templateApplication.operationActuals.head? | throw .request
+  let some insertion := middle.outcome.applications.find? (·.name == "outer") | throw .request
+  let some original := insertion.operationActuals.head? | throw .request
+  let sourceSubject : Subject _ := ⟨original.subject,original.suppliers⟩
+  -- Insert the complete actual into outer.V without traversing it as a callee
+  -- template. In particular, both requested-root origins remain middle's.
+  let inserted ← GenericOperationSubstitute.read insertion template.subject template.suppliers
+  let some forwarding := caller.outcome.applications.find? (·.name == "middle") | throw .request
+  let forwarded ← GenericOperationSubstitute.read forwarding
+    inserted.result.subject.description inserted.result.subject.suppliers
+  let subject := forwarded.result.subject
+  let .conditional keys _ _ ← GenericOperation.close subject.description | throw .request
+  let duties := middle.outcome.duties.filter (·.kind == .checkedMeaning)
+  return ⟨requestedMarkers sourceSubject,requestedMarkers inserted.result.subject,requestedMarkers subject,
+    inserted.result.steps.length,keys,subject.description.root,subject.description.nodes.map (·.children),
+    duties.map fun duty => (duty.origin.offset,duty.subject.nodes,duty.suppliers.map (·.1))⟩
+
+private def expectedMarkers : List Marker :=
+  [(1,524,"main","middle",["W","q"],["checked_op","(","W",",","Identity",")"]),
+    (3,547,"main","middle",["W","q"],["checked_op","(","W",",","Identity",")"])]
+
+-- Binary copying and power zero retain both original written offsets on the
+-- actual requested roots. Caller.W remains caller's key under simultaneous
+-- substitution. Each separate Meaning duty STILL concerns its child formal
+-- and the unchanged child supplier index, rather than the assertion wrapper.
+#guard markerControls.run 10000000 |>.1.toOption == some {
+  sourceMarkers := expectedMarkers
+  insertedMarkers := expectedMarkers
+  forwardedMarkers := expectedMarkers
+  insertionSteps := 1
+  remainingKeys := [.operation ⟨"main","caller",0⟩]
+  root := 5
+  childIndices := [[],[0],[],[2],[1,3],[4]]
+  childDuties := [(524,[.formal ⟨"main","middle",0⟩],[0]),(547,[.formal ⟨"main","middle",0⟩],[0])]
+}
+
 end QleisliKernel.Tests.GenericOperationSubstitute

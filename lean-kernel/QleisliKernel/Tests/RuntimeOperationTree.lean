@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimePreparedArm
+import QleisliKernel.Qirf.RuntimeOperationOccurrenceTree
 
 /-! The original caller supplies then_op(sign,sign). Its complete action is
 identity and each leaf realizes Z. The indexed arm requires an actual
@@ -67,6 +68,15 @@ private def inspect (fault : Fault) : WorkM Summary := do
      (.pure (if fault == .omittedSecond then 3 else 1),phase)]
   let providers := if fault == .missing then providers.take 1 else if fault == .extra then providers ++ [(.pure 1,phase)] else providers
   let second ← RuntimePreparedArm.prepare artifact original.catalogue table secondIndex providers [[reference]]
+  if fault == .none then
+    let tree ← RuntimeOperationOccurrenceTree.read second.graph
+    let initial := Sigma.mk tree.index tree.tree
+    -- checked_op(U,Identity) -> U -> supplied then_op -> its two leaves.
+    let first ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 0]
+    let second ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 1]
+    guard (first.2.located.occurrence.ordinal.val == 0 &&
+      second.2.located.occurrence.ordinal.val == 1) .request
+    guard (first.2.located.occurrence.index == 0 && second.2.located.occurrence.index == 1) .request
   let rows := original.signature.sourceRows ++ body.summary.staticRows ++ call.target.sourceRows ++ first.rows ++ second.rows
   let roots := (artifact.root :: first.roots ++ second.roots).eraseDups
   let order := if omitted then #[0,1,2,3] else #[0,1,2]
