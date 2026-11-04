@@ -14,8 +14,11 @@ development milestones from the scope of their evidence.
   traces each written arm assertion from its runtime call back to a unique
   original duty in the generic queue. Repeated calls to the same function
   retain distinct source occurrences even with identical static arguments.
-  The transported subject's equation and coverage of all original duties
-  remain required before source acceptance.
+  For closed subjects, compare each operation and its ordered children with
+  the checked native tree. When the written subject names a formal, check the
+  caller's original argument at its mixed-header position. The selected child
+  retains its exact ports and Meaning equation. Source-level preservation
+  through every substitution and coverage of all original duties remain open.
 
 - Validate operation-tree matrix dimensions after every constructor (#462),
   including supplied provider and formal maps. Prove the actual successful

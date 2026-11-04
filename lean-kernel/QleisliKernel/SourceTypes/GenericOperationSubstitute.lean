@@ -201,6 +201,69 @@ structure Step {sources} (application : ApplicationSource sources) (original : S
   result : NodeResult application
   computed : ∃ before after,(readNode application original previous index node).run before = (.ok result,after)
 
+/-- The actual executable formal branch either inserts the whole selected
+caller closure or retains the original unbound key. It applies no further
+Basis/Nat/Op substitution to the inserted subject or its supplier contexts. -/
+theorem Step.formal_result {sources application original} (step : @Step sources application original)
+    {key : Parameter} (formal : step.node = .formal key) :
+    step.result = match application.operationActuals.find? (·.original == key) with
+      | some actual => ⟨⟨actual.subject,actual.suppliers⟩,[],[]⟩
+      | none => ⟨⟨Description.singleton (callerFrame application) (.formal key),roots original step.index 0⟩,[],[]⟩ := by
+  obtain ⟨before,after,ran⟩ := step.computed
+  rw [formal] at ran
+  unfold readNode at ran
+  obtain ⟨_,_,_,returned⟩ := bind_success _ _ _ _ _ ran
+  cases found : application.operationActuals.find? (·.original == key) <;>
+    simp only [found] at returned <;> exact (pure_success _ _ _ _ returned).1
+
+/-- The lookup position in operationActuals counts Op entries; the Parameter
+stored at that position uses the ordinal in the original mixed-kind header. -/
+structure FormalSelection {sources application original} (step : @Step sources application original)
+    (key : Parameter) (actual : ActualOperation sources) : Prop where
+  source : original.description.nodes[step.index]? = some (.formal key)
+  first : application.operationActuals[application.operationActuals.findIdx (·.original == key)]? = some actual
+  originalKey : actual.original = key
+  keyAt : (operationKeys application)[application.operationActuals.findIdx (·.original == key)]? = some key
+  mixedFormal : ∃ formal ∈ application.target.header.formals, ∃ tokens,
+    formal.kind = .operation tokens ∧ key = ⟨application.owner,application.name,formal.ordinal⟩
+  returned : step.result = ⟨⟨actual.subject,actual.suppliers⟩,[],[]⟩
+
+private instance : ReflBEq Parameter := ⟨by deriving_ReflEq_tactic⟩
+private instance : LawfulBEq Parameter := ⟨by deriving_LawfulEq_tactic⟩
+
+theorem Step.formal_selection {sources application original} (step : @Step sources application original)
+    (context : Context application) {key : Parameter} (formal : step.node = .formal key)
+    {actual : ActualOperation sources} (found : application.operationActuals.find? (·.original == key) = some actual) :
+    FormalSelection step key actual := by
+  have keyEq : actual.original = key :=
+    eq_of_beq (List.find?_some (p := fun choice : ActualOperation sources => choice.original == key) found)
+  have first := List.find?_eq_getElem?_findIdx.symm.trans found
+  have present : key ∈ operationKeys application := by
+    rw [← context.operations,← keyEq]
+    exact List.mem_map_of_mem (f := ActualOperation.original) (List.mem_of_find?_eq_some found)
+  refine ⟨by simpa only [formal] using step.actual,first,keyEq,?_,?_,?_⟩
+  · rw [← context.operations,List.getElem?_map,first,Option.map_some,keyEq]
+  · obtain ⟨binder,member,selected⟩ := List.mem_filterMap.mp present
+    cases kind : binder.kind with
+    | basis => simp [kind] at selected
+    | natural => simp [kind] at selected
+    | operation tokens =>
+      exact ⟨binder,member,tokens,kind,by simpa only [kind,Option.some.injEq] using selected.symm⟩
+  · simpa only [found] using step.formal_result formal
+
+/-- A declared Op key in the authenticated mixed header necessarily reaches
+the insertion branch, including when the actual itself contains open keys. -/
+theorem Step.formal_selection_of_mem {sources application original} (step : @Step sources application original)
+    (context : Context application) {key : Parameter} (formal : step.node = .formal key)
+    (present : key ∈ operationKeys application) : ∃ actual, FormalSelection step key actual := by
+  rw [← context.operations] at present
+  obtain ⟨candidate,member,same⟩ := List.mem_map.mp present
+  cases found : application.operationActuals.find? (·.original == key) with
+  | some actual => exact ⟨actual,step.formal_selection context formal found⟩
+  | none =>
+    have excluded := List.find?_eq_none.mp found candidate member
+    simp [same] at excluded
+
 structure Result {sources} (application : ApplicationSource sources) (original : Subject sources) where
   subject : Subject sources
   steps : List (Step application original)

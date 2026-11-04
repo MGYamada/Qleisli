@@ -33,7 +33,7 @@ theorem RecordAt.node {artifact catalogue context description graph implementati
   rw [sameIndex] at original
   exact Option.some.inj (original.symm.trans located.original)
 
-private def readRecordAt {artifact catalogue context description graph implementations references prepared root requested}
+def readRecordAt {artifact catalogue context description graph implementations references prepared root requested}
     (checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested)
     (located : @RuntimeOperationOccurrenceTree.Located artifact catalogue context description graph implementations references prepared) :
     WorkM (RecordAt checked located) := do

@@ -4,6 +4,8 @@ import Protocol.ExecutionView.QmatchV5
 import QleisliKernel.Qirf.RuntimeNamedSelectionSurroundings
 import QleisliKernel.Qirf.RuntimeNamedCalls
 import QleisliKernel.Qirf.RuntimeNamedCallsComposition
+import QleisliKernel.Qirf.RuntimeLinkedSubject
+import QleisliKernel.Qirf.RuntimePreparedArm
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import Protocol.NativeContext.Bindings
@@ -724,6 +726,46 @@ private def originalArmSite {sources owner name context description graph origin
   | .unlocated => none
   | .arm table index => some (index.val,(table.arms[index]).label.ordinal,table.site.parsed.keyword.span.startByte)
 
+private abbrev LinkedArmSummary := Nat × Nat × String × Nat × Nat
+
+private def linkedForStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
+    queue rootOwner rootName name entry path}
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (index : Nat)
+    (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
+    (status : SourcePendingMeaning.DemandStatus invoked.demand) →
+    RuntimeLinkedSubject.ForStatus source index invoked status → Option LinkedArmSummary
+  | .classified (.closed _),linked => do
+    let .formal key _ _ _ choice _ _ _ := linked.head | none
+    let .thenOp left right := linked.structureMatch.matched.terminal.node | none
+    return (key.ordinal,choice.position,choice.header.name,left,right)
+  | .classified (.conditional ..),_ | .inactive _,_ => none
+
+private def linkedArmSummary {artifact catalogue queue context description graph origin implementations references root requested owner name rootOwner rootName}
+    (site : @RuntimeGraphOperation.Site artifact.sources owner name context description graph origin)
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
+    (checked : RuntimeOperationTree.Checked prepared root requested)
+    (source : RuntimeSourceOperationMarkers.OriginChecked origin prepared checked) (index : Nat)
+    {entry : @SourcePendingMeaning.Entry artifact.sources catalogue queue}
+    {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name}
+    (invoked : RuntimeDutyInvocation.DemandBinding entry path) :
+    RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Option LinkedArmSummary := by
+  cases site with
+  | unlocated => exact fun impossible => nomatch impossible
+  | arm => exact linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked)
+
+private def summarizeLink {artifact owner name arguments request prepared root runtime}
+    (body : @RuntimeBodyOperations.AtRoot artifact owner name arguments request prepared root runtime)
+    (link : RuntimeBodyOperations.ArmLink body) : Option LinkedArmSummary :=
+  let receipt := body.receipts[link.receiptIndex]
+  @linkedArmSummary artifact prepared.source.catalogue prepared.source.pending.queue
+    receipt.request.context receipt.request.description receipt.request.graph receipt.request.origin
+    receipt.request.implementations receipt.request.references root receipt.request.requested
+    receipt.location.owner receipt.location.name receipt.location.rootOwner receipt.location.rootName
+    receipt.location.site receipt.prepared receipt.evidence.checked receipt.evidence.source
+    link.markerIndex prepared.source.pending.entries[link.queueIndex] receipt.location.path
+    link.binding.instanceBinding link.subject
+
 private abbrev ObservingSummary :=
   List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat
 
@@ -747,6 +789,8 @@ private def observingRuntime (p : ObservingPayload) (composed : Bool) : WorkM Ob
   let bindings := checked.writtenArms.map fun link =>
     (link.binding.located.record,link.binding.instanceBinding.demand.source.original.origin.offset)
   guard (bindings == (if composed then [(4,325)] else [])) .request
+  let linked := checked.writtenArms.map (summarizeLink checked.checked)
+  guard (linked == (if composed then [some (0,0,"U",0,1)] else [])) .request
   let result := checked.checked.result
   return (result.history.issued.map (·.ordinal),result.retired.map (·.ordinal),
     result.history.bindings.map (·.port.token),observingHistoryCounts 3 checked.checked.ordinary.rows,
@@ -898,10 +942,104 @@ private def checkRepeatedChoose : IO Unit := do
         | .error .request => pure ()
         | _ => throw (IO.userError "sibling call's written duty must refuse at the request boundary")
 
+-- Compare original slots even when all supplied operators act as identity.
+-- The source and token positions are fixed independently of all native reads.
+private def mixedSupplySource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+meaning Identity:Bit=reference(keep);
+unitary fn choose[const U:Op<Bit>,const N:Nat,const V:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U),Applicable(V),Controllable(V) {
+    qmatch(s,q){0=>keep,1=>checked_op(V,Identity)}
+}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    let (s,q)=choose[then_op(keep,idle),1,then_op(keep,idle)](s,q);
+    choose[then_op(keep,idle),1,then_op(keep,idle)](s,q)
+}
+"#
+
+private def expectSupplyRefusal {α : Type} (action : WorkM α) : WorkM Unit := do
+  let refused ← try
+    let _ ← action
+    pure false
+  catch error => match error with
+    | .request => pure true
+    | other => throw other
+  guard refused .invalid
+
+private def checkSuppliedSlot {sources catalogue record}
+    (first last : SourceRuntimeContext.NamedEvent sources "main") (choice : RuntimeFormalActual.Choice) :
+    (invocation : @GenericDutyQueue.Invocation sources catalogue record) →
+    GenericDutyQueue.Demand invocation → WorkM Unit
+  | .root _,_ => throw .invalid
+  | .call _ app _,demand => do
+    let transfer := RuntimeFormalActual.substitution demand
+    let key : Semantics.SymbolicBasis.Parameter := ⟨"main","choose",2⟩
+    let [u,v] := first.target.operationActuals.sourceActuals | throw .invalid
+    let [laterU,laterV] := last.target.operationActuals.sourceActuals | throw .invalid
+    guard (u.checked.description == v.checked.description && v.checked.description == laterV.checked.description &&
+      u.index.val == 0 && v.index.val == 2 && u.name == "U" && v.name == "V") .invalid
+    let offsets := [u.actual.argument.tokens,laterU.actual.argument.tokens,
+      v.actual.argument.tokens,laterV.actual.argument.tokens].map fun tokens => tokens.head?.map (·.span.startByte)
+    guard (offsets == [some 442,some 500,some 463,some 521]) .invalid
+    let supply ← RuntimeFormalActual.readSupply first app.original transfer key choice
+    guard (choice.position == 1 && choice.header.ordinal == 2 && choice.header.name == "V" &&
+      supply.source.actual.argument.tokens.head?.map (·.span.startByte) == some 463) .invalid
+    expectSupplyRefusal (RuntimeFormalActual.readSupply first app.original transfer key {choice with position := 0})
+    expectSupplyRefusal (RuntimeFormalActual.readSupply first app.original transfer key {choice with header := u.actual.formal})
+    -- Both calls resolve to the same declaration, headers and actual graphs.
+    -- The later call's supplying argument has a different original token span.
+    expectSupplyRefusal (RuntimeFormalActual.readSupply last app.original transfer key choice)
+
+private def mixedSupplyStudy : WorkM Unit := do
+  let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
+  let selected : Semantics.Observation.Program :=
+    ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩
+  let artifact : Artifact := ⟨#[selected,identity],#[],#[("main",mixedSupplySource)],0,none⟩
+  let source ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named first,.named last] := source.body.checked.events | throw .invalid
+  let [duty,_] := source.pending.entries.filter (·.unconsumed) | throw .invalid
+  let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody first)
+  if caller : first.target.callerName = "route" then
+    let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" first.target.callerName := by
+      simpa only [caller] using (RuntimeOrdinaryBody.CallPath.root source.body)
+    let path := RuntimeOrdinaryBody.CallPath.named first callee.val (by with_reducible exact callee.property) parent
+    let invoked ← RuntimeDutyInvocation.readDemand duty path
+    let body := callee.val.checked
+    let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .invalid
+    let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation
+      body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
+    let [left,right] := List.finRange table.arms.length | throw .invalid
+    let empty : Context := .mk [] [] [] [] []
+    let provider : RuntimeProviderHeader.Request := (.pure 1,empty)
+    let plain ← RuntimePreparedArm.prepare artifact source.catalogue table left [provider] []
+    let arm ← RuntimePreparedArm.prepare artifact source.catalogue table right (List.replicate 4 provider) [[provider]]
+    let rows := source.signature.sourceRows ++ body.summary.staticRows ++ first.target.sourceRows ++ plain.rows ++ arm.rows
+    let root ← Validity.checkRootFromRoots artifact #[0,1] rows (artifact.root :: plain.roots ++ arm.roots).eraseDups
+    let .constructed _ _ _ markers _ ← RuntimePreparedArm.read arm root | throw .invalid
+    let [entry] := markers.entries | throw .invalid
+    let actual ← RuntimeNativeSubject.readSubject entry.assertion
+    let cursor := actual.child.cursor
+    let formal ← RuntimeNativeSubject.readFormal cursor
+    let choice ← RuntimeFormalActual.readChoice formal
+    checkSuppliedSlot first last choice invoked.invocation invoked.demand
+    let description := invoked.demand.transported.subject.description
+    let .closed correct ← GenericOperation.close description | throw .invalid
+    let _ ← RuntimeClosedSubject.read correct cursor
+    let some (.thenOp a b) := description.nodes[description.root]? | throw .invalid
+    let swapped := {description with nodes := description.nodes.set description.root (.thenOp b a)}
+    let .closed wrong ← GenericOperation.close swapped | throw .invalid
+    -- Both independent leaves are identities, but the source requests keep then idle.
+    expectSupplyRefusal (RuntimeClosedSubject.read wrong cursor)
+  else throw .invalid
+
 /-- Run the common source-origin association under native execution as well
 as the kernel guards. Both original arms are covered; the one original Meaning
 duty remains pending. Wrong phase and source order retain exact refusals. -/
 def nativeSourceMarkerControls : IO Unit := do
+  match (mixedSupplyStudy.run WorkProfile.qmatch.limit).1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError ("mixed formal supply controls: " ++ reprStr error))
   checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do

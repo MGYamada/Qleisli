@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.RuntimeOperationTree
-import QleisliKernel.Qirf.RuntimeWrittenDuty
+import QleisliKernel.Qirf.RuntimeLinkedSubject
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeOrdinaryHistories
 import QleisliKernel.Qirf.RuntimeReferenceContexts
@@ -207,6 +207,12 @@ structure ArmLink {artifact owner name arguments request prepared root runtime}
   markerIndex : Nat
   queueIndex : Fin prepared.source.pending.entries.length
   binding : body.Written receiptIndex markerIndex queueIndex
+  subject : let receipt := body.receipts[receiptIndex]
+    RuntimeLinkedSubject.Evidence receipt.location.site receipt.prepared receipt.evidence.checked
+      receipt.evidence.source markerIndex binding.instanceBinding
+  subjectRead : let receipt := body.receipts[receiptIndex]
+    RuntimeInterval.Computed (RuntimeLinkedSubject.read receipt.location.site receipt.prepared
+      receipt.evidence.checked receipt.evidence.source markerIndex binding.instanceBinding) subject
 
 /-- Associate each retained written arm assertion with its own invocation and
 queue entry. The transported generic subject and native action are retained
@@ -228,7 +234,9 @@ def readArmLinks {artifact owner name arguments request prepared root runtime}
       exactWork (Exact.charge (16*(prepared.source.pending.entries.length+1)))
       let binding ← RuntimeWrittenDuty.read receipt.location.site receipt.prepared receipt.evidence.checked source mi
         prepared.source.pending.entries[qi] receipt.location.path
-      return (⟨ri,mi,qi,binding⟩ : ArmLink body)
+      let subject ← NaturalAffine.witness (RuntimeLinkedSubject.read receipt.location.site receipt.prepared
+        receipt.evidence.checked source mi binding.instanceBinding)
+      return (⟨ri,mi,qi,binding,subject.val,by with_reducible exact subject.property⟩ : ArmLink body)
   return links.flatten
 
 structure Checked {artifact owner name arguments request}

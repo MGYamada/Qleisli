@@ -178,6 +178,12 @@ private theorem applications_call {sources catalogue record} (caller : @Invocati
     (Invocation.call caller application target).applications = caller.applications ++ [application.original] :=
   invocationFold_call _ _ _ _ _
 
+/-- The first simultaneous substitution uses the actual innermost call. -/
+theorem Invocation.call_reverse {sources catalogue record} (parent : @Invocation sources catalogue record)
+    (application : ApplicationAt catalogue record) (target : Target application) :
+    (Invocation.call parent application target).applications.reverse = application.original :: parent.applications.reverse := by
+  rw [applications_call,List.reverse_append] <;> rfl
+
 theorem Invocation.applications_nil_of_depth_zero {sources catalogue record}
     (invocation : @Invocation sources catalogue record) (atRoot : invocation.depth = 0) :
     invocation.applications = [] := by
