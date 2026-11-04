@@ -55,21 +55,22 @@ theorem of_ownerCode (bindings : Map) {code : Semantics.Exact.Matrix}
 /-- Derived reader availability from the same successful basis read and its
 actual port equalities. This is not an observed Carrier invocation or a claim
 that the public caller's remaining work suffices for an intermediate frame. -/
-theorem of_basis_read (binding : RuntimeOwnerMap.Binding) (layout : Semantics.FiniteCarrier.Layout)
-    (read : RuntimeInterval.Computed (FiniteCarrier.read binding.owner.basis) layout)
-    (bits : binding.port.bits = layout.bits) (wires : binding.port.wires.length = layout.bits) :
-    RuntimeInterval.Computed (Carrier.readOwner ⟨binding.port,binding.owner.basis⟩) layout := by
+theorem carrier_of_basis_read (owner : Semantics.CarrierInterface.Owner)
+    (layout : Semantics.FiniteCarrier.Layout)
+    (read : RuntimeInterval.Computed (FiniteCarrier.read owner.basis) layout)
+    (bits : owner.port.bits = layout.bits) (wires : owner.port.wires.length = layout.bits) :
+    RuntimeInterval.Computed (Carrier.readOwner owner) layout := by
   obtain ⟨work,left,ran⟩ := read
-  have ports : (binding.port.bits == layout.bits && binding.port.wires.length == layout.bits) = true := by
+  have ports : (owner.port.bits == layout.bits && owner.port.wires.length == layout.bits) = true := by
     simp only [Bool.and_eq_true,beq_iff_eq]
     exact ⟨bits,wires⟩
-  have guarded : (guard (binding.port.bits == layout.bits && binding.port.wires.length == layout.bits)
+  have guarded : (guard (owner.port.bits == layout.bits && owner.port.wires.length == layout.bits)
       .request).run left = (.ok (),left) :=
     congrArg (fun condition => (guard condition .request).run left) ports
   refine ⟨work,left,?_⟩
   calc
-    (Carrier.readOwner ⟨binding.port,binding.owner.basis⟩).run work =
-        ((guard (binding.port.bits == layout.bits && binding.port.wires.length == layout.bits) .request
+    (Carrier.readOwner owner).run work =
+        ((guard (owner.port.bits == layout.bits && owner.port.wires.length == layout.bits) .request
           >>= fun _ => pure layout) : WorkM Semantics.FiniteCarrier.Layout).run left := by
       unfold Carrier.readOwner
       rw [bind_run,ran]
@@ -77,9 +78,18 @@ theorem of_basis_read (binding : RuntimeOwnerMap.Binding) (layout : Semantics.Fi
       rw [bind_run,guarded]
     _ = (.ok layout,left) := rfl
 
+/-- The binding-specific statement preserves its complete original source role
+and uses the same actual carrier, without constructing a surrogate role. -/
+theorem of_basis_read (binding : RuntimeOwnerMap.Binding) (layout : Semantics.FiniteCarrier.Layout)
+    (read : RuntimeInterval.Computed (FiniteCarrier.read binding.owner.basis) layout)
+    (bits : binding.port.bits = layout.bits) (wires : binding.port.wires.length = layout.bits) :
+    RuntimeInterval.Computed (Carrier.readOwner ⟨binding.port,binding.owner.basis⟩) layout :=
+  carrier_of_basis_read ⟨binding.port,binding.owner.basis⟩ layout read bits wires
+
 #print axioms of_readOwners
 #print axioms ownerCode_readOwners
 #print axioms of_ownerCode
+#print axioms carrier_of_basis_read
 #print axioms of_basis_read
 
 end Qleisli.RuntimeOwnerCodeEvidence

@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Derive complete input/output sparse frames from the same original storage
+  and owner reads. Propagate owner-code availability through an actual
+  selection and derive its original axis bounds and distinctness. Prove exact
+  local/caller join, split and one-Bit gate traces from actual Raw steps.
+  Intermediate whole-body availability, literal reconstruction and source
+  composition remain open; these proofs add no acceptance route.
+
 - Derive exact local/caller circuit correspondence for the same checked
   `applyUnitary` tape, including empty circuits and unchanged spectator ports.
   Expose per-owner code evidence from existing reads and distinguish derived

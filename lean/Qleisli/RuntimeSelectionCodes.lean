@@ -48,19 +48,19 @@ private theorem wire_map_eq (before : Map) : ∀ after : Map,
 
 /-- The actual selected boundary and same original spectator bindings preserve
 the complete ordered source owner/wire map, without a lowering-shape premise. -/
-theorem selection_wires
+theorem selection_wires_of_read
     {dependencies program block start count inputs outputs roles}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
     (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
-    {selectorBits targetBits retained restricted}
-    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
-      source.before source.transport.after) :
+    {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained) :
     source.transport.after.bindings.map (fun binding => (binding.owner,binding.port.wires)) =
       source.before.bindings.map (fun binding => (binding.owner,binding.port.wires)) := by
   have spectators := Qleisli.RuntimeSelectionSpectators.selection_spectators frame source
   have selected := (RuntimeSelectionPartition.order_values _ _ _ source.selected.ordered).1
   have returned := (RuntimeSelectionPartition.order_values _ _ _ source.returned.ordered).1
-  have boundary := (RuntimeSelectionWires.source_boundary frame source literal).1
+  have boundary := (RuntimeSelectionWires.source_boundary_of_read frame source restricted).1
   have pair : (source.returned.first.owner,source.returned.first.port.wires) =
         (source.selected.first.owner,source.selected.first.port.wires) ∧
       (source.returned.second.owner,source.returned.second.port.wires) =
@@ -92,6 +92,19 @@ theorem selection_wires
       have equal := map_unique (fun binding : Binding => binding.owner.ordinal) _
         (owner_ordinals source.before) old oldMember current present (congrArg (·.ordinal) sameOwner)
       exact congrArg (fun binding : Binding => binding.port.wires) equal
+
+/-- Literal consumers use the same actual sector read. The complete wire map
+is already determined before literal reconstruction or code availability. -/
+theorem selection_wires
+    {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    {selectorBits targetBits retained restricted}
+    (_literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) :
+    source.transport.after.bindings.map (fun binding => (binding.owner,binding.port.wires)) =
+      source.before.bindings.map (fun binding => (binding.owner,binding.port.wires)) :=
+  selection_wires_of_read frame source restricted
 
 private theorem forest_by_bases (owners : List Semantics.CarrierInterface.Owner) :
     Semantics.CarrierInterface.forest owners =
@@ -170,6 +183,7 @@ theorem selection_axes {dependencies program block start count inputs outputs ro
   rw [Qleisli.RuntimeLiteralFrame.literal_frame literal,returnedWires,selectedWires]
   rfl
 
+#print axioms selection_wires_of_read
 #print axioms selection_wires
 #print axioms selection_codes
 #print axioms selection_axes

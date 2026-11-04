@@ -216,6 +216,39 @@ theorem sparseLayout_reference (basis : Basis) (sparse : Sparse)
                 simpa only [left,right,StackAgrees,Exact.ListRel] using related
               exact ⟨original,by simp [Semantics.FiniteCarrier.layout,right],pair.1⟩
 
+/-- A successful independent layout also has the same sparse coordinates.
+This is structural completeness of the existing reader, not a bounded-work
+converse or permission to enumerate a large concrete reference layout. -/
+theorem sparseLayout_complete (basis : Basis) (layout : Layout)
+    (reference : Semantics.FiniteCarrier.layout basis = some layout) :
+    ∃ sparse,sparseLayout basis = some sparse ∧ Agrees sparse layout := by
+  have related := fold_agrees basis
+  unfold Semantics.FiniteCarrier.layout at reference
+  cases right : basis.foldr Semantics.FiniteCarrier.layoutStep (some []) with
+  | none => simp [right] at reference
+  | some actual =>
+    cases actual with
+    | nil => simp [right] at reference
+    | cons original tail =>
+      cases tail with
+      | cons second rest => simp [right] at reference
+      | nil =>
+        have same : original = layout := by
+          simpa only [right,bind,Option.bind,pure,Option.some.injEq] using reference
+        subst original
+        cases left : basis.foldr sparseStep (some []) with
+        | none => simp [left,right,StackAgrees] at related
+        | some stack =>
+          cases stack with
+          | nil => simp [left,right,StackAgrees,Exact.ListRel] at related
+          | cons sparse rest =>
+            cases rest with
+            | cons second rest => simp [left,right,StackAgrees,Exact.ListRel] at related
+            | nil =>
+              have pair : Agrees sparse layout ∧ True := by
+                simpa only [left,right,StackAgrees,Exact.ListRel] using related
+              exact ⟨sparse,by simp [sparseLayout,left],pair.1⟩
+
 def carrierOwners (bindings : Map) : List Semantics.CarrierInterface.Owner :=
   bindings.map fun binding => ⟨binding.port,binding.owner.basis⟩
 
