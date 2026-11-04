@@ -67,6 +67,15 @@ jobs:
           auto-config: 'false'
           use-github-cache: 'false'
           build: 'false'
+      - name: Compile the native package in the fresh checkout
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test -z "$(git status --porcelain)"
+          python3 scripts/check_lean_kernel.py
+          echo "$SOURCE_COMMIT" > "$RUNNER_TEMP/proof-native-build.log"
+          (cd lean-kernel && lake build) 2>&1 | tee -a "$RUNNER_TEMP/proof-native-build.log"
       - name: Execute the fixed fresh proof and review-output plan
         run: python3 -B scripts/refresh_current_proof_records.py --source-commit "$SOURCE_COMMIT" --output "$RUNNER_TEMP/current-proof-records"
       - name: Retain actual proof records and proposed metadata for human review
@@ -78,5 +87,6 @@ jobs:
             ${{ runner.temp }}/proof-size.json
             ${{ runner.temp }}/proof-fixtures.json
             ${{ runner.temp }}/proof-cumulative.json
+            ${{ runner.temp }}/proof-native-build.log
             ${{ runner.temp }}/current-proof-records/
           if-no-files-found: error

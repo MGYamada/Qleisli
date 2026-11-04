@@ -82,9 +82,12 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-ordinary-adts`, `codex/beta-typed-ordinary-runtime`,
 `codex/beta-qmatch`, `codex/beta-qmatch-arm-body`, `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
-The selected branch and workflow source must agree.
-It runs the canonical
-builds, audits, full reductions and fixed protected-output comparisons before
+The selected branch and workflow source must agree. The runner compiles the
+native package from that checkout in a separate 15-minute preparation step and
+retains the build log with its commit. The registry then checks the native
+build, compiles the mathematical package, audits both packages and runs its
+fresh kernel replay and schema export within its existing deadline.
+The producer runs the full reductions and fixed protected-output comparisons before
 proposing changes to the schema registry, three current-evidence records and the
 derived current continuity snapshot. Its full command streams and five-file
 patch are uploaded as a distinct artifact;
