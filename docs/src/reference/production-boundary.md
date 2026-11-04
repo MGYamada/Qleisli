@@ -343,6 +343,14 @@ restriction. Fresh native conformance, canonical proof maintenance and full CI
 remain required; original source-body lowering, decoder/walker/native compilation,
 runtime/target preservation and broader QS/PR/RS/EXACT duties are separate.
 
+The internal common-body duty continuation authenticates every original
+operation argument in scalar-free Op calls, including unused siblings, against
+the complete ordered header keys. A forwarded formal retains its original
+mixed-header ordinal. The supplying assertion and enclosing arm retain separate
+original queue positions, source tokens, provider occurrences and exact Meaning
+equations under the same final native root. These component checks do not enable
+public v5, close general nested duties or establish source-action composition.
+
 The current ordered Raw frame additionally requires a complete structural
 source return. Checked renaming, ordinary tuple moves and the final expression
 retain the original logical owner identities, basis trees and returned order.

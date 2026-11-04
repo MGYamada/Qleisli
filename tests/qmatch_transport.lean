@@ -1964,6 +1964,20 @@ unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
 pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[checked_op(sign,Sign)](s,q)}
 "#
 
+private def slottedSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Sign:Bit=reference(sign);
+meaning Outer:Bit=reference(sign);
+unitary fn choose[const V:Op<Bit>,const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(V),Controllable(V),Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[keep,checked_op(sign,Sign)](s,q)}
+"#
+
+private inductive SlotFault where
+  | correct | swappedActuals | missingProvider | changedUnusedProvider
+  deriving BEq, Repr
+
 private def writtenSource : AppliedFault → String
   | .correct | .staleProviderOffset => appliedSource
   | .nested => nestedSource
@@ -2006,14 +2020,15 @@ private def nestedOriginTag {artifact owner name arguments request prepared orde
   | .supplying _ _ => 2
 
 private def checkNestedOriginals {artifact owner name arguments request prepared order runtime}
-    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime) : WorkM Unit := do
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (expected : List Nat := [6,12]) : WorkM Unit := do
   let report := body.coverage
   let required := (List.finRange prepared.source.pending.entries.length).filter (fun i =>
     prepared.source.pending.entries[i].unconsumed)
   let [inner,outer] := required | throw Finite.Error.invalid
-  guard (inner.val == 6 && outer.val == 12) .invalid
+  guard ([inner.val,outer.val] == expected) .invalid
   let observed := report.consumed.map fun item => item.1.val
-  guard (observed == [6,12] && report.residual.isEmpty) .invalid
+  guard (observed == expected && report.residual.isEmpty) .invalid
   let [first,second] := report.candidates | throw .invalid
   guard (nestedOriginTag first.origin == 1 && first.queueIndex == outer &&
     nestedOriginTag second.origin == 2 && second.queueIndex == inner &&
@@ -2029,7 +2044,8 @@ private def checkNestedOriginals {artifact owner name arguments request prepared
 
 private abbrev AppliedCoverage := List Nat × List Nat × List (Nat × Nat)
 
-private def readAppliedFixture (source name : String) (callOffset : Nat) (fault : AppliedFault) :
+private def readAppliedFixture (source name : String) (callOffset : Nat) (fault : AppliedFault)
+    (slots : Bool := false) (slotFault : SlotFault := .correct) :
     WorkM (AppliedCoverage × Option (AppliedOffer #[("main",source)])) := do
   let applied := fault == .correct || fault == .staleProviderOffset
   let port := fun (token wire : Nat) => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
@@ -2052,15 +2068,23 @@ private def readAppliedFixture (source name : String) (callOffset : Nat) (fault 
   let reference : RuntimeProviderHeader.Request := (.pure 5,phaseCtx 95)
   let inner := if fault == .wrongInnerMeaning then (.pure 1,empty) else reference
   let outer := if fault == .wrongOuterMeaning then (.pure 1,empty) else reference
-  let s : SourceSequence.Position := ⟨if applied then 322 else 294,0,1⟩
+  let s : SourceSequence.Position := ⟨if applied then 322 else if slots then 340 else 294,0,1⟩
   let c : SourceSequence.Position := ⟨callOffset,0,1⟩
   let site : RuntimeContextRequest.Site := ⟨interface,interface,s,[⟨1,2⟩,⟨3,4⟩]⟩
-  let child : Context := .withReferences [s] [site] [] [] [implementation,(.pure 1,empty),implementation]
-    (if applied then [[],[],[[reference]]] else [[[inner]],[],[[inner],[outer]]])
+  let keep : RuntimeProviderHeader.Request := (.pure 1,empty)
+  let bodies := if slots then match slotFault with
+    | .correct => [keep,implementation,keep,keep,implementation]
+    | .swappedActuals => [implementation,keep,keep,keep,implementation]
+    | .missingProvider => [keep,implementation,keep,implementation]
+    | .changedUnusedProvider => [(.pure 3,empty),implementation,keep,keep,implementation]
+    else [implementation,keep,implementation]
+  let child : Context := .withReferences [s] [site] [] [] bodies
+    (if slots then [[],[[inner]],[],[[inner],[outer]]]
+     else if applied then [[],[],[[reference]]] else [[[inner]],[],[[inner],[outer]]])
   let context : Context := .mk [c] [] [(c,child)] [] []
   let prepared ← RuntimeBodyOperations.prepare artifact "main" name {} context
   let checked ← RuntimeBodyOperations.read prepared #[0,1,2,3,4,5] runtime
-  if fault == .nested then checkNestedOriginals checked
+  if fault == .nested then checkNestedOriginals checked (if slots then [8,16] else [6,12])
   let offer := match checked.writtenArms with
     | [link] => (summarizeLink checked.checked link).bind (·.2)
     | _ => none
@@ -2083,7 +2107,54 @@ private def compareAppliedRoots : WorkM (Bool × List (String × Nat) × List (S
   return (seven.action == eight.action,seven.native.signature.staticArguments.naturals,
     eight.native.signature.staticArguments.naturals,decisions)
 
+-- Start from the genuine retained root call, then corrupt only its untrusted
+-- Op-slot metadata. Reversed, missing and duplicate keys cannot authenticate a
+-- call even when every original source token remains unchanged.
+private def slottedKeys : WorkM Unit := do
+  let artifact : Artifact := ⟨#[],#[],#[("main",slottedSource)],0,none⟩
+  let source ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let entry ← GenericCatalogue.lookup source.catalogue.toRuntimeChecked source.signature.original
+  let applications := (GenericCatalogue.bodyActivities entry.body).filterMap fun activity =>
+    match activity with | .application app => some app | _ => none
+  -- The original keep/sign provider occurrences remain separate applications.
+  -- Select this fixture's containing call by its actual frozen source span.
+  let [app] := applications.filter (fun app => app.tokens.head?.map (·.span.startByte) == some 442) | throw .invalid
+  guard (app.owner == "main" && app.name == "choose") .invalid
+  let [first,second] := app.operationActuals | throw .invalid
+  guard (app.operationActuals.map (·.original.ordinal) == [0,1]) .invalid
+  let _ ← SourceDutyProviderBare.readApplications source.catalogue [app]
+  for actuals in [[second,first],[second],[first,first]] do
+    refused .request (SourceDutyProviderBare.readApplications source.catalogue [{app with operationActuals := actuals}])
+
+private def slottedControls : IO Unit := do
+  for fault in [AppliedFault.nested,.wrongInnerMeaning,.wrongOuterMeaning] do
+    let source := match fault with
+      | .wrongInnerMeaning => slottedSource.replace "meaning Sign:Bit=reference(sign);" "meaning Sign:Bit=reference(keep);"
+      | .wrongOuterMeaning => slottedSource.replace "meaning Outer:Bit=reference(sign);" "meaning Outer:Bit=reference(keep);"
+      | _ => slottedSource
+    let (observed,left) := (readAppliedFixture source "route" 442 fault true).run WorkProfile.qmatch.limit
+    let result := observed.map Prod.fst
+    let expected : Except Finite.Error AppliedCoverage :=
+      if fault == .nested then .ok ([8,16],[],[(16,363)]) else .error .equation
+    let matched := match result,expected with
+      | .ok actual,.ok wanted => actual == wanted
+      | .error actual,.error wanted => actual == wanted
+      | _,_ => false
+    unless matched do
+      throw (IO.userError s!"original Op slots {repr fault}: expected {repr expected}, observed {repr result}")
+    IO.println s!"original Op slots {repr fault}: {repr result}; work={WorkProfile.qmatch.limit-left}"
+  for fault in [SlotFault.swappedActuals,.missingProvider,.changedUnusedProvider] do
+    let observed := ((readAppliedFixture slottedSource "route" 442 .nested true fault).run WorkProfile.qmatch.limit).1
+    match observed with
+    | .error .request => pure ()
+    | _ => throw (IO.userError s!"original Op slot corruption {repr fault}: observed {repr (observed.map Prod.fst)}")
+  match slottedKeys.run WorkProfile.qmatch.limit |>.1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError s!"original Op slot key identity: {repr error}")
+  IO.println "passed unused provider occurrence, wrong Meaning, crossed/missing body and exact original Op key controls"
+
 private def appliedControls : IO Unit := do
+  slottedControls
   for fault in [AppliedFault.correct,.nested,.staleProviderOffset,.wrongInnerMeaning,.wrongOuterMeaning] do
     let offset := if fault == .correct || fault == .staleProviderOffset then 423 else 396
     let observed := ((readAppliedFixture (writtenSource fault) "route" offset fault).run WorkProfile.qmatch.limit).1.map Prod.fst
