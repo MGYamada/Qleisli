@@ -505,6 +505,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               WorkM (BlockResult dependencies program prepared.block × List operations.Receipt))
           {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (origin : RuntimeGraphOperation.Origin graph)
+          (site : RuntimeGraphOperation.Site owner name origin)
           (requests : List RuntimeProviderHeader.Request)
           (references : List (List RuntimeProviderHeader.Request)) :
           WorkM (Semantics.Exact.Matrix × List (Island dependencies) × List operations.Receipt) := do
@@ -512,8 +513,9 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
         | .extended continuation =>
           let call : RuntimeGraphOperation.Request artifact := ⟨context,description,graph,requested,requests,references,origin⟩
           let checked ← NaturalAffine.witness (continuation.read call)
+          exactWork (Exact.charge 8)
           let receipt : RuntimeGraphOperation.CheckedReceipt continuation :=
-            ⟨call,checked.val,by with_reducible exact checked.property⟩
+            ⟨call,⟨rootOwner,rootName,owner,name,path,site⟩,checked.val,by with_reducible exact checked.property⟩
           return (continuation.action checked.val,continuation.obligations checked.val,[receipt])
         | .strict =>
           guard references.isEmpty .request
@@ -534,6 +536,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
       let consumeGraph {context description}
           (graph : StaticOperation.CheckedGraph artifact.sources context description)
           (requested : StaticOperation.Paths) (origin : RuntimeGraphOperation.Origin graph)
+          (site : RuntimeGraphOperation.Site owner name origin)
           (cursor : execution.queries.Cursor)
           (data : execution.queries.GraphData graph requested origin) (explicit : Bool) :
           WorkM (Semantics.Exact.Matrix × List (Island dependencies) × execution.queries.Cursor × List execution.Receipt) := do
@@ -547,22 +550,24 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               (body : SourceRuntimeTrace.Body signature) (program : Semantics.Observation.Program) (child : Context)
               (initial : RuntimeStructuralAction.SourceState) (prepared : RuntimeInterval.Prepared dependencies program) =>
             next .pureBody .rootOrder (.whole body) (.root body) program child () initial {} prepared.block
-          let (logical,checked,receipts) ← checkFreshOperation operations childRun graph requested origin (cursor.bodies.take count) group
+          let (logical,checked,receipts) ← checkFreshOperation operations childRun graph requested origin site (cursor.bodies.take count) group
           pure (logical,checked,{cursor with bodies := cursor.bodies.drop count, references},receipts)
         | .planned preparation continuation =>
           let ⟨implementations,references,plan⟩ := data
           let call : RuntimeGraphOperation.Request artifact :=
             ⟨context,description,graph,requested,implementations,references,origin⟩
           let checked ← NaturalAffine.witness (continuation.read call plan.evidence)
+          exactWork (Exact.charge 8)
           let receipt : RuntimeGraphOperation.StagedReceipt continuation :=
-            ⟨call,plan.evidence,plan.consumed,checked.val,by with_reducible exact checked.property⟩
+            ⟨call,⟨rootOwner,rootName,owner,name,path,site⟩,plan.evidence,plan.consumed,checked.val,
+              by with_reducible exact checked.property⟩
           return (continuation.action checked.val,continuation.obligations checked.val,(),[receipt])
       let opening ← RuntimeBodyQueries.openBody execution.queries source request sourcePlan
       let (obligations,sourceCursor,receipts) ← RuntimeBodyQueries.foldPrefixes execution.queries source.signature
         (fun actual data (obligations,cursor,receipts) => do
           exactWork (Exact.charge (receipts.length+1))
           let (_,checked,cursor,performed) ← consumeGraph actual.2.graph
-            (RuntimeGraphOperation.required source.signature actual.1.1) .unlocated cursor data (!request.references.isEmpty)
+            (RuntimeGraphOperation.required source.signature actual.1.1) .unlocated .unlocated cursor data (!request.references.isEmpty)
           pure (obligations ++ checked,cursor,receipts ++ performed))
         opening.actuals opening.prefixes
         (([] : List (Island dependencies)),opening.cursor,([] : List execution.Receipt))
@@ -697,7 +702,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               event.allocated.isEmpty && event.consumed.isEmpty) .request
             let operation ← RuntimeBodyQueries.readOperation execution.queries source event position sourceCursor data
             let (expected,children,performed) ← consumeOperationChild execution event
-              (consumeGraph event.operation.graph OperationAccess.applicable .unlocated) operation
+              (consumeGraph event.operation.graph OperationAccess.applicable .unlocated .unlocated) operation
             let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
             pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ children,position.start+position.count,operation.cursor,receipts ++ performed)
@@ -709,7 +714,8 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               (fun index data (logicals,checked,cursor,receipts) => do
                 exactWork (Exact.charge (16*(logicals.length+receipts.length+1)))
                 let (logical,children,cursor,performed) ← consumeGraph (table.arms[index]).operation.graph
-                  OperationAccess.controllable (.arm (table.arms[index]).operation) cursor data (!request.references.isEmpty)
+                  OperationAccess.controllable (.arm (table.arms[index]).operation) (.arm table index)
+                  cursor data (!request.references.isEmpty)
                 return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed)) selected.arms
               (([] : List Semantics.Exact.Matrix),([] : List (Island dependencies)),selected.cursor,receipts)
             let (node,_) ← selectionNode artifact interval callerFrame owners selector target table selected.site ()

@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.RuntimeOperationTree
-import QleisliKernel.Qirf.RuntimeSourceOperationMarkers
+import QleisliKernel.Qirf.RuntimeWrittenDuty
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeOrdinaryHistories
 import QleisliKernel.Qirf.RuntimeReferenceContexts
@@ -193,12 +193,52 @@ def readAt {artifact owner name arguments request}
       boundary.val,by with_reducible exact boundary.property⟩
   else throw .request
 
+abbrev AtRoot.Written {artifact owner name arguments request prepared root runtime}
+    (body : @AtRoot artifact owner name arguments request prepared root runtime)
+    (receiptIndex : Fin body.receipts.length) (markerIndex : Nat)
+    (queueIndex : Fin prepared.source.pending.entries.length) :=
+  let receipt := body.receipts[receiptIndex]
+  RuntimeWrittenDuty.Binding receipt.location.site receipt.prepared receipt.evidence.checked
+    receipt.evidence.source markerIndex prepared.source.pending.entries[queueIndex] receipt.location.path
+
+structure ArmLink {artifact owner name arguments request prepared root runtime}
+    (body : @AtRoot artifact owner name arguments request prepared root runtime) where
+  receiptIndex : Fin body.receipts.length
+  markerIndex : Nat
+  queueIndex : Fin prepared.source.pending.entries.length
+  binding : body.Written receiptIndex markerIndex queueIndex
+
+/-- Associate each retained written arm assertion with its own invocation and
+queue entry. The transported generic subject and native action are retained
+for the separate semantic discharge, including inactive and unused duties. -/
+def readArmLinks {artifact owner name arguments request prepared root runtime}
+    (body : @AtRoot artifact owner name arguments request prepared root runtime) : WorkM (List (ArmLink body)) := do
+  exactWork (Exact.charge (16*(body.receipts.length+1)^2))
+  let links ← (List.finRange body.receipts.length).mapM fun ri => do
+    let receipt := body.receipts[ri]
+    let source := receipt.evidence.source
+    let count := RuntimeWrittenDuty.markerCount receipt.location.site receipt.prepared receipt.evidence.checked source
+    if count == 0 then return []
+    let identified ← RuntimeDutyInvocation.identify prepared.source.pending.queue receipt.location.path
+    exactWork (Exact.charge (16*((identified.invocation.depth+1)^2+count+1)))
+    let instanceId := identified.invocation.id
+    (List.range count).mapM fun mi => do
+      let located ← RuntimeWrittenDuty.locate receipt.location.site receipt.prepared receipt.evidence.checked source mi
+      let qi ← RuntimeWrittenDuty.selectEntry prepared.source.pending instanceId located.marker
+      exactWork (Exact.charge (16*(prepared.source.pending.entries.length+1)))
+      let binding ← RuntimeWrittenDuty.read receipt.location.site receipt.prepared receipt.evidence.checked source mi
+        prepared.source.pending.entries[qi] receipt.location.path
+      return (⟨ri,mi,qi,binding⟩ : ArmLink body)
+  return links.flatten
+
 structure Checked {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) (order : Array Nat) (runtime : RuntimeFamily.Request) where
   root : Validity.Root
   fresh : RuntimeInterval.Computed (Validity.checkRootFromRoots artifact order prepared.rows prepared.roots .qmatch) root
   checked : AtRoot prepared root runtime
   consumed : RuntimeInterval.Computed (readAt prepared root runtime) checked
+  writtenArms : List (ArmLink checked)
+  writtenArmsRead : RuntimeInterval.Computed (readArmLinks checked) writtenArms
 
 /-- Exactly one fresh full graph follows discovery. The typed original body,
 all local graph receipts and ordinary histories consume that same root. -/
@@ -210,6 +250,8 @@ def read {artifact owner name arguments request}
     16*(prepared.roots.length+1)^2))
   let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order prepared.rows prepared.roots .qmatch)
   let checked ← NaturalAffine.witness (readAt prepared root.val runtime)
-  return ⟨root.val,by with_reducible exact root.property,checked.val,by with_reducible exact checked.property⟩
+  let written ← NaturalAffine.witness (readArmLinks checked.val)
+  return ⟨root.val,by with_reducible exact root.property,checked.val,by with_reducible exact checked.property,
+    written.val,by with_reducible exact written.property⟩
 
 end QleisliKernel.Qirf.RuntimeBodyOperations

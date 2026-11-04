@@ -68,7 +68,7 @@ structure MeaningOriginal {sources caller scope}
     root.original.source = marker.selected.resolution.source ∧
     root.original.declaration = marker.selected.resolution.declaration
 
-private def readMeaningOriginal {sources caller scope}
+def readMeaningOriginal {sources caller scope}
     (marker : SourceOperation.Marker sources caller scope) (request : SourceMeaning.Request sources) :
     WorkM (MeaningOriginal marker request) := do
   -- Existing source/Meaning readers pay for their original work. These are

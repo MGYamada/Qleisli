@@ -10,8 +10,11 @@ development milestones from the scope of their evidence.
   occurrence and its existing checked Meaning equation in individual constructed
   reads and the common body graph continuation. Carry the authentic arm through
   its indexed source plan and native request. Retain original token
-  positions, caller and Meaning declaration/source; preserve separate repeated
-  assertions. Complete original invocation, substitution and duty discharge
+  positions, caller and Meaning declaration/source. The common body checker
+  traces each written arm assertion from its runtime call back to a unique
+  original duty in the generic queue. Repeated calls to the same function
+  retain distinct source occurrences even with identical static arguments.
+  The transported subject's equation and coverage of all original duties
   remain required before source acceptance.
 
 - Validate operation-tree matrix dimensions after every constructor (#462),

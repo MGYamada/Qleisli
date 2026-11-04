@@ -25,7 +25,7 @@ private def nodeFields : OperationDescription.Node → Nat
   | .requested _ owner name => owner.utf8ByteSize+name.utf8ByteSize+4
   | _ => 4
 
-private def argumentFields (arguments : StaticTypes.Arguments) : Nat :=
+def argumentFields (arguments : StaticTypes.Arguments) : Nat :=
   (arguments.bases.map fun (name,basis) => name.utf8ByteSize+basisFields basis+1).sum+
     namedFields arguments.naturals+
     (arguments.operations.map fun (name,description) =>

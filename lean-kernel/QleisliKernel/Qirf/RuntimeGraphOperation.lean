@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeProviderHeaders
+import QleisliKernel.Qirf.RuntimeOrdinaryBody
 import QleisliKernel.SourceTypes.OperationAccess
 import QleisliKernel.SourceTypes.QuantumArms
 
@@ -30,6 +31,26 @@ structure Request (artifact : Artifact) where
   references : List (List BodyRequest)
   origin : Origin graph
 
+/-- An arm belongs to the table of the current function at this exact index.
+Other graph requests retain their invocation without a local arm site. -/
+inductive Site {sources : Sources} (owner name : String) :
+    {context : StaticOperation.Context} → {description : OperationDescription.Description} →
+    {graph : StaticOperation.CheckedGraph sources context description} → Origin graph → Type where
+  | unlocated {context description} {graph : StaticOperation.CheckedGraph sources context description} :
+      Site owner name (.unlocated (graph := graph))
+  | arm {offset selector target} (table : QuantumArms.Table sources owner name offset selector target)
+      (index : Fin table.arms.length) : Site owner name (.arm (table.arms[index]).operation)
+
+/-- Capture the actual source call chain at graph consumption. Every named
+edge retains its event, supplied arguments and successful callee body read. -/
+structure Location {artifact : Artifact} (request : Request artifact) where
+  rootOwner : String
+  rootName : String
+  owner : String
+  name : String
+  path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name
+  site : Site owner name request.origin
+
 structure Preparation (artifact : Artifact) where
   Evidence : Request artifact → Type
   read : (request : Request artifact) → WorkM (Evidence request)
@@ -50,6 +71,7 @@ structure Consumption (artifact : Artifact) (root : Validity.Root) (Obligation :
 structure CheckedReceipt {artifact root Obligation}
     (continuation : Consumption artifact root Obligation) where
   request : Request artifact
+  location : Location request
   evidence : continuation.Evidence request
   consumed : RuntimeInterval.Computed (continuation.read request) evidence
 
@@ -68,6 +90,7 @@ structure StagedConsumption {artifact : Artifact} (preparation : Preparation art
 structure StagedReceipt {artifact preparation root Obligation}
     (continuation : @StagedConsumption artifact preparation root Obligation) where
   request : Request artifact
+  location : Location request
   prepared : preparation.Evidence request
   preparedRead : RuntimeInterval.Computed (preparation.read request) prepared
   evidence : continuation.Evidence request prepared

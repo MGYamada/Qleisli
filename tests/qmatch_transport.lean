@@ -705,6 +705,25 @@ private def originalMarkerSummary {artifact catalogue context description graph 
       ((association.markers[entry.index.val]'entry.index.isLt).tokens.head?.map (·.span.startByte) |>.getD 0,
        entry.assertion.binding.index.val,entry.assertion.requirement.request.declarationName))
 
+private def rootedInRoute {sources rootOwner rootName owner name} :
+    RuntimeOrdinaryBody.CallPath sources rootOwner rootName owner name → Bool
+  | .root body => rootOwner == "main" && body.checked.signature.original.declaration.name == "route"
+  | .named .. => false
+
+private def directChooseOffset {sources rootOwner rootName owner name} :
+    RuntimeOrdinaryBody.CallPath sources rootOwner rootName owner name → Option Nat
+  | .root _ => none
+  | .named event body _ parent =>
+    if rootedInRoute parent && event.target.callerName == "route" &&
+        event.target.resolution.moduleName == "main" && body.checked.signature.original.declaration.name == "choose" then
+      some event.call.calleeOffset
+    else none
+
+private def originalArmSite {sources owner name context description graph origin} :
+    @RuntimeGraphOperation.Site sources owner name context description graph origin → Option (Nat × Nat × Nat)
+  | .unlocated => none
+  | .arm table index => some (index.val,(table.arms[index]).label.ordinal,table.site.parsed.keyword.span.startByte)
+
 private abbrev ObservingSummary :=
   List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat
 
@@ -716,6 +735,18 @@ private def observingRuntime (p : ObservingPayload) (composed : Bool) : WorkM Ob
   exactWork (Exact.charge (16*(checked.checked.receipts.length+1)^2))
   guard ((summaries.map (·.1)).sum == 2 &&
     summaries.flatMap (·.2) == (if composed then [(325,4,"Identity")] else [])) .request
+  -- Both table entries retain the written qmatch and the direct route→choose
+  -- call from the frozen source. A declaration occurrence has a different offset.
+  let sites := checked.checked.receipts.filterMap fun receipt => do
+    let (index,label,keyword) ← originalArmSite receipt.location.site
+    let offset ← directChooseOffset receipt.location.path
+    return (index,label,keyword,offset)
+  let keyword := if composed then 302 else 169
+  let offset := if composed then 666 else 515
+  guard (sites == [(0,0,keyword,offset),(1,1,keyword,offset)]) .request
+  let bindings := checked.writtenArms.map fun link =>
+    (link.binding.located.record,link.binding.instanceBinding.demand.source.original.origin.offset)
+  guard (bindings == (if composed then [(4,325)] else [])) .request
   let result := checked.checked.result
   return (result.history.issued.map (·.ordinal),result.retired.map (·.ordinal),
     result.history.bindings.map (·.port.token),observingHistoryCounts 3 checked.checked.ordinary.rows,
@@ -822,10 +853,56 @@ private def observingExpected (composed : Bool) : ObservingSummary :=
 #guard observingRawStudy false .omittedUnitOwner matches .error .request
 #guard observingRawStudy true .omittedUnitOwner matches .error .request
 
+-- The two written calls have the same provider and the same static actual.
+-- Queue entries 11 and 19 belong to different source invocations of duty 3.
+private def repeatedChooseSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Identity:Bit=reference(keep);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {
+    qmatch(s,q){0=>keep,1=>checked_op(U,Identity)}
+}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    let (s,q)=choose[keep](s,q);
+    choose[keep](s,q)
+}
+"#
+
+private def readRepeatedChoose (secondCall secondDuty : Bool) : WorkM (Nat × Nat × Nat) := do
+  let artifact : Artifact := ⟨#[],#[],#[("main",repeatedChooseSource)],0,none⟩
+  let source ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named first,.named last] := source.body.checked.events | throw .invalid
+  let event := if secondCall then last else first
+  let [firstDuty,lastDuty] := source.pending.entries.filter (·.unconsumed) | throw .invalid
+  let entry := if secondDuty then lastDuty else firstDuty
+  let body ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+  if caller : event.target.callerName = "route" then
+    let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" event.target.callerName := by
+      simpa only [caller] using (RuntimeOrdinaryBody.CallPath.root source.body)
+    let path := RuntimeOrdinaryBody.CallPath.named event body.val (by with_reducible exact body.property) parent
+    let bound ← RuntimeDutyInvocation.readDemand entry path
+    return (event.call.calleeOffset,entry.index.val,bound.demand.source.index.val)
+  else throw .invalid
+
+private def checkRepeatedChoose : IO Unit := do
+  for secondCall in [false,true] do
+    for secondDuty in [false,true] do
+      let outcome := ((readRepeatedChoose secondCall secondDuty).run WorkProfile.qmatch.limit).1
+      if secondCall == secondDuty then
+        let expected := if secondCall then (412,19,3) else (389,11,3)
+        unless outcome.toOption == some expected do
+          throw (IO.userError "original call failed to select its own written duty")
+      else
+        match outcome with
+        | .error .request => pure ()
+        | _ => throw (IO.userError "sibling call's written duty must refuse at the request boundary")
+
 /-- Run the common source-origin association under native execution as well
 as the kernel guards. Both original arms are covered; the one original Meaning
 duty remains pending. Wrong phase and source order retain exact refusals. -/
 def nativeSourceMarkerControls : IO Unit := do
+  checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do
       throw (IO.userError "native common arm/source association or complete history changed")
@@ -835,7 +912,7 @@ def nativeSourceMarkerControls : IO Unit := do
     match observingStudy composed .contextOrder with
     | .error .request => pure ()
     | _ => throw (IO.userError "native common source order refusal changed")
-  IO.println "passed common arm/source-marker association and observing phase/order controls; original Meaning duties remain pending"
+  IO.println "passed repeated-callee duty pairing, common arm bindings and observing phase/order controls; original Meaning discharge remains pending"
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 
