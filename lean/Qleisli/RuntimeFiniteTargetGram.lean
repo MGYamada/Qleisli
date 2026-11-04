@@ -220,7 +220,6 @@ theorem checked_selection {R S : Type}
       inputCode outputCode retained.sectors labels expected) logical)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     (joint : Nat → R → ℂ) (other : Nat → S → ℂ) (r : R) (s : S) :
     logical = expected ∧ ∃ table : OrdinalTable inputCode outputCode retained.sectors labels expected,
       (∀ physical, Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
@@ -251,7 +250,7 @@ theorem checked_selection {R S : Type}
     (congrArg Matrix.cols inputSame).trans
       (dimensionAt_eq literal.outputCode.owners codes.owners.returned.second targetMember actual).symm
   refine ⟨same,table,fun physical =>
-    Qleisli.RuntimeFiniteTargetAction.caller_action frame codes layouts literal form table joint physical r,?_⟩
+    Qleisli.RuntimeFiniteTargetAction.caller_action frame codes layouts literal table joint physical r,?_⟩
   exact table_gram literal.outputCode codes.owners.returned.first codes.owners.returned.second selectorMember targetMember
     different table (selector_card frame codes layouts literal) columns joint other r s
 

@@ -54,6 +54,14 @@ private theorem take_unique {token : Nat} {before : RawOwnerFlow.Frame}
   change (token :: remaining.map Prod.fst).Nodup at all
   exact (List.nodup_cons.mp all).2
 
+/-- The actual take removes exactly its original token/Tree cell. This
+partition also accounts for empty owners when a returned list is consumed. -/
+theorem take_partition {token : Nat} {before : RawOwnerFlow.Frame}
+    {tree : RawOwnerFlow.Tree} {remaining : RawOwnerFlow.Frame}
+    (ran : RawOwnerFlow.take token before = some (tree,remaining)) :
+    before.Perm ((token,tree) :: remaining) :=
+  take_perm ran
+
 private theorem map_unique {α β : Type} (f : α → β) (values : List α) :
     (values.map f).Nodup → ∀ first ∈ values,∀ second ∈ values,f first = f second → first = second := by
   induction values with
@@ -157,6 +165,7 @@ theorem move_extension {input output : Nat}
   exact List.Perm.cons (output,partTree) taken.2.1
 
 #print axioms take_extension
+#print axioms take_partition
 #print axioms put_extension
 #print axioms move_extension
 

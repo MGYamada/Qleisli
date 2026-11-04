@@ -27,21 +27,22 @@ private theorem pair_found (live : List Semantics.Raw.Port) (a b : Nat)
         simpa [PureInterval.portsOf,List.mapM_cons,left,right] using ran
       exact ⟨congrArg some same.1,congrArg some same.2⟩
 
-/-- Both source-selected returns keep their original owner and ordered wire
-vector. Untouched Raw spectator ports, including every distinct empty port,
-are preserved by the same interval's actual spectator check. -/
-theorem source_boundary
+/-- The actual retained sector read already fixes both ordered source returns.
+No successful Literal/readSource invocation or lowering-shape premise is needed
+for this wire boundary; the complete native spectator check is retained. -/
+theorem source_boundary_of_read
     {dependencies program block start count inputs outputs roles}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
     (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
-    {selectorBits targetBits retained restricted}
-    (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
-      source.before source.transport.after) :
+    {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained) :
     source.returned.toList.map (fun binding => (binding.owner,binding.port.wires)) =
       source.selected.toList.map (fun binding => (binding.owner,binding.port.wires)) ∧
       PureInterval.spectators frame.interval.before inputs =
         PureInterval.spectators frame.interval.after outputs := by
-  have read := literal.sectorReference
+  obtain ⟨sectorWork,sectorLeft,sectorRead⟩ := restricted
+  have read := Raw.Sector.read_bound _ _ _ _ _ sectorWork sectorLeft sectorRead
   obtain ⟨work,left,ran⟩ := frame.pureRead
   have purePrepared := (Raw.Pure.verify_conditions _ _ _ work left ran).1
   have samePrepared : frame.pureBody = retained.prepared :=
@@ -69,6 +70,22 @@ theorem source_boundary
   exact ⟨by simp only [RuntimeOwnerTransition.Pair.toList,List.map_cons,List.map_nil,
     sameOwners.1,sameOwners.2,firstWires,secondWires],frame.spectators⟩
 
+/-- Compatibility with existing literal consumers. The ordered wire result
+is supplied by the same actual sector read; Literal keeps its other duties. -/
+theorem source_boundary
+    {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles)
+    {selectorBits targetBits retained restricted}
+    (_literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
+      source.before source.transport.after) :
+    source.returned.toList.map (fun binding => (binding.owner,binding.port.wires)) =
+      source.selected.toList.map (fun binding => (binding.owner,binding.port.wires)) ∧
+      PureInterval.spectators frame.interval.before inputs =
+        PureInterval.spectators frame.interval.after outputs :=
+  source_boundary_of_read frame source restricted
+
+#print axioms source_boundary_of_read
 #print axioms source_boundary
 
 end QleisliKernel.Qirf.RuntimeSelectionWires

@@ -218,6 +218,19 @@ theorem source_ports {dependencies program block start count inputs outputs role
   exact ⟨Option.some.inj (frame.atEntry.symm.trans (entry.trans (pair_ports source.before source.selected))),
     Option.some.inj (frame.atExit.symm.trans (exit.trans (pair_ports source.transport.after source.returned)))⟩
 
+/-- The original source pair and its original-order complement partition the
+complete caller. Uniqueness is supplied by the same actual pure input read. -/
+theorem source_input_partition {dependencies program block start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs roles)
+    (source : RuntimeOwnerTransition.Selection frame.interval inputs outputs roles) :
+    (source.selected.toList ++ complement source.before.bindings source.selected.toList).Perm source.before.bindings := by
+  have unique := interval_selected_tokens frame
+  rw [(source_ports frame source).1] at unique
+  apply partition_perm _ _ (nodup_of_tokens _ source.before.tokensDistinct)
+  · apply nodup_of_tokens
+    simpa only [RuntimeOwnerTransition.Pair.toList,List.map_cons,List.map_nil] using unique
+  · exact (order_values _ _ _ source.selected.ordered).1
+
 /-- The actual pure-program output check supplies distinct returned tokens.
 This includes separate zero-width owners. -/
 private theorem output_tokens {dependencies program block arity start count inputs outputs roles}
@@ -243,6 +256,7 @@ theorem source_output_partition {dependencies program block start count inputs o
   · exact (order_values _ _ _ source.returned.ordered).1
 
 #print axioms source_output_partition
+#print axioms source_input_partition
 #print axioms source_ports
 #print axioms interval_selected_tokens
 #print axioms order_values

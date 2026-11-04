@@ -3,9 +3,9 @@ import QleisliKernel.Qirf.RuntimeSelectionWitness
 
 /-! Consume the literal witness of the exact original native selection node.
 The same finite source/code/layout/table fields produce physical intertwining
-and logical Gram. The explicit authentic SelectionForm premise is retained;
-this module does not derive that original lowering shape, compose named-call
-owner namespaces, grant acceptance or assume bounded arithmetic availability.
+and logical Gram without a fixed lowering shape. The original literal reader
+remains an explicit witness; its automatic derivation and named-call owner
+composition remain separate. No acceptance or bounded availability is assumed.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.RuntimeSelectionWitnessAction
@@ -14,8 +14,8 @@ open RuntimeForestCode
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct Qleisli.RuntimeMultiwayGram
 
 /-- A real node supplies its literal receipt. Every field of the source and
-native target equation stays indexed by that exact node; only the independently
-stated actual IR-shape obligation remains a premise. -/
+native target equation stays indexed by that exact node. Its actual owner and
+trace receipts supply the full code transport without an IR-shape premise. -/
 theorem checked_selection {R S : Type}
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -29,7 +29,6 @@ theorem checked_selection {R S : Type}
       inputCode outputCode retained.sectors labels expected) logical)
     (witness : RuntimeSelectionWitness.Checked (.selection frame selectorBits targetBits retained restricted
       inputCode outputCode labels expected logical equations codes layouts))
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     (joint : Nat → R → ℂ) (other : Nat → S → ℂ) (r : R) (s : S) :
     ∃ literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
         codes.owners.before codes.owners.transport.after,
@@ -47,7 +46,7 @@ theorem checked_selection {R S : Type}
   cases witness with
   | selection literal original =>
     exact ⟨literal,original,Qleisli.RuntimeFiniteTargetGram.checked_selection
-      frame codes layouts equations literal form joint other r s⟩
+      frame codes layouts equations literal joint other r s⟩
 
 #print axioms checked_selection
 

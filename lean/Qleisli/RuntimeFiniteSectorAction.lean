@@ -1,4 +1,5 @@
 import Qleisli.RuntimeFiniteTargetScatter
+import Qleisli.RuntimeSelectionCodes
 
 /-! A genuine finite-target source sector acting through its rectangular code.
 The actual local tape, original selected/returned owner pair, complete caller
@@ -192,7 +193,6 @@ theorem sector_code_action {Reference : Type}
     (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     {label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (label,required) logical)
     (joint : Nat → Reference → ℂ) (physical row : Nat) (reference : Reference)
@@ -210,7 +210,7 @@ theorem sector_code_action {Reference : Type}
     targetFibre literal.outputCode codes.owners.returned.second
       (scatter physical (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) selected) joint
   let pulled := fun input => referenceAction literal.outputCode joint (scatter physical axes input) reference
-  have code := Qleisli.RuntimeOwnerTransitionAction.selection_form_codes frame codes.owners literal form
+  have code := Qleisli.RuntimeSelectionCodes.selection_codes frame codes.owners literal
   have referenceCode : ∀ input ref,referenceAction literal.inputCode joint input ref =
       referenceAction literal.outputCode joint input ref := by
     intro input ref
@@ -219,7 +219,7 @@ theorem sector_code_action {Reference : Type}
     apply Qleisli.Exact.sum_map_congr
     intro logical _present
     rw [code.2 input logical]
-  have sourceAxes := Qleisli.RuntimeOwnerTransitionAction.selection_form_axes frame codes.owners literal form
+  have sourceAxes := Qleisli.RuntimeSelectionCodes.selection_axes frame codes.owners literal
   have read := literal.sectorReference
   obtain ⟨sector,found,_map,_same⟩ := Qleisli.NominalSector.logical_binding_map binding
   have inside := (List.getElem?_eq_some_iff.mp found).1

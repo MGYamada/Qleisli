@@ -30,7 +30,6 @@ theorem sector_caller_action {Reference : Type}
     (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     {label required logical}
     (binding : QleisliKernel.Qirf.NominalSector.LogicalBinding inputCode outputCode retained.sectors (label,required) logical)
     (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference)
@@ -62,7 +61,7 @@ theorem sector_caller_action {Reference : Type}
   have columns : required.cols = dimensionAt literal.outputCode.owners codes.owners.returned.second :=
     ((congrArg Matrix.cols binding.1.symm).trans binding.2.1).trans
       (inputColumns.trans (dimensionAt_eq literal.outputCode.owners codes.owners.returned.second member actual).symm)
-  have native := Qleisli.RuntimeFiniteSectorAction.sector_code_action frame codes layouts literal form binding
+  have native := Qleisli.RuntimeFiniteSectorAction.sector_code_action frame codes layouts literal binding
     joint physical row reference coordinate rowBound
   have native : Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
       (fun input => referenceAction literal.inputCode joint input reference) physical =
@@ -89,7 +88,6 @@ theorem supported_caller_action {Reference : Type}
     (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     (table : OrdinalTable inputCode outputCode retained.sectors labels arms)
     (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) (ordinal : Fin labels.length)
     (selectorCoordinate : gather physical
@@ -98,7 +96,7 @@ theorem supported_caller_action {Reference : Type}
         (fun input => referenceAction literal.inputCode joint input reference) physical =
       Qleisli.RuntimeMultiwayAction.finiteReferenceAction literal.outputCode
         (sourceAction frame codes layouts literal table joint) physical reference := by
-  rw [sector_caller_action frame codes layouts literal form (table.arm_checked ordinal)
+  rw [sector_caller_action frame codes layouts literal (table.arm_checked ordinal)
     joint physical reference selectorCoordinate]
   rw [← Qleisli.RuntimeMultiwayAction.finiteReferenceAction_of_nat]
   unfold Qleisli.RuntimeMultiwayAction.finiteReferenceAction
@@ -144,7 +142,6 @@ theorem padding_caller_action {Reference : Type}
     (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference)
     (padding : gather physical
       (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∉ labels) :
@@ -167,7 +164,7 @@ theorem padding_caller_action {Reference : Type}
     rw [selectedAxes,gather_append,firstSize]
     rfl
   let pulled := fun input => referenceAction literal.outputCode joint (scatter physical selected input) reference
-  have code := Qleisli.RuntimeOwnerTransitionAction.selection_form_codes frame codes.owners literal form
+  have code := Qleisli.RuntimeSelectionCodes.selection_codes frame codes.owners literal
   have sameCode (input : Nat) : referenceAction literal.inputCode joint input reference =
       referenceAction literal.outputCode joint input reference := by
     unfold referenceAction
@@ -175,7 +172,7 @@ theorem padding_caller_action {Reference : Type}
     apply Qleisli.Exact.sum_map_congr
     intro index _present
     rw [code.2 input index]
-  have sameAxes := Qleisli.RuntimeOwnerTransitionAction.selection_form_axes frame codes.owners literal form
+  have sameAxes := Qleisli.RuntimeSelectionCodes.selection_axes frame codes.owners literal
   have localized : Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
       (fun input => referenceAction literal.inputCode joint input reference) physical =
         Qleisli.Semantics.RawAction.circuit dependencies retained.steps pulled (pack selectorBits low row) := by
@@ -242,7 +239,6 @@ theorem caller_action {Reference : Type}
     (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
     (literal : RuntimeLocalEvents.Literal frame selectorBits targetBits retained restricted
       codes.owners.before codes.owners.transport.after)
-    (form : Qleisli.RuntimeOwnerTransitionAction.SelectionForm frame codes.owners)
     (table : OrdinalTable inputCode outputCode retained.sectors labels arms)
     (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
     Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
@@ -252,8 +248,8 @@ theorem caller_action {Reference : Type}
   by_cases supported : gather physical
       (codes.owners.returned.first.port.wires.map frame.interval.after.quantum.frame.idxOf) ∈ labels
   · obtain ⟨ordinal,inside,same⟩ := List.mem_iff_getElem.mp supported
-    exact supported_caller_action frame codes layouts literal form table joint physical reference ⟨ordinal,inside⟩ same.symm
-  · exact (padding_caller_action frame codes layouts literal form joint physical reference supported).trans
+    exact supported_caller_action frame codes layouts literal table joint physical reference ⟨ordinal,inside⟩ same.symm
+  · exact (padding_caller_action frame codes layouts literal joint physical reference supported).trans
       (Qleisli.RuntimeMultiwayAction.finite_selector_padding_reference frame codes layouts literal _ physical reference supported).symm
 
 #print axioms sector_caller_action
