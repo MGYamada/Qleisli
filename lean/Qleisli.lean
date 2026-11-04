@@ -33,6 +33,7 @@ import Qleisli.RuntimeFiniteTargetLogical
 import Qleisli.RuntimeFiniteTargetAction
 import Qleisli.RuntimeFiniteTargetGram
 import Qleisli.RuntimeSelectionWitnessAction
+import Qleisli.RuntimeLiteralFrame
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
 import Qleisli.Raw
