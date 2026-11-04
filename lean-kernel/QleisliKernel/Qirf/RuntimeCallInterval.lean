@@ -36,13 +36,15 @@ def Checked.program {dependencies program block start count inputs}
   Semantics.Ownership.pureProgram
     (RuntimePureInterval.fragment checked.selected checked.operations (checked.returned.map (·.token)))
 
+private def reserve {dependencies program} (block : RuntimeInterval.Block dependencies program) (inputs : List Nat) : WorkM Unit :=
+  exactWork (Exact.charge (64*(inputs.length+block.operations.length+1)))
+
 /-- The complete independently computed local output set is checked against
 the actual enclosing interval before source recursion assigns any result role.
 Separate zero-width ports and every caller spectator remain present. -/
-def read {dependencies program} (block : RuntimeInterval.Block dependencies program)
-    (start count : Nat) (inputs : List Nat) : WorkM (Checked block start count inputs) := do
-  exactWork (Exact.charge (64*(inputs.length+block.operations.length+1)))
-  let interval ← RuntimeInterval.check block start count
+private def readAt {dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (inputs : List Nat) :
+    WorkM {scope : Checked block start count inputs // scope.interval = interval} := do
   match parsed : Sector.pureOps ((block.operations.drop start).take count) with
   | none => throw .request
   | some operations =>
@@ -62,10 +64,24 @@ def read {dependencies program} (block : RuntimeInterval.Block dependencies prog
           let prepared ← RuntimeInterval.prepare dependencies
             (Semantics.Ownership.pureProgram
               (RuntimePureInterval.fragment selected operations (returned.map (·.token))))
-          return ⟨interval,operations,Sector.pureOps_bound _ _ parsed,selected,atEntry,localEntry.val,
+          return ⟨⟨interval,operations,Sector.pureOps_bound _ _ parsed,selected,atEntry,localEntry.val,
             by with_reducible exact localEntry.property,localAfter.val,
-            by with_reducible exact localAfter.property,returned,rfl,atExit,spectators,prepared⟩
+            by with_reducible exact localAfter.property,returned,rfl,atExit,spectators,prepared⟩,rfl⟩
         else throw .request
       else throw .request
+
+/-- The caller already checked this exact parent interval. All local entry,
+exit, body and spectator checks run against the retained interval. -/
+def readWithInterval {dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (inputs : List Nat) :
+    WorkM {scope : Checked block start count inputs // scope.interval = interval} := do
+  reserve block inputs
+  readAt interval inputs
+
+def read {dependencies program} (block : RuntimeInterval.Block dependencies program)
+    (start count : Nat) (inputs : List Nat) : WorkM (Checked block start count inputs) := do
+  reserve block inputs
+  let interval ← RuntimeInterval.check block start count
+  return (← readAt interval inputs).val
 
 end QleisliKernel.Qirf.RuntimeCallInterval

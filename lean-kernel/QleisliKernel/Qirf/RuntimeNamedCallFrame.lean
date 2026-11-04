@@ -25,6 +25,7 @@ structure Checked {sources caller dependencies program}
   inputs : Map
   inputRead : RuntimeInterval.Computed (RuntimeOwnerMap.order event.inputOwners before.bindings) inputs
   scope : RuntimeCallInterval.Checked block position.start position.count (inputs.map (·.port.token))
+  sameInterval : scope.interval = interval
   initial : Map
   initialRead : RuntimeInterval.Computed (RuntimeSourceBoundary.bindings
     (callee.checked.summary.parameterValues.flatMap valueOwners)
@@ -44,13 +45,13 @@ def read {sources caller dependencies program}
   let callerFrame ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
   if completeFrame : roles.Perm (before.bindings.map (·.owner)) then
     let inputs ← NaturalAffine.witness (RuntimeOwnerMap.order event.inputOwners before.bindings)
-    let scope ← RuntimeCallInterval.read block position.start position.count (inputs.val.map (·.port.token))
+    let scope ← RuntimeCallInterval.readWithInterval interval (inputs.val.map (·.port.token))
     let initial ← NaturalAffine.witness (RuntimeSourceBoundary.bindings
       (callee.checked.summary.parameterValues.flatMap valueOwners)
-      ((scope.selected.zip event.inputOwners).map fun (port,role) =>
+      ((scope.val.selected.zip event.inputOwners).map fun (port,role) =>
         (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)))
     return ⟨interval,callerFrame.val,callerFrame.property,completeFrame,inputs.val,
-      by with_reducible exact inputs.property,scope,initial.val,by with_reducible exact initial.property⟩
+      by with_reducible exact inputs.property,scope.val,scope.property,initial.val,by with_reducible exact initial.property⟩
   else throw .request
 
 end QleisliKernel.Qirf.RuntimeNamedCallFrame

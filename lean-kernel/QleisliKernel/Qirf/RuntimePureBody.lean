@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimePrimitiveAction
+import QleisliKernel.Qirf.RuntimePrimitiveSource
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeNamedBoundary
@@ -43,9 +44,8 @@ inductive Mode where
   | pureBody
   | runtimeBody
 
-def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) := do
-  let ordered ← RuntimeOwnerMap.order roles bindings
-  return ordered.map (·.port)
+def rolePorts (roles : List Owner) (bindings : Map) : WorkM (List Semantics.Raw.Port) :=
+  RuntimePrimitiveSource.rolePorts roles bindings
 
 /-- The native reads that supplied both widths and the exact selector label
 order. A caller cannot infer all-arm coverage from the list length alone. -/
@@ -110,7 +110,8 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
     (program : Semantics.Observation.Program) → RuntimeInterval.Block dependencies program → Type where
   | primitive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count input output role kind}
-      (action : RuntimePrimitiveAction.Checked block start count input output role kind) : Node dependencies program block
+      (action : RuntimePrimitiveAction.Checked block start count input output role kind)
+      (source : RuntimePrimitiveSource.Checked action) : Node dependencies program block
   | structural {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count sources caller event before}
       (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
@@ -189,25 +190,44 @@ def primitiveAt {sources caller dependencies program block start count}
     (event : SourceRuntimeContext.Event sources caller) :
     WorkM (RuntimeStructuralAction.SourceState × Node dependencies program block) := do
   let before : RuntimeStructuralAction.SourceState := {history with bindings := callerFrame.bindings}
-  let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
+  let owners ← NaturalAffine.witness (RuntimeOwnerTransition.read interval callerFrame.bindings)
   match event with
   | .primitive event =>
-    guard (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request
-    let [[.owner operand]] := event.arguments | throw .request
-    let kind ← match event.kind with
-      | .h => pure Semantics.PrimitiveOperator.Kind.h
-      | .globalPhaseEighth => pure Semantics.PrimitiveOperator.Kind.globalPhaseEighth
-      | _ => throw .request
-    let [input] ← rolePorts [operand] callerFrame.bindings | throw .request
-    let [output] ← rolePorts [operand] owners.after.bindings | throw .request
-    let action ← RuntimePrimitiveAction.check block start count input.token output.token operand kind
-    return ({before with bindings := owners.after.bindings},.primitive action)
+    let preserving ← NaturalAffine.witness (guard
+      (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request)
+    have preserved : (event.allocated.isEmpty && event.consumed.isEmpty &&
+        event.nextOrdinal == history.nextOrdinal) = true := by
+      obtain ⟨work,left,read⟩ := preserving.property
+      have unit : preserving.val = () := by cases preserving.val; rfl
+      rw [unit] at read
+      exact (guard_success _ _ _ _ read).1
+    match argument : event.arguments with
+    | [[.owner operand]] =>
+      let ⟨kind,selected⟩ ← RuntimePrimitiveSource.readKind event.kind
+      let input ← RuntimePrimitiveSource.readPort operand callerFrame.bindings
+      let output ← RuntimePrimitiveSource.readPort operand owners.val.after.bindings
+      let action ← NaturalAffine.witness
+        (RuntimePrimitiveAction.check block start count input.port.token output.port.token operand kind)
+      -- Reserve the constant new source/lookup receipt cells, not another read.
+      exactWork (Exact.charge 32)
+      let source : RuntimePrimitiveSource.Checked action.val :=
+        ⟨sources,caller,.primitive event,history,interval,callerFrame,
+          .primitive event history.nextOrdinal operand kind preserved argument selected,owners.val,
+          by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
+      return (source.after,.primitive action.val source)
+    | _ => throw .request
   | .phase event =>
-    let [input] ← rolePorts [event.operand] callerFrame.bindings | throw .request
-    let [output] ← rolePorts [event.operand] owners.after.bindings | throw .request
-    let action ← RuntimePrimitiveAction.check block start count input.token output.token event.operand
-      (.phase event.application.coefficient.exponent)
-    return ({before with bindings := owners.after.bindings},.primitive action)
+    let input ← RuntimePrimitiveSource.readPort event.operand callerFrame.bindings
+    let output ← RuntimePrimitiveSource.readPort event.operand owners.val.after.bindings
+    let action ← NaturalAffine.witness
+      (RuntimePrimitiveAction.check block start count input.port.token output.port.token event.operand
+        (.phase event.application.coefficient.exponent))
+    -- Reserve the constant new source/lookup receipt cells, not another read.
+    exactWork (Exact.charge 32)
+    let source : RuntimePrimitiveSource.Checked action.val :=
+      ⟨sources,caller,.phase event,history,interval,callerFrame,.phase event history.nextOrdinal,owners.val,
+        by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
+    return (source.after,.primitive action.val source)
   | _ => throw .request
 
 /-- Verify every literal arm and the complete selector partition with the
@@ -273,10 +293,13 @@ def Nodes.ofList {dependencies program block} (nodes : List (Node dependencies p
 
 def staticNodes {dependencies program block start count} :
     (action : RuntimeStaticPrimitive.Action) →
-      @RuntimeStaticPrimitive.Bound dependencies program block start count action →
-        List (Node dependencies program block)
-  | _,.identity _ => []
-  | _,.primitive checked => [.primitive checked]
+      (bound : @RuntimeStaticPrimitive.Bound dependencies program block start count action) →
+      (match bound with
+        | .identity _ => Unit
+        | .primitive checked => RuntimePrimitiveSource.Checked checked) →
+      List (Node dependencies program block)
+  | _,.identity _,_ => []
+  | _,.primitive checked,source => [.primitive checked source]
 
 mutual
 /-- The common loop records every actual mixed interval. Pure composition
@@ -629,7 +652,15 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
             let child := named.context
             let original := named.body
             let sourceCursor := named.cursor
-            let inputs ← rolePorts event.inputOwners bindings
+            let ordered ← NaturalAffine.witness (RuntimeOwnerMap.order event.inputOwners before.bindings)
+            let inputs := ordered.val.map (·.port)
+            let tokens := inputs.map (·.token)
+            let bindAt (actual : RuntimeInterval.Checked block position.start position.count) (same : actual = interval)
+                (selected : List Semantics.Raw.Port) (found : PureInterval.ports actual.before tokens = some selected) :
+                WorkM (RuntimeNamedBoundary.Inputs actual tokens event before) := do
+              let checked ← RuntimeNamedBoundary.bindInputs interval tokens event before ordered.val
+                (by with_reducible exact ordered.property) rfl selected (same ▸ found)
+              pure (same.symm ▸ checked)
             let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
             if callerName : event.target.callerName = name then
               let parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.target.callerName := by
@@ -639,7 +670,9 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               match mode with
               | .pureBody =>
                 guard (event.effect == .unitary) .request
-                let frame ← RuntimeCallInterval.read block position.start position.count (inputs.map (·.token))
+                let opened ← RuntimeCallInterval.readWithInterval interval tokens
+                let frame := opened.val
+                let bound ← bindAt frame.interval opened.property frame.selected frame.atEntry
                 let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
                   (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
                 let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
@@ -647,15 +680,16 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                   ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
                 let (nested,childReceipts) ← next .pureBody .localScope (.whole original) childPath frame.program child named.nested childHistory
                   ordinary frame.prepared.block
-                let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
-                  event before nested.history nested.retired original.checked.summary.value
+                let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
+                  event before nested.history nested.retired original.checked.summary.value bound
                 let node : Node dependencies program block := .named event frame original
                   named.original frame.prepared.block boundary (Nodes.ofList nested.actions)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
                   obligations ++ nested.obligations,position.start+position.count,sourceCursor,receipts ++ childReceipts)
               | .runtimeBody =>
-                let frame ← RuntimeCallScope.read block position.start position.count
-                  (inputs.map (·.token)) ordinary event.effect
+                let opened ← RuntimeCallScope.readWithInterval interval tokens ordinary event.effect
+                let frame := opened.val
+                let bound ← bindAt frame.interval opened.property frame.selected frame.atEntry
                 let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
                   (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
                 let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
@@ -663,8 +697,8 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                   ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
                 let (nested,childReceipts) ← next .runtimeBody .localScope (.whole original) childPath frame.program child named.nested childHistory
                   frame.visible.ssa frame.prepared.block
-                let boundary ← RuntimeNamedBoundary.read frame.interval (inputs.map (·.token))
-                  event before nested.history nested.retired original.checked.summary.value
+                let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
+                  event before nested.history nested.retired original.checked.summary.value bound
                 let step : Step dependencies program block := .named event frame original
                   named.original frame.prepared.block boundary nested.ordinary (Steps.ofList nested.steps)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions,steps ++ [step],

@@ -7,6 +7,7 @@ import QleisliKernel.Qirf.RuntimeNamedCallsComposition
 import QleisliKernel.Qirf.RuntimeLinkedSubject
 import QleisliKernel.Qirf.RuntimePreparedArm
 import QleisliKernel.Qirf.RuntimeBodyOperations
+import QleisliKernel.Qirf.RuntimeNamedFrameAxes
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
@@ -874,9 +875,53 @@ private def oneHopLinkedSummary : LinkedArmSummary → Option (Nat × Nat × Str
 private abbrev ObservingSummary :=
   List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat
 
+private abbrev SelectionObservation := List RuntimeSelectionSteps.Edge × Nat × Nat × Nat
+
+private def literalSize {dependencies program block node} (w : @RuntimeSelectionWitness.Checked dependencies program block node) : Nat × Nat :=
+  match w with | .selection literal _ => (literal.chunks.length,literal.traceResult.events.length)
+
+private def observeStoredSelections {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime) :
+    WorkM (List SelectionObservation) := do
+  (List.finRange body.selections.count).mapM fun i => do
+    let hit ← RuntimeSelectionSteps.locate body.selections i
+    let ordinal := hit.found.ordinal
+    let size := literalSize hit.found.literal
+    return (hit.path,ordinal,size.1,size.2)
+
+private abbrev PrimitiveView := String × Nat × List Nat × Nat × Nat
+private def primitiveView {dependencies program block start count input output role kind}
+    {action : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
+    (binding : RuntimePrimitiveSource.Checked action) : Option PrimitiveView :=
+  match binding.event with
+  | .phase event => some ("phase",event.call.calleeOffset,[event.application.j.result.value,event.application.k.result.value,event.application.coefficient.exponent],input,output)
+  | .primitive event => some (String.intercalate "::" (event.call.call.callee.map (·.text)),event.call.calleeOffset,[],input,output)
+  | _ => none
+
+private abbrev CallView := String × Nat × List Nat × List Nat × List Nat × List Nat × List Nat × Option PrimitiveView
+
+private def namedView {dependencies program block} : RuntimePureBody.Step dependencies program block → Option CallView
+  | .named event scope _ _ _ boundary _ children =>
+    let source := match children with
+      | .cons (.pure (.primitive _ written)) .nil => primitiveView written
+      | _ => none
+    let tokens := scope.selected.map (·.token)
+    some (event.target.resolution.declaration.name,event.call.calleeOffset,
+      boundary.input.ordered.map (·.port.token),tokens,RuntimeNamedFrameAxes.mixedAxes scope,
+      (PureInterval.spectators scope.interval.before tokens).map (·.token),scope.returned.map (·.token),source)
+  | _ => none
+
+private def checkStoredMiddle {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (offset : Nat) : WorkM Unit := do
+  let observations ← observeStoredSelections body
+  guard (observations == [([.nextOrdinal 1,.atOrdinal 1,.named 1 "main" "route" offset "main" "choose",
+    .atOrdinal 0,.pureStep 0],0,1,1)]) .invalid
+
 private def observingRuntime (p : ObservingPayload) (composed : Bool) : WorkM ObservingSummary := do
   let prepared ← RuntimeBodyOperations.prepare p.artifact "main" "route" {} p.context
   let checked ← RuntimeBodyOperations.read prepared p.order p.runtime
+  checkStoredMiddle checked (if composed then 666 else 515)
   let summaries := checked.checked.receipts.map fun receipt => originalMarkerSummary receipt.request.origin
     receipt.prepared receipt.evidence.checked receipt.evidence.source
   exactWork (Exact.charge (16*(checked.checked.receipts.length+1)^2))
@@ -1180,6 +1225,34 @@ private def expectSupplyRefusal {α : Type} (action : WorkM α) : WorkM Unit := 
     | .request => pure true
     | other => throw other
   guard refused .invalid
+
+-- Both reversed tokens identify live ports with the same dimensions. The
+-- original named event still fixes their order, including when the values agree.
+private def checkWrongInputOrder {dependencies program block start count inputs sources caller before child retired value}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    {event : SourceRuntimeContext.NamedEvent sources caller}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value) : WorkM Unit := do
+  let wrong := inputs.reverse
+  let some selected := PureInterval.ports interval.before wrong | throw .invalid
+  guard (wrong != inputs && selected == (boundary.input.ordered.map (·.port)).reverse) .invalid
+  expectSupplyRefusal (RuntimeNamedBoundary.read interval wrong event before child retired value)
+
+private def checkOrderedOriginalCalls : WorkM Unit := do
+  let (decoded,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,request) ← lift ((orderedCallProposal decoded original .none).mapError fun _ => .invalid)
+  let prepared ← RuntimeBodyOperations.prepare artifact request.source.moduleName request.source.functionName request.source.arguments request.context
+  let body ← RuntimeBodyOperations.read prepared order request.combinedRuntime
+  checkStoredMiddle body 553
+  let calls := body.checked.result.steps.filterMap namedView
+  guard (calls == [
+    ("pre",531,[1],[1],[1],[8,0],[2],some ("phase",384,[1,1,4],1,2)),
+    ("choose",553,[0,2],[0,2],[0,1],[8],[5,6],none),
+    ("post",596,[6],[6],[1],[8,5],[7],some ("h",437,[],6,7))]) .invalid
+  let [_,step,_] := body.checked.result.steps | throw .invalid
+  match step with
+  | .named _ _ _ _ _ boundary _ _ => checkWrongInputOrder boundary
+  | _ => throw .invalid
 
 private def checkSuppliedSlot {sources catalogue record}
     (first last : SourceRuntimeContext.NamedEvent sources "main") (choice : RuntimeFormalActual.Choice) :
@@ -1665,6 +1738,9 @@ def nativeSourceMarkerControls : IO Unit := do
   match (checkForwardedCommonBody true true).run WorkProfile.qmatch.limit |>.1 with
   | .ok () => pure ()
   | .error error => throw (IO.userError ("unreached equal-valued Meaning duty: " ++ reprStr error))
+  match (checkOrderedOriginalCalls.run WorkProfile.qmatch.limit).1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError ("ordered original call frames: " ++ reprStr error))
   checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do
@@ -1678,7 +1754,7 @@ def nativeSourceMarkerControls : IO Unit := do
   match (checkFourLevelCommonBody.run WorkProfile.qmatch.limit).1 with
   | .ok () => pure ()
   | .error error => throw (IO.userError ("four-level signed common body: " ++ reprStr error))
-  IO.println "passed written Meaning coverage, missing equal-valued occurrence, repeated-callee pairing, and observing phase/order controls"
+  IO.println "passed ordered call ports and primitive origins, written Meaning coverage, missing equal-valued occurrence, repeated-callee pairing, and observing phase/order controls"
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 

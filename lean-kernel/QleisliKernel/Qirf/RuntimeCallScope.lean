@@ -45,15 +45,17 @@ def Checked.program {dependencies original block start count inputs ordinary eff
   RuntimeCallScope.program checked.selected (checked.visible.table.map Prod.fst) ((block.operations.drop start).take count)
     (checked.returned.map (·.token)) checked.classicalOutputs effect
 
+private def reserve {dependencies original} (block : RuntimeInterval.Block dependencies original) (inputs : List Nat) : WorkM Unit :=
+  exactWork (Exact.charge (64*(inputs.length+block.operations.length+1)))
+
 /-- This is the complete literal subject for a named callee, with every actual
 visible SSA input and no caller quantum spectator in its canonical namespace.
 The same parent block independently checks global identity and lexical history.
 The source return tree and all canonical owner aliases must still be bound. -/
-def read {dependencies original} (block : RuntimeInterval.Block dependencies original)
-    (start count : Nat) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
-    (effect : Semantics.Raw.Effect) : WorkM (Checked block start count inputs ordinary effect) := do
-  exactWork (Exact.charge (64*(inputs.length+block.operations.length+1)))
-  let interval ← RuntimeInterval.check block start count
+private def readAt {dependencies original block start count}
+    (interval : @RuntimeInterval.Checked dependencies original block start count) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
+    (effect : Semantics.Raw.Effect) :
+    WorkM {scope : Checked block start count inputs ordinary effect // scope.interval = interval} := do
   match atEntry : PureInterval.ports interval.before inputs with
   | none => throw .request
   | some selected =>
@@ -74,12 +76,28 @@ def read {dependencies original} (block : RuntimeInterval.Block dependencies ori
         if actualClassical : classicalOutputs = RuntimeOrdinaryBody.visibleIds interval.after then
           let prepared ← RuntimeInterval.prepare dependencies
             (program selected (visible.table.map Prod.fst) operations (returned.map (·.token)) classicalOutputs effect)
-          return ⟨interval,selected,atEntry,visible,localEntry.val,
+          return ⟨⟨interval,selected,atEntry,visible,localEntry.val,
             by with_reducible exact localEntry.property,localAfter.val,
             by with_reducible exact localAfter.property,returned,rfl,atExit,spectators,classicalOutputs,
-            rfl,actualClassical,prepared⟩
+            rfl,actualClassical,prepared⟩,rfl⟩
         else throw .request
       else throw .request
     else throw .request
+
+/-- The caller already checked this exact parent interval. All local entry,
+exit, body and spectator checks run against the retained interval. -/
+def readWithInterval {dependencies original block start count}
+    (interval : @RuntimeInterval.Checked dependencies original block start count) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
+    (effect : Semantics.Raw.Effect) :
+    WorkM {scope : Checked block start count inputs ordinary effect // scope.interval = interval} := do
+  reserve block inputs
+  readAt interval inputs ordinary effect
+
+def read {dependencies original} (block : RuntimeInterval.Block dependencies original)
+    (start count : Nat) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
+    (effect : Semantics.Raw.Effect) : WorkM (Checked block start count inputs ordinary effect) := do
+  reserve block inputs
+  let interval ← RuntimeInterval.check block start count
+  return (← readAt interval inputs ordinary effect).val
 
 end QleisliKernel.Qirf.RuntimeCallScope

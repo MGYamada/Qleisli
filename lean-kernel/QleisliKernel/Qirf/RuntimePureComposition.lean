@@ -34,7 +34,7 @@ private def pureLocal {dependencies program block arity start count inputs outpu
     frame.operations,frame.literal,frame.spectators⟩
 
 def region {dependencies program block} : Node dependencies program block → Local block
-  | .primitive action => pureLocal action.interval
+  | .primitive action _ => pureLocal action.interval
   | .structural (start := start) (count := count) action =>
     ⟨start,count,action.inputs.map (·.token),action.outputs.map (·.token),action.inputRoles,action.outputRoles,
       action.interval,action.inputs,action.outputs,[action.operation],action.literal,action.spectators⟩

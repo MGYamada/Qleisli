@@ -1,4 +1,6 @@
-import QleisliKernel.Qirf.RuntimePureInterval
+import QleisliKernel.Qirf.RuntimeCallInterval
+import QleisliKernel.Qirf.RuntimeCallScope
+import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Raw.Trace
 import QleisliKernel.Raw.Observation
 
@@ -93,6 +95,65 @@ theorem interval_raw_fold {dependencies program block arity start count inputs o
   rw [frame.literal] at read
   exact checkOps_pure_raw_fold dependencies block.fuel frame.interval.before frame.interval.after frame.operations work left read
 
+/-- The executable Raw fold and the mathematical trace share the same events
+and final interface for the original operation list. -/
+def Traced (signatures : List Basis) (operations : List Semantics.Raw.Op) (before after : Raw.State) : Prop :=
+  ∃ events, operations.foldlM (Raw.advance signatures)
+      ⟨before,[],before.frame.length⟩ = .ok ⟨after,events,before.frame.length⟩ ∧
+    RuntimeLocalEvents.trace before.reference operations = some ⟨after.reference,events,before.frame.length⟩
+
+private theorem rawFoldReference (signatures : List Basis) (operations : List Semantics.Raw.Op)
+    (before after : Raw.State) (events : List Semantics.Raw.Event)
+    (actual : operations.foldlM (Raw.advance signatures) ⟨before,[],before.frame.length⟩ =
+      .ok ⟨after,events,before.frame.length⟩) :
+    RuntimeLocalEvents.trace before.reference operations = some ⟨after.reference,events,before.frame.length⟩ :=
+  Raw.operations_reference signatures operations ⟨before,[],before.frame.length⟩ ⟨after,events,before.frame.length⟩ actual
+
+private theorem traced_result (signatures : List Basis) (operations : List Semantics.Raw.Op) (before after : Raw.State)
+    (actual : ∃ events, operations.foldlM (Raw.advance signatures) ⟨before,[],before.frame.length⟩ =
+      .ok ⟨after,events,before.frame.length⟩) : Traced signatures operations before after := by
+  obtain ⟨events,ran⟩ := actual
+  exact ⟨events,ran,rawFoldReference signatures operations before after events ran⟩
+
+private theorem traced_of_checkOps {dependencies fuel before after} (operations : List Semantics.Raw.Op)
+    (ran : RuntimeInterval.Computed (Raw.Observation.checkOps dependencies fuel before
+      (operations.map Semantics.Observation.Op.pure)) after) : Traced (dependencies.map (·.signature)) operations before.quantum after.quantum := by
+  obtain ⟨work,left,read⟩ := ran
+  apply traced_result
+  exact checkOps_pure_raw_fold dependencies fuel before after operations work left read
+
+private theorem traced_parent {dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (operations : List Semantics.Raw.Op)
+    (literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure) :
+    Traced (dependencies.map (·.signature)) operations interval.before.quantum interval.after.quantum := by
+  apply traced_of_checkOps operations (fuel := block.fuel)
+  rw [← literal]
+  exact interval.intervalRead
+
+/-- The native named frame checks these very operations twice, once on the
+caller interface with its spectators and once on the ordered local inputs. -/
+theorem named_call_traces {dependencies program block start count inputs}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs) :
+    Traced (dependencies.map (·.signature)) scope.operations scope.interval.before.quantum scope.interval.after.quantum ∧
+      Traced (dependencies.map (·.signature)) scope.operations scope.localEntry.quantum scope.localAfter.quantum :=
+  ⟨traced_parent scope.interval scope.operations scope.literal,traced_of_checkOps scope.operations scope.nativeRead⟩
+
+/-- A named step in a mixed body admits this same pair of pure traces exactly
+when its actual interval consists of the indicated pure operations. -/
+theorem mixed_call_traces {dependencies program block start count inputs ordinary effect}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (operations : List Semantics.Raw.Op)
+    (literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure) :
+    Traced (dependencies.map (·.signature)) operations scope.interval.before.quantum scope.interval.after.quantum ∧
+      Traced (dependencies.map (·.signature)) operations scope.localEntry.quantum scope.localAfter.quantum := by
+  refine ⟨traced_parent scope.interval operations literal,?_⟩
+  apply traced_of_checkOps operations (fuel := 65)
+  rw [← literal]
+  exact scope.nativeRead
+
+#print axioms named_call_traces
+#print axioms mixed_call_traces
 #print axioms checkOps_pure_raw_fold
 #print axioms interval_raw_fold
 

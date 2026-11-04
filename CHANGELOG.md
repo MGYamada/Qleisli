@@ -13,6 +13,15 @@ development milestones from the scope of their evidence.
   It provides categorical dagger, isometry and tensor laws, a finite complex
   matrix model and a structural proof tactic in a standalone Lean package.
 
+- The common body checker retains each selection at its original position
+  in a named call or conditional arm. Its local action and Gram equation
+  apply to that node on arbitrary external reference states. Named-call
+  boundaries bind the original source owners to the selected tokens, ports
+  and ordered axes in the parent frame. Primitive steps retain the source
+  operand and phase exponent used to check the native fragment. The ordered
+  three-call regression exercises these bindings with a zero-width spectator.
+  Full caller composition and observing instrument preservation remain open.
+
 - Associate original arm source assertions with the same complete native
   occurrence and its existing checked Meaning equation in individual constructed
   reads and the common body graph continuation. Carry the authentic arm through

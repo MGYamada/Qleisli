@@ -415,3 +415,10 @@ initial queue items, discharges the selected occurrence and reports the other
 queue position as residual. The signed example covers two bare phase providers
 inside an ordered composition. Applied providers and nested requested operations
 require further source evidence.
+
+The [ordered call study](ordered-call-sources.json) keeps the original
+three-call source and the first projection diagnostics. The common reader
+selects the arm inside `choose` at byte 553. The surrounding named frames
+retain the phase at byte 384 and H at byte 437, their source owners, native
+tokens, caller axes and the zero-width spectator. The observing controls
+locate the same inner role through their own call offsets.
