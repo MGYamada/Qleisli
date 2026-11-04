@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeProviderHeaders
 import QleisliKernel.SourceTypes.OperationAccess
+import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Typed continuations for the common original runtime traversal.
 Every request retains its actual graph, demanded paths and ordered provider and
@@ -11,6 +12,15 @@ namespace QleisliKernel.Qirf.RuntimeGraphOperation
 open QleisliKernel Finite SourceTypes
 abbrev BodyRequest := RuntimeProviderHeader.Request
 
+/-- An arm origin retains the actual original operation, indexed by its exact
+graph. Unlocated graph requests make no original-assertion coverage claim;
+prefix/body-operation provenance still requires its separate association. -/
+inductive Origin {sources : Sources} : {context : StaticOperation.Context} →
+    {description : OperationDescription.Description} →
+    StaticOperation.CheckedGraph sources context description → Type where
+  | unlocated {context description} {graph : StaticOperation.CheckedGraph sources context description} : Origin graph
+  | arm {owner tokens} (operation : QuantumArms.Operation sources owner tokens) : Origin operation.graph
+
 structure Request (artifact : Artifact) where
   context : StaticOperation.Context
   description : OperationDescription.Description
@@ -18,6 +28,7 @@ structure Request (artifact : Artifact) where
   requested : StaticOperation.Paths
   implementations : List BodyRequest
   references : List (List BodyRequest)
+  origin : Origin graph
 
 structure Preparation (artifact : Artifact) where
   Evidence : Request artifact → Type

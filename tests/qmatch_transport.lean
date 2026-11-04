@@ -173,15 +173,6 @@ private def frames (path : System.FilePath) : IO Unit := do
       unless correct do throw (IO.userError ("qmatch source-frame wrong refusal: " ++ name))
   IO.println "passed 18 original structural source/frame/arm/code checks; paired native/QDV and compiler integration remain separate"
 
-def main (args : List String) : IO Unit := do
-  let [shapePath,executionPath] := args | throw (IO.userError "expected qmatch shape and execution fixtures")
-  shapes shapePath
-  execution executionPath
-  let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
-  execution (parent / "nominal-execution-cases.json") true
-  execution (parent / "body-execution-cases.json") true 5 9
-  frames (parent / "frame-execution-cases.json")
-
 /-! Transport regression for the original named choose[then_op(sign,sign)] around its joined Raw
 selection. Literal plain data is retained from the real Rust artifact/request;
 no source proof, accepted result or external study file is a runtime input.
@@ -701,10 +692,30 @@ private def observingTypedRoot (p : ObservingPayload) : WorkM Nat := do
   let checked ← RuntimeFamily.check p.rootArtifact p.rootOrder p.runtime
   return (OrdinaryDomain.assignments checked.domain).length
 
-private def observingRuntime (p : ObservingPayload) : WorkM
-    (List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat) := do
+/-- Inspect the SAME common-loop receipt, including its source association.
+An unlocated graph supplies no arm coverage; no independent arm is reread. -/
+private def originalMarkerSummary {artifact catalogue context description graph implementations references}
+    (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph) :
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references) →
+    {root requested : _} → (checked : RuntimeOperationTree.Checked prepared root requested) →
+    RuntimeSourceOperationMarkers.OriginChecked origin prepared checked → Nat × List (Nat × Nat × String) := by
+  cases origin with
+  | unlocated => exact fun _ {_ _} _ _ => (0,[])
+  | arm operation => exact fun _ {_ _} _ association => (1,association.entries.map fun entry =>
+      ((association.markers[entry.index.val]'entry.index.isLt).tokens.head?.map (·.span.startByte) |>.getD 0,
+       entry.assertion.binding.index.val,entry.assertion.requirement.request.declarationName))
+
+private abbrev ObservingSummary :=
+  List Nat × List Nat × List Nat × List Nat × List (Nat × Nat × List Nat) × Nat × Nat × Nat
+
+private def observingRuntime (p : ObservingPayload) (composed : Bool) : WorkM ObservingSummary := do
   let prepared ← RuntimeBodyOperations.prepare p.artifact "main" "route" {} p.context
   let checked ← RuntimeBodyOperations.read prepared p.order p.runtime
+  let summaries := checked.checked.receipts.map fun receipt => originalMarkerSummary receipt.request.origin
+    receipt.prepared receipt.evidence.checked receipt.evidence.source
+  exactWork (Exact.charge (16*(checked.checked.receipts.length+1)^2))
+  guard ((summaries.map (·.1)).sum == 2 &&
+    summaries.flatMap (·.2) == (if composed then [(325,4,"Identity")] else [])) .request
   let result := checked.checked.result
   return (result.history.issued.map (·.ordinal),result.retired.map (·.ordinal),
     result.history.bindings.map (·.port.token),observingHistoryCounts 3 checked.checked.ordinary.rows,
@@ -770,7 +781,7 @@ private def observingStudy (composed : Bool) (fault : ObservingFault) :=
   (do
     let proposal ← observingPayload composed
     let proposal ← observingMutation proposal fault
-    observingRuntime proposal).run WorkProfile.qmatch.limit |>.1
+    observingRuntime proposal composed).run WorkProfile.qmatch.limit |>.1
 
 private def observingRawStudy (composed : Bool) (fault : ObservingFault) :=
   (do
@@ -780,10 +791,14 @@ private def observingRawStudy (composed : Bool) (fault : ObservingFault) :=
     let rows ← observingTypedRoot proposal
     pure (raw,rows)).run WorkProfile.qmatch.limit |>.1
 
-#guard (observingStudy false .correct).toOption == some
-  ([0,1,2,3],[1,3],[6,4],[4,4],[(1,231,[488,295]),(3,231,[538,367])],3,2,0)
-#guard (observingStudy true .correct).toOption == some
-  ([0,1,2,3],[1,3],[6,4],[4,4],[(1,382,[639,446]),(3,382,[709,518])],3,3,1)
+private def observingExpected (composed : Bool) : ObservingSummary :=
+  if composed then
+    ([0,1,2,3],[1,3],[6,4],[4,4],[(1,382,[639,446]),(3,382,[709,518])],3,3,1)
+  else
+    ([0,1,2,3],[1,3],[6,4],[4,4],[(1,231,[488,295]),(3,231,[538,367])],3,2,0)
+
+#guard (observingStudy false .correct).toOption == some (observingExpected false)
+#guard (observingStudy true .correct).toOption == some (observingExpected true)
 #guard observingStudy false .wrongMeasurementOwner matches .error .invalid
 #guard observingStudy false .wrongXor matches .error .equation
 #guard observingStudy false .wrongSelectedPhase matches .error .equation
@@ -807,7 +822,32 @@ private def observingRawStudy (composed : Bool) (fault : ObservingFault) :=
 #guard observingRawStudy false .omittedUnitOwner matches .error .request
 #guard observingRawStudy true .omittedUnitOwner matches .error .request
 
+/-- Run the common source-origin association under native execution as well
+as the kernel guards. Both original arms are covered; the one original Meaning
+duty remains pending. Wrong phase and source order retain exact refusals. -/
+def nativeSourceMarkerControls : IO Unit := do
+  for composed in [false,true] do
+    unless (observingStudy composed .correct).toOption == some (observingExpected composed) do
+      throw (IO.userError "native common arm/source association or complete history changed")
+    match observingStudy composed .wrongSelectedPhase with
+    | .error .equation => pure ()
+    | _ => throw (IO.userError "native common selected phase refusal changed")
+    match observingStudy composed .contextOrder with
+    | .error .request => pure ()
+    | _ => throw (IO.userError "native common source order refusal changed")
+  IO.println "passed common arm/source-marker association and observing phase/order controls; original Meaning duties remain pending"
+
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
+
+def main (args : List String) : IO Unit := do
+  let [shapePath,executionPath] := args | throw (IO.userError "expected qmatch shape and execution fixtures")
+  shapes shapePath
+  execution executionPath
+  let parent := (System.FilePath.mk executionPath).parent.getD (System.FilePath.mk ".")
+  execution (parent / "nominal-execution-cases.json") true
+  execution (parent / "body-execution-cases.json") true 5 9
+  frames (parent / "frame-execution-cases.json")
+  QleisliKernel.Tests.RuntimeNamedSelectionBoundary.nativeSourceMarkerControls
 
 namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf

@@ -45,13 +45,14 @@ def Cut.after {before} (cut : Cut before) : Queues :=
 
 structure Graph {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact)
     {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
-    (demand : StaticOperation.Paths) (implementations : List BodyRequest) (references : List (List BodyRequest)) where
+    (demand : StaticOperation.Paths) (implementations : List BodyRequest) (references : List (List BodyRequest))
+    (origin : RuntimeGraphOperation.Origin graph := .unlocated) where
   occurrences : List Nat
   ordered : RuntimeInterval.Computed (StaticOperation.readOccurrences description) occurrences
   providers : implementations.length = (RuntimeProviderHeaders.providerIndices description occurrences).length
-  evidence : preparation.Evidence ⟨context,description,graph,demand,implementations,references⟩
+  evidence : preparation.Evidence ⟨context,description,graph,demand,implementations,references,origin⟩
   consumed : RuntimeInterval.Computed
-    (preparation.read ⟨context,description,graph,demand,implementations,references⟩) evidence
+    (preparation.read ⟨context,description,graph,demand,implementations,references,origin⟩) evidence
 
 inductive Prefixes {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact)
     {owner name} (signature : SourceRuntimeContext.Signature artifact.sources owner name) :
@@ -73,7 +74,7 @@ inductive Arms {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepar
   | cons {index : Fin table.arms.length} {rest : List (Fin table.arms.length)} {before after : Queues}
       (cut : Cut before)
       (graph : Graph preparation (table.arms[index]).operation.graph OperationAccess.controllable
-        cut.implementations cut.references)
+        cut.implementations cut.references (.arm (table.arms[index]).operation))
       (tail : Arms preparation table rest cut.after after) :
       Arms preparation table (index :: rest) before after
 

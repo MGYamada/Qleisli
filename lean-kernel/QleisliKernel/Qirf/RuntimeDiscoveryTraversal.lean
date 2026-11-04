@@ -10,21 +10,22 @@ open RuntimeBodyPlan (Queues)
 
 structure GraphResult {artifact context description} (mode : OperationMode artifact)
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths)
-    (before : Queues) where
+    (before : Queues) (origin : RuntimeGraphOperation.Origin graph := .unlocated) where
   after : Queues
   discovery : Discovery
   receipts : List mode.Receipt
-  planned : Option (Σ read : RuntimeBodyPlanReaders.GraphRead mode.preparation graph demand before,
+  planned : Option (Σ read : RuntimeBodyPlanReaders.GraphRead mode.preparation graph demand before origin,
     PLift (read.cut.after = after))
 
 private def graphRead {artifact context description} (mode : OperationMode artifact)
     (next : {owner name : String} → (scope : Scope artifact owner name) → (request : Context) →
       WorkM (BodyResult mode scope request))
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths)
-    (before : Queues) (explicit : Bool) : WorkM (GraphResult mode graph demand before) := do
+    (before : Queues) (explicit : Bool) (origin : RuntimeGraphOperation.Origin graph := .unlocated) :
+    WorkM (GraphResult mode graph demand before origin) := do
   match mode with
   | .extended preparation =>
-    let read ← RuntimeBodyPlanReaders.readGraph preparation graph demand before
+    let read ← RuntimeBodyPlanReaders.readGraph preparation graph demand before origin
     return ⟨read.cut.after,⟨preparation.rows read.graphPlan.evidence,preparation.roots read.graphPlan.evidence⟩,
       [read.receipt],some ⟨read,⟨rfl⟩⟩⟩
   | .strict =>
@@ -103,6 +104,7 @@ private def armsRead {artifact owner name offset selector target} (mode : Operat
           let _ ← lift (readOption artifact.programs[subject.implementation]?)
           let _ ← lift (readOption artifact.programs[subject.controlled]?)
           let first ← graphRead mode next (table.arms[index]).operation.graph OperationAccess.controllable queues explicit
+            (.arm (table.arms[index]).operation)
           let last ← tail rest first.after
           exactWork (Exact.charge (first.discovery.rows.length+first.discovery.roots.length+first.receipts.length+1))
           let planned := match first.planned,last.planned with

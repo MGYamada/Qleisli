@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeOperationTree
 import QleisliKernel.Qirf.RuntimeOperationOccurrenceTree
+import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Associate original written assertions with the same checked native records.
@@ -203,5 +204,32 @@ def read {artifact catalogue owner tokens implementations references}
     if every : entries.map (·.index) = List.finRange markers.length then
       return ⟨scope,markers,original,tree.val,by with_reducible exact tree.property,entries,every⟩
     else throw .request
+
+/-- The common graph path distinguishes a retained original arm from a graph
+whose source-origin association is still pending. An unlocated receipt is
+only Unit; it supplies no marker coverage and cannot inhabit the arm case. -/
+def OriginChecked {artifact catalogue context description graph implementations references}
+    (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph)
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
+    {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) : Type :=
+  match origin with
+  | .unlocated => Unit
+  | .arm operation => Checked operation prepared checked
+
+/-- Consume the actual source origin carried by this same graph request.
+The arm branch executes the association; there is no retry without provenance
+after a failed association and no change to the all-original duty queue. -/
+def readOrigin {artifact catalogue context description graph implementations references}
+    (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph)
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
+    {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) :
+    WorkM (OriginChecked origin prepared checked) := by
+  cases origin with
+  | unlocated => exact do
+    exactWork (Exact.charge 1)
+    pure ()
+  | arm operation => exact do
+    exactWork (Exact.charge 1)
+    read operation prepared checked
 
 end QleisliKernel.Qirf.RuntimeSourceOperationMarkers

@@ -48,12 +48,13 @@ def Mode.ArmsData {artifact owner name offset selector target} (mode : Mode arti
       Sigma fun after : Queues => RuntimeBodyPlan.Arms preparation table (List.finRange table.arms.length) before after
 
 def Mode.GraphData {artifact context description} (mode : Mode artifact)
-    (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths) : Type :=
+    (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths)
+    (origin : RuntimeGraphOperation.Origin graph := .unlocated) : Type :=
   match mode with
   | .fresh => Unit
   | .planned preparation => Sigma fun implementations : List RuntimeProviderHeader.Request =>
       Sigma fun references : List (List RuntimeProviderHeader.Request) =>
-        RuntimeBodyPlan.Graph preparation graph demand implementations references
+        RuntimeBodyPlan.Graph preparation graph demand implementations references origin
 
 def Mode.PrefixData {artifact owner name} (mode : Mode artifact)
     (signature : SourceRuntimeContext.Signature artifact.sources owner name)
@@ -111,7 +112,8 @@ The native sector checks subsequently use that same complete indexed order. -/
 def foldArms {artifact : Artifact} (mode : Mode artifact) {owner name offset selector target}
     (table : QuantumArms.Table artifact.sources owner name offset selector target) {State : Type}
     (step : (index : Fin table.arms.length) →
-      mode.GraphData (table.arms[index]).operation.graph OperationAccess.controllable → State → WorkM State)
+      mode.GraphData (table.arms[index]).operation.graph OperationAccess.controllable
+        (.arm (table.arms[index]).operation) → State → WorkM State)
     (data : mode.ArmsData table) (initial : State) : WorkM State :=
   match mode with
   | .fresh => (List.finRange table.arms.length).foldlM (fun state index => step index () state) initial

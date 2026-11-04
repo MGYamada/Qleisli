@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeOperationTree
+import QleisliKernel.Qirf.RuntimeSourceOperationMarkers
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeOrdinaryHistories
 import QleisliKernel.Qirf.RuntimeReferenceContexts
@@ -34,14 +35,20 @@ structure Operation (artifact : Artifact) (catalogue : GenericCatalogue.Checked 
     (RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references) prepared
   checked : RuntimeOperationTree.Checked prepared root call.requested
   checkedRead : RuntimeInterval.Computed (RuntimeOperationTree.read prepared root call.requested) checked
+  source : RuntimeSourceOperationMarkers.OriginChecked call.origin prepared checked
+  sourceRead : RuntimeInterval.Computed
+    (RuntimeSourceOperationMarkers.readOrigin call.origin prepared checked) source
 
 def readOperation (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
     (root : Validity.Root) (call : RuntimeGraphOperation.Request artifact) : WorkM (Operation artifact catalogue root call) := do
   let prepared ← NaturalAffine.witness
     (RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references)
   let checked ← NaturalAffine.witness (RuntimeOperationTree.read prepared.val root call.requested)
+  let source ← NaturalAffine.witness
+    (RuntimeSourceOperationMarkers.readOrigin call.origin prepared.val checked.val)
   return ⟨prepared.val,by with_reducible exact prepared.property,
-    checked.val,by with_reducible exact checked.property⟩
+    checked.val,by with_reducible exact checked.property,
+    source.val,by with_reducible exact source.property⟩
 
 /-- Provider body islands are retained as ordinary composition obligations.
 Meaning-reference computations remain on the same operation receipt; this
@@ -65,6 +72,9 @@ structure StagedOperation (artifact : Artifact) (catalogue : GenericCatalogue.Ch
     (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue call.graph call.implementations call.references) where
   checked : RuntimeOperationTree.Checked prepared root call.requested
   checkedRead : RuntimeInterval.Computed (RuntimeOperationTree.read prepared root call.requested) checked
+  source : RuntimeSourceOperationMarkers.OriginChecked call.origin prepared checked
+  sourceRead : RuntimeInterval.Computed
+    (RuntimeSourceOperationMarkers.readOrigin call.origin prepared checked) source
 
 def stagedConsumption (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
     (root : Validity.Root) : RuntimeGraphOperation.StagedConsumption (preparation artifact catalogue)
@@ -72,7 +82,10 @@ def stagedConsumption (artifact : Artifact) (catalogue : GenericCatalogue.Checke
   Evidence call prepared := StagedOperation artifact catalogue root call prepared
   read call prepared := do
     let checked ← NaturalAffine.witness (RuntimeOperationTree.read prepared root call.requested)
-    return ⟨checked.val,by with_reducible exact checked.property⟩
+    let source ← NaturalAffine.witness
+      (RuntimeSourceOperationMarkers.readOrigin call.origin prepared checked.val)
+    return ⟨checked.val,by with_reducible exact checked.property,
+      source.val,by with_reducible exact source.property⟩
   action operation := operation.checked.action
   obligations operation := operation.checked.providerIslands
 

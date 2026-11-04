@@ -11,19 +11,20 @@ open RuntimeBodyPlan
 
 structure GraphRead {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact)
     {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
-    (demand : StaticOperation.Paths) (before : Queues) where
+    (demand : StaticOperation.Paths) (before : Queues) (origin : RuntimeGraphOperation.Origin graph := .unlocated) where
   cut : Cut before
-  graphPlan : Graph preparation graph demand cut.implementations cut.references
+  graphPlan : Graph preparation graph demand cut.implementations cut.references origin
 
-def GraphRead.receipt {artifact preparation context description graph demand before}
-    (read : @GraphRead artifact preparation context description graph demand before) :
+def GraphRead.receipt {artifact preparation context description graph demand before origin}
+    (read : @GraphRead artifact preparation context description graph demand before origin) :
     RuntimeGraphOperation.PreparedReceipt preparation :=
-  ⟨⟨context,description,graph,demand,read.cut.implementations,read.cut.references⟩,
+  ⟨⟨context,description,graph,demand,read.cut.implementations,read.cut.references,origin⟩,
     read.graphPlan.evidence,read.graphPlan.consumed⟩
 
 def readGraph {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact)
     {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
-    (demand : StaticOperation.Paths) (before : Queues) : WorkM (GraphRead preparation graph demand before) := do
+    (demand : StaticOperation.Paths) (before : Queues) (origin : RuntimeGraphOperation.Origin graph := .unlocated) :
+    WorkM (GraphRead preparation graph demand before origin) := do
   let occurrences ← NaturalAffine.witness (StaticOperation.readOccurrences description)
   let count := (RuntimeProviderHeaders.providerIndices description occurrences.val).length
   if enough : count ≤ before.bodies.length then
@@ -35,9 +36,9 @@ def readGraph {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepara
       let cut : Cut before := ⟨implementations,references,remainingBodies,remainingReferences,
         (List.take_append_drop count before.bodies).symm,groups⟩
       let request : RuntimeGraphOperation.Request artifact :=
-        ⟨context,description,graph,demand,implementations,references⟩
+        ⟨context,description,graph,demand,implementations,references,origin⟩
       let checked ← NaturalAffine.witness (preparation.read request)
-      let graphPlan : Graph preparation graph demand cut.implementations cut.references :=
+      let graphPlan : Graph preparation graph demand cut.implementations cut.references origin :=
         ⟨occurrences.val,by with_reducible exact occurrences.property,
           by
             change (before.bodies.take count).length = count
@@ -96,6 +97,7 @@ def readArms {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparat
       | [] => return ⟨before,.nil before,[]⟩
       | index :: _ => do
         let first ← readGraph preparation (table.arms[index]).operation.graph OperationAccess.controllable before
+          (.arm (table.arms[index]).operation)
         let tail ← next _ first.cut.after
         exactWork (Exact.charge 1)
         return ⟨tail.after,.cons first.cut first.graphPlan tail.plans,first.receipt :: tail.receipts⟩)
