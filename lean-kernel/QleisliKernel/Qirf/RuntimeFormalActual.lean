@@ -8,18 +8,36 @@ namespace QleisliKernel.Qirf.RuntimeFormalActual
 open QleisliKernel Finite SourceTypes GenericOperation GenericOperationSubstitute GenericDutyQueue
 open QleisliKernel.Semantics.SymbolicBasis (Parameter)
 
-private def firstStep {sources app rest original result}
+/-- Both projections come from the same stored transport constructor. The
+remaining calls start with the entire subject returned by the first reader. -/
+structure TransportStep {sources} (app : ApplicationSource sources) (rest : List (ApplicationSource sources))
+    (original result : GenericOperationSubstitute.Subject sources) where
+  transfer : GenericOperationSubstitute.Checked app original
+  tail : GenericDutyQueue.Transport rest transfer.result.subject result
+
+def splitTransport {sources app rest original result}
     (transport : @GenericDutyQueue.Transport sources (app :: rest) original result) :
-    GenericOperationSubstitute.Checked app original :=
-  match transport with | .step _ _ _ checked _ => checked
+    TransportStep app rest original result :=
+  match transport with | .step _ _ _ checked tail => ⟨checked,tail⟩
+
+theorem splitTransport_original {sources app rest original result}
+    (transport : @GenericDutyQueue.Transport sources (app :: rest) original result) :
+    GenericDutyQueue.Transport.step app rest original (splitTransport transport).transfer
+      (splitTransport transport).tail = transport := by
+  cases transport
+  rfl
+
+def splitInvocation {sources catalogue record original result} (parent : @Invocation sources catalogue record)
+    (app : ApplicationAt catalogue record) (target : GenericDutyQueue.Target app)
+    (transport : GenericDutyQueue.Transport (Invocation.call parent app target).applications.reverse original result) :
+    TransportStep app.original parent.applications.reverse original result :=
+  splitTransport (Invocation.call_reverse parent app target ▸ transport)
 
 def substitution {sources catalogue record} {parent : @Invocation sources catalogue record}
     {app : ApplicationAt catalogue record} {target : GenericDutyQueue.Target app}
     (demand : Demand (.call parent app target)) :
     GenericOperationSubstitute.Checked app.original ⟨demand.source.original.subject,demand.source.original.suppliers⟩ :=
-  firstStep (rest := parent.applications.reverse) (by
-    rw [← Invocation.call_reverse parent app target]
-    exact demand.transported.receipt)
+  (splitInvocation parent app target demand.transported.receipt).transfer
 
 structure Choice where
   owner : String
@@ -55,6 +73,15 @@ structure Supply {sources caller original}
   formal : source.actual.formal = native.header ∧ source.name = native.header.name
   sameActual : source.checked.description = native.description
 
+/-- The next outer call receives exactly the selected caller actual, with
+its supplier origins intact. This uses the returned root of the actual fold. -/
+theorem Supply.returned {sources caller original event app transfer key native}
+    (supply : @Supply sources caller original event app transfer key native) :
+    transfer.result.subject = ⟨supply.genericActual.subject,supply.genericActual.suppliers⟩ := by
+  have root := transfer.result.returned
+  rw [supply.atRoot,Option.map_some] at root
+  exact (Option.some.inj root).symm.trans (congrArg NodeResult.subject supply.selection.returned)
+
 def readSupply {sources caller original}
     (event : SourceRuntimeContext.NamedEvent sources caller) (app : ApplicationSource sources)
     (transfer : GenericOperationSubstitute.Checked app original) (key : Parameter) (native : Choice) :
@@ -86,20 +113,5 @@ def readSupply {sources caller original}
       else throw .request
     else throw .request
   | _,_,_ => throw .request
-
-def Evidence {sources catalogue record queue rootOwner rootName owner name path invocation}
-    (binding : @RuntimeDutyInvocation.Binding sources catalogue queue rootOwner rootName owner name path record invocation)
-    (demand : GenericDutyQueue.Demand invocation) (key : Parameter) (native : Choice) : Type :=
-  match binding with
-  | .root .. => Empty
-  | .named (event := event) (application := app) _ _ => Supply event app.original (substitution demand) key native
-
-def read {sources catalogue record queue rootOwner rootName owner name path invocation}
-    (binding : @RuntimeDutyInvocation.Binding sources catalogue queue rootOwner rootName owner name path record invocation)
-    (demand : GenericDutyQueue.Demand invocation) (key : Parameter) (native : Choice) :
-    WorkM (Evidence binding demand key native) := by
-  cases binding with
-  | root => exact throw .request
-  | named => exact readSupply _ _ (substitution demand) key native
 
 end QleisliKernel.Qirf.RuntimeFormalActual

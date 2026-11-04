@@ -1,6 +1,6 @@
 import QleisliKernel.Qirf.RuntimeNativeSubject
 import QleisliKernel.Qirf.RuntimeStructuredRoot
-import QleisliKernel.SourceTypes.GenericOperation
+import QleisliKernel.SourceTypes.GenericClosedCorrespondence
 
 /-! Structural correspondence of one checked native child occurrence with an
 actual closed generic operation description. Every original child position is
@@ -67,15 +67,30 @@ structure At {artifact catalogue context description graph implementations refer
   ports : terminal.value.input = cursor.value.input ∧ terminal.value.output = cursor.value.output
   action : terminal.value.action = cursor.value.action
 
-/-- One-step projection of the actual outer formal read, without rerunning
-the selector or guessing a formal by name, action or equal-valued siblings. -/
-def At.outerFormal {artifact catalogue context description graph implementations references prepared root requested checked subject index cursor}
-    (matched : @At artifact catalogue context description graph implementations references prepared root requested
-      checked subject index cursor) :
-    Option {selected : Formal cursor // RuntimeInterval.Computed (RuntimeNativeSubject.readFormal cursor) selected} :=
-  match matched.paired with
-  | .node .. => none
-  | .formal selected original _ => some ⟨selected,original⟩
+theorem Paired.terminalNode {artifact catalogue context description graph implementations references prepared root requested
+    checked native index cursor terminal}
+    (paired : @Paired artifact catalogue context description graph implementations references prepared root requested
+      checked native index cursor terminal) :
+    ∃ node, native.nodes[index]? = some node ∧ shape terminal.node = shape node := by
+  induction paired using Paired.rec (motive_2 := fun _ _ _ => True) with
+  | node node selected _ same _ _ _ _ => exact ⟨node,selected,same⟩
+  | formal _ _ _ ih => exact ih
+  | nil => trivial
+  | cons => trivial
+/-- At any paired occurrence, the native terminal has the payload of the
+node that the actual generic closure computed at this original index. Its
+source child indices retain their order and any duplicates. -/
+theorem Paired.originalNode {original : GenericOperation.Description} (closed : GenericOperation.Closed original)
+    {artifact catalogue context description graph implementations references prepared root requested checked index cursor terminal}
+    (paired : @Paired artifact catalogue context description graph implementations references prepared root requested
+      checked closed.data.description index cursor terminal) :
+    ∃ node row, original.nodes[index]? = some node ∧ closed.data.nodes[index]? = some row ∧
+      (∃ before after,(GenericOperation.readNode node).run before = (.ok row,after)) ∧
+      shape terminal.node = shape row.node ∧ row.node.children = node.children := by
+  obtain ⟨actual,atIndex,same⟩ := paired.terminalNode
+  obtain ⟨node,row,source,atRow,payload,read,children⟩ := closed.originalNodeAt index atIndex
+  exact ⟨node,row,source,atRow,read,same.trans (congrArg shape payload.symm),
+    (congrArg Node.children payload).trans children⟩
 
 private def nodeFields (node : Node) : Nat :=
   RuntimeStructuredRoot.argumentFields {operations := [("",⟨[node],0⟩)]}
@@ -142,6 +157,17 @@ structure Checked {original : GenericOperation.Description} (closed : GenericOpe
   matched : At checked closed.data.description closed.data.description.root cursor
   traversed : RuntimeInterval.Computed (visit closed.data.description (prepared.occurrences.length+1)
     closed.data.description.root cursor) matched
+
+/-- Specialize the occurrence theorem to the root of the transported
+generic duty itself, using the root returned by the closure computation. -/
+theorem Checked.originalRoot {original : GenericOperation.Description} {closed : GenericOperation.Closed original}
+    {artifact catalogue context description graph implementations references prepared root requested checked cursor}
+    (matched : @Checked original closed artifact catalogue context description graph implementations references
+      prepared root requested checked cursor) :
+    ∃ node row, original.nodes[original.root]? = some node ∧ closed.data.nodes[original.root]? = some row ∧
+      (∃ before after,(GenericOperation.readNode node).run before = (.ok row,after)) ∧
+      shape matched.matched.terminal.node = shape row.node ∧ row.node.children = node.children := by
+  simpa only [closed.root_eq] using matched.matched.paired.originalNode closed
 
 /-- Fuel comes from the actual native child-edge occurrence count, not a new
 depth ceiling. Every recursive call follows a checked native child, including

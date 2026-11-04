@@ -15,10 +15,12 @@ development milestones from the scope of their evidence.
   original duty in the generic queue. Repeated calls to the same function
   retain distinct source occurrences even with identical static arguments.
   For closed subjects, compare each operation and its ordered children with
-  the checked native tree. When the written subject names a formal, check the
-  caller's original argument at its mixed-header position. The selected child
-  retains its exact ports and Meaning equation. Source-level preservation
-  through every substitution and coverage of all original duties remain open.
+  the checked native tree. When callers forward a formal, follow each named
+  call outward to the original supplying expression. Check its mixed-header
+  position, source tokens and stored substitution at every hop. The selected
+  child retains its exact ports and Meaning equation. Closing a generic
+  description preserves its root and ordered child indices. Tracking formals
+  inside constructed arguments and covering all original duties remain open.
 
 - Validate operation-tree matrix dimensions after every constructor (#462),
   including supplied provider and formal maps. Prove the actual successful

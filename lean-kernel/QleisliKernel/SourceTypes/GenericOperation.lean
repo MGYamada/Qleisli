@@ -276,7 +276,7 @@ structure NodeClosed where
   naturals : List NaturalCertificate := []
   bases : List BasisCertificate := []
 
-private def readNode : Node → WorkM NodeClosed
+def readNode : Node → WorkM NodeClosed
   | .formal _ => throw .request
   | .primitive kind target => do
     let basis ← readBasis target
