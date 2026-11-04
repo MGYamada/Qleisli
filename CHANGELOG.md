@@ -18,8 +18,11 @@ development milestones from the scope of their evidence.
   apply to that node on arbitrary external reference states. Named-call
   boundaries bind the original source owners to the selected tokens, ports
   and ordered axes in the parent frame. Primitive steps retain the source
-  operand and phase exponent used to check the native fragment. The ordered
-  three-call regression exercises these bindings with a zero-width spectator.
+  operand and phase exponent used to check the native fragment. For a named
+  call with one primitive and one native gate or unitary tape, Lean relates
+  the original operator to the caller's action on correlated reference states,
+  including the final port permutation. The three-call regression checks the
+  phase before the selection and the Hadamard after it with a zero-width spectator.
   Full caller composition and observing instrument preservation remain open.
 
 - Associate original arm source assertions with the same complete native

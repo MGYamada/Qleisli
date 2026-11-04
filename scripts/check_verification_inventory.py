@@ -117,8 +117,8 @@ ENGINEERING_INSTRUMENT_BOUNDARY = {
         'lemmas do not certify original source/QIRF composition or a native composed request.'
     ),
     'limits': (
-        'Unchanged 16 MiB per-file/request and 64 MiB QLV3 envelope/view limits, existing six-bit dense '
-        'reconstruction, i128 canonical dyadics with denominator exponent at most 126, one shared 10M '
+        '16 MiB per-file/request and 64 MiB QLV3 envelope/view limits, existing six-bit dense '
+        'reconstruction, i128 canonical dyadics with denominator exponent at most 126, one shared 20,000,000-unit '
         'native checker-work budget and 60s process timeout. Checker work is not emitted resource cost.'
     ),
     'failure': (
@@ -172,8 +172,8 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
         'preservation remain separate.'
     ),
     'limits': (
-        'Unchanged 16 MiB per-file/request, 64 MiB QLV3 envelope/view, dimension-64 exact matrices, '
-        'i128 canonical dyadics with denominator exponent at most 126, one shared 10M checker-work '
+        '16 MiB per-file/request, 64 MiB QLV3 envelope/view, dimension-64 exact matrices, '
+        'i128 canonical dyadics with denominator exponent at most 126, one shared 20,000,000-unit native checker-work '
         'budget and 60s process timeout. Checker work is not program/target execution-resource cost.'
     ),
     'failure': (
@@ -225,8 +225,8 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
            '-> Bit profile, not an arbitrary-input pure operation.',
  'limits': 'Separate fixed target profile: at most 1024 ASCII bytes, eight gates, one physical qubit and one '
            'terminal Bit; precharge precedes byte traversal. Existing 16 MiB ideal/request, 64 MiB '
-           'envelope/view, six-bit dense R8 reconstruction, canonical i128 dyadics, one shared 10M '
-           'checker-work budget and 60s process timeout are unchanged. Checker work is not a program or '
+           'envelope/view, six-bit dense R8 reconstruction, canonical i128 dyadics, one shared 20,000,000-unit '
+           'native checker-work budget and 60s process timeout apply. Checker work is not a program or '
            'target resource certificate.',
  'failure': 'Reject unsupported or noncanonical target bytes, includes, statements, gates, operands, missing '
             'reset, post-readout gates, extra readouts, exceeded target-profile capacity, substituted full '
@@ -281,9 +281,9 @@ FINITE_CARRIER_BOUNDARY = {
     ),
     'limits': (
         'Existing six-physical-bit/dimension-64 exact domain, 128-node forests, zero-based prefix '
-        'depth at most 32, at most 128 owners/members, canonical i128 dyadics and shared 10M native '
-        'work/60s process limits. Existing 16 MiB original body/request and 64 MiB envelope/view '
-        'limits remain; source host preparation keeps its separate existing budgets. No capacity is raised.'
+        'depth at most 32, at most 128 owners/members and canonical i128 dyadics. The native checker allows '
+        '20,000,000 exact-work units per decision with a 60s process limit. Existing 16 MiB original body/request and 64 MiB envelope/view '
+        'limits apply. Source host preparation keeps its separate budgets.'
     ),
     'failure': (
         'Reject wrong full trees/ports/member order/nominal identity/source/dependencies, false code/body '
@@ -312,7 +312,7 @@ ORDINARY_RESULT_BOUNDARY = {
     'binding': 'Fresh original signature/type/byte-envelope read, original Raw root/dependencies/ownership/effect/scope gate, typed input reading and exact complete instrument reconstruction for every independently enumerated canonical input, including all zero-probability hidden histories. Storage flattens to exact original input/output SSA lists. QDV compares the retained graph, selection, parameter/result forests, input rows, storage and effect; AcceptedProgram clones retain those same typed objects.',
     'encoding': 'Execution-only explicit-edition QLV3 with original QLV1 body/request, finite-ordinary-root-v2 QDV1 description and paired --ordinary-root-check / qleisli.native-result3 context. Internalv1, inspection/caller and old-mode fallback refuse. Portable export refuses until complete typed transport exists.',
     'domain': 'Finite ordinary enum/record parameters/results, construction, projection and exhaustive match through common original-body lowering. Nongeneric public selected runtime/classical roots and their eligible ordinary Basis/Nat dependency closure use the same emitter and native gate, borrowing complete original AST/text for a fresh common judgment with its associated indices. The immutable selected wrapper retains that instantiation and actual accepted request; small quantum temporaries use the same Raw emitter and all-history checks. Project main, selected run/sample and simulation APIs remain closed-only, including zero-width logical parameters. Ordinary Basis/Nat calls retain original nominal actuals, binder identities, public effects and closed partial siblings. Operation-formal closure, full qmatch and nominal finite-table consumers remain pending; selected Basis/Nat ordinary roots use the runtime-result gate; mixed quantum interfaces have the separately inventoried runtime-result gate. No source-pattern/body, decoder/native compiler/runtime/target preservation, inverse/control grant or new guarantee admission.',
-    'limits': 'Existing six-bit/64-row native finite profile, 64 parameters and128 total parameter nodes; each complete input forest and result storage has128 nodes/depth32. The selected producer separately retains word width8,1024 function calls,depth16,10000 Raw instructions and100000 conservative source-work units; dormant quantum/control obligations continue through existing finite evidence checks. Existing original source, exact arithmetic,10M native work,60s process, body/request and envelope capacities remain unchanged. No maximum-size quantum case is introduced.',
+    'limits': 'Existing six-bit/64-row native finite profile, 64 parameters and128 total parameter nodes; each complete input forest and result storage has128 nodes/depth32. The selected producer separately retains word width8,1024 function calls,depth16,10000 Raw instructions and100000 conservative source-work units; dormant quantum/control obligations continue through existing finite evidence checks. The native checker allows 20,000,000 exact-work units per decision. Original source, exact arithmetic, 60s process, body/request and envelope limits apply. No maximum-size quantum case is introduced.',
     'failure': 'Reject stale original identity/type/member order, missing/duplicate/permuted/padding/wrong-width input rows, altered input/output SSA maps, invalid enum codes on any input/history, zero-width argument loss, hidden observation under pure labels, missing public effects, wrong scope/mode/edition/version and exceeded limits. Missing/failed native checker never falls back.',
     'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
 }
@@ -331,7 +331,7 @@ RUNTIME_RESULT_BOUNDARY = {
     'binding': 'Fresh original StaticRuntimeSignature read with complete Basis/Nat actuals and original ordered premises and shared Raw root/dependency checks. Independently enumerate ordinary inputs and reconstruct every hidden history; check ordinary result codes, physical * inputCode = outputCode * logical and complete logical Gram sum. Public effects retain observation and logical dimensions. Exact QDV compares the same graph/request objects retained by AcceptedProgram and fresh rechecking.',
     'encoding': 'Execution-only explicit-edition QLV3, original QLV1 packet and finite-runtime-root-v2 QDV. Paired --runtime-root-check / native-result3 context. Old modes, inspection/caller scopes and missing native checking never fall back. Portable export cannot erase the typed frame.',
     'domain': 'Nongeneric mixed finite interfaces, Q<enum>/Q<record>, nested tuples, zero-width owners, structural split/join and small observing bodies through the shared original-source emitter. Original declarations remain common checked. Snapshot actual inputs before expansion consumes them. Selected Basis/Nat roots reuse the same emitter with complete original-header/actual binding. Ordinary Basis/Nat calls retain original nominal actuals, binder identities, public effects and closed partial siblings. Operation-formal closure, nominal coherent-table/Meaning and wider qmatch integration remain pending. No AST/body, complex-denotation, native/runtime/target preservation, inverse/control grant or new guarantee admission.',
-    'limits': 'Existing dense six-bit code/instrument components, 64 parameters and rows, 384 full type/storage prefix nodes, finite subtrees128/depth32 and ordinary storage128/depth32. Existing source, arithmetic,10M native work,60s process and envelope caps remain. Selected producer retains eight-bit words,1024 calls,depth16,10000 instructions,100000 work. No maximum-size quantum case is introduced.',
+    'limits': 'Existing dense six-bit code/instrument components, 64 parameters and rows, 384 full type/storage prefix nodes, finite subtrees128/depth32 and ordinary storage128/depth32. The native checker allows 20,000,000 exact-work units per decision. Source, arithmetic, 60s process and envelope limits apply. Selected producer retains eight-bit words,1024 calls,depth16,10000 instructions,100000 work. No maximum-size quantum case is introduced.',
     'failure': 'Reject type/nominal/tuple/Q erasure, stale graph or source, wrong axis/owner identity, missing input rows, padding leakage, invalid classical values even on zero-probability histories, false public effects, missing explicit public quantum annotations, incompatible native scope/version and limits. Zero-width parameters still prevent closed execution.',
     'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
 }
@@ -341,15 +341,31 @@ QMATCH_BOUNDARY = {
     'id': 'qmatch-component', 'group': 'qmatch-component',
     'entry_points': [
         'interchange::qmatch::{SourceSite,Position,Site,Arm,Request}; Request::{encode,decode}',
+        'interchange::qmatch::v5::{PROFILE,Source,Request}; Request::{encode,decode} (untrusted context proposal)',
         'interchange::native::Kernel::check_qmatch_source',
         'QmatchChecked::{artifact,request_bytes,request,native} (read-only component binding)',
     ],
     'status': 'Bounded original structural source-frame and exact Raw sector component, connected to the shared compiler; no ordinary-program conversion',
-    'request': 'Strict qleisli.qmatch-request version4 / finite-source-qmatch-context-v4: original module/function, every literal event position and ordered sites, each retaining attached/required ordered quantum owner forests, original UTF8 byte offset, literal Raw start/count and actual evidence/control indices. Labels, logical matrices, graph roots and success flags are not supplied. Parsing and public data constructors issue no acceptance.',
+    'request': (
+        'Production --qmatch-source-check reads only qleisli.qmatch-request version4 / finite-source-qmatch-context-v4. '
+        'It takes the original module/function and every literal event position and ordered site, with attached/required '
+        'ordered quantum owner forests, original UTF8 byte offset, literal Raw start/count and evidence/control indices. '
+        'Labels, logical matrices, graph roots and success flags are not supplied. The separate Rust version5 codec '
+        'returns bytes or a request with original static Op descriptions, a retained runtime request, ordered call, '
+        'branch and provider occurrences, and grouped Meaning references. V5 has no accepting native mode.'),
     'binding': 'Fresh original source/header/operand/arm-name reads derive complete types, canonical labels, public effects, exact source rows and actual evidence subjects. The complete structural source function retains every quantum parameter and result, logical owner identities, basis trees and returned order. The local pair remains in selector/target order independently of the complete function interface. Additional zero-width owners remain in the original frame, and its public effect cannot be sharpened by the pure local contract. Independent transport through original Raw joins/splits and owner-moving operations must return those exact source roles; equal/empty wire lists do not supply identity. Matching source/Raw zero-width permutations succeed. Opaque-owner refinements and allocation/release need their checked source/representation rules. Unknown suffixes and ignored observation/discard refuse. Every original selection and supported direct h/global_phase_eighth/phase call appears once in evaluation order; arguments precede their enclosing call. Original closed Nat syntax and lexical static bindings determine phase parameters. Every initializer and ordinary caller intermediate is checked, including unused initializers and ignored helper actuals; original static helper bodies retain their checked signed-affine rules. Retained checked values preserve each initializer and its earlier helper/name interpretation without repeated evaluation. Existing canonical dyadic/eighth-root restrictions remain exact; no producer parameter values or success receipts supply those facts. Original callee-token/qmatch-keyword coordinates survive grouping; source name resolution checks lexical/module/prelude absence before primitive classification. Literal intervals exhaust the complete Raw body in order without gaps/overlaps and bind actual owner frames; each passes its own exact equations even if successive operators cancel. One original graph supplies fresh receipts with complete input/dependency provenance and actual U/CU/main equations. Rust proposes joint roots from actual requested entries/control programs; Lean independently derives relevance. QDV compares the same retained graph/caches, every typed site interface, original function, source occurrence, literal interval and arm indices. A private component handle retains the same allocations, without ordinary-program conversion or inverse/control access.',
     'encoding': 'Explicit-edition execution-only QLV3 wraps exact original QLV1 body/request and finite-source-qmatch-context-v4 QDV1 graph/source-function/ordered event-position/ordered qmatch-site records, including both interfaces, source-interval and arms. --qmatch-source-check requires matching native-result3 accepted/execution context, complete product version and actual request-presence flag. Inspection/caller, old frames and cross-mode replies refuse without fallback.',
-    'domain': 'Bounded ordered pure primitive/selection literal intervals in a complete original structural function, with exact named-arm source association, finite builtin/nominal ordered type trees and preserved zero-width identities/phase. The shared compiler retains all quantum arguments and a flat quantum-owner result. Grouped/nested direct supported primitive calls, closed body-local static Nat aliases and named-arm selections share this boundary. Generic caller-actual binding remains separate. General expressions/call frames, mixed ordinary/quantum parameters, constructed/static/generic arms, the full twelve-bit/64-label source contract and source-body lowering remain unfinished. No new guarantee, source/runtime/target preservation or full QS/PR/RS/EXACT discharge is claimed.',
-    'limits': 'Existing finite carrier/Raw/dependency/exact arithmetic and 10M native work limits remain. At most128 ordered selections (no separate128-event position cap),64 requested arms per selection,128 source rows and1MiB aggregate source identity; source names1..4096 UTF8 bytes and indicesu32. Shared carrier forests/ports retain their configured bounds and u8 port-width representation. Existing16MiB body/request,64MiB envelope/view and60s process bounds remain. No maximum-size quantum case is generated or capacity raised.',
+    'domain': (
+        'Bounded ordered pure primitive/selection literal intervals in a complete original structural function, with '
+        'exact named-arm source association, finite builtin/nominal ordered type trees and preserved zero-width identities '
+        'and phase. The shared compiler retains all quantum arguments and a flat quantum-owner result. Grouped/nested '
+        'direct supported primitive calls, closed body-local static Nat aliases and named-arm selections share this boundary. '
+        'The staged v5 schema describes original static arguments, nested runtime contexts and provider subjects. Its '
+        'Rust codec and Lean request and execution-view readers produce proposals, checked component evidence or comparison '
+        'data. The shipped source-qmatch mode requires v4. Generic caller-actual binding, general expression/call frames, '
+        'mixed ordinary/quantum parameters, constructed/static/generic arms in production, the full twelve-bit/64-label '
+        'source contract and whole-body lowering remain open. No new constitutional guarantee or full QS/PR/RS/EXACT discharge.'),
+    'limits': 'The native checker allows 20,000,000 exact-work units per decision. Existing finite carrier/Raw/dependency/exact arithmetic limits apply. At most128 ordered selections (no separate128-event position cap),64 requested arms per selection,128 source rows and1MiB aggregate source identity; source names1..4096 UTF8 bytes and indicesu32. Shared carrier forests/ports retain their configured bounds and u8 port-width representation. Existing16MiB body/request,64MiB envelope/view and60s process bounds remain. No maximum-size quantum case is generated.',
     'failure': 'Reject stale types/ports/owner identity, false source occurrence/name/evidence association, overlapping/incomplete labels, observation in the pure selected interval, wrong public effect, phase/axis/dependency/body/control/Gram equations, unrelated nodes/rows, stale retained graph/request/caches and wrong context/scope. Source headers alone are not a source-body preservation theorem. A missing, failed, incompatible or timed-out checker grants no handle and never retries an old mode.',
     'replacement': ['VM-23', 'VM-24', 'VM-25', 'VM-28', 'VM-29'],
 }

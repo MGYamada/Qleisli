@@ -41,6 +41,21 @@ class InventoryTests(unittest.TestCase):
     def test_frozen_repository_is_covered(self):
         self.assertEqual(check(self.root,self.data),[])
 
+    def test_native_exact_work_keeps_sample_and_historical_budgets_separate(self):
+        limits = {row['id']: row['limits'] for row in self.data['boundaries']}
+        current = ('finite-leaf', 'hierarchy-inspect', 'qirf-native-v028', 'engineering-pure',
+                   'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm',
+                   'finite-carrier', 'qmatch-component', 'runtime-result', 'ordinary-result')
+        for boundary in current:
+            with self.subTest(boundary=boundary):
+                self.assertIn('20,000,000', limits[boundary])
+        work = next(row for row in self.data['capacities'] if row['id'] == 'work')
+        self.assertIn('20,000,000 exact-work units per decision', work['value'])
+        self.assertIn('Raw sample aggregate execution budget10000000', limits['sized-source-proposal'])
+        self.assertIn('10M shared decoding ceiling', limits['lean-finite-component-v024'])
+        self.assertIn('pure structural work2M', limits['hierarchy-inspect'])
+        self.assertIn('100000 conservative source-work units', limits['ordinary-result'])
+
     def test_typed_source_growth_rejects_even_after_enum_and_hash_refresh(self):
         path = self.root/'src/frontend/primitive.rs'
         original = path.read_text()
