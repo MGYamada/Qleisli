@@ -6,10 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
-- Prove preservation of the original ordered wire frame from the actual
-  retained circuit trace, without a fixed selection-lowering shape. Spectator
-  owners, literal reconstruction and complete source composition retain their
-  separate proof obligations.
+- Prove preservation of the original ordered wire frame and selected/returned
+  axes from the actual retained circuit trace, without a fixed lowering shape.
+  Prove exact owner-tree preservation through spectator frames for the same
+  complete owner-flow operation list, including joins and splits. Connecting
+  authentic source seeds and returns, literal reconstruction and complete
+  source composition retain their separate proof obligations.
 
 - Consume exact original body plans in the common native runtime handler,
   reusing graph preparations under the same final root. Keep interval, owner,
