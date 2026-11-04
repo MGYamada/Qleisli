@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Associate constructed-arm source assertions with the same complete native
+  occurrence and its existing checked Meaning equation. Retain original token
+  positions, caller and Meaning declaration/source; preserve separate repeated
+  assertions. Complete original invocation, substitution and duty discharge
+  remain required before source acceptance.
+
 - Validate operation-tree matrix dimensions after every constructor (#462),
   including supplied provider and formal maps. Prove the actual successful
   evaluator retains both carrier reads and exact logical dimensions. Preserve

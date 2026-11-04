@@ -25,6 +25,9 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
 
 private def falseSource := source.replace "checked_op(U,Identity)" "checked_op(U,Sign)"
 private def dormantSource := source.replace "checked_op(U,Identity)" "power(checked_op(U,Sign),0)"
+private def dormantCorrectSource := source.replace "checked_op(U,Identity)" "power(checked_op(U,Identity),0)"
+private def pairSource (first second : String) := source.replace "checked_op(U,Identity)"
+  ("then_op(checked_op(U," ++ first ++ "),checked_op(U," ++ second ++ "))")
 private def z : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[.pure (.gate .z 0 1)],[1],[],.unitary⟩
 private def identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
 private def erased : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[.pure (.applyUnitary 0 1 [])],[1],[],.unitary⟩
@@ -32,7 +35,8 @@ private def selected : Semantics.Observation.Program :=
   ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩
 
 private inductive Fault where
-  | none | falseMeaning | dormantFalse | omittedFirst | omittedSecond | missing | extra
+  | none | falseMeaning | dormantFalse | dormantTrue | omittedFirst | omittedSecond | missing | extra
+  | pair | pairWrongFirst | pairWrongSecond
   deriving BEq
 
 private def controlPresent {artifact context description graph index request header root demand}
@@ -44,7 +48,12 @@ private def controlPresent {artifact context description graph index request hea
 private abbrev Summary := List Nat × List (Nat × Bool × Bool) × List Nat × Bool
 
 private def inspect (fault : Fault) : WorkM Summary := do
-  let text := if fault == .falseMeaning then falseSource else if fault == .dormantFalse then dormantSource else source
+  let pair := fault == .pair || fault == .pairWrongFirst || fault == .pairWrongSecond
+  let text := if pair then
+      pairSource (if fault == .pairWrongFirst then "Sign" else "Identity")
+        (if fault == .pairWrongSecond then "Sign" else "Identity")
+    else if fault == .falseMeaning then falseSource else if fault == .dormantFalse then dormantSource
+    else if fault == .dormantTrue then dormantCorrectSource else source
   let omitted := fault == .omittedFirst || fault == .omittedSecond
   let programs := if omitted then #[selected,z,identity,erased] else #[selected,z,identity]
   let artifact : Artifact := ⟨programs,#[],#[("main",text)],0,none⟩
@@ -67,23 +76,49 @@ private def inspect (fault : Fault) : WorkM Summary := do
     [(.pure (if fault == .omittedFirst then 3 else 1),phase),
      (.pure (if fault == .omittedSecond then 3 else 1),phase)]
   let providers := if fault == .missing then providers.take 1 else if fault == .extra then providers ++ [(.pure 1,phase)] else providers
-  let second ← RuntimePreparedArm.prepare artifact original.catalogue table secondIndex providers [[reference]]
-  if fault == .none then
-    let tree ← RuntimeOperationOccurrenceTree.read second.graph
-    let initial := Sigma.mk tree.index tree.tree
-    -- checked_op(U,Identity) -> U -> supplied then_op -> its two leaves.
-    let first ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 0]
-    let second ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 1]
-    guard (first.2.located.occurrence.ordinal.val == 0 &&
-      second.2.located.occurrence.ordinal.val == 1) .request
-    guard (first.2.located.occurrence.index == 0 && second.2.located.occurrence.index == 1) .request
+  let providers := if pair then providers ++ providers else providers
+  let references := if pair then
+      [[if fault == .pairWrongFirst then (.pure 1,phase) else (.pure 2,empty)],
+       [if fault == .pairWrongSecond then (.pure 1,phase) else (.pure 2,empty)]]
+    else [[reference]]
+  let second ← RuntimePreparedArm.prepare artifact original.catalogue table secondIndex providers references
   let rows := original.signature.sourceRows ++ body.summary.staticRows ++ call.target.sourceRows ++ first.rows ++ second.rows
   let roots := (artifact.root :: first.roots ++ second.roots).eraseDups
   let order := if omitted then #[0,1,2,3] else #[0,1,2]
   let root ← Validity.checkRootFromRoots artifact order rows roots
   let checked ← RuntimePreparedArm.read second root
   match checked with
-  | .constructed _ actual _ =>
+  | .constructed _ actual _ markers _ =>
+    if fault == .none then
+      let tree := markers.tree
+      let initial := Sigma.mk tree.index tree.tree
+      -- Use the actual production association's tree and original marker,
+      -- rather than building an independent diagnostic traversal.
+      let first ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 0]
+      let second ← RuntimeOperationOccurrenceTree.follow initial [.child 0,.actual 0,.child 1]
+      guard (first.2.located.occurrence.ordinal.val == 0 &&
+        second.2.located.occurrence.ordinal.val == 1) .request
+      guard (first.2.located.occurrence.index == 0 && second.2.located.occurrence.index == 1) .request
+      let [entry] := markers.entries | throw .request
+      let marker := markers.markers[entry.index.val]'entry.index.isLt
+      guard (marker.tokens.head?.map (·.span.startByte) == some 325) .request
+      guard (entry.target.2.located.position.val == 4 && entry.assertion.binding.index.val == 4 &&
+        entry.assertion.child.index == 3 && entry.assertion.requirement.index.val == 0) .request
+      guard (entry.assertion.requirement.request.declarationName == "Identity") .request
+    if fault == .pair then
+      -- Equal requests must retain both original occurrences. The offsets
+      -- come from the preserved two-equal .qli; positions follow both edges.
+      guard (markers.entries.map (·.target.2.located.position.val) == [4,9] &&
+        markers.entries.map (·.assertion.binding.index.val) == [4,9]) .request
+      let offsets := markers.entries.map fun entry =>
+        (markers.markers[entry.index.val]'entry.index.isLt).tokens.head?.map (·.span.startByte)
+      guard (offsets == [some 333,some 356]) .request
+    if fault == .dormantTrue then
+      let [entry] := markers.entries | throw .request
+      let marker := markers.markers[entry.index.val]'entry.index.isLt
+      guard (marker.path == [.child 0] &&
+        marker.tokens.head?.map (·.span.startByte) == some 331) .request
+      guard (entry.target.2.located.position.val == 4 && entry.assertion.binding.index.val == 4) .request
     let providers := actual.outcome.records.filterMap fun record =>
       match record.checked.provider with
       | .absent _ => none
@@ -105,5 +140,15 @@ private def run (fault : Fault) := ((inspect fault).run 16000000).1
   match run fault with | .error .equation => true | _ => false
 #guard [Fault.missing,.extra].all fun fault =>
   match run fault with | .error .request => true | _ => false
+
+-- First whole-study budget for the new assertion experiments is the
+-- production 20M cap; the original sixteen-million controls stay unchanged.
+private def productionRun (fault : Fault) := ((inspect fault).run 20000000).1
+#guard (productionRun .pair).toOption.map (fun (order,providers,subjects,identity) =>
+  (order.length,providers.length,subjects.length,identity)) == some (11,4,2,true)
+#guard [Fault.pairWrongFirst,.pairWrongSecond].all fun fault =>
+  match productionRun fault with | .error .equation => true | _ => false
+#guard (productionRun .dormantTrue).toOption.map (fun (order,providers,subjects,identity) =>
+  (order.length,providers.length,subjects.length,identity)) == some (6,2,1,true)
 
 end QleisliKernel.Tests.RuntimeOperationTree

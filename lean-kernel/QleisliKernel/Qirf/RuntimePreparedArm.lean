@@ -1,10 +1,13 @@
 import QleisliKernel.Qirf.RuntimeOperationTree
+import QleisliKernel.Qirf.RuntimeSourceOperationMarkers
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! A genuine indexed original coherent arm uses the shared graph checker.
 Its written ordinal and source graph come only from the retained QuantumArms
 table. Forward bodies, actual C implementation evidence and complete Meaning
-graphs use the same final root. This adds no selector/sector or caller equation,
+graphs use the same final root. Constructed arms also associate every written
+source assertion with that same native occurrence's existing Meaning equation.
+This adds no selector/sector or caller equation,
 global catalogue discharge, wire reader or execution authority.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimePreparedArm
@@ -76,12 +79,16 @@ inductive Checked {artifact catalogue owner name offset selector target table in
       (actual : RuntimeOperationTree.Checked prepared.graph root OperationAccess.controllable)
       (original : RuntimeInterval.Computed
         (RuntimeOperationTree.read prepared.graph root OperationAccess.controllable) actual)
+      (markers : RuntimeSourceOperationMarkers.Checked
+        (table.arms[index.val]'index.isLt).operation prepared.graph actual)
+      (markersRead : RuntimeInterval.Computed
+        (RuntimeSourceOperationMarkers.read (table.arms[index.val]'index.isLt).operation prepared.graph actual) markers)
 
 def Checked.action {artifact catalogue owner name offset selector target table index implementations references prepared root} :
     @Checked artifact catalogue owner name offset selector target table index implementations references prepared root → Semantics.Exact.Matrix
   | .plain _ actual _ => actual.subject.action
   | .requested _ actual _ => actual.subject.action
-  | .constructed _ actual _ => actual.action
+  | .constructed _ actual _ _ _ => actual.action
 
 def Checked.demand {artifact catalogue owner name offset selector target table index implementations references prepared root} :
     @Checked artifact catalogue owner name offset selector target table index implementations references prepared root → StaticOperation.Paths
@@ -91,7 +98,9 @@ def Checked.demand {artifact catalogue owner name offset selector target table i
 
 /-- Every arm requests the real controlled path. The occurrence checker must
 materialize every demanded provider path; a Unit label or matching M matrix is
-insufficient. Shapes choose one reader directly, without retry on refusal. -/
+insufficient. Constructed source assertions retain the same checked equation,
+complete original declaration and exact occurrence; complete catalogue-duty
+association remains separate. Shapes choose one reader without retry. -/
 def read {artifact catalogue owner name offset selector target table index implementations references}
     (prepared : @Prepared artifact catalogue owner name offset selector target table index implementations references)
     (root : Validity.Root) : WorkM (Checked prepared root) := do
@@ -107,6 +116,9 @@ def read {artifact catalogue owner name offset selector target table index imple
   | .constructed =>
     let actual ← NaturalAffine.witness
       (RuntimeOperationTree.read prepared.graph root OperationAccess.controllable)
+    let markers ← NaturalAffine.witness
+      (RuntimeSourceOperationMarkers.read (table.arms[index.val]'index.isLt).operation prepared.graph actual.val)
     return .constructed source actual.val (by with_reducible exact actual.property)
+      markers.val (by with_reducible exact markers.property)
 
 end QleisliKernel.Qirf.RuntimePreparedArm

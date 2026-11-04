@@ -13,7 +13,9 @@ open QleisliKernel.SourceTypes.OperationDescription (Node)
 
 structure Located {artifact catalogue context description graph implementations references}
     (prepared : @RuntimePreparedOperation.GraphPrepared artifact catalogue context description graph implementations references) where
+  position : Fin prepared.occurrences.length
   occurrence : RuntimePreparedOperation.Occurrence artifact catalogue graph prepared.order
+  atPosition : prepared.occurrences[position.val]'position.isLt = occurrence
   member : occurrence ∈ prepared.occurrences
   node : Node
   original : description.nodes[occurrence.index]? = some node
@@ -104,8 +106,11 @@ def read {artifact catalogue context description graph implementations reference
     (prepared : @RuntimePreparedOperation.GraphPrepared artifact catalogue context description graph implementations references) :
     WorkM (Checked prepared) := do
   exactWork (Exact.charge (16*(prepared.occurrences.length+description.nodes.length+1)^2))
-  let stack ← prepared.occurrences.attach.foldlM (fun (stack : List (Sigma (Tree prepared))) current => do
-    let occurrence := current.val
+  -- Retaining the exact list position adds linked-list selections to the
+  -- original stack walk. Reserve that additional work before constructing it.
+  exactWork (Exact.charge (8*(prepared.occurrences.length+1)^2))
+  let stack ← (List.finRange prepared.occurrences.length).foldlM (fun (stack : List (Sigma (Tree prepared))) position => do
+    let occurrence := prepared.occurrences[position.val]'position.isLt
     match original : description.nodes[occurrence.index]? with
     | none => throw .request
     | some node =>
@@ -113,7 +118,7 @@ def read {artifact catalogue context description graph implementations reference
       let remaining := stack.take splitAt
       let children := stack.drop splitAt
       let ordered ← readChildren node.children children
-      let located : Located prepared := ⟨occurrence,current.property,node,original⟩
+      let located : Located prepared := ⟨position,occurrence,rfl,List.getElem_mem position.isLt,node,original⟩
       return remaining ++ [⟨occurrence.index,.branch located ordered⟩]) []
   match stack with
   | [⟨index,tree⟩] =>
