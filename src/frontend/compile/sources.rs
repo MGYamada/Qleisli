@@ -339,8 +339,10 @@ impl<'a> Collector<'a, '_> {
             return self.refusal("source closure has an unknown original definition");
         };
         let original_module = self.compiler.originals.module(&record.name.0);
-        let lookup_needs_prelude =
-            self.qmatch && original_module.as_ref().is_some_and(|module| !module.ast.no_implicit_prelude);
+        let lookup_needs_prelude = self.qmatch
+            && original_module
+                .as_ref()
+                .is_some_and(|module| !module.ast.no_implicit_prelude);
         let original = original_module.and_then(|source| source.ast.decls.get(record.ast_index));
         if !original
             .zip(self.compiler.declarations.get(&key))

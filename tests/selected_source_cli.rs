@@ -62,7 +62,10 @@ fn selected_checked_qmatch_arm_compares_the_original_phase() {
             .unwrap();
         let report = result(output, "check", valid);
         if valid {
-            assert!(report.contains("\"runtime_result_checked\":true"), "{report}");
+            assert!(
+                report.contains("\"runtime_result_checked\":true"),
+                "{report}"
+            );
         } else {
             assert!(report.contains("\"code\":\"contract\""), "{report}");
             assert!(report.contains("exact equation"), "{report}");
