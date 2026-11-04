@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Compose exact local/caller circuit locality through the same original Raw
+  operation list and actual owner-flow fold. Preserve every event boundary,
+  including empty circuits, and derive both complete traces and fixed frames.
+  Connecting the original body/sector readers remains separate work.
+
 - Derive exact local/caller circuit chunks and bounds for each original Raw
   step from its actual step, owner-flow and sector-event receipts. Preserve
   both quantumIf tapes, empty circuits and unchanged spectator ports.

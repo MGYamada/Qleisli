@@ -55,6 +55,7 @@ import Qleisli.RuntimeToffoliTrace
 import Qleisli.RuntimeQuantumIfTrace
 import Qleisli.RuntimeTraceBounds
 import Qleisli.RuntimeStepLocality
+import Qleisli.RuntimeFoldLocality
 import Qleisli.RuntimeOwnerCodeEvidence
 import Qleisli.RuntimeStorageOwnerEvidence
 import Qleisli.RuntimeBoundaryOwnerEvidence
