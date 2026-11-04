@@ -653,6 +653,13 @@ pub(in crate::interchange) mod engineering_pure;
 pub(in crate::interchange) mod engineering_pure_tensor;
 pub(in crate::interchange) mod ordinary_root;
 pub(in crate::interchange) mod qmatch;
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(in crate::interchange) mod qmatch_v5;
 pub(in crate::interchange) mod runtime_root;
 

@@ -938,6 +938,13 @@ fn decode_subject_with_types(
 #[derive(Clone, Copy)]
 enum QmatchSource<'a> {
     Sequence(&'a qmatch::Request),
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "retained v5 source subjects pending production composition"
+        )
+    )]
     Context(&'a qmatch::v5::Request),
 }
 

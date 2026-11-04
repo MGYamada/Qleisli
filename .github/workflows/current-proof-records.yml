@@ -56,11 +56,36 @@ jobs:
           (Path(os.environ['RUNNER_TEMP']) / 'proof-cumulative.json').write_bytes(maintenance.encoded(report))
           PY
           python3 -B scripts/test_refresh_current_proof_records.py
+      - name: Determine whether current proof records need regeneration
+        id: records
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import json, os, subprocess, time
+          from pathlib import Path
+          checks = []
+          for command in (["python3", "scripts/check_schema_registry.py", "--source-only"],
+                          ["python3", "scripts/check_initial_guarantees.py"]):
+              started = time.monotonic()
+              result = subprocess.run(command, capture_output=True, text=True)
+              checks.append(dict(command=command, exit_code=result.returncode,
+                                 seconds=time.monotonic()-started,
+                                 stdout=result.stdout, stderr=result.stderr))
+          refresh = os.environ["GITHUB_EVENT_NAME"] != "push" or any(row["exit_code"] for row in checks)
+          report = dict(source_commit=os.environ["SOURCE_COMMIT"], refresh=bool(refresh),
+                        scope="current source-record identities", checks=checks)
+          (Path(os.environ["RUNNER_TEMP"]) / "proof-record-freshness.json").write_text(json.dumps(report, indent=2)+"\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("refresh="+str(bool(refresh)).lower()+"\n")
+          print(json.dumps(report))
+          PY
       - name: Install the pinned native toolchain without a duplicate build
+        if: steps.records.outputs.refresh == 'true'
         uses: ./.github/actions/native-runtime
         with:
           prepare: 'false'
       - name: Prepare the pinned mathematical package and its existing cache
+        if: steps.records.outputs.refresh == 'true'
         uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
         with:
           lake-package-directory: lean
@@ -68,6 +93,7 @@ jobs:
           use-github-cache: 'false'
           build: 'false'
       - name: Compile the native package in the fresh checkout
+        if: steps.records.outputs.refresh == 'true'
         timeout-minutes: 15
         shell: bash
         run: |
@@ -77,6 +103,7 @@ jobs:
           echo "$SOURCE_COMMIT" > "$RUNNER_TEMP/proof-native-build.log"
           (cd lean-kernel && lake build) 2>&1 | tee -a "$RUNNER_TEMP/proof-native-build.log"
       - name: Execute the fixed fresh proof and review-output plan
+        if: steps.records.outputs.refresh == 'true'
         run: python3 -B scripts/refresh_current_proof_records.py --source-commit "$SOURCE_COMMIT" --output "$RUNNER_TEMP/current-proof-records"
       - name: Retain actual proof records and proposed metadata for human review
         if: always()
@@ -84,6 +111,7 @@ jobs:
         with:
           name: current-proof-records-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            ${{ runner.temp }}/proof-record-freshness.json
             ${{ runner.temp }}/proof-size.json
             ${{ runner.temp }}/proof-fixtures.json
             ${{ runner.temp }}/proof-cumulative.json

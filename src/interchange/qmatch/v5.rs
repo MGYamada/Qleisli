@@ -21,8 +21,19 @@ pub struct Request {
     pub context: Context,
 }
 
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 mod producer;
 mod runtime;
+#[cfg_attr(
+    not(test),
+    expect(unused_imports, reason = "v5 producer awaits production composition")
+)]
 pub(crate) use producer::proposal;
 
 impl Source {

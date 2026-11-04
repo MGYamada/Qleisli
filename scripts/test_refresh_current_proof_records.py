@@ -7,6 +7,7 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import textwrap
 import unittest
 from unittest.mock import Mock, patch
 
@@ -15,6 +16,36 @@ import check_schema_registry as registry
 
 
 class MaintenanceRefusalTests(unittest.TestCase):
+    def test_push_bootstrap_skips_only_matching_records_and_manual_always_replays(self):
+        workflow = (maintenance.ROOT / ".github/workflows/current-proof-records.yml").read_text()
+        block = workflow.split("      - name: Determine whether current proof records need regeneration\n")[1]
+        block = block.split("      - name: ")[0]
+        shell = textwrap.dedent(block.split("        run: |\n")[1])
+        script = "\n".join(shell.splitlines()[1:-1])
+        self.assertEqual(workflow.count("if: steps.records.outputs.refresh == 'true'"), 4)
+        self.assertIn("${{ runner.temp }}/proof-record-freshness.json", workflow)
+        for event, codes, expected in [
+            ("push", (0, 0), False), ("push", (1, 0), True),
+            ("push", (0, 1), True), ("workflow_dispatch", (0, 0), True),
+        ]:
+            with self.subTest(event=event, codes=codes), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                (root / "scripts").mkdir()
+                for name, code in zip(("check_schema_registry.py", "check_initial_guarantees.py"), codes):
+                    (root / "scripts" / name).write_text(f"raise SystemExit({code})\n")
+                output = root / "outputs"
+                result = maintenance.subprocess.run(
+                    [maintenance.sys.executable, "-c", script], cwd=root,
+                    env=maintenance.os.environ | dict(GITHUB_EVENT_NAME=event, SOURCE_COMMIT="a"*40,
+                                                       RUNNER_TEMP=str(root), GITHUB_OUTPUT=str(output)),
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads((root / "proof-record-freshness.json").read_text())
+                self.assertEqual(report["refresh"], expected)
+                self.assertEqual([row["exit_code"] for row in report["checks"]], list(codes))
+                self.assertEqual(output.read_text(), "refresh="+str(expected).lower()+"\n")
+
     def test_timeout_kills_owned_group_even_when_parent_exits_after_term(self):
         process = Mock(pid=123, returncode=-9)
         process.wait.side_effect = [maintenance.subprocess.TimeoutExpired(["lake"], 900), 0, -9]

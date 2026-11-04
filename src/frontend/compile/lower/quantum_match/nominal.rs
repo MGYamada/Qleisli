@@ -128,6 +128,10 @@ fn owner(
     })
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "retain the complete original source and native interfaces"
+)]
 fn retained_raw(
     lower: &mut Lowerer<'_, '_>,
     module: &str,

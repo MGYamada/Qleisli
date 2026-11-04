@@ -63,6 +63,19 @@ runs:
       with:
         toolchain: ${{ steps.profile.outputs.toolchain }}
         components: ${{ steps.profile.outputs.components }}
+    - name: Reject Rust lint failures before native preparation and tests
+      shell: bash
+      env:
+        RUST_PROFILE: ${{ inputs.profile }}
+        CARGO_PROFILE_DEV_DEBUG: '0'
+        CARGO_PROFILE_TEST_DEBUG: '0'
+        CARGO_INCREMENTAL: '0'
+      run: |
+        case "$RUST_PROFILE" in
+          latest) cargo +1.98.1 clippy --locked --all-targets -- -D warnings ;;
+          msrv) python3 scripts/run_msrv.py clippy --locked --all-targets -- -D warnings ;;
+          *) echo 'Unknown Rust producer profile' >&2; exit 1 ;;
+        esac
     - name: Run the complete assigned Rust commands
       uses: ./.github/actions/rust-suite
       with:

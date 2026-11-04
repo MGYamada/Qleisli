@@ -19,6 +19,13 @@ pub(crate) enum ArmBody {
     Evidence(std::sync::Arc<crate::contract::FunctionEvidence>),
     /// The standalone forward circuit of an original primitive or operation tree.
     /// The complete source request separately checks each original provider.
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "retained v5 source subjects pending production composition"
+        )
+    )]
     Program(crate::ir::RawProgram),
     Physical {
         bits: u32,
@@ -27,6 +34,13 @@ pub(crate) enum ArmBody {
     },
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) struct ArmSubject {
     pub body: ArmBody,
     pub controlled: crate::ir::RawProgram,
@@ -36,6 +50,13 @@ pub(crate) struct ArmSubject {
 /// Retained original provider subjects in descriptor child-edge postorder.
 /// These objects remain proposals; Meaning reference bodies and demanded path
 /// equations are derived independently before any v5 execution authority.
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) enum OriginalBody {
     Function {
         evidence: std::sync::Arc<crate::contract::FunctionEvidence>,
@@ -47,6 +68,13 @@ pub(crate) enum OriginalBody {
     },
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 impl OriginalBody {
     pub(crate) fn context(&self) -> &std::sync::Arc<ContextSubject> {
         match self {
@@ -55,6 +83,13 @@ impl OriginalBody {
     }
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) struct OperationSubject {
     pub description: Description,
     pub bodies: Vec<OriginalBody>,
@@ -66,6 +101,13 @@ pub(crate) struct OperationSubject {
 /// Original lowering coordinates retained alongside the exact prepared body.
 /// Encoding derives all graph indices afresh from these actual arm subjects.
 #[derive(Default)]
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) struct ContextSubject {
     pub supplies: Vec<(String, OperationSubject)>,
     pub positions: Vec<Position>,
@@ -84,6 +126,13 @@ pub(crate) struct ContextSubject {
     pub requires_source_gate: bool,
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) struct SelectionBody {
     pub interface: Interface,
     pub position: Position,

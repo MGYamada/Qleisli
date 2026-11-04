@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check Rust lint failures before native preparation and lengthy tests.
+- Compile fresh native bundles in bounded batches in import order, then build
+  the complete library and executable before auditing and replaying the same products.
+- Run the proof-record bootstrap on pushes when source records need regeneration,
+  and always run fresh verification for manual dispatch.
+
 - Detect stale schema and scoped-guarantee source records before scheduling
   Rust, native and distribution CI builds.
 

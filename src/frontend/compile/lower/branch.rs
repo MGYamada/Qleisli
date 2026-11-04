@@ -10,6 +10,13 @@ use crate::frontend::ast::{Block, Span};
 use crate::ir::{ClassicalId, ClassicalPhi, QuantumPhi, RawOp};
 use std::collections::BTreeMap;
 
+type BranchResult = (
+    Value,
+    usize,
+    Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
+    Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
+);
+
 impl Lowerer<'_, '_> {
     pub(super) fn branch(
         &mut self,
@@ -68,15 +75,7 @@ impl Lowerer<'_, '_> {
         else_arm: impl FnOnce(&mut Self, &mut Env) -> Result<Value, CompileError>,
         then_frame: Option<super::quantum_match::nominal::Frame>,
         else_frame: Option<super::quantum_match::nominal::Frame>,
-    ) -> Result<
-        (
-            Value,
-            usize,
-            Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
-            Option<std::sync::Arc<crate::interchange::qmatch::ContextSubject>>,
-        ),
-        CompileError,
-    > {
+    ) -> Result<BranchResult, CompileError> {
         self.compiler.charge(
             module,
             span,

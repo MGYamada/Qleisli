@@ -8,16 +8,17 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from package_lean_kernel import ROOT, parse_args, validate
+from package_lean_kernel import ROOT, library_builds, parse_args, validate
 
 
 class NativeBundleLanes(unittest.TestCase):
     def run_validation(self, lane, results=None):
-        with patch("package_lean_kernel.subprocess.run", side_effect=results,
+        with patch("package_lean_kernel.library_builds", return_value=[["lake", "build", "+Protocol.Core"]]), patch("package_lean_kernel.subprocess.run", side_effect=results,
                    return_value=subprocess.CompletedProcess([], 0, "checked", "")) as run:
             with contextlib.redirect_stdout(io.StringIO()):
                 logs = validate(Path("fresh-package"), lane)
@@ -28,7 +29,9 @@ class NativeBundleLanes(unittest.TestCase):
             with self.subTest(lane=lane):
                 logs, calls = self.run_validation(lane)
                 self.assertEqual([row["command"] for row in logs], [
-                    ["lake", "build"],
+                    ["lake", "build", "+Protocol.Core"],
+                    ["lake", "build", "QleisliKernel"],
+                    ["lake", "build", "qleisli-kernel"],
                     ["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"],
                 ])
                 for call in calls:
@@ -39,7 +42,9 @@ class NativeBundleLanes(unittest.TestCase):
     def test_full_keeps_independent_replay_of_both_roots(self):
         logs, _ = self.run_validation("full")
         self.assertEqual([row["command"] for row in logs], [
-            ["lake", "build"],
+            ["lake", "build", "+Protocol.Core"],
+            ["lake", "build", "QleisliKernel"],
+            ["lake", "build", "qleisli-kernel"],
             ["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"],
             ["lake", "env", "leanchecker", "--fresh", "QleisliKernel"],
             ["lake", "env", "leanchecker", "--fresh", "Main"],
@@ -61,10 +66,10 @@ class NativeBundleLanes(unittest.TestCase):
     def test_failed_build_audit_or_replay_never_produces_success(self):
         passed = subprocess.CompletedProcess([], 0, "checked", "")
         failed = subprocess.CompletedProcess([], 1, "", "deliberate rejection")
-        for lane, count in (("tests", 2), ("model", 2), ("full", 4)):
+        for lane, count in (("tests", 4), ("model", 4), ("full", 6)):
             for stage in range(count):
                 with self.subTest(lane=lane, stage=stage):
-                    with patch("package_lean_kernel.subprocess.run", side_effect=[passed] * stage + [failed]) as run:
+                    with patch("package_lean_kernel.library_builds", return_value=[["lake", "build", "+Protocol.Core"]]), patch("package_lean_kernel.subprocess.run", side_effect=[passed] * stage + [failed]) as run:
                         with contextlib.redirect_stdout(io.StringIO()), self.assertRaisesRegex(RuntimeError, "deliberate rejection"):
                             validate(Path("unused"), lane)
                         self.assertEqual(run.call_count, stage + 1)
@@ -72,6 +77,32 @@ class NativeBundleLanes(unittest.TestCase):
             with patch("package_lean_kernel.subprocess.run", side_effect=error):
                 with self.assertRaises(type(error)):
                     validate(Path("unused"), "tests")
+
+    def test_cold_batches_cover_every_module_with_dependencies_first(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary)
+            for index in range(130):
+                path = package / "QleisliKernel" / f"Module{index:03}.lean"
+                path.parent.mkdir(exist_ok=True)
+                # Lexical order is deliberately opposite to dependency order.
+                path.write_text(f"import QleisliKernel.Module{index + 1:03}\n" if index < 129 else "")
+            (package / "QleisliKernel.lean").write_text("import QleisliKernel.Module000\n")
+            (package / "Audit.lean").write_text("import QleisliKernel\n")
+            commands = library_builds(package)
+            self.assertTrue(all(command[:2] == ["lake", "build"] for command in commands))
+            self.assertEqual([len(command) - 2 for command in commands], [64, 64, 3])
+            actual = [name for command in commands for name in command[2:]]
+            self.assertEqual(actual, [f"+QleisliKernel.Module{index:03}" for index in reversed(range(130))] + ["+QleisliKernel"])
+
+    def test_cyclic_imports_fail_before_any_build(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            package = Path(temporary)
+            (package / "QleisliKernel.lean").write_text("import Protocol\n")
+            (package / "Protocol.lean").write_text("import QleisliKernel\n")
+            with patch("package_lean_kernel.subprocess.run") as run:
+                with self.assertRaises(ValueError):
+                    validate(package, "full")
+                run.assert_not_called()
 
     def test_both_platforms_forward_the_selected_lane_and_keep_relocation_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()

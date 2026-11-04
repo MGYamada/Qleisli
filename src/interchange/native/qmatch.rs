@@ -50,6 +50,13 @@ fn prepare(subject: Arc<Subject>, request: &Request) -> Result<Prepared> {
 impl Kernel {
     /// Construct the comparison from the actual decoded graph and complete
     /// original-context request. Execution requires a separate native decision.
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "retained v5 source subjects pending production composition"
+        )
+    )]
     pub(crate) fn qmatch_context_view(
         &self,
         artifact: &[u8],
