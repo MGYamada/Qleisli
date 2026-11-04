@@ -99,6 +99,10 @@ private def finiteSpan : Nat → Nat → Semantics.RuntimeType.Tree → Basis �
       let children := (Semantics.FiniteCarrier.children atom).getD 0
       recurse (pending-1+children) tail (atom :: reversed))
 
+/-- Definitional proof bridge to the same finite-prefix scan. This alias
+introduces no alternate parser, evaluation, guard or work charge. -/
+abbrev finitePrefixSpan := finiteSpan
+
 def pairBases (basis : Basis) : Except String (Basis × Basis) := do
   let .pair :: fields := basis | throw "source basis is not an exact pair"
   let tree := fields.map Semantics.RuntimeType.Atom.finite

@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceRuntimeValues
+import QleisliKernel.SourceTypes.SourceRuntimePrimitive
 import QleisliKernel.SourceTypes.SourceTrace
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.SourceOperationApplication
@@ -309,6 +310,11 @@ structure PrimitiveEvent (sources : Sources) (caller : String) where
   nextOrdinal : Nat
   held : List Semantics.SourceOwners.Owner
   remaining : Environment
+  /-- The same original successful evaluation, retained only for its result
+  properties. The enclosing body read authenticates the actual function name. -/
+  evaluated : ∃ (callerName : String) (initialOrdinal : Nat),
+    SourceRuntimePrimitive.apply kind ⟨caller,callerName,call.calleeOffset⟩ arguments initialOrdinal =
+      .ok (value,allocated,consumed,nextOrdinal)
 
 structure RegisterEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken

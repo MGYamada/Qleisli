@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect the same original source selection and retained sector to exact
+  caller/local traces and coefficient evaluation, without assuming complete
+  caller-forest code availability. Derive its existing Literal when original
+  before-owner codes are available. Retain the original primitive result as
+  erased evidence and derive join/split semantic layouts from that same result
+  and actual pair parser. No reader, acceptance rule or work cap changes;
+  full body/instrument composition and Meaning-duty discharge remain open.
+
 - Compose exact local/caller circuit locality through the same original Raw
   operation list and actual owner-flow fold. Preserve every event boundary,
   including empty circuits, and derive both complete traces and fixed frames.
