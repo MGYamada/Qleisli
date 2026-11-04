@@ -203,6 +203,11 @@ class OriginalCouplingHistory(unittest.TestCase):
             self.assertIn(f'{name} prepare=ok read=QleisliKernel.Finite.Error.equation', output['after'])
         self.assertIn('Applied.qli prepare=QleisliKernel.Finite.Error.request', output['after'])
         self.assertIn('[("n", 7)], [("n", 8)], [true, false, false, true]', output['crossed'])
+        nested = record['independent_nested']
+        self.assertEqual(nested['exit_code'], 0)
+        self.assertEqual(self.checked_text(nested['stderr']), '')
+        self.assertIn('(6, 403, 12, 317, [([], [6, 12]), ([6], [12]), ([12], [6]), ([6, 12], [])])',
+                      self.checked_text(nested['stdout']))
 
     def test_written_duty_first_runs(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/written-duty-first.json'
@@ -246,6 +251,18 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertIn('("pre", 531, [1], [1], [1], [8, 0], [2]', outputs[3])
         self.assertIn('("choose", 553, [0, 2], [0, 2], [0, 1], [8], [5, 6]', outputs[3])
         self.assertIn('("post", 596, [6], [6], [1], [8, 5], [7]', outputs[3])
+        study = record['root_coefficients']
+        signed = self.checked_text(study['keep_sign_source']).encode()
+        self.assertIn(b'qmatch(s,q){0=>keep,1=>sign}', signed)
+        for offset, name in [(380, b'pre'), (402, b'choose'), (425, b'post')]:
+            self.assertEqual(signed[offset:offset + len(name)], name)
+        observed = study['observed']
+        self.assertEqual(observed['exit_code'], 0)
+        self.assertEqual(self.checked_text(observed['stderr']), '')
+        output = self.checked_text(observed['stdout'])
+        self.assertIn('[1, 0, -1, 0, 0, 1, 0, -1, 1, 0, 1, 0, 0, 1, 0, 1]', output)
+        self.assertIn('[1, 0, -1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, -1]', output)
+        self.assertEqual(output.count('QleisliKernel.Finite.Error.equation'), 3)
 
     def test_supplier_first_sources_and_component_results(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/supplier-occurrence-first.json'

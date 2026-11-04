@@ -100,9 +100,9 @@ def read {artifact catalogue queue context description graph origin implementati
 
 /-- A queue ordinal is only a candidate. Require a unique written occurrence
 in the identified original invocation before checking its full binding. -/
-def selectEntry {sources catalogue owner scope} (pending : @SourcePendingMeaning.Prepared sources catalogue)
+def selectCandidate {sources catalogue owner scope} (pending : @SourcePendingMeaning.Prepared sources catalogue)
     (instanceId : GenericDutyQueue.InstanceId) (marker : SourceOperation.Marker sources owner scope) :
-    WorkM (Fin pending.entries.length) := do
+    WorkM (Option (Fin pending.entries.length)) := do
   exactWork (Exact.charge (16*(pending.entries.length+SourceTrace.Meter.tokenFields marker.tokens+1)))
   let items := pending.entries.toArray
   let tokenWork := SourceTrace.Meter.tokenFields marker.tokens
@@ -119,6 +119,11 @@ def selectEntry {sources catalogue owner scope} (pending : @SourcePendingMeaning
       if previous.isSome then throw .request
       return some i
     | _ => return previous
-  lift (readOption selected)
+  return selected
+
+def selectEntry {sources catalogue owner scope} (pending : @SourcePendingMeaning.Prepared sources catalogue)
+    (instanceId : GenericDutyQueue.InstanceId) (marker : SourceOperation.Marker sources owner scope) :
+    WorkM (Fin pending.entries.length) := do
+  lift (readOption (← selectCandidate pending instanceId marker))
 
 end QleisliKernel.Qirf.RuntimeWrittenDuty

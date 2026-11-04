@@ -20,6 +20,12 @@ structure Slice {deps program} (block : RuntimeInterval.Block deps program) (sta
   ops : List RawOp
   literal : (block.operations.drop start).take size = ops.map Semantics.Observation.Op.pure
 
+/-- A retained slice whose location is recovered from the checked call. -/
+structure Span {deps program} (block : RuntimeInterval.Block deps program) where
+  start : Nat
+  count : Nat
+  slice : Slice block start count
+
 /-- Project a genuine pure named call onto its interval in the parent block. -/
 def Slice.ofNamed {deps program block start size inputs}
     (scope : @RuntimeCallInterval.Checked deps program block start size inputs) : Slice block start size :=
@@ -44,6 +50,12 @@ in the parent trace to the event list in a source-action theorem. -/
 theorem Fold.events_unique {signatures ops before after otherAfter x y}
     (left : Fold signatures ops before after x) (right : Fold signatures ops before otherAfter y) : x = y :=
   congrArg Raw.Prepared.events (Except.ok.inj (left.symm.trans right))
+
+theorem Fold.trace {signatures ops before after events}
+    (folded : Fold signatures ops before after events) :
+    RuntimeLocalEvents.trace before.reference ops = some ⟨after.reference,events,before.frame.length⟩ :=
+  Raw.operations_reference signatures ops ⟨before,[],before.frame.length⟩
+    ⟨after,events,before.frame.length⟩ folded
 
 private theorem sliceFold {deps program block start size} (slice : @Slice deps program block start size) :
     ∃ events, Fold (deps.map (·.signature)) slice.ops slice.interval.before.quantum slice.interval.after.quantum events := by

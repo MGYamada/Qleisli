@@ -121,12 +121,13 @@ theorem Assertion.located_requested {artifact catalogue context description grap
     target.2.located.node = .requested assertion.child.index assertion.owner assertion.name :=
   assertion.binding.node.symm.trans assertion.written
 
-private def readAssertion {artifact catalogue context description graph implementations references prepared root requested caller scope}
+/- Bind the original marker to this exact previously retained native record. -/
+def readBoundAssertion {artifact catalogue context description graph implementations references prepared root requested caller scope}
     (checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested)
     (marker : SourceOperation.Marker artifact.sources caller scope)
-    (target : Sigma (@RuntimeOperationOccurrenceTree.Tree artifact catalogue context description graph implementations references prepared)) :
+    (target : Sigma (@RuntimeOperationOccurrenceTree.Tree artifact catalogue context description graph implementations references prepared))
+    (binding : RecordAt checked target.2.located) :
     WorkM (Assertion checked marker target) := do
-  let binding ← readRecordAt checked target.2.located
   match native : binding.record.checked.requirements with
   | .none .. => throw .request
   | .requested child owner name written children requirement original subject equation =>
@@ -139,6 +140,14 @@ private def readAssertion {artifact catalogue context description graph implemen
           native,sameOwner,sameName,meaning⟩
       else throw .request
     else throw .request
+
+private def readAssertion {artifact catalogue context description graph implementations references prepared root requested caller scope}
+    (checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested)
+    (marker : SourceOperation.Marker artifact.sources caller scope)
+    (target : Sigma (@RuntimeOperationOccurrenceTree.Tree artifact catalogue context description graph implementations references prepared)) :
+    WorkM (Assertion checked marker target) := do
+  let binding ← readRecordAt checked target.2.located
+  readBoundAssertion checked marker target binding
 
 /-- Pure projection of the SAME retained source read. The header-only legacy
 origin cannot supply original assertion coverage. Primitive origins contain no

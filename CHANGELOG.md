@@ -183,6 +183,14 @@ development milestones from the scope of their evidence.
   source positions reject. Reject unused reference groups inside provider,
   Meaning-reference and ordinary descendant bodies. Public v5 dispatch and
   general composition remain separate obligations.
+- Bind the selected node and both primitive calls to their original positions
+  in the same checked body. For adjacent, complete pure slices, the original
+  root's event sequence includes the three calls in order and its final
+  output permutation. Two-qubit regressions check all 16 signed coefficients
+  with both an identity and a controlled-Z selection between Z and H.
+- Track the inner and outer written Meaning obligations separately when a
+  caller supplies a single checked operation to a formal parameter. Each
+  consumes its own original queue position only with unique evidence.
 - Read original Meaning headers from one located module token stream. Keep
   exact directive, declaration and byte-slice checks while avoiding repeated
   whole-module lexing and quadratic header accumulation. The unchanged

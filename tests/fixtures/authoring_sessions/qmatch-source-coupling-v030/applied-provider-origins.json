@@ -85,5 +85,19 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "text": ""
     }
+  },
+  "independent_nested": {
+    "driver_sha256": "9423d53a129f812b49182491dd0c6ef934bdd623cb203e68212d4c1d1d069cae",
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 105,
+      "sha256": "095b7febcd487a97a5522ce938c5e420776d120e382f6c948dde34bfc842711d",
+      "text": "read=Except.ok (6, 403, 12, 317, [([], [6, 12]), ([6], [12]), ([12], [6]), ([6, 12], [])]) spent=8511022\n"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
   }
 }

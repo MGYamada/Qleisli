@@ -1,4 +1,6 @@
+import Init.Data.List.Nat.TakeDrop
 import QleisliKernel.Qirf.RuntimeBodyPlan
+import QleisliKernel.Qirf.RuntimeSourceEvent
 
 /-! Fixed source queries for the common native runtime traversal.
 Fresh readers retain live context queues. Planned readers consume exact original
@@ -282,29 +284,81 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
       return ⟨selected,positions,count,⟨_,_,events⟩⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 
-/-- The exact indexed event list drives planned queries. Body depth is not
-spent per event, and the native step receives the same original event/position.
-The Nat traversal bound is the actual full list length, never a guessed fuel. -/
+open RuntimeSourceEvent (At)
+
+private theorem headAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
+    (remaining : whole.drop ordinal = head :: rest) : whole[ordinal]? = some head := by
+  have first : (whole.drop ordinal)[0]? = some head := by rw [remaining]; rfl
+  simpa only [List.getElem?_drop,Nat.add_zero] using first
+
+private theorem tailAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
+    (remaining : whole.drop ordinal = head :: rest) : whole.drop (ordinal+1) = rest := by
+  rw [← List.drop_drop (i := 1) (j := ordinal) (l := whole),remaining]
+  rfl
+
+private def freshVisit {sources caller State}
+    (pairs : List (SourceRuntimeContext.Event sources caller × Position))
+    (step : (event : SourceRuntimeContext.Event sources caller) → (position : Position) →
+      At pairs event position → State → WorkM State) :
+    Nat → (ordinal : Nat) → (remaining : List (SourceRuntimeContext.Event sources caller × Position)) →
+      pairs.drop ordinal = remaining → State → WorkM State :=
+  Nat.rec
+    (fun _ordinal remaining _same state => match remaining with
+      | [] => pure state
+      | _ :: _ => throw .limit)
+    (fun _ next ordinal remaining same state => match remaining with
+      | [] => pure state
+      | (event,position) :: rest => do
+        let entry : At pairs event position := ⟨ordinal,headAt pairs ordinal (event,position) rest same⟩
+        let checked ← step event position entry state
+        next (ordinal+1) rest (tailAt pairs ordinal (event,position) rest same) checked)
+
+private def plannedVisit {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) {owner name State}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (pairs : List (SourceRuntimeContext.Event artifact.sources owner × Position))
+    (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+      At pairs event position → (Mode.planned preparation).EventData source event position →
+      State → WorkM State) :
+    Nat → (ordinal : Nat) → (remaining : List (SourceRuntimeContext.Event artifact.sources owner × Position)) →
+      pairs.drop ordinal = remaining → {before after : Queues} →
+      RuntimeBodyPlan.Events preparation source remaining before after → State → WorkM State :=
+  Nat.rec
+    (fun _ordinal remaining _same {_ _} plans state => match remaining,plans with
+      | [],.nil _ => pure state
+      | _ :: _,.cons _ _ => throw .limit)
+    (fun _ next ordinal remaining same {_ _} plans state => match remaining,plans with
+      | [],.nil _ => pure state
+      | (event,position) :: rest,.cons head tail => do
+        let entry : At pairs event position := ⟨ordinal,headAt pairs ordinal (event,position) rest same⟩
+        let checked ← step event position entry ⟨_,_,head⟩ state
+        next (ordinal+1) rest (tailAt pairs ordinal (event,position) rest same) tail checked)
+
+/-- Both modes consume their actual ordered source/event position. Ordinals
+advance with the same tail. The common loop reserves its prefix/list work
+before either the whole-body traversal or the selected static traversal. -/
 def foldEvents {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name) {State : Type}
-    (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
-      mode.EventData source event position → State → WorkM State)
     (pairs : List (SourceRuntimeContext.Event artifact.sources owner × Position))
+    (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+      At pairs event position → mode.EventData source event position → State → WorkM State)
     (data : mode.EventsData source pairs) (initial : State) : WorkM State :=
   match mode with
-  | .fresh => pairs.foldlM (fun state (event,position) => step event position () state) initial
-  | .planned preparation =>
-    let visit : Nat → (remaining : List (SourceRuntimeContext.Event artifact.sources owner × Position)) →
-        {before after : Queues} → RuntimeBodyPlan.Events preparation source remaining before after →
-        State → WorkM State :=
-      Nat.rec (fun remaining {_ _} plans state => match remaining,plans with
-        | [],.nil _ => pure state
-        | _ :: _,.cons _ _ => throw .limit)
-        (fun _ next remaining {_ _} plans state => match remaining,plans with
-          | [],.nil _ => pure state
-          | (event,position) :: rest,.cons head tail => do
-            let checked ← step event position ⟨_,_,head⟩ state
-            next rest tail checked)
-    visit pairs.length pairs data.2.2 initial
+  | .fresh => freshVisit pairs (fun event position entry state => step event position entry () state)
+    pairs.length 0 pairs rfl initial
+  | .planned preparation => plannedVisit preparation source pairs step pairs.length 0 pairs rfl data.2.2 initial
+
+def selectedOrigin {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name) (positions : List Position)
+    (parentEvent : SourceRuntimeContext.StaticEvent artifact.sources owner)
+    (children : List (SourceRuntimeContext.Event artifact.sources owner)) (parentPosition : Position)
+    (parent : At (source.events.zip positions) (.staticConditional parentEvent children) parentPosition)
+    (pureOnly : Bool) (cursor : mode.Cursor)
+    (data : mode.EventData source (.staticConditional parentEvent children) parentPosition)
+    (selection : {v : Static mode source parentEvent // RuntimeInterval.Computed
+      (readStatic mode source parentEvent children parentPosition pureOnly cursor data) v})
+    {event position} (entry : At (selection.val.sequence.selected.result.events.zip selection.val.positions) event position) :
+    RuntimeSourceEvent.Origin event position :=
+  .selected source positions parent selection.val.sequence.selected selection.val.sequence.original
+    selection.val.positions selection.val.count entry
 
 end QleisliKernel.Qirf.RuntimeBodyQueries
