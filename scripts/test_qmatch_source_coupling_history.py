@@ -166,6 +166,55 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def checked_text(self, payload):
+        data = payload['text'].encode('utf-8')
+        self.assertEqual(len(data), payload['bytes'])
+        self.assertEqual(hashlib.sha256(data).hexdigest(), payload['sha256'])
+        return payload['text']
+
+    def test_written_duty_first_runs(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/written-duty-first.json'
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']), ('qleisli.inert-written-duty-history', 1))
+        self.assertEqual([case['exit_code'] for case in record['studies']], [1, 1, 0])
+        for case in record['studies']:
+            source = self.checked_text(case['source'])
+            inputs = {item['file']: self.checked_text(item) for item in case['inputs']}
+            if 'program.json' in inputs:
+                self.assertEqual(json.loads(inputs['program.json'])['sources'], [{'path': 'main', 'text': source}])
+            else:
+                self.assertEqual(inputs['main.qli'], source)
+            output = self.checked_text(case['stdout'])
+            self.checked_text(case['stderr'])
+            if case['exit_code']:
+                self.assertIn('result=Except.error', output)
+                self.assertIn('Error.workLimit', output)
+            else:
+                self.assertIn('fn dormant(', source)
+                self.assertIn('result=Except.ok (2, [27], [(22, 2, 6, 325)])', output)
+        stages = self.checked_text(record['studies'][0]['stages'])
+        self.assertIn('through arm table: Except.error', stages)
+
+    def test_ordered_call_original_source_and_observations(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ordered-call-sources.json'
+        record = history_json(path)
+        self.assertEqual(record['format'], 'qleisli.ordered-call-source-study')
+        source = self.checked_text(record['source']).encode('utf-8')
+        for offset, name in [(384, b'phase'), (437, b'h'), (531, b'pre'), (553, b'choose'), (596, b'post')]:
+            self.assertEqual(source[offset:offset + len(name)], name)
+        runs = record['observations']
+        self.assertEqual([run['exit_code'] for run in runs], [1, 0, 138, 0])
+        outputs = [self.checked_text(run['stdout']) for run in runs]
+        for run in runs:
+            self.checked_text(run['stderr'])
+        self.assertIn('Type mismatch', outputs[0])
+        self.assertIn('pure result=Except.ok', outputs[1])
+        self.assertEqual(outputs[2], '')
+        self.assertEqual(runs[2]['driver_sha256'], runs[3]['driver_sha256'])
+        self.assertIn('("pre", 531, [1], [1], [1], [8, 0], [2]', outputs[3])
+        self.assertIn('("choose", 553, [0, 2], [0, 2], [0, 1], [8], [5, 6]', outputs[3])
+        self.assertIn('("post", 596, [6], [6], [1], [8, 5], [7]', outputs[3])
+
     def test_supplier_first_sources_and_component_results(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/supplier-occurrence-first.json'
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
