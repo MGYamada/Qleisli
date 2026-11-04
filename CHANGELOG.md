@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Derive exact local/caller circuit chunks and bounds for each original Raw
+  step from its actual step, owner-flow and sector-event receipts. Preserve
+  both quantumIf tapes, empty circuits and unchanged spectator ports.
+  Derive owner-code availability through checked pure owner transitions, and
+  distinguish a structural join's semantic layout from bounded matrix-reader
+  availability. Complete source-body composition remains open.
+
 - Derive complete input/output sparse frames from the same original storage
   and owner reads. Propagate owner-code availability through an actual
   selection and derive its original axis bounds and distinctness. Prove exact
