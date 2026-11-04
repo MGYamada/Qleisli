@@ -4,6 +4,11 @@
 *.rs.bk
 /lean/.lake/
 /lean-kernel/.lake/
+/qptl/.lake/
+/qptl/**/*.olean
+/qptl/**/*.olean.*
+/qptl/**/*.ilean
+/qptl/**/*.ir
 __pycache__/
 /python/build/
 /python/dist/

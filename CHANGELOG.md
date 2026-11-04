@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add the Qleisli Proof & Tactic Library preview in [`qptl/`](qptl/README.md).
+  It provides categorical dagger, isometry and tensor laws, a finite complex
+  matrix model and a structural proof tactic in a standalone Lean package.
+
 - Associate original arm source assertions with the same complete native
   occurrence and its existing checked Meaning equation in individual constructed
   reads and the common body graph continuation. Carry the authentic arm through

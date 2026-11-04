@@ -19,7 +19,7 @@ from current_metadata import read_json, write_bytes as write_metadata_bytes
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS = {'Cargo.toml': 'package', 'lean/lakefile.toml': '',
-             'lean-kernel/lakefile.toml': '', 'python/pyproject.toml': 'project',
+             'lean-kernel/lakefile.toml': '', 'qptl/lakefile.toml': '', 'python/pyproject.toml': 'project',
              'stdlib/Qargo.toml': 'qrate', 'research/semantic-kernel/Cargo.toml': 'package'}
 # Product versions must have the same ordering in SemVer and Python packaging.
 # An unnumbered stage normalizes to a0/b0/rc0, so numbered stages start at one.

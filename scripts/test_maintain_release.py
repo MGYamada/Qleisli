@@ -33,7 +33,8 @@ class ReleaseMaintenance(unittest.TestCase):
     def test_plan_is_read_only_and_preserves_dependency_versions(self):
         before = (self.root/'Cargo.toml').read_bytes()
         changes = release.version_plan(self.root, '0.2.9')
-        self.assertEqual(len(changes), 8)
+        self.assertEqual(len(changes), 9)
+        self.assertIn('qptl/lakefile.toml', changes)
         self.assertEqual((self.root/'Cargo.toml').read_bytes(), before)
         for name in release.MANIFESTS:
             self.assertIn('version="9.8.7"', changes[name])
@@ -64,7 +65,7 @@ class ReleaseMaintenance(unittest.TestCase):
         for version in ['0.3.0-alpha', '0.3.0-alpha.1', '0.3.0-beta.2', '0.3.0']:
             with self.subTest(version=version):
                 changes = release.version_plan(self.root, version)
-                self.assertEqual(len(changes), 13)
+                self.assertEqual(len(changes), 14)
                 for name, section in release.MANIFESTS.items():
                     manifest = tomllib.loads(changes[name])
                     product = manifest[section] if section else manifest
