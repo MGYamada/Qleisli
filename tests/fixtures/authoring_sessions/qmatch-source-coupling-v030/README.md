@@ -422,3 +422,9 @@ selects the arm inside `choose` at byte 553. The surrounding named frames
 retain the phase at byte 384 and H at byte 437, their source owners, native
 tokens, caller axes and the zero-width spectator. The observing controls
 locate the same inner role through their own call offsets.
+
+The [applied-provider study](applied-provider-origins.json) retains the first
+rejected source and the two legal spellings that distinguish the supplying
+argument from the assertion written in the arm. The common reader discharges
+the obligation for `stamp[7]`. Changing its unused argument to 8 preserves
+the matrix but fails the comparison with the source that supplied 7.

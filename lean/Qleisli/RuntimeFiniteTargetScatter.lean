@@ -15,6 +15,24 @@ open RuntimeForestCode RuntimeOwnerCodeReindex
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct
 open Qleisli.RuntimeForestRegroup Qleisli.RuntimeFiniteTargetFibre
 
+theorem scatter_overwrite (base first second : Nat) (axes : List Nat) (unique : axes.Nodup) :
+    scatter (scatter base axes first) axes second = scatter base axes second := by
+  apply Nat.eq_of_testBit_eq
+  intro axis
+  have same : bit (scatter (scatter base axes first) axes second) axis = bit (scatter base axes second) axis := by
+    by_cases present : axis ∈ axes
+    · obtain ⟨index,bound,equal⟩ := List.getElem_of_mem present
+      subst axis
+      rw [RuntimeScatterTransport.scatter_at _ _ axes unique index bound,
+        RuntimeScatterTransport.scatter_at _ _ axes unique index bound]
+    · rw [RuntimeScatterTransport.scatter_outside _ _ axis axes present,
+        RuntimeScatterTransport.scatter_outside _ _ axis axes present,
+        RuntimeScatterTransport.scatter_outside _ _ axis axes present]
+  simp only [bit] at same
+  rw [← Nat.toNat_testBit _ axis,← Nat.toNat_testBit _ axis] at same
+  cases left : (scatter (scatter base axes first) axes second).testBit axis <;>
+    cases right : (scatter base axes second).testBit axis <;> simp_all
+
 private theorem bit_zero (label bits axis : Nat) (bound : label < 2^bits)
     (outside : bits ≤ axis) : bit label axis = 0 := by
   have power : 2^bits ≤ 2^axis := by gcongr; norm_num

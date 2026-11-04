@@ -3,6 +3,7 @@ import QleisliKernel.Qirf.RuntimeForwardedSupply
 import QleisliKernel.Qirf.RuntimeClosedEvaluation
 import QleisliKernel.Qirf.RuntimeOriginalMeaning
 import QleisliKernel.Qirf.RuntimeClosedProvider
+import QleisliKernel.Qirf.RuntimeAppliedProvider
 
 /-! Pair a closed queue subject with the native child of the very same written
 assertion. A forwarded formal follows the original mixed arguments and
@@ -31,6 +32,9 @@ structure ClosedAt {artifact catalogue owner tokens implementations references o
   providers : RuntimeClosedProvider.Checked invoked.demand.transported.subject closed structureMatch.matched.paired ⟨false,false,false⟩
   providersRead : RuntimeInterval.Computed (RuntimeClosedProvider.read invoked.demand.transported.subject
     closed structureMatch.matched.paired ⟨false,false,false⟩) providers
+  applied : Option (RuntimeAppliedProvider.Checked invoked.demand structureMatch.matched.terminal)
+  appliedRead : RuntimeInterval.Computed
+    (RuntimeAppliedProvider.read? invoked.demand structureMatch.matched.terminal) applied
   originalMeaning : RuntimeOriginalMeaning.Checked marker.assertion invoked.demand.source.original
   meaningRead : RuntimeInterval.Computed
     (RuntimeOriginalMeaning.read marker.assertion invoked.demand.source.original) originalMeaning
@@ -72,11 +76,13 @@ private def readClosed {artifact catalogue owner tokens implementations referenc
       invoked.demand.transported.receipt matched.val.matched.paired)
     let providers ← NaturalAffine.witness (RuntimeClosedProvider.read invoked.demand.transported.subject
       closed matched.val.matched.paired ⟨false,false,false⟩)
+    let applied ← NaturalAffine.witness (RuntimeAppliedProvider.read? invoked.demand matched.val.matched.terminal)
     let meaning ← NaturalAffine.witness (RuntimeOriginalMeaning.read marker.assertion invoked.demand.source.original)
     have semantic := RuntimeClosedEvaluation.assertion marker.assertion subject.val matched.val
     return ⟨marker,original,subject.val,by with_reducible exact subject.property,
       matched.val,by with_reducible exact matched.property,suppliers.val,by with_reducible exact suppliers.property,
-      semantic.1,providers.val,by with_reducible exact providers.property,meaning.val,by with_reducible exact meaning.property,semantic.2⟩
+      semantic.1,providers.val,by with_reducible exact providers.property,
+      applied.val,by with_reducible exact applied.property,meaning.val,by with_reducible exact meaning.property,semantic.2⟩
 
 def assessment {sources catalogue queue rootOwner rootName owner name entry path}
     (invoked : @RuntimeDutyInvocation.DemandBinding sources catalogue queue rootOwner rootName owner name entry path) :

@@ -165,7 +165,7 @@ def Provider.expectedEffect {sources catalogue record invocation demand view}
   SourceEffect.visible provider.supplier.origin.state.owner provider.owner provider.signature.original.declaration.isPublic
     provider.signature.original.parsedHeader.effect provider.inference.inferred.inferredEffect
 
-private def readProvider {sources catalogue record invocation}
+def readProvider {sources catalogue record invocation}
     (demand : @Demand sources catalogue record invocation) (view : View demand.transported.subject.description)
     (closed : GenericOperation.Closed view.selection.subject) (originalStatus : view.status = .closed closed) :
     WorkM (Provider demand view) := do

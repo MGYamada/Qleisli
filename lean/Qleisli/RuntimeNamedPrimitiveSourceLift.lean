@@ -212,24 +212,6 @@ private theorem fragment_trace {dependencies operations before after localBefore
   simp only [RuntimePureInterval.fragment,initial,actual,bind,Option.bind,pure]
   simp [Semantics.RawTrace.finish,Semantics.RawTrace.axes]
 
-private theorem scatter_overwrite (base first second : Nat) (axes : List Nat) (unique : axes.Nodup) :
-    scatter (scatter base axes first) axes second = scatter base axes second := by
-  apply Nat.eq_of_testBit_eq
-  intro axis
-  have same : bit (scatter (scatter base axes first) axes second) axis = bit (scatter base axes second) axis := by
-    by_cases present : axis ∈ axes
-    · obtain ⟨index,bound,equal⟩ := List.getElem_of_mem present
-      subst axis
-      rw [RuntimeScatterTransport.scatter_at _ _ axes unique index bound,
-        RuntimeScatterTransport.scatter_at _ _ axes unique index bound]
-    · rw [RuntimeScatterTransport.scatter_outside _ _ axis axes present,
-        RuntimeScatterTransport.scatter_outside _ _ axis axes present,
-        RuntimeScatterTransport.scatter_outside _ _ axis axes present]
-  simp only [bit] at same
-  rw [← Nat.toNat_testBit _ axis,← Nat.toNat_testBit _ axis] at same
-  cases left : (scatter (scatter base axes first) axes second).testBit axis <;>
-    cases right : (scatter base axes second).testBit axis <;> simp_all
-
 /-- The spectator coordinate is the complete parent basis label with these
 selected axes cleared. Its dependence on the logical input is unrestricted. -/
 noncomputable def encodedParent {Reference : Type} (axes : List Nat) (code : Matrix)
@@ -248,7 +230,7 @@ private theorem encoded_pull {Reference : Type} (axes : List Nat) (unique : axes
       action code (sourceSlice axes base joint) input reference := by
   unfold encodedParent
   rw [Qleisli.RuntimeFiniteTargetScatter.gather_scatter base input axes unique bound,
-    scatter_overwrite base input 0 axes unique]
+    RuntimeFiniteTargetScatter.scatter_overwrite base input 0 axes unique]
   rfl
 
 /-- This private bridge substitutes the source CodeSpace equation into the

@@ -831,7 +831,15 @@ private def firstInterior {artifact catalogue context description graph implemen
     | .noInterior _ => none
     | .located _ value _ => some (callerInterior hop _ _ value)
 
-private abbrev LinkedArmSummary := List SupplyHopSummary × Option InteriorView × OperationDescription.Node
+-- Compare the original provider expectation to a native instance returned by
+-- another actual walk. Equal phase/actions do not identify unused scalar actuals.
+private structure AppliedOffer (sources : Sources) where
+  native : StaticOperation.Provider sources
+  action : Semantics.Exact.Matrix
+  checkIdentity : StaticOperation.Provider sources → WorkM Unit
+
+private abbrev LinkedArmSummary (sources : Sources) :=
+  (List SupplyHopSummary × Option InteriorView × OperationDescription.Node) × Option (AppliedOffer sources)
 
 private def linkedForStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
     queue rootOwner rootName name entry path}
@@ -839,9 +847,13 @@ private def linkedForStatus {artifact catalogue owner tokens implementations ref
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
     (status : SourcePendingMeaning.DemandStatus invoked.demand) →
-    RuntimeLinkedSubject.ForStatus source index invoked status → Option LinkedArmSummary
+    RuntimeLinkedSubject.ForStatus source index invoked status → Option (LinkedArmSummary artifact.sources)
   | .classified (.closed _),linked =>
-    some (linked.suppliers.hops.map supplyHopSummary,firstInterior linked.suppliers,linked.structureMatch.matched.terminal.node)
+    some ((linked.suppliers.hops.map supplyHopSummary,firstInterior linked.suppliers,linked.structureMatch.matched.terminal.node),
+      linked.applied.map fun applied =>
+        ⟨applied.slot.provider.header.original.supplied.provider,applied.slot.actual.action,fun native => do
+          let _ ← SourceDutyProviderFresh.readIdentity applied.provider native
+          pure ()⟩)
   | .classified (.conditional ..),_ | .inactive _,_ => none
 
 private def linkedArmSummary {artifact catalogue queue context description graph origin implementations references root requested owner name rootOwner rootName}
@@ -852,14 +864,14 @@ private def linkedArmSummary {artifact catalogue queue context description graph
     {entry : @SourcePendingMeaning.Entry artifact.sources catalogue queue}
     {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name}
     (invoked : RuntimeDutyInvocation.DemandBinding entry path) :
-    RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Option LinkedArmSummary := by
+    RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Option (LinkedArmSummary artifact.sources) := by
   cases site with
   | unlocated => exact fun impossible => nomatch impossible
   | arm => exact linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked)
 
 private def summarizeLink {artifact owner name arguments request prepared root runtime}
     (body : @RuntimeBodyOperations.AtRoot artifact owner name arguments request prepared root runtime)
-    (link : RuntimeBodyOperations.ArmLink body) : Option LinkedArmSummary :=
+    (link : RuntimeBodyOperations.ArmLink body) : Option (LinkedArmSummary artifact.sources) :=
   let receipt := body.receipts[link.receiptIndex]
   @linkedArmSummary artifact prepared.source.catalogue prepared.source.pending.queue
     receipt.request.context receipt.request.description receipt.request.graph receipt.request.origin
@@ -869,8 +881,8 @@ private def summarizeLink {artifact owner name arguments request prepared root r
     link.markerIndex prepared.source.pending.entries[link.queueIndex] receipt.location.path
     link.binding.instanceBinding link.subject
 
-private def oneHopLinkedSummary : LinkedArmSummary → Option (Nat × Nat × String × Nat × Nat)
-  | ([(_,_,ordinal,name,position,_,_)],none,.thenOp left right) => some (ordinal,position,name,left,right)
+private def oneHopLinkedSummary {sources} : LinkedArmSummary sources → Option (Nat × Nat × String × Nat × Nat)
+  | (([(_,_,ordinal,name,position,_,_)],none,.thenOp left right),_) => some (ordinal,position,name,left,right)
   | _ => none
 
 private abbrev ObservingSummary :=
@@ -996,7 +1008,7 @@ private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool 
   let artifact := {seed with sources := #[("main",source)]}
   let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
   let checked ← RuntimeBodyOperations.read body order request.runtime
-  let [some (hops,inside,_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  let [some ((hops,inside,_),_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
   guard (body.source.pending.entries.countP (·.unconsumed) == (if dormant then 2 else 1)) .invalid
   let [⟨index,witness⟩] := checked.coverage.consumed | throw .invalid
   guard (witness.link.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
@@ -1048,7 +1060,7 @@ private def checkFourLevelCommonBody : WorkM Unit := do
   guard (bindings == [(3,8,325)]) .invalid
   let sites := checked.checked.receipts.filterMap fun receipt => originalArmSite receipt.location.site
   guard (sites == [(0,0,302),(1,1,302)]) .invalid
-  let [some (hops,some inside,_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  let [some ((hops,some inside,_),_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
   guard (hops == [("main","choose",0,"U",0,0,some 472)] &&
     inside.rows == [([0],0,2,"W",0,some 480,some 612),([1],1,5,"W",0,some 482,some 612)] &&
     inside.observed == inside.expected) .invalid
@@ -1718,10 +1730,120 @@ private def fourLevelSupplyStudy (fault : TailFault) : WorkM (List (List TailNod
     else throw .invalid
   else throw .invalid
 
+private inductive AppliedFault where
+  | correct | staleProviderOffset | wrongInnerMeaning | wrongOuterMeaning | nested
+  deriving BEq, Repr
+
+-- Capture the native report for the two small sources preserved before
+-- the applied-provider check. Keeping the same phase on both providers makes
+-- original source locations and separate Meaning reference groups observable.
+private def appliedSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+unitary fn stamp[const n:Nat](q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Sign:Bit=reference(sign);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Sign)}}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[stamp[7]](s,q)}
+"#
+
+private def nestedSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Sign:Bit=reference(sign);
+meaning Outer:Bit=reference(sign);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[checked_op(sign,Sign)](s,q)}
+"#
+
+private def writtenSource : AppliedFault → String
+  | .correct | .staleProviderOffset => appliedSource
+  | .nested => nestedSource
+  | .wrongInnerMeaning => nestedSource.replace "meaning Sign:Bit=reference(sign);" "meaning Sign:Bit=reference(keep);"
+  | .wrongOuterMeaning => nestedSource.replace "meaning Outer:Bit=reference(sign);" "meaning Outer:Bit=reference(keep);"
+
+private abbrev AppliedCoverage := List Nat × List Nat × List (Nat × Nat)
+
+private def readAppliedFixture (source name : String) (callOffset : Nat) (fault : AppliedFault) :
+    WorkM (AppliedCoverage × Option (AppliedOffer #[("main",source)])) := do
+  let applied := fault == .correct || fault == .staleProviderOffset
+  let port := fun (token wire : Nat) => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
+  let owner := fun (token wire : Nat) => (⟨port token wire,[.bit]⟩ : Semantics.CarrierInterface.Owner)
+  let one := fun (phase : Bool) => (⟨[port 0 0],[],if phase then [.pure (.gate .z 0 1)] else [],[if phase then 1 else 0],[],.unitary⟩ :
+    Semantics.Observation.Program)
+  let selection := fun (phase : Bool) => (⟨[port 0 0,port 1 1],[],[.pure (.quantumIf 0 1 2 3 [] (if phase then [.gate .z 0] else []))],
+    [2,3],[],.unitary⟩ : Semantics.Observation.Program)
+  let artifact : Artifact := ⟨#[selection true,one false,selection false,one true,selection true,one true],
+    #[],#[("main",source)],0,none⟩
+  let interface : Semantics.CarrierInterface.Interface := ⟨[owner 0 0,owner 1 1],[owner 2 0,owner 3 1],.unitary⟩
+  let t := Semantics.RuntimeType.owner [.bit]
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main",name,[t,t],[[.quantum (owner 0 0)],[.quantum (owner 1 1)]],[[]],
+      Semantics.RuntimeType.tuple 2 [t,t],[.tuple 2,.quantum (owner 2 0),.quantum (owner 3 1)],.unitary,{}⟩
+  let empty : Context := .mk [] [] [] [] []
+  let phaseCtx := fun offset => RuntimeContextRequest.Context.mk [⟨offset,0,1⟩] [] [] [] []
+  let implementation : RuntimeProviderHeader.Request := (.pure 3,phaseCtx
+    (if fault == .staleProviderOffset then 159 else if applied then 158 else 95))
+  let reference : RuntimeProviderHeader.Request := (.pure 5,phaseCtx 95)
+  let inner := if fault == .wrongInnerMeaning then (.pure 1,empty) else reference
+  let outer := if fault == .wrongOuterMeaning then (.pure 1,empty) else reference
+  let s : SourceSequence.Position := ⟨if applied then 322 else 294,0,1⟩
+  let c : SourceSequence.Position := ⟨callOffset,0,1⟩
+  let site : RuntimeContextRequest.Site := ⟨interface,interface,s,[⟨1,2⟩,⟨3,4⟩]⟩
+  let child : Context := .withReferences [s] [site] [] [] [implementation,(.pure 1,empty),implementation]
+    (if applied then [[],[],[[reference]]] else [[[inner]],[],[[inner],[outer]]])
+  let context : Context := .mk [c] [] [(c,child)] [] []
+  let prepared ← RuntimeBodyOperations.prepare artifact "main" name {} context
+  let checked ← RuntimeBodyOperations.read prepared #[0,1,2,3,4,5] runtime
+  let offer := match checked.writtenArms with
+    | [link] => (summarizeLink checked.checked link).bind (·.2)
+    | _ => none
+  return ((checked.coverage.consumed.map (·.1.val),checked.coverage.residual.map Fin.val,
+    checked.writtenArms.map fun link => (link.queueIndex.val,link.binding.instanceBinding.demand.source.original.origin.offset)),offer)
+
+private def compareAppliedRoots : WorkM (Bool × List (String × Nat) × List (String × Nat) × List Bool) := do
+  let source := appliedSource ++
+    "pub unitary fn other(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[stamp[8]](s,q)}\n"
+  let (_,some seven) ← readAppliedFixture source "route" 423 .correct | throw .invalid
+  let (_,some eight) ← readAppliedFixture source "other" 503 .correct | throw .invalid
+  let compare := fun (original actual : AppliedOffer #[("main",source)]) => do
+    try
+      original.checkIdentity actual.native
+      pure true
+    catch error =>
+      if error == .request then pure false else throw error
+  let decisions ← [(seven,seven),(seven,eight),(eight,seven),(eight,eight)].mapM
+    fun (original,actual) => compare original actual
+  return (seven.action == eight.action,seven.native.signature.staticArguments.naturals,
+    eight.native.signature.staticArguments.naturals,decisions)
+
+private def appliedControls : IO Unit := do
+  for fault in [AppliedFault.correct,.nested,.staleProviderOffset,.wrongInnerMeaning,.wrongOuterMeaning] do
+    let offset := if fault == .correct || fault == .staleProviderOffset then 423 else 396
+    let observed := ((readAppliedFixture (writtenSource fault) "route" offset fault).run WorkProfile.qmatch.limit).1.map Prod.fst
+    let expected : Except Finite.Error (List Nat × List Nat × List (Nat × Nat)) := match fault with
+      | .correct => .ok ([11],[],[(11,345)])
+      | .nested => .ok ([],[6,12],[(12,317)])
+      | .staleProviderOffset => .error .request
+      | .wrongInnerMeaning | .wrongOuterMeaning => .error .equation
+    let matched := match observed,expected with
+      | .ok actual,.ok wanted => actual == wanted
+      | .error actual,.error wanted => actual == wanted
+      | _,_ => false
+    unless matched do
+      throw (IO.userError s!"applied-provider {repr fault}: expected {repr expected}, observed {repr observed}")
+  let (compared,left) := compareAppliedRoots.run WorkProfile.qmatch.limit
+  match compared with
+  | .ok (true,[("n",7)],[("n",8)],[true,false,false,true]) =>
+    IO.println s!"passed both actual source/provider matches and both crossed unused Nat refusals; work={WorkProfile.qmatch.limit-left}"
+  | _ => throw (IO.userError s!"crossed unused applied-provider Nat: {repr compared}")
+
 /-- Run the common source-origin association under native execution as well
 as the kernel guards. Both original arms are covered; the one original Meaning
 duty remains pending. Wrong phase and source order retain exact refusals. -/
 def nativeSourceMarkerControls : IO Unit := do
+  appliedControls
   for fault in [TailFault.correct,.crossedNativeLeaf,.crossedAncestry,.siblingRow,.unshiftedRow,
       .missingRow,.wrongFormal,.wrongHopChoice,.reversedUses] do
     match (fourLevelSupplyStudy fault).run WorkProfile.qmatch.limit with

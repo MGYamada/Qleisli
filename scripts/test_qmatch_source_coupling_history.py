@@ -172,6 +172,38 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(hashlib.sha256(data).hexdigest(), payload['sha256'])
         return payload['text']
 
+    def test_applied_provider_originals(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/applied-provider-origins.json'
+        record = history_json(path)
+        sources = {name: self.checked_text(data) for name, data in record['original'].items()}
+        self.assertEqual((record['format'], record['version']), ('qleisli.applied-provider-authoring-history', 1))
+        self.assertIn('checked_op(checked_op(stamp[7],Sign),Outer)', sources['main.qli'])
+        self.assertIn('choose[stamp[7]]', sources['Applied.qli'])
+        self.assertIn('choose[checked_op(sign,Sign)]', sources['Nested.qli'])
+        for name, meaning in [('WrongInnerPhase.qli', 'Sign'), ('WrongOuterPhase.qli', 'Outer')]:
+            self.assertEqual(sources[name], sources['Nested.qli'].replace(
+                f'meaning {meaning}:Bit=reference(sign)', f'meaning {meaning}:Bit=reference(keep)'))
+        for n in (7, 8):
+            self.assertIn(f'choose[stamp[{n}]]', sources['TwoRoots.qli'])
+        output = {}
+        for stage in ('first', 'before', 'after', 'crossed'):
+            result = record[stage]
+            self.assertEqual(result['exit_code'], int(stage == 'first'))
+            output[stage] = self.checked_text(result['stdout'])
+            error = self.checked_text(result['stderr'])
+            if stage == 'first':
+                self.assertIn('original queue preparation refused', error)
+            else:
+                self.assertEqual(error, '')
+        self.assertIn('QleisliKernel.Finite.Error.request', output['first'])
+        self.assertIn('consumed=[] residual=[11] links=[(11, 345)]', output['before'])
+        self.assertIn('consumed=[11] residual=[] links=[(11, 345)]', output['after'])
+        self.assertIn('residual=[6, 12] links=[(12, 317)]', output['after'])
+        for name in ('WrongInnerPhase.qli', 'WrongOuterPhase.qli'):
+            self.assertIn(f'{name} prepare=ok read=QleisliKernel.Finite.Error.equation', output['after'])
+        self.assertIn('Applied.qli prepare=QleisliKernel.Finite.Error.request', output['after'])
+        self.assertIn('[("n", 7)], [("n", 8)], [true, false, false, true]', output['crossed'])
+
     def test_written_duty_first_runs(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/written-duty-first.json'
         record = history_json(path)

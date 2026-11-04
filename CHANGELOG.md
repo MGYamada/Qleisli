@@ -23,7 +23,11 @@ development milestones from the scope of their evidence.
   the original operator to the caller's action on correlated reference states,
   including the final port permutation. The three-call regression checks the
   phase before the selection and the Hadamard after it with a zero-width spectator.
-  Full caller composition and observing instrument preservation remain open.
+  For a named call whose body is one complete selection, Lean also relates
+  the parent's literal events to the original arm table. Adjacent checked
+  intervals compose in execution order, including the parent's final output
+  permutation. Connecting the whole source call chain and preserving every
+  observing history remain open.
 
 - Associate original arm source assertions with the same complete native
   occurrence and its existing checked Meaning equation in individual constructed
@@ -33,6 +37,9 @@ development milestones from the scope of their evidence.
   traces each written arm assertion from its runtime call back to a unique
   original duty in the generic queue. Repeated calls to the same function
   retain distinct source occurrences even with identical static arguments.
+  A directly applied provider with closed Basis or Nat arguments can discharge
+  its arm's checked Meaning when the original arguments, body, ports and action
+  match the native provider. Unused static arguments retain their identities.
   For closed subjects, compare each operation and its ordered children with
   the checked native tree. When callers forward a formal, follow each named
   call outward to the original supplying expression. Check its mixed-header

@@ -27,7 +27,7 @@ structure Fulfilled (link : ClosedAt source index invoked closed) : Prop where
   operand : writtenName invoked.demand.source.original.subject = true
   bindings : invoked.demand.source.original.bindings.isEmpty = true
   application : invoked.demand.source.original.runtimeApplication.isNone = true
-  providers : link.providers.AllBound
+  providers : link.providers.AllBound ∨ link.applied.isSome = true
   input : link.structureMatch.matched.terminal.value.input = link.originalMeaning.request.meaning.graph.input
   output : link.structureMatch.matched.terminal.value.output = link.originalMeaning.request.meaning.graph.output
   action : link.structureMatch.matched.terminal.value.action = link.originalMeaning.specification.action
@@ -40,7 +40,7 @@ private structure Verdict where
 private def closedVerdict (link : ClosedAt source index invoked closed) : Verdict :=
   let duty := invoked.demand.source.original
   if h : duty.kind = .checkedMeaning ∧ writtenName duty.subject = true ∧ duty.bindings.isEmpty = true ∧
-      duty.runtimeApplication.isNone = true ∧ link.providers.complete = true then
+      duty.runtimeApplication.isNone = true ∧ (link.providers.complete = true ∨ link.applied.isSome = true) then
     ⟨Fulfilled link,true,fun _ =>
       ⟨h.1,h.2.1,h.2.2.1,h.2.2.2.1,h.2.2.2.2,link.originalEquation.1,link.originalEquation.2.1,link.originalEquation.2.2⟩⟩
   else ⟨Fulfilled link,false,by intro impossible; cases impossible⟩

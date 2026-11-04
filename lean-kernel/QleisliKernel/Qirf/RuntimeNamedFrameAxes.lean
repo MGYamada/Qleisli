@@ -12,7 +12,7 @@ namespace QleisliKernel.Qirf.RuntimeNamedFrameAxes
 open QleisliKernel Finite SourceTypes
 open QleisliKernel.Semantics.Raw (Port)
 
-private theorem selectedPorts (live : List Port) (tokens : List Nat)
+theorem selectedPorts (live : List Port) (tokens : List Nat)
     -- The selected port list may contain Unit ports, so token order is kept.
     (ports : List Port) (found : PureInterval.portsOf live tokens = some ports) :
     ports ⊆ live ∧ ports.map (·.token) = tokens := by

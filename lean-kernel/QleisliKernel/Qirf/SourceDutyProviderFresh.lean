@@ -141,7 +141,7 @@ structure Identity {sources catalogue record invocation demand view}
   publicEffect : native.signature.original.parsedHeader.effect = provider.signature.original.parsedHeader.effect
   expectedEffect : native.expectedEffect = provider.expectedEffect
 
-private def readIdentity {sources catalogue record invocation demand view}
+def readIdentity {sources catalogue record invocation demand view}
     (provider : @SourceDutySlots.Provider sources catalogue record invocation demand view)
     (native : StaticOperation.Provider sources) : WorkM (Identity provider native) := do
   exactWork (Exact.charge (32*(native.moduleName.utf8ByteSize+native.declarationName.utf8ByteSize+

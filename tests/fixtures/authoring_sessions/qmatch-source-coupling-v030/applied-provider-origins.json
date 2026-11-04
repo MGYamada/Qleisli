@@ -1,0 +1,89 @@
+{
+  "format": "qleisli.applied-provider-authoring-history",
+  "version": 1,
+  "scope": "Original two-qubit source studies through the common Lean body reader. Output paths use the source basenames. These are component evaluations.",
+  "original": {
+    "main.qli": {
+      "bytes": 374,
+      "sha256": "d8f013628c1b6303b5e6099f78ed27e942dcc296b894ce5e2d3e8048e8a666c7",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nunitary fn stamp[const n:Nat](q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nmeaning Outer:Bit=reference(sign);\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    qmatch(s,q){0=>keep,1=>checked_op(checked_op(stamp[7],Sign),Outer)}\n}\n"
+    },
+    "Applied.qli": {
+      "bytes": 446,
+      "sha256": "fe51330b847048295259c9e3cd3f2fbf6578ee2a232f4fede8ed574c1eb5d0d4",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nunitary fn stamp[const n:Nat](q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Sign)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[stamp[7]](s,q)}\n"
+    },
+    "Nested.qli": {
+      "bytes": 432,
+      "sha256": "780101f1a757be6e2baa1e3d1a167601cd421c229220713b2d05462b0a7c940c",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nmeaning Outer:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[checked_op(sign,Sign)](s,q)}\n"
+    },
+    "WrongInnerPhase.qli": {
+      "bytes": 432,
+      "sha256": "520a684319074c274895ca84bfacdb1bfbe3cbd0d89ba155ac1b9d3c9b30b915",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(keep);\nmeaning Outer:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[checked_op(sign,Sign)](s,q)}\n"
+    },
+    "WrongOuterPhase.qli": {
+      "bytes": 432,
+      "sha256": "237945186312c86b7e8e8cb871e46ced3c6c0704f6ca6c40edb32dea88560816",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nmeaning Outer:Bit=reference(keep);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[checked_op(sign,Sign)](s,q)}\n"
+    },
+    "TwoRoots.qli": {
+      "bytes": 526,
+      "sha256": "68be520312fdb47359e95c976a9118168ab199d0750ec7d570f0143084124c9b",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nunitary fn stamp[const n:Nat](q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Sign)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[stamp[7]](s,q)}\npub unitary fn other(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[stamp[8]](s,q)}\n"
+    }
+  },
+  "first": {
+    "exit_code": 1,
+    "stdout": {
+      "bytes": 70,
+      "sha256": "9169ef3c864a3fe97312e667170b406d0f53d7a34051876159f2c8d2a254c1c4",
+      "text": "queue=Except.error (QleisliKernel.Finite.Error.request) spent=1138955\n"
+    },
+    "stderr": {
+      "bytes": 55,
+      "sha256": "194358db7e4a97721a69715479822c423a2ce265456c65677340edd344eac3d7",
+      "text": "uncaught exception: original queue preparation refused\n"
+    }
+  },
+  "before": {
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 158,
+      "sha256": "4ec610a32bf4adb2d93678ddb7fa73ec7d021cb199a6c117f632dd7216cbc8a0",
+      "text": "Applied.qli checked consumed=[] residual=[11] links=[(11, 345)] spent=5373368\nNested.qli checked consumed=[] residual=[6, 12] links=[(12, 317)] spent=7445670\n"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
+  },
+  "after": {
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 399,
+      "sha256": "0cac249592f818c92ffa4d6af744818d3437f2a1c27e3f7ed120288c8bfb630c",
+      "text": "Applied.qli checked consumed=[11] residual=[] links=[(11, 345)] spent=5996476\nNested.qli checked consumed=[] residual=[6, 12] links=[(12, 317)] spent=7445670\nWrongInnerPhase.qli prepare=ok read=QleisliKernel.Finite.Error.equation spent=6688496\nWrongOuterPhase.qli prepare=ok read=QleisliKernel.Finite.Error.equation spent=6799305\nApplied.qli prepare=QleisliKernel.Finite.Error.request spent=2456331\n"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
+  },
+  "crossed": {
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 91,
+      "sha256": "7b5496cece05814493f1812c4a499bdea36306211544d18b3e5f1c07c7b92ec0",
+      "text": "result=Except.ok (true, [(\"n\", 7)], [(\"n\", 8)], [true, false, false, true]) spent=13973064\n"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
+  }
+}
