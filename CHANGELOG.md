@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Derive exact local/caller circuit correspondence for the same checked
+  `applyUnitary` tape, including empty circuits and unchanged spectator ports.
+  Expose per-owner code evidence from existing reads and distinguish derived
+  reader availability from observed invocations and complete body coverage.
+
 - Derive complete source-owner, sparse-code and axis transport from the actual
   local/caller runs and literal trace. Remove the fixed lowering-shape premise
   from common finite-target action, logical Gram and selection-witness proofs.
