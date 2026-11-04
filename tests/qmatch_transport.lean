@@ -8,6 +8,7 @@ import QleisliKernel.Qirf.RuntimeLinkedSubject
 import QleisliKernel.Qirf.RuntimePreparedArm
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeNamedFrameAxes
+import QleisliKernel.Qirf.RuntimeNamedPrimitiveOccurrence
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
@@ -898,17 +899,25 @@ private def primitiveView {dependencies program block start count input output r
   | .primitive event => some (String.intercalate "::" (event.call.call.callee.map (·.text)),event.call.calleeOffset,[],input,output)
   | _ => none
 
-private abbrev CallView := String × Nat × List Nat × List Nat × List Nat × List Nat × List Nat × Option PrimitiveView
+private def literalName {input output operation} : RuntimeNamedPrimitiveOccurrence.Literal input output operation → String
+  | .gate .h => "gate h"
+  | .gate _ => "other gate"
+  | .applyUnitary _ => "apply_unitary"
+
+private def sourceAndLiteral {dependencies program block} (step : RuntimePureBody.Step dependencies program block) :
+    Option (PrimitiveView × String) := do
+  let .named written bound ← RuntimeNamedPrimitiveOccurrence.inspect? step
+  let source ← primitiveView written
+  return (source,literalName bound.form)
+
+private abbrev CallView := String × Nat × List Nat × List Nat × List Nat × List Nat × List Nat × Option (PrimitiveView × String)
 
 private def namedView {dependencies program block} : RuntimePureBody.Step dependencies program block → Option CallView
-  | .named event scope _ _ _ boundary _ children =>
-    let source := match children with
-      | .cons (.pure (.primitive _ written)) .nil => primitiveView written
-      | _ => none
+  | step@(.named event scope _ _ boundary _ _) =>
     let tokens := scope.selected.map (·.token)
     some (event.target.resolution.declaration.name,event.call.calleeOffset,
       boundary.input.ordered.map (·.port.token),tokens,RuntimeNamedFrameAxes.mixedAxes scope,
-      (PureInterval.spectators scope.interval.before tokens).map (·.token),scope.returned.map (·.token),source)
+      (PureInterval.spectators scope.interval.before tokens).map (·.token),scope.returned.map (·.token),sourceAndLiteral step)
   | _ => none
 
 private def checkStoredMiddle {artifact owner name arguments request prepared order runtime}
@@ -1246,12 +1255,12 @@ private def checkOrderedOriginalCalls : WorkM Unit := do
   checkStoredMiddle body 553
   let calls := body.checked.result.steps.filterMap namedView
   guard (calls == [
-    ("pre",531,[1],[1],[1],[8,0],[2],some ("phase",384,[1,1,4],1,2)),
+    ("pre",531,[1],[1],[1],[8,0],[2],some (("phase",384,[1,1,4],1,2),"apply_unitary")),
     ("choose",553,[0,2],[0,2],[0,1],[8],[5,6],none),
-    ("post",596,[6],[6],[1],[8,5],[7],some ("h",437,[],6,7))]) .invalid
+    ("post",596,[6],[6],[1],[8,5],[7],some (("h",437,[],6,7),"gate h"))]) .invalid
   let [_,step,_] := body.checked.result.steps | throw .invalid
   match step with
-  | .named _ _ _ _ _ boundary _ _ => checkWrongInputOrder boundary
+  | .named _ _ _ _ boundary _ _ => checkWrongInputOrder boundary
   | _ => throw .invalid
 
 private def checkSuppliedSlot {sources catalogue record}

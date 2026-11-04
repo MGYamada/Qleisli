@@ -62,7 +62,7 @@ private def sourceEvents (n : Nat) (twoBits : Bool) :
 
 private def namedActuals {dependencies program block} (basis : Semantics.FiniteCarrier.Basis) :
     RuntimePureBody.Step dependencies program block → List (List (String × Nat) × Bool × Option Semantics.Raw.Effect)
-  | .named _ _ body _ _ _ _ _ => [(body.checked.signature.arguments.naturals,
+  | .named _ _ body _ _ _ _ => [(body.checked.signature.arguments.naturals,
       decide (body.checked.signature.arguments.bases = [("A",basis)]),body.checked.signature.original.parsedHeader.effect)]
   | _ => []
 

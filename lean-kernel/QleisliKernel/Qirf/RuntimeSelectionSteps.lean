@@ -48,14 +48,14 @@ private inductive View (dependencies : List Semantics.Finite.Dependency) (parent
 
 private def inspect {dependencies} : (item : Item dependencies) → View dependencies item
   | .node ordinal node@(.selection ..) => .selection ordinal node
-  | .node ordinal (.named event _ _ _ _ _ nested) => .child (namedEdge ordinal event) (.nodes 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
+  | .node ordinal (.named event _ _ _ _ nested) => .child (namedEdge ordinal event) (.nodes 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
   | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.operation ..) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)
       (by simp only [Smaller] <;> decreasing_tactic) (by simp only [Smaller] <;> decreasing_tactic)
   | .step ordinal (.pure node) => .child (.pureStep ordinal) (.node ordinal node) (by simp only [Smaller] <;> decreasing_tactic)
   | .step _ (.gap _) | .step _ (.observation _) => .leaf
-  | .step ordinal (.named event _ _ _ _ _ _ nested) => .child (namedEdge ordinal event) (.steps 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
+  | .step ordinal (.named event _ _ _ _ _ nested) => .child (namedEdge ordinal event) (.steps 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
   | .step ordinal (.conditional _ _ _ _ _ _ left right) => .pair (.thenBranch ordinal) (.steps 0 left) (.elseBranch ordinal) (.steps 0 right)
       (by simp only [Smaller] <;> decreasing_tactic) (by simp only [Smaller] <;> decreasing_tactic)
   | .steps _ .nil => .leaf

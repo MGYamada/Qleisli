@@ -138,7 +138,7 @@ turn the local boundary into an execution handle. -/
 def Checked.node {artifact owner name arguments source request references named root runtime prepared child}
     (checked : @Checked artifact owner name arguments source request references named root runtime prepared child) :
     RuntimePureBody.Node root.dependencies root.program prepared.ports.block.block :=
-  .named named.event prepared.frame named.callee prepared.calleeRead prepared.frame.prepared.block
+  .named named.event prepared.frame named.callee prepared.calleeRead
     checked.boundary (RuntimePureBody.Nodes.ofList [child.node])
 
 end QleisliKernel.Qirf.RuntimeNamedSelectionBoundary

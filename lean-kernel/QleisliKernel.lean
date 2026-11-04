@@ -108,6 +108,8 @@ import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeNamedFrameAxes
+import QleisliKernel.Qirf.RuntimeNamedReturnAxes
+import QleisliKernel.Qirf.RuntimeNamedPrimitiveOccurrence
 import QleisliKernel.Qirf.RuntimeBodyPlan
 import QleisliKernel.Qirf.RuntimeBodyPlanReaders
 import QleisliKernel.Qirf.RuntimeBodyQueries

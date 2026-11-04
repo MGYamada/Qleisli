@@ -122,9 +122,8 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (frame : RuntimeCallInterval.Checked block start count inputs)
       (source : SourceRuntimeTrace.Body event.target.signature)
       (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
-      (childBlock : RuntimeInterval.Block dependencies frame.program)
       (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
-      (children : Nodes dependencies frame.program childBlock) : Node dependencies program block
+      (children : Nodes dependencies frame.program frame.prepared.block) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {arity start count inputs outputs roles}
       (frame : RuntimePureInterval.Checked block arity start count inputs outputs roles)
@@ -186,15 +185,16 @@ this helper does not select source events or provide a whole-body equation. -/
 def primitiveAt {sources caller dependencies program block start count}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
     (history : RuntimeStructuralAction.SourceState)
-    (callerFrame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before)
+    (boundFrame : {frame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before //
+      frame.bindings = history.bindings})
     (event : SourceRuntimeContext.Event sources caller) :
     WorkM (RuntimeStructuralAction.SourceState × Node dependencies program block) := do
-  let before : RuntimeStructuralAction.SourceState := {history with bindings := callerFrame.bindings}
+  let callerFrame := boundFrame.val
   let owners ← NaturalAffine.witness (RuntimeOwnerTransition.read interval callerFrame.bindings)
   match event with
   | .primitive event =>
     let preserving ← NaturalAffine.witness (guard
-      (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == before.nextOrdinal) .request)
+      (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == history.nextOrdinal) .request)
     have preserved : (event.allocated.isEmpty && event.consumed.isEmpty &&
         event.nextOrdinal == history.nextOrdinal) = true := by
       obtain ⟨work,left,read⟩ := preserving.property
@@ -211,7 +211,7 @@ def primitiveAt {sources caller dependencies program block start count}
       -- Reserve the constant new source/lookup receipt cells, not another read.
       exactWork (Exact.charge 32)
       let source : RuntimePrimitiveSource.Checked action.val :=
-        ⟨sources,caller,.primitive event,history,interval,callerFrame,
+        ⟨sources,caller,.primitive event,history,interval,callerFrame,boundFrame.property,
           .primitive event history.nextOrdinal operand kind preserved argument selected,owners.val,
           by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
       return (source.after,.primitive action.val source)
@@ -225,7 +225,7 @@ def primitiveAt {sources caller dependencies program block start count}
     -- Reserve the constant new source/lookup receipt cells, not another read.
     exactWork (Exact.charge 32)
     let source : RuntimePrimitiveSource.Checked action.val :=
-      ⟨sources,caller,.phase event,history,interval,callerFrame,.phase event history.nextOrdinal,owners.val,
+      ⟨sources,caller,.phase event,history,interval,callerFrame,boundFrame.property,.phase event history.nextOrdinal,owners.val,
         by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
     return (source.after,.primitive action.val source)
   | _ => throw .request
@@ -318,10 +318,9 @@ inductive Step (dependencies : List Semantics.Finite.Dependency) :
       (frame : RuntimeCallScope.Checked block start count inputs ordinary event.effect)
       (source : SourceRuntimeTrace.Body event.target.signature)
       (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
-      (childBlock : RuntimeInterval.Block dependencies frame.program)
       (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
       (finalOrdinary : RuntimeOrdinaryBody.State)
-      (children : Steps dependencies frame.program childBlock) : Step dependencies program block
+      (children : Steps dependencies frame.program frame.prepared.block) : Step dependencies program block
   | conditional {program block offset sources rootOwner rootName caller name}
       (path : RuntimeOrdinaryBody.CallPath sources rootOwner rootName caller name)
       (event : SourceRuntimeContext.BranchEvent sources caller)
@@ -613,7 +612,8 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let (history,retired,ordinary,actions,steps,obligations,_cursor,sourceCursor,receipts) ← advance state position.start
           exactWork (Exact.charge (receipts.length+execution.referenceCount sourceCursor+1))
           let interval ← RuntimeInterval.check block position.start position.count
-          let callerFrame ← reordered (history.bindings.map (·.owner)) interval.before history.bindings
+          let boundFrame ← RuntimeOwnerMap.checkBindings (history.bindings.map (·.owner)) interval.before history.bindings
+          let callerFrame := boundFrame.val
           let bindings := callerFrame.bindings
           let before : RuntimeStructuralAction.SourceState := {history with bindings}
           let structural := match event with
@@ -640,11 +640,11 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
                   obligations,position.start+position.count,sourceCursor,receipts)
             else do
-              let (after,node) ← primitiveAt interval history callerFrame (.primitive event)
+              let (after,node) ← primitiveAt interval history boundFrame (.primitive event)
               return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations,position.start+position.count,sourceCursor,receipts)
           | .phase event,data =>
-            let (after,node) ← primitiveAt interval history callerFrame (.phase event)
+            let (after,node) ← primitiveAt interval history boundFrame (.phase event)
             return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,sourceCursor,receipts)
           | .named event,data =>
@@ -683,7 +683,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
                   event before nested.history nested.retired original.checked.summary.value bound
                 let node : Node dependencies program block := .named event frame original
-                  named.original frame.prepared.block boundary (Nodes.ofList nested.actions)
+                  named.original boundary (Nodes.ofList nested.actions)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions ++ [node],steps ++ [.pure node],
                   obligations ++ nested.obligations,position.start+position.count,sourceCursor,receipts ++ childReceipts)
               | .runtimeBody =>
@@ -700,7 +700,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
                   event before nested.history nested.retired original.checked.summary.value bound
                 let step : Step dependencies program block := .named event frame original
-                  named.original frame.prepared.block boundary nested.ordinary (Steps.ofList nested.steps)
+                  named.original boundary nested.ordinary (Steps.ofList nested.steps)
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions,steps ++ [step],
                   obligations ++ nested.obligations,position.start+position.count,sourceCursor,receipts ++ childReceipts)
             else throw .request

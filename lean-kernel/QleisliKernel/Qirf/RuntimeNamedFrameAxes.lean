@@ -52,7 +52,7 @@ private theorem classicalInputs (ids : List Nat) (state result : Raw.Observation
     obtain ⟨quantum,table⟩ := ih _ tail
     exact ⟨quantum,by simpa [List.append_assoc] using table⟩
 
-private theorem initialized {program state}
+theorem initialized {program state}
     (read : RuntimeInterval.Computed (PureInterval.initial program) state) :
     state.quantum.reference = ⟨program.inputs,program.inputs.flatMap (·.wires)⟩ ∧ Raw.stateValid state.quantum = true ∧
       state.classical = program.classicalInputs.map (fun i => (i,0)) := by
@@ -102,7 +102,7 @@ theorem wires_in_frame (scope : RuntimeCallInterval.Checked block start count in
     scope.selected.flatMap (·.wires) ⊆ scope.interval.before.quantum.frame :=
   selected_subset scope.interval scope.selected scope.atEntry
 
-private theorem wireLookup (frame : List Nat) {wire : Nat} (member : wire ∈ frame) :
+theorem wireLookup (frame : List Nat) {wire : Nat} (member : wire ∈ frame) :
     frame[frame.idxOf wire]? = some wire := by
   induction frame with
   | nil => cases member
@@ -175,7 +175,7 @@ theorem bound_input_order {sources caller event callee position before}
   obtain ⟨contained,ordered⟩ := RuntimeSelectionPartition.order_values _ _ _ frame.inputRead
   exact ⟨contained,ordered,source_tokens frame.scope⟩
 
-private theorem tokenLookup (live : List Port) (p : Port) (unique : (live.map (·.token)).Nodup)
+theorem tokenLookup (live : List Port) (p : Port) (unique : (live.map (·.token)).Nodup)
     (member : p ∈ live) : live.find? (fun port => port.token == p.token) = some p := by
   induction live with
   | nil => cases member
@@ -269,7 +269,7 @@ theorem mixed_bound_axes {sources caller ordinary effect before child retired ch
 /-- In the common result itself the original named event, child scope and
 boundary determine the same ordered ports and caller-coordinate projection. -/
 def StepInputOrder : RuntimePureBody.Step dependencies program block → Prop
-  | .named event scope _ _ _ boundary _ _ =>
+  | .named event scope _ _ boundary _ _ =>
     boundary.input.ordered.map (·.owner) = event.inputOwners ∧
       scope.selected = boundary.input.ordered.map (·.port) ∧
       mixedAxes scope = RuntimeForestCode.forestAxes scope.interval.before.quantum.frame boundary.input.ordered
@@ -277,7 +277,7 @@ def StepInputOrder : RuntimePureBody.Step dependencies program block → Prop
 
 theorem step_input_order (step : RuntimePureBody.Step dependencies program block) : StepInputOrder step :=
   match step with
-  | .named _ scope _ _ _ boundary _ _ => mixed_bound_axes scope boundary
+  | .named _ scope _ _ boundary _ _ => mixed_bound_axes scope boundary
   | .pure .. | .gap .. | .observation .. | .conditional .. => True.intro
 
 end QleisliKernel.Qirf.RuntimeNamedFrameAxes

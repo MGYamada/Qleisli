@@ -54,7 +54,7 @@ def read {artifact owner name arguments source event position}
 def Checked.node {artifact owner name arguments source event position ordinary root program block before}
     (checked : @Checked artifact owner name arguments source event position ordinary root program block before) :
     RuntimePureBody.Node root.dependencies program block :=
-  .named event checked.frame.scope ordinary.body ordinary.bodyRead checked.frame.scope.prepared.block
+  .named event checked.frame.scope ordinary.body ordinary.bodyRead
     checked.boundary (RuntimePureBody.Nodes.ofList checked.nested.actions)
 
 end QleisliKernel.Qirf.RuntimeNamedOrdinaryLocal

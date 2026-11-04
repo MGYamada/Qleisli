@@ -28,7 +28,7 @@ def step {sources owner dependencies program block} (state : @State dependencies
   guard (position.offset == SourceRuntimeContext.Event.offset event && position.start == state.cursor) .request
   let interval ← RuntimeInterval.check block position.start position.count
   let frame ← RuntimeOwnerMap.checkBindings (state.history.bindings.map (·.owner)) interval.before state.history.bindings
-  let (after,node) ← RuntimePureBody.primitiveAt interval state.history frame.val event
+  let (after,node) ← RuntimePureBody.primitiveAt interval state.history frame event
   return ⟨after,node :: state.reverseNodes,position.start+position.count⟩
 
 def walk {sources owner dependencies program block}

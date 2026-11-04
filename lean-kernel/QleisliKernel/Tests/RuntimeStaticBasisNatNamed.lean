@@ -49,7 +49,7 @@ private def sourceCalls (n : Nat) : WorkM (Bool × Nat × Option (List (String �
 
 private def namedActuals {dependencies program block} : RuntimePureBody.Node dependencies program block →
     List (List (String × Nat) × Bool × Option Semantics.Raw.Effect)
-  | .named _ _ body _ _ _ _ => [(body.checked.signature.arguments.naturals,
+  | .named _ _ body _ _ _ => [(body.checked.signature.arguments.naturals,
       decide (body.checked.signature.arguments.bases = [("A",[.unit])]),
       body.checked.signature.original.parsedHeader.effect)]
   | _ => []

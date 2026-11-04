@@ -15,12 +15,12 @@ private def source := "#![no_implicit_prelude]\n" ++
 
 private def namedEffects {dependencies program block} :
     RuntimePureBody.Node dependencies program block → List (Option Semantics.Raw.Effect)
-  | .named _ _ body _ _ _ _ => [body.checked.signature.original.parsedHeader.effect]
+  | .named _ _ body _ _ _ => [body.checked.signature.original.parsedHeader.effect]
   | _ => []
 
 private def namedNaturals {dependencies program block} :
     RuntimePureBody.Node dependencies program block → List (List (String × Nat))
-  | .named _ _ body _ _ _ _ => [body.checked.signature.arguments.naturals]
+  | .named _ _ body _ _ _ => [body.checked.signature.arguments.naturals]
   | _ => []
 
 private def actual (n exponent : Nat) (wrongOwner parentAsCall callerAsCallee publicObserve genericLeaf : Bool) :

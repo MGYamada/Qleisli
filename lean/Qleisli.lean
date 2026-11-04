@@ -58,6 +58,9 @@ import Qleisli.RuntimeTraceBounds
 import Qleisli.RuntimeStepLocality
 import Qleisli.RuntimeFoldLocality
 import Qleisli.RuntimeIntervalRawFold
+import Qleisli.RuntimeNamedGateLift
+import Qleisli.RuntimeNamedPrimitiveSourceLift
+import Qleisli.RuntimeNamedOccurrenceAction
 import Qleisli.RuntimeSectorPrefix
 import Qleisli.RuntimeSelectionTraceEvidence
 import Qleisli.RuntimeSelectionLiteralEvidence

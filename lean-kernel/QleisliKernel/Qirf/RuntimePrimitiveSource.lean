@@ -62,6 +62,7 @@ structure Checked {dependencies program block start count input output role kind
   history : RuntimeStructuralAction.SourceState
   interval : RuntimeInterval.Checked block start count
   frame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before
+  sameHistory : frame.bindings = history.bindings
   selected : Selected event history.nextOrdinal role kind
   owners : RuntimeOwnerTransition.Checked interval frame.bindings
   ownerRead : RuntimeInterval.Computed (RuntimeOwnerTransition.read interval frame.bindings) owners

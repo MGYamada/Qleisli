@@ -64,7 +64,7 @@ def readCall {artifact owner name arguments source event position context refere
 def CallChecked.node {artifact owner name arguments source event position context references call root program block before}
     (checked : @CallChecked artifact owner name arguments source event position context references call root program block before) :
     RuntimePureBody.Node root.dependencies program block :=
-  .named event checked.frame.scope call.callee call.calleeRead checked.frame.scope.prepared.block
+  .named event checked.frame.scope call.callee call.calleeRead
     checked.boundary (RuntimePureBody.Nodes.ofList [checked.child.node])
 
 abbrev Checked {artifact owner name arguments source request}

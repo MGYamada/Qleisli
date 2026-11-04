@@ -26,7 +26,7 @@ structure Primitive {sources caller dependencies program}
     (RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings) frame
   after : SourceState
   node : RuntimePureBody.Node dependencies program block
-  actionRead : RuntimeInterval.Computed (RuntimePureBody.primitiveAt interval before frame.val event) (after,node)
+  actionRead : RuntimeInterval.Computed (RuntimePureBody.primitiveAt interval before frame event) (after,node)
 
 def readPrimitive {sources caller dependencies program}
     (event : SourceRuntimeContext.Event sources caller) (position : Position)
@@ -35,7 +35,7 @@ def readPrimitive {sources caller dependencies program}
   let interval ← NaturalAffine.witness (RuntimeInterval.check block position.start position.count)
   let frame ← NaturalAffine.witness
     (RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.val.before before.bindings)
-  let action ← NaturalAffine.witness (RuntimePureBody.primitiveAt interval.val before frame.val.val event)
+  let action ← NaturalAffine.witness (RuntimePureBody.primitiveAt interval.val before frame.val event)
   return ⟨interval.val,by with_reducible exact interval.property,frame.val,
     by with_reducible exact frame.property,action.val.1,action.val.2,
     by with_reducible exact action.property⟩
