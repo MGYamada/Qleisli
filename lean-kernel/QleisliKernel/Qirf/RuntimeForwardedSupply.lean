@@ -1,10 +1,10 @@
-import QleisliKernel.Qirf.RuntimeFormalActual
+import QleisliKernel.Qirf.RuntimeInteriorAssembly
 import QleisliKernel.Qirf.RuntimeClosedSubject
 
 /-! Follow a root operation formal across the original named call path. Each
 wrapper consumes one authentic native selection and one stored substitution.
-The first concrete root retains its remaining transport. Formal occurrences
-inside that concrete constructor are a separate correspondence obligation.
+Constructed arguments retain their located interior uses at the supplying
+call. The remaining transport stays attached to the checked chain.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeForwardedSupply
 open QleisliKernel Finite SourceTypes GenericDutyQueue
@@ -58,6 +58,61 @@ structure Selected {artifact catalogue context description graph implementations
   supplied : Computed (RuntimeFormalActual.readSupply event app transfer key choice) supply
   returned : transfer.result.subject = ⟨supply.genericActual.subject,supply.genericActual.suppliers⟩
 
+/-- A root formal is already handled by the next named call. A concrete
+argument without lexical Op nodes needs no traversal of its written syntax. -/
+private def hasInterior (original : GenericOperation.Description) : Bool :=
+  match original.nodes[original.root]? with
+  | none | some (.formal _) => false
+  | some _ => original.nodes.any fun node => (keyOf node).isSome
+
+def AtCaller {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) : Type :=
+  match prior,remaining with
+  | .root ..,_ => Empty
+  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) _ _,receipt =>
+    RuntimeInteriorSupply.Checked hop.supply outer supplying.original
+      (RuntimeFormalActual.splitInvocation parent supplying target receipt).transfer hop.wrapper.child
+
+private def readAtCaller {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) : WorkM (AtCaller hop prior remaining) :=
+  match prior,remaining with
+  | .root ..,_ => throw .request
+  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) _ _,receipt =>
+    RuntimeInteriorSupply.read hop.supply outer supplying.original
+      (RuntimeFormalActual.splitInvocation parent supplying target receipt).transfer hop.wrapper.child
+
+inductive Interior {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) where
+  | noInterior (none : hasInterior hop.supply.genericActual.subject = false)
+  | located (needed : hasInterior hop.supply.genericActual.subject = true)
+      (value : AtCaller hop prior remaining)
+      (computed : Computed (readAtCaller hop prior remaining) value)
+
+def readInterior {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) : WorkM (Interior hop prior remaining) := do
+  exactWork (Exact.charge (16*(hop.supply.genericActual.subject.nodes.length+1)))
+  match needed : hasInterior hop.supply.genericActual.subject with
+  | false => return .noInterior needed
+  | true =>
+    let located ← NaturalAffine.witness (readAtCaller hop prior remaining)
+    return .located needed located.val (by with_reducible exact located.property)
+
 inductive Chain {artifact catalogue context description graph implementations references prepared root requested}
     {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
     {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String} {native : OperationDescription.Description}
@@ -83,6 +138,8 @@ inductive Chain {artifact catalogue context description graph implementations re
       {transport : GenericDutyQueue.Transport (Invocation.call invocation app target).applications.reverse original result}
       {cursor : Cursor checked} {paired : Paired checked native index cursor terminal}
       (hop : Selected event app.original (RuntimeFormalActual.splitInvocation invocation app target transport).transfer paired)
+      (interior : {value : Interior hop prior (RuntimeFormalActual.splitInvocation invocation app target transport).tail //
+        Computed (readInterior hop prior (RuntimeFormalActual.splitInvocation invocation app target transport).tail) value})
       (tail : Chain prior (RuntimeFormalActual.splitInvocation invocation app target transport).tail hop.wrapper.child) :
       Chain (Binding.named (body := body) (original := bodyRead) (target := target) prior edge) transport paired
 
@@ -122,8 +179,9 @@ private def visit {artifact catalogue context description graph implementations 
             let hop : Selected event app.original pieces.transfer paired :=
               ⟨key,source,wrapper,choice.val,by with_reducible exact choice.property,
                 supply.val,by with_reducible exact supply.property,supply.val.returned⟩
+            let interior ← NaturalAffine.witness (readInterior hop prior pieces.tail)
             let tail ← next prior pieces.tail hop.wrapper.child
-            return .formal hop tail)
+            return .formal hop ⟨interior.val,by with_reducible exact interior.property⟩ tail)
 
 def read {artifact catalogue context description graph implementations references prepared root requested checked
     queue rootOwner rootName owner name path record invocation original result native index cursor terminal}
@@ -178,7 +236,7 @@ def Chain.hops {artifact catalogue context description graph implementations ref
     (fun _ next {_ _ _ _ _ _ _ _ _ _ _} value => by
       cases value with
       | direct => exact fun _ => []
-      | formal hop tail =>
+      | formal hop _ tail =>
         intro bound
         rw [callLength] at bound
         exact ⟨hop.key,hop.choice.header.name,hop.choice.position,hop.supply.source.index.val,

@@ -732,7 +732,45 @@ private def supplyHopSummary (hop : RuntimeForwardedSupply.Hop) : SupplyHopSumma
   (hop.key.moduleName,hop.key.declarationName,hop.key.ordinal,hop.formalName,hop.position,hop.mixed,
     hop.tokens.head?.map (·.span.startByte))
 
-private abbrev LinkedArmSummary := List SupplyHopSummary × OperationDescription.Node
+private abbrev InteriorRow := List Nat × Nat × Nat × String × Nat × Option Nat × Option Nat
+
+private structure InteriorView where
+  rows : List InteriorRow
+  observed : List GenericFormalPaths.Occurrence
+  expected : List GenericFormalPaths.Occurrence
+  deriving BEq
+
+private def callerInterior {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @RuntimeForwardedSupply.Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @RuntimeDutyInvocation.Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) :
+    RuntimeForwardedSupply.AtCaller hop prior remaining → InteriorView := by
+  cases prior with
+  | root => exact fun impossible => nomatch impossible
+  | named => exact fun value =>
+    ⟨value.entries.map (fun entry =>
+      (entry.leaf.route.positions,entry.leaf.finish.index,entry.leaf.finish.occurrence.cursor.binding.index.val,
+       entry.leaf.choice.header.name,entry.leaf.choice.position,
+       entry.use.tokens.head?.map (·.span.startByte),entry.leaf.supply.source.actual.argument.tokens.head?.map (·.span.startByte))),
+      value.entries.map RuntimeInteriorSupply.Entry.signature,value.expected⟩
+
+private def firstInterior {artifact catalogue context description graph implementations references prepared root requested checked
+    queue rootOwner rootName owner name path record invocation original result native index cursor terminal}
+    {binding : @RuntimeDutyInvocation.Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation}
+    {transport : GenericDutyQueue.Transport invocation.applications.reverse original result}
+    {paired : @RuntimeClosedSubject.Paired artifact catalogue context description graph implementations references prepared root requested
+      checked native index cursor terminal}
+    (chain : RuntimeForwardedSupply.Chain binding transport paired) : Option InteriorView :=
+  match chain with
+  | .direct .. => none
+  | .formal hop inside _ =>
+    match inside.val with
+    | .noInterior _ => none
+    | .located _ value _ => some (callerInterior hop _ _ value)
+
+private abbrev LinkedArmSummary := List SupplyHopSummary × Option InteriorView × OperationDescription.Node
 
 private def linkedForStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
     queue rootOwner rootName name entry path}
@@ -742,7 +780,7 @@ private def linkedForStatus {artifact catalogue owner tokens implementations ref
     (status : SourcePendingMeaning.DemandStatus invoked.demand) →
     RuntimeLinkedSubject.ForStatus source index invoked status → Option LinkedArmSummary
   | .classified (.closed _),linked =>
-    some (linked.suppliers.hops.map supplyHopSummary,linked.structureMatch.matched.terminal.node)
+    some (linked.suppliers.hops.map supplyHopSummary,firstInterior linked.suppliers,linked.structureMatch.matched.terminal.node)
   | .classified (.conditional ..),_ | .inactive _,_ => none
 
 private def linkedArmSummary {artifact catalogue queue context description graph origin implementations references root requested owner name rootOwner rootName}
@@ -771,7 +809,7 @@ private def summarizeLink {artifact owner name arguments request prepared root r
     link.binding.instanceBinding link.subject
 
 private def oneHopLinkedSummary : LinkedArmSummary → Option (Nat × Nat × String × Nat × Nat)
-  | ([(_,_,ordinal,name,position,_,_)],.thenOp left right) => some (ordinal,position,name,left,right)
+  | ([(_,_,ordinal,name,position,_,_)],none,.thenOp left right) => some (ordinal,position,name,left,right)
   | _ => none
 
 private abbrev ObservingSummary :=
@@ -826,20 +864,31 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
 }
 "#
 
-private def checkForwardedCommonBody : WorkM Unit := do
+private def checkForwardedCommonBody (interior : Bool := false) : WorkM Unit := do
   let (seed,order) ← Protocol.Qirf.readAll artifactBytes
   let request ← Protocol.QmatchV5.readRequest requestBytes
   let [(_,selection)] := request.context.calls | throw .invalid
   let inner : SourceSequence.Position := ⟨465,0,3⟩
-  let outer : SourceSequence.Position := ⟨543,0,3⟩
-  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] (selection.bodies.take 2) [[]]
+  let outer : SourceSequence.Position := ⟨if interior then 554 else 543,0,3⟩
+  let signedInputs := selection.bodies.take (if interior then 1 else 2)
+  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] signedInputs [[]]
   let context : Context := .mk [outer] [] [(outer,relay)] [] []
-  let artifact := {seed with sources := #[("main",forwardedSignedSource)]}
+  let source := if interior then
+      (forwardedSignedSource.replace "choose[W](s,q)" "choose[then_op(W,W)](s,q)").replace
+        "relay[then_op(sign,sign)](s,q)" "relay[sign](s,q)"
+    else forwardedSignedSource
+  let artifact := {seed with sources := #[("main",source)]}
   let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
   let checked ← RuntimeBodyOperations.read body order request.runtime
-  let suppliers := checked.writtenArms.map fun link => (summarizeLink checked.checked link).map Prod.fst
-  guard (suppliers == [some [("main","choose",0,"U",0,0,some 472),
-    ("main","relay",0,"W",0,0,some 549)]] && body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
+  let [some (hops,inside,_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  guard (body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
+  if interior then
+    let some located := inside | throw .invalid
+    guard (hops == [("main","choose",0,"U",0,0,some 472)] &&
+      located.rows == [([0],0,1,"W",0,some 480,some 560),([1],1,3,"W",0,some 482,some 560)]) .invalid
+  else
+    guard (inside.isNone && hops == [("main","choose",0,"U",0,0,some 472),
+      ("main","relay",0,"W",0,0,some 549)]) .invalid
 
 private inductive ObservingFault where
   | correct | wrongMeasurementOwner | wrongXor | contextOrder | omittedUnitOwner | wrongSelectedPhase
@@ -1108,7 +1157,7 @@ private def rejectOuterChain {artifact catalogue context description graph imple
     (chain : RuntimeForwardedSupply.Chain binding transport paired) : WorkM Unit := do
   match chain with
   | .direct .. => throw .invalid
-  | .formal hop _ => rejectCrossedOuterSupply other hop.supply
+  | .formal hop _ _ => rejectCrossedOuterSupply other hop.supply
 
 private def rejectForwardedChain {artifact catalogue context description graph implementations references prepared root requested checked
     queue rootOwner rootName owner name path record invocation original result native index cursor terminal}
@@ -1120,7 +1169,7 @@ private def rejectForwardedChain {artifact catalogue context description graph i
     (chain : RuntimeForwardedSupply.Chain binding transport paired) : WorkM Unit := do
   match chain with
   | .direct .. => throw .invalid
-  | .formal _ tail => rejectOuterChain other tail
+  | .formal _ _ tail => rejectOuterChain other tail
 
 private def forwardedSupplyStudy (second : Bool) : WorkM (List SupplyHopSummary) := do
   let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
@@ -1177,10 +1226,109 @@ private def forwardedSupplyStudy (second : Bool) : WorkM (List SupplyHopSummary)
     else throw .invalid
   else throw .invalid
 
+-- Frozen source with W written twice in one argument and an equal unused V.
+private def interiorSupplySource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+meaning I:Bit=reference(keep);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {
+    qmatch(s,q){0=>keep,1=>checked_op(U,I)}
+}
+unitary fn relay[const W:Op<Bit>,const V:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(W),Controllable(W),Applicable(V),Controllable(V) {
+    choose[then_op(W,W)](s,q)
+}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    relay[keep,keep](s,q)
+}
+"#
+
+private def rejectEqualInteriorSlot {sources catalogue record}
+    (outer : SourceRuntimeContext.NamedEvent sources "main") (choice : RuntimeFormalActual.Choice) :
+    (invocation : @GenericDutyQueue.Invocation sources catalogue record) →
+    GenericDutyQueue.Demand invocation → WorkM Unit
+  | .root _,_ | .call (.root _) _ _,_ => throw .invalid
+  | .call (.call parent outerApp outerTarget) innerApp innerTarget,demand => do
+    let inner := RuntimeFormalActual.splitInvocation (.call parent outerApp outerTarget) innerApp innerTarget
+      demand.transported.receipt
+    let transfer := (RuntimeFormalActual.splitInvocation parent outerApp outerTarget inner.tail).transfer
+    let [w,v] := outer.target.operationActuals.sourceActuals | throw .invalid
+    guard (w.name == "W" && v.name == "V" && w.checked.description == v.checked.description &&
+      w.checked.description == choice.description && choice.header.name == w.name && choice.position == 0 &&
+      w.actual.argument.tokens.head?.map (·.span.startByte) == some 515 &&
+      v.actual.argument.tokens.head?.map (·.span.startByte) == some 520) .invalid
+    let wKey : Semantics.SymbolicBasis.Parameter := ⟨"main","relay",w.actual.formal.ordinal⟩
+    let vKey : Semantics.SymbolicBasis.Parameter := ⟨"main","relay",v.actual.formal.ordinal⟩
+    expectSupplyRefusal (RuntimeFormalActual.readSupplyAt outer outerApp.original transfer 0 wKey
+      {choice with position := 1})
+    expectSupplyRefusal (RuntimeFormalActual.readSupplyAt outer outerApp.original transfer 0 vKey
+      {choice with position := 1,header := v.actual.formal})
+
+private def interiorSupplyStudy : WorkM Unit := do
+  let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
+  let selected : Semantics.Observation.Program :=
+    ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩
+  let artifact : Artifact := ⟨#[selected,identity],#[],#[("main",interiorSupplySource)],0,none⟩
+  let source ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named outer] := source.body.checked.events | throw .invalid
+  let [duty] := source.pending.entries.filter (·.unconsumed) | throw .invalid
+  let relay ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody outer)
+  let [.named inner] := relay.val.checked.events | throw .invalid
+  let choose ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody inner)
+  if outerCaller : outer.target.callerName = "route" then
+    let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" outer.target.callerName := by
+      simpa only [outerCaller] using (RuntimeOrdinaryBody.CallPath.root source.body)
+    let relayPath := RuntimeOrdinaryBody.CallPath.named outer relay.val (by with_reducible exact relay.property) parent
+    if innerCaller : inner.target.callerName = outer.target.resolution.declaration.name then
+      let innerParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
+          outer.target.resolution.moduleName inner.target.callerName := by simpa only [innerCaller] using relayPath
+      let path := RuntimeOrdinaryBody.CallPath.named inner choose.val (by with_reducible exact choose.property) innerParent
+      let invoked ← RuntimeDutyInvocation.readDemand duty path
+      let body := choose.val.checked
+      let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .invalid
+      let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation
+        body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
+      let [left,right] := List.finRange table.arms.length | throw .invalid
+      let empty : Context := .mk [] [] [] [] []
+      let provider : RuntimeProviderHeader.Request := (.pure 1,empty)
+      let plain ← RuntimePreparedArm.prepare artifact source.catalogue table left [provider] []
+      let arm ← RuntimePreparedArm.prepare artifact source.catalogue table right (List.replicate 4 provider) [[provider]]
+      let rows := source.signature.sourceRows ++ relay.val.checked.summary.staticRows ++ body.summary.staticRows ++
+        outer.target.sourceRows ++ inner.target.sourceRows ++ plain.rows ++ arm.rows
+      let root ← Validity.checkRootFromRoots artifact #[0,1] rows (artifact.root :: plain.roots ++ arm.roots).eraseDups
+      let .constructed _ _ _ markers _ ← RuntimePreparedArm.read arm root | throw .invalid
+      let [entry] := markers.entries | throw .invalid
+      let child ← RuntimeNativeSubject.readSubject entry.assertion
+      let .closed closed ← GenericOperation.close invoked.demand.transported.subject.description | throw .invalid
+      let paired ← RuntimeClosedSubject.read closed child.child.cursor
+      let chain ← RuntimeForwardedSupply.read invoked.binding invoked.demand.transported.receipt paired.matched.paired
+      let some view := firstInterior chain | throw .invalid
+      let key : Semantics.SymbolicBasis.Parameter := ⟨"main","relay",0⟩
+      guard (view.rows == [([0],0,2,"W",0,some 434,some 515),([1],1,5,"W",0,some 436,some 515)] &&
+        view.expected == [([0],0,key),([1],1,key)] && view.observed == view.expected) .invalid
+      let [a,b] := view.observed | throw .invalid
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [b,a] view.expected)
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [a] view.expected)
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [a,a] view.expected)
+      let u ← RuntimeNativeSubject.readFormal child.child.cursor
+      let side ← RuntimeNativeSubject.readChild u.child.cursor 0
+      let w ← RuntimeNativeSubject.readFormal side.cursor
+      rejectEqualInteriorSlot outer (← RuntimeFormalActual.readChoice w) invoked.invocation invoked.demand
+      -- A shared zero-power subgraph still contributes both distinct edge paths.
+      let frame : NaturalFrames.Frame := ⟨[]⟩
+      let shared : GenericOperation.Description := ⟨frame,[.formal key,.thenOp 0 0,.power 1 ⟨⟨0,[]⟩,false⟩],
+        2,List.replicate 3 frame⟩
+      guard ((← GenericFormalPaths.read shared) == [([0,0],0,key),([0,1],0,key)]) .invalid
+    else throw .invalid
+  else throw .invalid
+
 /-- Run the common source-origin association under native execution as well
 as the kernel guards. Both original arms are covered; the one original Meaning
 duty remains pending. Wrong phase and source order retain exact refusals. -/
 def nativeSourceMarkerControls : IO Unit := do
+  match (interiorSupplyStudy.run WorkProfile.qmatch.limit).1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError ("constructed argument occurrence controls: " ++ reprStr error))
   for second in [false,true] do
     match (forwardedSupplyStudy second).run WorkProfile.qmatch.limit with
     | (.ok _,_) => pure ()
@@ -1188,9 +1336,10 @@ def nativeSourceMarkerControls : IO Unit := do
   match (mixedSupplyStudy.run WorkProfile.qmatch.limit).1 with
   | .ok () => pure ()
   | .error error => throw (IO.userError ("mixed formal supply controls: " ++ reprStr error))
-  match (checkForwardedCommonBody.run WorkProfile.qmatch.limit).1 with
-  | .ok () => pure ()
-  | .error error => throw (IO.userError ("common forwarded source arguments: " ++ reprStr error))
+  for interior in [false,true] do
+    match ((checkForwardedCommonBody interior).run WorkProfile.qmatch.limit).1 with
+    | .ok () => pure ()
+    | .error error => throw (IO.userError ("common forwarded source arguments: " ++ reprStr error))
   checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do

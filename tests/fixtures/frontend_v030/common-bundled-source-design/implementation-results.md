@@ -45,7 +45,7 @@ Two regression tests use independent simultaneous faults to check failure order.
 - A [second read-only audit](independent-metadata-review.json) recomputed replay
   bytes and metadata independently, and found no cached-origin privilege or
   skipped whole-declaration checking in the current adapters.
-- The [reviewed inventory refresh](metadata-review/metadata-changes.json) changes
+- The [reviewed inventory refresh](metadata-review.archive.json) (member `metadata-changes.json`) changes
   four existing source hashes and adds the private source module. Existing
   public surfaces, capacities, 269 constructors, 20 boundaries and 21 paths remain
   unchanged. Coverage changes only its current surface digest. JSON serialization

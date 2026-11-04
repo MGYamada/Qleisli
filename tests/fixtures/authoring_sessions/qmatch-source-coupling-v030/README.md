@@ -393,3 +393,17 @@ Complete original headers retain the directive and byte positions. This is an
 informed reader study; it supplies no native execution or source-preservation
 claim. External implementation snapshots and full observer maps are disclosed
 as external, with their original identities.
+
+## Supplier occurrence first observations
+
+The [supplier packet](supplier-occurrence-first.json) retains three exact
+original sources, complete compact drivers and raw first command streams.
+Two native component observations expose forwarded formal wrappers and separate
+interior occurrences. The mixed-provider first attempt exhausts its single 20M
+counter; its printed expected paths are not observed traversal results.
+A separately scoped direct-relay diagnostic on the same source observes all
+three uses, including the zero-power child and unused mixed Op actual. It
+omits route traversal and the complete pending duty queue.
+Full kernel windows remain external-only, and the recorded base commits are
+not clean-commit build attestations. This inert packet supplies no fresh replay,
+whole-caller preservation proof, accepted handle or guarantee admission.

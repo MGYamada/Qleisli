@@ -19,8 +19,12 @@ development milestones from the scope of their evidence.
   call outward to the original supplying expression. Check its mixed-header
   position, source tokens and stored substitution at every hop. The selected
   child retains its exact ports and Meaning equation. Closing a generic
-  description preserves its root and ordered child indices. Tracking formals
-  inside constructed arguments and covering all original duties remain open.
+  description preserves its root and ordered child indices. If a caller
+  supplies a constructed operation, match every lexical Op use to its own
+  written argument, native occurrence and supplying slot in the next call.
+  Preserve repeated edges, zero-power children and unused provider arguments.
+  Further substitutions of those individual children and coverage of all
+  original duties remain open.
 
 - Validate operation-tree matrix dimensions after every constructor (#462),
   including supplied provider and formal maps. Prove the actual successful

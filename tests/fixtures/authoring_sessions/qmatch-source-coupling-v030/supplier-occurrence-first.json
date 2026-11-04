@@ -1,0 +1,247 @@
+{
+  "format": "qleisli.inert-supplier-source-history",
+  "version": 1,
+  "scope": "Self-contained exact first source, driver and raw command streams for three informed local component studies. Full captured kernel source windows remain explicitly external-only. Historical commands are inert; their results are not current replay, clean-commit build attestation, source-preservation proofs, native accepted handles or constitutional guarantee discharge.",
+  "studies": [
+    {
+      "id": "forwarded-original-occurrences",
+      "kind": "informed-native-component-first-observation",
+      "desired_contract": "Two original route calls share choose[W] and equal identity action. Distinguish their outer keep supplier occurrences; matching formal names or action alone is not the desired occurrence binding.",
+      "scope": "The original component reader reports choose.U then relay.W for each call and terminal main.keep. It does not test a crossed supplier, prove original substitution correspondence, bind the whole route IR, or issue an accepted handle.",
+      "source": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/forwarded-supplier-occurrence-first/main.qli",
+        "bytes": 497,
+        "sha256": "6a316e93b0b94606b86f0a5ceab3b1bdfe485e8e714d6d83ddaea3dc5b76a7be",
+        "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nmeaning I:Bit=reference(keep);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {\n    qmatch(s,q){0=>keep,1=>checked_op(U,I)}\n}\nunitary fn relay[const W:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(W),Controllable(W) {choose[W](s,q)}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    let (s,q)=relay[keep](s,q);\n    relay[keep](s,q)\n}\n"
+      },
+      "driver": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/forwarded-supplier-occurrence-first/Native.first.lean",
+        "bytes": 2960,
+        "sha256": "e0b00c3feafdf67e72ba452a031e195fff76184b852f59e5b47c717772d2a33d",
+        "text": "import QleisliKernel.Qirf.RuntimeFormalActual\nimport QleisliKernel.Qirf.RuntimePreparedArm\nimport QleisliKernel.Qirf.RuntimeBodyDiscovery\nopen QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf\n\nprivate def probe (text : String) (second : Bool) : WorkM (List (String × Nat × String) × OperationDescription.Node) := do\n  let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩\n  let selected : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩\n  let artifact : Artifact := ⟨#[selected,identity],#[],#[(\"main\",text)],0,none⟩\n  let source ← RuntimeBodyDiscovery.prepareSource artifact \"main\" \"route\" {}\n  let [.named first,.named last] := source.body.checked.events | throw .invalid\n  let outer := if second then last else first\n  let relay ← SourceRuntimeTrace.readNamedBody outer\n  let [.named inner] := relay.checked.events | throw .invalid\n  let choose ← SourceRuntimeTrace.readNamedBody inner\n  let body := choose.checked\n  let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .invalid\n  let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation\n    body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope\n  let [left,right] := List.finRange table.arms.length | throw .invalid\n  let empty : RuntimeContextRequest.Context := .mk [] [] [] [] []\n  let provider : RuntimeProviderHeader.Request := (.pure 1,empty)\n  let plain ← RuntimePreparedArm.prepare artifact source.catalogue table left [provider] []\n  let arm ← RuntimePreparedArm.prepare artifact source.catalogue table right [provider] [[provider]]\n  let rows := source.signature.sourceRows ++ relay.checked.summary.staticRows ++ body.summary.staticRows ++\n    outer.target.sourceRows ++ inner.target.sourceRows ++ plain.rows ++ arm.rows\n  let root ← Validity.checkRootFromRoots artifact #[0,1] rows (artifact.root :: plain.roots ++ arm.roots).eraseDups\n  let .constructed _ _ _ markers _ ← RuntimePreparedArm.read arm root | throw .invalid\n  let [entry] := markers.entries | throw .invalid\n  let child ← RuntimeNativeSubject.readSubject entry.assertion\n  let u ← RuntimeNativeSubject.readFormal child.child.cursor\n  let w ← RuntimeNativeSubject.readFormal u.child.cursor\n  return ([(u.name,u.position,u.header.name),(w.name,w.position,w.header.name)],w.child.cursor.node)\n\ndef main (args : List String) : IO Unit := do\n  let [file] := args | throw (IO.userError \"expected original source\")\n  let text ← IO.FS.readFile file\n  for second in [false,true] do\n    let (result,left) := (probe text second).run WorkProfile.qmatch.limit\n    IO.println s!\"second={second} result={repr result} spent={WorkProfile.qmatch.limit-left}\"\n    unless result.isOk do throw (IO.userError \"expected native forwarded formal pair\")\n"
+      },
+      "observation": {
+        "id": "forwarded-native-original-selectors",
+        "repository_base_commit": "f03c1018769fb93a9b1163568e85a2cdf76492af",
+        "clean_commit_build_claim": false,
+        "source_state": "captured local worktree window; HEAD is a base identity, not build-at-commit attestation",
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--run",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/forwarded-supplier-occurrence-first/Native.first.lean",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/forwarded-supplier-occurrence-first/main.qli"
+        ],
+        "cwd": "/private/tmp/qleisli-qmatch-arm-body/lean-kernel",
+        "exit_code": 0,
+        "stdout": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/forwarded-native-original-selectors/stdout.txt",
+          "bytes": 345,
+          "sha256": "8b5ea6fb854a39391118b4becc3ab5bc38388f05a87a4300d9d14ea904d02f6c",
+          "text": "second=false result=Except.ok ([(\"choose\", 0, \"U\"), (\"relay\", 0, \"W\")],\n QleisliKernel.SourceTypes.OperationDescription.Node.provider \"main\" \"keep\" [] [] []) spent=10676573\nsecond=true result=Except.ok ([(\"choose\", 0, \"U\"), (\"relay\", 0, \"W\")],\n QleisliKernel.SourceTypes.OperationDescription.Node.provider \"main\" \"keep\" [] [] []) spent=10676573\n"
+        },
+        "stderr": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/forwarded-native-original-selectors/stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "source_window_unchanged": true,
+        "external_inputs_unchanged": true,
+        "work_counter_scope": "one WorkProfile.qmatch.limit counter per original call, independently for second=false and second=true",
+        "capture_record": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/forwarded-native-original-selectors/result.json",
+          "bytes": 1697,
+          "sha256": "e6704553ccb38a8aa55c026b68b470472dbb34f57d5a4a19c9f4e2b77a8e13e6"
+        },
+        "source_window": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/forwarded-native-original-selectors/sources-before.json",
+          "bytes": 80191,
+          "sha256": "2154b96aec0780aefe591934a172a83f7ab52eb0d401476bcb568f4d3587add3",
+          "scope": "external-only complete captured kernel source-window hash inventory; not copied into this focused record"
+        }
+      }
+    },
+    {
+      "id": "constructed-interior-occurrences",
+      "kind": "informed-native-interior-component-first-observation",
+      "desired_contract": "The original incoming then_op(W,W) has two ordered lexical uses and separate native wrapper occurrences. Both must retain original supplier provenance.",
+      "scope": "The component observation exposes native child positions 0/1, distinct records 2/5, original supplier offsets 254 and transported offsets 515. These metadata observations alone do not prove interior source/native or generic substitution correspondence, whole-caller preservation, or an accepted handle.",
+      "source": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/constructed-interior-supplier-first/main.qli",
+        "bytes": 533,
+        "sha256": "26e3333acc0ebbc75265cd946fe33147a34779c893c0d4787be118f9d8e67458",
+        "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nmeaning I:Bit=reference(keep);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {\n    qmatch(s,q){0=>keep,1=>checked_op(U,I)}\n}\nunitary fn relay[const W:Op<Bit>,const V:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(W),Controllable(W),Applicable(V),Controllable(V) {\n    choose[then_op(W,W)](s,q)\n}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    relay[keep,keep](s,q)\n}\n"
+      },
+      "driver": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/constructed-interior-supplier-first/NativeInterior.first.lean",
+        "bytes": 3404,
+        "sha256": "c9981171ec5f5900fec399f6fbc949281855774ee7ab31df64609fd6ebe3c3ad",
+        "text": "import QleisliKernel.Qirf.RuntimeFormalActual\nimport QleisliKernel.Qirf.RuntimePreparedArm\nimport QleisliKernel.Qirf.RuntimeBodyDiscovery\nopen QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf\n\nprivate def probe (text : String) : WorkM (List (Nat × Nat × String) × List (Nat × Nat) × List (Nat × Nat)) := do\n  let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩\n  let selected : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩\n  let artifact : Artifact := ⟨#[selected,identity],#[],#[(\"main\",text)],0,none⟩\n  let source ← RuntimeBodyDiscovery.prepareSource artifact \"main\" \"route\" {}\n  let [.named outer] := source.body.checked.events | throw .invalid\n  let relay ← SourceRuntimeTrace.readNamedBody outer\n  let [.named inner] := relay.checked.events | throw .invalid\n  let choose ← SourceRuntimeTrace.readNamedBody inner\n  let body := choose.checked\n  let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .invalid\n  let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation\n    body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope\n  let [left,right] := List.finRange table.arms.length | throw .invalid\n  let empty : RuntimeContextRequest.Context := .mk [] [] [] [] []\n  let provider : RuntimeProviderHeader.Request := (.pure 1,empty)\n  let plain ← RuntimePreparedArm.prepare artifact source.catalogue table left [provider] []\n  let arm ← RuntimePreparedArm.prepare artifact source.catalogue table right (List.replicate 4 provider) [[provider]]\n  let rows := source.signature.sourceRows ++ relay.checked.summary.staticRows ++ body.summary.staticRows ++\n    outer.target.sourceRows ++ inner.target.sourceRows ++ plain.rows ++ arm.rows\n  let root ← Validity.checkRootFromRoots artifact #[0,1] rows (artifact.root :: plain.roots ++ arm.roots).eraseDups\n  let .constructed _ _ _ markers _ ← RuntimePreparedArm.read arm root | throw .invalid\n  let [entry] := markers.entries | throw .invalid\n  let child ← RuntimeNativeSubject.readSubject entry.assertion\n  let u ← RuntimeNativeSubject.readFormal child.child.cursor\n  let edges ← [0,1].mapM fun position => do\n    let side ← RuntimeNativeSubject.readChild u.child.cursor position\n    let w ← RuntimeNativeSubject.readFormal side.cursor\n    return (position,side.cursor.binding.index.val,w.name ++ \".\" ++ w.header.name)\n  let [duty] := source.pending.entries.filter (·.unconsumed) | throw .invalid\n  let .demand invocation demand := duty.subject | throw .invalid\n  let [_,app] := invocation.applications | throw .invalid\n  let [composite] := app.operationActuals | throw .invalid\n  return (edges,composite.suppliers.map (fun (index,origin) => (index,origin.offset)),\n    demand.transported.subject.suppliers.map (fun (index,origin) => (index,origin.offset)))\n\ndef main (args : List String) : IO Unit := do\n  let [file] := args | throw (IO.userError \"expected original source\")\n  let text ← IO.FS.readFile file\n  let (result,left) := (probe text).run WorkProfile.qmatch.limit\n  IO.println s!\"result={repr result} spent={WorkProfile.qmatch.limit-left}\"\n  unless result.isOk do throw (IO.userError \"expected two independent native formal occurrences\")\n"
+      },
+      "observation": {
+        "id": "constructed-interior-native-first",
+        "repository_base_commit": "f03c1018769fb93a9b1163568e85a2cdf76492af",
+        "clean_commit_build_claim": false,
+        "source_state": "captured local worktree window; HEAD is a base identity, not build-at-commit attestation",
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--run",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/constructed-interior-supplier-first/NativeInterior.first.lean",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/constructed-interior-supplier-first/main.qli"
+        ],
+        "cwd": "/private/tmp/qleisli-qmatch-arm-body/lean-kernel",
+        "exit_code": 0,
+        "stdout": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/constructed-interior-native-first/stdout.txt",
+          "bytes": 117,
+          "sha256": "6a2a356f0d938ef5c1d0dc609328f8d007f06d86da79617e8c7b5fdfcf6ce8a3",
+          "text": "result=Except.ok ([(0, 2, \"relay.W\"), (1, 5, \"relay.W\")], [(0, 254), (1, 254)], [(0, 515), (1, 515)]) spent=18368843\n"
+        },
+        "stderr": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/constructed-interior-native-first/stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "source_window_unchanged": true,
+        "external_inputs_unchanged": true,
+        "work_counter_scope": "one WorkProfile.qmatch.limit counter for the complete recorded probe",
+        "capture_record": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/constructed-interior-native-first/result.json",
+          "bytes": 1714,
+          "sha256": "447f89df167e721ac2eca8b4ef93d2470397d0e1dbd83793dc3372585cf5fd15"
+        },
+        "source_window": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/constructed-interior-native-first/sources-before.json",
+          "bytes": 80467,
+          "sha256": "4b6fa9895297903159904a1608a5a1a9ec3b5e86fbbb25d3c70c932eefcbe44a",
+          "scope": "external-only complete captured kernel source-window hash inventory; not copied into this focused record"
+        }
+      }
+    },
+    {
+      "id": "mixed-provider-first-refusal",
+      "kind": "informed-source-traversal-first-refusal",
+      "desired_contract": "Traverse provider[seed,then_op(W,power(W,0)),W] in original order: mixed actual 1 child 0; mixed actual 1 child 1 child 0; unused mixed actual 2. All bind relay.W at original mixed ordinal 1, with separate use bytes 592/600/606.",
+      "scope": "The genuine first prepareSource plus traversal attempt exhausts the single 20M work counter. The printed EXPECTED tuple is only an oracle; no lexical-use result was observed. This is not successful parser coverage, a full common checker pass, native preservation, or an accepted handle.",
+      "source": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/main.qli",
+        "bytes": 672,
+        "sha256": "aadf326ce712dd3790281ce4fb33bfd1000fcc8371cf161541a9855769096d15",
+        "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn accept[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>\n    requires Applicable(U),Adjointable(U),Controllable(U){U(q)}\nunitary fn provider[const count:Nat,const action:Op<Bit>,const unused:Op<Bit>](q:Q<Bit>)->Q<Bit>\n    requires Applicable(action),Adjointable(action),Controllable(action),\n             Applicable(unused),Adjointable(unused),Controllable(unused){action(q)}\nunitary fn relay[const seed:Nat,const W:Op<Bit>](q:Q<Bit>)->Q<Bit>\n    requires Applicable(W),Adjointable(W),Controllable(W){\n    accept[provider[seed,then_op(W,power(W,0)),W]](q)\n}\npub unitary fn route(q:Q<Bit>)->Q<Bit>{relay[0,keep](q)}\n"
+      },
+      "driver": {
+        "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/Observe-first.lean",
+        "bytes": 2681,
+        "sha256": "babbb696cbe9fc5d791b5fb8bdfa43e635e1bb419630f1de7278c9dd40ed5756",
+        "text": "import QleisliKernel.Qirf.RuntimeBodyDiscovery\nimport QleisliKernel.SourceTypes.OperationSourceUses\n\nopen QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf\n\nprivate abbrev UseSummary :=\n  List SourceOperation.Edge × String × String × Nat × String × List (String × Nat × Nat)\n\nprivate def summarizeUse {sources caller callerName original instantiation entries environment scope genericState rootTokens}\n    (use : @OperationSourceUses.Use sources caller callerName original instantiation entries environment scope genericState rootTokens) :\n    UseSummary :=\n  (use.path,use.formal.key.moduleName,use.formal.key.declarationName,use.formal.key.ordinal,\n    use.formal.headerFormal.name,use.tokens.map fun token => (token.text,token.span.startByte,token.span.endByte))\n\nprivate abbrev Summary := Nat × Nat × Nat × List String × List UseSummary\n\n/-- This is a source-traversal component observation. No native action,\nMeaning equality, ownership transition or accepted handle is claimed here. -/\nprivate def probe (text : String) : WorkM Summary := do\n  let artifact : Artifact := ⟨#[],#[],#[(\"main\",text)],0,none⟩\n  let original ← RuntimeBodyDiscovery.prepareSource artifact \"main\" \"route\" {}\n  let [.named outer] := original.body.checked.events | throw .invalid\n  let relay ← SourceRuntimeTrace.readNamedBody outer\n  let [.named inner] := relay.checked.events | throw .invalid\n  let [incoming] := inner.target.operationActuals.sourceActuals | throw .invalid\n  let checked ← OperationSourceUses.readChecked incoming.checked\n  return (outer.call.calleeOffset,inner.call.calleeOffset,incoming.index.val,\n    incoming.actual.argument.tokens.map (·.text),checked.uses.map summarizeUse)\n\nprivate def expected : Summary :=\n  (654,563,0,\n    [\"provider\",\"[\",\"seed\",\",\",\"then_op\",\"(\",\"W\",\",\",\"power\",\"(\",\"W\",\",\",\"0\",\")\",\")\",\",\",\"W\",\"]\"],\n    [([.actual 1,.child 0],\"main\",\"relay\",1,\"W\",[(\"W\",592,593)]),\n     ([.actual 1,.child 1,.child 0],\"main\",\"relay\",1,\"W\",[(\"W\",600,601)]),\n     ([.actual 2],\"main\",\"relay\",1,\"W\",[(\"W\",606,607)])])\n\ndef main (args : List String) : IO Unit := do\n  let [file] := args | throw (IO.userError \"expected the original mixed provider source\")\n  let text ← IO.FS.readFile file\n  let (result,left) := (probe text).run WorkProfile.qmatch.limit\n  IO.println s!\"result={repr result}; work={WorkProfile.qmatch.limit-left}; left={left}\"\n  IO.println s!\"expected={repr expected}\"\n  match result with\n  | .error _ => throw (IO.userError \"original mixed provider traversal refused\")\n  | .ok actual =>\n    unless actual == expected do\n      throw (IO.userError \"original mixed paths, formal keys or use spans differ\")\n"
+      },
+      "observation": {
+        "id": "interior-provider-authoring-first",
+        "repository_base_commit": "e28e420b67ee2e67d1a37d9564a9a29d84bea311",
+        "clean_commit_build_claim": false,
+        "source_state": "captured local worktree window; HEAD is a base identity, not build-at-commit attestation",
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--run",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/Observe-first.lean",
+          "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/main.qli"
+        ],
+        "cwd": "/private/tmp/qleisli-qmatch-arm-body/lean-kernel",
+        "exit_code": 1,
+        "stdout": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-authoring-first/stdout.txt",
+          "bytes": 793,
+          "sha256": "a386e9dd9f49c01245c7c45b36d0ef2e935206c958173907916983924cd228ac",
+          "text": "result=Except.error (QleisliKernel.Finite.Error.arithmetic (QleisliKernel.Exact.Error.workLimit)); work=17369928; left=2630072\nexpected=(654,\n 563,\n 0,\n [\"provider\", \"[\", \"seed\", \",\", \"then_op\", \"(\", \"W\", \",\", \"power\", \"(\", \"W\", \",\", \"0\", \")\", \")\", \",\", \"W\", \"]\"],\n [([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1, QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 592, 593)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 600, 601)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 2], \"main\", \"relay\", 1, \"W\", [(\"W\", 606, 607)])])\n"
+        },
+        "stderr": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-authoring-first/stderr.txt",
+          "bytes": 62,
+          "sha256": "89e7636a04d697cc28042eb6e90cd51d22475cffb1745e2e7cce2fc56db591ba",
+          "text": "uncaught exception: original mixed provider traversal refused\n"
+        },
+        "source_window_unchanged": true,
+        "external_inputs_unchanged": true,
+        "work_counter_scope": "one WorkProfile.qmatch.limit counter for the complete recorded probe",
+        "capture_record": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-authoring-first/result.json",
+          "bytes": 1675,
+          "sha256": "c32a5a3e2431f223b7c90e4e0584c3a5c612592f9a3b86eaef499358b9f93a2f"
+        },
+        "source_window": {
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-authoring-first/sources-before.json",
+          "bytes": 81142,
+          "sha256": "3fc7302b466d07cf597812b85db88b5a8360469b9d18e02263e4fa88afce59ed",
+          "scope": "external-only complete captured kernel source-window hash inventory; not copied into this focused record"
+        }
+      },
+      "diagnostics": [
+        {
+          "id": "mixed-provider-direct-relay-diagnostic",
+          "kind": "separate-expanded-source-traversal-diagnostic",
+          "source_sha256": "aadf326ce712dd3790281ce4fb33bfd1000fcc8371cf161541a9855769096d15",
+          "scope": "The same unchanged original source is read through its catalogue and a direct main::relay signature with seed=0 and W=main.keep, then its genuine body and incoming checked argument. It observes all three exact use paths without route traversal or complete pending duty preparation. The leading tuple0 is a diagnostic sentinel, not an observed caller offset. This does not repair or replace the full first refusal, bind a route invocation, prove native preservation or issue an accepted handle.",
+          "driver": {
+            "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/Observe-relay-only.lean",
+            "bytes": 2994,
+            "sha256": "5e3dc0c107d6d0bcc4b53236d6fb45da284f9b8c631a3a4ed1278f26f25f4fe6",
+            "text": "import QleisliKernel.Qirf.RuntimeBodyDiscovery\nimport QleisliKernel.SourceTypes.OperationSourceUses\n\nopen QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf\n\nprivate abbrev UseSummary :=\n  List SourceOperation.Edge × String × String × Nat × String × List (String × Nat × Nat)\n\nprivate def summarizeUse {sources caller callerName original instantiation entries environment scope genericState rootTokens}\n    (use : @OperationSourceUses.Use sources caller callerName original instantiation entries environment scope genericState rootTokens) :\n    UseSummary :=\n  (use.path,use.formal.key.moduleName,use.formal.key.declarationName,use.formal.key.ordinal,\n    use.formal.headerFormal.name,use.tokens.map fun token => (token.text,token.span.startByte,token.span.endByte))\n\nprivate abbrev Summary := Nat × Nat × Nat × List String × List UseSummary\n\n/-- This is a source-traversal component observation. No native action,\nMeaning equality, ownership transition or accepted handle is claimed here. -/\nprivate def probe (text : String) : WorkM Summary := do\n  let artifact : Artifact := ⟨#[],#[],#[(\"main\",text)],0,none⟩\n  -- Isolate the parser on the original instantiated relay body. The route\n  -- invocation and complete original duty queue are outside this component check.\n  let catalogue ← GenericCatalogue.read artifact.sources\n  let arguments : StaticTypes.Arguments :=\n    ⟨[],[(\"seed\",0)],[(\"W\",OperationDescription.provider \"main\" \"keep\" [] [] [])]⟩\n  let original ← SourceRuntimeContext.readSignature artifact.sources \"main\" \"relay\" arguments (.source \"main\") (some catalogue)\n  let relay ← SourceRuntimeTrace.readBodyWithSignature original\n  let [.named inner] := relay.checked.events | throw .invalid\n  let [incoming] := inner.target.operationActuals.sourceActuals | throw .invalid\n  let checked ← OperationSourceUses.readChecked incoming.checked\n  return (0,inner.call.calleeOffset,incoming.index.val,\n    incoming.actual.argument.tokens.map (·.text),checked.uses.map summarizeUse)\n\nprivate def expected : Summary :=\n  (0,563,0,\n    [\"provider\",\"[\",\"seed\",\",\",\"then_op\",\"(\",\"W\",\",\",\"power\",\"(\",\"W\",\",\",\"0\",\")\",\")\",\",\",\"W\",\"]\"],\n    [([.actual 1,.child 0],\"main\",\"relay\",1,\"W\",[(\"W\",592,593)]),\n     ([.actual 1,.child 1,.child 0],\"main\",\"relay\",1,\"W\",[(\"W\",600,601)]),\n     ([.actual 2],\"main\",\"relay\",1,\"W\",[(\"W\",606,607)])])\n\ndef main (args : List String) : IO Unit := do\n  let [file] := args | throw (IO.userError \"expected the original mixed provider source\")\n  let text ← IO.FS.readFile file\n  let (result,left) := (probe text).run WorkProfile.qmatch.limit\n  IO.println s!\"result={repr result}; work={WorkProfile.qmatch.limit-left}; left={left}\"\n  IO.println s!\"expected={repr expected}\"\n  match result with\n  | .error _ => throw (IO.userError \"original mixed provider traversal refused\")\n  | .ok actual =>\n    unless actual == expected do\n      throw (IO.userError \"original mixed paths, formal keys or use spans differ\")\n"
+          },
+          "observation": {
+            "id": "interior-provider-relay-only",
+            "repository_base_commit": "e28e420b67ee2e67d1a37d9564a9a29d84bea311",
+            "clean_commit_build_claim": false,
+            "source_state": "captured local worktree window; HEAD is a base identity, not build-at-commit attestation",
+            "argv": [
+              "lake",
+              "env",
+              "lean",
+              "-DwarningAsError=true",
+              "--run",
+              "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/Observe-relay-only.lean",
+              "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/interior-mixed-provider-first/main.qli"
+            ],
+            "cwd": "/private/tmp/qleisli-qmatch-arm-body/lean-kernel",
+            "exit_code": 0,
+            "stdout": {
+              "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-relay-only/stdout.txt",
+              "bytes": 1365,
+              "sha256": "a3214dde729a79dafc0d1ab8407353fffbe9ca35552765b9e8451bacc6cd232e",
+              "text": "result=Except.ok (0,\n 563,\n 0,\n [\"provider\", \"[\", \"seed\", \",\", \"then_op\", \"(\", \"W\", \",\", \"power\", \"(\", \"W\", \",\", \"0\", \")\", \")\", \",\", \"W\", \"]\"],\n [([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1, QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 592, 593)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 600, 601)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 2], \"main\", \"relay\", 1, \"W\", [(\"W\", 606, 607)])]); work=13913179; left=6086821\nexpected=(0,\n 563,\n 0,\n [\"provider\", \"[\", \"seed\", \",\", \"then_op\", \"(\", \"W\", \",\", \"power\", \"(\", \"W\", \",\", \"0\", \")\", \")\", \",\", \"W\", \"]\"],\n [([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1, QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 592, 593)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 1,\n    QleisliKernel.SourceTypes.SourceOperation.Edge.child 0],\n   \"main\",\n   \"relay\",\n   1,\n   \"W\",\n   [(\"W\", 600, 601)]),\n  ([QleisliKernel.SourceTypes.SourceOperation.Edge.actual 2], \"main\", \"relay\", 1, \"W\", [(\"W\", 606, 607)])])\n"
+            },
+            "stderr": {
+              "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-relay-only/stderr.txt",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "text": ""
+            },
+            "source_window_unchanged": true,
+            "external_inputs_unchanged": true,
+            "work_counter_scope": "one WorkProfile.qmatch.limit counter for the direct instantiated relay source diagnostic; route and pending duty queue are not checked",
+            "capture_record": {
+              "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-relay-only/result.json",
+              "bytes": 1686,
+              "sha256": "17f5477b821148e8559da692e6362108fc24bb97842431ff002b5d50db178a13"
+            },
+            "source_window": {
+              "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/checks/interior-provider-relay-only/sources-before.json",
+              "bytes": 81142,
+              "sha256": "3fc7302b466d07cf597812b85db88b5a8360469b9d18e02263e4fa88afce59ed",
+              "scope": "external-only complete captured kernel source-window hash inventory; not copied into this focused record"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

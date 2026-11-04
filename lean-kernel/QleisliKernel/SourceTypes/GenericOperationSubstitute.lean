@@ -93,13 +93,13 @@ structure NaturalStep {sources} (application : ApplicationSource sources) where
     (NaturalSubstitute.substitute (callerFrame application).binders.length original
       application.naturalActuals).run before = (.ok checked,after)
 
-private def basis {sources} (application : ApplicationSource sources) (code : Code) :
+def basis {sources} (application : ApplicationSource sources) (code : Code) :
     WorkM (BasisStep application) := do
   let checked ← NaturalAffine.witness (SymbolicTypes.substitute (callerFrame application).binders.length
     application.basisActuals application.naturalActuals code)
   return ⟨code,checked.val,by with_reducible exact checked.property⟩
 
-private def natural {sources} (application : ApplicationSource sources) (form : Form) :
+def natural {sources} (application : ApplicationSource sources) (form : Form) :
     WorkM (NaturalStep application) := do
   let checked ← NaturalAffine.witness (NaturalSubstitute.substitute (callerFrame application).binders.length
     form application.naturalActuals)
@@ -110,7 +110,7 @@ structure NodeResult {sources} (application : ApplicationSource sources) where
   bases : List (BasisStep application)
   naturals : List (NaturalStep application)
 
-private def roots {sources} (original : Subject sources) (index root : Nat) : List (Nat × Origin sources) :=
+def roots {sources} (original : Subject sources) (index root : Nat) : List (Nat × Origin sources) :=
   (original.suppliers.filter (·.1 == index)).map (fun (_,origin) => (root,origin))
 
 private def reserve {sources} (subjects : List (Subject sources)) : WorkM Unit := do
@@ -134,7 +134,7 @@ private def binary {sources} (original : Subject sources) (index : Nat)
   return ⟨description,left.suppliers ++ right.suppliers.map (fun (index,origin) =>
     (index+left.description.nodes.length,origin)) ++ roots original index description.root⟩
 
-private def readNode {sources} (application : ApplicationSource sources) (original : Subject sources)
+def readNode {sources} (application : ApplicationSource sources) (original : Subject sources)
     (previous : List (Subject sources)) (index : Nat) (node : Node) : WorkM (NodeResult application) := do
   exactWork (Exact.charge (16*(Meter.node node+actualFields application+
     original.suppliers.length+previous.length+1)*
@@ -337,5 +337,236 @@ def readDuty {sources} (application : ApplicationSource sources) (original : Dut
     WorkM (DutyChecked application original) := do
   let subject ← read application original.subject original.suppliers
   return ⟨subject⟩
+
+private theorem finiteFoldInvariant {α β : Type} (p : β → Prop) (f : β → α → WorkM β)
+    (keep : ∀ state item next before after, p state →
+      (f state item).run before = (.ok next,after) → p next)
+    (items : List α) {initial final : β} {before after : Nat} (valid : p initial)
+    (ran : (items.foldlM f initial).run before = (.ok final,after)) : p final := by
+  induction items generalizing initial before with
+  | nil =>
+    simp only [List.foldlM_nil] at ran
+    rw [(pure_success _ _ _ _ ran).1]
+    exact valid
+  | cons item rest ih =>
+    simp only [List.foldlM_cons] at ran
+    obtain ⟨next,middle,one,tail⟩ := bind_success _ _ _ _ _ ran
+    exact ih (keep initial item next before middle valid one) tail
+
+private def Prefixes {sources application original}
+    (previous : List (Subject sources)) (rows : List (@Step sources application original)) : Prop :=
+  previous = rows.map (·.result.subject) ∧
+    ∀ i row, rows[i]? = some row → row.previous = (rows.take i).map (·.result.subject)
+
+private theorem prefixes_append {sources application original} {previous : List (Subject sources)}
+    {rows : List (@Step sources application original)} (valid : Prefixes previous rows)
+    (added : Step application original) (prior : added.previous = previous) :
+    Prefixes (previous ++ [added.result.subject]) (rows ++ [added]) := by
+  obtain ⟨values,oldRows⟩ := valid
+  constructor
+  · simp only [List.map_append,List.map_cons,List.map_nil,values]
+  · intro i row selected
+    by_cases old : i < rows.length
+    · rw [List.getElem?_append_left old] at selected
+      rw [List.take_append_of_le_length (Nat.le_of_lt old)]
+      exact oldRows i row selected
+    · obtain ⟨bound,_⟩ := List.getElem?_eq_some_iff.mp selected
+      simp only [List.length_append,List.length_singleton] at bound
+      have atEnd : i = rows.length := by omega
+      subst i
+      rw [List.getElem?_append_right (Nat.le_refl rows.length)] at selected
+      have same : added = row := by simpa using selected
+      rw [List.take_left,← same]
+      exact prior.trans values
+
+/-- The successful simultaneous substitution reads each child from the projected
+results of the strictly preceding steps of this execution, in their original order. -/
+theorem Checked.previous_eq {sources application original} (checked : @Checked sources application original)
+    (i : Nat) {step : Step application original} (selected : checked.result.steps[i]? = some step) :
+    step.previous = (checked.result.steps.take i).map (·.result.subject) := by
+  obtain ⟨_,_,ran⟩ := checked.computed
+  unfold run at ran
+  obtain ⟨_,_,_,tail⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨_,_,_,tail⟩ := bind_success _ _ _ _ _ tail
+  obtain ⟨⟨previous,rows⟩,_,folded,finish⟩ := bind_success _ _ _ _ _ tail
+  have valid : Prefixes previous rows := by
+    refine finiteFoldInvariant
+      (fun pair : List (Subject sources) × List (Step application original) => Prefixes pair.1 pair.2)
+      _ ?_ _ ?_ folded
+    · rintro ⟨prev,steps⟩ index next before after kept one
+      dsimp only at one
+      split at one
+      · cases one
+      · obtain ⟨result,_,_,appended⟩ := bind_success _ _ _ _ _ one
+        have same := (pure_success _ _ _ _ appended).1
+        subst next
+        refine prefixes_append kept ⟨index,_,?_,prev,result.val,?_⟩ rfl
+    · exact ⟨rfl,by simp⟩
+  dsimp only at finish
+  split at finish
+  · split at finish
+    · cases finish
+    · have same := (pure_success _ _ _ _ finish).1
+      have actualRows : checked.result.steps = rows := congrArg Result.steps same
+      rw [actualRows] at selected ⊢
+      exact valid.2 i step selected
+  · cases finish
+
+/-- A selected step stores the exact index of its original source node. -/
+theorem Result.index_at {sources application original} (result : @Result sources application original)
+    {i : Nat} {step : Step application original} (selected : result.steps[i]? = some step) :
+    step.index = i := by
+  have size := congrArg List.length result.every
+  simp only [List.length_map,List.length_range] at size
+  have bound := (List.getElem?_eq_some_iff.mp selected).choose
+  rw [size] at bound
+  have atIndex := congrArg (fun xs : List Nat => xs[i]?) result.every
+  simpa only [List.getElem?_map,selected,Option.map_some,List.getElem?_range bound,Option.some.injEq]
+    using atIndex
+
+/-- Both reads refer to the same checked substitution step. In particular a
+second use of an equal-looking subject cannot select a different original index. -/
+structure UsedChild {sources application original} (checked : @Checked sources application original)
+    (parent : Step application original) (index : Nat) (child : Step application original) : Prop where
+  atIndex : checked.result.steps[index]? = some child
+  originalIndex : child.index = index
+  previous : parent.previous[index]? = some child.result.subject
+
+theorem Checked.child_at {sources application original} (checked : @Checked sources application original)
+    {i index : Nat} {parent : Step application original} {subject : Subject sources}
+    (parentAt : checked.result.steps[i]? = some parent) (used : parent.previous[index]? = some subject) :
+    ∃ child, UsedChild checked parent index child ∧ child.result.subject = subject := by
+  have inPrefix := used
+  rw [checked.previous_eq i parentAt,List.getElem?_map] at inPrefix
+  cases found : (checked.result.steps.take i)[index]? with
+  | none => simp [found] at inPrefix
+  | some child =>
+    have equal : child.result.subject = subject := by simpa only [found,Option.map_some,Option.some.injEq] using inPrefix
+    have inside := Nat.lt_of_lt_of_le (List.getElem?_eq_some_iff.mp found).choose (List.length_take_le _ _)
+    have atIndex := (List.getElem?_take_of_lt (l := checked.result.steps) inside).symm.trans found
+    exact ⟨child,⟨atIndex,checked.result.index_at atIndex,by rw [equal]; exact used⟩,equal⟩
+
+inductive BinaryConstructor : (Nat → Nat → Node) → Prop where
+  | thenOp : BinaryConstructor .thenOp
+  | tensor : BinaryConstructor .tensor
+  | conjugate : BinaryConstructor .conjugate
+
+structure BinaryChildren {sources application original} (checked : @Checked sources application original)
+    (parent : Step application original) (l r : Nat) (constructor : Nat → Nat → Node)
+    (leftStep rightStep : Step application original) : Prop where
+  left : UsedChild checked parent l leftStep
+  right : UsedChild checked parent r rightStep
+  description : parent.result.subject.description =
+    leftStep.result.subject.description.binary rightStep.result.subject.description constructor
+  suppliers : parent.result.subject.suppliers = leftStep.result.subject.suppliers ++
+    rightStep.result.subject.suppliers.map (fun (j,origin) => (j+leftStep.result.subject.description.nodes.length,origin)) ++
+    roots original parent.index parent.result.subject.description.root
+
+theorem readOption_selected {α : Type} {option : Option α} {value : α} {before after : Nat}
+    (ran : (lift (readOption option)).run before = (.ok value,after)) : option = some value := by
+  have success := (lift_success _ _ _ _ ran).1
+  cases option <;> simp_all [readOption]
+
+/-- The actual binary reader uses left and right in source order and appends
+every supplier, including repeated ones, with the same shift as the right graph. -/
+theorem Checked.binary_children {sources application original} (checked : @Checked sources application original)
+    {i l r : Nat} {parent : Step application original} {constructor : Nat → Nat → Node}
+    (parentAt : checked.result.steps[i]? = some parent) (kind : BinaryConstructor constructor)
+    (source : parent.node = constructor l r) :
+    ∃ left right, BinaryChildren checked parent l r constructor left right := by
+  obtain ⟨_,after,ran⟩ := parent.computed
+  rw [source] at ran
+  unfold readNode at ran
+  obtain ⟨_,start,_,body⟩ := bind_success _ _ _ _ _ ran
+  have program : ((do
+      let left ← lift (readOption parent.previous[l]?)
+      let right ← lift (readOption parent.previous[r]?)
+      let subject ← binary original parent.index left right constructor
+      pure (⟨subject,[],[]⟩ : NodeResult application)) : WorkM _).run start = (.ok parent.result,after) := by
+    cases kind <;> exact body
+  obtain ⟨leftValue,_,readLeft,readRemaining⟩ := bind_success _ _ _ _ _ program
+  obtain ⟨rightValue,_,readRight,buildRemaining⟩ := bind_success _ _ _ _ _ readRemaining
+  obtain ⟨assembled,_,built,pureResult⟩ := bind_success _ _ _ _ _ buildRemaining
+  have output : parent.result = ⟨assembled,[],[]⟩ := (pure_success _ _ _ _ pureResult).1
+  obtain ⟨left,leftAt,leftEq⟩ := checked.child_at parentAt (readOption_selected readLeft)
+  obtain ⟨right,rightAt,rightEq⟩ := checked.child_at parentAt (readOption_selected readRight)
+  subst leftValue
+  subst rightValue
+  have subject : parent.result.subject = assembled := congrArg NodeResult.subject output
+  unfold binary at built
+  obtain ⟨_,_,_,built⟩ := bind_success _ _ _ _ _ built
+  obtain ⟨_,_,_,built⟩ := bind_success _ _ _ _ _ built
+  have returned := subject.trans (pure_success _ _ _ _ built).1
+  exact ⟨left,right,leftAt,rightAt,congrArg Subject.description returned,by rw [returned]⟩
+
+inductive UnaryConstructor : (Nat → Node) → Prop where
+  | inverse : UnaryConstructor .inverse
+  | controlled : UnaryConstructor .controlled
+  | requested (owner name : String) : UnaryConstructor (fun j => .requested j owner name)
+
+structure UnaryChild {sources application original} (checked : @Checked sources application original)
+    (parent : Step application original) (index : Nat) (constructor : Nat → Node)
+    (childStep : Step application original) : Prop where
+  child : UsedChild checked parent index childStep
+  description : parent.result.subject.description = childStep.result.subject.description.unary constructor
+  suppliers : parent.result.subject.suppliers = childStep.result.subject.suppliers ++
+    roots original parent.index parent.result.subject.description.root
+
+private theorem Checked.unary_built {sources application original} (checked : @Checked sources application original)
+    {i index before after : Nat} {parent : Step application original} {value assembled : Subject sources}
+    {constructor : Nat → Node} (parentAt : checked.result.steps[i]? = some parent)
+    (used : parent.previous[index]? = some value)
+    (built : (unary application original parent.index value constructor).run before = (.ok assembled,after))
+    (subject : parent.result.subject = assembled) :
+    ∃ child, UnaryChild checked parent index constructor child := by
+  obtain ⟨child,childAt,childEq⟩ := checked.child_at parentAt used
+  subst value
+  unfold unary at built
+  obtain ⟨_,_,_,built⟩ := bind_success _ _ _ _ _ built
+  obtain ⟨_,_,_,built⟩ := bind_success _ _ _ _ _ built
+  have returned := subject.trans (pure_success _ _ _ _ built).1
+  exact ⟨child,childAt,congrArg Subject.description returned,by rw [returned]⟩
+
+theorem Checked.unary_child {sources application original} (checked : @Checked sources application original)
+    {i index : Nat} {parent : Step application original} {constructor : Nat → Node}
+    (parentAt : checked.result.steps[i]? = some parent) (kind : UnaryConstructor constructor)
+    (source : parent.node = constructor index) :
+    ∃ child, UnaryChild checked parent index constructor child := by
+  obtain ⟨_,after,ran⟩ := parent.computed
+  rw [source] at ran
+  unfold readNode at ran
+  obtain ⟨_,start,_,body⟩ := bind_success _ _ _ _ _ ran
+  have program : ((do
+      let value ← lift (readOption parent.previous[index]?)
+      let subject ← unary application original parent.index value constructor
+      pure (⟨subject,[],[]⟩ : NodeResult application)) : WorkM _).run start = (.ok parent.result,after) := by
+    cases kind <;> exact body
+  obtain ⟨_,_,used,body⟩ := bind_success _ _ _ _ _ program
+  obtain ⟨assembled,_,built,body⟩ := bind_success _ _ _ _ _ body
+  have output : parent.result = ⟨assembled,[],[]⟩ := (pure_success _ _ _ _ body).1
+  exact checked.unary_built parentAt (readOption_selected used) built (congrArg NodeResult.subject output)
+
+/-- The original child is read even for zero power. Its constructor receives
+the exact retained Nat replacement and the original exponent mode. -/
+theorem Checked.power_child {sources application original} (checked : @Checked sources application original)
+    {i index : Nat} {parent : Step application original} {count : Count}
+    (parentAt : checked.result.steps[i]? = some parent) (source : parent.node = .power index count) :
+    ∃ (child : Step application original) (replacement : NaturalStep application), replacement.original = count.form ∧
+      parent.result.naturals = [replacement] ∧ UnaryChild checked parent index
+        (fun j => .power j ⟨replacement.checked.form,count.powerTwo⟩) child := by
+  obtain ⟨_,_,ran⟩ := parent.computed
+  rw [source] at ran
+  unfold readNode at ran
+  obtain ⟨_,_,_,body⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨replacement,_,naturalRun,body⟩ := bind_success _ _ _ _ _ body
+  obtain ⟨_,_,used,body⟩ := bind_success _ _ _ _ _ body
+  obtain ⟨assembled,_,built,body⟩ := bind_success _ _ _ _ _ body
+  have output : parent.result = ⟨assembled,[],[replacement]⟩ := (pure_success _ _ _ _ body).1
+  obtain ⟨child,childRead⟩ := checked.unary_built parentAt (readOption_selected used) built
+    (congrArg NodeResult.subject output)
+  unfold natural at naturalRun
+  obtain ⟨_,_,_,naturalReturn⟩ := bind_success _ _ _ _ _ naturalRun
+  have naturalEq := (pure_success _ _ _ _ naturalReturn).1
+  exact ⟨child,replacement,congrArg NaturalStep.original naturalEq,congrArg NodeResult.naturals output,childRead⟩
 
 end QleisliKernel.SourceTypes.GenericOperationSubstitute

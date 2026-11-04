@@ -166,6 +166,97 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def test_supplier_first_sources_and_component_results(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/supplier-occurrence-first.json'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '6969433ba78afed75e3dad408e22560f0df232f474a2353b85320af8e94cbbd1')
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.inert-supplier-source-history', 1))
+        self.assertIn('external-only', record['scope'])
+        self.assertEqual([row['id'] for row in record['studies']],
+                         ['forwarded-original-occurrences', 'constructed-interior-occurrences',
+                          'mixed-provider-first-refusal'])
+
+        def retained_blob(blob):
+            self.assertEqual(set(blob), {'path', 'bytes', 'sha256', 'text'})
+            raw = blob['text'].encode('utf-8')
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                             (blob['bytes'], blob['sha256']))
+            return raw
+
+        def retained_command(driver, observation, source_path):
+            original_driver = retained_blob(driver)
+            self.assertTrue(original_driver.startswith(b'import QleisliKernel.'))
+            self.assertIn(b'def main (args : List String)', original_driver)
+            retained_blob(observation['stdout'])
+            retained_blob(observation['stderr'])
+            self.assertFalse(observation['clean_commit_build_claim'])
+            self.assertRegex(observation['repository_base_commit'], r'^[0-9a-f]{40}$')
+            self.assertIn('not build-at-commit', observation['source_state'])
+            self.assertTrue(observation['source_window_unchanged'])
+            self.assertTrue(observation['external_inputs_unchanged'])
+            self.assertEqual(observation['argv'][-2:], [driver['path'], source_path])
+            for name in ('capture_record', 'source_window'):
+                reference = observation[name]
+                self.assertGreater(reference['bytes'], 0)
+                self.assertRegex(reference['sha256'], r'^[0-9a-f]{64}$')
+            self.assertIn('external-only', observation['source_window']['scope'])
+
+        for study in record['studies']:
+            with self.subTest(study=study['id']):
+                retained_blob(study['source'])
+                retained_command(study['driver'], study['observation'], study['source']['path'])
+
+        forwarded, interior, mixed = record['studies']
+        self.assertEqual(forwarded['source']['sha256'],
+                         '6a316e93b0b94606b86f0a5ceab3b1bdfe485e8e714d6d83ddaea3dc5b76a7be')
+        original = forwarded['source']['text'].encode('utf-8')
+        self.assertEqual((original[375:376], original[462:466], original[484:488]),
+                         (b'W', b'keep', b'keep'))
+        first = forwarded['observation']
+        self.assertEqual((first['exit_code'], first['stderr']['text']), (0, ''))
+        self.assertEqual(first['stdout']['text'].count('spent=10676573'), 2)
+        self.assertEqual(first['stdout']['text'].count('("choose", 0, "U"), ("relay", 0, "W")'), 2)
+
+        self.assertEqual(interior['source']['sha256'],
+                         '26e3333acc0ebbc75265cd946fe33147a34779c893c0d4787be118f9d8e67458')
+        self.assertIn('choose[then_op(W,W)]', interior['source']['text'])
+        self.assertEqual((interior['observation']['exit_code'], interior['observation']['stderr']['text']), (0, ''))
+        self.assertEqual(interior['observation']['stdout']['text'],
+                         'result=Except.ok ([(0, 2, "relay.W"), (1, 5, "relay.W")], '
+                         '[(0, 254), (1, 254)], [(0, 515), (1, 515)]) spent=18368843\n')
+
+        self.assertEqual(mixed['source']['sha256'],
+                         'aadf326ce712dd3790281ce4fb33bfd1000fcc8371cf161541a9855769096d15')
+        self.assertIn('provider[seed,then_op(W,power(W,0)),W]', mixed['source']['text'])
+        original = mixed['source']['text'].encode('utf-8')
+        self.assertEqual([original[index:index+1] for index in (592, 600, 606)], [b'W'] * 3)
+        refusal = mixed['observation']
+        self.assertEqual(refusal['exit_code'], 1)
+        self.assertIn('workLimit)); work=17369928; left=2630072', refusal['stdout']['text'])
+        self.assertNotIn('result=Except.ok', refusal['stdout']['text'])
+        self.assertIn('expected=', refusal['stdout']['text'])
+        self.assertEqual(refusal['stderr']['text'],
+                         'uncaught exception: original mixed provider traversal refused\n')
+
+        self.assertEqual(len(mixed['diagnostics']), 1)
+        diagnostic = mixed['diagnostics'][0]
+        self.assertEqual(diagnostic['id'], 'mixed-provider-direct-relay-diagnostic')
+        self.assertEqual(diagnostic['source_sha256'], mixed['source']['sha256'])
+        self.assertIn('direct main::relay signature', diagnostic['scope'])
+        self.assertIn('diagnostic sentinel', diagnostic['scope'])
+        observed = diagnostic['observation']
+        retained_command(diagnostic['driver'], observed, mixed['source']['path'])
+        self.assertEqual((observed['exit_code'], observed['stderr']['text']), (0, ''))
+        returned = observed['stdout']['text'].split('\nexpected=', 1)[0]
+        self.assertTrue(returned.startswith('result=Except.ok (0,\n 563,\n 0,'))
+        self.assertIn('work=13913179; left=6086821', returned)
+        self.assertEqual(returned.count('Edge.actual 1'), 2)
+        self.assertEqual(returned.count('Edge.actual 2'), 1)
+        for start in (592, 600, 606):
+            self.assertEqual(returned.count(f'("W", {start}, {start+1})'), 1)
+
     def test_static_runtime_shadow_first_counterexample(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/runtime-static-shadow-first.json.xz'
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),

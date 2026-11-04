@@ -55,12 +55,12 @@ def readChoice {artifact catalogue context description graph implementations ref
   let some actual := description.select formal.child.cursor.value.index | throw .request
   return ⟨formal.owner,formal.name,formal.header,formal.position,actual⟩
 
-structure Supply {sources caller original}
+structure SupplyAt {sources caller original}
     (event : SourceRuntimeContext.NamedEvent sources caller) (app : ApplicationSource sources)
-    (transfer : GenericOperationSubstitute.Checked app original) (key : Parameter) (native : Choice) where
+    (transfer : GenericOperationSubstitute.Checked app original) (index : Nat) (key : Parameter) (native : Choice) where
   step : Step app original
-  atRoot : transfer.result.steps[original.description.root]? = some step
-  rootIndex : step.index = original.description.root
+  atIndex : transfer.result.steps[index]? = some step
+  stepIndex : step.index = index
   genericActual : ActualOperation sources
   selection : FormalSelection step key genericActual
   keyMatches : key = ⟨native.owner,native.name,native.header.ordinal⟩
@@ -73,32 +73,50 @@ structure Supply {sources caller original}
   formal : source.actual.formal = native.header ∧ source.name = native.header.name
   sameActual : source.checked.description = native.description
 
+structure Supply {sources caller original}
+    (event : SourceRuntimeContext.NamedEvent sources caller) (app : ApplicationSource sources)
+    (transfer : GenericOperationSubstitute.Checked app original) (key : Parameter) (native : Choice)
+    extends SupplyAt event app transfer original.description.root key native
+
+theorem Supply.atRoot {sources caller original event app transfer key native}
+    (supply : @Supply sources caller original event app transfer key native) :
+    transfer.result.steps[original.description.root]? = some supply.step := supply.atIndex
+
+theorem Supply.rootIndex {sources caller original event app transfer key native}
+    (supply : @Supply sources caller original event app transfer key native) :
+    supply.step.index = original.description.root := supply.stepIndex
+
+theorem SupplyAt.returnedStep {sources caller original event app transfer index key native}
+    (supply : @SupplyAt sources caller original event app transfer index key native) :
+    supply.step.result.subject = ⟨supply.genericActual.subject,supply.genericActual.suppliers⟩ :=
+  congrArg NodeResult.subject supply.selection.returned
+
 /-- The next outer call receives exactly the selected caller actual, with
 its supplier origins intact. This uses the returned root of the actual fold. -/
 theorem Supply.returned {sources caller original event app transfer key native}
     (supply : @Supply sources caller original event app transfer key native) :
     transfer.result.subject = ⟨supply.genericActual.subject,supply.genericActual.suppliers⟩ := by
   have root := transfer.result.returned
-  rw [supply.atRoot,Option.map_some] at root
-  exact (Option.some.inj root).symm.trans (congrArg NodeResult.subject supply.selection.returned)
+  rw [supply.atIndex,Option.map_some] at root
+  exact (Option.some.inj root).symm.trans supply.toSupplyAt.returnedStep
 
-def readSupply {sources caller original}
+def readSupplyAt {sources caller original}
     (event : SourceRuntimeContext.NamedEvent sources caller) (app : ApplicationSource sources)
-    (transfer : GenericOperationSubstitute.Checked app original) (key : Parameter) (native : Choice) :
-    WorkM (Supply event app transfer key native) := do
+    (transfer : GenericOperationSubstitute.Checked app original) (index : Nat) (key : Parameter) (native : Choice) :
+    WorkM (SupplyAt event app transfer index key native) := do
   exactWork (Exact.charge (16*(transfer.result.steps.length+app.target.header.formals.length+
     event.target.operationActuals.sourceActuals.length+SourceTrace.Meter.tokenFields app.tokens+
     SourceTrace.Meter.tokenFields app.target.envelope.occurrence.header+
     SourceTrace.Meter.tokenFields event.call.call.callee+app.written.arguments.length+
     (app.operationActuals.map fun a => a.original.moduleName.utf8ByteSize+a.original.declarationName.utf8ByteSize+1).sum+
     (app.operationActuals.length+1)*(key.moduleName.utf8ByteSize+key.declarationName.utf8ByteSize+1)+1)))
-  match hstep : transfer.result.steps[original.description.root]?,
+  match hstep : transfer.result.steps[index]?,
       found : app.operationActuals.find? (·.original == key), selected : event.target.operationActuals.sourceActuals[native.position]? with
   | some step,some actual,some source =>
     exactWork (Exact.charge (16*(RuntimeStructuredRoot.argumentFields ⟨[],[],[("",source.checked.description),("",native.description)]⟩+
       SourceTrace.Meter.tokenFields source.actual.argument.tokens+native.owner.utf8ByteSize+native.name.utf8ByteSize+
       native.header.name.utf8ByteSize+source.name.utf8ByteSize+1)))
-    if rootIndex : step.index = original.description.root then
+    if stepIndex : step.index = index then
       if formal : step.node = .formal key then
         if valid : key = ⟨native.owner,native.name,native.header.ordinal⟩ ∧
             app.operationActuals.findIdx (·.original == key) = native.position ∧
@@ -106,12 +124,18 @@ def readSupply {sources caller original}
             app.written.arguments[key.ordinal]? = some source.actual.argument ∧
             source.actual.formal = native.header ∧ source.name = native.header.name ∧
             source.checked.description = native.description then
-          return ⟨step,hstep,rootIndex,actual,step.formal_selection transfer.context formal found,valid.1,
+          return ⟨step,hstep,stepIndex,actual,step.formal_selection transfer.context formal found,valid.1,
             valid.2.1,valid.2.2.1,source,selected,valid.2.2.2.1,valid.2.2.2.2.1,
             ⟨valid.2.2.2.2.2.1,valid.2.2.2.2.2.2.1⟩,valid.2.2.2.2.2.2.2⟩
         else throw .request
       else throw .request
     else throw .request
   | _,_,_ => throw .request
+
+def readSupply {sources caller original}
+    (event : SourceRuntimeContext.NamedEvent sources caller) (app : ApplicationSource sources)
+    (transfer : GenericOperationSubstitute.Checked app original) (key : Parameter) (native : Choice) :
+    WorkM (Supply event app transfer key native) := do
+  return ⟨← readSupplyAt event app transfer original.description.root key native⟩
 
 end QleisliKernel.Qirf.RuntimeFormalActual
