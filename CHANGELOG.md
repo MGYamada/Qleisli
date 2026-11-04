@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add Julia mathematical reference tests and QPTL proof/tactic tests to the
+  main CI full profile and 0.3.0 release-readiness gate. Require same-run
+  producer success and receipts, preserving the existing eight stable required
+  contexts and keeping Julia outside the constitutional acceptance boundary.
 - Add the Qleisli Proof & Tactic Library preview in [`qptl/`](qptl/README.md).
   It provides categorical dagger, isometry and tensor laws, a finite complex
   matrix model and a structural proof tactic in a standalone Lean package.

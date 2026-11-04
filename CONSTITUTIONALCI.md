@@ -199,6 +199,10 @@ and runs the retained fresh proof replays. Required contexts `rust`, `rust-msrv`
 aggregate all selected producers against the exact checkout. A failed selector
 or missing/failed/skipped selected producer fails the gate. An intentionally
 unselected producer is not evidence that its work ran.
+The selected producers also include the Julia mathematical reference test
+(`julia/test/runtests.jl`) and independent QPTL proof/tactic build and test
+(`lake build` and `lake test` under `qptl/`). They join the existing eight
+stable required contexts; no new branch-protection context is needed.
 
 Corpus validation uses `--quick` / `quick-representative-v1` in every profile,
 including releases and manual full validation. Automatic exhaustive corpus
@@ -262,6 +266,10 @@ through trusted workflow `needs` outputs. It verifies repository, commit/tree,
 run ID, attempt, event, producer identity and actual payload hashes. Candidate
 JSON cannot choose the workflow run or trusted digest. Rerunning only failed
 jobs cannot combine earlier-attempt successful receipts into readiness.
+In particular, the Julia and QPTL test jobs must both succeed and emit their
+own same-run receipts; a path-filtered separate workflow, skipped job or
+previous-run success does not satisfy either release dependency. Their tests
+do not certify source preservation or replace the Lean-kernel proof authority.
 The Lean producer must supply the live constitutional replay result for the
 same exact ledger, not a source-only result.
 
