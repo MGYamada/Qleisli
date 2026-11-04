@@ -26,11 +26,9 @@ structure OriginalSetup {sources owner name} (signature : Signature sources owne
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   genericRead : ∃ before after,
-    (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))
-      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
+    (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue).run before = (.ok generic,after)
 
 private def readOriginalSetup {sources owner name} (signature : Signature sources owner name) :
     Finite.WorkM (OriginalSetup signature) := do
@@ -38,9 +36,7 @@ private def readOriginalSetup {sources owner name} (signature : Signature source
   match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
   | .error _ => throw .request
   | .ok tree =>
-    let generic ← NaturalAffine.witness (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))
-      (signature.operations.catalogue.map (·.meaningsContext)))
+    let generic ← NaturalAffine.witness (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue)
     return ⟨tree,parsed,generic.val,by with_reducible exact generic.property⟩
 
 def originalSetup {sources owner name signature} (summary : @Summary sources owner name signature) :
@@ -116,7 +112,7 @@ private def readComputedLogical {sources owner name} (signature : Signature sour
 with its own full original body fuel; this evaluator's fuel bounds only its
 current original AST. -/
 def evalWithReader {sources owner name} (signature : Signature sources owner name)
-    (generic : GenericTypeTrace.Checked signature.original)
+    (generic : RuntimeGenericAnalysis.Checked signature.original)
     (basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations)
     (computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations)
     (readCallee : {callee calleeName : String} → (target : Signature sources callee calleeName) →

@@ -23,8 +23,16 @@ development milestones from the scope of their evidence.
   supplies a constructed operation, match every lexical Op use to its own
   written argument, native occurrence and supplying slot in the next call.
   Preserve repeated edges, zero-power children and unused provider arguments.
-  Further substitutions of those individual children and coverage of all
-  original duties remain open.
+  Follow each of those uses through further substitutions using its position
+  in the whole original argument. The checked closed operation retains the
+  ordered child computations and their exact action. Check the original queue
+  Meaning against the same dependency root, reference requests and native
+  child. Reuse formation and source checks for previously verified operation
+  arguments. The common body reader now reconciles its initial queue with
+  the verified arm occurrences. A uniquely matched written Meaning can be
+  discharged for a fully checked tree of structural operations and bare
+  providers with direct bodies. Unreached occurrences, applied providers and
+  nested Meaning obligations retain their own status.
 
 - Validate operation-tree matrix dimensions after every constructor (#462),
   including supplied provider and formal maps. Prove the actual successful

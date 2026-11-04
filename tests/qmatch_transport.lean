@@ -734,10 +734,66 @@ private def supplyHopSummary (hop : RuntimeForwardedSupply.Hop) : SupplyHopSumma
 
 private abbrev InteriorRow := List Nat × Nat × Nat × String × Nat × Option Nat × Option Nat
 
+private structure TailNodeView where
+  positions : List Nat
+  key : Semantics.SymbolicBasis.Parameter
+  formalName : String
+  inputIndex : Nat
+  nodeOffset : Nat
+  rowOffset : Nat
+  outputIndex : Nat
+  nativeIndex : Nat
+  childNativeIndex : Nat
+  argumentOffset : Option Nat
+  terminal : Bool
+  children : Nat
+  localNodes : Nat
+  localSuppliers : Nat
+  deriving BEq, Repr
+
+private def tailBasic (row : TailNodeView) :=
+  (row.positions,row.key.declarationName,row.formalName,row.inputIndex,row.nodeOffset,row.outputIndex,
+    row.nativeIndex,row.childNativeIndex,row.argumentOffset,row.terminal,row.children,row.localNodes)
+
+private def tailNodeView {artifact catalogue context description graph implementations references prepared root requested}
+    {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
+    {native : OperationDescription.Description} {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String}
+    {task : RuntimeTransitiveInterior.Task checked native queue rootOwner rootName}
+    (step : RuntimeTransitiveInterior.Step task) : TailNodeView :=
+  let focus := step.focus.focus
+  ⟨task.site.positions,task.site.key,task.site.leaf.choice.header.name,
+    focus.inputIndex,focus.nodeOffset,focus.rowOffset,focus.outputIndex,
+    task.site.leaf.finish.occurrence.cursor.binding.index.val,task.site.leaf.child.cursor.binding.index.val,
+    task.site.leaf.supply.source.actual.argument.tokens.head?.map (·.span.startByte),
+    (match step.next with | .terminal .. => true | .named .. => false),step.children.length,
+    focus.row.result.subject.description.nodes.length,focus.row.result.subject.suppliers.length⟩
+
+-- Observe every stored child, without rerunning a source/native reader. An
+-- exhausted observation returns none rather than a truncated successful list.
+private def tailTreeObservation {artifact catalogue context description graph implementations references prepared root requested}
+    {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
+    {native : OperationDescription.Description} {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String} :
+    Nat → {task : RuntimeTransitiveInterior.Task checked native queue rootOwner rootName} →
+    RuntimeTransitiveInterior.Tree task → Option (List TailNodeView) :=
+  Nat.rec (fun {_} _ => none) (fun _ next {_} tree => do
+    match tree with
+    | .node step _ children =>
+      let nested ← (List.finRange step.children.length).mapM
+        fun (index : Fin step.children.length) => next (children index)
+      pure (tailNodeView step :: nested.flatten))
+
+private def completeTailTree {artifact catalogue context description graph implementations references prepared root requested}
+    {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
+    {native : OperationDescription.Description} {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String}
+    {task : RuntimeTransitiveInterior.Task checked native queue rootOwner rootName}
+    (tree : RuntimeTransitiveInterior.Tree task) : Option (List TailNodeView) :=
+  tailTreeObservation (task.invocation.depth+1) tree
+
 private structure InteriorView where
   rows : List InteriorRow
   observed : List GenericFormalPaths.Occurrence
   expected : List GenericFormalPaths.Occurrence
+  trees : Option (List (List TailNodeView))
   deriving BEq
 
 private def callerInterior {artifact catalogue context description graph implementations references prepared root requested checked
@@ -749,12 +805,15 @@ private def callerInterior {artifact catalogue context description graph impleme
     RuntimeForwardedSupply.AtCaller hop prior remaining → InteriorView := by
   cases prior with
   | root => exact fun impossible => nomatch impossible
-  | named => exact fun value =>
+  | named => exact fun result =>
+    let value := result.1.val
     ⟨value.entries.map (fun entry =>
       (entry.leaf.route.positions,entry.leaf.finish.index,entry.leaf.finish.occurrence.cursor.binding.index.val,
        entry.leaf.choice.header.name,entry.leaf.choice.position,
        entry.use.tokens.head?.map (·.span.startByte),entry.leaf.supply.source.actual.argument.tokens.head?.map (·.span.startByte))),
-      value.entries.map RuntimeInteriorSupply.Entry.signature,value.expected⟩
+      value.entries.map RuntimeInteriorSupply.Entry.signature,value.expected,
+      (List.finRange value.entries.length).mapM
+        fun (index : Fin value.entries.length) => completeTailTree (result.2.val index)⟩
 
 private def firstInterior {artifact catalogue context description graph implementations references prepared root requested checked
     queue rootOwner rootName owner name path record invocation original result native index cursor terminal}
@@ -864,7 +923,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
 }
 "#
 
-private def checkForwardedCommonBody (interior : Bool := false) : WorkM Unit := do
+private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool := false) : WorkM Unit := do
   let (seed,order) ← Protocol.Qirf.readAll artifactBytes
   let request ← Protocol.QmatchV5.readRequest requestBytes
   let [(_,selection)] := request.context.calls | throw .invalid
@@ -877,11 +936,21 @@ private def checkForwardedCommonBody (interior : Bool := false) : WorkM Unit := 
       (forwardedSignedSource.replace "choose[W](s,q)" "choose[then_op(W,W)](s,q)").replace
         "relay[then_op(sign,sign)](s,q)" "relay[sign](s,q)"
     else forwardedSignedSource
+  let source := if dormant then source ++
+    "unitary fn dormant(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qmatch(s,q){0=>keep,1=>checked_op(keep,Identity)}}\n"
+    else source
   let artifact := {seed with sources := #[("main",source)]}
   let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
   let checked ← RuntimeBodyOperations.read body order request.runtime
   let [some (hops,inside,_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
-  guard (body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
+  guard (body.source.pending.entries.countP (·.unconsumed) == (if dormant then 2 else 1)) .invalid
+  let [⟨index,witness⟩] := checked.coverage.consumed | throw .invalid
+  guard (witness.link.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
+  if dormant then
+    let [other] := checked.coverage.residual | throw .invalid
+    let .demand _ remaining := body.source.pending.entries[other].subject | throw .invalid
+    guard (other != index && remaining.source.original.origin.state.name == "dormant") .invalid
+  else guard checked.coverage.residual.isEmpty .invalid
   if interior then
     let some located := inside | throw .invalid
     guard (hops == [("main","choose",0,"U",0,0,some 472)] &&
@@ -889,6 +958,60 @@ private def checkForwardedCommonBody (interior : Bool := false) : WorkM Unit := 
   else
     guard (inside.isNone && hops == [("main","choose",0,"U",0,0,some 472),
       ("main","relay",0,"W",0,0,some 549)]) .invalid
+
+-- The same original signed source and three literal call intervals as
+-- constructed-transfer-common-body-first. Reuse the existing nine programs,
+-- evidence and arm/reference requests; do not embed another packet copy.
+private def fourLevelSignedSource : String :=
+  (((forwardedSignedSource.replace "choose[W](s,q)" "choose[then_op(W,W)](s,q)").replace
+    "pub unitary fn route"
+    ("unitary fn outer[const X:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n" ++
+     "    requires Applicable(X),Controllable(X) {relay[X](s,q)}\n" ++
+     "pub unitary fn route")).replace
+    "relay[then_op(sign,sign)](s,q)" "outer[sign](s,q)")
+
+private def checkFourLevelCommonBody : WorkM Unit := do
+  let (seed,order) ← Protocol.Qirf.readAll artifactBytes
+  let request ← Protocol.QmatchV5.readRequest requestBytes
+  let [(_,selection)] := request.context.calls | throw .invalid
+  let inner : SourceSequence.Position := ⟨465,0,3⟩
+  let middle : SourceSequence.Position := ⟨606,0,3⟩
+  let outer : SourceSequence.Position := ⟨683,0,3⟩
+  let supplied := selection.bodies.take 1
+  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] supplied [[]]
+  let outside : Context := .withReferences [middle] [] [(middle,relay)] [] supplied [[]]
+  let context : Context := .mk [outer] [] [(outer,outside)] [] []
+  let artifact := {seed with sources := #[("main",fourLevelSignedSource)]}
+  let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
+  let checked ← RuntimeBodyOperations.read body order request.runtime
+  guard (body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
+  let [⟨_,witness⟩] := checked.coverage.consumed | throw .invalid
+  guard (checked.coverage.residual.isEmpty && witness.link.binding.located.record == 8 &&
+    witness.link.binding.instanceBinding.invocation.depth == 3) .invalid
+  let bindings := checked.writtenArms.map fun link =>
+    (link.binding.instanceBinding.invocation.depth,link.binding.located.record,
+      link.binding.instanceBinding.demand.source.original.origin.offset)
+  guard (bindings == [(3,8,325)]) .invalid
+  let sites := checked.checked.receipts.filterMap fun receipt => originalArmSite receipt.location.site
+  guard (sites == [(0,0,302),(1,1,302)]) .invalid
+  let [some (hops,some inside,_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  guard (hops == [("main","choose",0,"U",0,0,some 472)] &&
+    inside.rows == [([0],0,2,"W",0,some 480,some 612),([1],1,5,"W",0,some 482,some 612)] &&
+    inside.observed == inside.expected) .invalid
+  let some [[leftW,leftX],[rightW,rightX]] := inside.trees | throw .invalid
+  guard ([tailBasic leftW,tailBasic leftX,tailBasic rightW,tailBasic rightX] ==
+    [([0],"relay","W",0,0,0,2,1,some 612,false,1,1),
+     ([0],"outer","X",0,0,0,1,0,some 689,true,0,1),
+     ([1],"relay","W",1,1,1,5,4,some 612,false,1,1),
+     ([1],"outer","X",1,1,1,4,3,some 689,true,0,1)]) .invalid
+  guard ([leftW.key,leftX.key,rightW.key,rightX.key] ==
+    [⟨"main","relay",0⟩,⟨"main","outer",0⟩,⟨"main","relay",0⟩,⟨"main","outer",0⟩] &&
+    leftW.rowOffset == 0 && leftX.rowOffset == 0 && leftW.localSuppliers > 0 && leftX.localSuppliers > 0 &&
+    rightW.rowOffset == leftW.localSuppliers && rightX.rowOffset == leftX.localSuppliers) .invalid
+  let result := checked.checked.result
+  guard (result.history.issued.map (·.ordinal) == [0,1] && result.history.nextOrdinal == 2 && result.retired.isEmpty &&
+    result.history.bindings.map (·.owner.ordinal) == [0,1] &&
+    result.history.bindings.map (·.port.token) == [4,5]) .invalid
 
 private inductive ObservingFault where
   | correct | wrongMeasurementOwner | wrongXor | contextOrder | omittedUnitOwner | wrongSelectedPhase
@@ -1322,10 +1445,209 @@ private def interiorSupplyStudy : WorkM Unit := do
     else throw .invalid
   else throw .invalid
 
+-- Exact first source from constructed-transfer-tail-first/main.qli. The
+-- earlier full route stopped at workLimit before the arm table; the separate
+-- outer-only observation reached W records 2/5 and X records 1/4. Neither first
+-- diagnostic is rewritten by these continuous public-budget component checks.
+private def fourLevelSupplySource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+meaning I:Bit=reference(keep);
+unitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U) {
+    qmatch(s,q){0=>keep,1=>checked_op(U,I)}
+}
+unitary fn relay[const W:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(W),Controllable(W) {choose[then_op(W,W)](s,q)}
+unitary fn outer[const X:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(X),Controllable(X) {relay[X](s,q)}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){outer[keep](s,q)}
+"#
+
+private inductive TailFault where
+  | correct | crossedNativeLeaf | crossedAncestry | siblingRow | unshiftedRow
+  | missingRow | wrongFormal | wrongHopChoice | reversedUses
+  deriving BEq, Repr
+
+private def tailTreeRows {artifact catalogue context description graph implementations references prepared root requested}
+    {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
+    {native : OperationDescription.Description} {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String} :
+    Nat → {task : RuntimeTransitiveInterior.Task checked native queue rootOwner rootName} →
+    RuntimeTransitiveInterior.Tree task → WorkM (List TailNodeView) :=
+  Nat.rec (fun {_} _ => throw .limit) (fun _ next {_} tree => do
+    match tree with
+    | .node step _ children =>
+      let view := tailNodeView step
+      exactWork (Exact.charge (16*(step.children.length+1)^2))
+      let nested ← (List.finRange step.children.length).mapM fun index => next (children index)
+      pure (view :: nested.flatten))
+
+private def tailSiteSignature {artifact catalogue context description graph implementations references prepared root requested checked native}
+    (site : @RuntimeTransitiveInterior.Site artifact catalogue context description graph implementations references prepared root requested checked native) :
+    GenericFormalPaths.Occurrence :=
+  (site.leaf.route.positions,site.leaf.finish.index,site.key)
+
+/-- Both Trees and all replacement sites are real children of the one checked
+native occurrence. Only the proposed ancestry/coverage or selected hop is wrong.
+Identical Choice payloads alone do not identify a different native occurrence. -/
+private def checkTailMutations {artifact catalogue context description graph implementations references prepared root requested}
+    {checked : @RuntimeOperationTree.Checked artifact catalogue context description graph implementations references prepared root requested}
+    {native : OperationDescription.Description} {queue : GenericDutyQueue.Checked catalogue} {rootOwner rootName : String}
+    {leftTask rightTask : RuntimeTransitiveInterior.Task checked native queue rootOwner rootName}
+    (fault : TailFault) (left : RuntimeTransitiveInterior.Tree leftTask) (right : RuntimeTransitiveInterior.Tree rightTask) :
+    WorkM Unit := do
+  match left,right with
+  | .node leftStep _ _,.node rightStep _ _ =>
+    let [li] := List.finRange leftStep.children.length | throw .invalid
+    let [ri] := List.finRange rightStep.children.length | throw .invalid
+    let leftX := leftStep.children[li]
+    let rightX := rightStep.children[ri]
+    let actualLeft := tailSiteSignature leftX.site
+    let actualRight := tailSiteSignature rightX.site
+    guard ([actualLeft] == leftStep.focus.expectedAt && [actualRight] == rightStep.focus.expectedAt &&
+      leftX.site.ancestors == [0] && rightX.site.ancestors == [1] &&
+      leftX.site.leaf.finish.occurrence.cursor.binding.index.val == 1 &&
+      rightX.site.leaf.finish.occurrence.cursor.binding.index.val == 4 &&
+      leftX.site.key == rightX.site.key && leftX.site.leaf.choice.position == 0 &&
+      rightX.site.leaf.choice.position == 0 &&
+      leftX.site.leaf.choice.description == rightX.site.leaf.choice.description) .invalid
+    match fault with
+    | .correct | .reversedUses => pure ()
+    | .crossedNativeLeaf =>
+      -- This replacement carries the other real X row AND its native cursor.
+      expectSupplyRefusal (RuntimeTransitiveInterior.readFocus {rightX.site with ancestors := leftX.site.ancestors})
+    | .crossedAncestry =>
+      expectSupplyRefusal (RuntimeTransitiveInterior.readFocus {leftX.site with ancestors := rightX.site.ancestors})
+    | .siblingRow =>
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [actualRight] leftStep.focus.expectedAt)
+    | .unshiftedRow =>
+      -- The right whole-result X is 1; its original local closure index was 0.
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [actualRight] rightStep.focus.expected)
+    | .missingRow =>
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [] rightStep.focus.expectedAt)
+    | .wrongFormal =>
+      let (positions,index,key) := actualRight
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage
+        [(positions,index,{key with declarationName := "relay"})] rightStep.focus.expectedAt)
+    | .wrongHopChoice =>
+      let site := leftX.site
+      expectSupplyRefusal (RuntimeFormalActual.readSupplyAt site.event site.app site.transfer
+        site.leaf.finish.index site.key leftTask.site.leaf.choice)
+
+private def checkFourLevelAtCaller {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
+    (hop : @RuntimeForwardedSupply.Selected artifact catalogue context description graph implementations references prepared root requested checked
+      native index cursor terminal caller original event app transfer paired)
+    (prior : @RuntimeDutyInvocation.Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation)
+    (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result)
+    (fault : TailFault) : RuntimeForwardedSupply.AtCaller hop prior remaining → WorkM (List (List TailNodeView)) := by
+  cases prior with
+  | root => exact fun impossible => nomatch impossible
+  | named => exact fun value => do
+    let immediate := value.1.val
+    guard (immediate.entries.map (fun entry =>
+      (entry.leaf.route.positions,entry.leaf.finish.index,entry.leaf.finish.occurrence.cursor.binding.index.val,
+        entry.use.tokens.head?.map (·.span.startByte),entry.leaf.supply.source.actual.argument.tokens.head?.map (·.span.startByte))) ==
+      [([0],0,2,some 383,some 515),([1],1,5,some 385,some 515)]) .invalid
+    let [li,ri] := List.finRange immediate.entries.length | throw .invalid
+    let left := value.2.val li
+    let right := value.2.val ri
+    let leftRows ← tailTreeRows 4 left
+    let rightRows ← tailTreeRows 4 right
+    let [leftW,leftX] := leftRows | throw .invalid
+    let [rightW,rightX] := rightRows | throw .invalid
+    guard ([tailBasic leftW,tailBasic leftX,tailBasic rightW,tailBasic rightX] ==
+      [([0],"relay","W",0,0,0,2,1,some 515,false,1,1),
+       ([0],"outer","X",0,0,0,1,0,some 587,true,0,1),
+       ([1],"relay","W",1,1,1,5,4,some 515,false,1,1),
+       ([1],"outer","X",1,1,1,4,3,some 587,true,0,1)]) .invalid
+    -- Binary assembly keeps each entire supplier block. A zero row offset
+    -- on the right would lose the preceding sibling's original origins.
+    guard (leftW.rowOffset == 0 && leftX.rowOffset == 0 &&
+      leftW.localSuppliers > 0 && leftX.localSuppliers > 0 &&
+      rightW.rowOffset == leftW.localSuppliers && rightX.rowOffset == leftX.localSuppliers) .invalid
+    checkTailMutations fault left right
+    if fault == .reversedUses then
+      let [first,last] := immediate.entries.map RuntimeInteriorSupply.Entry.signature | throw .invalid
+      expectSupplyRefusal (RuntimeInteriorSupply.checkCoverage [last,first] immediate.expected)
+    return [leftRows,rightRows]
+
+private def checkFourLevelChain {artifact catalogue context description graph implementations references prepared root requested checked
+    queue rootOwner rootName owner name path record invocation original result native index cursor terminal}
+    {binding : @RuntimeDutyInvocation.Binding artifact.sources catalogue queue rootOwner rootName owner name path record invocation}
+    {transport : GenericDutyQueue.Transport invocation.applications.reverse original result}
+    {paired : @RuntimeClosedSubject.Paired artifact catalogue context description graph implementations references prepared root requested
+      checked native index cursor terminal}
+    (fault : TailFault) (chain : RuntimeForwardedSupply.Chain binding transport paired) :
+    WorkM (List (List TailNodeView)) := do
+  match chain with
+  | .direct .. => throw .invalid
+  | .formal hop inside _ =>
+    match inside.val with
+    | .noInterior _ => throw .invalid
+    | .located _ value _ => checkFourLevelAtCaller hop _ _ fault value
+
+private def fourLevelSupplyStudy (fault : TailFault) : WorkM (List (List TailNodeView)) := do
+  let identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
+  let selected : Semantics.Observation.Program :=
+    ⟨[⟨0,[0],1⟩,⟨1,[1],1⟩],[],[.pure (.quantumIf 0 1 2 3 [] [])],[2,3],[],.unitary⟩
+  let artifact : Artifact := ⟨#[selected,identity],#[],#[("main",fourLevelSupplySource)],0,none⟩
+  let source ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named outer] := source.body.checked.events | throw .invalid
+  let [duty] := source.pending.entries.filter (·.unconsumed) | throw .invalid
+  let outside ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody outer)
+  let [.named middle] := outside.val.checked.events | throw .invalid
+  let relay ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody middle)
+  let [.named inner] := relay.val.checked.events | throw .invalid
+  let choose ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody inner)
+  if outerCaller : outer.target.callerName = "route" then
+    let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" outer.target.callerName := by
+      simpa only [outerCaller] using (RuntimeOrdinaryBody.CallPath.root source.body)
+    let outerPath := RuntimeOrdinaryBody.CallPath.named outer outside.val (by with_reducible exact outside.property) parent
+    if middleCaller : middle.target.callerName = outer.target.resolution.declaration.name then
+      let middleParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
+          outer.target.resolution.moduleName middle.target.callerName := by simpa only [middleCaller] using outerPath
+      let relayPath := RuntimeOrdinaryBody.CallPath.named middle relay.val (by with_reducible exact relay.property) middleParent
+      if innerCaller : inner.target.callerName = middle.target.resolution.declaration.name then
+        let innerParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
+            middle.target.resolution.moduleName inner.target.callerName := by simpa only [innerCaller] using relayPath
+        let path := RuntimeOrdinaryBody.CallPath.named inner choose.val (by with_reducible exact choose.property) innerParent
+        let invoked ← RuntimeDutyInvocation.readDemand duty path
+        let body := choose.val.checked
+        let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .invalid
+        let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation
+          body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
+        let [left,right] := List.finRange table.arms.length | throw .invalid
+        let empty : Context := .mk [] [] [] [] []
+        let provider : RuntimeProviderHeader.Request := (.pure 1,empty)
+        let plain ← RuntimePreparedArm.prepare artifact source.catalogue table left [provider] []
+        let arm ← RuntimePreparedArm.prepare artifact source.catalogue table right (List.replicate 2 provider) [[provider]]
+        let rows := source.signature.sourceRows ++ outside.val.checked.summary.staticRows ++ relay.val.checked.summary.staticRows ++
+          body.summary.staticRows ++ outer.target.sourceRows ++ middle.target.sourceRows ++ inner.target.sourceRows ++ plain.rows ++ arm.rows
+        let root ← Validity.checkRootFromRoots artifact #[0,1] rows (artifact.root :: plain.roots ++ arm.roots).eraseDups
+        let .constructed _ _ _ markers _ ← RuntimePreparedArm.read arm root | throw .invalid
+        let [entry] := markers.entries | throw .invalid
+        let child ← RuntimeNativeSubject.readSubject entry.assertion
+        let .closed closed ← GenericOperation.close invoked.demand.transported.subject.description | throw .invalid
+        let paired ← RuntimeClosedSubject.read closed child.child.cursor
+        let chain ← RuntimeForwardedSupply.read invoked.binding invoked.demand.transported.receipt paired.matched.paired
+        guard (chain.hops.map supplyHopSummary == [("main","choose",0,"U",0,0,some 375)]) .invalid
+        checkFourLevelChain fault chain
+      else throw .invalid
+    else throw .invalid
+  else throw .invalid
+
 /-- Run the common source-origin association under native execution as well
 as the kernel guards. Both original arms are covered; the one original Meaning
 duty remains pending. Wrong phase and source order retain exact refusals. -/
 def nativeSourceMarkerControls : IO Unit := do
+  for fault in [TailFault.correct,.crossedNativeLeaf,.crossedAncestry,.siblingRow,.unshiftedRow,
+      .missingRow,.wrongFormal,.wrongHopChoice,.reversedUses] do
+    match (fourLevelSupplyStudy fault).run WorkProfile.qmatch.limit with
+    | (.ok rows,left) =>
+      if fault == .correct then
+        IO.println s!"four-level original supplier trees={repr rows}; work={WorkProfile.qmatch.limit-left}"
+    | (.error error,_) =>
+      throw (IO.userError ("four-level original supplier control " ++ reprStr fault ++ ": " ++ reprStr error))
   match (interiorSupplyStudy.run WorkProfile.qmatch.limit).1 with
   | .ok () => pure ()
   | .error error => throw (IO.userError ("constructed argument occurrence controls: " ++ reprStr error))
@@ -1340,6 +1662,9 @@ def nativeSourceMarkerControls : IO Unit := do
     match ((checkForwardedCommonBody interior).run WorkProfile.qmatch.limit).1 with
     | .ok () => pure ()
     | .error error => throw (IO.userError ("common forwarded source arguments: " ++ reprStr error))
+  match (checkForwardedCommonBody true true).run WorkProfile.qmatch.limit |>.1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError ("unreached equal-valued Meaning duty: " ++ reprStr error))
   checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do
@@ -1350,7 +1675,10 @@ def nativeSourceMarkerControls : IO Unit := do
     match observingStudy composed .contextOrder with
     | .error .request => pure ()
     | _ => throw (IO.userError "native common source order refusal changed")
-  IO.println "passed repeated-callee duty pairing, common arm bindings and observing phase/order controls; original Meaning discharge remains pending"
+  match (checkFourLevelCommonBody.run WorkProfile.qmatch.limit).1 with
+  | .ok () => pure ()
+  | .error error => throw (IO.userError ("four-level signed common body: " ++ reprStr error))
+  IO.println "passed written Meaning coverage, missing equal-valued occurrence, repeated-callee pairing, and observing phase/order controls"
 
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 

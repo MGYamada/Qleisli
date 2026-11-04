@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeInteriorAssembly
+import QleisliKernel.Qirf.RuntimeTransitiveInterior
 import QleisliKernel.Qirf.RuntimeClosedSubject
 
 /-! Follow a root operation formal across the original named call path. Each
@@ -73,9 +74,14 @@ def AtCaller {artifact catalogue context description graph implementations refer
     (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) : Type :=
   match prior,remaining with
   | .root ..,_ => Empty
-  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) _ _,receipt =>
-    RuntimeInteriorSupply.Checked hop.supply outer supplying.original
-      (RuntimeFormalActual.splitInvocation parent supplying target receipt).transfer hop.wrapper.child
+  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) outerPrior _,receipt =>
+    let pieces := RuntimeFormalActual.splitInvocation parent supplying target receipt
+    Σ immediate : {value : RuntimeInteriorSupply.Checked hop.supply outer supplying.original pieces.transfer hop.wrapper.child //
+      Computed (RuntimeInteriorSupply.read hop.supply outer supplying.original pieces.transfer hop.wrapper.child) value},
+      {trees : (i : Fin immediate.val.entries.length) →
+        RuntimeTransitiveInterior.Tree (RuntimeTransitiveInterior.taskOf
+          (RuntimeTransitiveInterior.Site.ofLeaf [] immediate.val.entries[i].leaf) outerPrior pieces.tail) //
+        Computed (RuntimeTransitiveInterior.read outerPrior pieces.tail immediate.val.entries) trees}
 
 private def readAtCaller {artifact catalogue context description graph implementations references prepared root requested checked
     native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}
@@ -85,9 +91,14 @@ private def readAtCaller {artifact catalogue context description graph implement
     (remaining : GenericDutyQueue.Transport invocation.applications.reverse transfer.result.subject result) : WorkM (AtCaller hop prior remaining) :=
   match prior,remaining with
   | .root ..,_ => throw .request
-  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) _ _,receipt =>
-    RuntimeInteriorSupply.read hop.supply outer supplying.original
-      (RuntimeFormalActual.splitInvocation parent supplying target receipt).transfer hop.wrapper.child
+  | .named (event := outer) (invocation := parent) (application := supplying) (target := target) outerPrior _,receipt =>
+    do
+      let pieces := RuntimeFormalActual.splitInvocation parent supplying target receipt
+      let immediate ← NaturalAffine.witness
+        (RuntimeInteriorSupply.read hop.supply outer supplying.original pieces.transfer hop.wrapper.child)
+      let followed ← NaturalAffine.witness (RuntimeTransitiveInterior.read outerPrior pieces.tail immediate.val.entries)
+      return ⟨⟨immediate.val,by with_reducible exact immediate.property⟩,
+        ⟨followed.val,by with_reducible exact followed.property⟩⟩
 
 inductive Interior {artifact catalogue context description graph implementations references prepared root requested checked
     native index cursor terminal caller original event app transfer paired queue rootOwner rootName owner name path record invocation result}

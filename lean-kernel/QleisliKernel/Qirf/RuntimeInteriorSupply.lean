@@ -194,6 +194,22 @@ def readLeaf {artifact catalogue context description graph implementations refer
     return ⟨point,found.val.2,by with_reducible exact found.property,selected,wrapper,choice.val,
       by with_reducible exact choice.property,supply.val,by with_reducible exact supply.property⟩
 
+private def formalChild {artifact catalogue context description graph implementations references prepared root requested checked native
+    index cursor terminal} (paired : @Paired artifact catalogue context description graph implementations references prepared
+      root requested checked native index cursor terminal)
+    (selected : {value : Formal cursor // Computed (RuntimeNativeSubject.readFormal cursor) value})
+    (same : formalAt paired = some selected) : Paired checked native index selected.val.child.cursor terminal := by
+  cases paired with
+  | node => cases same
+  | formal picked read child => cases same; exact child
+
+def Leaf.child {artifact catalogue context description graph implementations references prepared root requested checked native
+    caller original event app transfer start path key}
+    (leaf : @Leaf artifact catalogue context description graph implementations references prepared root requested checked native
+      caller original event app transfer start path key) : Native checked native :=
+  ⟨leaf.finish.occurrence.index,leaf.selected.val.child.cursor,leaf.finish.occurrence.terminal,
+    formalChild leaf.finish.occurrence.paired leaf.selected leaf.wrapper⟩
+
 def Path.positions {artifact catalogue context description graph implementations references prepared root requested checked native
     sources app original transfer start edges finish}
     (route : @Path artifact catalogue context description graph implementations references prepared root requested checked native
@@ -239,6 +255,27 @@ def Entry.signature {artifact catalogue context description graph implementation
     (entry : Entry uses event app transfer start) : List Nat × Nat × Parameter :=
   (entry.leaf.route.positions,entry.leaf.finish.index,entry.use.formal.key)
 
+def readEntries {artifact catalogue context description graph implementations references prepared root requested checked native caller
+    original sourceOwner sourceName originalHeader helpers environment scope genericState tokens}
+    {inst : @StaticInstantiation.Checked artifact.sources sourceOwner sourceName originalHeader}
+    (uses : List (OperationSourceUses.Use inst helpers environment scope genericState tokens))
+    (event : SourceRuntimeContext.NamedEvent artifact.sources caller) (app : GenericOperation.ApplicationSource artifact.sources)
+    (transfer : GenericOperationSubstitute.Checked app original)
+    (start : @Point artifact catalogue context description graph implementations references prepared root requested checked native) :
+    WorkM (List (Entry uses event app transfer start)) := do
+  exactWork (Exact.charge (16*(uses.length+1)))
+  let values := uses.toArray
+  (List.finRange uses.length).mapM fun (index : Fin uses.length) => do
+    let use := values[index.val]'(by simpa only [values,List.size_toArray] using index.isLt)
+    have originalUse : uses[index.val]? = some use := by
+      simpa only [use,values,List.getElem_toArray] using List.getElem?_eq_getElem index.isLt
+    let leaf ← NaturalAffine.witness (readLeaf event app transfer start use.path use.formal.key)
+    exactWork (Exact.charge (16*(SourceTrace.Meter.tokenFields originalHeader.occurrence.header+
+      SourceTrace.Meter.tokenFields app.target.envelope.occurrence.header+1)))
+    if same : use.formal.headerFormal = leaf.val.choice.header then
+      return ⟨index,use,originalUse,leaf.val,by with_reducible exact leaf.property,same⟩
+    else throw .request
+
 private def occurrenceFields (occurrences : List GenericFormalPaths.Occurrence) : Nat :=
   occurrences.foldl (fun total (path,_,key) =>
     total + path.length + key.moduleName.utf8ByteSize + key.declarationName.utf8ByteSize + 1) 0
@@ -276,20 +313,8 @@ def read {artifact catalogue context description graph implementations reference
       checked native index cursor terminal) : WorkM (Checked incoming event app transfer paired) := do
   let sourced ← NaturalAffine.witness (OperationSourceUses.readChecked incoming.source.checked)
   let uses := sourced.val.uses
-  exactWork (Exact.charge (16*(uses.length+1)))
-  let values := uses.toArray
   let start := initial innerTransfer.result.subject.description.root paired
-  let entries ← (List.finRange uses.length).mapM fun (index : Fin uses.length) => do
-    let use := values[index.val]'(by simpa only [values,List.size_toArray] using index.isLt)
-    have originalUse : uses[index.val]? = some use := by
-      simpa only [use,values,List.getElem_toArray] using List.getElem?_eq_getElem index.isLt
-    let leaf ← NaturalAffine.witness (readLeaf event app transfer start use.path use.formal.key)
-    exactWork (Exact.charge (16*(SourceTrace.Meter.tokenFields innerEvent.target.callerSignature.original.occurrence.header+
-      SourceTrace.Meter.tokenFields app.target.envelope.occurrence.header+1)))
-    if same : use.formal.headerFormal = leaf.val.choice.header then
-      return (⟨index,use,originalUse,leaf.val,by with_reducible exact leaf.property,same⟩ :
-        Entry uses event app transfer start)
-    else throw .request
+  let entries ← readEntries uses event app transfer start
   if ordered : entries.map (·.index) = List.finRange uses.length then
     let expected ← NaturalAffine.witness (GenericFormalPaths.read incoming.genericActual.subject)
     exactWork (Exact.charge (8*(entries.foldl (fun total e => total+e.use.path.length+1) 1)))

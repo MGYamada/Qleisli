@@ -42,9 +42,13 @@ def selectInstance {sources caller callerName}
   | none => throw .request
   | some resolution =>
     let operationReader := SourceOperation.buildWithGeneric callerSignature.toChecked entries environment scope genericState 65
-    let actuals ← StaticApplication.read callerSignature.instantiation entries environment scope written
+    let actualsWithState ← StaticApplication.readWithState callerSignature.instantiation entries environment scope written
       resolution.moduleName resolution.declaration.name operationReader genericState
-    let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
+    let actuals := actualsWithState.val
+    let operationActuals ← SourceOperation.checkApplicationActualsWithBuilder actuals callerSignature.supply (by
+      change SourceOperation.buildWithInstantiation callerSignature.instantiation entries environment scope genericState 65 =
+        SourceOperation.buildWithInstantiation callerSignature.instantiation entries environment scope actualsWithState.val.genericState 65
+      rw [actualsWithState.property])
     let core ← QuantumSignatureCore.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
       (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers))
     let operations ← StaticOperation.checkArgumentsFrom core.instantiation (.source caller) operationActuals.actuals

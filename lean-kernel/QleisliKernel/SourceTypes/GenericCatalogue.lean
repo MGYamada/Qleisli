@@ -302,7 +302,7 @@ def bodyReferences {sources} (body : BodyRecord sources) : List DefId :=
 /-- Project exact already-checked records by actual original reference edges.
 This operation never rechecks a body and never includes an unrelated validated
 declaration merely because it belongs to the same module or catalogue. -/
-def selectRecords {sources} (records : List (BodyRecord sources)) :
+def selectRecordsWith {sources} (references : BodyRecord sources → List DefId) (records : List (BodyRecord sources)) :
     Nat → List DefId → List (BodyRecord sources) → WorkM (List (BodyRecord sources)) :=
   Nat.rec (fun pending selected => if pending.isEmpty then pure selected else throw .limit)
     (fun _ next pending selected => do
@@ -312,7 +312,10 @@ def selectRecords {sources} (records : List (BodyRecord sources)) :
       | id :: rest =>
         if selected.any (·.id == id) then next rest selected else
           let some body := records.find? (·.id == id) | throw .request
-          next (rest ++ bodyReferences body) (selected ++ [body]))
+          next (rest ++ references body) (selected ++ [body]))
+
+def selectRecords {sources} (records : List (BodyRecord sources)) :=
+  selectRecordsWith bodyReferences records
 
 def Entry.relevanceFuel {sources catalogue owner name original}
     (_entry : @Entry sources catalogue owner name original) : Nat :=

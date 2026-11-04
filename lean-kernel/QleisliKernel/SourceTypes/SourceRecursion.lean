@@ -1,3 +1,4 @@
+import QleisliKernel.SourceTypes.RuntimeGenericAnalysis
 import QleisliKernel.SourceTypes.GenericTypeTrace
 
 /-! Exact original self-call decrease receipts. Closed specialization descent
@@ -29,7 +30,7 @@ instance {sources owner name targetOwner targetName original scope callee target
 
 structure Matched {sources owner name targetOwner targetName}
     {original : OrdinarySignature.Original sources owner name}
-    (generic : GenericTypeTrace.Checked original) (scope : List String) (callee : List LocatedToken)
+    (generic : RuntimeGenericAnalysis.Checked original) (scope : List String) (callee : List LocatedToken)
     (target : OrdinarySignature.Original sources targetOwner targetName) where
   receipt : GenericTypeTrace.Recursion sources
   originalMember : receipt ∈ generic.recursiveCalls
@@ -37,7 +38,7 @@ structure Matched {sources owner name targetOwner targetName}
 
 inductive Checked {sources owner name targetOwner targetName}
     {original : OrdinarySignature.Original sources owner name}
-    (generic : GenericTypeTrace.Checked original) (scope : List String) (callee : List LocatedToken)
+    (generic : RuntimeGenericAnalysis.Checked original) (scope : List String) (callee : List LocatedToken)
     (target : OrdinarySignature.Original sources targetOwner targetName) where
   | other (different : (owner,name) ≠ (targetOwner,targetName))
   | self (runtime : original.parsedHeader.ordinaryOnly = false)
@@ -45,7 +46,7 @@ inductive Checked {sources owner name targetOwner targetName}
 
 def read {sources owner name targetOwner targetName}
     {original : OrdinarySignature.Original sources owner name}
-    (generic : GenericTypeTrace.Checked original) (scope : List String) (callee : List LocatedToken)
+    (generic : RuntimeGenericAnalysis.Checked original) (scope : List String) (callee : List LocatedToken)
     (target : OrdinarySignature.Original sources targetOwner targetName) :
     WorkM (Checked generic scope callee target) := do
   if same : (owner,name) = (targetOwner,targetName) then

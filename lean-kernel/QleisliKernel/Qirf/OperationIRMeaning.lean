@@ -90,6 +90,24 @@ def readNode {sources} (metadata : StaticOperation.Result sources) (node : Node)
   guard (value.cols == input.labels.length && value.rows == output.labels.length) .request
   return (value,nextProvider)
 
+private theorem formalPosition_remap {sources} (metadata : StaticOperation.Result sources)
+    (operations : List (String × Nat)) (ordinal : Nat) (f : Nat → Nat) :
+    formalPosition metadata (operations.map fun (name,index) => (name,f index)) ordinal =
+      formalPosition metadata operations ordinal := by
+  simp only [formalPosition,List.map_map,List.length_map,Function.comp_def]
+
+/-- Edge addresses locate the supplied occurrence values before evaluation.
+Renumbering these addresses leaves the executable node computation unchanged
+with the same ordered operands, exact provider rows and original metadata. -/
+theorem readNode_remap {sources} (metadata : StaticOperation.Result sources) (node : Node)
+    (f : Nat → Nat) (children providers : List Matrix) (nextProvider : Nat) :
+    readNode metadata (node.remap f) children providers nextProvider =
+      readNode metadata node children providers nextProvider := by
+  cases node <;> first
+    | rfl
+    | (rcases children with _ | ⟨x,_ | ⟨y,_ | ⟨z,rest⟩⟩⟩ <;> rfl)
+    | simp only [Node.remap,readNode,formalPosition_remap]
+
 /-- Success of the executable evaluator, for every node and starting budget,
 retains both actual carrier reads and exact declared logical dimensions. No
 caller-supplied shape premise or reference-only acceptance predicate is used. -/

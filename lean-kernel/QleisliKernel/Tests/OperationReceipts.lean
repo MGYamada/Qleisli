@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.StaticSelection
 import QleisliKernel.SourceTypes.PhaseApplication
+import QleisliKernel.WorkLimit
 
 /-! Small original per-node supplying-context regressions. Metadata receipts
 retain private-source forwarding and host/public boundaries; provider bodies,
@@ -70,5 +71,44 @@ private def mismatchedInstance : Bool :=
 
 -- Even an unused Nat actual belongs to the exact original instance receipt.
 #guard mismatchedInstance = false
+
+private def loanSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+meaning I:Bit=reference(keep);
+meaning J:Bit=reference(keep);
+unitary fn run[const U:Op<Bit>,const V:Op<Bit>](q:Q<Bit>)->Q<Bit>
+    requires Applicable(U) {U(q)}
+pub unitary fn route(q:Q<Bit>)->Q<Bit>{run[checked_op(keep,I),checked_op(keep,I)](q)}
+"#
+
+private def loanControls : WorkM Bool := do
+  let original : Sources := #[("main",loanSource)]
+  let leaf := OperationDescription.provider "main" "keep" [] [] []
+  let marked (name : String) := leaf.unary (fun index => .requested index "main" name)
+  let arguments := [("U",marked "I"),("V",marked "I")]
+  let catalogue ← GenericCatalogue.read original
+  let signature ← QuantumSignature.readWithArguments original "main" "run"
+    {operations := arguments} (.source "main") (some catalogue)
+  let formal (v : String) := OperationDescription.formal "main" "run" [] [] [("U",marked "I"),("V",marked v)] 0
+  let inspect (description : OperationDescription.Description) := do
+    let graph ← StaticOperation.checkWithSupply signature.supply description
+    pure (graph.requirements.map Prod.fst,graph.contexts)
+  let refuses (description : OperationDescription.Description) := do
+    try
+      let _ ← inspect description
+      pure false
+    catch error => match error with | .request => pure true | other => throw other
+  let separate ← inspect (formal "I")
+  let zero ← inspect ((formal "I").unary (fun child => .power child 0))
+  -- Both descriptors still select checked_op(keep,I) from this complete graph.
+  -- The two distinct original loans claim the same destination nodes.
+  let overlap : OperationDescription.Description :=
+    ⟨[.provider "main" "keep" [] [] [],.requested 0 "main" "I",.formal "main" "run" [] [] [("U",1),("V",1)] 0],2⟩
+  let crossed ← refuses overlap
+  let stale ← refuses (formal "J")
+  return separate == ([0,2],List.replicate 5 (.source "main")) &&
+    zero == ([0,2],List.replicate 6 (.source "main")) && crossed && stale
+
+#guard (loanControls.run exactWorkLimit).1.toOption == some true
 
 end QleisliKernel.Tests.OperationReceipts

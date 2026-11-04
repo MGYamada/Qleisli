@@ -186,13 +186,16 @@ def Checked.arguments {sources owner name original instantiation entries environ
   {bases := checked.actuals.flatMap Actual.bases,naturals := checked.actuals.flatMap Actual.naturals,
     operations := checked.actuals.flatMap Actual.operations}
 
-def read {sources owner name original}
+/-- Retain the exact symbolic state supplied to this actual read. The proof
+does not infer state equality from selected Nat values or operation graphs. -/
+def readWithState {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
     (scope : List String) {tokens : List LocatedToken} (written : Syntax tokens)
     (targetOwner targetName : String) (operationReader : OperationReader := noOperations)
     (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
-    WorkM (Checked instantiation entries environment scope operationReader written targetOwner targetName) := do
+    WorkM {checked : Checked instantiation entries environment scope operationReader written targetOwner targetName //
+      checked.genericState = genericState} := do
   let target ← StaticHeaders.read sources targetOwner targetName instantiation.originals
   guard (written.arguments.length ≤ 32) .limit
   exactWork (Exact.charge (64*(tokens.length+1)*(target.header.formals.length+1)))
@@ -202,8 +205,17 @@ def read {sources owner name original}
     if ordered : actuals.map (fun actual => (actual.formal,actual.argument)) =
         target.header.formals.zip written.arguments then
       let premises ← StaticCallPremises.read instantiation genericState scope target written.arguments
-      return ⟨target,actuals,complete,ordered,genericState,premises⟩
+      return ⟨⟨target,actuals,complete,ordered,genericState,premises⟩,rfl⟩
     else throw .request
   else throw .request
+
+def read {sources owner name original}
+    (instantiation : @StaticInstantiation.Checked sources owner name original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) {tokens : List LocatedToken} (written : Syntax tokens)
+    (targetOwner targetName : String) (operationReader : OperationReader := noOperations)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources) := none) :
+    WorkM (Checked instantiation entries environment scope operationReader written targetOwner targetName) := do
+  return (← readWithState instantiation entries environment scope written targetOwner targetName operationReader genericState).val
 
 end QleisliKernel.SourceTypes.StaticApplication

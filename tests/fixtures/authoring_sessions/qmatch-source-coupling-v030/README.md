@@ -407,3 +407,11 @@ omits route traversal and the complete pending duty queue.
 Full kernel windows remain external-only, and the recorded base commits are
 not clean-commit build attestations. This inert packet supplies no fresh replay,
 whole-caller preservation proof, accepted handle or guarantee admission.
+
+The [written duty study](written-duty-first.json) preserves the first four-call
+source, signed body and work-limit diagnostics. Its negative control adds an
+unreached arm with the same requested Identity. The common reader retains both
+initial queue items, discharges the selected occurrence and reports the other
+queue position as residual. The signed example covers two bare phase providers
+inside an ordered composition. Applied providers and nested requested operations
+require further source evidence.

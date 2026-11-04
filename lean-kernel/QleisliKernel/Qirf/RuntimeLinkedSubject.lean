@@ -1,5 +1,8 @@
 import QleisliKernel.Qirf.RuntimeWrittenDuty
 import QleisliKernel.Qirf.RuntimeForwardedSupply
+import QleisliKernel.Qirf.RuntimeClosedEvaluation
+import QleisliKernel.Qirf.RuntimeOriginalMeaning
+import QleisliKernel.Qirf.RuntimeClosedProvider
 
 /-! Pair a closed queue subject with the native child of the very same written
 assertion. A forwarded formal follows the original mixed arguments and
@@ -23,8 +26,34 @@ structure ClosedAt {artifact catalogue owner tokens implementations references o
   suppliers : RuntimeForwardedSupply.Chain invoked.binding invoked.demand.transported.receipt structureMatch.matched.paired
   identified : RuntimeInterval.Computed (RuntimeForwardedSupply.read invoked.binding
     invoked.demand.transported.receipt structureMatch.matched.paired) suppliers
+  evaluated : RuntimeClosedEvaluation.Evaluation closed checked invoked.demand.transported.subject.description.root
+    structureMatch.matched.terminal
+  providers : RuntimeClosedProvider.Checked invoked.demand.transported.subject closed structureMatch.matched.paired ⟨false,false,false⟩
+  providersRead : RuntimeInterval.Computed (RuntimeClosedProvider.read invoked.demand.transported.subject
+    closed structureMatch.matched.paired ⟨false,false,false⟩) providers
+  originalMeaning : RuntimeOriginalMeaning.Checked marker.assertion invoked.demand.source.original
+  meaningRead : RuntimeInterval.Computed
+    (RuntimeOriginalMeaning.read marker.assertion invoked.demand.source.original) originalMeaning
   equation : RuntimeOperationTree.Equation structureMatch.matched.terminal.value marker.assertion.requirement
     marker.assertion.equation.specification
+
+theorem ClosedAt.originalEquation {artifact catalogue owner tokens implementations references operation prepared root requested checked
+    queue rootOwner rootName name entry path}
+    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked}
+    {index : Nat}
+    {invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path}
+    {closed : GenericOperation.Closed invoked.demand.transported.subject.description}
+    (link : ClosedAt source index invoked closed) :
+    link.structureMatch.matched.terminal.value.input = link.originalMeaning.request.meaning.graph.input ∧
+    link.structureMatch.matched.terminal.value.output = link.originalMeaning.request.meaning.graph.output ∧
+    link.structureMatch.matched.terminal.value.action = link.originalMeaning.specification.action := by
+  have same := link.subject.same.symm
+  exact ⟨link.structureMatch.matched.ports.1.trans
+      ((congrArg RuntimeOperationTree.Value.input same).trans link.originalMeaning.input),
+    link.structureMatch.matched.ports.2.trans
+      ((congrArg RuntimeOperationTree.Value.output same).trans link.originalMeaning.output),
+    link.structureMatch.matched.action.trans
+      ((congrArg RuntimeOperationTree.Value.action same).trans link.originalMeaning.action)⟩
 
 private def readClosed {artifact catalogue owner tokens implementations references operation prepared root requested checked
     queue rootOwner rootName name entry path}
@@ -41,14 +70,13 @@ private def readClosed {artifact catalogue owner tokens implementations referenc
     let matched ← NaturalAffine.witness (RuntimeClosedSubject.read closed subject.val.child.cursor)
     let suppliers ← NaturalAffine.witness (RuntimeForwardedSupply.read invoked.binding
       invoked.demand.transported.receipt matched.val.matched.paired)
-    have equation := marker.assertion.equation.equation
-    have same := subject.val.same.symm
-    let result := matched.val.matched
+    let providers ← NaturalAffine.witness (RuntimeClosedProvider.read invoked.demand.transported.subject
+      closed matched.val.matched.paired ⟨false,false,false⟩)
+    let meaning ← NaturalAffine.witness (RuntimeOriginalMeaning.read marker.assertion invoked.demand.source.original)
+    have semantic := RuntimeClosedEvaluation.assertion marker.assertion subject.val matched.val
     return ⟨marker,original,subject.val,by with_reducible exact subject.property,
       matched.val,by with_reducible exact matched.property,suppliers.val,by with_reducible exact suppliers.property,
-      ⟨result.ports.1.trans ((congrArg RuntimeOperationTree.Value.input same).trans equation.input),
-        result.ports.2.trans ((congrArg RuntimeOperationTree.Value.output same).trans equation.output),
-        result.action.trans ((congrArg RuntimeOperationTree.Value.action same).trans equation.action)⟩⟩
+      semantic.1,providers.val,by with_reducible exact providers.property,meaning.val,by with_reducible exact meaning.property,semantic.2⟩
 
 def assessment {sources catalogue queue rootOwner rootName owner name entry path}
     (invoked : @RuntimeDutyInvocation.DemandBinding sources catalogue queue rootOwner rootName owner name entry path) :

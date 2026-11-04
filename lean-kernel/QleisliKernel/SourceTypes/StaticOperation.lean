@@ -209,18 +209,20 @@ private def result {sources : Sources} (input output : Basis) (effect : Effect) 
 private def child {sources : Sources} (previous : List (Result sources)) (index : Nat) : WorkM (Result sources) :=
   match previous[index]? with | none => throw .request | some result => pure result
 
-private def readProvider (sources : Sources) (context : Context) (description : Description)
-    (previous : List (Result sources)) (owner name : String) (bases : List (String × Basis))
-    (naturals : List (String × Nat)) (operations : List (String × Nat))
-    (catalogue : Option (GenericCatalogue.Checked sources)) : WorkM (Result sources) := do
-  let actuals ← operations.mapM fun (name,index) => do
-    let some description := description.select index | throw .request
-    return (name,description)
+private def selectActuals (description : Description) (operations : List (String × Nat)) :
+    WorkM (List (String × Description)) := operations.mapM fun (name,index) => do
+  let some actual := description.select index | throw .request
+  pure (name,actual)
+
+private def readProvider (sources : Sources) (context : Context)
+    (readChild : Nat → WorkM (Result sources)) (actuals : List (String × Description))
+    (owner name : String) (bases : List (String × Basis)) (naturals : List (String × Nat))
+    (operations : List (String × Nat)) (catalogue : Option (GenericCatalogue.Checked sources)) : WorkM (Result sources) := do
   let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
     (catalogue.map (·.originals)) (catalogue.map (·.helpers))
   guard (context.visible owner signature.original.declaration.isPublic) .request
   let generic ← GenericCatalogue.inferOriginal signature.original catalogue
-  let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
+  let originalResults ← operations.mapM fun (name,index) => do return (name,← readChild index)
   let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
   let kindRows ← kindRowsWithInstantiation signature.instantiation
   let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
@@ -246,8 +248,9 @@ private def readProvider (sources : Sources) (context : Context) (description : 
     ⟨true,reversible && reverseArgs,reversible && endomorphic && controlArgs⟩
     (some ⟨owner,name,signature,expected,internal,some generic⟩) none kindRows requirements
 
-def readNode (sources : Sources) (context : Context) (description : Description)
-    (previous : List (Result sources)) (node : Node)
+private def readNodeWith (sources : Sources) (context : Context) (description : Description)
+    (readChild : Nat → WorkM (Result sources))
+    (select : List (String × Nat) → WorkM (List (String × Description))) (node : Node)
     (catalogue : Option (GenericCatalogue.Checked sources) := none) : WorkM (Result sources) := do
   match node with
   | .primitive kind target =>
@@ -255,15 +258,13 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     guard (kind == .globalPhaseEighth || target == [.bit]) .request
     result target target .unitary ⟨true,true,true⟩
   | .provider owner name bases naturals operations =>
-    readProvider sources context description previous owner name bases naturals operations catalogue
+    readProvider sources context readChild (← select operations) owner name bases naturals operations catalogue
   | .formal owner name bases naturals operations ordinal =>
     guard (context == .source owner) .request
-    let actuals ← operations.mapM fun (name,index) => do
-      let some description := description.select index | throw .request
-      return (name,description)
+    let actuals ← select operations
     let signature ← QuantumSignatureCore.prepareWithArguments sources owner name {bases,naturals,operations := actuals}
       (catalogue.map (·.originals)) (catalogue.map (·.helpers))
-    let originalResults ← operations.mapM fun (name,index) => do return (name,← child previous index)
+    let originalResults ← operations.mapM fun (name,index) => do return (name,← readChild index)
     let bindings ← bindArgumentsWithContracts signature.instantiation originalResults
     let kindRows ← kindRowsWithInstantiation signature.instantiation
     let staticRows ← StaticInstantiation.readRowsWithTypes signature.instantiation (signature.inputs ++ signature.outputs)
@@ -282,38 +283,38 @@ def readNode (sources : Sources) (context : Context) (description : Description)
       let effect := contract.effect
       result input output effect paths none (some ⟨owner,name,signature,effect,false,none⟩) kindRows requirements
   | .inverse index =>
-    let c ← child previous index
+    let c ← readChild index
     guard (c.effect == .unitary && c.paths.adjointable) .request
     result c.output c.input c.effect ⟨c.paths.adjointable,c.paths.applicable,c.paths.controllable⟩
   | .controlled index =>
-    let c ← child previous index
+    let c ← readChild index
     guard (c.effect == .unitary && c.input == c.output) .request
     result (.pair :: .bit :: c.input) (.pair :: .bit :: c.output) .unitary
       ⟨c.paths.controllable,c.paths.controllable,c.paths.controllable⟩
   | .power index count =>
-    let c ← child previous index
+    let c ← readChild index
     guard (c.input == c.output && count ≤ 4294967295) .request
     result c.input c.output c.effect c.paths
   | .thenOp left right =>
-    let a ← child previous left
-    let b ← child previous right
+    let a ← readChild left
+    let b ← readChild right
     guard (a.output == b.input) .request
     result a.input b.output (joinEffect a.effect b.effect) (a.paths.meet b.paths)
   | .tensor left right =>
-    let a ← child previous left
-    let b ← child previous right
+    let a ← readChild left
+    let b ← readChild right
     result (.pair :: a.input ++ b.input) (.pair :: a.output ++ b.output)
       (joinEffect a.effect b.effect) (a.paths.meet b.paths)
   | .conjugate outer middle =>
-    let a ← child previous outer
-    let b ← child previous middle
+    let a ← readChild outer
+    let b ← readChild middle
     guard (a.effect == .unitary && b.input == a.input && b.output == a.input) .request
     result a.output a.output (joinEffect a.effect b.effect)
       ⟨a.paths.applicable && a.paths.adjointable && b.paths.applicable,
         a.paths.applicable && a.paths.adjointable && b.paths.adjointable,
         a.paths.applicable && a.paths.adjointable && b.paths.controllable⟩
   | .requested index owner name =>
-    let c ← child previous index
+    let c ← readChild index
     let some operand := description.nodes[index]? | throw .request
     -- checked_op accepts an original name, never an explicitly specialized
     -- provider or a constructed operand. An original formal keeps its full
@@ -327,6 +328,11 @@ def readNode (sources : Sources) (context : Context) (description : Description)
     guard (requirement.meaning.graph.input == c.input && requirement.meaning.graph.output == c.output) .request
     result c.input c.output c.effect c.paths none none [] [(index,requirement)]
 
+def readNode (sources : Sources) (context : Context) (description : Description)
+    (previous : List (Result sources)) (node : Node)
+    (catalogue : Option (GenericCatalogue.Checked sources) := none) : WorkM (Result sources) :=
+  readNodeWith sources context description (child previous) (selectActuals description) node catalogue
+
 def readOccurrences (description : Description) : WorkM (List Nat) := do
   -- Reserve both capped topological scans before entering their pure readers.
   exactWork (Exact.charge (64*(description.nodes.length+1)^2))
@@ -334,16 +340,79 @@ def readOccurrences (description : Description) : WorkM (List Nat) := do
   exactWork (Exact.charge (8*(count+1)^2))
   adapt description.occurrences
 
+private def natFields (n : Nat) : Nat := 1+n.log2/8
+
+private def basisFields (basis : Basis) : Nat := basis.foldl (fun total atom => total+match atom with
+  | .enumeration origin names | .record origin names =>
+    origin.moduleName.utf8ByteSize+origin.declarationName.utf8ByteSize+origin.source.utf8ByteSize+
+      names.foldl (fun n name => n+name.utf8ByteSize+1) 4
+  | .bits n | .tuple n => natFields n+1
+  | _ => 1) 0
+
+private def basisArguments (bases : List (String × Basis)) : Nat :=
+  bases.foldl (fun total (name,basis) => total+name.utf8ByteSize+basisFields basis+1) 0
+
+private def namedIndices (values : List (String × Nat)) : Nat :=
+  values.foldl (fun total (name,index) => total+name.utf8ByteSize+natFields index+1) 0
+
+private def applicationFields (owner name : String) (bases : List (String × Basis))
+    (naturals operations : List (String × Nat)) : Nat :=
+  owner.utf8ByteSize+name.utf8ByteSize+basisArguments bases+namedIndices naturals+namedIndices operations+8
+
+private def nodeFields : Node → Nat
+  | .primitive _ target => basisFields target+2
+  | .provider owner name bases naturals operations => applicationFields owner name bases naturals operations
+  | .formal owner name bases naturals operations ordinal =>
+    applicationFields owner name bases naturals operations+natFields ordinal
+  | .requested i owner name => natFields i+owner.utf8ByteSize+name.utf8ByteSize+3
+  | .power i count => natFields i+natFields count+2
+  | node => node.children.foldl (fun total i => total+natFields i) 1
+
+private def descriptionFields (description : Description) : Nat :=
+  description.nodes.foldl (fun total node => total+nodeFields node) (natFields description.root)
+
+private structure GraphWork where
+  shape : Nat
+  payload : Nat
+  sourceBytes : Nat
+
+private def graphWork (sources : Sources) (description : Description) : GraphWork :=
+  ⟨description.nodes.foldl (fun total node => total+node.children.length+1) 1,descriptionFields description,
+    sources.foldl (fun total (owner,text) => total+owner.utf8ByteSize+text.utf8ByteSize+1) 1⟩
+
+-- The canonical selectors scan the graph and its reachability lists, remap
+-- each retained edge and recheck completeness. Charge separately per request.
+private def selectionWork (work : GraphWork) : Nat := 32*work.shape^2+16*(work.payload+1)
+
+private def freshNode {sources} (context : Context) (description : Description) (work : GraphWork)
+    (previous : Array (Result sources)) (node : Node) (catalogue : Option (GenericCatalogue.Checked sources))
+    (prepared : Option (List (String × Description)) := none) : WorkM (Result sources) := do
+  let operands := node.children.foldl (fun total index => total+match previous[index]? with
+    | some value => basisFields value.input+basisFields value.output+1
+    | none => 1) 0
+  let fields := nodeFields node
+  let sourceWork := match node with
+    | .provider .. | .formal .. | .requested .. => 64*work.sourceBytes
+    | _ => 0
+  exactWork (Exact.charge (16*(fields+operands+work.shape+1)+sourceWork))
+  readNodeWith sources context description (fun i => lift (readOption previous[i]?))
+    (fun operations => match prepared with
+      | some actuals => pure actuals
+      | none => do
+        exactWork (Exact.charge (operations.length*selectionWork work))
+        selectActuals description operations) node catalogue
+
 def readNodes (sources : Sources) (context : Context) (description : Description)
     (catalogue : Option (GenericCatalogue.Checked sources) := none) :
     WorkM (List (Result sources)) := do
+  let work := graphWork sources description
+  exactWork (Exact.charge (16*(sources.size+work.shape^2+work.payload+1)))
   guard description.complete .request
   let _ ← readOccurrences description
-  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  exactWork (Exact.charge (64*(bytes+1)*(description.nodes.length+1)^2))
-  description.nodes.foldlM (fun previous node => do
-    let next ← readNode sources context description previous node catalogue
-    pure (previous ++ [next])) []
+  let results ← description.nodes.foldlM (init := #[]) fun previous node => do
+    let value ← freshNode context description work previous node catalogue
+    pure (previous.push value)
+  pure results.toList
 
 structure GraphData (sources : Sources) where
   description : Description
@@ -392,81 +461,107 @@ def selectData {sources : Sources} (data : GraphData sources) (index : Nat) : Op
     else none
   else none
 
-private structure Borrowed where
-  destination : Nat
+private structure Loan where
+  occurrence : Nat
   actual : Nat
   sourceIndex : Nat
-  occurrence : Nat
+  deriving BEq
 
-private def insertBorrowed (previous : List Borrowed) (next : Borrowed) : WorkM (List Borrowed) := do
-  exactWork (Exact.charge (previous.length+1))
-  match previous.find? (·.destination == next.destination) with
-  | none => pure (previous ++ [next])
-  | some existing =>
-    guard (existing.actual == next.actual && existing.sourceIndex == next.sourceIndex &&
-      existing.occurrence == next.occurrence) .request
-    pure previous
+private inductive Planned (sources : Sources) where
+  | fresh
+  | formal (arguments : List (String × Description))
+  | borrowed (loan : Loan) (value : Result sources) (context : Context)
 
-private def originalFormal {sources : Sources} (supply : SupplyData sources) (description : Description) (node : Node) :
-    WorkM (Option (List (String × Nat))) := do
-  match node with
-  | .formal owner name bases naturals operations ordinal =>
-    guard (owner == supply.owner && name == supply.name &&
-      bases == supply.instantiation.arguments.bases && naturals == supply.instantiation.arguments.naturals) .request
-    let actuals ← operations.mapM fun (name,index) => do
-      let some child := description.select index | throw .request
-      pure (name,child)
-    guard (actuals == supply.instantiation.arguments.operations) .request
-    match supply.instantiation with
-    | .closed _ => throw .request
-    | .static _ environment _ =>
-      let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
-      guard (formal.ordinal == ordinal && match formal.kind with | .operation _ => true | _ => false) .request
-      pure (some operations)
-  | _ => pure none
+-- A borrowed result keeps its actual supplying context and redirects each
+-- local Meaning request through this wrapper's original destination map.
+private def installLoan {sources} (plan : Array (Planned sources)) (graph : GraphData sources)
+    (occurrence actual : Nat) (indices : List Nat) (mapping : Array Nat) : WorkM (Array (Planned sources)) := do
+  exactWork (Exact.charge (16*(indices.length+graph.results.length+graph.contexts.length+1)))
+  let results := graph.results.toArray
+  let contexts := graph.contexts.toArray
+  indices.zipIdx.foldlM (init := plan) fun slots (destination,sourceIndex) => do
+    let loan := ⟨occurrence,actual,sourceIndex⟩
+    match slots[destination]? with
+    | none | some (.formal _) => throw .request
+    | some (.borrowed earlier _ _) =>
+      guard (earlier == loan) .request
+      pure slots
+    | some .fresh =>
+      let some value := results[sourceIndex]? | throw .request
+      let some context := contexts[sourceIndex]? | throw .request
+      exactWork (Exact.charge (16*(value.requirements.length+1)))
+      let some value := remapResult (fun i => mapping[i]?) value | throw .request
+      pure (slots.setIfInBounds destination (.borrowed loan value context))
 
-private def borrowPlan {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (List Borrowed) := do
-  exactWork (Exact.charge (16*(description.nodes.length+1)^2))
-  description.nodes.zipIdx.reverse.foldlM (fun plan (node,occurrence) => do
-    if plan.any (·.destination == occurrence) then pure plan else
-    match node with
-    | .formal owner name .. =>
-      if owner != supply.owner || name != supply.name then pure plan else
-        let some operations ← originalFormal supply description node | throw .request
-        operations.foldlM (fun plan (name,index) => do
-          let some actual := (supply.actuals.zipIdx).find? (fun (actual,_) => actual.1 == name) | throw .request
-          let some (indices,selected) := description.selection index | throw .request
-          guard (selected == actual.1.2.description && indices.length == actual.1.2.results.length) .request
-          (indices.zipIdx).foldlM (fun plan (destination,sourceIndex) =>
-            insertBorrowed plan ⟨destination,actual.2,sourceIndex,occurrence⟩) plan) plan
-    | _ => pure plan) []
+-- The exact selected descriptors serve both original-argument comparison
+-- and the later common formal reader. Validate all arguments in written order.
+private def planFormal {sources} (supply : SupplyData sources) (description : Description) (work : GraphWork)
+    (actuals : List ((String × GraphData sources) × Nat)) (plan : Array (Planned sources)) (occurrence : Nat)
+    (owner name : String) (bases : List (String × Basis)) (naturals operations : List (String × Nat))
+    (ordinal : Nat) : WorkM (Array (Planned sources)) := do
+  let expected := supply.instantiation.arguments
+  exactWork (Exact.charge (16*(owner.utf8ByteSize+name.utf8ByteSize+supply.owner.utf8ByteSize+supply.name.utf8ByteSize+
+    basisArguments bases+basisArguments expected.bases+namedIndices naturals+namedIndices expected.naturals+
+    natFields ordinal+supply.original.occurrence.header.length+1)))
+  guard (owner == supply.owner && name == supply.name && bases == expected.bases && naturals == expected.naturals) .request
+  match supply.instantiation with
+  | .closed _ => throw .request
+  | .static _ environment _ =>
+    let some formal := environment.numeric.original.header.formals[ordinal]? | throw .request
+    guard (formal.ordinal == ordinal && match formal.kind with | .operation _ => true | _ => false) .request
+  let keyFields := actuals.foldl (fun total entry => total+entry.1.1.utf8ByteSize+1) 0
+  let initial : Array (Planned sources) × List (Nat × Array Nat) × List (String × Description) := (plan,[],[])
+  let (slots,_,reverseArgs) ← operations.foldlM (init := initial) fun (slots,maps,args) (key,index) => do
+    exactWork (Exact.charge (selectionWork work+16*(keyFields+key.utf8ByteSize+maps.length+1)))
+    let some ((_,actual),id) := actuals.find? (fun entry => entry.1.1 == key) | throw .request
+    let some (indices,selected) := description.selection index | throw .request
+    exactWork (Exact.charge (16*(descriptionFields selected+descriptionFields actual.description+indices.length+1)))
+    guard (selected == actual.description && indices.length == actual.results.length) .request
+    -- For a repeated reference to the same actual at this wrapper the first
+    -- destination list remains the remapping used for its local requirements.
+    let (mapping,maps) := match maps.find? (·.1 == id) with
+      | some (_,mapping) => (mapping,maps)
+      | none => let mapping := indices.toArray; (mapping,(id,mapping) :: maps)
+    let slots ← installLoan slots actual occurrence id indices mapping
+    pure (slots,maps,(key,selected) :: args)
+  let arguments := reverseArgs.reverse
+  let fields := fun (rows : List (String × Description)) =>
+    rows.foldl (fun total (key,graph) => total+key.utf8ByteSize+descriptionFields graph+1) 0
+  exactWork (Exact.charge (16*(fields arguments+fields expected.operations+1)))
+  guard (arguments == expected.operations) .request
+  pure (slots.setIfInBounds occurrence (.formal arguments))
 
-private def borrowedValue {sources : Sources} (supply : SupplyData sources) (description : Description)
-    (plan : List Borrowed) (entry : Borrowed) : WorkM (Result sources × Context) := do
-  let some (_,actual) := supply.actuals[entry.actual]? | throw .request
-  let some value := actual.results[entry.sourceIndex]? | throw .request
-  let some context := actual.contexts[entry.sourceIndex]? | throw .request
-  let some value := remapResult (fun sourceIndex =>
-    (plan.find? fun other => other.occurrence == entry.occurrence && other.actual == entry.actual &&
-      other.sourceIndex == sourceIndex).map (·.destination)) value
-    | throw .request
-  guard (entry.destination < description.nodes.length) .request
-  pure (value,context)
+private def borrowPlan {sources} (supply : SupplyData sources) (description : Description) (work : GraphWork) :
+    WorkM (Array (Planned sources)) := do
+  exactWork (Exact.charge (16*(description.nodes.length+supply.actuals.length+1)))
+  let actuals := supply.actuals.zipIdx
+  description.nodes.zipIdx.reverse.foldlM (init := Array.replicate description.nodes.length .fresh) fun plan (node,index) => do
+    match plan[index]?,node with
+    | some .fresh,.formal owner name bases naturals operations ordinal =>
+      planFormal supply description work actuals plan index owner name bases naturals operations ordinal
+    | none,_ => throw .request
+    | _,_ => pure plan
 
 private def readInheritedData {sources : Sources} (supply : SupplyData sources) (description : Description) : WorkM (GraphData sources) := do
+  let work := graphWork sources description
+  exactWork (Exact.charge (16*(sources.size+work.shape^2+work.payload+1)))
   guard description.complete .request
   let _ ← readOccurrences description
-  let plan ← borrowPlan supply description
-  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  exactWork (Exact.charge (64*(bytes+1)*(description.nodes.length+1)^2))
-  let (results,contexts) ← description.nodes.zipIdx.foldlM (fun (previous,contexts) (node,index) => do
-    let (value,context) ← match plan.find? (·.destination == index) with
-      | some entry => borrowedValue supply description plan entry
-      | none => do
-        let _ ← originalFormal supply description node
-        let value ← readNode sources (.source supply.owner) description previous node supply.catalogue
+  let plan ← borrowPlan supply description work
+  let initial : Array (Result sources) × Array Context := (#[],#[])
+  let (values,places) ← description.nodes.zipIdx.foldlM (init := initial) fun (previous,contexts) (node,index) => do
+    let (value,context) ← match plan[index]? with
+      | some (.borrowed _ value context) => pure (value,context)
+      | some (.formal arguments) => do
+        let value ← freshNode (.source supply.owner) description work previous node supply.catalogue (some arguments)
         pure (value,Context.source supply.owner)
-    pure (previous ++ [value],contexts ++ [context])) ([],[])
+      | some .fresh => do
+        let value ← freshNode (.source supply.owner) description work previous node supply.catalogue
+        pure (value,Context.source supply.owner)
+      | none => throw .request
+    pure (previous.push value,contexts.push context)
+  let results := values.toList
+  let contexts := places.toList
   if count : results.length = description.nodes.length then
     if contextCount : contexts.length = description.nodes.length then
       if complete : description.complete = true then
@@ -498,7 +593,7 @@ def readFreshLeafData (sources : Sources) (context : Context)
     if atRoot : description.root = 0 then
       if complete : description.complete = true then
         let _ ← readOccurrences description
-        exactWork (Exact.charge (64*(owner.utf8ByteSize+name.utf8ByteSize+bases.length+naturals.length+1)))
+        exactWork (Exact.charge (64*(applicationFields owner name bases naturals []+1)))
         let value ← readNode sources context description [] (.provider owner name bases naturals []) (some catalogue)
         pure ⟨description,[value],[context],by simp only [nodes,List.length_singleton],
           by simp only [nodes,List.length_singleton],complete,value,by simp only [atRoot,List.getElem?_cons_zero]⟩

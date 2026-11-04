@@ -1,3 +1,4 @@
+import QleisliKernel.SourceTypes.RuntimeGenericAnalysis
 import QleisliKernel.SourceTypes.SourceRuntimeValues
 import QleisliKernel.SourceTypes.SourceRuntimePrimitive
 import QleisliKernel.SourceTypes.SourceTrace
@@ -194,9 +195,15 @@ def readTargetWithWritten {sources caller callerName scope tokens}
   | some resolution =>
     let operationReader := SourceOperation.buildWithInstantiation callerSignature.instantiation
       naturals.helpers.val naturals.environment scope naturals.generic 65
-    let actuals ← StaticApplication.read callerSignature.instantiation naturals.helpers.val
+    let actualsWithState ← StaticApplication.readWithState callerSignature.instantiation naturals.helpers.val
       naturals.environment scope written resolution.moduleName resolution.declaration.name operationReader naturals.generic
-    let operationActuals ← SourceOperation.checkApplicationActuals actuals callerSignature.supply
+    let actuals := actualsWithState.val
+    let operationActuals ← SourceOperation.checkApplicationActualsWithBuilder actuals callerSignature.supply (by
+      change SourceOperation.buildWithInstantiation callerSignature.instantiation naturals.helpers.val
+          naturals.environment scope naturals.generic 65 =
+        SourceOperation.buildWithInstantiation callerSignature.instantiation naturals.helpers.val
+          naturals.environment scope actualsWithState.val.genericState 65
+      rw [actualsWithState.property])
     let checked ← StaticRuntimeSignature.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
       (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers))
     let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals callerSignature.operations.catalogue
@@ -236,11 +243,9 @@ structure Summary {sources owner name} (signature : Signature sources owner name
   tree : SourceSyntax.Tree signature.original.occurrence.body
   parsed : SourceSyntax.read (signature.original.occurrence.body.length+1) 0 true
     signature.original.occurrence.body = .ok tree
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   genericRead : ∃ before after,
-    (GenericTypeTrace.readWithTree signature.instantiation tree
-      (signature.operations.catalogue.map (·.modulesContext))
-      (signature.operations.catalogue.map (·.meaningsContext))).run before = (.ok generic,after)
+    (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
   computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
@@ -353,7 +358,7 @@ structure BasisEvent (sources : Sources) (caller : String) where
   written : SourceControlSyntax.CheckedBasis tokens
   callerName : String
   signature : Signature sources caller callerName
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   input : Semantics.SourceOwners.Owner
@@ -428,7 +433,7 @@ structure ComputedEvent (sources : Sources) (caller : String) where
   written : SourceComputedSyntax.Checked tokens
   callerName : String
   signature : Signature sources caller callerName
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   bindings : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
   binding : SourceBasisBindings.ActiveAt signature.instantiation
     (generic.computedObligations.map SourceComputedBindings.port) (SourceRuntimeComputed.offset written)
@@ -454,7 +459,7 @@ structure BranchEvent (sources : Sources) (caller : String) where
   written : SourceControlSyntax.CheckedConditional tokens
   callerName : String
   signature : Signature sources caller callerName
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   condition : Expression
@@ -475,7 +480,7 @@ structure StaticEvent (sources : Sources) (caller : String) where
   written : SourceStaticControlSyntax.Checked tokens
   callerName : String
   signature : Signature sources caller callerName
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   selection : SourceStaticSelection.Checked sources caller naturals scope written
@@ -498,7 +503,7 @@ structure MatchEvent (sources : Sources) (caller : String) where
   written : SourceMatchSyntax.Checked tokens
   callerName : String
   signature : Signature sources caller callerName
-  generic : GenericTypeTrace.Checked signature.original
+  generic : RuntimeGenericAnalysis.Checked signature.original
   naturals : PhaseApplication.Naturals sources
   scope : List String
   basis : Semantics.FiniteCarrier.Basis

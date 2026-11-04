@@ -83,6 +83,28 @@ private def staleOwners : WorkM Unit := do
 -- not replace the owner result computed again from the actual original body.
 #guard (staleOwners.run work).1 matches .error .request
 
+/-- A retained catalogue rechecks the actual generic tree. Relevance and
+effect agree with cold discovery, including for a conservatively annotated
+static declaration. An unrelated module contributes no source row. -/
+private def retainedGeneric : WorkM Bool := do
+  let modules := #[("main","#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q} pub observe fn route[const N:Nat](q:Q<Bit>)->Q<Bit>{keep(q)}"),
+    ("unrelated","#![no_implicit_prelude]\nunitary fn idle(q:Q<Bit>)->Q<Bit>{q}")]
+  let catalogue ← GenericCatalogue.read modules
+  let signature ← SourceRuntimeContext.readSignature modules "main" "route" ⟨[],[("N",1)],[]⟩ .external (some catalogue)
+  let tokens := signature.original.occurrence.body
+  let tree ← lift ((SourceSyntax.read (tokens.length+1) 0 true tokens).mapError fun _ => Error.request)
+  let cold ← GenericTypeTrace.readWithTree signature.instantiation tree
+    (some catalogue.modulesContext) (some catalogue.meaningsContext)
+  let observed ← RuntimeGenericAnalysis.read signature.instantiation tree (some catalogue)
+  let .retained .. := observed | throw .invalid
+  let oldRows ← SourceTrace.retainStaticRows cold.sourceRows
+  let newRows ← SourceTrace.retainStaticRows observed.sourceRows
+  return observed.inferredEffect == cold.inferredEffect && observed.quantumUse == cold.quantumUse &&
+    observed.outcome.references == cold.root.outcome.references && oldRows == newRows &&
+    newRows.map Prod.fst == ["main"]
+
+#guard (retainedGeneric.run work).1.toOption == some true
+
 example {sources owner name} (fuel : Nat) (active : List SourceCallStack.Frame)
     (signature : SourceRuntimeContext.Signature sources owner name) :
     SourceRuntimeTrace.readNested sources fuel active signature =

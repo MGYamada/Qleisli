@@ -1,5 +1,7 @@
 import QleisliKernel.SourceTypes.SourceTrace
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
+import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.SourceTypes.OperationSourceUses
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Original per-occurrence operation supply. A private source-selected leaf
@@ -43,6 +45,39 @@ private def spectator (parameter : String := "c") : Sources :=
 -- A runtime binding named local cannot supply the private function of that
 -- spelling as an operation actual, including an otherwise unused actual.
 #guard ((SourceRuntimeTrace.read (spectator "local") "main" "route").run 2000000000).1.toOption.isNone
+
+-- Retain all three written uses of W while checking route from its original
+-- entry under one public work allowance. The zero-power child and the unused
+-- provider argument have distinct source positions.
+private def mixedSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn accept[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+    requires Applicable(U),Adjointable(U),Controllable(U){U(q)}
+unitary fn provider[const count:Nat,const action:Op<Bit>,const unused:Op<Bit>](q:Q<Bit>)->Q<Bit>
+    requires Applicable(action),Adjointable(action),Controllable(action),
+             Applicable(unused),Adjointable(unused),Controllable(unused){action(q)}
+unitary fn relay[const seed:Nat,const W:Op<Bit>](q:Q<Bit>)->Q<Bit>
+    requires Applicable(W),Adjointable(W),Controllable(W){
+    accept[provider[seed,then_op(W,power(W,0)),W]](q)
+}
+pub unitary fn route(q:Q<Bit>)->Q<Bit>{relay[0,keep](q)}
+"#
+
+private def mixedUses : Finite.WorkM (List (List SourceOperation.Edge × Nat × String × Nat × Nat)) := do
+  let artifact : Qirf.Artifact := ⟨#[],#[],#[("main",mixedSource)],0,none⟩
+  let original ← Qirf.RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named outer] := original.body.checked.events | throw .invalid
+  let relay ← SourceRuntimeTrace.readNamedBody outer
+  let [.named inner] := relay.checked.events | throw .invalid
+  let [incoming] := inner.target.operationActuals.sourceActuals | throw .invalid
+  let uses ← OperationSourceUses.readChecked incoming.checked
+  uses.uses.mapM fun use => do
+    let [token] := use.tokens | throw .invalid
+    return (use.path,use.formal.key.ordinal,token.text,token.span.startByte,token.span.endByte)
+
+#guard (mixedUses.run Qirf.WorkProfile.qmatch.limit).1.toOption == some
+  [([.actual 1,.child 0],1,"W",592,593),([.actual 1,.child 1,.child 0],1,"W",600,601),
+   ([.actual 2],1,"W",606,607)]
 
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeContext.fromPreparedWithArguments
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeContext.fromQuantumCore

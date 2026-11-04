@@ -339,6 +339,36 @@ structure CheckedWithInstantiation {sources caller callerName original}
   provenance : BoundProvenance instantiation entries environment scope tokens genericState target description original
   sameRows : provenance.rows = rows
 
+/-- An already performed original proposal read, indexed by every source and
+static-context input. It carries no graph, capability or body-check result. -/
+structure Proposal {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (target : Option Semantics.FiniteCarrier.Basis) (tokens : List LocatedToken) where
+  description : Description
+  original : ∃ before after,
+    (proposalWithInstantiation instantiation entries environment scope genericState target tokens).run before =
+      (.ok description,after)
+
+/-- Only proposal construction is shared. The supplying context, complete
+graph, capabilities, original rows and all assertion markers are checked now. -/
+def readFromProposal {sources caller callerName original instantiation entries environment scope genericState target tokens}
+    (proposal : @Proposal sources caller callerName original instantiation entries environment scope genericState target tokens)
+    (supply : Option (StaticOperation.Supply instantiation) := none) :
+    WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
+  let graph ← match supply with
+    | none => StaticOperation.check sources (.source caller) proposal.description
+    | some supply => StaticOperation.checkWithSupply supply proposal.description
+  let provenance ← NaturalAffine.witness
+    (proposalProvenanceWithInstantiation instantiation entries environment scope genericState target tokens)
+  have provenanceRead : ∃ before after,
+      (proposalProvenanceWithInstantiation instantiation entries environment scope genericState target tokens).run before =
+        (.ok provenance.val,after) := by
+    with_reducible exact provenance.property
+  pure ⟨proposal.description,genericState,target,supply,proposal.original,graph,provenance.val.rows,
+    provenance_rows provenanceRead,⟨provenance.val,provenanceRead⟩,rfl⟩
+
 def readWithInstantiation {sources caller callerName original}
     (instantiation : @StaticInstantiation.Checked sources caller callerName original)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
@@ -348,20 +378,9 @@ def readWithInstantiation {sources caller callerName original}
     (supply : Option (StaticOperation.Supply instantiation) := none) :
     WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
   let description ← NaturalAffine.witness (proposalWithInstantiation instantiation entries environment scope genericState target tokens)
-  let graph ← match supply with
-    | none => StaticOperation.check sources (.source caller) description.val
-    | some supply => StaticOperation.checkWithSupply supply description.val
-  let provenance ← NaturalAffine.witness
-    (proposalProvenanceWithInstantiation instantiation entries environment scope genericState target tokens)
-  have original : ∃ before after,
-      (proposalWithInstantiation instantiation entries environment scope genericState target tokens).run before = (.ok description.val,after) := by
-    with_reducible exact description.property
-  have provenanceRead : ∃ before after,
-      (proposalProvenanceWithInstantiation instantiation entries environment scope genericState target tokens).run before =
-        (.ok provenance.val,after) := by
-    with_reducible exact provenance.property
-  pure ⟨description.val,genericState,target,supply,original,graph,provenance.val.rows,
-    provenance_rows provenanceRead,⟨provenance.val,provenanceRead⟩,rfl⟩
+  let proposal : Proposal instantiation entries environment scope genericState target tokens :=
+    ⟨description.val,by with_reducible exact description.property⟩
+  readFromProposal proposal supply
 
 abbrev Checked {sources caller callerName} (signature : QuantumSignatureCore.Checked sources caller callerName)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
@@ -376,6 +395,63 @@ def read {sources caller callerName} (signature : QuantumSignatureCore.Checked s
     (supply : Option (StaticOperation.Supply signature.instantiation) := none) :
     WorkM (Checked signature entries environment scope tokens) :=
   readWithInstantiation signature.instantiation entries environment scope tokens genericState target supply
+
+/-- The fresh and retained branches record different actual actions. Retaining
+a proposal never asserts that the fresh whole source reader was rerun. -/
+inductive ProposalInput {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (tokens : List LocatedToken) where
+  | fresh
+  | retained (proposal : Proposal instantiation entries environment scope genericState none tokens)
+
+def readInput {sources caller callerName original instantiation entries environment scope genericState tokens}
+    (input : @ProposalInput sources caller callerName original instantiation entries environment scope genericState tokens)
+    (supply : StaticOperation.Supply instantiation) :
+    WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) :=
+  match input with
+  | .fresh => readWithInstantiation instantiation entries environment scope tokens genericState none (some supply)
+  | .retained proposal => readFromProposal proposal (some supply)
+
+/-- A call creator may identify the exact source builder it actually supplied.
+An arbitrary OperationReader keeps the existing fresh path. This identity is
+not inferred by comparing names, descriptions, ports or closed values. -/
+inductive BuilderReuse {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName) where
+  | fresh
+  | retained (sameReader : operationReader =
+      buildWithInstantiation instantiation entries environment scope application.genericState 65)
+
+private def inputOfValue {sources caller callerName original entries environment scope operationReader genericState tokens kind}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (sameReader : operationReader =
+      buildWithInstantiation instantiation entries environment scope genericState 65)
+    (value : StaticApplication.Value instantiation entries environment scope operationReader tokens kind) :
+    WorkM (ProposalInput instantiation entries environment scope genericState tokens) :=
+  match value with
+  | .basis .. | .natural .. => throw .request
+  | .operation description _ original =>
+    let proposal : Proposal instantiation entries environment scope genericState none tokens :=
+      ⟨description,by
+        change ∃ before after,
+          (buildWithInstantiation instantiation entries environment scope genericState 65 tokens).run before =
+            (.ok description,after)
+        simpa only [sameReader] using original⟩
+    pure (.retained proposal)
+
+private def inputOfActual {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (reuse : BuilderReuse application)
+    (actual : StaticApplication.Actual instantiation entries environment scope operationReader) :
+    WorkM (ProposalInput instantiation entries environment scope application.genericState actual.argument.tokens) :=
+  match reuse with
+  | .fresh => pure .fresh
+  | .retained sameReader => inputOfValue sameReader actual.value
 
 /-- One already-computed operation actual at its exact original position.
 The mixed formal and argument tokens remain on actual; this supplies no native
@@ -393,9 +469,9 @@ structure ActualSource {sources caller callerName original entries environment s
   operation : actual.operations = [(name,description)]
   checked : CheckedWithInstantiation instantiation entries environment scope actual.argument.tokens
   sameDescription : checked.description = description
+  input : ProposalInput instantiation entries environment scope application.genericState actual.argument.tokens
   original : ∃ before after,
-    (readWithInstantiation instantiation entries environment scope actual.argument.tokens
-      application.genericState none (some supply)).run before = (.ok checked,after)
+    (readInput input supply).run before = (.ok checked,after)
 
 def ActualSource.native {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName
     instantiation application supply}
@@ -414,11 +490,12 @@ structure ApplicationActualsResult {sources caller callerName original entries e
   sameActuals : actuals = sourceActuals.map ActualSource.native
   sameRows : rows = sourceActuals.flatMap (fun source => source.checked.rows)
 
-def readApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+def readApplicationActualsWith {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
     {instantiation : @StaticInstantiation.Checked sources caller callerName original}
     (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
       operationReader tokens written targetOwner targetName)
-    (supply : StaticOperation.Supply instantiation) : WorkM (ApplicationActualsResult application supply) := do
+    (supply : StaticOperation.Supply instantiation) (reuse : BuilderReuse application) :
+    WorkM (ApplicationActualsResult application supply) := do
   -- The finite range, linked-list selections, retained source cells and final
   -- projections are new work. This debit precedes those indexed traversals.
   exactWork (Exact.charge (16*(application.actuals.length+1)^2))
@@ -427,8 +504,8 @@ def readApplicationActuals {sources caller callerName original entries environme
     match operation : actual.operations with
     | [] => pure none
     | [(name,description)] =>
-      let checked ← NaturalAffine.witness (readWithInstantiation instantiation entries environment scope actual.argument.tokens
-        application.genericState none (some supply))
+      let input ← inputOfActual application reuse actual
+      let checked ← NaturalAffine.witness (readInput input supply)
       let compared ← NaturalAffine.witness (guard (checked.val.description == description) .request)
       have sameDescription : checked.val.description = description := by
         obtain ⟨before,after,read⟩ := compared.property
@@ -436,12 +513,19 @@ def readApplicationActuals {sources caller callerName original entries environme
         rw [unit] at read
         exact beq_iff_eq.mp (guard_success _ _ _ _ read).1
       let source : ActualSource application supply :=
-        ⟨index,actual,rfl,name,description,operation,checked.val,sameDescription,
+        ⟨index,actual,rfl,name,description,operation,checked.val,sameDescription,input,
           by with_reducible exact checked.property⟩
       pure (some source)
     | _ => throw .request
   let sourceActuals := retained.filterMap id
   return ⟨sourceActuals.map ActualSource.native,sourceActuals.flatMap (fun source => source.checked.rows),sourceActuals,rfl,rfl⟩
+
+def readApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (supply : StaticOperation.Supply instantiation) : WorkM (ApplicationActualsResult application supply) :=
+  readApplicationActualsWith application supply .fresh
 
 /-- Original application tokens authenticate both native graph projections and
 these SAME source reads. Original mixed positions and source order are retained
@@ -451,8 +535,9 @@ structure ApplicationActuals {sources caller callerName original entries environ
     (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
       operationReader tokens written targetOwner targetName)
     (supply : StaticOperation.Supply instantiation) extends ApplicationActualsResult application supply where
+  reuse : BuilderReuse application
   original : ∃ before after,
-    (readApplicationActuals application supply).run before = (.ok toApplicationActualsResult,after)
+    (readApplicationActualsWith application supply reuse).run before = (.ok toApplicationActualsResult,after)
 
 def checkApplicationActuals {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
     {instantiation : @StaticInstantiation.Checked sources caller callerName original}
@@ -460,6 +545,20 @@ def checkApplicationActuals {sources caller callerName original entries environm
       operationReader tokens written targetOwner targetName)
     (supply : StaticOperation.Supply instantiation) : WorkM (ApplicationActuals application supply) := do
   let checked ← NaturalAffine.witness (readApplicationActuals application supply)
-  pure ⟨checked.val,by with_reducible exact checked.property⟩
+  pure ⟨checked.val,.fresh,by simpa only [readApplicationActuals] using checked.property⟩
+
+/-- Reuse the genuine per-actual proposal receipt retained by StaticApplication.
+Native/source graph and complete provenance reads still run for every actual,
+including unused ones and zero-power children. -/
+def checkApplicationActualsWithBuilder {sources caller callerName original entries environment scope operationReader tokens written targetOwner targetName}
+    {instantiation : @StaticInstantiation.Checked sources caller callerName original}
+    (application : @StaticApplication.Checked sources caller callerName original instantiation entries environment scope
+      operationReader tokens written targetOwner targetName)
+    (supply : StaticOperation.Supply instantiation)
+    (sameReader : operationReader =
+      buildWithInstantiation instantiation entries environment scope application.genericState 65) :
+    WorkM (ApplicationActuals application supply) := do
+  let checked ← NaturalAffine.witness (readApplicationActualsWith application supply (.retained sameReader))
+  pure ⟨checked.val,.retained sameReader,by with_reducible exact checked.property⟩
 
 end QleisliKernel.SourceTypes.SourceOperation
