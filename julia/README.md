@@ -1,4 +1,4 @@
-# Experimental cyclotomic arithmetic
+# Experimental exact scalar arithmetic
 
 This standalone Julia environment uses **Julia 1.13.1** and
 **Cyclotomics.jl 0.3.2**. `Project.toml` fixes these compatibility requirements;
@@ -12,6 +12,18 @@ not the separate CyclotomicNumbers.jl package. Oscar is not a dependency.
 These are experimental computations, separate from Qleisli production
 acceptance, Lean proofs and the constitutional guarantee ledger.
 
+The dependency-free sparse `RInfScalar` reference and its two test suites are
+imported from [RInfScalar at commit
+`e63938e2ac33795b57e07b27b3c620f0a172d9e8`](https://github.com/MGYamada/RInfScalar/tree/e63938e2ac33795b57e07b27b3c620f0a172d9e8).
+The arithmetic and capacity policies are unchanged; only local include paths,
+usage comments and test attribution are adapted.
+
+| Original file | Local file | Role |
+| --- | --- | --- |
+| `RInfScalar.jl` | [src/RInfScalar.jl](src/RInfScalar.jl) | Exact sparse dyadic-phase arithmetic, R3 conversion and reference codec |
+| `test_RInfScalar.jl` | [test/test_rinf_scalar.jl](test/test_rinf_scalar.jl) | Dependency-free regression and independent exact polynomial/rational checks |
+| `test_Cyclotomics.jl` | [test/test_rinf_cyclotomics.jl](test/test_rinf_cyclotomics.jl) | Exact conversion checks against Cyclotomics |
+
 Run the following commands from the repository root. Disable startup files
 and omit the global Julia environment from the load path so that the experiment
 uses only this project and Julia's standard libraries.
@@ -22,6 +34,35 @@ JULIA_LOAD_PATH="@:@stdlib" julia --startup-file=no --project=julia \
 JULIA_LOAD_PATH="@:@stdlib" julia --startup-file=no --project=julia julia/test/runtests.jl
 JULIA_LOAD_PATH="@:@stdlib" julia --startup-file=no --project=julia julia/examples/clifford_t.jl
 ```
+
+`runtests.jl` runs the existing cyclotomic experiments and both imported
+suites. Each imported suite includes the standalone implementation in its own
+module, keeping its type definitions and helper names separate.
+
+The sparse core regression can also run without the project or any external
+package:
+
+```sh
+JULIA_LOAD_PATH="@stdlib" julia --startup-file=no julia/test/test_rinf_scalar.jl
+```
+
+To use the sparse reference without adding its names to the interactive scope:
+
+```julia
+module RInfReference
+include("julia/src/RInfScalar.jl")
+end
+
+z = RInfReference.rinf_phase(1, 3)
+z * conj(z) == one(RInfReference.RInfScalar)
+RInfReference.decode_rinf(RInfReference.encode_rinf(z)) == z
+```
+
+The sparse representation uses dyadic coefficients and canonical phase keys
+in `[0, 1/2)`. Its explicit integer, support, work and conversion limits reject
+unsupported computations without approximation. The codec remains a Julia
+reference format; copying it does not enable a Qleisli production wire format
+or supply a Lean proof.
 
 For an interactive session:
 

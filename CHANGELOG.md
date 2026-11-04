@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Import the experimental RInfScalar Julia reference and both existing test
+  suites into `julia/src/` and `julia/test/`. Keep arithmetic unchanged, adapt
+  include paths and run the suites through the shared Julia test entry point.
 - Add the Qleisli Proof & Tactic Library preview in [`qptl/`](qptl/README.md).
   It provides categorical dagger, isometry and tensor laws, a finite complex
   matrix model and a structural proof tactic in a standalone Lean package.
