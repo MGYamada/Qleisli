@@ -3,13 +3,15 @@ import QleisliKernel.Qirf.RuntimeBodyOperations
 
 /-! Retain actual recursive runs of original named callees and their inputs.
 The complete source-state chain and each named child's actual binding/callback
-reads follow one proof of the real common loop. Other step constructors receive
+reads follow one proof of the real common loop, now retaining actual primitive
+input/output histories as well. Other step constructors receive
 no child-provenance assertion. This is not a whole logical-action theorem.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace Qleisli.RuntimeNamedChildRuns
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open RuntimePureBody
+open RuntimeNamedSourceFlow (NodeAligned)
 
 /-- The original callee, its complete real argument binding, visible ordinary
 SSA and actual recursive result determine this named step's stored child.
@@ -84,6 +86,104 @@ def Invariant {artifact root execution} (next : BlockRunner artifact root execut
   | (history,_,_,_,steps,_,_,_,_) => Flow next initial steps history
 
 open RuntimeNamedSourceFlow (Returned reordered_self)
+
+private theorem primitive_aligned {sources caller dependencies program block start count}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (history : RuntimeStructuralAction.SourceState)
+    (frame : {frame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before //
+      frame.bindings = history.bindings})
+    (event : SourceTypes.SourceRuntimeContext.Event sources caller)
+    (location : Option (RuntimeSourceEvent.Location event start count))
+    (result : RuntimeStructuralAction.SourceState × Node dependencies program block)
+    (checked : RuntimeInterval.Computed (primitiveAt interval history frame event location) result) :
+    NodeAligned history result.1 result.2 := by
+  obtain ⟨work,left,ran⟩ := checked
+  unfold primitiveAt at ran
+  obtain ⟨owners,a,_owners,h⟩ := bind_success _ _ _ _ _ ran
+  cases event
+  case phase event =>
+    obtain ⟨input,b,_input,h⟩ := bind_success _ _ _ _ _ h
+    obtain ⟨output,c,_output,h⟩ := bind_success _ _ _ _ _ h
+    obtain ⟨action,d,_action,h⟩ := bind_success _ _ _ _ _ h
+    obtain ⟨_,e,_charge,h⟩ := bind_success _ _ _ _ _ h
+    have same := (pure_success _ _ _ _ h).1
+    subst result
+    exact ⟨rfl,rfl⟩
+  case primitive event =>
+    obtain ⟨preserving,b,_preserving,h⟩ := bind_success _ _ _ _ _ h
+    split at h
+    next operand argument =>
+      obtain ⟨kind,c,_kind,h⟩ := bind_success _ _ _ _ _ h
+      rcases kind with ⟨kind,selection⟩
+      obtain ⟨input,d,_input,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨output,e,_output,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨action,f,_action,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨_,g,_charge,h⟩ := bind_success _ _ _ _ _ h
+      have same := (pure_success _ _ _ _ h).1
+      subst result
+      exact ⟨rfl,rfl⟩
+    all_goals cases h
+  all_goals cases h
+
+private theorem operation_aligned {dependencies program}
+    (block : RuntimeInterval.Block dependencies program) (position : Position)
+    (roles : List RuntimeOwnerMap.Owner) (before after : RuntimeOwnerMap.Map)
+    (expected : Semantics.Exact.Matrix) (node : Node dependencies program block)
+    (initial final : RuntimeStructuralAction.SourceState)
+    (checked : RuntimeInterval.Computed (operationNode block position roles before after expected) node) :
+    NodeAligned initial final node := by
+  obtain ⟨work,left,ran⟩ := checked
+  unfold operationNode at ran
+  obtain ⟨inputs,a,_inputs,h⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨outputs,b,_outputs,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨frame,c,_frame,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨inputCode,d,_input,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨outputCode,e,_output,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨physical,f,_physical,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨action,g,_action,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,i,_charge,h⟩ := bind_success _ _ _ _ _ h
+  split at h
+  · have same := (pure_success _ _ _ _ h).1
+    subst node
+    trivial
+  · cases h
+
+private theorem selection_aligned {α : Type} (artifact : Artifact)
+    {dependencies program block start count roles}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (frame : RuntimeOwnerMap.Checked roles interval.before)
+    (owners : RuntimeOwnerTransition.Checked interval frame.bindings)
+    (selector target : RuntimeOwnerMap.Owner) {moduleName name offset}
+    (table : SourceTypes.QuantumArms.Table artifact.sources moduleName name offset selector.basis target.basis)
+    (site : RuntimeContextRequest.Site) (initial : α)
+    (realize : Fin table.arms.length →
+      SourceTypes.QuantumArms.BoundArm artifact.sources moduleName selector.basis target.basis →
+      α → WorkM (Semantics.Exact.Matrix × α))
+    (result : Node dependencies program block × α)
+    (before after : RuntimeStructuralAction.SourceState)
+    (checked : RuntimeInterval.Computed
+      (selectionNode artifact interval frame owners selector target table site initial realize) result) :
+    NodeAligned before after result.1 := by
+  obtain ⟨work,left,ran⟩ := checked
+  unfold selectionNode at ran
+  obtain ⟨_,a,_count,h⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨entry,b,_entry,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨exit,c,_exit,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,d,_interface,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨inputCode,e,_input,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨outputCode,f,_output,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨selectorRead,g,_selector,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨targetRead,i,_target,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨walk,j,_walk,h⟩ := bind_success _ _ _ _ _ h
+  rcases walk with ⟨meanings,remaining⟩
+  obtain ⟨expected,k,_expected,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨attached,l,_attached,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨restriction,m,_restriction,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨logical,n,_logical,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst result
+  trivial
+
 
 /-- One proof of the actual iteration retains both the complete state chain
 and its named-child computations. The recursive caller is explicit here;
@@ -230,7 +330,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc True.intro True.intro
+      exact chain.snoc (primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩) True.intro
     case operation =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,f,_shape,h⟩ := bind_success _ _ _ _ _ h
@@ -241,7 +341,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc True.intro True.intro
+      exact chain.snoc (operation_aligned block position _ _ _ _ node history _ ⟨i,j,_node⟩) True.intro
     case selection =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h
@@ -252,7 +352,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc True.intro True.intro
+      exact chain.snoc (selection_aligned artifact interval frame owners _ _ _ _ _ _ (node,extra) history _ ⟨g,i,_node⟩) True.intro
     case primitive =>
       split at h
       · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h
@@ -271,7 +371,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
           have same := (pure_success _ _ _ _ returned).1
           subst after
           have chain := entered
-          exact chain.snoc True.intro True.intro
+          exact chain.snoc (primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩) True.intro
     case conditional =>
       obtain ⟨_,e,_count,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h

@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Derive primitive input histories and full carrier/port correspondence from
+  the actual original pre/post callee runs. Connect the authentic complete
+  caller encoding to the same parent Raw-event source action, retaining phase,
+  arbitrary correlated spectators/references and the explicit local reorder.
+  Reuse the single common-loop proof. Output-code/order and whole-function
+  logical-action/observing-history composition remain open; no native rule,
+  work limit or public v5 capability changes.
+
 - Connect each named child in the actual body traversal to its original callee,
   real argument binding, visible ordinary SSA and recursive result. Derive the
   existing state-flow law from this single strengthened loop proof and retain
