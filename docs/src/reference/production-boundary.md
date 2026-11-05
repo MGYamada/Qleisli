@@ -369,6 +369,18 @@ the same caller frame. These are return-transport and Raw-instrument laws;
 composition of the different source-level encodings and logical actions
 remains a separate obligation.
 
+`RuntimeNamedSourceFlow.original_body` derives the named-boundary state chain
+from the actual common body loop and its retained successful traversal. It
+retains the real initial owner reorder and final source-return read.
+`original_three` connects the actual pre/choose/post calls through their complete
+source states, including ordered bindings, full bases, ports and issuance
+history. Equal physical widths and assumed code equations are not premises.
+The proof follows both fresh and planned event traversal, including selected
+static continuations, with the original continuous work counter. The recursive
+iteration is factored without changing its guards, reads or charges. Other step
+kinds receive no named-boundary assertion from this administrative invariant;
+whole-source code, logical-action and observing-history composition remain open.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting
