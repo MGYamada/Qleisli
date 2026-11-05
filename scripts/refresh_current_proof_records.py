@@ -38,6 +38,7 @@ KERNEL = "lean-kernel/.lake/build/bin/qleisli-kernel"
 HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-ordinary-adts", "refs/heads/codex/beta-typed-ordinary-runtime",
     "refs/heads/codex/beta-qmatch", "refs/heads/codex/beta-qmatch-arm-body", "refs/heads/codex/beta-qmatch-three-calls",
+    "refs/heads/codex/beta-qmatch-op-slots",
     "refs/heads/codex/beta-quantum-runtime-types",
     "refs/heads/codex/beta-runtime-static-bindings"))
 FIXED = (

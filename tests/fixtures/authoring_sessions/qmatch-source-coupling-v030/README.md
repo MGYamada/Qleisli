@@ -428,3 +428,14 @@ rejected source and the two legal spellings that distinguish the supplying
 argument from the assertion written in the arm. The common reader discharges
 the obligation for `stamp[7]`. Changing its unused argument to 8 preserves
 the matrix but fails the comparison with the source that supplied 7.
+
+The [original Op-slot study](op-slots-first.json) retains a two-qubit source
+with an unused first Op formal and an asserted second one. The complete native
+proposal keeps all five provider occurrences, including the unused formal in
+the arm's original wrapper. Before the change, duties 8 and 16 remain residual;
+afterwards their separate source and Meaning evidence consumes both. The first
+test incorrectly assumed that only the enclosing call was an application;
+the diagnostic retains the original keep, sign and choose occurrences separately.
+Full source maps remain external, and dirty implementation windows are not
+clean-commit build attestations. General nested duties, public v5, full12/64,
+source-action composition and Issue completion remain pending.

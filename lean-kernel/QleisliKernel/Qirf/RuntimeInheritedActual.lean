@@ -9,7 +9,8 @@ open RuntimeNativeSubject (Cursor)
 
 -- A written assertion in a static actual inherits the original supplying call.
 -- Compare its full rooted original payload and every lexical supplier row.
--- Restrict this reader to one scalar-free Op formal from an unguarded root.
+-- Retain every scalar-free Op actual, including unused siblings. The selected
+-- formal keeps its original mixed-header ordinal in an unguarded root call.
 private structure OriginalKey where
   owner : String
   name : String
@@ -79,11 +80,6 @@ def requestedBare (description : GenericOperation.Description) : Bool :=
     | [.provider _ _ [] [] [] [],.requested 0 _ _] => true
     | _ => false
 
-private def simpleCall {sources} (call : GenericOperation.ApplicationSource sources) : Bool :=
-  match call.basisActuals,call.naturalActuals,call.operationActuals with
-  | [],[],[op] => requestedBare op.subject
-  | _,_,_ => false
-
 private def applicationCost {sources} (a : GenericOperation.ApplicationSource sources) : Nat :=
   originalFields a.state.prepared.original.envelope + originalFields a.target.envelope +
     SourceTrace.Meter.tokenFields a.tokens + SourceTrace.Meter.nameFields a.scope +
@@ -105,7 +101,7 @@ structure Inherited {sources} (catalogue : GenericCatalogue.Checked sources)
   originalTarget : originalKey binding.original.envelope = originalKey app.target.envelope
   actualOwner : originalKey binding.actual.state.prepared.original.envelope = originalKey app.state.prepared.original.envelope
   mixed : binding.formal = formal
-  formalOfCall : app.target.header.formals = [binding.formal]
+  formalOfCall : app.target.header.formals[binding.formal.ordinal]? = some binding.formal
   appliedTo : binding.actual.tokens = argument ∧ binding.actual.tokens = tokens
   sameScope : binding.actual.scope = app.scope
   noGuard : binding.actual.state.environment.guards.isEmpty = true
@@ -125,7 +121,6 @@ def readInherited : WorkM (Inherited catalogue app hop.supply.source.actual.form
     match retained : binding.application with
     | none => throw Finite.Error.request
     | some application =>
-      guard (simpleCall application && simpleCall app) Finite.Error.request
       exactWork (Exact.charge (32*(applicationCost application+applicationCost app+
         originalFields binding.actual.state.prepared.original.envelope+originalFields binding.original.envelope+
         SourceTrace.Meter.tokenFields binding.actual.tokens+SourceTrace.Meter.tokenFields marker.tokens+
@@ -135,7 +130,8 @@ def readInherited : WorkM (Inherited catalogue app hop.supply.source.actual.form
         let supplied ← NaturalAffine.witness (SourceDutyProviderBare.readApplications catalogue [application])
         if target : originalKey binding.original.envelope = originalKey app.target.envelope ∧
             originalKey binding.actual.state.prepared.original.envelope = originalKey app.state.prepared.original.envelope ∧
-            binding.formal = hop.supply.source.actual.formal ∧ app.target.header.formals = [binding.formal] then
+            binding.formal = hop.supply.source.actual.formal ∧
+            app.target.header.formals[binding.formal.ordinal]? = some binding.formal then
           if site : (binding.actual.tokens = hop.supply.source.actual.argument.tokens ∧ binding.actual.tokens = marker.tokens) ∧
               binding.actual.scope = app.scope ∧ binding.actual.state.environment.guards.isEmpty = true then
             let ⟨original,caller,formal,onlyFormal⟩ := target
@@ -170,7 +166,6 @@ structure Supplied where
   inherited : ResultOf (readInherited hop inner.route.val.invoked.val.demand.source.original marker)
 
 def readSupplied : WorkM (Supplied hop pending (parent := parent) (parentInvocation := parentInvocation)) := do
-  guard (simpleCall app) .request
   let markers := hop.supply.source.checked.provenance.markers
   exactWork (Exact.charge (16*(markers.length+SourceTrace.Meter.tokenFields hop.supply.source.actual.argument.tokens+1)))
   match selected : markers with

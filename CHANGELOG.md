@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Authenticate every original Op argument slot in scalar-free calls, including
+  unused siblings, before assigning separate caller/arm Meaning credits.
+  Select the forwarded formal by its original mixed-header ordinal. The
+  component retains exact source, provider, call and Meaning checks; general
+  nested duties, public v5 and the full qmatch profile remain pending.
+
 - Check Rust lint failures before native preparation and lengthy tests.
 - Compile fresh native bundles in bounded batches in import order, then build
   the complete library and executable before auditing and replaying the same products.

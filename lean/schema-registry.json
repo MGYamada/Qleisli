@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "2d3d0d9633254f3a94d8d61b3569555de9f598a9c1323b54ea99c2611eb83d72",
+    "sha256": "c2e2cf5a06af9ab11ccf828c1e79ba0e0580ec075f095e2f42b6ac0c80612188",
     "files": {
       "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -413,7 +413,7 @@
       "lean-kernel/QleisliKernel/Qirf/RuntimeFormalActual.lean": "6cafbc78e121c2ae3ed6d21cba75f0682eb57151a6da5c82c8ae4a179d3f6456",
       "lean-kernel/QleisliKernel/Qirf/RuntimeForwardedSupply.lean": "7548938b6ec9afce635638d23fe2b6894ddd6dfb674ff48b14d8a2e71730ac86",
       "lean-kernel/QleisliKernel/Qirf/RuntimeGraphOperation.lean": "5fab5420f524ece7b5f62e96e70f9c4a715fac3f29cd4b8f7b5bbe0a5adc73bd",
-      "lean-kernel/QleisliKernel/Qirf/RuntimeInheritedActual.lean": "d8afa52b7dc7c62f032ddbf13264fbde56eb0d0aa4335d6615dba637a830d72f",
+      "lean-kernel/QleisliKernel/Qirf/RuntimeInheritedActual.lean": "42685cd6074ca3afa96705c823be5db01c33e9a646499c6d315273625de8cf74",
       "lean-kernel/QleisliKernel/Qirf/RuntimeInteriorAssembly.lean": "d2e15123932c1dd99e9a5df343deb129213c7a0b28584d4691a1dab7590908d9",
       "lean-kernel/QleisliKernel/Qirf/RuntimeInteriorFocus.lean": "4989961b2a78fde9e0d536fe86e24fa182c75fc2b2c994fe4223724652771ace",
       "lean-kernel/QleisliKernel/Qirf/RuntimeInteriorSupply.lean": "2ddb7e10c640007d267cca33378b147772ee6989684d253dbba431763f820549",
@@ -502,7 +502,7 @@
       "lean-kernel/QleisliKernel/Qirf/SourceClassicalTree.lean": "723e813f5c5f5f728b359df057b1cd72eb85d5b9bd75fa4df21ec70c3e799afc",
       "lean-kernel/QleisliKernel/Qirf/SourceContextRequest.lean": "b1c4f4907a3b0fc74481a7a2ffa034d646247bb107b74f0940e899f347aae627",
       "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderApplied.lean": "832bf0a7aebe509d1b2ece238222dc0e1e4fb1eede79494fedede18ffb46e8a8",
-      "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderBare.lean": "e29a33617c06d85bdfdcf8c52bfe2b2629ecae05148aaf7962e6f9fafd378d55",
+      "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderBare.lean": "004a7053e44a3316ebfe598344680e607106bc50bdb5a7277fd657d8bb61f289",
       "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderBody.lean": "ba6a2017ff89d7861a5f7e95c4f5139f19b7c937a47ff85037c23994bf9cea5c",
       "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderFresh.lean": "a1af4af36cf34cb4835dca4cf9d50b817831619d177e1ea46e12b60dadb1e1da",
       "lean-kernel/QleisliKernel/Qirf/SourceDutyProviderHeader.lean": "de3ce7d4629293824c3a684d3f0c80af7d12e7e1dba5af9487e156404010f2c9",

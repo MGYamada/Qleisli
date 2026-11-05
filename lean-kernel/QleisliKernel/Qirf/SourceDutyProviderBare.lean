@@ -153,7 +153,9 @@ structure Application {sources} (catalogue : GenericCatalogue.Checked sources)
   caller : Site catalogue application.state application.scope application.tokens
   noBases : application.basisActuals.isEmpty = true
   noNaturals : application.naturalActuals.isEmpty = true
-  singleOperation : application.target.header.formals.length ≤ 1
+  originalSlots : application.operationActuals.map (·.original) =
+    application.target.header.formals.map (fun formal =>
+      ⟨application.owner,application.name,formal.ordinal⟩)
   operationKinds : application.target.header.formals.all operationOnly = true
   candidate : CallName.Checked sources application.state.owner application.scope application.written.callee
   queried : SourceDutySlots.Computed
@@ -193,10 +195,15 @@ private def readApplication {sources} (catalogue : GenericCatalogue.Checked sour
     (application : ApplicationSource sources) : WorkM (Application catalogue application) := do
   let caller ← readSite catalogue application.state application.scope application.tokens
   exactWork (Exact.charge (16*(application.basisActuals.length+application.naturalActuals.length+
-    application.target.header.formals.length+1)))
+    application.target.header.formals.length+1)+32*((application.operationActuals.map fun actual =>
+      GenericOperation.Meter.key actual.original).sum+
+      (application.target.header.formals.length+1)*
+        (application.owner.utf8ByteSize+application.name.utf8ByteSize+3))))
   if noBases : application.basisActuals.isEmpty = true then
     if noNaturals : application.naturalActuals.isEmpty = true then
-      if singleOperation : application.target.header.formals.length ≤ 1 then
+      if originalSlots : application.operationActuals.map (·.original) =
+          application.target.header.formals.map (fun formal =>
+            ⟨application.owner,application.name,formal.ordinal⟩) then
         if operationKinds : application.target.header.formals.all operationOnly = true then
           let candidate ← NaturalAffine.witness
             (CallName.read sources application.state.owner application.scope application.written.callee)
@@ -214,7 +221,7 @@ private def readApplication {sources} (catalogue : GenericCatalogue.Checked sour
                 application.transfer.callee.helpers application.transfer.callee.bindings)
               let relevance ← SourceRows.read (applicationRows application caller.original.rows candidate.val
                 target.val.body.definition.rows helpers.val)
-              return ⟨caller,noBases,noNaturals,singleOperation,operationKinds,candidate.val,
+              return ⟨caller,noBases,noNaturals,originalSlots,operationKinds,candidate.val,
                 by with_reducible exact candidate.property,resolution,resolved,
                 same.1,same.2.1,same.2.2.1,same.2.2.2,target.val,by with_reducible exact target.property,
                 target.val.body.definition.rows,rfl,

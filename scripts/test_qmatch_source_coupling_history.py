@@ -172,6 +172,32 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(hashlib.sha256(data).hexdigest(), payload['sha256'])
         return payload['text']
 
+    def test_original_op_slots_keep_distinct_source_duties(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/op-slots-first.json'
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']), ('qleisli.original-op-slot-history', 1))
+        source = self.checked_text(record['original']['main.qli'])
+        self.assertIn('const V:Op<Bit>,const U:Op<Bit>', source)
+        self.assertIn('choose[keep,checked_op(sign,Sign)]', source)
+        self.assertIn('1=>checked_op(U,Outer)', source)
+        current = (ROOT / 'tests/qmatch_transport.lean').read_text()
+        self.assertIn('private def slottedSource : String := r#"' + source + '"#', current)
+        outputs = {}
+        for stage in ('before', 'after_component', 'first_control_failure', 'key_inventory'):
+            row = record[stage]
+            outputs[stage] = self.checked_text(row['stdout']) + self.checked_text(row['stderr'])
+            self.assertEqual(row['report']['exit_code'], int(stage == 'first_control_failure'))
+            self.assertTrue(row['report']['source_window_unchanged'])
+        self.assertIn('Except.ok (Except.ok ([], [8, 16], []))', outputs['before'])
+        self.assertIn('Except.ok (Except.ok ([8, 16], [], []))', outputs['after_component'])
+        self.assertIn('original Op slot key identity: QleisliKernel.Finite.Error.invalid',
+                      outputs['first_control_failure'])
+        self.assertIn('("keep", []), ("sign", []), ("choose", [0, 1])', outputs['key_inventory'])
+        self.assertNotEqual(record['before']['report']['static_library_sha256'],
+                            record['after_component']['report']['static_library_sha256'])
+        self.assertIn('dirty implementation windows', record['scope'])
+        self.assertIn('full twelve-bit/64-label contract', record['pending'])
+
     def test_applied_provider_originals(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/applied-provider-origins.json'
         record = history_json(path)

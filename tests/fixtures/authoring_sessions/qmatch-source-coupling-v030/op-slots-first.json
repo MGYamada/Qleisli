@@ -1,0 +1,146 @@
+{
+  "format": "qleisli.original-op-slot-history",
+  "version": 1,
+  "study_kind": "informed component study",
+  "original": {
+    "main.qli": {
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Sign:Bit=reference(sign);\nmeaning Outer:Bit=reference(sign);\nunitary fn choose[const V:Op<Bit>,const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(V),Controllable(V),Applicable(U),Controllable(U) {qmatch(s,q){0=>keep,1=>checked_op(U,Outer)}}\npub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){choose[keep,checked_op(sign,Sign)](s,q)}\n",
+      "bytes": 483,
+      "sha256": "26196759d6a7f48e0250e8ddd2d53c182711d40fee58cdbb6fe392e32bbfba2d"
+    }
+  },
+  "before": {
+    "report": {
+      "head": "04377df9b0eaca98dad57a5523c08d8a86d16d6a",
+      "argv": [
+        "/opt/homebrew/opt/python@3.15/bin/python3.15",
+        "scripts/run_native_lean_test.py",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/two-formal-slot-native-first-17ab/all-original-occurrences-driver.lean",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/two-formal-slot-native-first-17ab"
+      ],
+      "exit_code": 0,
+      "seconds": 48.4322856660001,
+      "source_window_unchanged": true,
+      "child_max_rss_bytes_macos": 1744666624,
+      "static_library_sha256": "aeaf5add2be8e9ec21692e8d1dfd42630db5d4ba71564dfd3bb6f9a4f4c41b4d",
+      "wrapper_sha256": "9dc8a432343ace1af120cff307417235d10b7283d998b963c28a0bbfe0821e33",
+      "stdout_sha256": "91a1eb86a191f87dc3436912bfd5325fe3833065db267f0e858368a2470652a5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "observational native driver; exit zero alone does not establish acceptance; inspect actual stage results"
+    },
+    "stdout": {
+      "text": "two-formal original-slot baseline: Except.ok (Except.ok ([], [8, 16], [])); work=13768060\n",
+      "bytes": 90,
+      "sha256": "91a1eb86a191f87dc3436912bfd5325fe3833065db267f0e858368a2470652a5"
+    },
+    "stderr": {
+      "text": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "after_component": {
+    "report": {
+      "head": "04377df9b0eaca98dad57a5523c08d8a86d16d6a",
+      "argv": [
+        "/opt/homebrew/opt/python@3.15/bin/python3.15",
+        "scripts/run_native_lean_test.py",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/two-formal-slot-native-first-17ab/all-original-occurrences-driver.lean",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/two-formal-slot-native-first-17ab"
+      ],
+      "exit_code": 0,
+      "seconds": 89.17348237498663,
+      "source_window_unchanged": true,
+      "child_max_rss_bytes_macos": 1740701696,
+      "static_library_sha256": "ce9138c638c237c5e3b00b0a264802ecfba2dea923063c3c6e99bcca1cbe9b8b",
+      "wrapper_sha256": "9dc8a432343ace1af120cff307417235d10b7283d998b963c28a0bbfe0821e33",
+      "stdout_sha256": "73eaa8f5023c3c0f1c40cfe65cf9e8a8c6062625e973d1e6e4b51def4f624072",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "observational native driver; exit zero alone does not establish acceptance; inspect actual stage results"
+    },
+    "stdout": {
+      "text": "two-formal original-slot baseline: Except.ok (Except.ok ([8, 16], [], [])); work=15146585\n",
+      "bytes": 90,
+      "sha256": "73eaa8f5023c3c0f1c40cfe65cf9e8a8c6062625e973d1e6e4b51def4f624072"
+    },
+    "stderr": {
+      "text": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "first_control_failure": {
+    "report": {
+      "argv": [
+        "/opt/homebrew/opt/python@3.15/bin/python3.15",
+        "scripts/run_native_lean_test.py",
+        "tests/qmatch_transport.lean",
+        "tests/fixtures/qmatch_v030/transport-cases.json",
+        "tests/fixtures/qmatch_v030/execution-cases.json"
+      ],
+      "exit_code": 1,
+      "seconds": 69.22769683296792,
+      "source_window_unchanged": true,
+      "base_head": "04377df9b0eaca98dad57a5523c08d8a86d16d6a",
+      "peak_child_rss": 1614249984,
+      "library_sha256": "ce9138c638c237c5e3b00b0a264802ecfba2dea923063c3c6e99bcca1cbe9b8b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c105e6f83e971ab034de862a875bb78e23bb14a5df10ceb5d33fa0ceeb2fef83"
+    },
+    "stdout": {
+      "text": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "text": "Traceback (most recent call last):\n  File \"/private/tmp/qleisli-qmatch-arm-body/scripts/run_native_lean_test.py\", line 37, in <module>\n    sys.exit(main())\n             ~~~~^^\n  File \"/private/tmp/qleisli-qmatch-arm-body/scripts/run_native_lean_test.py\", line 28, in main\n    output = native_harness.run([str(binary), *args.arguments], native_harness.ROOT, log)\n  File \"/private/tmp/qleisli-qmatch-arm-body/scripts/native_harness.py\", line 38, in run\n    raise RuntimeError(json.dumps(log[-1]))\nRuntimeError: {\"command\": [\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-lean-test-d3hp732_/native-test\", \"tests/fixtures/qmatch_v030/transport-cases.json\", \"tests/fixtures/qmatch_v030/execution-cases.json\"], \"cwd\": \"/private/tmp/qleisli-qmatch-arm-body\", \"exit\": 1, \"stdout\": \"passed 48 shared Rust/Lean request shape expectations; parsing confers no acceptance\\npassed 2 exact controls and 24 QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate\\npassed 2 exact controls and 24 QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate\\npassed 5 exact controls and 9 QLV3 source/body/evidence/view refusals, including actual context dispatch; fresh native compilation/handle tests remain separate\\npassed 18 original structural source/frame/arm/code checks; paired native/QDV and compiler integration remain separate\\noriginal Op slots _private.Main.0.QleisliKernel.Tests.RuntimeNamedSelectionBoundary.AppliedFault.nested: Except.ok ([8, 16], [], [(16, 363)]); work=10944768\\noriginal Op slots _private.Main.0.QleisliKernel.Tests.RuntimeNamedSelectionBoundary.AppliedFault.wrongInnerMeaning: Except.error (QleisliKernel.Finite.Error.equation); work=8694406\\noriginal Op slots _private.Main.0.QleisliKernel.Tests.RuntimeNamedSelectionBoundary.AppliedFault.wrongOuterMeaning: Except.error (QleisliKernel.Finite.Error.equation); work=8822382\\n\", \"stderr\": \"uncaught exception: original Op slot key identity: QleisliKernel.Finite.Error.invalid\\n\", \"seconds\": 2.0613640000810847}\n",
+      "bytes": 2140,
+      "sha256": "c105e6f83e971ab034de862a875bb78e23bb14a5df10ceb5d33fa0ceeb2fef83"
+    }
+  },
+  "key_inventory": {
+    "report": {
+      "head": "04377df9b0eaca98dad57a5523c08d8a86d16d6a",
+      "argv": [
+        "/opt/homebrew/opt/python@3.15/bin/python3.15",
+        "scripts/run_native_lean_test.py",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/op-slots-original-key-inventory.lean",
+        "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/two-formal-slot-native-first-17ab"
+      ],
+      "exit_code": 0,
+      "seconds": 51.53583558299579,
+      "source_window_unchanged": true,
+      "child_max_rss_bytes_macos": 1723645952,
+      "static_library_sha256": "ce9138c638c237c5e3b00b0a264802ecfba2dea923063c3c6e99bcca1cbe9b8b",
+      "wrapper_sha256": "9dc8a432343ace1af120cff307417235d10b7283d998b963c28a0bbfe0821e33",
+      "stdout_sha256": "1405bb77936b91a5cf0b544a1df04ef28c2c69a13dc30e3207bc1025653d8351",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "observational native driver; exit zero alone does not establish acceptance; inspect actual stage results"
+    },
+    "stdout": {
+      "text": "actual original slot inventory: Except.ok [(\"keep\", []), (\"sign\", []), (\"choose\", [0, 1])]; work=4245771\n",
+      "bytes": 105,
+      "sha256": "1405bb77936b91a5cf0b544a1df04ef28c2c69a13dc30e3207bc1025653d8351"
+    },
+    "stderr": {
+      "text": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "scope": "Two-qubit original source and unchanged native reader observations; dirty implementation windows are content-bound external evidence, not clean-commit build attestations. Native source credit is not public v5 or source-action preservation.",
+  "provenance": {
+    "base": "04377df9b0eaca98dad57a5523c08d8a86d16d6a",
+    "external_directory": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101",
+    "whole_source_windows": "External checks directories retain original full source maps; not copied or presented as repository-contained proof artifacts.",
+    "first_proposal": "The initial hand-authored four-body proposal omitted the unused V occurrence inside arm U. Retaining all five original occurrences repaired proposal data without changing acceptance. Earlier source/driver diagnostics remain external."
+  },
+  "pending": [
+    "general nested and constructed Meaning duties",
+    "public v5 integration",
+    "full twelve-bit/64-label contract",
+    "general typed source/code/instrument composition",
+    "latest-head full CI and review",
+    "Issues 64, 195 and 142 completion"
+  ]
+}
