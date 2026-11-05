@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect each original single-primitive call's exact logical update to the
+  complete returned caller encoding, retaining correlated spectators and
+  external references. Remove its final local reorder only on actual finite
+  rows. Derive both pre/post laws from the same original three-call root and
+  real child executions. The middle-selection join, general body/instrument
+  composition, public v5 and full12/64 remain pending; acceptance is unchanged.
+
 - Derive original named primitive output carriers and the same native code read
   through the actual callee execution, source return and caller owner mapping.
   Factor the complete caller output encoding with arbitrary reference/spectator
