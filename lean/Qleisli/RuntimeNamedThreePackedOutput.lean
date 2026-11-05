@@ -330,7 +330,7 @@ theorem original_post_finish {artifact owner name arguments request prepared ord
 
 #print axioms original_post_finish
 
-open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt Composed EntryFrame)
+open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt Composed ComposedAt originalBindings PointwiseAction EntryFrame)
 open Qleisli.RuntimeNamedSelectionWholeOutput (callerUpdate)
 open Qleisli.RuntimeNamedCallerAction (updatedJoint)
 open Qleisli.RuntimeForestOrderedProduct
@@ -407,7 +407,7 @@ theorem packed_composition {dependencies program block preStep centerStep postSt
   cases pre
   cases center
   cases post
-  dsimp only [EntryFrame,Composed,FinishCaller,PackedComposition] at *
+  dsimp only [EntryFrame,Composed,ComposedAt,originalBindings,PointwiseAction,FinishCaller,PackedComposition] at *
   cases stored : held.literal
   case selection =>
     rw [stored] at chain
@@ -420,7 +420,7 @@ theorem packed_composition {dependencies program block preStep centerStep postSt
     intro Reference joint row bounded ref
     have composed := funext fun physical => action joint physical ref
     simp only [Qleisli.Semantics.RawAction.events,List.foldl_append,List.foldl_cons,List.foldl_nil] at composed ⊢
-    rw [composed]
+    erw [composed]
     exact reorder output _ row bounded ref
 
 /-- The original input storage, actual complete three-call event list and

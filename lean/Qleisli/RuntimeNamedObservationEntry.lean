@@ -10,7 +10,7 @@ open QleisliKernel QleisliKernel.Qirf
 open QleisliKernel.Qirf.RuntimeForestCode (Frame OwnerCode)
 open Qleisli.Semantics.ObservingAction (History)
 open Qleisli.RuntimeNamedThreePackedInstrument (advance pureHistory)
-open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt)
+open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt ComposedAt originalBindings)
 open Qleisli.RuntimeNamedSourceFlow (entryState)
 open Qleisli.RuntimeForestProduct (referenceAction)
 
@@ -57,36 +57,58 @@ theorem original_entry {artifact owner name arguments request prepared order run
 
 #print axioms original_entry
 
+/-- Run the original erasure on a represented history and account for every
+visible and hidden outcome. The continuation describes the use of each
+unnormalized projected operator. -/
+def OutcomeHistories {sources caller dependencies program functionName event block position previous}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous) (input : Frame observed.before) (consumed : OwnerCode observed.input)
+    (continues : (Nat → Nat → ℂ) → History → Prop) : Prop :=
+  let raw := observed.interval.before.quantum.reference
+  let axes := observed.input.port.wires.map raw.frame.idxOf
+  let erasure := Semantics.Observation.Event.erase raw.frame.length axes observed.measured
+  ∀ (recurse : List Semantics.Observation.Event → History → Option (List History))
+    (joint : Nat → Nat → ℂ) (history : History),
+    (∀ col, RawFiniteRows.OnRows raw.frame.length (fun row => history.operator row col)
+      (fun row => referenceAction input joint row col)) →
+    ∃ branch : Nat → History,
+      Qleisli.Semantics.ObservingAction.step dependencies recurse erasure history =
+        some ((List.range (2^axes.length)).map branch) ∧
+      ∀ outcome, outcome < 2^axes.length →
+        (branch outcome).values = (match observed.measured with
+          | none => history.values
+          | some id => history.values++[(id,outcome == 1)]) ∧
+        (branch outcome).hidden = history.hidden++[outcome] ∧
+        continues (RuntimeOriginalObservation.outcomeJoint consumed outcome joint) (branch outcome)
 
+theorem OutcomeHistories.imp {sources caller dependencies program functionName event block position previous}
+    {observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous} {input : Frame observed.before} {consumed : OwnerCode observed.input}
+    {continues next : (Nat → Nat → ℂ) → History → Prop}
+    (histories : OutcomeHistories observed input consumed continues)
+    (implies : ∀ projected branch, continues projected branch → next projected branch) :
+    OutcomeHistories observed input consumed next := by
+  intro recurse joint history represented
+  obtain ⟨branch,read,law⟩ := histories recurse joint history represented
+  refine ⟨branch,read,?_⟩
+  intro outcome bounded
+  obtain ⟨visible,hidden,acts⟩ := law outcome bounded
+  exact ⟨visible,hidden,implies _ _ acts⟩
 
-/-- Every actual erasure result is encoded in the entry frame of the same
-original named call. There is no premise about amplitudes outside the
-observation's finite input domain. -/
+/-- Every original erasure outcome supplies the checked first call's frame. -/
 def SuppliedHistories {sources caller dependencies program functionName event block position previous step}
     (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
       event block position previous)
     (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
     (input : Frame observed.before) : Prop :=
-  match pre with
-  | .named (scope := scope) (before := before) _ _ =>
-    let raw := observed.interval.before.quantum.reference
-    let axes := observed.input.port.wires.map raw.frame.idxOf
-    let event := Semantics.Observation.Event.erase raw.frame.length axes observed.measured
-    ∃ same : observed.interval.after = scope.interval.before,
-    ∃ consumed : OwnerCode observed.input, ∃ output : Frame observed.after,
-      (checkedAt same observed.after).bindings = before.bindings ∧
-      ∀ (recurse : List Semantics.Observation.Event → History → Option (List History))
-        (joint : Nat → Nat → ℂ) (history : History),
-        (∀ col, RawFiniteRows.OnRows raw.frame.length (fun row => history.operator row col)
-          (fun row => referenceAction input joint row col)) →
-        ∃ branch : Nat → History,
-          Qleisli.Semantics.ObservingAction.step dependencies recurse event history =
-            some ((List.range (2^axes.length)).map branch) ∧
-          ∀ outcome, outcome < 2^axes.length → ∀ col,
-            RawFiniteRows.OnRows scope.interval.before.quantum.frame.length
-              (fun row => (branch outcome).operator row col)
-              (fun row => referenceAction (frameAt same output)
-                (RuntimeOriginalObservation.outcomeJoint consumed outcome joint) row col)
+  let entry := (RuntimeNamedOccurrenceAction.span pre).slice.interval.before
+  ∃ same : observed.interval.after = entry,
+  ∃ consumed : OwnerCode observed.input, ∃ output : Frame observed.after,
+    (checkedAt same observed.after).bindings = originalBindings pre ∧
+    OutcomeHistories observed input consumed (fun projected branch =>
+      ∀ col, RawFiniteRows.OnRows entry.quantum.frame.length
+        (fun row => branch.operator row col)
+        (fun row => referenceAction (frameAt same output) projected row col))
 
 private theorem supply {sources caller dependencies program functionName event block position previous step}
     (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
@@ -103,11 +125,14 @@ private theorem supply {sources caller dependencies program functionName event b
   obtain ⟨branch,emitted,branches⟩ := law recurse joint history
     (fun row bounded col => represented col row bounded)
   refine ⟨branch,emitted,?_⟩
-  intro outcome outcomeBound col row rowBound
+  intro outcome outcomeBound
+  obtain ⟨visible,hidden,encoded⟩ := branches outcome outcomeBound
+  refine ⟨visible,hidden,?_⟩
+  intro col row rowBound
   dsimp only
   rw [RuntimeNamedThreeFrameChain.frameAt_action]
-  rw [← same] at rowBound
-  exact (branches outcome outcomeBound).2.2 row rowBound col
+  have bound := (congrArg (fun state => row < 2^state.quantum.frame.length) same).mpr rowBound
+  exact encoded row bound col
 
 theorem original_supplies_histories {artifact owner name arguments request prepared order runtime}
     (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
@@ -124,6 +149,55 @@ theorem original_supplies_histories {artifact owner name arguments request prepa
     (original_entry body view observed earlier prefixShape next) input
 
 #print axioms original_supplies_histories
+
+/-- On every actual observation outcome, the three original pure calls
+implement the source equation in the actual post-call frame. The equation
+uses the unnormalized projected joint state for that outcome. -/
+def ObservedComposition {sources caller dependencies program functionName event block position previous
+    preStep centerStep postStep rootItem rootCount}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous)
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
+    (center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep)
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
+    (input : Frame observed.before) (events : List Semantics.Raw.Event) : Prop :=
+  ∃ same : observed.interval.after = (RuntimeNamedOccurrenceAction.span pre).slice.interval.before,
+  ∃ consumed : OwnerCode observed.input, ∃ retained : Frame observed.after,
+    (checkedAt same observed.after).bindings = originalBindings pre ∧
+    ComposedAt pre center post held (frameAt same retained) (fun decode =>
+      OutcomeHistories observed input consumed (fun projected branch =>
+        let after := pureHistory dependencies events branch
+        after.values = branch.values ∧ after.hidden = branch.hidden ∧
+        ∀ col, RawFiniteRows.OnRows (RuntimeNamedOccurrenceAction.span post).slice.interval.after.quantum.frame.length
+          (fun row => after.operator row col) (fun row => decode projected row col)))
+
+private theorem compose_observation {sources caller dependencies program functionName event block position previous
+    preStep centerStep postStep rootItem rootCount}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous)
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
+    (center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep)
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
+    (input : Frame observed.before) (a b c : List Semantics.Raw.Event)
+    (supplied : SuppliedHistories observed pre input)
+    (bounds : RawFiniteRows.BoundedEvents (RuntimeNamedOccurrenceAction.span pre).slice.interval.before.quantum.frame.length
+      (a++b++c) (RuntimeNamedOccurrenceAction.span post).slice.interval.after.quantum.frame.length)
+    (chain : RuntimeNamedThreeFrameChain.Composed pre center post held a b c) :
+    ObservedComposition observed pre center post held input (a++b++c) := by
+  obtain ⟨same,consumed,retained,bindings,histories⟩ := supplied
+  refine ⟨same,consumed,retained,bindings,(chain _ (frameAt same retained) bindings).imp ?_⟩
+  intro decode acts
+  apply histories.imp
+  intro projected branch represented
+  refine ⟨rfl,rfl,?_⟩
+  intro col row bounded
+  have transported := Qleisli.RuntimeNamedThreePackedInstrument.pureHistory_operator_congr bounds
+    dependencies branch (referenceAction (frameAt same retained) projected) represented col row bounded
+  exact transported.trans (acts projected row col)
 
 /-- The original prefix at the first call ends in the checked erasure. -/
 theorem prefix_erasure {sources caller dependencies program functionName event block position previous start count}
@@ -170,6 +244,7 @@ theorem original_erasure_then_adjacent {artifact owner name arguments request pr
       body.root.dependencies body.root.program path event body.checked.native.block position before ssa)
     (earlier : List (RuntimePureBody.Step body.root.dependencies body.root.program body.checked.native.block))
     (prefixShape : view.earlier = earlier ++ [.observation observed])
+    (input : Frame observed.checked.before)
     (coverage : RuntimeNamedSelectionOn.Coverage view.centerSelection
       (RuntimeNamedThreeOccurrence.actual_adjacent_middle body view)) :
     let held := RuntimeNamedThreeOccurrence.actual_adjacent_middle body view
@@ -186,10 +261,8 @@ theorem original_erasure_then_adjacent {artifact owner name arguments request pr
         (body.checked.native.block.operations.take position.start) = some (state,priorEvents) ∧
       body.checked.native.whole.prepared.events =
         (priorEvents++[erasure]) ++ (a++b++c).map Semantics.Observation.Event.pure ++ suffix ∧
-      Entry observed.checked view.prePrimitive ∧
-      RawFiniteRows.BoundedEvents pre.slice.interval.before.quantum.frame.length
-        (a++b++c) post.slice.interval.after.quantum.frame.length ∧
-      RuntimeNamedThreeFrameChain.Composed view.prePrimitive view.centerSelection view.postPrimitive held a b c ∧
+      ObservedComposition observed.checked view.prePrimitive view.centerSelection view.postPrimitive
+        held input (a++b++c) ∧
       ∀ history : History,
         Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
           body.checked.native.whole.prepared.events history =
@@ -206,8 +279,10 @@ theorem original_erasure_then_adjacent {artifact owner name arguments request pr
   obtain ⟨priorEvents,entered,actual⟩ := prefix_erasure observed.checked pre.slice.interval next prior read
   change prior = priorEvents++[erasure] at actual
   subst prior
+  have supplied := original_supplies_histories body view observed earlier prefixShape next input
   refine ⟨a,b,c,priorEvents,suffix,entered,events,
-    original_entry body view observed earlier prefixShape next,bounds,composed,?_⟩
+    compose_observation observed.checked view.prePrimitive view.centerSelection view.postPrimitive
+      held input a b c supplied bounds composed,?_⟩
   intro history
   rw [historyLaw,RuntimeNamedThreePackedInstrument.run_append_event body.root.dependencies 64]
   cases Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history <;> rfl

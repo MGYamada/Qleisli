@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that each original `measure_z` or `discard` outcome follows the same
+  source equation as its immediately adjacent pre/choose/post Raw interval.
+  The law retains the actual prefix, suffix and outcome records. It compares
+  finite post-call rows and preserves reference columns.
+
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
   frames from retained owner receipts. The selection uses its written return

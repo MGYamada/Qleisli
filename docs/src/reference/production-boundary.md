@@ -532,8 +532,15 @@ outcome into the entry frame of an immediately following original named call,
 using the exact source-state and Raw interval joins. The original checked
 event slices retain their finite input and output widths in
 `RawFiniteRows.checked_slice`. Their action on each inherited history depends
-only on its finite input coefficients. General source traversal and the
-remaining body-wide source-action correspondence are separate obligations.
+only on its finite input coefficients.
+`RuntimeNamedObservationEntry.original_erasure_then_adjacent` ties the exact
+prefix, erasure, three-call interval and continuation to one original observing
+IR program. For each erasure outcome, the same three-call source equation acts
+on the unnormalized projected state in the checked post-call frame. It keeps
+the visible measurement and hidden outcome through all three calls. The
+equation applies to every finite post-call row and reference column of a
+represented incoming history. General observing-body composition and the
+packed return from this longer source path remain open.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
