@@ -7,12 +7,13 @@ frame supplies the exact input encoding for every emitted history.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeNamedObservationEntry
 open QleisliKernel QleisliKernel.Qirf
-open QleisliKernel.Qirf.RuntimeForestCode (Frame OwnerCode)
+open QleisliKernel.Qirf.RuntimeForestCode (Frame OwnerCode forestAxes)
 open Qleisli.Semantics.ObservingAction (History)
 open Qleisli.RuntimeNamedThreePackedInstrument (advance pureHistory)
-open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt ComposedAt originalBindings)
+open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt ComposedAt originalBindings PostFrame EncodedOperator encodePost)
 open Qleisli.RuntimeNamedSourceFlow (entryState)
 open Qleisli.RuntimeForestProduct (referenceAction)
+open Qleisli.RuntimeNamedThreePackedOutput (FinishCaller packedCallerReturn)
 
 def Entry {sources caller dependencies program functionName event block position previous step}
     (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
@@ -150,9 +151,27 @@ theorem original_supplies_histories {artifact owner name arguments request prepa
 
 #print axioms original_supplies_histories
 
-/-- On every actual observation outcome, the three original pure calls
-implement the source equation in the actual post-call frame. The equation
-uses the unnormalized projected joint state for that outcome. -/
+/-- Instantiate the typed three-call equation on all outcomes of this
+original erasure, with the original pre-call map and frame. -/
+def ObservedCompositionWith {sources caller dependencies program functionName event block position previous
+    preStep centerStep postStep rootItem rootCount}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous)
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
+    (center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep)
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
+    (input : Frame observed.before)
+    (continues : PostFrame post → EncodedOperator → (Nat → Nat → ℂ) → History → Prop) : Prop :=
+  ∃ same : observed.interval.after = (RuntimeNamedOccurrenceAction.span pre).slice.interval.before,
+  ∃ consumed : OwnerCode observed.input, ∃ retained : Frame observed.after,
+    (checkedAt same observed.after).bindings = originalBindings pre ∧
+    ComposedAt pre center post held (frameAt same retained) (fun caller logical =>
+      OutcomeHistories observed input consumed (continues caller logical))
+
+/-- The original three pure calls act on each unnormalized projected state
+in the actual post-call frame and preserve its outcome records. -/
 def ObservedComposition {sources caller dependencies program functionName event block position previous
     preStep centerStep postStep rootItem rootCount}
     {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
@@ -163,15 +182,11 @@ def ObservedComposition {sources caller dependencies program functionName event 
     (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
     (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
     (input : Frame observed.before) (events : List Semantics.Raw.Event) : Prop :=
-  ∃ same : observed.interval.after = (RuntimeNamedOccurrenceAction.span pre).slice.interval.before,
-  ∃ consumed : OwnerCode observed.input, ∃ retained : Frame observed.after,
-    (checkedAt same observed.after).bindings = originalBindings pre ∧
-    ComposedAt pre center post held (frameAt same retained) (fun decode =>
-      OutcomeHistories observed input consumed (fun projected branch =>
-        let after := pureHistory dependencies events branch
-        after.values = branch.values ∧ after.hidden = branch.hidden ∧
-        ∀ col, RawFiniteRows.OnRows (RuntimeNamedOccurrenceAction.span post).slice.interval.after.quantum.frame.length
-          (fun row => after.operator row col) (fun row => decode projected row col)))
+  ObservedCompositionWith observed pre center post held input (fun caller logical projected branch =>
+    let after := pureHistory dependencies events branch
+    after.values = branch.values ∧ after.hidden = branch.hidden ∧
+    ∀ col, RawFiniteRows.OnRows (RuntimeNamedOccurrenceAction.span post).slice.interval.after.quantum.frame.length
+      (fun row => after.operator row col) (fun row => encodePost post caller (logical projected) row col))
 
 private theorem compose_observation {sources caller dependencies program functionName event block position previous
     preStep centerStep postStep rootItem rootCount}
@@ -190,7 +205,7 @@ private theorem compose_observation {sources caller dependencies program functio
     ObservedComposition observed pre center post held input (a++b++c) := by
   obtain ⟨same,consumed,retained,bindings,histories⟩ := supplied
   refine ⟨same,consumed,retained,bindings,(chain _ (frameAt same retained) bindings).imp ?_⟩
-  intro decode acts
+  intro caller logical acts
   apply histories.imp
   intro projected branch represented
   refine ⟨rfl,rfl,?_⟩
@@ -198,6 +213,53 @@ private theorem compose_observation {sources caller dependencies program functio
   have transported := Qleisli.RuntimeNamedThreePackedInstrument.pureHistory_operator_congr bounds
     dependencies branch (referenceAction (frameAt same retained) projected) represented col row bounded
   exact transported.trans (acts projected row col)
+
+/-- Compare the actual returned history with the packed source result after
+applying the original return order to the post-call logical state. -/
+def PackedOutcomeAction {dependencies program block postStep roles state checked}
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (output : @Frame roles state checked) (events : List Semantics.Raw.Event) (finish : Semantics.Raw.Event)
+    (caller : PostFrame post) (logical : EncodedOperator) (projected : Nat → Nat → ℂ) (branch : History) : Prop :=
+  let after := pureHistory dependencies (events++[finish]) branch
+  after.values = branch.values ∧ after.hidden = branch.hidden ∧
+  ∀ col, RawFiniteRows.OnRows state.quantum.frame.length
+    (fun row => after.operator row col) (fun row => packedCallerReturn post output caller (logical projected) row col)
+
+private theorem packed_outcomes {sources caller dependencies program functionName event block position previous
+    preStep centerStep postStep rootItem rootCount roles state checked}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous)
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
+    (center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep)
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
+    (input : Frame observed.before) (events : List Semantics.Raw.Event)
+    (composition : ObservedComposition observed pre center post held input events)
+    (output : @Frame roles state checked) (axes : List Nat)
+    (physical : state.quantum.frame = (RuntimeNamedOccurrenceAction.span post).slice.interval.after.quantum.frame)
+    (finish : FinishCaller post output (.reorder state.quantum.frame.length axes)) :
+    ObservedCompositionWith observed pre center post held input
+      (PackedOutcomeAction post output events (.reorder state.quantum.frame.length axes)) := by
+  obtain ⟨same,consumed,retained,bindings,law⟩ := composition
+  refine ⟨same,consumed,retained,bindings,law.imp ?_⟩
+  intro caller logical each
+  apply each.imp
+  intro projected branch encoded
+  obtain ⟨_values,_hidden,encoded⟩ := encoded
+  refine ⟨rfl,rfl,?_⟩
+  intro col row bounded
+  have columns : RawFiniteRows.OnRows state.quantum.frame.length
+      (fun row => (pureHistory dependencies events branch).operator row col)
+      (fun row => encodePost post caller (logical projected) row col) := by
+    rw [congrArg List.length physical]
+    exact encoded col
+  have matched := (RawFiniteRows.BoundedEvent.reorder state.quantum.frame.length axes).congr
+    dependencies _ _ columns row bounded
+  change Qleisli.Semantics.RawAction.events dependencies (events++[.reorder state.quantum.frame.length axes])
+    (fun physical => branch.operator physical col) row = _
+  simp only [Qleisli.Semantics.RawAction.events,List.foldl_append,List.foldl_cons,List.foldl_nil]
+  exact matched.trans (finish caller (logical projected) row bounded col)
 
 /-- The original prefix at the first call ends in the checked erasure. -/
 theorem prefix_erasure {sources caller dependencies program functionName event block position previous start count}
@@ -263,6 +325,21 @@ theorem original_erasure_then_adjacent {artifact owner name arguments request pr
         (priorEvents++[erasure]) ++ (a++b++c).map Semantics.Observation.Event.pure ++ suffix ∧
       ObservedComposition observed.checked view.prePrimitive view.centerSelection view.postPrimitive
         held input (a++b++c) ∧
+      (view.later = [] → post.start+post.count = body.checked.native.block.operations.length →
+        let state := body.checked.native.whole.state
+        let finish := Semantics.Raw.Event.reorder state.quantum.frame.length
+          (forestAxes state.quantum.frame body.checked.owners.bindings)
+        ∃ output : Frame body.checked.owners, suffix = [.pure finish] ∧
+          ObservedCompositionWith observed.checked view.prePrimitive view.centerSelection view.postPrimitive
+            held input (PackedOutcomeAction view.postPrimitive output (a++b++c) finish) ∧
+          ∀ history : History,
+            Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
+              body.checked.native.whole.prepared.events history =
+              (do
+                let inherited ← Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history
+                let erased ← advance body.root.dependencies
+                  (Qleisli.Semantics.ObservingAction.run body.root.dependencies 64) inherited erasure
+                return erased.map (pureHistory body.root.dependencies (a++b++c++[finish])))) ∧
       ∀ history : History,
         Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
           body.checked.native.whole.prepared.events history =
@@ -274,18 +351,34 @@ theorem original_erasure_then_adjacent {artifact owner name arguments request pr
               (advance body.root.dependencies (Qleisli.Semantics.ObservingAction.run body.root.dependencies 64))
               (erased.map (pureHistory body.root.dependencies (a++b++c)))) := by
   intro held pre center post state axes erasure next toCenter toPost
-  obtain ⟨a,b,c,prior,suffix,read,events,bounds,composed,historyLaw⟩ :=
+  obtain ⟨a,b,c,prior,suffix,read,events,terminal,bounds,composed,historyLaw⟩ :=
     RuntimeNamedThreePackedInstrument.original_adjacent_observing body view coverage toCenter toPost
   obtain ⟨priorEvents,entered,actual⟩ := prefix_erasure observed.checked pre.slice.interval next prior read
   change prior = priorEvents++[erasure] at actual
   subst prior
   have supplied := original_supplies_histories body view observed earlier prefixShape next input
-  refine ⟨a,b,c,priorEvents,suffix,entered,events,
-    compose_observation observed.checked view.prePrimitive view.centerSelection view.postPrimitive
-      held input a b c supplied bounds composed,?_⟩
-  intro history
-  rw [historyLaw,RuntimeNamedThreePackedInstrument.run_append_event body.root.dependencies 64]
-  cases Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history <;> rfl
+  have observation := compose_observation observed.checked view.prePrimitive view.centerSelection view.postPrimitive
+    held input a b c supplied bounds composed
+  refine ⟨a,b,c,priorEvents,suffix,entered,events,observation,?_,?_⟩
+  · intro last ends state finish
+    obtain ⟨finalState,suffixRead⟩ := terminal ends
+    obtain ⟨finishRead,physical,output,action⟩ :=
+      Qleisli.RuntimeNamedThreePackedOutput.original_adjacent_post_finish body view last ends finalState
+    have finished : suffix = [.pure finish] :=
+      suffixRead.trans (congrArg (fun event => [Semantics.Observation.Event.pure event]) finishRead)
+    refine ⟨output,finished,
+      packed_outcomes observed.checked view.prePrimitive view.centerSelection view.postPrimitive held input
+        (a++b++c) observation output _ physical action,?_⟩
+    intro history
+    have original : body.checked.native.whole.prepared.events =
+        ((priorEvents++[erasure]) ++ (a++b++c++[finish]).map Semantics.Observation.Event.pure) ++ [] := by
+      simp only [events,finished,List.append_nil,List.map_append,List.map_cons,List.map_nil,List.append_assoc]
+    rw [original,RuntimeNamedThreePackedInstrument.run_surround_pure body.root.dependencies 64,
+      RuntimeNamedThreePackedInstrument.run_append_event body.root.dependencies 64]
+    cases Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history <;> rfl
+  · intro history
+    rw [historyLaw,RuntimeNamedThreePackedInstrument.run_append_event body.root.dependencies 64]
+    cases Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history <;> rfl
 
 #print axioms original_erasure_then_adjacent
 end Qleisli.RuntimeNamedObservationEntry

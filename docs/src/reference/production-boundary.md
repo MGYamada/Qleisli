@@ -539,8 +539,11 @@ IR program. For each erasure outcome, the same three-call source equation acts
 on the unnormalized projected state in the checked post-call frame. It keeps
 the visible measurement and hidden outcome through all three calls. The
 equation applies to every finite post-call row and reference column of a
-represented incoming history. General observing-body composition and the
-packed return from this longer source path remain open.
+represented incoming history. When the post call ends both the original source
+traversal and the Raw operations, the actual suffix is the final permutation.
+The same theorem gives the packed source result in the original return order
+for every outcome and identifies the list of histories returned by the original
+interpreter. General observing-body composition remains open.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

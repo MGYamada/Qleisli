@@ -164,6 +164,28 @@ theorem original_observation_join {artifact owner name arguments request prepare
   exact (congrArg some (tail.adjacent (rfl : exitState (.observation observed) = some observed.after) read)).trans
     read.symm
 
+/-- A terminal adjacent post call supplies the input of the original return
+read, even when the original traversal has preceding observing steps. -/
+theorem original_adjacent_return {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    (terminal : view.later = []) :
+    let source := SourceTypes.SourceRuntimeScope.Subject.whole prepared.source.body
+    ∃ last, exitState view.post = some last ∧
+      Returned body.checked.native.block source.outputRoles last body.checked.result.history := by
+  obtain ⟨_initial,_read,last,flow,returned⟩ := original_body body
+  rw [view.original,terminal] at flow
+  obtain ⟨_entry,tail⟩ := flow.suffix
+  cases tail with
+  | cons pre tail =>
+    cases tail with
+    | cons center tail =>
+      cases tail with
+      | cons post tail =>
+        cases tail
+        exact ⟨last,post.exit (primitive_exit view.postPrimitive),returned⟩
+
+#print axioms original_adjacent_return
 #print axioms original_observation_join
 #print axioms original_adjacent_calls
 #print axioms original_three

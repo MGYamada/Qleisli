@@ -9,7 +9,9 @@ development milestones from the scope of their evidence.
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.
   The law retains the actual prefix, suffix and outcome records. It compares
-  finite post-call rows and preserves reference columns.
+  finite post-call rows and preserves reference columns. When the post call
+  ends the original source traversal and Raw operations, it also gives the
+  original interpreter's packed histories in the written return order.
 
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
