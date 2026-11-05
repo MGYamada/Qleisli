@@ -76,6 +76,15 @@ theorem Run.append {dependencies program block initial middle final first rest}
   | nil => exact right
   | cons head tail ih => exact .cons head (ih right)
 
+theorem Run.suffix {dependencies program block initial final first rest}
+    (flow : @Run dependencies program block initial (first++rest) final) :
+    ∃ middle, Run middle rest final := by
+  induction first generalizing initial with
+  | nil => exact ⟨initial,flow⟩
+  | cons step first ih =>
+    cases flow with
+    | cons _ tail => exact ih tail
+
 theorem Run.snoc {dependencies program block initial middle final steps step}
     (before : @Run dependencies program block initial steps middle) (next : Aligned middle final step) :
     Run initial (steps ++ [step]) final :=

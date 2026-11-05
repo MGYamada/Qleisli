@@ -221,4 +221,77 @@ theorem root_interval_histories {deps program}
 
 #print axioms root_interval_histories
 
+/-- The actual source interval has the same call actions as the pure event
+slice inside the original observing root. The inherited operator columns
+can be compared with the explicit source equation in their checked input
+frame. The original continuation, including the final reorder, follows. -/
+theorem original_adjacent_observing {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    (coverage : RuntimeNamedSelectionOn.Coverage view.centerSelection
+      (RuntimeNamedThreeOccurrence.actual_adjacent_middle body view)) :
+    let held := RuntimeNamedThreeOccurrence.actual_adjacent_middle body view
+    let pre := RuntimeNamedOccurrenceAction.span view.prePrimitive
+    let center := RuntimeNamedSelectionOn.middle view.centerSelection held coverage
+    let post := RuntimeNamedOccurrenceAction.span view.postPrimitive
+    center.start = pre.start+pre.count → post.start = center.start+center.count →
+    ∃ a b c : List Semantics.Raw.Event, ∃ earlier later : List Semantics.Observation.Event,
+      body.checked.native.whole.prepared.events =
+        earlier ++ (a++b++c).map Semantics.Observation.Event.pure ++ later ∧
+      RuntimeNamedThreeFrameChain.Composed view.prePrimitive view.centerSelection view.postPrimitive held a b c ∧
+      ∀ history : History,
+        Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
+          body.checked.native.whole.prepared.events history =
+          (do
+            let inherited ← Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 earlier history
+            later.foldlM
+              (advance body.root.dependencies (Qleisli.Semantics.ObservingAction.run body.root.dependencies 64))
+              (inherited.map (pureHistory body.root.dependencies (a++b++c)))) := by
+  intro held pre center post next last
+  change center.start = pre.start+pre.count at next
+  change post.start = center.start+center.count at last
+  have calls := RuntimeNamedSourceFlow.original_adjacent_calls body view
+  cases firstRead : pre with
+  | mk firstStart firstCount firstSlice =>
+    cases middleRead : center with
+    | mk middleStart middleCount middleSlice =>
+      cases lastRead : post with
+      | mk lastStart lastCount lastSlice =>
+        simp only [firstRead,middleRead,lastRead] at next last
+        change middleStart = firstStart+firstCount at next
+        change lastStart = middleStart+middleCount at last
+        subst middleStart
+        subst lastStart
+        obtain ⟨a,b,c,chain⟩ := RuntimeAdjacentSlices.three firstSlice middleSlice lastSlice
+        have preOn := RuntimeNamedOccurrenceAction.on_span view.prePrimitive a (by
+          change RuntimeAdjacentSlices.Fold _ pre.slice.ops pre.slice.interval.before.quantum
+            pre.slice.interval.after.quantum a
+          rw [firstRead]
+          exact chain.preFold)
+        have centerOn := RuntimeNamedSelectionOn.on_middle view.centerSelection held coverage b (by
+          change RuntimeLocalEvents.trace center.slice.interval.before.quantum.reference center.slice.ops =
+            some ⟨center.slice.interval.after.quantum.reference,b,center.slice.interval.before.quantum.frame.length⟩
+          rw [middleRead]
+          exact chain.chooseFold.trace)
+        have postOn := RuntimeNamedOccurrenceAction.on_span view.postPrimitive c (by
+          change RuntimeAdjacentSlices.Fold _ post.slice.ops post.slice.interval.before.quantum
+            post.slice.interval.after.quantum c
+          rw [lastRead]
+          exact chain.postFold)
+        have firstRaw : pre.slice.interval.after = center.slice.interval.before := by
+          rw [firstRead,middleRead]
+          exact chain.toChoose
+        have secondRaw : center.slice.interval.after = post.slice.interval.before := by
+          rw [middleRead,lastRead]
+          exact chain.toPost
+        obtain ⟨earlier,later,events,histories⟩ := root_interval_histories body.checked.native chain
+        exact ⟨a,b,c,earlier,later,events,
+          RuntimeNamedThreeFrameChain.compose_sites (fuel := 126)
+            view.prePrimitive view.centerSelection view.postPrimitive held coverage
+            calls.2.2.1 calls.2.2.2.1 calls.2.2.2.2 a b c preOn centerOn postOn
+            calls.1 calls.2.1 firstRaw secondRaw,
+          histories⟩
+
+#print axioms original_adjacent_observing
+
 end Qleisli.RuntimeNamedThreePackedInstrument

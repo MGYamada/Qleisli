@@ -103,6 +103,42 @@ theorem original_child_runs {artifact owner name arguments request prepared orde
     primitive_child _ view.postPrimitive (flow.calls view.post
       ((congrArg (fun steps => view.post ∈ steps) view.original).mpr (by simp)))⟩
 
+/-- The real adjacent source steps and all three recursive child reads also
+remain available inside a longer original source body. -/
+theorem original_adjacent_calls {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps) :
+    let execution := RuntimePureBody.ExecutionMode.planned
+      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
+      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
+    let next := RuntimePureBody.runBlockCore artifact body.root execution 127
+    exitState view.pre = entryState view.center ∧
+      exitState view.center = entryState view.post ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.pre ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.center ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.post := by
+  obtain ⟨_initial,_input,_last,flow,_returned⟩ := RuntimeNamedChildRuns.original_body body
+  have source := flow.source
+  rw [view.original] at source
+  obtain ⟨_entry,tail⟩ := source.suffix
+  cases tail with
+  | cons pre tail =>
+    cases tail with
+    | cons center tail =>
+      cases tail with
+      | cons post _ =>
+        exact ⟨(pre.exit (primitive_exit view.prePrimitive)).trans
+            (center.entry (middle_entry view.centerSelection)).symm,
+          (center.exit (middle_exit view.centerSelection)).trans
+            (post.entry (primitive_entry view.postPrimitive)).symm,
+          primitive_child _ view.prePrimitive (flow.calls view.pre
+            ((congrArg (fun steps => view.pre ∈ steps) view.original).mpr (by simp))),
+          middle_child _ view.centerSelection (flow.calls view.center
+            ((congrArg (fun steps => view.center ∈ steps) view.original).mpr (by simp))),
+          primitive_child _ view.postPrimitive (flow.calls view.post
+            ((congrArg (fun steps => view.post ∈ steps) view.original).mpr (by simp)))⟩
+
+#print axioms original_adjacent_calls
 #print axioms original_three
 #print axioms original_child_runs
 end Qleisli.RuntimeNamedSourceFlow
