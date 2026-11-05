@@ -358,6 +358,17 @@ are checked again; an enclosing equation cannot replace the inner equation.
 These component checks do not enable public v5, close all general nested duties
 or establish source-action composition.
 
+`RuntimeNamedThreeRoot.Whole.instrument_decomposition` factors the original
+root's independent instrument meaning into the three actual event slices and
+its final output permutation. It retains complete intermediate history
+families, including hidden and zero-weight outcomes, without normalization or
+reassociation of the bounded evaluator. `RuntimeNamedCodeTransport` proves
+that the checked original child-to-caller return map preserves complete basis
+trees, ports, the independent sparse-code interpretation and ordered axes in
+the same caller frame. These are return-transport and Raw-instrument laws;
+composition of the different source-level encodings and logical actions
+remains a separate obligation.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting

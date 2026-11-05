@@ -91,6 +91,7 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch`, `codex/beta-qmatch-arm-body`, `codex/beta-qmatch-three-calls`,
 `codex/beta-qmatch-op-slots`,
 `codex/beta-qmatch-duty-forest`,
+`codex/beta-qmatch-instrument-composition`,
 `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree. On pushes, the producer

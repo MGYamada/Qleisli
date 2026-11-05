@@ -1,6 +1,8 @@
 import Qleisli.RuntimeAdjacentRootAction
 import Qleisli.RuntimeNamedSelectionOn
 import Qleisli.RuntimeNamedOccurrenceAction
+import Qleisli.RawInstrumentComposition
+import Qleisli.RuntimeNamedCodeTransport
 
 /-! Recover the literal parent slices from the three source calls. The middle
 slice comes from the selection retained by this traversal of this body.
@@ -28,6 +30,48 @@ structure Whole {deps program} (root : RuntimeInterval.Prepared deps program)
         (Semantics.RawTrace.axes post.slice.interval.after.quantum.reference
           (program.outputs.flatMap fun token => ((post.slice.interval.after.quantum.live.find?
             (fun port => port.token == token)).map (·.wires)).getD [])))]
+
+private def finalEvent {deps program} (root : RuntimeInterval.Prepared deps program)
+    (post : Span root.block) : Semantics.Observation.Event :=
+  .pure (.reorder post.slice.interval.after.quantum.frame.length
+    (Semantics.RawTrace.axes post.slice.interval.after.quantum.reference
+      (program.outputs.flatMap fun token => ((post.slice.interval.after.quantum.live.find?
+        (fun port => port.token == token)).map (·.wires)).getD [])))
+
+/-- Factor the actual original observing root's independent instrument
+meaning into the three retained slices and its one real final permutation.
+The complete intermediate history families are existentially retained. This
+does not identify the slices' different source codes or discharge their
+remaining whole-source encoding correspondence. -/
+theorem Whole.instrument_decomposition {deps program} {root : RuntimeInterval.Prepared deps program}
+    {pre center post : Span root.block} {a b c : List Event}
+    (whole : Whole root pre center post a b c) (classical : List Bool)
+    (histories : List Qleisli.Semantics.RawInstrument.History) :
+    Qleisli.Semantics.RawInstrument.ProgramMeaning deps program classical histories ↔
+      ∃ initial first second third,
+        Qleisli.Semantics.Raw.IdentityMeaning root.whole.prepared.inputBits initial ∧
+        Qleisli.Semantics.RawInstrument.Run deps (a.map Semantics.Observation.Event.pure)
+          [⟨program.classicalInputs.zip classical,[],initial⟩] first ∧
+        Qleisli.Semantics.RawInstrument.Run deps (b.map Semantics.Observation.Event.pure) first second ∧
+        Qleisli.Semantics.RawInstrument.Run deps (c.map Semantics.Observation.Event.pure) second third ∧
+        Qleisli.Semantics.RawInstrument.Run deps [finalEvent root post] third histories := by
+  have events : root.whole.prepared.events =
+      ((a.map Semantics.Observation.Event.pure ++ b.map Semantics.Observation.Event.pure) ++
+        c.map Semantics.Observation.Event.pure) ++ [finalEvent root post] := by
+    simpa only [List.map_append,finalEvent] using whole.finalEvents
+  constructor
+  · rintro ⟨prepared,initial,original,identity,ran⟩
+    have same : prepared = root.whole.prepared := Option.some.inj (original.symm.trans root.originalRoot.reader)
+    subst prepared
+    rw [events] at ran
+    obtain ⟨third,front,last⟩ := (Qleisli.Semantics.RawInstrument.Run.append_iff _ _ _ _).mp ran
+    obtain ⟨second,front,post⟩ := (Qleisli.Semantics.RawInstrument.Run.append_iff _ _ _ _).mp front
+    obtain ⟨first,pre,center⟩ := (Qleisli.Semantics.RawInstrument.Run.append_iff _ _ _ _).mp front
+    exact ⟨initial,first,second,third,identity,pre,center,post,last⟩
+  · rintro ⟨initial,first,second,third,identity,pre,center,post,last⟩
+    refine ⟨root.whole.prepared,initial,root.originalRoot.reader,identity,?_⟩
+    rw [events]
+    exact ((pre.append center).append post).append last
 
 private theorem whole {deps program} (p : RuntimeInterval.Prepared deps program)
     (pre center post : Span p.block) (starts : pre.start = 0)
@@ -68,5 +112,16 @@ theorem original_body {artifact owner name arguments request prepared order runt
     RuntimeNamedSelectionOn.on_middle view.centerSelection held coverage b root.centerTrace,
     RuntimeNamedOccurrenceAction.on_span view.postPrimitive c root.postFold⟩
 
+/-- The same complete original traversal supplies the code/axis return law
+for every named call in its retained step list. This does not assert equality
+of unrelated intermediate source encodings or compose their logical actions. -/
+theorem original_return_codes {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (step : RuntimePureBody.Step body.root.dependencies body.root.program body.checked.native.block)
+    (_original : step ∈ body.checked.result.steps) : RuntimeNamedCodeTransport.StepReturnCodes step :=
+  RuntimeNamedCodeTransport.step_return_codes step
+
 #print axioms original_body
+#print axioms Whole.instrument_decomposition
+#print axioms original_return_codes
 end Qleisli.RuntimeNamedThreeRoot
