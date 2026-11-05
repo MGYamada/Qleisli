@@ -83,6 +83,7 @@ import Qleisli.RuntimeNamedBlockEncoding
 import Qleisli.RuntimeNamedCarrierEncoding
 import Qleisli.RuntimeNamedBlockSpectators
 import Qleisli.RuntimeNamedSelectionInputEncoding
+import Qleisli.RuntimeNamedThreeFrameChain
 import Qleisli.RuntimeSectorPrefix
 import Qleisli.RuntimeSelectionTraceEvidence
 import Qleisli.RuntimeSelectionLiteralEvidence

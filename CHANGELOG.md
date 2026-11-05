@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Compose the three original pre/choose/post logical actions on their actual
+  Raw event slices. Derive the first frame from input storage and the intermediate
+  frames from retained owner receipts. The selection uses its written return
+  order and preserves correlated spectators and external references. The root
+  witness retains the final Raw reorder for the remaining source return proof.
+
 - Connect the actual named selection's source action to its complete caller
   input, using the original ordered owners, code receipts and correlated
   spectator/reference coefficients. Instantiate all three pre/choose/post

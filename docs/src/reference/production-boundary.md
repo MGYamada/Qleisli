@@ -487,12 +487,20 @@ those facts with the same original child run, indexed Literal, coverage and
 parent-event source law. The source carrier equality is derived from that run,
 not supplied by a caller. Its `original_three_input_actions` consumer retains
 all three complete-input action laws on the same original root event lists.
-The middle result is still expressed in the child's retained output code.
-Connecting that result to the actual complete caller output, whole-function
-logical-action/observing-history composition, public v5 and full12/64 remains
-open. The three-call view is bounded and supplies no general-body coverage.
-These mathematical laws change no native acceptance rule, effect, work limit,
-capability or admitted guarantee.
+The selection output proof uses the child's actual return permutation and
+the original mapping to caller owners. It transports the corresponding sparse
+coefficients through the exact output axes and applies each source arm on every
+spectator coordinate of the joint input. This yields the complete caller output
+in its original owner order, with all reference correlations.
+
+`RuntimeNamedThreeFrameChain.original_three_composed` composes the three
+logical updates on the original Raw event slices. The original input storage
+and entry read supply the first frame. At both joins the same native state and
+source owner map carry the preceding output into the next call. The root witness
+retains the actual final Raw reorder. The remaining obligations include identifying
+its full source return encoding, extending the proof to general bodies and
+observing histories, public v5 and full12/64. The three-call view uses explicit
+whole-slice coverage. Native acceptance and work limits remain as specified above.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
