@@ -520,6 +520,16 @@ observing bodies remains open, along with public v5 and full12/64. The packed
 root law uses explicit whole-slice coverage.
 Native acceptance and work limits remain as specified above.
 
+For a checked original `measure_z` or `discard`,
+`RuntimeOriginalObservation.original_observation_histories` identifies the
+actual Raw erasure event and every emitted outcome. Each unnormalized
+operator on the surviving owner code is the original consumed owner's basis
+effect on that outcome, with the same arbitrary reference coordinates.
+The theorem retains all hidden outcomes and the original visible measurement
+identifier. It requires the input code representation on finite Raw rows.
+Connecting these outputs through general source traversal and the enclosing
+call actions remains a separate obligation.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting
