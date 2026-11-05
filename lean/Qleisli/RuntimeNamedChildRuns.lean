@@ -388,7 +388,9 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
           have same := (pure_success _ _ _ _ returned).1
           subst after
           have chain := entered
-          exact chain.snoc True.intro True.intro
+          refine chain.snoc ⟨?_,rfl⟩ True.intro
+          change history = {history with bindings := frame.bindings}
+          rw [sameBindings]
         · obtain ⟨performed,e,_performed,returned⟩ := bind_success _ _ _ _ _ h
           rcases performed with ⟨nextHistory,node⟩
           have same := (pure_success _ _ _ _ returned).1

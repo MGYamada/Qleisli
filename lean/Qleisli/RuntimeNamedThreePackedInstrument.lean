@@ -1,5 +1,6 @@
 import Qleisli.RuntimeNamedThreePackedOutput
 import Qleisli.RuntimeObservingPrefix
+import Qleisli.RawFiniteRows
 import Qleisli.Semantics.ObservingAction
 
 /-! Identify the original named-call interval in the independent observing
@@ -16,6 +17,20 @@ noncomputable def pureHistory (dependencies : List Semantics.Finite.Dependency)
     (events : List Semantics.Raw.Event) (initial : History) : History :=
   {initial with operator := fun row col =>
     Qleisli.Semantics.RawAction.events dependencies events (fun input => initial.operator input col) row}
+
+/-- Finite-row agreement of an inherited operator with the source input
+encoding suffices for the original pure interval's operator on each column. -/
+theorem pureHistory_operator_congr {before after events}
+    (bounded : RawFiniteRows.BoundedEvents before events after)
+    (dependencies : List Semantics.Finite.Dependency) (history : History)
+    (input : Nat → Nat → ℂ)
+    (represented : ∀ col, RawFiniteRows.OnRows before
+      (fun row => history.operator row col) (fun row => input row col)) :
+    ∀ col, RawFiniteRows.OnRows after
+      (fun row => (pureHistory dependencies events history).operator row col)
+      (Qleisli.Semantics.RawAction.events dependencies events (fun row => input row col)) := by
+  intro col
+  exact bounded.congr dependencies _ _ (represented col)
 
 private noncomputable def advance (dependencies : List Semantics.Finite.Dependency)
     (recurse : List Semantics.Observation.Event → History → Option (List History))
@@ -238,6 +253,8 @@ theorem original_adjacent_observing {artifact owner name arguments request prepa
     ∃ a b c : List Semantics.Raw.Event, ∃ earlier later : List Semantics.Observation.Event,
       body.checked.native.whole.prepared.events =
         earlier ++ (a++b++c).map Semantics.Observation.Event.pure ++ later ∧
+      RawFiniteRows.BoundedEvents pre.slice.interval.before.quantum.frame.length
+        (a++b++c) post.slice.interval.after.quantum.frame.length ∧
       RuntimeNamedThreeFrameChain.Composed view.prePrimitive view.centerSelection view.postPrimitive held a b c ∧
       ∀ history : History,
         Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
@@ -285,7 +302,16 @@ theorem original_adjacent_observing {artifact owner name arguments request prepa
           rw [middleRead,lastRead]
           exact chain.toPost
         obtain ⟨earlier,later,events,histories⟩ := root_interval_histories body.checked.native chain
-        exact ⟨a,b,c,earlier,later,events,
+        have finite :
+            RawFiniteRows.BoundedEvents firstSlice.interval.before.quantum.frame.length
+              (a++b++c) lastSlice.interval.after.quantum.frame.length := by
+          have firstBounds := RawFiniteRows.checked_slice firstSlice a chain.preFold.trace
+          have middleBounds := RawFiniteRows.checked_slice middleSlice b chain.chooseFold.trace
+          have lastBounds := RawFiniteRows.checked_slice lastSlice c chain.postFold.trace
+          rw [← chain.toChoose] at middleBounds
+          rw [← chain.toPost] at lastBounds
+          exact (firstBounds.append middleBounds).append lastBounds
+        exact ⟨a,b,c,earlier,later,events,finite,
           RuntimeNamedThreeFrameChain.compose_sites (fuel := 126)
             view.prePrimitive view.centerSelection view.postPrimitive held coverage
             calls.2.2.1 calls.2.2.2.1 calls.2.2.2.2 a b c preOn centerOn postOn

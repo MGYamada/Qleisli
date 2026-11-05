@@ -74,7 +74,7 @@ private theorem gather_bound (label : Nat) (axes : List Nat) : gather label axes
     have small := Scatter.bit_lt label axis
     omega
 
-private theorem scatter_bound (label bits value : Nat) (axes : List Nat)
+theorem scatter_bound (label bits value : Nat) (axes : List Nat)
     (bound : label < 2^bits) (axesBound : ∀ axis ∈ axes, axis < bits) :
     scatter label axes value < 2^bits := by
   apply bound_of_bits

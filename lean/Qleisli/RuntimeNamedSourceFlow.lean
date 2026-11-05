@@ -1,10 +1,9 @@
 import Qleisli.RuntimeOwnerBindingFacts
 import QleisliKernel.Qirf.RuntimePureBody
 
-/-! Alignment of actual named-call, primitive and selection source states. This is
-an administrative property of the native traversal, not a logical action or
-code equation. Other step kinds carry no state assertion here; named entry/exit
-queries retain their original scope.
+/-! Alignment of actual named-call, primitive, selection and observation
+source states. The traversal retains complete before and after owner states
+for these joins. Logical action and code equations are proved separately.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeNamedSourceFlow
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
@@ -26,19 +25,22 @@ def Aligned {dependencies program block} (before after : SourceState)
   | .named (before := original) _ _ _ _ boundary _ _ =>
     before = original ∧ after = boundary.after
   | .pure node => NodeAligned before after node
-  | .gap .. | .observation .. | .conditional .. => True
+  | .observation (before := original) observed => before = original ∧ after = observed.after
+  | .gap .. | .conditional .. => True
 
 def entryState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named (before := original) .. => some original
-  | .pure .. | .gap .. | .observation .. | .conditional .. => none
+  | .observation (before := original) _ => some original
+  | .pure .. | .gap .. | .conditional .. => none
 
 def exitState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named _ _ _ _ boundary _ _ => some boundary.after
-  | .pure .. | .gap .. | .observation .. | .conditional .. => none
+  | .observation observed => some observed.after
+  | .pure .. | .gap .. | .conditional .. => none
 
 theorem Aligned.entry_eq {dependencies program block before after step state}
     (aligned : @Aligned dependencies program block before after step)

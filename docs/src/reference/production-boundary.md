@@ -527,8 +527,13 @@ operator on the surviving owner code is the original consumed owner's basis
 effect on that outcome, with the same arbitrary reference coordinates.
 The theorem retains all hidden outcomes and the original visible measurement
 identifier. It requires the input code representation on finite Raw rows.
-Connecting these outputs through general source traversal and the enclosing
-call actions remains a separate obligation.
+`RuntimeNamedObservationEntry.original_supplies_histories` transports every
+outcome into the entry frame of an immediately following original named call,
+using the exact source-state and Raw interval joins. The original checked
+event slices retain their finite input and output widths in
+`RawFiniteRows.checked_slice`. Their action on each inherited history depends
+only on its finite input coefficients. General source traversal and the
+remaining body-wide source-action correspondence are separate obligations.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
