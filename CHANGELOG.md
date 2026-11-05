@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect each named child in the actual body traversal to its original callee,
+  real argument binding, visible ordinary SSA and recursive result. Derive the
+  existing state-flow law from this single strengthened loop proof and retain
+  the three computations for the original pre/choose/post calls. Whole-source
+  logical-action and observing-history composition remain open.
+
 - Prove named-call source-state continuity from the actual common body loop,
   including its real input and return reads. The retained pre/choose/post calls
   share complete owner maps, bases, ports and issuance histories. Factor the

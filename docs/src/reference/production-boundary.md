@@ -381,6 +381,18 @@ iteration is factored without changing its guards, reads or charges. Other step
 kinds receive no named-boundary assertion from this administrative invariant;
 whole-source code, logical-action and observing-history composition remain open.
 
+`RuntimeNamedChildRuns.original_body` strengthens that same loop proof with the
+actual recursive run of every named child on its original callee and native
+block. The retained input read binds the callee's original parameter owners to
+the caller's selected ports and original input owners; the recursive call uses
+the same checked visible ordinary SSA. The input read's remaining work is the
+recursive call's starting work. Its exact result determines the stored
+child steps, returned history and ordinary state. The weaker state-flow law is
+derived from this single strengthened proof. `original_child_runs` supplies
+those computations for the actual pre/choose/post view. Other step constructors
+receive no child-provenance assertion here; whole-source code/action and
+observing-history composition, public v5 and full12/64 remain open.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting

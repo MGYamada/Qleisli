@@ -2,7 +2,7 @@ name: Produce reviewable current proof records
 
 on:
   push:
-    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts, codex/beta-typed-ordinary-runtime, codex/beta-qmatch, codex/beta-qmatch-arm-body, codex/beta-qmatch-three-calls, codex/beta-qmatch-op-slots, codex/beta-qmatch-duty-forest, codex/beta-qmatch-instrument-composition, codex/beta-qmatch-source-flow, codex/beta-quantum-runtime-types, codex/beta-runtime-static-bindings]
+    branches: [codex/beta-finite-adts, codex/beta-ordinary-adts, codex/beta-typed-ordinary-runtime, codex/beta-qmatch, codex/beta-qmatch-arm-body, codex/beta-qmatch-three-calls, codex/beta-qmatch-op-slots, codex/beta-qmatch-duty-forest, codex/beta-qmatch-instrument-composition, codex/beta-qmatch-source-flow, codex/beta-qmatch-child-runs, codex/beta-quantum-runtime-types, codex/beta-runtime-static-bindings]
     paths:
       - .github/workflows/current-proof-records.yml
       - scripts/refresh_current_proof_records.py

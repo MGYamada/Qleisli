@@ -32,6 +32,22 @@ private theorem middle_exit {dependencies program block step}
   cases held
   exact ⟨_,rfl⟩
 
+private theorem primitive_child {artifact root execution}
+    (next : RuntimePureBody.BlockRunner artifact root execution) {program block step}
+    (held : @RuntimeNamedPrimitiveOccurrence.Occurrence root.dependencies program block step)
+    (checked : RuntimeNamedChildRuns.CheckedStep next step) :
+    RuntimeNamedChildRuns.ChildRun artifact root execution next step := by
+  cases held
+  exact checked
+
+private theorem middle_child {artifact root execution}
+    (next : RuntimePureBody.BlockRunner artifact root execution) {program block step}
+    (held : @RuntimeNamedThreeOccurrence.Middle root.dependencies program block step)
+    (checked : RuntimeNamedChildRuns.CheckedStep next step) :
+    RuntimeNamedChildRuns.ChildRun artifact root execution next step := by
+  cases held
+  exact checked
+
 /-- Both joins concern the full actual owner maps, bases, ports and issuance
 histories. Neither matching widths nor a caller-provided code equation is used.
 The first call is anchored to the real source entry read and the last call to
@@ -65,5 +81,28 @@ theorem original_three {artifact owner name arguments request prepared order run
             (final.entry (primitive_entry view.postPrimitive)).symm,
           last,final.exit (primitive_exit view.postPrimitive),returned⟩
 
+/-- Each of the three stored children comes from the actual recursive reader
+on its original callee. The retained computation includes the real argument
+binding read, visible ordinary SSA, callee block, source plan and result steps.
+This does not yet compose their logical actions or observing histories. -/
+theorem original_child_runs {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Three body.checked.result.steps) :
+    let execution := RuntimePureBody.ExecutionMode.planned
+      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
+      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
+    let next := RuntimePureBody.runBlockCore artifact body.root execution 127
+    RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.pre ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.center ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.post := by
+  obtain ⟨_initial,_input,_last,flow,_returned⟩ := RuntimeNamedChildRuns.original_body body
+  exact ⟨primitive_child _ view.prePrimitive (flow.calls view.pre
+      ((congrArg (fun steps => view.pre ∈ steps) view.original).mpr (by simp))),
+    middle_child _ view.centerSelection (flow.calls view.center
+      ((congrArg (fun steps => view.center ∈ steps) view.original).mpr (by simp))),
+    primitive_child _ view.postPrimitive (flow.calls view.post
+      ((congrArg (fun steps => view.post ∈ steps) view.original).mpr (by simp)))⟩
+
 #print axioms original_three
+#print axioms original_child_runs
 end Qleisli.RuntimeNamedSourceFlow
