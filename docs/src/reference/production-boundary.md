@@ -509,9 +509,15 @@ including erasure, reset and both sides of classical branches.
 `root_interval_histories` uses that agreement to locate an adjacent pure
 interval in the original observing root. The interpreter preserves every
 inherited history and applies the pure action to each operator before
-continuing with the original suffix and final reorder. The source-action
-correspondence for general observing bodies remains open, along with public
-v5 and full12/64. The packed root law uses explicit whole-slice coverage.
+continuing with the original suffix and final reorder.
+`original_adjacent_observing` locates the three original calls in a longer
+source traversal and retains the selection at its actual global rank. The
+same Raw events drive both the source-action equation and every inherited
+operator column represented in the checked input frame. The law still
+requires that input representation, the supported call shapes, and exact
+adjacency of their Raw slices. The source-action correspondence for general
+observing bodies remains open, along with public v5 and full12/64. The packed
+root law uses explicit whole-slice coverage.
 Native acceptance and work limits remain as specified above.
 
 The retained two-qubit general-composition development regression has an
