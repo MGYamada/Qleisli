@@ -22,38 +22,6 @@ open QleisliKernel.Qirf QleisliKernel.Qirf.RuntimeForestCode
 open QleisliKernel.Qirf.RuntimeOwnerMap (Binding Map)
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct
 
-private theorem owner_order_eq (before : Map) : ∀ after : Map,
-    (before.map (fun binding => binding.owner.ordinal)).Nodup → after ⊆ before →
-      after.map (·.owner) = before.map (·.owner) → after = before := by
-  induction before with
-  | nil =>
-    intro after _unique _subset ordered
-    cases after with
-    | nil => rfl
-    | cons first rest => simp at ordered
-  | cons head rest ih =>
-    intro after unique subset ordered
-    cases after with
-    | nil => simp at ordered
-    | cons first tail =>
-      have order : first.owner = head.owner ∧ tail.map (·.owner) = rest.map (·.owner) := by
-        simpa only [List.map_cons,List.cons.injEq] using ordered
-      have same : first = head := map_unique (fun binding : Binding => binding.owner.ordinal) _ unique
-        first (subset (List.mem_cons_self)) head (List.mem_cons_self) (congrArg (·.ordinal) order.1)
-      subst first
-      have separate := List.nodup_cons.mp unique
-      have tailSubset : tail ⊆ rest := by
-        intro binding member
-        rcases List.mem_cons.mp (subset (List.mem_cons_of_mem _ member)) with equal | later
-        · have ownerMember : binding.owner ∈ rest.map (·.owner) := by
-            rw [← order.2]
-            exact List.mem_map.mpr ⟨binding,member,rfl⟩
-          subst binding
-          obtain ⟨other,present,sameOwner⟩ := List.mem_map.mp ownerMember
-          exact False.elim (separate.1 (List.mem_map.mpr ⟨other,present,congrArg (·.ordinal) sameOwner⟩))
-        · exact later
-      rw [ih tail separate.2 tailSubset order.2]
-
 private theorem checkOps_empty (dependencies : List Semantics.Finite.Dependency) (fuel : Nat)
     (before after : QleisliKernel.Raw.Observation.State) (work left : Nat)
     (ran : (QleisliKernel.Raw.Observation.checkOps dependencies fuel before []).run work = (.ok after,left)) : after = before := by

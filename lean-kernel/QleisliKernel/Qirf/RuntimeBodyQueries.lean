@@ -286,6 +286,24 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
 
 open RuntimeSourceEvent (At)
 
+/-- An ordered trace of the actual handler computations. Original ordinals,
+handler data and intermediate work counters are retained. This administrative
+trace grants no source-action or code-preservation property of a handler. -/
+inductive EventRun {sources : Sources} {caller : String} {State : Type}
+    (pairs : List (SourceRuntimeContext.Event sources caller × Position))
+    (Data : SourceRuntimeContext.Event sources caller → Position → Type)
+    (step : (event : SourceRuntimeContext.Event sources caller) → (position : Position) →
+      At pairs event position → Data event position → State → WorkM State) :
+    Nat → List (SourceRuntimeContext.Event sources caller × Position) →
+      State → State → Nat → Nat → Prop where
+  | nil (ordinal : Nat) (state : State) (work : Nat) :
+      EventRun pairs Data step ordinal [] state state work work
+  | cons {event position rest initial middle final work budget left}
+      (entry : At pairs event position) (data : Data event position)
+      (read : (step event position entry data initial).run work = (.ok middle,budget))
+      (tail : EventRun pairs Data step (entry.ordinal+1) rest middle final budget left) :
+      EventRun pairs Data step entry.ordinal ((event,position) :: rest) initial final work left
+
 private theorem headAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
     (remaining : whole.drop ordinal = head :: rest) : whole[ordinal]? = some head := by
   have first : (whole.drop ordinal)[0]? = some head := by rw [remaining]; rfl
@@ -346,6 +364,114 @@ def foldEvents {artifact : Artifact} (mode : Mode artifact) {owner name}
   | .fresh => freshVisit pairs (fun event position entry state => step event position entry () state)
     pairs.length 0 pairs rfl initial
   | .planned preparation => plannedVisit preparation source pairs step pairs.length 0 pairs rfl data.2.2 initial
+
+private theorem freshVisit_trace {sources caller State}
+    (pairs : List (SourceRuntimeContext.Event sources caller × Position))
+    (step : (event : SourceRuntimeContext.Event sources caller) → (position : Position) →
+      At pairs event position → State → WorkM State)
+    (fuel ordinal : Nat) (remaining : List (SourceRuntimeContext.Event sources caller × Position))
+    (same : pairs.drop ordinal = remaining) (initial final : State) (work left : Nat)
+    (read : (freshVisit pairs step fuel ordinal remaining same initial).run work = (.ok final,left)) :
+    EventRun pairs (fun _ _ => Unit) (fun event position entry _ => step event position entry)
+      ordinal remaining initial final work left := by
+  induction fuel generalizing ordinal remaining initial final work left with
+  | zero =>
+    cases remaining with
+    | nil =>
+      obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+      exact .nil _ _ _
+    | cons head rest => cases read
+  | succ fuel ih =>
+    cases remaining with
+    | nil =>
+      obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+      exact .nil _ _ _
+    | cons pair rest =>
+      rcases pair with ⟨event,position⟩
+      let entry : At pairs event position := ⟨ordinal,headAt pairs ordinal (event,position) rest same⟩
+      change (do
+        let checked ← step event position entry initial
+        freshVisit pairs step fuel (ordinal+1) rest (tailAt pairs ordinal (event,position) rest same) checked).run work =
+          (.ok final,left) at read
+      obtain ⟨middle,budget,head,tail⟩ := bind_success _ _ _ _ _ read
+      exact .cons entry () head (ih _ _ _ _ _ _ _ tail)
+
+private theorem plannedVisit_trace {artifact : Artifact}
+    (preparation : RuntimeGraphOperation.Preparation artifact) {owner name State}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (pairs : List (SourceRuntimeContext.Event artifact.sources owner × Position))
+    (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+      At pairs event position → (Mode.planned preparation).EventData source event position →
+      State → WorkM State)
+    (fuel ordinal : Nat) (remaining : List (SourceRuntimeContext.Event artifact.sources owner × Position))
+    (same : pairs.drop ordinal = remaining) {before after : Queues}
+    (plans : RuntimeBodyPlan.Events preparation source remaining before after)
+    (initial final : State) (work left : Nat)
+    (read : (plannedVisit preparation source pairs step fuel ordinal remaining same plans initial).run work =
+      (.ok final,left)) :
+    EventRun pairs ((Mode.planned preparation).EventData source) step
+      ordinal remaining initial final work left := by
+  induction fuel generalizing ordinal remaining initial final work left before after with
+  | zero =>
+    cases plans with
+    | nil =>
+      obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+      exact .nil _ _ _
+    | cons head tail => cases read
+  | succ fuel ih =>
+    cases plans with
+    | nil =>
+      obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+      exact .nil _ _ _
+    | @cons _ _ _ event position rest before between after head tail =>
+      let entry : At pairs event position := ⟨ordinal,headAt pairs ordinal (event,position) rest same⟩
+      change (do
+        let checked ← step event position entry ⟨_,_,head⟩ initial
+        plannedVisit preparation source pairs step fuel (ordinal+1) rest
+          (tailAt pairs ordinal (event,position) rest same) tail checked).run work = (.ok final,left) at read
+      obtain ⟨middle,budget,first,last⟩ := bind_success _ _ _ _ _ read
+      exact .cons entry ⟨_,_,head⟩ first (ih _ _ _ _ _ _ _ _ last)
+
+/-- Successful fresh and planned traversal supplies one continuous ordered
+trace of exactly its own handler calls. No work reset or alternate handler is
+introduced. Source-state invariants must be proved separately for that handler. -/
+theorem foldEvents_trace {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name) {State : Type}
+    (pairs : List (SourceRuntimeContext.Event artifact.sources owner × Position))
+    (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+      At pairs event position → mode.EventData source event position → State → WorkM State)
+    (data : mode.EventsData source pairs) (initial final : State) (work left : Nat)
+    (read : (foldEvents mode source pairs step data initial).run work = (.ok final,left)) :
+    EventRun pairs (mode.EventData source) step 0 pairs initial final work left := by
+  cases mode with
+  | fresh =>
+    have checked := freshVisit_trace pairs (fun event position entry => step event position entry ())
+      pairs.length 0 pairs rfl initial final work left read
+    have same : (fun event position entry (_ : Unit) => step event position entry ()) = step := by
+      funext event position entry actual
+      cases actual
+      rfl
+    simpa only [same] using checked
+  | planned preparation =>
+    exact plannedVisit_trace preparation source pairs step
+      pairs.length 0 pairs rfl data.2.2 initial final work left read
+
+/-- Any invariant must hold for the actual handler and all of its exact
+original event/data occurrences. The trace supplies the real intermediate
+states and work counters; successful final IR alone is not such a premise. -/
+theorem EventRun.invariant {sources caller State pairs Data step ordinal remaining initial final work left}
+    (trace : @EventRun sources caller State pairs Data step ordinal remaining initial final work left)
+    (property : State → Prop) (opening : property initial)
+    (preserves : ∀ event position entry data before after budget rest,
+      property before → (step event position entry data before).run budget = (.ok after,rest) → property after) :
+    property final := by
+  induction trace with
+  | nil => exact opening
+  | cons entry data read tail ih =>
+    exact ih (preserves _ _ entry data _ _ _ _ opening read)
+
+#print axioms foldEvents_trace
+#print axioms EventRun.invariant
 
 def selectedOrigin {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name) (positions : List Position)

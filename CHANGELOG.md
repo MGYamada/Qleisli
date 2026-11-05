@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove named-call source-state continuity from the actual common body loop,
+  including its real input and return reads. The retained pre/choose/post calls
+  share complete owner maps, bases, ports and issuance histories. Factor the
+  unchanged recursive iteration for this proof; work and acceptance rules stay
+  unchanged. Whole-source logical action composition remains open.
+
 - Factor the original three-call Raw instrument into its actual slices and final
   output permutation, retaining every intermediate history. Prove that the
   checked named-call return map preserves complete basis trees, sparse codes and
