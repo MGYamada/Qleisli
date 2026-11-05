@@ -9,6 +9,7 @@ namespace Qleisli.RuntimeNamedObservationEntry
 open QleisliKernel QleisliKernel.Qirf
 open QleisliKernel.Qirf.RuntimeForestCode (Frame OwnerCode)
 open Qleisli.Semantics.ObservingAction (History)
+open Qleisli.RuntimeNamedThreePackedInstrument (advance pureHistory)
 open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt)
 open Qleisli.RuntimeNamedSourceFlow (entryState)
 open Qleisli.RuntimeForestProduct (referenceAction)
@@ -124,4 +125,92 @@ theorem original_supplies_histories {artifact owner name arguments request prepa
 
 #print axioms original_supplies_histories
 
+/-- The original prefix at the first call ends in the checked erasure. -/
+theorem prefix_erasure {sources caller dependencies program functionName event block position previous start count}
+    (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous)
+    (pre : RuntimeInterval.Checked block start count)
+    (next : start = position.start+position.count)
+    (events : List Semantics.Observation.Event)
+    (read : Semantics.Observation.readOps block.fuel block.entry.quantum.reference
+      (block.operations.take start) = some (pre.before.quantum.reference,events)) :
+    let state := observed.interval.before.quantum.reference
+    let axes := observed.input.port.wires.map state.frame.idxOf
+    ∃ prefixEvents,
+      Semantics.Observation.readOps block.fuel block.entry.quantum.reference
+        (block.operations.take position.start) = some (state,prefixEvents) ∧
+      events = prefixEvents ++ [.erase state.frame.length axes observed.measured] := by
+  subst start
+  obtain ⟨work,left,checked⟩ := observed.interval.prefixRead
+  obtain ⟨prefixEvents,prefixRead⟩ := RuntimeObservingPrefix.checkOps_reference dependencies
+    block.fuel block.entry observed.interval.before (block.operations.take position.start) work left checked
+  have erasure := (RuntimeOriginalObservation.original_erasure observed).1
+  have positive : ∃ fuel, block.fuel = fuel+1 := by
+    cases depth : block.fuel with
+    | zero => rw [depth] at checked; cases checked
+    | succ fuel => exact ⟨fuel,rfl⟩
+  obtain ⟨fuel,depth⟩ := positive
+  rw [RuntimeAdjacentSlices.prefixSplit,depth,RuntimeAdjacentSlices.readOps_append] at read
+  rw [depth] at prefixRead erasure
+  rw [prefixRead] at read
+  simp only [bind,Option.bind] at read
+  rw [erasure] at read
+  exact ⟨prefixEvents,by rw [depth]; exact prefixRead,congrArg Prod.snd (Option.some.inj read).symm⟩
+
+#print axioms prefix_erasure
+/-- The original source erasure directly precedes the pure call chain in the
+original observing program. Every incoming history takes the actual erasure
+step, then every emitted history takes the original three-call action and
+the original continuation. -/
+theorem original_erasure_then_adjacent {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    {rootOwner rootName caller functionName path event position before ssa}
+    (observed : @RuntimeOrdinaryBody.Observation artifact.sources rootOwner rootName caller functionName
+      body.root.dependencies body.root.program path event body.checked.native.block position before ssa)
+    (earlier : List (RuntimePureBody.Step body.root.dependencies body.root.program body.checked.native.block))
+    (prefixShape : view.earlier = earlier ++ [.observation observed])
+    (coverage : RuntimeNamedSelectionOn.Coverage view.centerSelection
+      (RuntimeNamedThreeOccurrence.actual_adjacent_middle body view)) :
+    let held := RuntimeNamedThreeOccurrence.actual_adjacent_middle body view
+    let pre := RuntimeNamedOccurrenceAction.span view.prePrimitive
+    let center := RuntimeNamedSelectionOn.middle view.centerSelection held coverage
+    let post := RuntimeNamedOccurrenceAction.span view.postPrimitive
+    let state := observed.checked.interval.before.quantum.reference
+    let axes := observed.checked.input.port.wires.map state.frame.idxOf
+    let erasure := Semantics.Observation.Event.erase state.frame.length axes observed.checked.measured
+    pre.start = position.start+position.count →
+    center.start = pre.start+pre.count → post.start = center.start+center.count →
+    ∃ a b c : List Semantics.Raw.Event, ∃ priorEvents suffix : List Semantics.Observation.Event,
+      Semantics.Observation.readOps 65 body.checked.native.block.entry.quantum.reference
+        (body.checked.native.block.operations.take position.start) = some (state,priorEvents) ∧
+      body.checked.native.whole.prepared.events =
+        (priorEvents++[erasure]) ++ (a++b++c).map Semantics.Observation.Event.pure ++ suffix ∧
+      Entry observed.checked view.prePrimitive ∧
+      RawFiniteRows.BoundedEvents pre.slice.interval.before.quantum.frame.length
+        (a++b++c) post.slice.interval.after.quantum.frame.length ∧
+      RuntimeNamedThreeFrameChain.Composed view.prePrimitive view.centerSelection view.postPrimitive held a b c ∧
+      ∀ history : History,
+        Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
+          body.checked.native.whole.prepared.events history =
+          (do
+            let inherited ← Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history
+            let erased ← advance body.root.dependencies
+              (Qleisli.Semantics.ObservingAction.run body.root.dependencies 64) inherited erasure
+            suffix.foldlM
+              (advance body.root.dependencies (Qleisli.Semantics.ObservingAction.run body.root.dependencies 64))
+              (erased.map (pureHistory body.root.dependencies (a++b++c)))) := by
+  intro held pre center post state axes erasure next toCenter toPost
+  obtain ⟨a,b,c,prior,suffix,read,events,bounds,composed,historyLaw⟩ :=
+    RuntimeNamedThreePackedInstrument.original_adjacent_observing body view coverage toCenter toPost
+  obtain ⟨priorEvents,entered,actual⟩ := prefix_erasure observed.checked pre.slice.interval next prior read
+  change prior = priorEvents++[erasure] at actual
+  subst prior
+  refine ⟨a,b,c,priorEvents,suffix,entered,events,
+    original_entry body view observed earlier prefixShape next,bounds,composed,?_⟩
+  intro history
+  rw [historyLaw,RuntimeNamedThreePackedInstrument.run_append_event body.root.dependencies 64]
+  cases Qleisli.Semantics.ObservingAction.run body.root.dependencies 65 priorEvents history <;> rfl
+
+#print axioms original_erasure_then_adjacent
 end Qleisli.RuntimeNamedObservationEntry
