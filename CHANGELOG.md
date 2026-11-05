@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Factor the original three-call Raw instrument into its actual slices and final
+  output permutation, retaining every intermediate history. Prove that the
+  checked named-call return map preserves complete basis trees, sparse codes and
+  ordered axes in the caller frame. Whole-source action composition remains open.
+
 - Bind an original supplying Meaning inside a constructed Op argument to its
   authenticated caller path and native child. Account for the complete ordered
   provider forest before discharging the separate enclosing Meaning. The
