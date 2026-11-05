@@ -439,11 +439,27 @@ encoding equation. `RuntimeNamedOutputOrder` transports dense
 logical coefficients by the original owners' exact cardinalities, including
 padding and dimension-one owners. Its separate code identity requires equality
 of full ordered source-owner/wire pairs and the actual Raw frame; code equality
-does not establish those source premises. Connecting the actual transformed
-output coefficients to this complete encoding and source order remains open,
-as do whole-function logical-action/observing-history composition, public v5
-and full12/64. These mathematical laws change no native acceptance rule,
-effect, work limit, capability or admitted guarantee.
+does not establish those source premises.
+
+`RuntimeNamedHeadCoefficients` identifies the actual source input fibre and
+updates its exact logical coefficients using the true input/output cardinalities.
+`RuntimeNamedCallerGeometry` derives the returned basis, wires, full Raw frame
+and unchanged spectator bindings from the actual callee and caller boundary.
+`RuntimeNamedCallerAction.actual_whole_caller_action` combines those facts with
+the same native output-code read to prove the exact action on the complete
+returned caller encoding, for arbitrary correlated logical/reference states.
+It removes the final self-reorder only on actual finite physical rows; no
+unbounded identity of that event is assumed. `original_pre_post_actions`
+instantiates both laws using the real child executions and exactly the event
+lists retained by the original root decomposition. The supplied complete
+checked frames remain explicit premises, rather than a proof of their
+construction for every source body.
+
+Connecting the middle selection to these caller coefficients, whole-function
+logical-action/observing-history composition, public v5 and full12/64 remains
+open. The three-call view is bounded and supplies no general-body coverage.
+These mathematical laws change no native acceptance rule, effect, work limit,
+capability or admitted guarantee.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
