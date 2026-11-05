@@ -1,21 +1,29 @@
 import Qleisli.RuntimeOwnerBindingFacts
 import QleisliKernel.Qirf.RuntimePureBody
 
-/-! Alignment of the source states at actual named-call boundaries. This is
+/-! Alignment of actual named-call and primitive source states. This is
 an administrative property of the native traversal, not a logical action or
-code equation. Other step kinds carry no named-boundary assertion here.
+code equation. Other step kinds carry no state assertion here; named entry/exit
+queries retain their original scope.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeNamedSourceFlow
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open RuntimeStructuralAction (SourceState)
 open RuntimeOwnerMap (Binding Map)
 
+def NodeAligned {dependencies program block} (before after : RuntimeStructuralAction.SourceState)
+    (node : RuntimePureBody.Node dependencies program block) : Prop :=
+  match node with
+  | .primitive _ binding => before = binding.history ∧ after = binding.after
+  | _ => True
+
 def Aligned {dependencies program block} (before after : SourceState)
     (step : @RuntimePureBody.Step dependencies program block) : Prop :=
   match step with
   | .named (before := original) _ _ _ _ boundary _ _ =>
     before = original ∧ after = boundary.after
-  | .pure .. | .gap .. | .observation .. | .conditional .. => True
+  | .pure node => NodeAligned before after node
+  | .gap .. | .observation .. | .conditional .. => True
 
 def entryState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=

@@ -393,6 +393,34 @@ those computations for the actual pre/choose/post view. Other step constructors
 receive no child-provenance assertion here; whole-source code/action and
 observing-history composition, public v5 and full12/64 remain open.
 
+The same state-flow proof additionally aligns actual primitive nodes with
+both their complete source input history and checked output history. Its
+primitive handler, operation and selection case proofs share the existing
+loop; other step constructors acquire no new state/code assertion.
+`RuntimeNamedPrimitiveInputs.original_pre_post_inputs` derives the original
+pre/post primitive input carriers from the actual callee recursion and argument
+construction. The real parameter reorder preserves that same assigned map;
+complete basis trees and ordered ports, rather than equal widths, determine
+the primitive's retained input-code read.
+
+`RuntimeNamedInputAction.original_input_action` substitutes the complete
+authentic caller encoding into the same original parent Raw-event source-action
+law. The original child input proof and checked selected ports derive its
+carrier/axis equalities. The independent sparse forest coefficients construct
+an arbitrary correlated spectator/reference fibre; no factorization of the
+joint state, supplied encoding equation or dense caller reconstruction is
+assumed. Native singleton code equality follows from the actual primitive
+reader. The equation retains the real final local reorder and output code.
+`original_pre_post_input_actions` applies these input laws to the pre/post event
+lists of that same original root under the existing literal coverage and slice
+start/length premises; it does not infer those premises from matching widths.
+Transport of that output fibre to the complete caller output encoding/source
+order, whole-function logical-action/observing-history composition, public v5
+and full12/64 remain open. These are mathematical input-action laws, not an
+additional native acceptance gate, bounded availability claim or guarantee
+admission. No executable kernel/Rust rule, effect label, work limit or public
+capability changes.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting
