@@ -49,11 +49,47 @@ inductive ChildRun (artifact : Artifact) (root : Validity.Root)
       ChildRun artifact root execution next
         (.named event scope body bodyRead boundary result.ordinary (Steps.ofList result.steps))
 
+/-- Both original recursive arm reads and their checked join share the
+remaining-work counters of the original conditional step. -/
+inductive ConditionalRun (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution) :
+    {program : Semantics.Observation.Program} →
+    {block : RuntimeInterval.Block root.dependencies program} →
+    Step root.dependencies program block → Prop where
+  | checked {program : Semantics.Observation.Program}
+      {block : RuntimeInterval.Block root.dependencies program} {offset rootOwner rootName caller name}
+      {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName caller name}
+      {event : SourceTypes.SourceRuntimeContext.BranchEvent artifact.sources caller}
+      {source : RuntimeBranchAction.Source event} {sameName : event.callerName = name}
+      {actual : @RuntimeInterval.Branch root.dependencies program block offset}
+      {actualRead : RuntimeInterval.Computed (RuntimeInterval.readBranch block offset) actual}
+      {leftRequest rightRequest : Context}
+      {leftPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original true) leftRequest}
+      {rightPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original false) rightRequest}
+      {before ordinary}
+      {left : BlockResult root.dependencies program actual.thenBlock}
+      {right : BlockResult root.dependencies program actual.elseBlock}
+      {leftReceipts rightReceipts : List execution.Receipt}
+      {action : RuntimeBranchAction.Checked path event source actual before left.history right.history
+        ordinary left.ordinary right.ordinary}
+      {beforeThen afterThen afterElse afterJoin : Nat}
+      (thenRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original true)
+          path program leftRequest leftPlan before ordinary actual.thenBlock).run beforeThen =
+        (.ok (left,leftReceipts),afterThen))
+      (elseRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original false)
+          path program rightRequest rightPlan before ordinary actual.elseBlock).run afterThen =
+        (.ok (right,rightReceipts),afterElse))
+      (joinRead : (RuntimeBranchAction.read path event source actual before left.history right.history
+          ordinary left.ordinary right.ordinary).run afterElse = (.ok action,afterJoin)) :
+      ConditionalRun artifact root execution next (.conditional path event source actual actualRead action
+        (Steps.ofList left.steps) (Steps.ofList right.steps))
+
 def CheckedStep {artifact root execution} (next : BlockRunner artifact root execution)
     {program block} (step : Step root.dependencies program block) : Prop :=
   match step with
   | .named .. => ChildRun artifact root execution next step
-  | .pure .. | .gap .. | .observation .. | .conditional .. => True
+  | .conditional .. => ConditionalRun artifact root execution next step
+  | .pure .. | .gap .. | .observation .. => True
 
 structure Flow {artifact root execution} (next : BlockRunner artifact root execution)
     {program block} (initial : RuntimeStructuralAction.SourceState)
@@ -273,7 +309,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       let gapStep : Step root.dependencies program block :=
         @Step.gap root.dependencies program block cursor (block.operations.length-cursor) history ordinaryAfter gap
       have finishedData := finish_steps (gap.ssa,steps ++ [gapStep]) result afterGap left finished
-      exact ⟨history,finishedData.1.symm ▸ chain.snoc True.intro True.intro,finishedData.2⟩
+      exact ⟨history,finishedData.1.symm ▸ chain.snoc ⟨rfl,rfl⟩ True.intro,finishedData.2⟩
   have advances (before after : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt)
       (start budget remaining : Nat) (incoming : Invariant next historyStart before)
       (read : (advance before start).run budget = (.ok after,remaining)) : Invariant next historyStart after := by
@@ -288,7 +324,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ h).1
       subst after
       have chain := incoming
-      exact chain.snoc True.intro True.intro
+      exact chain.snoc ⟨rfl,rfl⟩ True.intro
   have named_preserves
       (event : SourceTypes.SourceRuntimeContext.NamedEvent artifact.sources owner)
       (position : Position) (origin : RuntimeSourceEvent.Origin (.named event) position)
@@ -411,7 +447,9 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         have same := (pure_success _ _ _ _ returned).1
         subst after
         have chain := entered
-        exact chain.snoc True.intro True.intro
+        refine chain.snoc ⟨?_,rfl⟩ (ConditionalRun.checked _left _right _action)
+        change history = {history with bindings := frame.bindings}
+        rw [sameBindings]
       · cases h
     all_goals
       obtain ⟨_,e,_owners,failed⟩ := bind_success _ _ _ _ _ h

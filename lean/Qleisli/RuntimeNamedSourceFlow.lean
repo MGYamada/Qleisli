@@ -1,9 +1,9 @@
 import Qleisli.RuntimeOwnerBindingFacts
 import QleisliKernel.Qirf.RuntimePureBody
 
-/-! Alignment of actual named-call, primitive, selection and observation
-source states. The traversal retains complete before and after owner states
-for these joins. Logical action and code equations are proved separately.
+/-! Alignment of the original traversal's source states. It retains complete
+owner states across named calls, observations, classical gaps and branches,
+as well as the primitive and selection joins. Logical actions are separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeNamedSourceFlow
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
@@ -26,21 +26,26 @@ def Aligned {dependencies program block} (before after : SourceState)
     before = original ∧ after = boundary.after
   | .pure node => NodeAligned before after node
   | .observation (before := original) observed => before = original ∧ after = observed.after
-  | .gap .. | .conditional .. => True
+  | .gap (before := original) gap => before = original ∧ after = gap.after
+  | .conditional _ _ _ _ _ (before := original) action _ _ => before = original ∧ after = action.next
 
 def entryState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named (before := original) .. => some original
   | .observation (before := original) _ => some original
-  | .pure .. | .gap .. | .conditional .. => none
+  | .gap (before := original) _ => some original
+  | .conditional _ _ _ _ _ (before := original) _ _ _ => some original
+  | .pure .. => none
 
 def exitState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named _ _ _ _ boundary _ _ => some boundary.after
   | .observation observed => some observed.after
-  | .pure .. | .gap .. | .conditional .. => none
+  | .gap gap => some gap.after
+  | .conditional _ _ _ _ _ action _ _ => some action.next
+  | .pure .. => none
 
 theorem Aligned.entry_eq {dependencies program block before after step state}
     (aligned : @Aligned dependencies program block before after step)

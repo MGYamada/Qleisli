@@ -545,6 +545,17 @@ The same theorem gives the packed source result in the original return order
 for every outcome and identifies the list of histories returned by the original
 interpreter. General observing-body composition remains open.
 
+`RuntimeNamedChildRuns.original_body` retains the actual input and output owner
+states for classical gaps and conditionals. For each conditional it keeps both
+original recursive arm reads and the successful join on their returned owner
+states and ordinary SSA tables, with the original work counters.
+`RuntimeOriginalBranch.original_branch_events` identifies the exact Raw branch
+event, both arm traces and their final permutations. On a history whose
+ordinary values agree with the checked source expressions,
+`original_branch_step` selects the arm by the source condition and retains the
+literal classical phi merge. The source action inside each arm and the
+source-level meaning of the phi merge remain separate.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting

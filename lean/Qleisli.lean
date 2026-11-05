@@ -88,6 +88,7 @@ import Qleisli.RuntimeNamedThreePackedOutput
 import Qleisli.RuntimeNamedThreePackedInstrument
 import Qleisli.RawFiniteRows
 import Qleisli.RuntimeOriginalObservation
+import Qleisli.RuntimeOriginalBranch
 import Qleisli.RuntimeNamedObservationEntry
 import Qleisli.RuntimeSectorPrefix
 import Qleisli.RuntimeSelectionTraceEvidence
