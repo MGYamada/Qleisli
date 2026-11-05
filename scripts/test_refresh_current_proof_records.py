@@ -120,6 +120,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-qmatch-duty-forest",
                 "refs/heads/codex/beta-qmatch-instrument-composition",
                 "refs/heads/codex/beta-qmatch-source-flow",
+                "refs/heads/codex/beta-qmatch-child-runs",
                 "refs/heads/codex/beta-quantum-runtime-types",
                 "refs/heads/codex/beta-runtime-static-bindings")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
