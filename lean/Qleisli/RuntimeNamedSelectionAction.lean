@@ -148,7 +148,7 @@ theorem selection_reference_action
         Qleisli.RuntimeMultiwayAction.finiteReferenceAction literal.outputCode
           (sourceAction frame codes layouts literal table
             (sourceSlice (RuntimeNamedFrameAxes.mixedAxes scope) base joint)) physical reference := by
-  obtain ⟨parentEvents,parentTrace,parentAction⟩ :=
+  obtain ⟨parentEvents,parentTrace,parentAction,_geometry⟩ :=
     RuntimeNamedSelectionParent.parent_action scope frame starts covers literal
   have entry : frame.interval.before.quantum.reference = scope.localEntry.quantum.reference :=
     (RuntimeNamedSelectionParent.at_zero frame.interval starts).trans

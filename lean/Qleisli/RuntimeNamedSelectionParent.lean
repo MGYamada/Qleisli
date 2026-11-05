@@ -82,10 +82,12 @@ private theorem embedded_chunks (signatures : List Basis) (ops : List Semantics.
     (related : Exact.ListRel (Raw.Sector.EventPiece child.frame.length) childResult.events pieces) :
     ∃ chunks, childResult.events = RuntimeLocalEvents.localEvents child.frame.length chunks ∧
       parentResult.events = RuntimeLocalEvents.circuitEvents parent.frame.length (child.frame.map parent.frame.idxOf) chunks ∧
-      RuntimeLocalEvents.bounds child.frame.length chunks = true := by
-  obtain ⟨chunks,stored⟩ := RuntimeFoldLocality.folds_locality signatures ops parent child parentResult childResult
-    spectators ownerBefore ownerAfter pieces embedding parentFold childFold ownerFold related
-  exact ⟨chunks,stored.1,stored.2.1,stored.2.2.2.1⟩
+      RuntimeLocalEvents.bounds child.frame.length chunks = true ∧
+      parentResult.state.frame = parent.frame ∧ childResult.state.frame = child.frame := by
+  obtain ⟨chunks,localRun,parentRun,_flat,bounded,_live,parentFrame,childFrame,_rest⟩ :=
+    RuntimeFoldLocality.folds_locality signatures ops parent child parentResult childResult
+      spectators ownerBefore ownerAfter pieces embedding parentFold childFold ownerFold related
+  exact ⟨chunks,localRun,parentRun,bounded,parentFrame,childFrame⟩
 
 private theorem lift_folds (dependencies : List Dependency) (ops : List Semantics.Raw.Op)
     (parent after child childAfter : Raw.State) (axes : List Nat) (childResult : Semantics.RawTrace.Prepared)
@@ -98,14 +100,18 @@ private theorem lift_folds (dependencies : List Dependency) (ops : List Semantic
     (spectators : List Port) (embedding : parent.live.Perm (child.live ++ spectators))
     (coordinates : child.frame.map parent.frame.idxOf = axes) (unique : axes.Nodup) :
     ∃ events, RuntimeLocalEvents.trace parent.reference ops = some ⟨after.reference,events,parent.frame.length⟩ ∧
-      ∀ (values : Nat → ℂ) (base : Nat), Qleisli.Semantics.RawAction.Locality.pull base axes
+      (∀ (values : Nat → ℂ) (base : Nat), Qleisli.Semantics.RawAction.Locality.pull base axes
         (Qleisli.Semantics.RawAction.events dependencies events values) =
         Qleisli.Semantics.RawAction.events dependencies childResult.events
-          (Qleisli.Semantics.RawAction.Locality.pull base axes values) := by
+          (Qleisli.Semantics.RawAction.Locality.pull base axes values)) ∧
+      after.frame = parent.frame ∧ childResult.state.frame = child.frame := by
   obtain ⟨events,parentFold,parentTrace⟩ := parentRan
   obtain ⟨childEvents,childFold,childTrace⟩ := childRan
+  have sameTrace := Option.some.inj (childTrace.symm.trans original)
   have emitted : childEvents = childResult.events :=
-    congrArg Semantics.RawTrace.Prepared.events (Option.some.inj (childTrace.symm.trans original))
+    congrArg Semantics.RawTrace.Prepared.events sameTrace
+  have childExit : childAfter.frame = childResult.state.frame :=
+    congrArg (fun traced : Semantics.RawTrace.Prepared => traced.state.frame) sameTrace
   let parentResult : Raw.Prepared := ⟨after,events,parent.frame.length⟩
   let selectedResult : Raw.Prepared := ⟨childAfter,childEvents,child.frame.length⟩
   have savedPieces : Exact.ListRel (Raw.Sector.EventPiece child.frame.length) childEvents pieces := by
@@ -118,16 +124,17 @@ private theorem lift_folds (dependencies : List Dependency) (ops : List Semantic
   change Exact.ListRel (Raw.Sector.EventPiece child.frame.length) selectedResult.events pieces at savedPieces
   have locality : ∃ chunks, selectedResult.events = RuntimeLocalEvents.localEvents child.frame.length chunks ∧
       parentResult.events = RuntimeLocalEvents.circuitEvents parent.frame.length (child.frame.map parent.frame.idxOf) chunks ∧
-      RuntimeLocalEvents.bounds child.frame.length chunks = true := by
+      RuntimeLocalEvents.bounds child.frame.length chunks = true ∧
+      parentResult.state.frame = parent.frame ∧ selectedResult.state.frame = child.frame := by
     with_reducible
       exact embedded_chunks (dependencies.map Semantics.Finite.Dependency.signature)
         ops parent child parentResult selectedResult spectators ownerBefore ownerAfter pieces embedding parentFold childFold ownerFold savedPieces
-  obtain ⟨chunks,localRun,parentRun,bounded⟩ := locality
+  obtain ⟨chunks,localRun,parentRun,bounded,parentFrame,childFrame⟩ := locality
   have parentEvents : events = RuntimeLocalEvents.circuitEvents parent.frame.length axes chunks :=
     parentRun.trans (congrArg (fun a => RuntimeLocalEvents.circuitEvents parent.frame.length a chunks) coordinates)
   have childData : childResult.events = RuntimeLocalEvents.localEvents child.frame.length chunks := emitted.symm.trans localRun
   have width : axes.length = child.frame.length := by rw [← coordinates,List.length_map]
-  refine ⟨events,parentTrace,?_⟩
+  refine ⟨events,parentTrace,?_,parentFrame,childExit.symm.trans childFrame⟩
   intro values base
   rw [parentEvents,childData]
   exact pull_events dependencies _ _ _ unique width chunks bounded base values
@@ -145,11 +152,15 @@ theorem parent_action {dependencies program block start count inputs ordinary ef
     ∃ parentEvents,
       RuntimeLocalEvents.trace scope.interval.before.quantum.reference frame.operations =
         some ⟨scope.interval.after.quantum.reference,parentEvents,scope.interval.before.quantum.frame.length⟩ ∧
-      ∀ (values : Nat → ℂ) (base : Nat),
+      (∀ (values : Nat → ℂ) (base : Nat),
         Qleisli.Semantics.RawAction.Locality.pull base (RuntimeNamedFrameAxes.mixedAxes scope)
           (Qleisli.Semantics.RawAction.events dependencies parentEvents values) =
         Qleisli.Semantics.RawAction.events dependencies literal.traceResult.events
-          (Qleisli.Semantics.RawAction.Locality.pull base (RuntimeNamedFrameAxes.mixedAxes scope) values) := by
+          (Qleisli.Semantics.RawAction.Locality.pull base (RuntimeNamedFrameAxes.mixedAxes scope) values)) ∧
+      scope.interval.after.quantum.frame = scope.interval.before.quantum.frame ∧
+      frame.interval.after.quantum.frame = frame.interval.before.quantum.frame ∧
+      frame.interval.after.quantum.frame.map scope.interval.after.quantum.frame.idxOf =
+        RuntimeNamedFrameAxes.mixedAxes scope := by
   have actual : (block.operations.drop start).take count = frame.operations.map Semantics.Observation.Op.pure := by
     calc
       _ = (((block.operations.drop start).take count).drop first).take size := by rw [starts,List.drop_zero,covers,List.take_length]
@@ -179,10 +190,16 @@ theorem parent_action {dependencies program block start count inputs ordinary ef
   have axes : scope.localEntry.quantum.frame.map scope.interval.before.quantum.frame.idxOf =
       RuntimeNamedFrameAxes.mixedAxes scope := by
     exact congrArg (List.map scope.interval.before.quantum.frame.idxOf) localFrame
-  exact lift_folds dependencies frame.operations scope.interval.before.quantum scope.interval.after.quantum
-    scope.localEntry.quantum scope.localAfter.quantum (RuntimeNamedFrameAxes.mixedAxes scope) literal.traceResult
-    folds.1 folds.2 written pieces related ownerBefore ownerAfter ownerFold spectators embedding axes
-    (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
+  obtain ⟨events,trace,action,parentFrame,localExit⟩ :=
+    lift_folds dependencies frame.operations scope.interval.before.quantum scope.interval.after.quantum
+      scope.localEntry.quantum scope.localAfter.quantum (RuntimeNamedFrameAxes.mixedAxes scope) literal.traceResult
+      folds.1 folds.2 written pieces related ownerBefore ownerAfter ownerFold spectators embedding axes
+      (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
+  have childExit : frame.interval.after.quantum.frame = scope.localEntry.quantum.frame :=
+    (congrArg Semantics.RawTrace.Interface.frame literal.afterState.symm).trans localExit
+  refine ⟨events,trace,action,parentFrame,childExit.trans frameEq.symm,?_⟩
+  rw [parentFrame,childExit]
+  exact axes
 
 #print axioms parent_action
 end Qleisli.RuntimeNamedSelectionParent
