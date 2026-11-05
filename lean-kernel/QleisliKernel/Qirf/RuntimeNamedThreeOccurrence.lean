@@ -193,27 +193,39 @@ private def retainedData_at {dependencies program block step count ordinal}
     (earlier later : List (Step dependencies program block))
     (occurrence : @Middle dependencies program block step)
     (witness : @Witness dependencies (.steps ordinal (Steps.ofList (earlier ++ step :: later))) count) :
-    RetainedData witness occurrence :=
-  match earlier with
-  | [] => by
-    cases occurrence with
-    | named node selected =>
-      change SelectionAt witness node 0
-      change Witness (.steps ordinal (.cons _ (Steps.ofList later))) count at witness
-      let current := consData witness
+    RetainedData witness occurrence := by
+  cases occurrence with
+  | @named start span inputs sources caller before childHistory childRetired ordinary
+      event scope body read boundary finalOrdinary node selected =>
+    let target : Step dependencies program block :=
+      .named event scope body read boundary finalOrdinary (.cons (.pure node) .nil)
+    change SelectionAt witness node 0
+    let atHead {ordinal count : Nat}
+        (w : Witness (.steps ordinal (.cons target (Steps.ofList later))) count) :
+        SelectionAt w node 0 := by
+      let current := consData w
       let child := namedData current.head
       let leaf := singletonData selected child.nested
       refine ⟨leaf.literal,leaf.obtained,leaf.rank,.atOrdinal ordinal :: child.edge :: leaf.path,?_⟩
       exact current.firstLift _ _ _ (child.liftAt _ _ _ leaf.original)
-  | first :: earlier => by
-    change Witness (.steps ordinal (.cons first (Steps.ofList (earlier ++ step :: later)))) count at witness
-    let current := consData witness
-    let held := retainedData_at earlier later occurrence current.tail
-    cases occurrence with
-    | named node selected =>
-      exact ⟨held.literal,held.obtained,current.a+held.rank,.nextOrdinal (ordinal+1) :: held.path,
-        current.restLift _ _ _ held.original⟩
-termination_by structural earlier
+    refine (Nat.rec (motive := fun fuel =>
+      (remaining : List (Step dependencies program block)) → remaining.length ≤ fuel →
+      ∀ {ordinal count : Nat}
+        (w : Witness (.steps ordinal (Steps.ofList (remaining ++ target :: later))) count),
+        SelectionAt w node 0) ?_ ?_ earlier.length) earlier (Nat.le_refl _) witness
+    · intro remaining bound ordinal count current
+      cases remaining with
+      | nil => exact atHead current
+      | cons head tail => exact False.elim (Nat.not_succ_le_zero tail.length bound)
+    · intro fuel recurse remaining bound ordinal count current
+      cases remaining with
+      | nil => exact atHead current
+      | cons head tail =>
+        change Witness (.steps ordinal (.cons head (Steps.ofList (tail ++ target :: later)))) count at current
+        let parts := consData current
+        let held := recurse tail (Nat.le_of_succ_le_succ bound) parts.tail
+        exact ⟨held.literal,held.obtained,parts.a+held.rank,.nextOrdinal (ordinal+1) :: held.path,
+          parts.restLift _ _ _ held.original⟩
 
 private def retainedData_in {dependencies program block steps count step}
     (witness : @Witness dependencies (.steps 0 (Steps.ofList (program := program) (block := block) steps)) count)
