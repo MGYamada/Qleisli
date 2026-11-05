@@ -421,6 +421,30 @@ additional native acceptance gate, bounded availability claim or guarantee
 admission. No executable kernel/Rust rule, effect label, work limit or public
 capability changes.
 
+`RuntimeNamedPrimitiveOutputs.original_pre_post_outputs` now derives the
+native output carriers through each real callee run, its original return
+reorder and the actual caller owner mapping. It retains complete basis trees
+and ports. `actual_occurrence_output_code` attaches that same native code
+computation to the returned caller binding in its complete checked frame.
+The interval-state identity lemmas compare successful reads of the same
+original block/start/count; their derived empty checkpoints are erased proofs,
+not fabricated runtime receipts or extra work for the nonempty interval.
+
+`RuntimeNamedOutputEncoding.complete_output_encoding` factors the complete
+caller output encoding through that native code, retaining arbitrary correlated
+spectator/reference coefficients. Its `original_pre_post_output_encodings`
+consumer derives the target, retained owner code and native code read from
+each actual original call and its complete output frame; none is an assumed
+encoding equation. `RuntimeNamedOutputOrder` transports dense
+logical coefficients by the original owners' exact cardinalities, including
+padding and dimension-one owners. Its separate code identity requires equality
+of full ordered source-owner/wire pairs and the actual Raw frame; code equality
+does not establish those source premises. Connecting the actual transformed
+output coefficients to this complete encoding and source order remains open,
+as do whole-function logical-action/observing-history composition, public v5
+and full12/64. These mathematical laws change no native acceptance rule,
+effect, work limit, capability or admitted guarantee.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting

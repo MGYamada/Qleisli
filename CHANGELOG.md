@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Derive original named primitive output carriers and the same native code read
+  through the actual callee execution, source return and caller owner mapping.
+  Factor the complete caller output encoding with arbitrary reference/spectator
+  coefficients, and prove exact owner/cardinality reorder laws. Whole-function
+  output-coefficient, logical-action and observing-history composition remain
+  open; native acceptance, limits and public v5 are unchanged.
+
 - Derive primitive input histories and full carrier/port correspondence from
   the actual original pre/post callee runs. Connect the authentic complete
   caller encoding to the same parent Raw-event source action, retaining phase,
