@@ -11,7 +11,8 @@ open RuntimePureBody
 
 /-- Every successful actual iteration retains its original entry read, the
 complete ordered step list, and the actual final source-return read. The named
-state invariant asserts no physical action for the other step constructors. -/
+state invariant includes actual primitive and selection maps but asserts no
+physical action for any step constructor. -/
 theorem step_flow (artifact : Artifact) (root : Validity.Root)
     (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution) (outputBoundary : OutputBoundary)
     {rootOwner rootName owner name : String}

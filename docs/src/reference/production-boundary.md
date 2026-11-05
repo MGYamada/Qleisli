@@ -455,6 +455,22 @@ lists retained by the original root decomposition. The supplied complete
 checked frames remain explicit premises, rather than a proof of their
 construction for every source body.
 
+`RuntimeNamedSelectionInputs.original_middle_source` derives the middle
+selection's complete original input carriers from the real argument construction
+and child run. The same strengthened common-loop invariant retains its exact
+before binding map and full returned source state; the actual final written
+return, including its reorder, starts at that selection after-map. All nominal
+trees, ports, spectators and separate zero-width owners remain in those maps.
+This supplies source-state provenance, not a caller coefficient/action equation
+or a proof of arbitrary intermediate frame availability.
+`RuntimeNamedSelectionFrames.original_middle_frames` derives both mathematical
+child Frames from the complete caller input Frame. It selects the actual
+ordered argument owners, transports their existing receipts by full port/basis
+equality, and uses the same selection's original owner flow for its after Frame.
+No final child Frame, successful `readFrame` invocation or remaining-work bound
+is supplied or fabricated. Caller-frame construction and availability for
+arbitrary source bodies retain their separate obligations.
+
 Connecting the middle selection to these caller coefficients, whole-function
 logical-action/observing-history composition, public v5 and full12/64 remains
 open. The three-call view is bounded and supplies no general-body coverage.

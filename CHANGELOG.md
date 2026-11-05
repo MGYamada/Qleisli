@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain the selection's actual input map and full returned source state in
+  the same common-loop proof. Bind the original middle child's complete input
+  carriers and final written return order to its real argument construction
+  and recursive run. Derive both actual child Frames from the complete caller's
+  original owner codes, without a supplied child Frame or budgeted read.
+  The caller coefficient/action join and general
+  body/instrument coverage remain pending; native acceptance is unchanged.
+
 - Connect each original single-primitive call's exact logical update to the
   complete returned caller encoding, retaining correlated spectators and
   external references. Remove its final local reorder only on actual finite

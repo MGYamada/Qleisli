@@ -3,8 +3,8 @@ import QleisliKernel.Qirf.RuntimeBodyOperations
 
 /-! Retain actual recursive runs of original named callees and their inputs.
 The complete source-state chain and each named child's actual binding/callback
-reads follow one proof of the real common loop, now retaining actual primitive
-input/output histories as well. Other step constructors receive
+reads follow one proof of the real common loop, retaining actual primitive
+histories and selection input/return maps. Other step constructors receive
 no child-provenance assertion. This is not a whole logical-action theorem.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
@@ -148,6 +148,24 @@ private theorem operation_aligned {dependencies program}
     trivial
   · cases h
 
+private theorem selection_before_transport
+    {dependencies program block start count inputs outputs selector target inputCode outputCode}
+    {left right : @RuntimeInterval.Checked dependencies program block start count}
+    (same : left = right)
+    (codes : SelectionCodes left inputs outputs selector target inputCode outputCode) :
+    (same ▸ codes).owners.before.bindings = codes.owners.before.bindings := by
+  cases same
+  rfl
+
+private theorem selection_after_transport
+    {dependencies program block start count inputs outputs selector target inputCode outputCode}
+    {left right : @RuntimeInterval.Checked dependencies program block start count}
+    (same : left = right)
+    (codes : SelectionCodes left inputs outputs selector target inputCode outputCode) :
+    (same ▸ codes).owners.transport.after.bindings = codes.owners.transport.after.bindings := by
+  cases same
+  rfl
+
 private theorem selection_aligned {α : Type} (artifact : Artifact)
     {dependencies program block start count roles}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
@@ -160,10 +178,11 @@ private theorem selection_aligned {α : Type} (artifact : Artifact)
       SourceTypes.QuantumArms.BoundArm artifact.sources moduleName selector.basis target.basis →
       α → WorkM (Semantics.Exact.Matrix × α))
     (result : Node dependencies program block × α)
-    (before after : RuntimeStructuralAction.SourceState)
+    (before : RuntimeStructuralAction.SourceState)
+    (sameBindings : frame.bindings = before.bindings)
     (checked : RuntimeInterval.Computed
       (selectionNode artifact interval frame owners selector target table site initial realize) result) :
-    NodeAligned before after result.1 := by
+    NodeAligned before {before with bindings := owners.after.bindings} result.1 := by
   obtain ⟨work,left,ran⟩ := checked
   unfold selectionNode at ran
   obtain ⟨_,a,_count,h⟩ := bind_success _ _ _ _ _ ran
@@ -182,7 +201,8 @@ private theorem selection_aligned {α : Type} (artifact : Artifact)
   obtain ⟨logical,n,_logical,h⟩ := bind_success _ _ _ _ _ h
   have same := (pure_success _ _ _ _ h).1
   subst result
-  trivial
+  simp only [NodeAligned,selection_before_transport,selection_after_transport]
+  exact ⟨sameBindings.symm,True.intro⟩
 
 
 /-- One proof of the actual iteration retains both the complete state chain
@@ -352,7 +372,10 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc (selection_aligned artifact interval frame owners _ _ _ _ _ _ (node,extra) history _ ⟨g,i,_node⟩) True.intro
+      exact chain.snoc (by
+        have aligned := selection_aligned artifact interval frame owners _ _ _ _ _ _
+          (node,extra) history sameBindings ⟨g,i,_node⟩
+        simpa only [sameBindings] using aligned) True.intro
     case primitive =>
       split at h
       · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h

@@ -77,6 +77,8 @@ import Qleisli.RuntimeNamedOutputOrder
 import Qleisli.RuntimeNamedHeadCoefficients
 import Qleisli.RuntimeNamedCallerGeometry
 import Qleisli.RuntimeNamedCallerAction
+import Qleisli.RuntimeNamedSelectionInputs
+import Qleisli.RuntimeNamedSelectionFrames
 import Qleisli.RuntimeSectorPrefix
 import Qleisli.RuntimeSelectionTraceEvidence
 import Qleisli.RuntimeSelectionLiteralEvidence

@@ -1,7 +1,7 @@
 import Qleisli.RuntimeOwnerBindingFacts
 import QleisliKernel.Qirf.RuntimePureBody
 
-/-! Alignment of actual named-call and primitive source states. This is
+/-! Alignment of actual named-call, primitive and selection source states. This is
 an administrative property of the native traversal, not a logical action or
 code equation. Other step kinds carry no state assertion here; named entry/exit
 queries retain their original scope.
@@ -15,6 +15,9 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
     (node : RuntimePureBody.Node dependencies program block) : Prop :=
   match node with
   | .primitive _ binding => before = binding.history ∧ after = binding.after
+  | .selection (codes := codes) .. =>
+    before.bindings = codes.owners.before.bindings ∧
+      after = {before with bindings := codes.owners.transport.after.bindings}
   | _ => True
 
 def Aligned {dependencies program block} (before after : SourceState)
