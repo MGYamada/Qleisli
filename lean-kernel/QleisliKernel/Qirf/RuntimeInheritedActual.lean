@@ -72,14 +72,6 @@ private def callKey {sources} (a : GenericOperation.ApplicationSource sources) :
   ⟨originalKey a.state.prepared.original.envelope,a.scope,a.tokens,a.state.environment.guards.isEmpty,
     originalKey a.target.envelope,a.basisActuals,a.naturalActuals,a.operationActuals.map actualKey⟩
 
--- This first case has no scalar actual at the supplying call and the
--- operation itself has exactly a bare provider and its requested wrapper.
--- Check this constant-spine restriction before comparing symbolic payloads.
-def requestedBare (description : GenericOperation.Description) : Bool :=
-  description.root == 1 && match description.nodes with
-    | [.provider _ _ [] [] [] [],.requested 0 _ _] => true
-    | _ => false
-
 private def applicationCost {sources} (a : GenericOperation.ApplicationSource sources) : Nat :=
   originalFields a.state.prepared.original.envelope + originalFields a.target.envelope +
     SourceTrace.Meter.tokenFields a.tokens + SourceTrace.Meter.nameFields a.scope +
@@ -106,16 +98,13 @@ structure Inherited {sources} (catalogue : GenericCatalogue.Checked sources)
   sameScope : binding.actual.scope = app.scope
   noGuard : binding.actual.state.environment.guards.isEmpty = true
 
-section
-variable {artifact catalogue context description graph implementations references prepared root requested checked
-    native index cursor terminal caller original event app transfer paired}
-    (hop : @RuntimeForwardedSupply.Selected artifact catalogue context description graph implementations references
-      prepared root requested checked native index cursor terminal caller original event app transfer paired)
-    (duty : GenericOperation.Duty artifact.sources)
-    (marker : SourceOperation.Marker artifact.sources caller event.scope)
-
-def readInherited : WorkM (Inherited catalogue app hop.supply.source.actual.formal
-    hop.supply.source.actual.argument.tokens duty marker.tokens) := do
+/-- A selected interior actual uses the same complete supplying-call check as
+a whole-formal actual. The caller supplies its authenticated original slot. -/
+def readInheritedAt {sources caller scope} (catalogue : GenericCatalogue.Checked sources)
+    (app : GenericOperation.ApplicationSource sources) (formal : StaticHeaders.Formal)
+    (argument : List LocatedToken) (duty : GenericOperation.Duty sources)
+    (marker : SourceOperation.Marker sources caller scope) :
+    WorkM (Inherited catalogue app formal argument duty marker.tokens) := do
   match only : duty.bindings with
   | [binding] =>
     match retained : binding.application with
@@ -124,24 +113,31 @@ def readInherited : WorkM (Inherited catalogue app hop.supply.source.actual.form
       exactWork (Exact.charge (32*(applicationCost application+applicationCost app+
         originalFields binding.actual.state.prepared.original.envelope+originalFields binding.original.envelope+
         SourceTrace.Meter.tokenFields binding.actual.tokens+SourceTrace.Meter.tokenFields marker.tokens+
-        SourceTrace.Meter.tokenFields hop.supply.source.actual.argument.tokens+
+        SourceTrace.Meter.tokenFields argument+
         SourceTrace.Meter.nameFields binding.actual.scope+1)))
       if call : callKey application = callKey app then
         let supplied ← NaturalAffine.witness (SourceDutyProviderBare.readApplications catalogue [application])
         if target : originalKey binding.original.envelope = originalKey app.target.envelope ∧
             originalKey binding.actual.state.prepared.original.envelope = originalKey app.state.prepared.original.envelope ∧
-            binding.formal = hop.supply.source.actual.formal ∧
+            binding.formal = formal ∧
             app.target.header.formals[binding.formal.ordinal]? = some binding.formal then
-          if site : (binding.actual.tokens = hop.supply.source.actual.argument.tokens ∧ binding.actual.tokens = marker.tokens) ∧
+          if site : (binding.actual.tokens = argument ∧ binding.actual.tokens = marker.tokens) ∧
               binding.actual.scope = app.scope ∧ binding.actual.state.environment.guards.isEmpty = true then
-            let ⟨original,caller,formal,onlyFormal⟩ := target
+            let ⟨original,caller,sameFormal,onlyFormal⟩ := target
             return ⟨binding,only,application,retained,call,supplied.val,by with_reducible exact supplied.property,
-              original,caller,formal,onlyFormal,site.1,site.2.1,site.2.2⟩
+              original,caller,sameFormal,onlyFormal,site.1,site.2.1,site.2.2⟩
           else throw Finite.Error.request
         else throw Finite.Error.request
       else throw Finite.Error.request
   | _ => throw Finite.Error.request
-end
+
+def readInherited {artifact catalogue context description graph implementations references prepared root requested checked
+    native index cursor terminal caller original event app transfer paired}
+    (hop : @RuntimeForwardedSupply.Selected artifact catalogue context description graph implementations references
+      prepared root requested checked native index cursor terminal caller original event app transfer paired)
+    (duty : GenericOperation.Duty artifact.sources)
+    (marker : SourceOperation.Marker artifact.sources caller event.scope) :=
+  readInheritedAt catalogue app hop.supply.source.actual.formal hop.supply.source.actual.argument.tokens duty marker
 
 section
 variable {artifact catalogue context description graph implementations references prepared root requested checked

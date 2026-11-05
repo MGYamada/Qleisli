@@ -2224,6 +2224,73 @@ def nativeSourceMarkerControls : IO Unit := do
   | .error error => throw (IO.userError ("four-level signed common body: " ++ reprStr error))
   IO.println "passed ordered call ports and primitive origins, written Meaning coverage, missing equal-valued occurrence, repeated-callee pairing, and observing phase/order controls"
 
+private def generalHistory {sources owner name signature dependencies program body prepared runtime inputs initial ssa bindings assignments}
+    (rows : @RuntimeOrdinaryHistories.Rows sources owner name signature dependencies program body prepared runtime inputs
+      initial ssa bindings assignments) : Option Raw.StreamedInstrument.History :=
+  match rows with
+  | .cons row .nil => match row.histories with
+    | [history] => if history.hidden.isEmpty && history.values.isEmpty then some history else none
+    | _ => none
+  | _ => none
+
+private def generalIdentity {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime) : WorkM Unit := do
+  guard (body.checked.native.whole.prepared.inputBits == 2 &&
+    body.checked.native.whole.state.quantum.frame.length == 2 &&
+    body.root.program.classicalInputs.isEmpty && body.root.program.classicalOutputs.isEmpty) .request
+  let some history := generalHistory body.checked.ordinary.rows | throw .request
+  for row in List.range 4 do
+    for col in List.range 4 do
+      let actual ← history.operator row col
+      let expected : Semantics.Exact.Scalar := if row == col then .one else .zero
+      guard (actual == expected) .equation
+
+private def generalField (payload : Json) (name : String) : IO ByteArray := do
+  let .ok row := payload.getObjVal? name | throw (IO.userError "missing original general Meaning payload")
+  let .ok text := row.getObjValAs? String "text" | throw (IO.userError "missing original general Meaning bytes")
+  return text.toUTF8
+
+private def generalMeaningCase (name : String) (payload : Json) : IO Unit := do
+  let ir ← generalField payload "artifact"
+  let req ← generalField payload "request"
+  -- Maintainer-authorized development exception for this one general example,
+  -- tracked by #472. Production WorkProfile and the whole-body entry guard
+  -- remain unchanged. These separately budgeted actions issue no handle and
+  -- are never presented as one successful bounded production computation.
+  let developmentAllowance : Nat := 18446744073709551615
+  let (.ok (artifact,order),afterIR) := (Protocol.Qirf.readAll ir).run developmentAllowance
+    | throw (IO.userError "general Meaning IR decode failed")
+  let (.ok request,afterRequest) := (Protocol.QmatchV5.readRequest req).run afterIR
+    | throw (IO.userError "general Meaning request decode failed")
+  let (prepared,afterPreparation) := (RuntimeBodyOperations.prepare artifact request.source.moduleName
+    request.source.functionName request.source.arguments request.context).run afterRequest
+  match prepared with
+  | .error error =>
+    unless (name == "swapped-original-slots" || name == "changed-sibling-provider") && error == .request do
+      throw (IO.userError s!"general Meaning unexpected preparation refusal {name}: {repr error}")
+  | .ok prepared =>
+    let (result,afterBody) := (RuntimeBodyOperations.read prepared order request.combinedRuntime).run WorkProfile.qmatch.limit
+    match result with
+    | .error error =>
+      unless (name == "wrong-inner-meaning" || name == "wrong-outer-meaning") && error == .equation do
+        throw (IO.userError s!"general Meaning unexpected body refusal {name}: {repr error}")
+    | .ok body =>
+      unless name == "positive" && body.coverage.consumed.map (·.1.val) == [15,27] && body.coverage.residual.isEmpty do
+        throw (IO.userError s!"general Meaning wrong original credits {name}")
+      let (.ok (),afterOracle) := (generalIdentity body).run developmentAllowance
+        | throw (IO.userError "general Meaning independent exact I4 failed")
+      IO.println s!"general Meaning original credits [15,27], no residual, exact I4; development-only aggregate work={developmentAllowance-afterPreparation+WorkProfile.qmatch.limit-afterBody+developmentAllowance-afterOracle}; production profile={WorkProfile.qmatch.limit}"
+
+def generalMeaningControls : IO Unit := do
+  let .ok record := Json.parse (← IO.FS.readFile
+      "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/general-meaning-first.json")
+    | throw (IO.userError "general Meaning fixture parse failed")
+  let .ok controls := record.getObjVal? "controls" | throw (IO.userError "general Meaning controls missing")
+  for name in ["positive","wrong-inner-meaning","wrong-outer-meaning","swapped-original-slots","changed-sibling-provider"] do
+    let .ok payload := controls.getObjVal? name | throw (IO.userError "general Meaning case missing")
+    generalMeaningCase name payload
+  IO.println "passed general constructed Meaning credits, both exact equation refusals and both original-source substitutions"
+
 end QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 
 def main (args : List String) : IO Unit := do
@@ -2235,6 +2302,7 @@ def main (args : List String) : IO Unit := do
   execution (parent / "body-execution-cases.json") true 5 9
   frames (parent / "frame-execution-cases.json")
   QleisliKernel.Tests.RuntimeNamedSelectionBoundary.nativeSourceMarkerControls
+  QleisliKernel.Tests.RuntimeNamedSelectionBoundary.generalMeaningControls
 
 namespace QleisliKernel.Tests.RuntimeNamedSelectionBoundary
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes QleisliKernel.Qirf

@@ -439,3 +439,27 @@ the diagnostic retains the original keep, sign and choose occurrences separately
 Full source maps remain external, and dirty implementation windows are not
 clean-commit build attestations. General nested duties, public v5, full12/64,
 source-action composition and Issue completion remain pending.
+
+The [general constructed Meaning study](general-meaning-first.json) retains
+the unchanged 625-byte source, its actual Rust IR/request, the first normal-work
+refusal and separate development-only component checks. The original inner
+and outer obligations remain at IDs 15 and 27: both first remain residual,
+then both discharge through the original interior Op path and complete ordered
+provider forest. The actual body also passes an independent full-phase I4
+check. Consistent wrong inner/outer meanings fail exact equations; changed
+actual order or sibling providers fail original-source preparation. The first
+counterexample preparation refusals and unreachable-root repair stay distinct
+from the final equation controls. The maintained native driver replays all five
+final cases; the Rust producer checks its original emitted bytes.
+The unchanged [Rust artifact](../../qmatch_v030/general-meaning-artifact.json)
+and [request](../../qmatch_v030/general-meaning-request.json) are the active byte
+expectations, separate from the history packet's timing metadata. The first
+Rust fixture-reader failures remain recorded; no JSON parser or dependency is
+changed to read that historical metadata.
+
+Only this general-composition development experiment uses the explicit work
+exception recorded in #472. Source preparation and the unchanged normal-budget
+whole-body action run separately; their aggregate is reported honestly. No
+single bounded acceptance, public source handle, general preservation theorem
+or completed Issue is claimed. The production 20M profile remains unchanged.
+Whole dirty source windows remain external, with their original hashes.

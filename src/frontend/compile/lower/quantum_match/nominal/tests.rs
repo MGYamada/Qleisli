@@ -346,3 +346,131 @@ fn aliased_ordinary_actuals_share_one_physical_input_without_losing_copies() {
     assert!(lower.compiler.function_evidence.is_empty());
     assert!(lower.compiler.instrument_evidence.is_empty());
 }
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn original_general_nested_meaning_proposal() {
+    use crate::frontend::compile::{lower::lower_function, snapshot_tests::compiler};
+    let source = r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+meaning Inner:Bit=reference(sign);
+meaning Outer:Bit=reference(keep);
+unitary fn choose[const W:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(W),Controllable(W) {qmatch(s,q){0=>keep,1=>checked_op(W,Outer)}}
+unitary fn relay[const U:Op<Bit>,const V:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+    requires Applicable(U),Controllable(U),Applicable(V),Controllable(V) {choose[then_op(U,V)](s,q)}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,Inner),sign](s,q)}
+"#;
+    let project = project(source);
+    let mut compiler = compiler(&project);
+    for name in ["main::keep", "main::sign"] {
+        let key = compiler.source.resolution.qualified(name).unwrap();
+        let program = lower_function(&mut compiler, &key).unwrap();
+        compiler.checked.insert(key, program);
+    }
+    for name in ["main::Inner", "main::Outer"] {
+        let key = compiler.source.resolution.qualified(name).unwrap();
+        compiler.compile_meaning(&key).unwrap();
+    }
+    let route = compiler.source.resolution.qualified("main::route").unwrap();
+    // Retain the normal Raw producer; the selected Op-closure gate is unchanged.
+    compiler.selected_entry = Some(route);
+    let program = lower_function(&mut compiler, &route).unwrap();
+    let caller = program.source_context().expect("original root body");
+    let [(_, relay)] = caller.calls.as_slice() else {
+        panic!("one original relay")
+    };
+    assert_eq!(
+        relay
+            .supplies
+            .iter()
+            .map(|(name, _)| name.as_str())
+            .collect::<Vec<_>>(),
+        ["U", "V"]
+    );
+    let [(_, choose)] = relay.calls.as_slice() else {
+        panic!("one original choose")
+    };
+    assert_eq!(
+        choose
+            .supplies
+            .iter()
+            .map(|(name, _)| name.as_str())
+            .collect::<Vec<_>>(),
+        ["W"]
+    );
+    assert_eq!(choose.selections.len(), 1);
+    // This is untrusted test metadata for the fixed two-Bit library interface.
+    // The same independently checked body request must validate it before any
+    // source claim. No typed accepted handle or public entry is manufactured.
+    use crate::interchange::{carrier, ordinary_root, runtime_root};
+    let bit = vec![
+        runtime_root::Atom::Quantum,
+        runtime_root::Atom::Finite(carrier::Atom::Bit),
+    ];
+    let owner = |port: &crate::ir::QuantumPort| {
+        runtime_root::Storage::Quantum(carrier::Owner {
+            port: port.clone(),
+            basis: vec![carrier::Atom::Bit],
+        })
+    };
+    let runtime = runtime_root::Request {
+        selection: ordinary_root::Selection::Exported,
+        module: "main".into(),
+        declaration: "route".into(),
+        static_bases: vec![],
+        static_naturals: vec![],
+        parameters: vec![bit.clone(), bit.clone()],
+        input_storage: program
+            .raw()
+            .quantum_inputs
+            .iter()
+            .map(|p| vec![owner(p)])
+            .collect(),
+        input_rows: vec![vec![]],
+        result: [
+            vec![runtime_root::Atom::Finite(carrier::Atom::Pair)],
+            bit.clone(),
+            bit,
+        ]
+        .concat(),
+        storage: std::iter::once(runtime_root::Storage::Tuple(2))
+            .chain(program.output_ports().iter().map(owner))
+            .collect(),
+        public_effect: Effect::Unitary,
+    };
+    let (artifact, request) = crate::interchange::qmatch::v5::proposal(
+        program.raw(),
+        Arc::new(runtime),
+        caller,
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    let bytes = request.encode().unwrap();
+    let view = compiler
+        .kernel
+        .qmatch_context_view(&artifact, &bytes)
+        .unwrap();
+    assert!(
+        view.starts_with(b"QDV1"),
+        "inspection only; not native body acceptance"
+    );
+    assert_eq!(
+        artifact,
+        include_bytes!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/qmatch_v030/general-meaning-artifact.json"
+        ))
+    );
+    assert_eq!(
+        bytes,
+        include_bytes!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/qmatch_v030/general-meaning-request.json"
+        ))
+    );
+}
