@@ -348,8 +348,23 @@ operation argument in scalar-free Op calls, including unused siblings, against
 the complete ordered header keys. A forwarded formal retains its original
 mixed-header ordinal. The supplying assertion and enclosing arm retain separate
 original queue positions, source tokens, provider occurrences and exact Meaning
-equations under the same final native root. These component checks do not enable
-public v5, close general nested duties or establish source-action composition.
+equations under the same final native root. An authenticated interior formal
+path may locate a supplying assertion inside a constructed argument. The
+continuation requires exactly one original requested node with fully bound
+children, and checks every other local provider and ordered descendant. Unknown
+providers, further missing requests and ambiguous supplying occurrences remain
+residual. The supplying root's complete original call and mixed-header keys
+are checked again; an enclosing equation cannot replace the inner equation.
+These component checks do not enable public v5, close all general nested duties
+or establish source-action composition.
+
+The retained two-qubit general-composition development regression has an
+explicit preparation-work exception tracked by
+[#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting
+source preparation and the unchanged normal-budget whole-body action separately,
+reports aggregate work, and independently checks all sixteen exact I4 entries.
+It issues no handle and is not one bounded production acceptance. The public
+20,000,000 ceiling above and its entry guard remain unchanged.
 
 The current ordered Raw frame additionally requires a complete structural
 source return. Checked renaming, ordinary tuple moves and the final expression

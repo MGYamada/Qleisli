@@ -172,6 +172,66 @@ class OriginalCouplingHistory(unittest.TestCase):
         self.assertEqual(hashlib.sha256(data).hexdigest(), payload['sha256'])
         return payload['text']
 
+    def test_general_meaning_originals_and_scoped_work_exception(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/general-meaning-first.json'
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.general-composition-meaning-history', 1))
+        source = self.checked_text(record['original']['main.qli'])
+        artifact = json.loads(self.checked_text(record['original']['artifact']))
+        request = json.loads(self.checked_text(record['original']['request']))
+        for kind in ('artifact', 'request'):
+            self.assertEqual((ROOT / f'tests/fixtures/qmatch_v030/general-meaning-{kind}.json').read_bytes(),
+                             self.checked_text(record['original'][kind]).encode())
+        self.assertEqual(artifact['sources'], [{'path': 'main', 'text': source}])
+        self.assertEqual(len(artifact['programs']), 16)
+        self.assertEqual(request['source']['function'], 'route')
+        self.assertIn('choose[then_op(U,V)](s,q)', source)
+        self.assertIn('relay[checked_op(sign,Inner),sign](s,q)', source)
+        outputs = {}
+        for stage in ('first_normal_work', 'staged_before', 'staged_after', 'maintained_regressions'):
+            row = record[stage]
+            self.assertEqual(row['report']['exit_code'], 0)
+            self.assertTrue(row['report']['source_window_unchanged'])
+            outputs[stage] = self.checked_text(row['stdout']) + self.checked_text(row['stderr'])
+        self.assertIn('Exact.Error.workLimit', outputs['first_normal_work'])
+        self.assertIn('consumed=[]; residual=[15, 27]', outputs['staged_before'])
+        self.assertIn('oracle=Except.ok (); consumed=[15, 27]; residual=[]', outputs['staged_after'])
+        self.assertEqual(set(record['controls']), {
+            'positive', 'wrong-inner-meaning', 'wrong-outer-meaning',
+            'swapped-original-slots', 'changed-sibling-provider'})
+        for name, row in record['controls'].items():
+            text = self.checked_text(row['source'])
+            supplied = json.loads(self.checked_text(row['artifact']))
+            self.assertEqual(supplied['sources'], [{'path': 'main', 'text': text}])
+            self.assertEqual(len(supplied['programs']), 16)
+            json.loads(self.checked_text(row['request']))
+            output = self.checked_text(row['stdout']) + self.checked_text(row['stderr'])
+            if name == 'positive':
+                self.assertIn('consumed=[15, 27]; residual=[]', output)
+            elif name in ('wrong-inner-meaning', 'wrong-outer-meaning'):
+                self.assertIn('EXCEPTION actual body: QleisliKernel.Finite.Error.equation', output)
+            else:
+                self.assertIn('EXCEPTION actual preparation: QleisliKernel.Finite.Error.request', output)
+        self.assertTrue(record['controls_report']['source_window_unchanged'])
+        self.assertTrue(all(row['passed'] for row in record['controls_report']['results']))
+        self.assertEqual(len(record['first_control_attempts']), 3)
+        for row in record['first_control_attempts'].values():
+            self.checked_text(row['observer'])
+            self.assertTrue(row['report']['source_window_unchanged'])
+            self.assertFalse(all(case['passed'] for case in row['report']['results']))
+        self.assertIn('Dirty implementation windows', record['scope'])
+        self.assertIn('production 20000000 general-composition restoration (#472)', record['pending'])
+        for row in record['first_rust_binding_failures'].values():
+            self.assertNotEqual(row['report']['exit_code'], 0)
+            self.checked_text(row['stdout'])
+            self.checked_text(row['stderr'])
+        self.assertEqual(record['final_rust_binding']['report']['exit_code'], 0)
+        self.assertIn('1 passed; 0 failed; 0 ignored;', self.checked_text(record['final_rust_binding']['stdout']))
+        self.assertEqual(record['final_native_regressions']['report']['exit_code'], 0)
+        self.assertIn('passed general constructed Meaning credits',
+                      self.checked_text(record['final_native_regressions']['stdout']))
+
     def test_original_op_slots_keep_distinct_source_duties(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/op-slots-first.json'
         record = history_json(path)

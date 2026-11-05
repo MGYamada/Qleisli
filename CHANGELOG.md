@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Bind an original supplying Meaning inside a constructed Op argument to its
+  authenticated caller path and native child. Account for the complete ordered
+  provider forest before discharging the separate enclosing Meaning. The
+  two-qubit development regression retains both original IDs and checks exact
+  I4 plus wrong-Meaning/source substitutions. Its explicit work exception is
+  tracked by #472; production stays at 20M, and public v5, source preservation
+  and full qmatch integration remain pending.
+
 - Authenticate every original Op argument slot in scalar-free calls, including
   unused siblings, before assigning separate caller/arm Meaning credits.
   Select the forwarded formal by its original mixed-header ordinal. The
