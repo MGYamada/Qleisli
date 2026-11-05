@@ -295,13 +295,13 @@ private theorem source_parent_action
 /-- The original source operator acts through these exact parent events and
 the explicit local reorder. This is a proposition about the actual call, not
 an additional native acceptance judgment. -/
-def MixedAction {dependencies program block start count inputs ordinary effect}
+def MixedActionOn {dependencies program block start count inputs ordinary effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (portBinding : RuntimeOwnerMap.Binding) (form : Form) (output : Nat)
     {primitiveStart primitiveCount primitiveInput primitiveOutput role kind}
     (primitive : RuntimePrimitiveAction.Checked scope.prepared.block primitiveStart primitiveCount primitiveInput primitiveOutput role kind)
-    (binding : RuntimePrimitiveSource.Checked primitive) : Prop :=
-    ∃ parentEvents childEvents,
+    (binding : RuntimePrimitiveSource.Checked primitive) (parentEvents : List Semantics.Raw.Event) : Prop :=
+    ∃ childEvents,
       Facts dependencies [form.operation portBinding.port.token output]
         scope.interval.before.quantum scope.interval.after.quantum scope.localEntry.quantum scope.localAfter.quantum
         (RuntimeNamedFrameAxes.mixedAxes scope) portBinding.port output form parentEvents childEvents ∧
@@ -317,6 +317,14 @@ def MixedAction {dependencies program block start count inputs ordinary effect}
         action primitive.outputCode
           (fun logical ref => action primitive.expected
             (sourceSlice (RuntimeNamedFrameAxes.mixedAxes scope) base joint) logical ref) row reference
+
+def MixedAction {dependencies program block start count inputs ordinary effect}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (portBinding : RuntimeOwnerMap.Binding) (form : Form) (output : Nat)
+    {primitiveStart primitiveCount primitiveInput primitiveOutput role kind}
+    (primitive : RuntimePrimitiveAction.Checked scope.prepared.block primitiveStart primitiveCount primitiveInput primitiveOutput role kind)
+    (binding : RuntimePrimitiveSource.Checked primitive) : Prop :=
+  ∃ parentEvents, MixedActionOn scope portBinding form output primitive binding parentEvents
 
 /-- The original primitive is indexed by this SAME mixed scope's actual
 prepared block. Exact fragment equality binds its complete selected ports,

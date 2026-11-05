@@ -88,7 +88,8 @@ not authorized by this rule.
 The separate `current-proof-records` workflow prepares reviewable proof metadata
 for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-ordinary-adts`, `codex/beta-typed-ordinary-runtime`,
-`codex/beta-qmatch`, `codex/beta-qmatch-arm-body`, `codex/beta-quantum-runtime-types` or
+`codex/beta-qmatch`, `codex/beta-qmatch-arm-body`, `codex/beta-qmatch-three-calls`,
+`codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree. On pushes, the producer
 first records the schema and scoped-guarantee source identity checks. Matching

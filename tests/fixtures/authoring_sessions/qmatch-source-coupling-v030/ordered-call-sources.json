@@ -68,5 +68,27 @@
       }
     }
   ],
-  "interpretation": "The first projection failed to elaborate. Its typed successor observed the original paths. The full port-view probe initially exited without output. Following a full kernel rebuild the same driver reported both primitive source positions, the original selected ports and the zero-width spectator. These are bounded observations. The parent-level composition of all source actions remains a separate proof."
+  "interpretation": "The first projection failed to elaborate. Its typed successor observed the original paths. The full port-view probe initially exited without output. Following a full kernel rebuild the same driver reported both primitive source positions, the original selected ports and the zero-width spectator. These are bounded observations. The parent-level composition of all source actions remains a separate proof.",
+  "root_coefficients": {
+    "study": "Two-qubit signed amplitudes of the same retained root history. The source basis orders the selector first and carries the zero-wire Unit owner.",
+    "keep_sign_source": {
+      "bytes": 450,
+      "sha256": "29c48c19ec224d0eebcd7690050f8e3217a197852df6865dc207b78522655892",
+      "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nunitary fn choose(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    qmatch(s,q){0=>keep,1=>sign}\n}\nunitary fn pre(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\npub unitary fn post(q:Q<Bit>)->Q<Bit>{h(q)}\npub unitary fn route(u:Q<Unit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,(Q<Bit>,Q<Bit>)){\n    let q=pre(q);\n    let (s,q)=choose(s,q);\n    let q=post(q);\n    (u,(s,q))\n}\n"
+    },
+    "observed": {
+      "driver_sha256": "33701434d0692d18322827db3c4954d7da9209b7849458f318d157f93ebaa3e5",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 571,
+        "sha256": "b58f91478ed24eca8849660fa51eb892e0b801a4e399bc36f6970a15b954d767",
+        "text": "root 4x4 original sign;sign: Except.ok ([1, 0, -1, 0, 0, 1, 0, -1, 1, 0, 1, 0, 0, 1, 0, 1], [8, 5, 7], [0, 1, 2]); work=11024653\nroot 4x4 original keep/sign: Except.ok ([1, 0, -1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, -1], [8, 5, 7], [0, 1, 2]); work=3579843\nroot 4x4 sign;sign wrong native order: Except.error (QleisliKernel.Finite.Error.equation); work=10029666\nroot 4x4 keep/sign wrong native order: Except.error (QleisliKernel.Finite.Error.equation); work=3277262\nroot 4x4 keep/sign wrong relative sign: Except.error (QleisliKernel.Finite.Error.equation); work=3378429\n"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      }
+    }
+  }
 }

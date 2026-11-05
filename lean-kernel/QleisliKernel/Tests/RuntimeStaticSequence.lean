@@ -13,6 +13,26 @@ private def source := "#![no_implicit_prelude]\n" ++
   "pub unitary fn route[const n:Nat](u:Q<Unit>,q:Q<Bit>)->(Q<Bit>,Q<Unit>){\n" ++
   "    let q=if static n==0{q}else{let q=phase[1,1](q);h(q)};\n    (q,u)\n}\n"
 
+private abbrev SelectedIndex := Nat × Nat × Nat × Nat × Nat × Nat
+
+/-- Project the source and position at each stored ordinal in the actual
+returned receipt. The outer position names the static expression; its body
+supplies the independent inner source index and native slice. -/
+private def selectedIndex {dependencies program block} :
+    RuntimePureBody.Node dependencies program block → Option SelectedIndex
+  | .primitive _ written => do
+    let location ← written.location
+    let .selected source outerPositions outer body _ positions _ inner := location.origin | none
+    let parent ← source.events[outer.ordinal]?
+    let parentPosition ← outerPositions[outer.ordinal]?
+    let event ← body.result.events[inner.ordinal]?
+    let position ← positions[inner.ordinal]?
+    if parent.offset == parentPosition.offset && position == location.position &&
+        event.offset == written.event.offset && event.offset == position.offset then
+      return (outer.ordinal,parent.offset,inner.ordinal,event.offset,position.start,position.count)
+    else none
+  | _ => none
+
 private def actual (n exponent : Nat) (wrongOrder wrongOwner single : Bool) :
     WorkM (List Nat × List Nat × List Nat × Nat) := do
   let text := if single then source.replace "let q=phase[1,1](q);h(q)" "phase[1,1](q)" else source
@@ -37,6 +57,10 @@ private def actual (n exponent : Nat) (wrongOrder wrongOwner single : Bool) :
   let inputs ← RuntimeSourceBoundary.readInputs body prepared
     [[.quantum ⟨unit,[.unit]⟩],[.quantum ⟨bit,[.bit]⟩]]
   let checked ← RuntimePureBody.checkPrepared artifact fresh.root body fresh.root.program context inputs.owners.bindings prepared
+  let expectedIndices : List SelectedIndex :=
+    if n == 0 then [] else if single then [(0,107,0,129,0,2)]
+    else [(0,107,0,135,0,1),(0,107,1,149,1,1)]
+  guard (checked.result.actions.mapM selectedIndex == some expectedIndices) .invalid
   return (checked.result.history.issued.map (·.ordinal),checked.result.bindings.map (·.owner.ordinal),
     checked.result.bindings.map (·.port.token),checked.result.actions.length)
 

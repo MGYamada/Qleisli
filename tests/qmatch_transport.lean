@@ -9,6 +9,7 @@ import QleisliKernel.Qirf.RuntimePreparedArm
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeNamedFrameAxes
 import QleisliKernel.Qirf.RuntimeNamedPrimitiveOccurrence
+import QleisliKernel.Qirf.RuntimeNamedThreeOccurrence
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import Protocol.NativeContext.Bindings
 import QleisliKernel.Qirf.ContextSector
@@ -920,7 +921,14 @@ private def sourceAndLiteral {dependencies program block} (step : RuntimePureBod
     Option (PrimitiveView × String) := do
   let .named written bound ← RuntimeNamedPrimitiveOccurrence.inspect? step
   let source ← primitiveView written
-  return (source,literalName bound.form)
+  let location ← written.location
+  let .direct subject positions entry := location.origin | none
+  let event ← subject.events[entry.ordinal]?
+  let position ← positions[entry.ordinal]?
+  if entry.ordinal == 0 && position == location.position && event.offset == written.event.offset &&
+      position.offset == event.offset && position.start == 0 && position.count == 1 then
+    return (source,literalName bound.form)
+  else none
 
 private abbrev CallView := String × Nat × List Nat × List Nat × List Nat × List Nat × List Nat × Option (PrimitiveView × String)
 
@@ -1258,22 +1266,221 @@ private def checkWrongInputOrder {dependencies program block start count inputs 
   guard (wrong != inputs && selected == (boundary.input.ordered.map (·.port)).reverse) .invalid
   expectSupplyRefusal (RuntimeNamedBoundary.read interval wrong event before child retired value)
 
+open QleisliKernel.Qirf.RuntimeNamedThreeOccurrence (Middle RetainedData)
+
+private abbrev OriginalOperands := Nat × Nat × List Nat × List (List Nat)
+
+private def originalOperands {dependencies program block} : RuntimePureBody.Step dependencies program block → Option OriginalOperands
+  | .named (start := first) (count := size) event _ _ _ _ _ _ =>
+    some (first,size,event.inputOwners.map (·.ordinal),
+      event.arguments.map (fun argument => (QleisliKernel.SourceTypes.SourceRuntimeValues.valueOwners argument).map (·.ordinal)))
+  | _ => none
+
+private abbrev SpectatorData := List (Nat × List Nat × Nat)
+private def spectatorsData {dependencies program block} : RuntimePureBody.Step dependencies program block → Option SpectatorData
+  | .named _ scope _ _ _ _ _ =>
+    some ((PureInterval.spectators scope.interval.before (scope.selected.map (·.token))).map
+      (fun port => (port.token,port.wires,port.bits)))
+  | _ => none
+
+private abbrev MiddleData := String × Nat × List RuntimeSelectionSteps.Edge × Nat × Nat
+
+private def middleCoversCall {dependencies rootItem rootCount program block step}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (middle : @Middle dependencies program block step) (held : RetainedData witness middle) : Bool :=
+  match middle,held with
+  | .named (start := start) (count := count) (scope := scope) _ _,held =>
+    match held.literal with
+    | .selection (start := first) (count := size) _ _ =>
+      first == 0 && size == ((block.operations.drop start).take count).length &&
+        scope.interval.before.quantum.frame.length == 2
+
+/-- `held.literal` and `held.obtained` are literally the stored leaf returned
+by actual_body_middle; their indices are this exact original middle Step. -/
+private def retainedMiddleData {dependencies rootItem rootCount program block step}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (middle : @Middle dependencies program block step) (held : RetainedData witness middle) : MiddleData :=
+  match middle,held with
+  | .named (event := event) node _,held =>
+    have _sameRead : RuntimeInterval.Computed (RuntimeSelectionWitness.read node) held.literal := held.obtained
+    have _sameOccurrence : RuntimeSelectionSteps.At witness 0 held.path
+      ⟨_,_,0,node,held.literal,held.obtained⟩ := held.original
+    let size := literalSize held.literal
+    (event.target.resolution.declaration.name,event.call.calleeOffset,held.path,size.1,size.2)
+
+
 private def checkOrderedOriginalCalls : WorkM Unit := do
   let (decoded,order) ← Protocol.Qirf.readAll artifactBytes
   let original ← Protocol.QmatchV5.readRequest requestBytes
   let (artifact,request) ← lift ((orderedCallProposal decoded original .none).mapError fun _ => .invalid)
   let prepared ← RuntimeBodyOperations.prepare artifact request.source.moduleName request.source.functionName request.source.arguments request.context
   let body ← RuntimeBodyOperations.read prepared order request.combinedRuntime
-  checkStoredMiddle body 553
-  let calls := body.checked.result.steps.filterMap namedView
+  let some view := QleisliKernel.Qirf.RuntimeNamedThreeOccurrence.inspect? body.checked.result.steps
+    | throw .invalid
+  have _first : body.checked.result.steps[0]? = some view.pre := view.preAt
+  have _middle : body.checked.result.steps[1]? = some view.center := view.centerAt
+  have _last : body.checked.result.steps[2]? = some view.post := view.postAt
+  let held := RuntimeNamedThreeOccurrence.actual_body_middle body view
+  guard (middleCoversCall view.centerSelection held) .invalid
+  let middle := retainedMiddleData view.centerSelection held
+  let some calls := [view.pre,view.center,view.post].mapM namedView | throw .invalid
   guard (calls == [
     ("pre",531,[1],[1],[1],[8,0],[2],some (("phase",384,[1,1,4],1,2),"apply_unitary")),
     ("choose",553,[0,2],[0,2],[0,1],[8],[5,6],none),
     ("post",596,[6],[6],[1],[8,5],[7],some (("h",437,[],6,7),"gate h"))]) .invalid
+  guard ([view.pre,view.center,view.post].map originalOperands == [
+    some (0,1,[2],[[2]]),some (1,3,[1,2],[[1],[2]]),some (4,1,[2],[[2]])]) .invalid
+  guard ([view.pre,view.center,view.post].map spectatorsData == [
+    some [(8,[],0),(0,[0],1)],some [(8,[],0)],some [(8,[],0),(5,[0],1)]]) .invalid
+  guard (middle == ("choose",553,
+    [.nextOrdinal 1,.atOrdinal 1,.named 1 "main" "route" 553 "main" "choose",.atOrdinal 0,.pureStep 0],1,1)) .invalid
+  guard (body.selections.count == 1) .invalid
+  -- This is the complete list, not a filtered list of named calls. These
+  -- malformed shapes are inspected without changing the original body.
+  guard ((QleisliKernel.Qirf.RuntimeNamedThreeOccurrence.inspect? (body.checked.result.steps.take 2)).isNone &&
+    (QleisliKernel.Qirf.RuntimeNamedThreeOccurrence.inspect? (body.checked.result.steps ++ [view.post])).isNone &&
+    (QleisliKernel.Qirf.RuntimeNamedThreeOccurrence.inspect? [view.pre,view.post,view.center]).isNone) .invalid
   let [_,step,_] := body.checked.result.steps | throw .invalid
   match step with
   | .named _ _ _ _ boundary _ _ => checkWrongInputOrder boundary
   | _ => throw .invalid
+
+private def keepSignSource : String := r#"#![no_implicit_prelude]
+unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+unitary fn choose(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qmatch(s,q){0=>keep,1=>sign}
+}
+unitary fn pre(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+pub unitary fn post(q:Q<Bit>)->Q<Bit>{h(q)}
+pub unitary fn route(u:Q<Unit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,(Q<Bit>,Q<Bit>)){
+    let q=pre(q);
+    let (s,q)=choose(s,q);
+    let q=post(q);
+    (u,(s,q))
+}
+"#
+
+private inductive SmallFault where
+  | none | wrongOrder | relativeSign
+  deriving BEq, Repr
+
+private def bitPort (token wire : Nat) : Semantics.Raw.Port := ⟨token,[wire],1⟩
+private def unitPort : Semantics.Raw.Port := ⟨8,[],0⟩
+private def zSteps : List Semantics.Finite.Step := [⟨[],.monomial [0] [0,1] [0,4]⟩]
+private def singleProgram (signed : Bool) : Semantics.Observation.Program :=
+  ⟨[bitPort 0 0],[],if signed then [.pure (.applyUnitary 0 1 zSteps)] else [],
+    [if signed then 1 else 0],[],.unitary⟩
+private def controlledProgram (signed : Bool) : Semantics.Observation.Program :=
+  ⟨[bitPort 0 0,bitPort 1 1],[],[.pure (.quantumIf 0 1 2 3 [] (if signed then [.gate .z 0] else []))],
+    [2,3],[],.unitary⟩
+
+/-- Untrusted proposal for keepSignSource. The original named
+pre/choose/post body, source effect and Unit spectator are freshly re-read. -/
+private def keepSignPayload (fault : SmallFault) : Artifact × Array Nat × Request := Id.run do
+  let first : Semantics.Observation.Op := if fault == .wrongOrder then .pure (.gate .h 1 2)
+    else .pure (.applyUnitary 1 2 zSteps)
+  let last : Semantics.Observation.Op := if fault == .wrongOrder then .pure (.applyUnitary 6 7 zSteps)
+    else .pure (.gate .h 6 7)
+  let one : List Semantics.Raw.UnitaryStep := if fault == .relativeSign then [.phase .minusOne,.gate .z 0]
+    else [.gate .z 0]
+  let rootProgram : Semantics.Observation.Program :=
+    ⟨[unitPort,bitPort 0 0,bitPort 1 1],[],[first,.pure (.quantumIf 0 2 5 6 [] one),last],[8,5,7],[],.unitary⟩
+  let artifact : Artifact := ⟨#[rootProgram,singleProgram false,controlledProgram false,
+    singleProgram true,controlledProgram true],#[],#[("main",keepSignSource)],0,none⟩
+  let empty : Context := .withReferences [] [] [] [] [] []
+  let signBody : Context := .withReferences [⟨95,0,1⟩] [] [] [] [] []
+  let preBody : Context := .withReferences [⟨233,0,1⟩] [] [] [] [] []
+  let postBody : Context := .withReferences [⟨286,0,1⟩] [] [] [] [] []
+  let portsIn : List Semantics.CarrierInterface.Owner := [⟨bitPort 0 0,[.bit]⟩,⟨bitPort 2 1,[.bit]⟩]
+  let portsOut : List Semantics.CarrierInterface.Owner := [⟨bitPort 5 0,[.bit]⟩,⟨bitPort 6 1,[.bit]⟩]
+  let interface : Semantics.CarrierInterface.Interface := ⟨portsIn,portsOut,.unitary⟩
+  let inner : Position := ⟨169,0,1⟩
+  let site : RuntimeContextRequest.Site := ⟨interface,interface,inner,[⟨1,2⟩,⟨3,4⟩]⟩
+  let chooseBody : Context := .withReferences [inner] [site] [] [] [(.pure 1,empty),(.pure 3,signBody)] [[],[]]
+  let positions : List Position := [⟨380,0,1⟩,⟨402,1,1⟩,⟨425,2,1⟩]
+  let context : Context := .withReferences positions []
+    [(⟨380,0,1⟩,preBody),(⟨402,1,1⟩,chooseBody),(⟨425,2,1⟩,postBody)] [] [] []
+  let unitTree := Semantics.RuntimeType.owner [.unit]
+  let bitTree := Semantics.RuntimeType.owner [.bit]
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",[unitTree,bitTree,bitTree],
+      [[.quantum ⟨unitPort,[.unit]⟩],[.quantum ⟨bitPort 0 0,[.bit]⟩],[.quantum ⟨bitPort 1 1,[.bit]⟩]],
+      [[]],Semantics.RuntimeType.tuple 2 [unitTree,Semantics.RuntimeType.tuple 2 [bitTree,bitTree]],
+      [.tuple 2,.quantum ⟨unitPort,[.unit]⟩,.tuple 2,.quantum ⟨bitPort 5 0,[.bit]⟩,.quantum ⟨bitPort 7 1,[.bit]⟩],
+      .unitary,{}⟩
+  return (artifact,#[0,1,2,3,4],⟨⟨"main","route",{}⟩,runtime,context⟩)
+
+/-- Read the coefficient function already stored in the unique pure history. -/
+private def storedHistory {sources owner name signature dependencies program body prepared runtime inputs initial ssa bindings assignments}
+    (rows : @RuntimeOrdinaryHistories.Rows sources owner name signature dependencies program body prepared runtime inputs
+      initial ssa bindings assignments) : Option Raw.StreamedInstrument.History :=
+  match rows with
+  | .cons row .nil =>
+    match row.histories with
+    | [history] => if history.hidden.isEmpty && history.values.isEmpty then some history else none
+    | _ => none
+  | _ => none
+
+/-- ±sqrt(2)/2 in the exact independent R8 coefficient domain. -/
+private def halfRootSigned (negative : Bool) : Semantics.Exact.Scalar :=
+  ⟨.integer 0,⟨if negative then -1 else 1,1⟩,.integer 0,.integer 0⟩
+
+/-- Source basis labels are low-first (s,q); Unit has one label and zero axes.
+pre is Z on q. choose is I (sign;sign) or CZ (keep/sign). post is H on q.
+Thus U[r,c] = delta(s_r,s_c) /sqrt(2) *
+(-1)^(q_c*(1+q_r+s_c)) for CZ, omitting s_c for the Identity choice.
+Wrong-order and relative-selector-phase oracles deliberately change that
+independently stated expression. No native action/summary supplies a sign. -/
+private def sourceOracleEntry (signedCZ wrongOrder relativeFlip : Bool) (row col : Nat) : Semantics.Exact.Scalar :=
+  if row % 2 != col % 2 then .zero else
+  let selector := if signedCZ then col % 2 else 0
+  let inputTarget := col / 2
+  let outputTarget := row / 2
+  let exponent := if wrongOrder then outputTarget*(1+selector+inputTarget)
+    else inputTarget*(1+selector+outputTarget)
+  let exponent := exponent + (if relativeFlip then col % 2 else 0)
+  halfRootSigned (exponent % 2 == 1)
+
+private def sourceOracle (signedCZ wrongOrder relativeFlip : Bool) : List Semantics.Exact.Scalar :=
+  (List.range 4).flatMap fun row => (List.range 4).map fun col => sourceOracleEntry signedCZ wrongOrder relativeFlip row col
+
+private def originalPayload (wrongOrder : Bool) : WorkM (Artifact × Array Nat × Request) := do
+  let (decoded,order) ← Protocol.Qirf.readAll artifactBytes
+  let original ← Protocol.QmatchV5.readRequest requestBytes
+  let (artifact,request) ← lift ((orderedCallProposal decoded original (if wrongOrder then .wrongOrder else .none)).mapError fun _ => .invalid)
+  return (artifact,order,request)
+
+/-- All 16 actual root entries are evaluated from its SAME retained history,
+including the final original output ordering. No new native acceptance path. -/
+private def rootOracle (signedCZ : Bool) (fault : SmallFault) : WorkM Unit := do
+  let (artifact,order,request) ← if signedCZ then pure (keepSignPayload fault) else originalPayload (fault == .wrongOrder)
+  guard request.compatible .request
+  let prepared ← RuntimeBodyOperations.prepare artifact request.source.moduleName request.source.functionName
+    request.source.arguments request.context
+  let body ← RuntimeBodyOperations.read prepared order request.combinedRuntime
+  guard (body.checked.native.whole.prepared.inputBits == 2 && body.checked.native.whole.state.quantum.frame.length == 2 &&
+    body.root.program.classicalInputs.isEmpty && body.root.program.classicalOutputs.isEmpty) .invalid
+  guard (body.root.program.inputs.map (fun port => (port.token,port.wires,port.bits)) ==
+    [(8,[],0),(0,[0],1),(1,[1],1)] && body.root.program.outputs == [8,5,7]) .invalid
+  let calls := body.checked.result.steps.map fun step => match step with
+    | .named event .. => some (event.target.resolution.declaration.name,event.call.calleeOffset,event.inputOwners.map (·.ordinal))
+    | _ => none
+  guard (calls == (if signedCZ then [some ("pre",380,[2]),some ("choose",402,[1,2]),some ("post",425,[2])]
+    else [some ("pre",531,[2]),some ("choose",553,[1,2]),some ("post",596,[2])])) .invalid
+  let some history := storedHistory body.checked.ordinary.rows | throw .invalid
+  let matrixRows ← (List.range 4).mapM fun row => (List.range 4).mapM fun col => history.operator row col
+  let entries := matrixRows.flatten
+  guard (entries == sourceOracle signedCZ false false) .equation
+  guard (entries != sourceOracle signedCZ true false && entries != sourceOracle signedCZ false true) .invalid
+  guard (body.checked.result.history.issued.map (·.ordinal) == [0,1,2]) .invalid
+
+private def checkRootCoefficients : IO Unit := do
+  for (signedCZ,fault) in [(false,SmallFault.none),(true,.none),(false,.wrongOrder),
+      (true,.wrongOrder),(true,.relativeSign)] do
+    match fault, (rootOracle signedCZ fault).run WorkProfile.qmatch.limit |>.1 with
+    | .none,.ok () | .wrongOrder,.error .equation | .relativeSign,.error .equation => pure ()
+    | _,answer => throw (IO.userError s!"ordered root coefficients (CZ={signedCZ}, {repr fault}): {repr answer}")
 
 private def checkSuppliedSlot {sources catalogue record}
     (first last : SourceRuntimeContext.NamedEvent sources "main") (choice : RuntimeFormalActual.Choice) :
@@ -1763,6 +1970,63 @@ private def writtenSource : AppliedFault → String
   | .wrongInnerMeaning => nestedSource.replace "meaning Sign:Bit=reference(sign);" "meaning Sign:Bit=reference(keep);"
   | .wrongOuterMeaning => nestedSource.replace "meaning Outer:Bit=reference(sign);" "meaning Outer:Bit=reference(keep);"
 
+private def refused {α : Type} (expected : Finite.Error) (action : WorkM α) : WorkM Unit := fun work =>
+  match action.run work with
+  | (.error actual,left) => if actual == expected then (.ok (),left) else (.error actual,left)
+  | (.ok _,left) => (.error .invalid,left)
+
+private def crossedMeaning {artifact catalogue context description graph origin implementations references root requested owner name}
+    (pending : @SourcePendingMeaning.Prepared artifact.sources catalogue) (inner : Fin pending.entries.length)
+    (site : @RuntimeGraphOperation.Site artifact.sources owner name context description graph origin)
+    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
+    (checked : RuntimeOperationTree.Checked prepared root requested)
+    (source : RuntimeSourceOperationMarkers.OriginChecked origin prepared checked) (index : Nat) :
+    WorkM Unit := by
+  cases site with
+  | unlocated => exact throw Finite.Error.invalid
+  | arm => exact do
+    let some entry := source.entries[index]? | throw Finite.Error.invalid
+    let outerMarker := source.markers[entry.index]
+    let .demand instanceAt innerDuty := pending.entries[inner].subject | throw Finite.Error.invalid
+    refused .invalid (RuntimeWrittenDuty.selectEntry pending instanceAt.id outerMarker)
+    refused .request (RuntimeWrittenDuty.readWritten innerDuty.source.original.origin.state.name outerMarker innerDuty.source.original)
+    let operand ← RuntimeNativeSubject.readSubject entry.assertion
+    let forwarded ← RuntimeNativeSubject.readFormal operand.child.cursor
+    let innerCursor := forwarded.child.cursor
+    refused .request (RuntimeSourceOperationMarkers.readBoundAssertion checked outerMarker innerCursor.tree innerCursor.binding)
+    refused .request (RuntimeOriginalMeaning.read entry.assertion innerDuty.source.original)
+
+-- Each position has its own source evidence. Withholding either candidate
+-- or duplicating it leaves precisely that original queue position unproved.
+private def nestedOriginTag {artifact owner name arguments request prepared order runtime}
+    {body : @RuntimeBodyOperations.Traversed artifact owner name arguments request prepared order runtime}
+    {link q} : RuntimeArmDutyCoverage.Origin body link q → Nat
+  | .direct _ => 0
+  | .enclosing _ => 1
+  | .supplying _ _ => 2
+
+private def checkNestedOriginals {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime) : WorkM Unit := do
+  let report := body.coverage
+  let required := (List.finRange prepared.source.pending.entries.length).filter (fun i =>
+    prepared.source.pending.entries[i].unconsumed)
+  let [inner,outer] := required | throw Finite.Error.invalid
+  guard (inner.val == 6 && outer.val == 12) .invalid
+  let observed := report.consumed.map fun item => item.1.val
+  guard (observed == [6,12] && report.residual.isEmpty) .invalid
+  let [first,second] := report.candidates | throw .invalid
+  guard (nestedOriginTag first.origin == 1 && first.queueIndex == outer &&
+    nestedOriginTag second.origin == 2 && second.queueIndex == inner &&
+    first.link.queueIndex == outer && second.link.queueIndex == outer) .invalid
+  let receipt := body.checked.receipts[first.link.receiptIndex]
+  crossedMeaning prepared.source.pending inner receipt.location.site receipt.prepared receipt.evidence.checked
+    receipt.evidence.source first.link.markerIndex
+  let status := fun (candidates : List (RuntimeArmDutyCoverage.Candidate body.toTraversed)) =>
+    (RuntimeArmDutyCoverage.covered candidates inner,RuntimeArmDutyCoverage.covered candidates outer)
+  guard ([status [],status [first],status [second],status [first,second],
+      status [first,second,second],status [first,first,second]] ==
+    [(false,false),(false,true),(true,false),(true,true),(false,true),(true,false)]) .invalid
+
 private abbrev AppliedCoverage := List Nat × List Nat × List (Nat × Nat)
 
 private def readAppliedFixture (source name : String) (callOffset : Nat) (fault : AppliedFault) :
@@ -1796,6 +2060,7 @@ private def readAppliedFixture (source name : String) (callOffset : Nat) (fault 
   let context : Context := .mk [c] [] [(c,child)] [] []
   let prepared ← RuntimeBodyOperations.prepare artifact "main" name {} context
   let checked ← RuntimeBodyOperations.read prepared #[0,1,2,3,4,5] runtime
+  if fault == .nested then checkNestedOriginals checked
   let offer := match checked.writtenArms with
     | [link] => (summarizeLink checked.checked link).bind (·.2)
     | _ => none
@@ -1824,7 +2089,7 @@ private def appliedControls : IO Unit := do
     let observed := ((readAppliedFixture (writtenSource fault) "route" offset fault).run WorkProfile.qmatch.limit).1.map Prod.fst
     let expected : Except Finite.Error (List Nat × List Nat × List (Nat × Nat)) := match fault with
       | .correct => .ok ([11],[],[(11,345)])
-      | .nested => .ok ([],[6,12],[(12,317)])
+      | .nested => .ok ([6,12],[],[(12,317)])
       | .staleProviderOffset => .error .request
       | .wrongInnerMeaning | .wrongOuterMeaning => .error .equation
     let matched := match observed,expected with
@@ -1872,6 +2137,7 @@ def nativeSourceMarkerControls : IO Unit := do
   match (checkOrderedOriginalCalls.run WorkProfile.qmatch.limit).1 with
   | .ok () => pure ()
   | .error error => throw (IO.userError ("ordered original call frames: " ++ reprStr error))
+  checkRootCoefficients
   checkRepeatedChoose
   for composed in [false,true] do
     unless (observingStudy composed .correct).toOption == some (observingExpected composed) do

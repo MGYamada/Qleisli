@@ -1,4 +1,4 @@
-import QleisliKernel.Qirf.RuntimeBodyOperationTraversal
+import QleisliKernel.Qirf.RuntimeNestedArm
 import QleisliKernel.Qirf.RuntimeLinkedEligibility
 
 /-! Residual original Meaning duties after checking one common body.
@@ -46,10 +46,6 @@ private def references {n : Nat} : List (Fin n) → Nat → Fin n → List Nat :
     (fun key _ next start q =>
       let tail := next (start+1) q
       if key = q then start :: tail else tail)
-
-/-- All written-arm list positions naming this exact pending queue position. -/
-def occurrences (body : Traversed prepared order runtime) (q : Position prepared) : List Nat :=
-  references (body.writtenArms.map (·.queueIndex)) 0 q
 
 private def buckets {n : Nat} : List (Fin n) → Nat → Vector (List Nat) n :=
   foldTotal (fun _ => Nat → Vector (List Nat) n) (fun _ => Vector.replicate n [])
@@ -112,41 +108,116 @@ private def indexedPositive (body : Traversed prepared order runtime) (link : Ar
   subst entry
   rfl
 
-private def single (body : Traversed prepared order runtime) (q : Position prepared)
-    (lookup : Nat → Option (ArmLink body.checked)) : List Nat → Bool
+/-- A supplying argument and its enclosing arm are distinct claims even
+when their exact actions agree. Each points at its own original queue duty. -/
+inductive Origin (body : Traversed prepared order runtime) (link : ArmLink body.checked) :
+    Position prepared → Type where
+  | direct (test : {value : Bool // value = positive body link}) : Origin body link link.queueIndex
+  | enclosing (proof : RuntimeNestedArm.Evidence body.checked link .enclosing) : Origin body link link.queueIndex
+  | supplying (q : Position prepared) (proof : RuntimeNestedArm.Evidence body.checked link (.supplying q)) :
+      Origin body link q
+
+def Origin.accepted {body : Traversed prepared order runtime} {link q} : Origin body link q → Bool
+  | .direct test => test.val
+  | .enclosing _ | .supplying .. => true
+
+def Origin.Contract {body : Traversed prepared order runtime} {link q} : Origin body link q → Prop
+  | .direct _ => Positive body link
+  | .enclosing _ => Nonempty (RuntimeNestedArm.Evidence body.checked link .enclosing)
+  | .supplying i _ => Nonempty (RuntimeNestedArm.Evidence body.checked link (.supplying i))
+
+theorem Origin.sound {body : Traversed prepared order runtime} {link q} (origin : Origin body link q)
+    (accepted : origin.accepted = true) : origin.Contract := by
+  cases origin with
+  | direct test => exact positive_sound body link (test.property.symm.trans accepted)
+  | enclosing proof => exact ⟨proof⟩
+  | supplying _ proof => exact ⟨proof⟩
+
+structure Candidate (body : Traversed prepared order runtime) where
+  armIndex : Nat
+  link : ArmLink body.checked
+  atWritten : body.writtenArms[armIndex]? = some link
+  queueIndex : Position prepared
+  origin : Origin body link queueIndex
+
+/-- Keep one enclosing candidate per written link, including a negative
+one, and add the original supplying position only with its own evidence. -/
+def readCandidates (body : Traversed prepared order runtime) : WorkM (List (Candidate body)) := do
+  let arms := body.writtenArms
+  let entries := prepared.source.pending.entries
+  exactWork (Exact.charge (32*(arms.length+entries.length+body.checked.receipts.length+1)))
+  let values := entries.toArray
+  let receipts := body.checked.receipts.toArray
+  let armArray := arms.toArray
+  let rows ← (List.finRange arms.length).mapM fun (ordinal : Fin arms.length) => do
+    let i := ordinal.val
+    let chosen := armArray[i]'(by simpa only [armArray,List.size_toArray] using ordinal.isLt)
+    have selected : arms[i]? = some chosen := by
+      simp only [chosen,armArray,List.getElem_toArray]
+      exact List.getElem?_eq_getElem (show i < arms.length from ordinal.isLt)
+    let entry := values[chosen.queueIndex.val]'(by simpa only [values,entries,List.size_toArray] using chosen.queueIndex.isLt)
+    let original := indexedPositive body chosen
+      (receipts[chosen.receiptIndex.val]'(by simpa only [receipts,List.size_toArray] using chosen.receiptIndex.isLt))
+      entry
+      (by simp only [receipts,List.getElem_toArray,Fin.getElem_fin])
+      (by simp only [entry,values,entries,List.getElem_toArray,Fin.getElem_fin])
+    let direct : Candidate body := ⟨i,chosen,selected,chosen.queueIndex,.direct original⟩
+    if !RuntimeNestedDuty.possible entry then return [direct]
+    match ← RuntimeNestedArm.read body.checked chosen with
+    | none => return [direct]
+    | some nested =>
+      let caller : Candidate body := ⟨i,chosen,selected,nested.position,.supplying nested.position nested.supplying⟩
+      let parent : Candidate body := match nested.enclosing with
+        | some proof => ⟨i,chosen,selected,chosen.queueIndex,.enclosing proof⟩
+        | none => direct
+      return [parent,caller]
+  return rows.flatten
+
+/-- All candidate positions, including unresolved enclosing links. Two
+references to one original position stay ambiguous even if one is positive. -/
+def occurrences {body : Traversed prepared order runtime} (candidates : List (Candidate body))
+    (q : Position prepared) : List Nat :=
+  references (candidates.map (·.queueIndex)) 0 q
+
+private def single {body : Traversed prepared order runtime} (q : Position prepared)
+    (lookup : Nat → Option (Candidate body)) : List Nat → Bool
   | [index] => match lookup index with
     | none => false
-    | some link => decide (link.queueIndex = q ∧ positive body link = true)
+    | some found => decide (found.queueIndex = q ∧ found.origin.accepted = true)
   | _ => false
 
-/-- Independent list specification. Duplicate links stay outstanding even
-when exactly one copy carries positive evidence. -/
-def covered (body : Traversed prepared order runtime) (q : Position prepared) : Bool :=
-  single body q (fun i => body.writtenArms[i]?) (occurrences body q)
+def covered {body : Traversed prepared order runtime} (candidates : List (Candidate body))
+    (q : Position prepared) : Bool :=
+  single q (fun i => candidates[i]?) (occurrences candidates q)
 
-def remaining (body : Traversed prepared order runtime) (q : Position prepared) : Bool :=
-  prepared.source.pending.entries[q.val].unconsumed && !covered body q
+def remaining {body : Traversed prepared order runtime} (candidates : List (Candidate body))
+    (q : Position prepared) : Bool :=
+  prepared.source.pending.entries[q.val].unconsumed && !covered candidates q
 
-structure Discharge (body : Traversed prepared order runtime) (q : Position prepared) where
+structure Discharge {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (q : Position prepared) where
   index : Nat
-  link : ArmLink body.checked
-  atWritten : body.writtenArms[index]? = some link
-  queue : link.queueIndex = q
+  candidate : Candidate body
+  atCandidate : candidates[index]? = some candidate
+  queue : candidate.queueIndex = q
   required : prepared.source.pending.entries[q.val].unconsumed = true
-  unique : occurrences body q = [index]
-  proved : Positive body link
+  unique : occurrences candidates q = [index]
+  proved : candidate.origin.Contract
 
-private inductive Decision (body : Traversed prepared order runtime) (q : Position prepared) where
+/-- The enclosing arm link locates the common traversal. For a supplying
+credit, candidate.origin carries its separately indexed caller obligation. -/
+def Discharge.link {body : Traversed prepared order runtime} {candidates : List (Candidate body)} {q}
+    (witness : Discharge candidates q) := witness.candidate.link
+
+private inductive Decision {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (q : Position prepared) where
   | skipped (already : prepared.source.pending.entries[q.val].unconsumed = false)
-  | residual (required : prepared.source.pending.entries[q.val].unconsumed = true) (openDuty : covered body q = false)
-  | consumed (witness : Discharge body q) (closed : covered body q = true)
+  | residual (required : prepared.source.pending.entries[q.val].unconsumed = true) (openDuty : covered candidates q = false)
+  | consumed (witness : Discharge candidates q) (closed : covered candidates q = true)
 
-private def classify (body : Traversed prepared order runtime) (q : Position prepared)
+private def classify {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (q : Position prepared)
     (required : Bool) (need : required = prepared.source.pending.entries[q.val].unconsumed)
-    (members : List Nat) (same : occurrences body q = members)
-    (lookup : Nat → Option (ArmLink body.checked)) (original : ∀ i,body.writtenArms[i]? = lookup i)
-    (test : (link : ArmLink body.checked) → {value : Bool // value = positive body link}) :
-    Decision body q := by
+    (members : List Nat) (same : occurrences candidates q = members)
+    (lookup : Nat → Option (Candidate body)) (original : ∀ i,candidates[i]? = lookup i) :
+    Decision candidates q := by
   cases required with
   | false => exact .skipped need.symm
   | true =>
@@ -158,27 +229,24 @@ private def classify (body : Traversed prepared order runtime) (q : Position pre
       | nil =>
         cases atIndex : lookup i with
         | none => exact .residual need.symm (by simp [covered,same,single,(original i).trans atIndex])
-        | some link =>
+        | some found =>
           have selected := (original i).trans atIndex
-          let result := test link
-          if proof : link.queueIndex = q ∧ result.val = true then
-            have yes : link.queueIndex = q ∧ positive body link = true := ⟨proof.1,result.property.symm.trans proof.2⟩
-            exact .consumed ⟨i,link,selected,yes.1,need.symm,same,positive_sound body link yes.2⟩
+          if yes : found.queueIndex = q ∧ found.origin.accepted = true then
+            exact .consumed ⟨i,found,selected,yes.1,need.symm,same,found.origin.sound yes.2⟩
               (by simp [covered,same,single,selected,yes])
-          else
-            have no : ¬ (link.queueIndex = q ∧ positive body link = true) := by simpa only [result.property] using proof
-            exact .residual need.symm (by simp [covered,same,single,selected,no])
+          else exact .residual need.symm (by simp [covered,same,single,selected,yes])
 
-structure Report (body : Traversed prepared order runtime) (indices : List (Position prepared)) where
+structure Classified {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (indices : List (Position prepared)) where
   residual : List (Position prepared)
-  consumed : List ((q : Position prepared) × Discharge body q)
-  exactResidual : residual = indices.filter (remaining body)
+  consumed : List ((q : Position prepared) × Discharge candidates q)
+  exactResidual : residual = indices.filter (remaining candidates)
   exactConsumed : consumed.map (·.1) =
-    indices.filter (fun q => prepared.source.pending.entries[q.val].unconsumed && covered body q)
+    indices.filter (fun q => prepared.source.pending.entries[q.val].unconsumed && covered candidates q)
 
-private def collect (body : Traversed prepared order runtime) (row : (q : Position prepared) → Decision body q) :
-    (indices : List (Position prepared)) → Report body indices :=
-  foldTotal (Report body) ⟨[],[],rfl,rfl⟩ (fun q _ later =>
+private def collect {body : Traversed prepared order runtime} (candidates : List (Candidate body))
+    (row : (q : Position prepared) → Decision candidates q) :
+    (indices : List (Position prepared)) → Classified candidates indices :=
+  foldTotal (Classified candidates) ⟨[],[],rfl,rfl⟩ (fun q _ later =>
     match row q with
     | .skipped already => ⟨later.residual,later.consumed,
         by simpa [List.filter_cons,remaining,already] using later.exactResidual,
@@ -190,26 +258,28 @@ private def collect (body : Traversed prepared order runtime) (row : (q : Positi
         by simpa [List.filter_cons,remaining,witness.required,closed] using later.exactResidual,
         by simpa [List.filter_cons,witness.required,closed] using congrArg (List.cons q) later.exactConsumed⟩)
 
-/-- Reconcile the entire original queue under the same checked body. No
-reader of this report changes the initial source assessment or issues a handle. -/
+structure Report (body : Traversed prepared order runtime) (indices : List (Position prepared)) where
+  candidates : List (Candidate body)
+  candidatesRead : RuntimeInterval.Computed (readCandidates body) candidates
+  result : Classified candidates indices
+
+def Report.residual {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.residual
+def Report.consumed {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.consumed
+
 def read (body : Traversed prepared order runtime) :
     WorkM (Report body (List.finRange prepared.source.pending.entries.length)) := do
+  let candidates ← NaturalAffine.witness (readCandidates body)
   let entries := prepared.source.pending.entries
-  let arms := body.writtenArms
-  exactWork (Exact.charge (32*(entries.length+arms.length+body.checked.receipts.length+1)))
+  exactWork (Exact.charge (32*(entries.length+candidates.val.length+1)))
   let values := entries.toArray
-  let links := arms.toArray
-  let receipts := body.checked.receipts.toArray
-  let table := buckets (arms.map (·.queueIndex)) 0
-  let test := fun (link : ArmLink body.checked) =>
-    indexedPositive body link
-      (receipts[link.receiptIndex.val]'(by simpa only [receipts,List.size_toArray] using link.receiptIndex.isLt))
-      (values[link.queueIndex.val]'(by simpa only [values,entries,List.size_toArray] using link.queueIndex.isLt))
-      (by simp only [receipts,List.getElem_toArray,Fin.getElem_fin]) (by simp only [values,entries,List.getElem_toArray,Fin.getElem_fin])
-  return collect body (fun q =>
+  let links := candidates.val.toArray
+  let keys := candidates.val.map (·.queueIndex)
+  let table := buckets keys 0
+  let result := collect candidates.val (fun q =>
     let entry := values[q.val]'(by simpa only [values,entries,List.size_toArray] using q.isLt)
-    classify body q entry.unconsumed (by simp only [entry,values,entries,List.getElem_toArray])
-      table[q.val] (by exact (buckets_spec (arms.map (·.queueIndex)) 0 q).symm) (fun i => links[i]?)
-      (fun i => (List.getElem?_toArray (xs := arms) (i := i)).symm) test) (List.finRange entries.length)
+    classify candidates.val q entry.unconsumed (by simp only [entry,values,entries,List.getElem_toArray])
+      table[q.val] (by exact (buckets_spec keys 0 q).symm) (fun i => links[i]?)
+      (fun i => (List.getElem?_toArray (xs := candidates.val) (i := i)).symm)) (List.finRange entries.length)
+  return ⟨candidates.val,by with_reducible exact candidates.property,result⟩
 
 end QleisliKernel.Qirf.RuntimeArmDutyCoverage

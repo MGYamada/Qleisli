@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
+import QleisliKernel.Qirf.RuntimeSourceEvent
 import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimeStructuralAction
 
@@ -59,6 +60,7 @@ structure Checked {dependencies program block start count input output role kind
   sources : Sources
   caller : String
   event : SourceRuntimeContext.Event sources caller
+  location : Option (RuntimeSourceEvent.Location event start count)
   history : RuntimeStructuralAction.SourceState
   interval : RuntimeInterval.Checked block start count
   frame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before

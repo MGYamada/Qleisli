@@ -187,12 +187,13 @@ def primitiveAt {sources caller dependencies program block start count}
     (history : RuntimeStructuralAction.SourceState)
     (boundFrame : {frame : RuntimeOwnerMap.Checked (history.bindings.map (·.owner)) interval.before //
       frame.bindings = history.bindings})
-    (event : SourceRuntimeContext.Event sources caller) :
+    (event : SourceRuntimeContext.Event sources caller)
+    (location : Option (RuntimeSourceEvent.Location event start count) := none) :
     WorkM (RuntimeStructuralAction.SourceState × Node dependencies program block) := do
   let callerFrame := boundFrame.val
   let owners ← NaturalAffine.witness (RuntimeOwnerTransition.read interval callerFrame.bindings)
-  match event with
-  | .primitive event =>
+  match event,location with
+  | .primitive event,location =>
     let preserving ← NaturalAffine.witness (guard
       (event.allocated.isEmpty && event.consumed.isEmpty && event.nextOrdinal == history.nextOrdinal) .request)
     have preserved : (event.allocated.isEmpty && event.consumed.isEmpty &&
@@ -211,12 +212,12 @@ def primitiveAt {sources caller dependencies program block start count}
       -- Reserve the constant new source/lookup receipt cells, not another read.
       exactWork (Exact.charge 32)
       let source : RuntimePrimitiveSource.Checked action.val :=
-        ⟨sources,caller,.primitive event,history,interval,callerFrame,boundFrame.property,
+        ⟨sources,caller,.primitive event,location,history,interval,callerFrame,boundFrame.property,
           .primitive event history.nextOrdinal operand kind preserved argument selected,owners.val,
           by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
       return (source.after,.primitive action.val source)
     | _ => throw .request
-  | .phase event =>
+  | .phase event,location =>
     let input ← RuntimePrimitiveSource.readPort event.operand callerFrame.bindings
     let output ← RuntimePrimitiveSource.readPort event.operand owners.val.after.bindings
     let action ← NaturalAffine.witness
@@ -225,10 +226,10 @@ def primitiveAt {sources caller dependencies program block start count}
     -- Reserve the constant new source/lookup receipt cells, not another read.
     exactWork (Exact.charge 32)
     let source : RuntimePrimitiveSource.Checked action.val :=
-      ⟨sources,caller,.phase event,history,interval,callerFrame,boundFrame.property,.phase event history.nextOrdinal,owners.val,
+      ⟨sources,caller,.phase event,location,history,interval,callerFrame,boundFrame.property,.phase event history.nextOrdinal,owners.val,
         by with_reducible exact owners.property,input,rfl,output,rfl,by with_reducible exact action.property⟩
     return (source.after,.primitive action.val source)
-  | _ => throw .request
+  | _,_ => throw .request
 
 /-- Verify every literal arm and the complete selector partition with the
 actual ordered source owners and their encodings. The enclosing traversal
@@ -606,9 +607,9 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
             let gap ← RuntimeOrdinaryBody.readGap block cursor (start-cursor) history ordinary
             return (history,retired,gap.ssa,actions,steps ++ [.gap gap],obligations,start,sourceCursor,receipts)
       let step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
-          execution.queries.EventData source event position →
+          RuntimeSourceEvent.Origin event position → execution.queries.EventData source event position →
           QueryState dependencies program block execution.queries.Cursor execution.Receipt →
-            WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) := fun event position data state => do
+            WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) := fun event position origin data state => do
           let (history,retired,ordinary,actions,steps,obligations,_cursor,sourceCursor,receipts) ← advance state position.start
           exactWork (Exact.charge (receipts.length+execution.referenceCount sourceCursor+1))
           let interval ← RuntimeInterval.check block position.start position.count
@@ -625,8 +626,8 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let readOwners := RuntimeOwnerTransition.read interval callerFrame.bindings
           let continuation (owners : RuntimeOwnerTransition.Checked interval callerFrame.bindings) :
               RuntimeStructuralAction.SourceState := {before with bindings := owners.after.bindings}
-          match event,data with
-          | .primitive event,data =>
+          match event,data,origin with
+          | .primitive event,data,origin =>
             if structural then
               let action ← RuntimeStructuralAction.read block position.start position.count event before
               let node : Node dependencies program block := .structural action
@@ -640,14 +641,14 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 return (action.after,retired ++ action.retired,action.ordinary,actions,steps ++ [.observation action],
                   obligations,position.start+position.count,sourceCursor,receipts)
             else do
-              let (after,node) ← primitiveAt interval history boundFrame (.primitive event)
+              let (after,node) ← primitiveAt interval history boundFrame (.primitive event) (some ⟨position,rfl,rfl,origin⟩)
               return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
                 obligations,position.start+position.count,sourceCursor,receipts)
-          | .phase event,data =>
-            let (after,node) ← primitiveAt interval history boundFrame (.phase event)
+          | .phase event,data,origin =>
+            let (after,node) ← primitiveAt interval history boundFrame (.phase event) (some ⟨position,rfl,rfl,origin⟩)
             return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,sourceCursor,receipts)
-          | .named event,data =>
+          | .named event,data,_ =>
             let named ← RuntimeBodyQueries.readNamed execution.queries source event position sourceCursor data
             let child := named.context
             let original := named.body
@@ -704,7 +705,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 return (boundary.after,retired ++ event.consumed,nested.ordinary,actions,steps ++ [step],
                   obligations ++ nested.obligations,position.start+position.count,sourceCursor,receipts ++ childReceipts)
             else throw .request
-          | .conditional event thenEvents elseEvents,data =>
+          | .conditional event thenEvents elseEvents,data,_ =>
             match mode with
             | .pureBody => throw .request
             | .runtimeBody =>
@@ -730,7 +731,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                   obligations ++ left.islands ++ right.islands,position.start+position.count,selected.cursor,
                   receipts ++ leftReceipts ++ rightReceipts)
               else throw .request
-          | .operation event,data =>
+          | .operation event,data,_ =>
             let owners ← readOwners
             guard (event.operation.graph.root.input == event.operation.graph.root.output &&
               event.allocated.isEmpty && event.consumed.isEmpty) .request
@@ -740,7 +741,7 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
             let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
             pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ children,position.start+position.count,operation.cursor,receipts ++ performed)
-          | .selection tokens parsed original selector target scope naturals held remaining,data =>
+          | .selection tokens parsed original selector target scope naturals held remaining,data,_ =>
             let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
             let selected ← RuntimeBodyQueries.readSelection execution.queries source position sourceCursor data
             let table := selected.table
@@ -759,18 +760,21 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 pure (logical,())
             pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ checked,position.start+position.count,sourceCursor,receipts)
-          | _,_ =>
+          | _,_,_ =>
             let _ ← readOwners
             throw .request
       let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+          RuntimeSourceEvent.At (source.events.zip request.positions) event position →
           execution.queries.EventData source event position →
           QueryState dependencies program block execution.queries.Cursor execution.Receipt →
-            WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) := fun event position data state => do
-          match event,data with
-          | .staticConditional event children,data =>
+            WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) := fun event position entry data state => do
+          match event,data,entry with
+          | .staticConditional event children,data,entry =>
             let (_,_,_,_,_,_,_,incomingSourceCursor,_) := state
-            let selected ← RuntimeBodyQueries.readStatic execution.queries source event children position
-              (match mode with | .pureBody => true | .runtimeBody => false) incomingSourceCursor data
+            let pureOnly := match mode with | .pureBody => true | .runtimeBody => false
+            let actual ← NaturalAffine.witness (RuntimeBodyQueries.readStatic execution.queries source event children position
+              pureOnly incomingSourceCursor data)
+            let selected := actual.val
             let state ← advance state position.start
             let (history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts) := state
             let sequence := selected.sequence
@@ -783,15 +787,20 @@ def runBlockCore (artifact : Artifact) (root : Validity.Root) (execution : Execu
               32*(Raw.OwnerFlow.fields retired+1)))
             let initial : QueryState dependencies program block execution.queries.Cursor execution.Receipt :=
               (before,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts)
-            let result ← RuntimeBodyQueries.foldEvents execution.queries source step
-              (sequence.selected.result.events.zip selected.positions) selected.events initial
+            let result ← RuntimeBodyQueries.foldEvents execution.queries source
+              (sequence.selected.result.events.zip selected.positions)
+              (fun event_ position_ inner data_ state_ =>
+                step event_ position_ (RuntimeBodyQueries.selectedOrigin execution.queries source request.positions
+                  event children position entry pureOnly incomingSourceCursor data
+                  ⟨selected,by with_reducible exact actual.property⟩ inner) data_ state_)
+              selected.events initial
             let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_sourceCursor,_receipts) := result
             guard (afterCursor == position.start+position.count) .request
             let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired
             return result
-          | event,data => step event position data state
+          | event,data,entry => step event position (.direct source request.positions entry) data state
       let (history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts) ←
-        RuntimeBodyQueries.foldEvents execution.queries source outerStep (source.events.zip request.positions) opening.events
+        RuntimeBodyQueries.foldEvents execution.queries source (source.events.zip request.positions) outerStep opening.events
           (initialHistory,([] : List Owner),initialOrdinary,
             ([] : List (Node dependencies program block)),([] : List (Step dependencies program block)),
             obligations,0,sourceCursor,receipts)

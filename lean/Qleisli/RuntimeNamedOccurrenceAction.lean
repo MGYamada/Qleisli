@@ -1,4 +1,5 @@
 import Qleisli.RuntimeNamedPrimitiveSourceLift
+import Qleisli.RuntimeAdjacentAction
 import QleisliKernel.Qirf.RuntimeNamedPrimitiveOccurrence
 
 /-! The source-to-caller action for a primitive recovered from the actual named
@@ -50,5 +51,41 @@ theorem preserved {dependencies program block step} (found : @Occurrence depende
   | @named _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ scope _ _ boundary _ _ written bound =>
     exact atScope scope boundary written bound
 
+def span {deps program block step} (found : @Occurrence deps program block step) : RuntimeAdjacentSlices.Span block :=
+  match found with
+  | .named (scope := scope) _ bound => ⟨_,_,scope.interval,[bound.operation],bound.parent⟩
+
+private abbrev AtEvents {dependencies program block start count inputs ordinary effect}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    {ordered first size input output role kind}
+    {action : RuntimePrimitiveAction.Checked scope.prepared.block first size input output role kind}
+    (original : RuntimePrimitiveSource.Checked action) (bound : Bound scope ordered action)
+    (events : List Semantics.Raw.Event) :=
+  MixedActionOn scope bound.binding (nativeForm bound.form) output action original events
+
+def On {deps program block step} (found : @Occurrence deps program block step)
+    (events : List Semantics.Raw.Event) : Prop :=
+  match found with
+  | .named written bound => AtEvents _ written bound events
+
+/-- The parent fold fixes the event list in the primitive's source equation. -/
+theorem on_span {deps program block step} (found : @Occurrence deps program block step)
+    (events : List Semantics.Raw.Event)
+    (folded : RuntimeAdjacentSlices.Fold (deps.map (·.signature)) (span found).slice.ops
+      (span found).slice.interval.before.quantum (span found).slice.interval.after.quantum events) :
+    On found events := by
+  cases found with
+  | @named _ _ _ _ _ _ _ _ _ _ _ input output _ _ _ scope _ _ boundary _ _ written bound =>
+    obtain ⟨actual,child,facts,law⟩ := atScope scope boundary written bound
+    have spelling : (nativeForm bound.form).operation bound.binding.port.token output = bound.operation := by
+      rw [bound.token]
+      exact form_operation bound.form
+    have first := facts.parentFold
+    rw [spelling] at first
+    have same : actual = events := RuntimeAdjacentSlices.Fold.events_unique first folded
+    subst events
+    exact ⟨child,facts,law⟩
+
 #print axioms preserved
+#print axioms on_span
 end Qleisli.RuntimeNamedOccurrenceAction
