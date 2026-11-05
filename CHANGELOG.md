@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add a bounded exact Julia Shor15 reference and shared finite-state operations
+  over the unchanged `RInfScalar` arithmetic. Check full-basis modular
+  permutations, controlled powers, QFT conventions, joint amplitudes, exact
+  Born probabilities and integer factor recovery/retry paths in `runtests.jl`.
+  This completes only the Shor example of #473's six-example plan; it supplies
+  no Lean/QPTL proof, production acceptance or QS/PR/RS guarantee.
+
 - Factor the original three-call Raw instrument into its actual slices and final
   output permutation, retaining every intermediate history. Prove that the
   checked named-call return map preserves complete basis trees, sparse codes and
