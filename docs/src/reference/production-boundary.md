@@ -552,9 +552,14 @@ states and ordinary SSA tables, with the original work counters.
 `RuntimeOriginalBranch.original_branch_events` identifies the exact Raw branch
 event, both arm traces and their final permutations. On a history whose
 ordinary values agree with the checked source expressions,
-`original_branch_step` selects the arm by the source condition and retains the
-literal classical phi merge. The source action inside each arm and the
-source-level meaning of the phi merge remain separate.
+`original_branch_step` selects the arm by the source condition.
+`RuntimeOriginalClassicalJoin.original_branch_classical_join` uses the original
+Raw freshness check for every classical phi destination. If the selected arm
+returns histories with their checked SSA agreement and issued identities, the
+literal merge produces one corresponding history per arm result, in order.
+Its visible values agree with the checked post-branch source expressions, and
+its quantum operator and hidden outcomes are those of that arm result. The
+source actions inside the arms and the quantum phi encoding remain separate.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

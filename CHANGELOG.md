@@ -16,6 +16,9 @@ development milestones from the scope of their evidence.
 - Retain both original conditional arm runs and their checked join in the
   source traversal proof. Relate the literal Raw branch, arm permutations,
   and the selected arm on an agreed history to the checked source condition.
+  With the selected arm's SSA agreement and issued identities, prove that
+  the literal classical phi merge supplies the checked visible values for
+  every resulting history while preserving its operator and hidden outcomes.
 
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
