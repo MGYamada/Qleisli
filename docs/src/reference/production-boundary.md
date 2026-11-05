@@ -558,8 +558,14 @@ Raw freshness check for every classical phi destination. If the selected arm
 returns histories with their checked SSA agreement and issued identities, the
 literal merge produces one corresponding history per arm result, in order.
 Its visible values agree with the checked post-branch source expressions, and
-its quantum operator and hidden outcomes are those of that arm result. The
-source actions inside the arms and the quantum phi encoding remain separate.
+its quantum operator and hidden outcomes are those of that arm result.
+`RuntimeOriginalQuantumPhi.original_quantum_phi_action` ties the actual
+arm-final Raw permutation to the complete original owner pairing. It retains
+each owner's exact carrier layout, including separate zero-width owners, and
+derives the source output frame in its checked owner order. The equation holds
+for every finite output row and reference column. A represented arm history
+keeps its ordinary values and hidden outcomes through that exact permutation.
+The source actions inside arbitrary arms and their full composition remain open.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

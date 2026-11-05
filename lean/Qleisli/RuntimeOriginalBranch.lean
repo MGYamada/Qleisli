@@ -31,6 +31,7 @@ structure Trace {dependencies program block offset}
     some (actual.thenState.quantum.reference,left)
   rightRead : readOps actual.childFuel actual.interval.before.quantum.reference actual.elseOps =
     some (actual.elseState.quantum.reference,right)
+  joined : actual.interval.after.quantum.reference = Semantics.Observation.phiInterface actual.quantum
   parentRead : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
     some (actual.interval.after.quantum.reference,[branchEvent actual left right])
 
@@ -67,7 +68,7 @@ theorem original_branch_events {dependencies program block offset}
   obtain ⟨_events,original⟩ := RuntimeObservingPrefix.checkOps_reference _ _ _ _ _ _ _ ran
   have after : Semantics.Observation.phiInterface actual.quantum = actual.interval.after.quantum.reference :=
     congrArg Prod.fst (Option.some.inj (read.symm.trans original))
-  refine ⟨⟨thenEvents,elseEvents,thenRead,elseRead,?_⟩⟩
+  refine ⟨⟨thenEvents,elseEvents,thenRead,elseRead,after.symm,?_⟩⟩
   rw [read,after]
 
 private theorem phi_outputs_fresh (phis : List Semantics.Observation.ClassicalPhi)
@@ -89,13 +90,14 @@ private theorem phi_outputs_fresh (phis : List Semantics.Observation.ClassicalPh
       rw [records,List.map_append]
       exact List.mem_append.mpr (Or.inl issued)
 
-/-- The checked parent branch inserts all classical phi destinations after
-both actual arm reads. Each destination is fresh in both arm histories,
-including identities already issued in an inactive scope. -/
-theorem original_branch_outputs_fresh {dependencies program block offset}
+/-- The original branch validates its complete quantum phi interface and
+inserts all classical destinations after the same two actual arm reads. -/
+theorem original_branch_phi_checks {dependencies program block offset}
     (actual : @RuntimeInterval.Branch dependencies program block offset) :
-    ∀ phi ∈ actual.classical, phi.output ∉ actual.thenState.classical.map Prod.fst ∧
-      phi.output ∉ actual.elseState.classical.map Prod.fst := by
+    Raw.Observation.phiValid actual.thenState.quantum actual.elseState.quantum actual.quantum = true ∧
+    ∀ phi ∈ actual.classical,
+      phi.output ∉ actual.thenState.classical.map Prod.fst ∧
+        phi.output ∉ actual.elseState.classical.map Prod.fst := by
   obtain ⟨work,left,read⟩ := actual.interval.intervalRead
   rw [original_branch_ops actual,actual.depth] at read
   obtain ⟨_,_,fold,_⟩ := bind_success _ _ _ _ _ read
@@ -113,9 +115,10 @@ theorem original_branch_outputs_fresh {dependencies program block offset}
   obtain ⟨elseState,_,elseRead,body⟩ := bind_success _ _ _ _ _ body
   have sameElse := RuntimeAdjacentSlices.checkOps_unique ⟨_,_,elseRead⟩ actual.elseRead
   subst elseState
+  obtain ⟨_,_,quantumPhis,body⟩ := bind_success _ _ _ _ _ body
   obtain ⟨_,_,_,body⟩ := bind_success _ _ _ _ _ body
   obtain ⟨_,_,_,body⟩ := bind_success _ _ _ _ _ body
-  obtain ⟨_,_,_,body⟩ := bind_success _ _ _ _ _ body
+  refine ⟨(guard_success _ _ _ _ quantumPhis).1,?_⟩
   have fresh := phi_outputs_fresh _ _ _ (lift_success _ _ _ _ body).1
   obtain ⟨rightWork,rightLeft,rightRead⟩ := actual.elseRead
   have keeps := (Raw.Observation.checkOps_history _ _ _ _ _ rightWork rightLeft rightRead).2.2
@@ -125,6 +128,14 @@ theorem original_branch_outputs_fresh {dependencies program block offset}
   intro issued
   obtain ⟨binding,present,output⟩ := List.mem_map.mp issued
   exact right (List.mem_map.mpr ⟨binding,keeps binding present,output⟩)
+
+/-- Each destination is fresh in both arm histories, including identities
+already issued in an inactive scope. -/
+theorem original_branch_outputs_fresh {dependencies program block offset}
+    (actual : @RuntimeInterval.Branch dependencies program block offset) :
+    ∀ phi ∈ actual.classical, phi.output ∉ actual.thenState.classical.map Prod.fst ∧
+      phi.output ∉ actual.elseState.classical.map Prod.fst :=
+  (original_branch_phi_checks actual).2
 
 /-- Use the original condition check on the same finite ordinary inputs and
 measurement row as the history that reaches the branch. -/
