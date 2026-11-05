@@ -85,6 +85,7 @@ import Qleisli.RuntimeNamedBlockSpectators
 import Qleisli.RuntimeNamedSelectionInputEncoding
 import Qleisli.RuntimeNamedThreeFrameChain
 import Qleisli.RuntimeNamedThreePackedOutput
+import Qleisli.RuntimeNamedThreePackedInstrument
 import Qleisli.RuntimeSectorPrefix
 import Qleisli.RuntimeSelectionTraceEvidence
 import Qleisli.RuntimeSelectionLiteralEvidence

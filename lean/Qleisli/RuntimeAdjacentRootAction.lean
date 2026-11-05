@@ -90,6 +90,97 @@ private theorem pure_in_observing {recurse : Reader}
       simpa only [List.map_cons,List.foldlM_cons,observationAdvance,readStep,step,bind,Option.bind,
         pure,List.map_append] using ih {initial with state := next,events := initial.events ++ added} read
 
+private theorem read_carry (recurse : Reader) (operations : List Semantics.Observation.Op)
+    (state : Semantics.RawTrace.Interface) (previous carried : List Semantics.Observation.Event) :
+    operations.foldlM (observationAdvance recurse) (state,previous++carried) =
+      (operations.foldlM (observationAdvance recurse) (state,carried)).map
+        (fun result => (result.1,previous++result.2)) := by
+  induction operations generalizing state carried with
+  | nil => rfl
+  | cons first rest ih =>
+    cases read : readStep recurse state first with
+    | none =>
+      simp only [List.foldlM_cons,observationAdvance,read,bind,Option.bind,Option.map]
+    | some pair =>
+      obtain ⟨next,added⟩ := pair
+      simp only [List.foldlM_cons,observationAdvance,read,bind,Option.bind,pure]
+      change rest.foldlM (observationAdvance recurse) (next,(previous++carried)++added) =
+        (rest.foldlM (observationAdvance recurse) (next,carried++added)).map
+          (fun result => (result.1,previous++result.2))
+      rw [List.append_assoc]
+      exact ih next (carried++added)
+
+/-- Split the actual independent observing reader at an original operation
+boundary. Neither side restarts from a synthesized interface, and the
+earlier events remain in their original order. -/
+theorem readOps_append (fuel : Nat) (state : Semantics.RawTrace.Interface) (first rest : List Semantics.Observation.Op) :
+    Semantics.Observation.readOps (fuel+1) state (first++rest) =
+      (do
+        let (middle,earlier) ← Semantics.Observation.readOps (fuel+1) state first
+        let (last,later) ← Semantics.Observation.readOps (fuel+1) middle rest
+        return (last,earlier++later)) := by
+  simp only [Raw.ObservationAgreement.read_succ,Raw.ObservationAgreement.layer]
+  change (first++rest).foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (state,[]) =
+    (do
+      let (middle,earlier) ← first.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (state,[])
+      let (last,later) ← rest.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (middle,[])
+      return (last,earlier++later))
+  rw [List.foldlM_append]
+  cases firstRead : first.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (state,[]) with
+  | none => rfl
+  | some pair =>
+    obtain ⟨middle,earlier⟩ := pair
+    change rest.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (middle,earlier) =
+      (do
+        let (last,later) ← rest.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (middle,[])
+        return (last,earlier++later))
+    have carried := read_carry (Semantics.Observation.readOps fuel) rest middle earlier []
+    rw [List.append_nil] at carried
+    rw [carried]
+    cases restRead : rest.foldlM (observationAdvance (Semantics.Observation.readOps fuel)) (middle,[]) <;> rfl
+
+/-- An actual adjacent source-call interval retains its exact pure Raw events
+between an arbitrary observing prefix and suffix. The original reader result
+at the first boundary supplies the live interface. -/
+theorem Three.observing_interval
+    {deps program block s a b c pre choose post preEvents chooseEvents postEvents}
+    (result : @Three deps program block s a b c pre choose post preEvents chooseEvents postEvents)
+    (fuel : Nat) (initial final : Semantics.RawTrace.Interface)
+    (earlier events : List Semantics.Observation.Event)
+    (entered : Semantics.Observation.readOps (fuel+1) initial (block.operations.take s) =
+      some (pre.interval.before.quantum.reference,earlier))
+    (original : Semantics.Observation.readOps (fuel+1) initial block.operations = some (final,events)) :
+    ∃ later,
+      Semantics.Observation.readOps (fuel+1) post.interval.after.quantum.reference
+        (block.operations.drop (s+(a+b+c))) = some (final,later) ∧
+      events = earlier ++ (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure ++ later := by
+  let rest := block.operations.drop (s+(a+b+c))
+  have split : block.operations = (block.operations.take s ++
+      (pre.ops ++ choose.ops ++ post.ops).map Semantics.Observation.Op.pure) ++ rest := by
+    unfold rest
+    rw [← result.literal,← prefixSplit]
+    exact (List.take_append_drop _ _).symm
+  have middle : Semantics.Observation.readOps (fuel+1) pre.interval.before.quantum.reference
+      ((pre.ops ++ choose.ops ++ post.ops).map Semantics.Observation.Op.pure) =
+      some (post.interval.after.quantum.reference,
+        (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure) := by
+    rw [Raw.ObservationAgreement.read_succ]
+    exact pure_in_observing _ _ _ result.parentTrace
+  rw [split,readOps_append,readOps_append,entered] at original
+  simp only [bind,Option.bind,middle,pure] at original
+  cases finished : Semantics.Observation.readOps (fuel+1) post.interval.after.quantum.reference rest with
+  | none => rw [finished] at original; cases original
+  | some pair =>
+    obtain ⟨endState,later⟩ := pair
+    rw [finished] at original
+    have equal := Option.some.inj original
+    have sameState := congrArg Prod.fst equal
+    have sameEvents := congrArg Prod.snd equal
+    exact ⟨later,congrArg (fun state => some (state,later)) sameState,sameEvents.symm⟩
+
+#print axioms readOps_append
+#print axioms Three.observing_interval
+
 private theorem originalStart {deps program} (p : RuntimeInterval.Prepared deps program) {count}
     (i : Interval p.block 0 count) :
     i.before.quantum.reference = Semantics.RawTrace.initial program.inputs := by

@@ -493,14 +493,24 @@ coefficients through the exact output axes and applies each source arm on every
 spectator coordinate of the joint input. This yields the complete caller output
 in its original owner order, with all reference correlations.
 
-`RuntimeNamedThreeFrameChain.original_three_composed` composes the three
-logical updates on the original Raw event slices. The original input storage
-and entry read supply the first frame. At both joins the same native state and
-source owner map carry the preceding output into the next call. The root witness
-retains the actual final Raw reorder. The remaining obligations include identifying
-its full source return encoding, extending the proof to general bodies and
-observing histories, public v5 and full12/64. The three-call view uses explicit
-whole-slice coverage. Native acceptance and work limits remain as specified above.
+The original input storage and entry read supply the first frame in
+`RuntimeNamedThreeFrameChain.original_three_composed`. At both joins the same
+native state and source owner map carry the preceding output into the next
+call. `RuntimeNamedThreePackedOutput.original_three_packed` also identifies the
+actual final Raw reorder and the original return's owner reindex. Its
+finite-row equation includes the complete packed output for every joint
+logical input and reference coordinate.
+
+`RuntimeNamedThreePackedInstrument.original_three_observing` connects that
+equation to the same independently read observing event list.
+`interval_histories` factors the original observing reader and interpreter at
+an adjacent pure interval. Given the original prefix read at the checked
+interface, the interpreter preserves every inherited history and applies the
+pure action to each operator before continuing with the original suffix.
+Deriving the prefix alignment for arbitrary observing source bodies and
+covering the rest of their source actions remain open, along with public v5
+and full12/64. The packed root law uses explicit whole-slice coverage.
+Native acceptance and work limits remain as specified above.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
