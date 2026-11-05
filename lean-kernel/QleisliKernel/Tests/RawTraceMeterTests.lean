@@ -44,7 +44,7 @@ def accepted (original : String) (program : Observation.Program) (budget : Nat :
 #guard header (identitySource "(Unit,Unit)") (identityProgram 0 []) = some 2176
 #guard !accepted (identitySource "Unit") (identityProgram 0 []) 0
 #guard !accepted (identitySource "Unit") (identityProgram 0 []) 639
-#guard (SourceTraceCost.composed.run 10000000).1.toOption = some (129,129)
+#guard (SourceTraceCost.composed.run 22000000).1.toOption = some (129,129)
 #guard match (SourceTraceCost.composed.run 9000000).1 with
   | .error (.arithmetic .workLimit) => true
   | _ => false

@@ -284,7 +284,44 @@ call without gaps or overlaps. Each retains its actual owner frame and passes
 its own exact equations. Original source reads
 determine the canonical labels, types, owners, public effects and source rows;
 actual receipt inputs and dependency snapshots bind the named arm bodies.
+The structural execution proof recovers each entry's historical snapshot from
+the same successful graph run and preserves every dependency it references in
+the final root. It transports the original IR execution with identical exact
+operators, hidden histories, failures and remaining work; it covers references
+in both branches even when the condition is constant. Unrelated slots may
+differ. The common context result retains this execution property in its
+ordered original arm-binding relation. This does not prove the meaning or
+lowering of the original source body.
+The unwired original-arm continuation reuses the actual checked signature and
+body through the common source traversal, then checks the realized entry's IR
+under those same final dependencies. Supported bodies inherit the common
+reader's explicit scope; selections still require their recursive arm equations.
+This continuation does not enable a native request, handle or broader source
+preservation claim.
 The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector equations.
+For a Bit selector and a Bit target, `RuntimeSelectionAction.caller_action`
+relates the literal Raw events to both indexed logical arm matrices on the
+complete returned owner code. It covers a single `quantumIf` and the
+compiler's `join`, `apply_unitary`, `split` sequence. The original logical
+selector and target determine which matrix and row act, including when the
+selected wires are reversed or separated by spectators.
+`RuntimeSelectionGram.logical_gram` proves inner-product preservation for
+arbitrary joint caller/reference amplitudes under the same two arm receipts.
+`RuntimeSelectionGram.checked_selection` obtains both receipts and the
+canonical order `[0, 1]` from the source layout reads and the logical
+matrix comparison retained by the native selection node.
+`RuntimeMultiwayAction.checked_selection` covers any checked finite selector
+with a Bit target under the same literal interval and owner-code premises.
+Each encoded selector label determines one original arm. On valid encoded
+inputs, the physical output agrees with that arm at every output row,
+including zero amplitude on padding labels. The same arm receipts preserve
+the logical inner product with an arbitrary external reference.
+Ordinary and source-`qmatch` checks share a public ceiling of 20,000,000
+exact-work units per request. Decoding, source and graph checks, and execution-view
+comparison spend from the same counter. Rust also charges native receipts
+against the remaining exact work of the compilation, across all sites and
+calls. The limit is inclusive. Clients using the previous 10,000,000 or
+13,000,000 ceilings must update the Rust frontend and Lean checker together.
 The ordinary source-root wrapper retains its original main-only roots and empty
 extra source-query extension.
 
@@ -705,7 +742,7 @@ Each distinct compact original/replacement Raw pair requires the existing native
 function-equation check under the input `AcceptedProgram`'s own checker. The
 local comparison retains full scalar phase and ordered control polarities. An
 export retains at most seven complete-body local receipts and shares the
-existing 10,000,000 exact-work budget across all Raw operations. Unavailable
+shared 20,000,000 exact-work budget across all Raw operations. Unavailable
 checking, rejection or exhausted capacity produces no artifact or alternate
 acceptance path. These local equations do not establish general source/export,
 resource or external QIS preservation; the two adopted guarantees and pending

@@ -89,3 +89,13 @@ using .CyclotomicExperiments
         @test dot(bell, bell) == exact_scalar(1)
     end
 end
+
+# Each copied suite includes the standalone reference implementation in its
+# own namespace, avoiding duplicate type definitions and imported-name clashes.
+module RInfScalarTests
+include(joinpath(@__DIR__, "test_rinf_scalar.jl"))
+end
+
+module RInfCyclotomicsTests
+include(joinpath(@__DIR__, "test_rinf_cyclotomics.jl"))
+end

@@ -158,7 +158,10 @@ impl Lowerer<'_, '_> {
         let target = self.expr(module, &selection.target, env)?;
         let target_slot = self.quantum(module, selection.target.span, &target, false)?;
         let selector_basis = &self.raw.registers[&selector_slot].basis;
-        if self.nominal_qmatch.is_some()
+        if self
+            .nominal_qmatch
+            .as_ref()
+            .is_some_and(nominal::Frame::requires_source_gate)
             || selector_basis.basis_bits().is_none()
             || self.raw.registers[&target_slot]
                 .basis
@@ -214,6 +217,7 @@ impl Lowerer<'_, '_> {
         let target_basis = self.raw.registers[&target_slot].basis.clone();
         let mut expectations = vec![None; count];
         let mut steps = Vec::new();
+        let mut arms = Vec::new();
         for arm in &selection.arms {
             let QuantumLabel::Ordinal(label) = &arm.label else {
                 return Err(self.error(
@@ -232,28 +236,59 @@ impl Lowerer<'_, '_> {
                     "qmatch ordinal is duplicated or outside the selector domain",
                 ));
             }
-            let operation = self.operation_steps(
-                module,
-                &arm.operation,
-                &target_basis,
-                env,
-                Access::Controlled,
-            )?;
-            let already_controlled = operation.is_some();
-            let mut body = match operation {
-                Some(body) => body,
-                None => self.static_steps(module, &arm.operation, &target_basis, env)?,
-            };
-            let expected = self
-                .target_meaning(module, &arm.operation, &target_basis)?
-                .ok_or_else(|| {
-                    self.error(
-                        module,
-                        arm.span,
-                        ErrorCode::Unsupported,
-                        "qmatch requires each arm's independently obtained exact meaning",
+            let (mut body, already_controlled, expected, operation) = match &arm.operation.kind {
+                StaticOpKind::Name(name) => {
+                    let operation =
+                        self.operation_steps(module, name, &target_basis, env, Access::Controlled)?;
+                    let controlled = operation.is_some();
+                    let body = match operation {
+                        Some(body) => body,
+                        None => self.static_steps(module, name, &target_basis, env)?,
+                    };
+                    (
+                        body,
+                        controlled,
+                        self.target_meaning(module, name, &target_basis)?,
+                        None,
                     )
-                })?;
+                }
+                _ => {
+                    let operation = self.operation(module, &arm.operation, env)?;
+                    if operation.basis != target_basis
+                        || operation.codomain != target_basis
+                        || operation.effect != Effect::Unitary
+                    {
+                        return Err(self.error(
+                            module,
+                            arm.span,
+                            ErrorCode::TypeMismatch,
+                            "qmatch arm requires the exact Unitary target interface",
+                        ));
+                    }
+                    let body =
+                        operation.steps(module, arm.span, Access::Controlled, self.compiler)?;
+                    (body, true, operation.meaning.clone(), Some(operation))
+                }
+            };
+            let expected = expected.ok_or_else(|| {
+                self.error(
+                    module,
+                    arm.span,
+                    ErrorCode::Unsupported,
+                    "qmatch requires each arm's independently obtained exact meaning",
+                )
+            })?;
+            if self.nominal_qmatch.is_some() {
+                arms.push(nominal::builtin_arm(
+                    self,
+                    module,
+                    &arm.operation,
+                    &target_basis,
+                    operation.as_ref(),
+                    &body,
+                    already_controlled,
+                )?);
+            }
             self.compiler.charge(
                 module,
                 span,
@@ -303,10 +338,14 @@ impl Lowerer<'_, '_> {
             span,
             total_size(circuit.steps().iter().map(super::super::circuit::size)),
         )?;
-        let joined =
-            self.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
-        let slot = self.quantum(module, span, &joined, false)?;
-        self.apply_circuit(slot, circuit.steps().to_vec());
-        self.primitive_call(module, span, PrimitiveId::Split, vec![joined])
+        nominal::apply_selection(
+            self,
+            module,
+            span,
+            selection.keyword.start,
+            [selector, target],
+            circuit.steps().to_vec(),
+            arms,
+        )
     }
 }

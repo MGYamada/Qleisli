@@ -4,6 +4,7 @@ Byte comparison is not a source-preservation or simulation-correctness proof.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 import argparse
+from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ from native_packet import envelope, parse_reply, MODES
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/verification_v030/execution-view-binding'
 VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
+EXACT_WORK_LIMIT = 20_000_000
 
 
 def qdv(value):
@@ -112,7 +114,7 @@ class Probe:
             assert result.returncode == 0 and reply.claim in ('accepted', 'pending'), (mode, result)
             assert reply.context.scope == scope, (scope, result)
             if reply.claim == 'accepted':
-                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= 10_000_000, reply
+                assert len(reply.payload) == 2 and 0 <= int(reply.payload[0]) <= EXACT_WORK_LIMIT, reply
                 requested = mode in ('--qirf-contract', '--carrier-pure-check',
                                      '--ordinary-root-check', '--qmatch-source-check')
                 assert reply.payload[1] == ('1' if requested else '0'), reply
@@ -123,7 +125,7 @@ class Probe:
 
 def check_pending_payload(mode, payload):
     assert len(payload) >= 3 and 0 <= int(payload[0]) <= 2_000_000, payload
-    assert 0 <= int(payload[1]) <= 10_000_000, payload
+    assert 0 <= int(payload[1]) <= EXACT_WORK_LIMIT, payload
     bounds = [100_000]
     if mode != '--hierarchy-pending':
         bounds.append(8 if mode == '--hierarchy-fourier-pending' else 100_000)
@@ -188,6 +190,33 @@ def callers(probe):
         probe.check('--qirf-native', envelope('2026', original, graph, wrong, row['indices']), error='decoded_view')
 
 
+def qmatch_work_boundary(probe, original, base_work):
+    # Trailing whitespace changes source-byte work while preserving every
+    # original span and operation. Update both copies of the source identity.
+    def check(padding, error=None):
+        row = deepcopy(original)
+        source = row['artifact']['sources'][0]
+        graph = row['view'][1]
+        for record in [graph[3][0], graph[5][0][4][3][0]]:
+            assert record == ['source', source['path'], source['text']]
+            record[2] += ' ' * padding
+        source['text'] += ' ' * padding
+        data = envelope('2026', inner(row['artifact'], row['request']), qdv(row['view']))
+        return probe.check('--qmatch-source-check', data, 'execution', error=error)
+
+    # Measure this executable's cost per byte on the same tiny circuit.
+    # The public allowance is fixed even as the source-reading algorithm improves.
+    extra_work = int(check(64).payload[0]) - base_work
+    per_byte, remainder = divmod(extra_work, 64)
+    assert per_byte > 0 and remainder == 0
+    inside = (EXACT_WORK_LIMIT - base_work) // per_byte
+    assert 64 < inside < 65_536
+    used = int(check(inside).payload[0])
+    assert used == base_work + inside * per_byte
+    assert used <= EXACT_WORK_LIMIT < used + per_byte
+    check(inside + 1, 'limit')
+
+
 def qmatch(probe):
     directory = ROOT / 'tests/fixtures/qmatch_v030'
     rows = []
@@ -199,6 +228,13 @@ def qmatch(probe):
         assert len(cases) == count
         rows.extend(cases)
     for row in rows:
+        # Run the saved source and literal QDV in the same isolated prelude
+        # environment. Preserve all original offsets and malformed view fields.
+        row['artifact']['sources'].append({'path': 'std::prelude', 'text': ''})
+        view = row['view']
+        if (isinstance(view, list) and len(view) > 1 and isinstance(view[1], list)
+                and len(view[1]) > 3 and isinstance(view[1][3], list)):
+            view[1][3].append(['source', 'std::prelude', ''])
         original = inner(row['artifact'], row['request'])
         graph = qdv(row['view'])
         error = (None if row['accepted'] else 'decoded_view'
@@ -206,8 +242,10 @@ def qmatch(probe):
         if not row['accepted'] and 'native_code' in row:
             assert row['native_code'] in ('equation', 'request', 'decodedView')
             error = 'decoded_view' if row['native_code'] == 'decodedView' else 'contract'
-        probe.check('--qmatch-source-check', envelope('2026', original, graph),
-                    'execution', error=error)
+        reply = probe.check('--qmatch-source-check', envelope('2026', original, graph),
+                            'execution', error=error)
+        if row['name'] == 'original-exact-i':
+            qmatch_work_boundary(probe, row, int(reply.payload[0]))
         if row['accepted']:
             probe.check('--qmatch-source-check', envelope('2026', original), error='format')
             probe.check('--qmatch-source-check', envelope('2026', original, graph, qdv([])),

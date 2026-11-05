@@ -1,5 +1,7 @@
 import QleisliKernel.Qirf.RawTrace
 import QleisliKernel.Qirf.SelectionCore
+import QleisliKernel.Qirf.SourcePendingMeaning
+import QleisliKernel.SourceTypes.SourceImportRows
 
 /-! Complete source events, literal Raw intervals and original qmatch equations.
 Primitive events remain alongside all original selections.
@@ -21,27 +23,27 @@ def selection {sources owner} : SourceTrace.Event sources owner → Option Sourc
   | .selection event .. => some event
   | .primitive _ => none
   | .phase _ => none
+  | .named _ => none
+  | .operation _ => none
 
-structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
-  source : Witness (SourceTrace.read artifact.sources owner name)
-  sites : List (SelectionCore.Header artifact source.val.signature)
-  everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection
-  everyRequest : sites.map (·.request) = requests
+def selectionData {sources owner} : SourceTrace.Event sources owner →
+    Option (SourceTypes.QuantumSequence.Event × Option (PhaseApplication.Naturals sources) × List String)
+  | .selection event _ scope _ naturals => some (event,naturals,scope)
+  | _ => none
 
-def readHeaders (artifact : Artifact) (owner name : String) (requests : List Request) :
-    WorkM (Headers artifact owner name requests) := do
-  guard (0 < requests.length && requests.length ≤ 128) .limit
-  let source ← SourceTypes.NaturalAffine.witness (SourceTrace.read artifact.sources owner name)
-  let events := source.val.result.events.filterMap selection
-  exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
-    64*(events.map SourceSequence.eventFields).sum))
-  guard (events.length == requests.length) .request
-  let sites ← (events.zip requests).mapM (SelectionCore.readHeader artifact source.val.signature)
-  if everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection then
-    if everyRequest : sites.map (·.request) = requests then
-      return ⟨source,sites,everyEvent,everyRequest⟩
-    else throw .request
-  else throw .request
+/-- The legacy closed-source entry shares one audit of these exact original
+rows with its checked signature and all subsequent arm queries. This is a new
+computation witness, never a claimed execution of SourceTrace.read. Preserve
+the old nongeneric header boundary until the complete v5 continuation exists.
+The catalogue itself contributes no source-relevance rows. -/
+def readSource (sources : Sources) (owner name : String) : WorkM (SourceTrace.Checked sources owner name) := do
+  let catalogue ← GenericCatalogue.read sources
+  let _ ← SourcePendingMeaning.read catalogue
+  let signature ← QuantumSignature.readWithArguments sources owner name {} .external (some catalogue)
+  guard (signature.original.parsedHeader.staticTokens.isNone &&
+    signature.original.parsedHeader.requiresTokens.isNone) .request
+  let body ← SourceTrace.readWithSignature signature
+  return body.checked
 
 /-- Every retained absence lookup still names exactly one original module row. -/
 theorem lookupRow {sources owner name} (lookup : SourceLookup.Checked sources owner name) :
@@ -101,35 +103,87 @@ theorem primitiveRowsOriginal {sources owner}
 
 def eventRows {sources owner} : SourceTrace.Event sources owner → List (String × String)
   | .primitive event => primitiveRows event
-  | .phase event => candidateRows event.application.candidate
+  | .phase event => candidateRows event.application.candidate ++ event.naturals.sourceRows
   | .selection .. => []
+  | .named event => event.signature.sourceRows ++
+      ResolutionProvenance.sourceRows event.target.resolved ++
+      event.target.selected.actuals.actuals.flatMap StaticApplication.Actual.sourceRows
+  | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
+
+/-- Exactly the selected source, event, carrier and arm query rows. Global
+catalogue validation supplies no rows to this seed list. -/
+def queriedRows {artifact owner name} (source : SourceTrace.Checked artifact.sources owner name)
+    (sites : List (SelectionCore.Header artifact source.signature)) : List (String × String) :=
+  source.sourceRows ++ source.result.events.flatMap eventRows ++
+    sites.flatMap fun header =>
+      Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
+
+structure Headers (artifact : Artifact) (owner name : String) (requests : List Request) where
+  source : Witness (readSource artifact.sources owner name)
+  sites : List (SelectionCore.Header artifact source.val.signature)
+  everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection
+  everyRequest : sites.map (·.request) = requests
+  catalogue : GenericCatalogue.Checked artifact.sources
+  sameCatalogue : source.val.signature.operations.catalogue = some catalogue
+  relevance : SourceImportRows.Checked catalogue (queriedRows source.val sites)
+
+def readHeaders (artifact : Artifact) (owner name : String) (requests : List Request) :
+    WorkM (Headers artifact owner name requests) := do
+  guard (0 < requests.length && requests.length ≤ 128) .limit
+  let source ← SourceTypes.NaturalAffine.witness (readSource artifact.sources owner name)
+  guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request
+  let events := source.val.result.events.filterMap selectionData
+  exactWork (Exact.charge (64*(requests.length+events.length+1)^2+
+    64*(events.map fun event => SourceSequence.eventFields event.1).sum))
+  guard (events.length == requests.length) .request
+  let sites ← (events.zip requests).mapM fun (event,request) =>
+    SelectionCore.readHeader artifact source.val.signature (event.1,request) event.2.1 event.2.2
+  if everyEvent : sites.map (·.event) = source.val.result.events.filterMap selection then
+    if everyRequest : sites.map (·.request) = requests then
+      match sameCatalogue : source.val.signature.operations.catalogue with
+      | none => throw .request
+      | some catalogue =>
+        let relevance ← SourceImportRows.read catalogue (queriedRows source.val sites)
+        return ⟨source,sites,everyEvent,everyRequest,catalogue,sameCatalogue,relevance⟩
+    else throw .request
+  else throw .request
 
 def rows {artifact owner name requests} (headers : Headers artifact owner name requests) : List (String × String) :=
-  headers.source.val.signature.sourceRows ++ headers.source.val.result.events.flatMap eventRows ++
-    headers.sites.flatMap fun header =>
-    Carrier.sourceRows header.request.attached header.request.required ++ header.rows.val
+  headers.relevance.rows
+
+/-- Added import rows have an actual retained import-query path from these
+selected original reads. No unrelated catalogue module is a relevance seed. -/
+theorem rows_rooted {artifact owner name requests} (headers : Headers artifact owner name requests)
+    (row : String × String) (member : row ∈ rows headers) :
+    SourceImportRows.Rooted headers.catalogue (queriedRows headers.source.val headers.sites) row :=
+  headers.relevance.rows_rooted row member
 
 def roots {artifact owner name requests} (headers : Headers artifact owner name requests) : List Nat :=
   (artifact.root :: headers.sites.flatMap (·.roots.val)).eraseDups
 
 structure Body {artifact owner name requests} (order : Array Nat)
     (headers : Headers artifact owner name requests) (positions : List Position) where
-  root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
+  root : Witness (Validity.checkRootFromRoots artifact order (rows headers) (roots headers) .qmatch)
   context : Witness (RawTrace.check headers.source.val root.val.dependencies root.val.program positions)
 
 def prepare {artifact owner name requests} (order : Array Nat)
     (headers : Headers artifact owner name requests) (positions : List Position) :
     WorkM (Body order headers positions) := do
-  let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  let nodes := headers.sites.foldl (fun count header =>
-    count+Carrier.sourceNodes header.request.attached header.request.required) 0
-  let rowCount := headers.source.val.signature.sourceRows.length+
-    (headers.source.val.result.events.flatMap eventRows).length+nodes+
-    headers.sites.foldl (fun count header => count+header.rows.val.length) 0
+  let original := artifact.sources.toList
+  let relevant := rows headers
+  let rowBytes := fun (row : String × String) => row.1.utf8ByteSize + row.2.utf8ByteSize
+  let originalBytes := (original.map rowBytes).sum
+  let relevantBytes := (relevant.map rowBytes).sum
+  -- The graph and its root both check source usage. Bound every pair in
+  -- each pass, including both complete byte strings and the table walks.
+  -- The import traversal already checked the original queries in the header.
+  let comparisons := (originalBytes+original.length)*relevant.length + relevantBytes*original.length
+  let references := artifact.entries.size + (artifact.entries.toList.map fun entry => entry.sources.length).sum
   let rootCount := 1+headers.sites.foldl (fun count header => count+header.roots.val.length) 0
-  exactWork (Exact.charge (4*nodes+5+(bytes+artifact.sources.size+1)*(rowCount+1)+16*rootCount^2))
+  exactWork (Exact.charge (2*(comparisons+references+original.length+relevant.length+1) +
+    originalBytes+relevantBytes+16*rootCount^2))
   let root ← SourceTypes.NaturalAffine.witness
-    (Validity.checkRootFromRoots artifact order (rows headers) (roots headers))
+    (Validity.checkRootFromRoots artifact order relevant (roots headers) .qmatch)
   let context ← SourceTypes.NaturalAffine.witness
     (RawTrace.check headers.source.val root.val.dependencies root.val.program positions)
   return ⟨root,context⟩
@@ -144,8 +198,9 @@ structure SelectionSite {sources owner name} (source : Source sources owner name
   scope : List String
   frame : (held ++ owners event.before).Perm
     ([event.selector,event.target] ++ held ++ owners event.remaining)
+  naturals : Option (PhaseApplication.Naturals sources)
   position : Position
-  site : RawTrace.Site source dependencies program whole (.selection event held scope frame) position
+  site : RawTrace.Site source dependencies program whole (.selection event held scope frame naturals) position
 
 def collect {sources owner name dependencies program whole events positions}
     {source : Source sources owner name}
@@ -162,10 +217,12 @@ def collect {sources owner name dependencies program whole events positions}
       | .cons (event := event) (position := position) site rest =>
         let collected ← next rest
         match event with
-        | .selection event held scope frame =>
-          return ⟨event,held,scope,frame,position,site⟩ :: collected
+        | .selection event held scope frame naturals =>
+          return ⟨event,held,scope,frame,naturals,position,site⟩ :: collected
         | .primitive _ => return collected
-        | .phase _ => return collected)
+        | .phase _ => return collected
+        | .named _ => return collected
+        | .operation _ => return collected)
   traverse (events.length+1) sites
 
 def interval {artifact owner name requests order positions}
@@ -232,7 +289,7 @@ def check (artifact : Artifact) (order : Array Nat) (owner name : String)
 theorem Checked.originalRoot {artifact order owner name positions requests}
     (checked : Checked artifact order owner name positions requests) :
     ∃ work, Validity.SourceRootPostconditionFromRoots artifact order (rows checked.headers)
-      (roots checked.headers) checked.body.root.val work := by
+      (roots checked.headers) checked.body.root.val work .qmatch := by
   obtain ⟨work,left,ran⟩ := checked.body.root.property
   exact ⟨work,Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ ran⟩
 

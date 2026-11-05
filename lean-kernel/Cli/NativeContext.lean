@@ -20,7 +20,7 @@ def runNativeContext (mode : Protocol.NativeContext.Mode) (requestedProduct : St
       try readNativeInput (← IO.getStdin)
       catch _ => pure (.error .packet)
     else pure (.ok ByteArray.empty)
-  let work := 10000000
+  let work := mode.workLimit
   let (result,left) := match input with
     | .error error => (.error error,work)
     | .ok bytes => (Protocol.NativeContext.run mode requestedProduct bytes).run work

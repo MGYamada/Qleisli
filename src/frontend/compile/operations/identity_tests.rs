@@ -47,6 +47,8 @@ fn provider(evidence: Arc<FunctionEvidence>) -> Operation {
         meaning: Some(evidence.meaning().clone()),
         effect: Effect::Unitary,
         node: Arc::new(Node::Provider(evidence)),
+        source_origin: None,
+        source_formal: None,
         depth: 1,
         nodes: 1,
     }
@@ -57,6 +59,8 @@ fn repeat(count: u16, child: Operation) -> Operation {
         depth: child.depth + 1,
         nodes: child.nodes + 1,
         node: Arc::new(Node::Repeat(count, child.clone())),
+        source_origin: None,
+        source_formal: None,
         ..child
     }
 }
@@ -66,6 +70,8 @@ fn then(left: Operation, right: Operation) -> Operation {
         depth: 1 + left.depth.max(right.depth),
         nodes: 1 + left.nodes + right.nodes,
         node: Arc::new(Node::Then(left.clone(), right)),
+        source_origin: None,
+        source_formal: None,
         ..left
     }
 }

@@ -84,8 +84,8 @@ def sourcesUsedWithSources (artifact : Qirf.Artifact) (extra : List (String × S
 source-row coverage is parameterized; the carrier profile derives exact rows
 from checked original nominal declarations rather than a supplied flag. -/
 def checkRootFromRoots (artifact : Qirf.Artifact) (order : Array Nat)
-    (extra : List (String × String)) (roots : List Nat) : WorkM Root := do
-  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots
+    (extra : List (String × String)) (roots : List Nat) (profile : WorkProfile := .ordinary) : WorkM Root := do
+  let receipts ← checkGraphReceiptsFromRoots artifact order extra roots profile
   let dependencies := (before receipts).map Semantics.ObservingFunction.Receipt.dependency
   guard (sourcesUsedWithSources artifact extra)
   let program ← lift (readOption artifact.programs[artifact.root]?)

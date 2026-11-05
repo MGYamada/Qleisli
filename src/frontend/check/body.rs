@@ -524,12 +524,9 @@ impl Checker<'_, '_> {
     }
     fn retain_expression_statics(&mut self, expression: &Expr, scope: &Scope) -> Result<()> {
         let roots = plans::expression_natural_roots(expression, &self.program.budget)?;
-        let operation = match &expression.kind {
-            ExprKind::ApplyStatic { operation, .. }
-            | ExprKind::Adjoint { operation, .. }
-            | ExprKind::Controlled { operation, .. } => Some(operation),
-            _ => None,
-        };
+        let operations = plans::expression_operations(expression, |span, count| {
+            self.program.budget.charge(span, count)
+        })?;
         let primitive = match &expression.kind {
             ExprKind::Call {
                 callee,
@@ -550,7 +547,7 @@ impl Checker<'_, '_> {
             }
             _ => None,
         };
-        if roots.is_empty() && primitive.is_none() && operation.is_none() {
+        if roots.is_empty() && primitive.is_none() && operations.is_empty() {
             return Ok(());
         }
         let environment = self.plan_environment(scope, expression.span)?;
@@ -564,16 +561,10 @@ impl Checker<'_, '_> {
                 source.span,
             )?;
         }
-        if let Some(source) = operation {
+        for (source, requested) in operations {
             self.program.budget.charge(source.span, 5)?;
             let node = self.index().node_id_static_op(source);
             let expression_node = self.original_node(expression.span)?;
-            let requested = match expression.kind {
-                ExprKind::ApplyStatic { .. } => [true, false, false],
-                ExprKind::Adjoint { .. } => [false, true, false],
-                ExprKind::Controlled { .. } => [false, false, true],
-                _ => unreachable!("original runtime operation root selected above"),
-            };
             let operation = Arc::new(self.capture().operation(source)?);
             self.record_body_static(
                 node,

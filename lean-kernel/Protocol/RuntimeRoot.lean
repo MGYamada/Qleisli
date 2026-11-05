@@ -98,7 +98,7 @@ def decode (value : Json) : WorkM Qirf.RuntimeFamily.Request := do
     | "isometry" => pure .iso
     | "observe" => pure .observe
     | _ => throw "unknown runtime public effect")
-  return ⟨selection,owner,name,parameters,inputs,rows,result,stored,effect,⟨bases,naturals⟩⟩
+  return ⟨selection,owner,name,parameters,inputs,rows,result,stored,effect,{bases,naturals}⟩
 
 def readRequest (bytes : ByteArray) : WorkM Qirf.RuntimeFamily.Request := do
   let value ← adapt (do

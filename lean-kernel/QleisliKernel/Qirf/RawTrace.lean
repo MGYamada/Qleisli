@@ -20,16 +20,27 @@ def offset {sources owner} : Event sources owner → Nat
   | .selection event .. => event.parsed.keyword.span.startByte
   | .primitive event => event.call.calleeOffset
   | .phase event => event.call.calleeOffset
+  | .named event => event.call.calleeOffset
+  | .operation event => event.call.calleeOffset
 
 def selected {sources owner} : Event sources owner → List Owner
   | .selection event .. => [event.selector,event.target]
   | .primitive event => [event.operand]
   | .phase event => [event.operand]
+  | .named event => event.inputOwners
+  | .operation event => event.inputOwners
+
+def returned {sources owner} : Event sources owner → List Owner
+  | .named event => event.outputOwners
+  | .operation event => event.outputOwners
+  | event => selected event
 
 def frameOwners {sources owner} : Event sources owner → List Owner
   | .selection event held .. => held ++ owners event.before
   | .primitive event => event.held ++ owners event.before
   | .phase event => event.held ++ owners event.before
+  | .named event => event.held ++ owners event.before
+  | .operation event => event.frameOwners
 
 def leafRoles (frame : Qirf.SourceSequence.Frame) : Option (List Owner) :=
   frame.mapM fun (_,tree) => match tree with
@@ -46,6 +57,24 @@ instance (frame : Qirf.SourceSequence.Frame) (roles : List Owner) :
 
 def primitiveKind : SourceTrace.PrimitiveKind → PrimitiveAction.Kind
   | .h => .h | .globalPhaseEighth => .globalPhaseEighth
+
+/-- Only the body-computed source owner identities select output tokens.
+An equal physical width never identifies a returned logical owner. -/
+def reorderTokens (roles : List Owner) (tokens : List Nat) (wanted : List Owner) : Option (List Nat) :=
+  wanted.mapM fun role => ((roles.zip tokens).find? fun pair => pair.1 == role).map (·.2)
+
+structure NamedAction {sources owner} (event : SourceCalls.Event sources owner)
+    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
+    (position : Position) (inputs outputs : List Nat) where
+  stableOutputs : List Nat
+  originalOrder : reorderTokens event.outputOwners outputs event.inputOwners = some stableOutputs
+  interval : Qirf.PureInterval.Many.Checked event.inputOwners.length dependencies program
+    position.start position.count inputs stableOutputs event.inputOwners
+
+def NamedAction.program {sources owner dependencies program position inputs outputs}
+    {event : SourceCalls.Event sources owner}
+    (checked : NamedAction event dependencies program position inputs outputs) : Semantics.Observation.Program :=
+  Semantics.Ownership.pureProgram (PureInterval.fragment checked.interval.selected checked.interval.slice outputs)
 
 /-- The selected source event determines the checked action. The selection
 case checks the interval only; its arm semantics must be supplied separately. -/
@@ -66,6 +95,8 @@ def Action {sources owner} (event : Event sources owner)
         position.start position.count input output event.operand
         (.phase event.application.coefficient.exponent)
     | _,_ => Empty
+  | .named event => NamedAction event dependencies program position inputs outputs
+  | .operation _ => Empty
 
 def readAction {sources owner} (event : Event sources owner)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
@@ -89,6 +120,16 @@ def readAction {sources owner} (event : Event sources owner)
         position.start position.count input output event.operand
         (.phase event.application.coefficient.exponent)
     | _,_ => throw .request
+  | .named event =>
+    exactWork (Exact.charge (64*(Raw.OwnerFlow.fields event.inputOwners+
+      Raw.OwnerFlow.fields event.outputOwners+inputs.length+outputs.length+1)^2))
+    match originalOrder : reorderTokens event.outputOwners outputs event.inputOwners with
+    | none => throw .request
+    | some stableOutputs =>
+      let interval ← Qirf.PureInterval.Many.checkPrepared event.inputOwners.length dependencies program prepared
+        position.start position.count inputs stableOutputs event.inputOwners
+      return ⟨stableOutputs,originalOrder,interval⟩
+  | .operation _ => throw .request
 
 structure Site {sources owner name} (source : Source sources owner name)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
@@ -104,7 +145,7 @@ structure Site {sources owner name} (source : Source sources owner name)
   inputs : List Nat
   inputBinding : Qirf.SourceSequence.tokensOf before.val (selected event) = some inputs
   outputs : List Nat
-  outputBinding : Qirf.SourceSequence.tokensOf after.val (selected event) = some outputs
+  outputBinding : Qirf.SourceSequence.tokensOf after.val (returned event) = some outputs
   action : Action event dependencies program position inputs outputs
 
 def readSite {sources owner name} (source : Source sources owner name)
@@ -125,7 +166,7 @@ def readSite {sources owner name} (source : Source sources owner name)
         match inputBinding : Qirf.SourceSequence.tokensOf before.val (selected event) with
         | none => throw .request
         | some inputs =>
-          match outputBinding : Qirf.SourceSequence.tokensOf after.val (selected event) with
+          match outputBinding : Qirf.SourceSequence.tokensOf after.val (returned event) with
           | none => throw .request
           | some outputs =>
             let action ← readAction event dependencies program prepared position inputs outputs

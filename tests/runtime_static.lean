@@ -77,7 +77,7 @@ private def typeComparisons : IO Unit := do
   let source := "pub enum Tri{First,Middle,Last} " ++ generic
   let origin : Semantics.FiniteCarrier.Origin := ⟨"main","Tri",source⟩
   let tri : Semantics.FiniteCarrier.Basis := [.enumeration origin ["First","Middle","Last"]]
-  let arguments : StaticTypes.Arguments := ⟨[("A",tri)],[("n",2)]⟩
+  let arguments : StaticTypes.Arguments := {bases := [("A",tri)], naturals := [("n",2)]}
   let cases : List (String × String × String × StaticTypes.Arguments × Option Semantics.FiniteCarrier.Basis) := [
     ("nominal Basis retains the original type",source,"A",arguments,some tri),
     ("type tree and Nat substitution compose",source,"(A,Bits<n-1>)",arguments,
@@ -101,7 +101,7 @@ private def typeComparisons : IO Unit := do
     ("zero Bits actual remains Bits",source,"A",{arguments with bases := [("A",[.bits 0])]},some [.bits 0]),
     ("false original premise refuses",source,"A",{arguments with naturals := [("n",0)]},none),
     ("caller Nat cannot capture nominal fields", "pub struct Packet{field:Bits<n>} " ++ generic,
-      "Packet",⟨[("A",[.unit])],[("n",2)]⟩,none),
+      "Packet",{bases := [("A",[.unit])], naturals := [("n",2)]},none),
     ("operation closure remains outside this component",
       "pub unitary fn keep[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}",
       "Bit",{},none)
@@ -123,7 +123,7 @@ private def runtimeResult (program : String) (arguments : StaticTypes.Arguments)
 private def runtimeComparisons : IO Unit := do
   let tri : Semantics.FiniteCarrier.Basis :=
     [.enumeration ⟨"labels","Tri",runtimeLabels⟩ ["First","Middle","Last"]]
-  let arguments : StaticTypes.Arguments := ⟨[("A",tri)],[("n",2)]⟩
+  let arguments : StaticTypes.Arguments := {bases := [("A",tri)], naturals := [("n",2)]}
   let ordinary := Semantics.RuntimeType.ordinary
   let owner := Semantics.RuntimeType.owner
   let tuple := Semantics.RuntimeType.tuple
@@ -142,7 +142,7 @@ private def runtimeComparisons : IO Unit := do
       "pub fn keep[const A:Basis,const n:Nat](x:(A,Bits<n>))->(A,Bits<n>){x}",arguments,
       some ([tuple 2 [ordinary tri,ordinary [.bits 2]]],tuple 2 [ordinary tri,ordinary [.bits 2]])),
     ("zero-width owner remains an owner",
-      "pub unitary fn keep[const A:Basis](q:Q<A>)->(Q<A>,Unit){(q,())}",⟨[("A",[.unit])],[]⟩,
+      "pub unitary fn keep[const A:Basis](q:Q<A>)->(Q<A>,Unit){(q,())}",{bases := [("A",[.unit])]},
       some ([owner [.unit]],tuple 2 [owner [.unit],ordinary [.unit]])),
     ("public quantum header needs an explicit effect",
       "pub fn keep[const A:Basis,const n:Nat](q:Q<A>)->Q<A>{q}",arguments,none),

@@ -121,8 +121,8 @@ def cases():
     matrices[-1] = [matrices[-1]]
     for i, matrix in enumerate(matrices):
         value = description(matrix)
-        for budget in [0, 4*len(value['entries'])-1, 4*len(value['entries']), 10000000, 10000001]:
-            add(f'matrix_{i}_work_{budget}', 'matrix', budget >= 4*len(value['entries']) and budget <= 10000000,
+        for budget in [0, 4*len(value['entries'])-1, 4*len(value['entries']), 10000000, 10000001, 20000000, 20000001]:
+            add(f'matrix_{i}_work_{budget}', 'matrix', budget >= 4*len(value['entries']) and budget <= 20000000,
                 text=dumps(value), budget=budget, oracle=matrix)
     for name, matrix, accepted in [
         ('unit_scalar_unitary', [[[-1,0,0,0]]], True),

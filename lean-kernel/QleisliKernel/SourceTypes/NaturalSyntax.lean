@@ -8,6 +8,11 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.SourceTypes.NaturalSyntax
 open Semantics.SourceNatural
 
+/-- Existing contextual Rust Nat-name positions retain these type words as
+names. Ordinary identifiers and qualified path tails keep their own grammar. -/
+def isName (token : String) : Bool :=
+  identifier token || ["Q","Op","Unit","Bit","CBit"].contains token
+
 private structure Node where
   expression : Expr
   depth : Nat
@@ -149,7 +154,7 @@ private def step (s : Scan) (token : String) : Except String Scan := do
       if !s.operand then throw "missing natural operator"
       -- Every atom occupies one common parser nesting level, including leaves.
       if s.frames.length ≥ 64 then throw "natural nesting capacity"
-      if identifier token then return {s with pending := [token]}
+      if isName token then return {s with pending := [token]}
       push s ⟨.number (← decimal token),1⟩
 
 /-- Consume the complete expression; brackets describe static call arguments,

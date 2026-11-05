@@ -43,6 +43,14 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
+The `changes` job checks schema and admitted-guarantee source identities before
+scheduling executable validation. Stale records fail this inexpensive gate
+before Rust, native and distribution builds start. The independent
+`current-proof-records` workflow can still regenerate and verify those records.
+Each Rust producer also runs the pinned strict Clippy command before native
+preparation and test execution. The canonical lint/research verification remains
+in its complete validation plan and retains its source-bound receipt.
+
 Cargo builds and documents without a native checker. Ordinary Rust tests that
 need it use `cfg_attr(not(qleisli_native_tests), ignore = ...)`, with the explicit
 `native-kernel gate: requires QLEISLI_KERNEL` reason. `build.rs` enables only this
@@ -80,11 +88,19 @@ not authorized by this rule.
 The separate `current-proof-records` workflow prepares reviewable proof metadata
 for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-ordinary-adts`, `codex/beta-typed-ordinary-runtime`,
-`codex/beta-qmatch`, `codex/beta-quantum-runtime-types` or
+`codex/beta-qmatch`, `codex/beta-qmatch-arm-body`, `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
-The selected branch and workflow source must agree.
-It runs the canonical
-builds, audits, full reductions and fixed protected-output comparisons before
+The selected branch and workflow source must agree. On pushes, the producer
+first records the schema and scoped-guarantee source identity checks. Matching
+records finish this bootstrap workflow at that point. Stale records and manual
+dispatches run the complete fresh verification and proposal generation below.
+Required ordinary CI retains its own executable checks and proof-lane policy.
+When regeneration is required, the runner compiles the
+native package from that checkout in a separate 15-minute preparation step and
+retains the build log with its commit. The registry then checks the native
+build, compiles the mathematical package, audits both packages and runs its
+fresh kernel replay and schema export within its existing deadline.
+The producer runs the full reductions and fixed protected-output comparisons before
 proposing changes to the schema registry, three current-evidence records and the
 derived current continuity snapshot. Its full command streams and five-file
 patch are uploaded as a distinct artifact;
@@ -340,6 +356,11 @@ still runs in the separate required Lean job. Packaging-policy changes select
 `full`. No previous executable or validation output is reused.
 
 Full macOS/Linux jobs also retain native distribution archives and SHA-256 files.
+Fresh bundle preparation compiles all library modules in import order, at most
+64 modules per command, then builds the complete library target before native
+code generation and linking. Each command retains the existing 600-second deadline.
+The compiled declaration audit and full-lane replays run on those same fresh
+products in the isolated source copy.
 `archive_lean_kernel.py` requires a clean commit, matching source/payload hashes
 and full fresh replay. It preserves licenses and records the exact source commit
 inside the archive. CI artifacts are candidates: publishing GitHub Release assets

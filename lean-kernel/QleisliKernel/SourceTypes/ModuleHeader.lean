@@ -26,6 +26,18 @@ structure Projection (source : String) (original : List LocatedToken) where
   initial : modulePrefix = [] ∨ (disabled = true ∧ modulePrefix = moduleTokens.take 5)
   restored : modulePrefix ++ tokens = original
 
+def projectKnown (source : String) (original : List LocatedToken) (moduleTokens : List LocatedToken)
+    (lexed : lexLocated source = .ok moduleTokens) (disabled : Bool)
+    (policy : policyTokens (moduleTokens.map (·.text)) = .ok disabled) :
+    Except String (Projection source original) := do
+  if (original.take 5).map (·.text) == ["#","!","[","no_implicit_prelude","]"] then
+    if initial : disabled = true ∧ original.take 5 = moduleTokens.take 5 then
+      return ⟨moduleTokens,lexed,disabled,policy,original.take 5,original.drop 5,
+        Or.inr initial,List.take_append_drop 5 original⟩
+    else throw "declaration header directive is not initial"
+  else
+    return ⟨moduleTokens,lexed,disabled,policy,[],original,Or.inl rfl,rfl⟩
+
 def project (source : String) (original : List LocatedToken) :
     Except String (Projection source original) := do
   match lexed : lexLocated source with
@@ -34,13 +46,28 @@ def project (source : String) (original : List LocatedToken) :
     match policy : policyTokens (moduleTokens.map (·.text)) with
     | .error error => throw error
     | .ok disabled =>
-      if (original.take 5).map (·.text) == ["#","!","[","no_implicit_prelude","]"] then
-        if initial : disabled = true ∧ original.take 5 = moduleTokens.take 5 then
-          return ⟨moduleTokens,lexed,disabled,policy,original.take 5,original.drop 5,
-            Or.inr initial,List.take_append_drop 5 original⟩
-        else throw "declaration header directive is not initial"
-      else
-        return ⟨moduleTokens,lexed,disabled,policy,[],original,Or.inl rfl,rfl⟩
+      projectKnown source original moduleTokens lexed disabled policy
+
+theorem project_known (source : String) (original moduleTokens : List LocatedToken)
+    (lexed : lexLocated source = .ok moduleTokens) (disabled : Bool)
+    (policy : policyTokens (moduleTokens.map (·.text)) = .ok disabled) :
+    project source original = projectKnown source original moduleTokens lexed disabled policy := by
+  unfold project
+  split
+  next message failed =>
+    have impossible := failed.symm.trans lexed
+    cases impossible
+  next tokens tokensRead =>
+    have sameTokens : tokens = moduleTokens := Except.ok.inj (tokensRead.symm.trans lexed)
+    subst tokens
+    split
+    next message failed =>
+      have impossible := failed.symm.trans policy
+      cases impossible
+    next chosen chosenRead =>
+      have sameChoice : chosen = disabled := Except.ok.inj (chosenRead.symm.trans policy)
+      subst chosen
+      rfl
 
 theorem Projection.original_header {source original} (projection : Projection source original) :
     projection.modulePrefix ++ projection.tokens = original := projection.restored

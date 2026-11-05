@@ -1,0 +1,263 @@
+import QleisliKernel.SourceTypes.QuantumMoves
+import QleisliKernel.SourceTypes.RuntimeSignature
+import QleisliKernel.Raw.OwnerFlow
+import QleisliKernel.Semantics.SourceOrdinary
+
+/-! Typed symbolic runtime values for complete original-body traversal.
+Ordinary values copy; any value containing a logical quantum owner moves.
+Measurement symbols preserve original callee origins and the full call path.
+These values are source-checking metadata, not simulator states or receipts.
+Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
+namespace QleisliKernel.SourceTypes.SourceRuntimeValues
+open QleisliKernel QleisliKernel.Semantics.SourceOwners
+open QleisliKernel.Semantics.FiniteCarrier
+
+abbrev Site := Semantics.SourceOrdinary.Site
+abbrev Expression := Semantics.SourceOrdinary.Expression
+
+namespace Expression
+@[match_pattern] abbrev input := Semantics.SourceOrdinary.Expression.input
+@[match_pattern] abbrev basisInput := Semantics.SourceOrdinary.Expression.basisInput
+@[match_pattern] abbrev unit := Semantics.SourceOrdinary.Expression.unit
+@[match_pattern] abbrev bit := Semantics.SourceOrdinary.Expression.bit
+@[match_pattern] abbrev ordinal := Semantics.SourceOrdinary.Expression.ordinal
+@[match_pattern] abbrev measured := Semantics.SourceOrdinary.Expression.measured
+@[match_pattern] abbrev project := Semantics.SourceOrdinary.Expression.project
+@[match_pattern] abbrev combine := Semantics.SourceOrdinary.Expression.combine
+@[match_pattern] abbrev field := Semantics.SourceOrdinary.Expression.field
+@[match_pattern] abbrev equalsOrdinal := Semantics.SourceOrdinary.Expression.equalsOrdinal
+@[match_pattern] abbrev not := Semantics.SourceOrdinary.Expression.not
+@[match_pattern] abbrev xor := Semantics.SourceOrdinary.Expression.xor
+@[match_pattern] abbrev and := Semantics.SourceOrdinary.Expression.and
+@[match_pattern] abbrev choose := Semantics.SourceOrdinary.Expression.choose
+end Expression
+
+abbrev Atom := Semantics.SourceOrdinary.Atom
+abbrev Value := Semantics.SourceOrdinary.Value
+
+namespace Atom
+@[match_pattern] abbrev owner := Semantics.SourceOrdinary.Atom.owner
+@[match_pattern] abbrev ordinary := Semantics.SourceOrdinary.Atom.ordinary
+@[match_pattern] abbrev tuple := Semantics.SourceOrdinary.Atom.tuple
+end Atom
+
+inductive BindingOrigin where
+  | parameter (ordinal : Nat)
+  | letBinding (offset : Nat)
+  | basis (offset : Nat)
+  | computedData (offset : Nat)
+  | computedAuxiliary (offset : Nat)
+  deriving BEq, DecidableEq, Repr
+
+structure Cell where
+  name : String
+  value : Value
+  origin : BindingOrigin
+  deriving BEq, DecidableEq, Repr
+
+abbrev Environment := List Cell
+
+def valueOwners (value : Value) : List Owner :=
+  value.filterMap fun atom => match atom with | .owner owner => some owner | _ => none
+
+def owners (environment : Environment) : List Owner := environment.flatMap (valueOwners ∘ Cell.value)
+
+def ordinary (value : Value) : List (Basis × Expression) :=
+  value.filterMap fun atom => match atom with | .ordinary basis term => some (basis,term) | _ => none
+
+def typeOf (value : Value) : Semantics.RuntimeType.Tree := value.flatMap fun atom => match atom with
+  | .owner owner => Semantics.RuntimeType.owner owner.basis
+  | .ordinary basis _ => Semantics.RuntimeType.ordinary basis
+  | .tuple arity => [.finite (if arity == 2 then .pair else .tuple arity)]
+
+private def spanValue : Nat → Nat → Value → Value → Except String (Value × Value) :=
+  Nat.rec (fun _ _ _ => throw "incomplete runtime source value") (fun _ recurse pending rest reversed => do
+    if pending == 0 then return (reversed.reverse,rest)
+    let atom :: tail := rest | throw "missing runtime source value"
+    let children := match atom with | .tuple arity => arity | _ => 0
+    if children > 128 then throw "runtime source tuple capacity"
+    recurse (pending-1+children) tail (atom :: reversed))
+
+def splitValue (value : Value) : Except String (Value × Value) :=
+  spanValue (value.length+1) 1 value []
+
+/-- Copying a wholly ordinary tuple retains its binding. A mixed tuple moves
+as a whole and cannot be used to read or duplicate its quantum-containing part. -/
+def take (name : String) (environment : Environment) : Except String (Value × Environment) :=
+  (environment.foldr (fun cell (rest,result) =>
+    (cell :: rest,if cell.name == name then
+      .ok (cell.value,if (valueOwners cell.value).isEmpty then cell :: rest else rest)
+      else result.map fun (value,remaining) => (value,cell :: remaining)))
+    ([],throw "undefined or consumed runtime source binding")).2
+
+private def finiteSpan : Nat → Nat → Semantics.RuntimeType.Tree → Basis →
+    Except String (Basis × Semantics.RuntimeType.Tree) :=
+  Nat.rec (fun _ _ _ => throw "incomplete runtime finite tree")
+    (fun _ recurse pending rest reversed => do
+      if pending == 0 then return (reversed.reverse,rest)
+      let .finite atom :: tail := rest | throw "quantum marker inside a finite source basis"
+      let children := (Semantics.FiniteCarrier.children atom).getD 0
+      recurse (pending-1+children) tail (atom :: reversed))
+
+/-- Definitional proof bridge to the same finite-prefix scan. This alias
+introduces no alternate parser, evaluation, guard or work charge. -/
+abbrev finitePrefixSpan := finiteSpan
+
+def pairBases (basis : Basis) : Except String (Basis × Basis) := do
+  let .pair :: fields := basis | throw "source basis is not an exact pair"
+  let tree := fields.map Semantics.RuntimeType.Atom.finite
+  let (first,rest) ← finiteSpan (tree.length+1) 1 tree []
+  let (second,rest) ← finiteSpan (rest.length+1) 1 rest []
+  if !rest.isEmpty then throw "source pair basis has trailing fields"
+  return (first,second)
+
+private def seedNode : Nat → Semantics.RuntimeType.Tree → Nat → Nat →
+    Except String (Value × Semantics.RuntimeType.Tree × Nat × Nat) :=
+  Nat.rec (fun _ _ _ => throw "runtime source parameter nesting")
+    (fun _ recurse tree nextOwner nextOrdinary => do
+      let atom :: rest := tree | throw "empty runtime source parameter"
+      match atom with
+      | .quantum =>
+        let (basis,tail) ← finiteSpan (rest.length+1) 1 rest []
+        return ([.owner ⟨nextOwner,basis⟩],tail,nextOwner+1,nextOrdinary)
+      | .finite (.pair) | .finite (.tuple _) =>
+        let .finite finite := atom | throw "runtime source tuple marker"
+        let some count := Semantics.FiniteCarrier.children finite | throw "runtime source tuple arity"
+        let (children,tail,owner,ordinary) ← (List.range count).foldlM
+          (fun (values,tail,owner,ordinary) _ => do
+            let (value,tail,owner,ordinary) ← recurse tail owner ordinary
+            return (values ++ value,tail,owner,ordinary)) ([],rest,nextOwner,nextOrdinary)
+        return (.tuple count :: children,tail,owner,ordinary)
+      | .finite _ =>
+        let (basis,tail) ← finiteSpan (tree.length+1) 1 tree []
+        return ([.ordinary basis (.input nextOrdinary)],tail,nextOwner,nextOrdinary+1))
+
+def seedValues {sources : Sources} (parameters : List (RuntimeSignature.Part sources)) :
+    Except String (List Value × Nat × Nat) := do
+  parameters.foldlM (fun (values,owner,ordinary) parameter => do
+    let (value,rest,owner,ordinary) ← seedNode 65 parameter.tree owner ordinary
+    if !rest.isEmpty then throw "runtime source parameter has trailing type nodes"
+    return (values ++ [value],owner,ordinary)) ([],0,0)
+
+private def bindNode (origin : BindingOrigin) : Nat → QuantumMoves.Term → Value → Environment →
+    Except String (QuantumMoves.Term × Value × Environment) :=
+  Nat.rec (fun _ _ _ => throw "runtime source pattern nesting")
+    (fun _ recurse term value environment => do
+      let atom :: rest := term | throw "missing runtime source pattern"
+      match atom with
+      | .name name =>
+        let (selected,tail) ← splitValue value
+        if environment.any (fun cell => cell.name == name && !(valueOwners cell.value).isEmpty) then
+          throw "shadowing a live runtime quantum binding"
+        return (rest,tail,⟨name,selected,origin⟩ :: environment.filter (·.name != name))
+      | .wildcard =>
+        let (selected,tail) ← splitValue value
+        if !(valueOwners selected).isEmpty then throw "implicit runtime quantum discard"
+        return (rest,tail,environment)
+      | .tuple count =>
+        if count == 0 then
+          match value with
+          | .ordinary [.unit] _ :: tail => return (rest,tail,environment)
+          | _ => throw "Unit binding pattern requires exact ordinary Unit"
+        let .tuple arity :: tail := value | throw "runtime tuple pattern on an atomic owner/value"
+        if arity != count then throw "runtime source pattern tuple shape"
+        (List.range count).foldlM (fun (term,value,current) _ => recurse term value current)
+          (rest,tail,environment))
+
+def bind (pattern : List String) (value : Value) (environment : Environment)
+    (origin : BindingOrigin := .letBinding 0) : Except String Environment := do
+  let term ← QuantumMoves.parsePattern 65 pattern
+  let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
+  if !decide names.Nodup then throw "duplicate binding in one runtime pattern"
+  let (term,value,result) ← bindNode origin 65 term value environment
+  if !term.isEmpty || !value.isEmpty || result.length > 128 then throw "incomplete runtime source binding"
+  return result
+
+def seed (patterns : List (List String)) (values : List Value) : Except String Environment := do
+  if patterns.length != values.length then throw "runtime source parameter count"
+  ((patterns.zip values).zipIdx).foldlM (fun environment ((pattern,value),index) => do
+    let term ← QuantumMoves.parsePattern 65 pattern
+    let names := term.filterMap fun atom => match atom with | .name name => some name | _ => none
+    if names.any (fun name => environment.any (·.name == name)) then throw "duplicate runtime parameter binding"
+    bind pattern value environment (.parameter index)) []
+
+def mappedOwner (actuals : List Owner) (owner : Owner) : Except String Owner := do
+  let some actual := actuals[owner.ordinal]? | throw "runtime call owner ordinal"
+  if actual.basis != owner.basis then throw "runtime call owner nominal type"
+  return actual
+
+def transportStep (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) : (e : Expression) →
+    ((child : Expression) → sizeOf child < sizeOf e → Except String Expression) → Except String Expression
+  | .input ordinal, _ => do
+    let some (_,actual) := ordinary[ordinal]? | throw "runtime call ordinary ordinal"
+    return actual
+  | .basisInput ordinal, _ => pure (.basisInput ordinal)
+  | .unit, _ => pure .unit
+  | .bit value, _ => pure (.bit value)
+  | .ordinal value, _ => pure (.ordinal value)
+  | .measured origin calls owner, _ => do return .measured origin (site :: calls) (← mappedOwner actuals owner)
+  | .project value ordinal, child => do return .project (← child value (by decreasing_tactic)) ordinal
+  | .combine stride first second, child => do
+    return .combine stride (← child first (by decreasing_tactic))
+      (← child second (by decreasing_tactic))
+  | .field stride dimension receiver, child => do
+    return .field stride dimension (← child receiver (by decreasing_tactic))
+  | .equalsOrdinal ordinal value, child =>
+    return .equalsOrdinal ordinal (← child value (by decreasing_tactic))
+  | .not value, child => do return .not (← child value (by decreasing_tactic))
+  | .xor first second, child => do
+    let first ← child first (by decreasing_tactic)
+    let second ← child second (by decreasing_tactic)
+    return .xor first second
+  | .and first second, child => do
+    let first ← child first (by decreasing_tactic)
+    let second ← child second (by decreasing_tactic)
+    return .and first second
+  | .choose condition thenValue elseValue, child => do
+    return .choose (← child condition (by decreasing_tactic))
+      (← child thenValue (by decreasing_tactic))
+      (← child elseValue (by decreasing_tactic))
+
+def expressionTransport (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) : Expression → Except String Expression :=
+  Semantics.SourceOrdinary.Expression.descend (transportStep site actuals ordinary)
+
+theorem expressionTransport_unfold (site : Site) (actuals : List Owner) (ordinary : List (Basis × Expression)) (e : Expression) :
+    expressionTransport site actuals ordinary e = transportStep site actuals ordinary e (fun child _ => expressionTransport site actuals ordinary child) :=
+  Semantics.SourceOrdinary.Expression.descend_eq _ e
+
+/-- Measure the same original tree for structural size and source-byte work.
+No source nesting bound caps a longer flat chain of calls or helpers. -/
+private def expressionWeight (leaf : Expression → Nat) : Expression → Nat :=
+  Semantics.SourceOrdinary.Expression.descend (motive := fun _ => Nat) (fun e => match e with
+    | .project x _ | .field _ _ x | .equalsOrdinal _ x | .not x => fun child =>
+      1 + child x (by decreasing_tactic)
+    | .xor a b | .and a b | .combine _ a b => fun child =>
+      1 + child a (by decreasing_tactic) + child b (by decreasing_tactic)
+    | .choose c t f => fun child =>
+      1 + child c (by decreasing_tactic) + child t (by decreasing_tactic) + child f (by decreasing_tactic)
+    | value => fun _ => leaf value)
+
+def expressionSize : Expression → Nat := expressionWeight (fun _ => 1)
+
+def siteFields (site : Site) : Nat :=
+  site.moduleName.utf8ByteSize+site.functionName.utf8ByteSize+2
+
+def expressionFields : Expression → Nat := expressionWeight (fun
+  | .measured origin calls owner => 1+siteFields origin+(calls.map siteFields).sum+Raw.OwnerFlow.fields [owner]
+  | _ => 1)
+
+def valueFields (value : Value) : Nat := value.foldl (fun count atom => count+match atom with
+  | .owner owner => Raw.OwnerFlow.fields [owner]
+  | .ordinary basis expression => Raw.OwnerFlow.fields [⟨0,basis⟩]+expressionFields expression
+  | .tuple _ => 1) 0
+
+def transport (site : Site) (actuals : List Owner) (inputs : List (Basis × Expression))
+    (value : Value) : Except String Value :=
+  value.mapM fun atom => do
+    match atom with
+    | .owner owner => return .owner (← mappedOwner actuals owner)
+    | .ordinary basis expression =>
+      return .ordinary basis (← expressionTransport site actuals inputs expression)
+    | .tuple arity => return .tuple arity
+
+end QleisliKernel.SourceTypes.SourceRuntimeValues

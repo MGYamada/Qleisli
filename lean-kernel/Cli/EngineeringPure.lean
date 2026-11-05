@@ -21,14 +21,14 @@ def runEngineeringPure : IO UInt32 := do
     catch _ =>
       IO.println "qleisli.engineering-pure-native 1\nerror\nformat"
       return (1 : UInt32)
-  let (result,left) := (CheckedEngineeringPure.run bytes).run 10000000
+  let (result,left) := (CheckedEngineeringPure.run bytes).run QleisliKernel.exactWorkLimit
   match result with
   | .error error =>
     IO.println ("qleisli.engineering-pure-native 1\nerror\n" ++ Native.errorCode error)
     return 1
   | .ok _ =>
     IO.println ("qleisli.engineering-pure-native 1\nengineering-checked\nexecution\n" ++
-      toString (10000000-left))
+      toString (QleisliKernel.exactWorkLimit-left))
     return 0
 
 end QleisliKernel.Cli

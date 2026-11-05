@@ -6,9 +6,389 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check Rust lint failures before native preparation and lengthy tests.
+- Compile fresh native bundles in bounded batches in import order, then build
+  the complete library and executable before auditing and replaying the same products.
+- Run the proof-record bootstrap on pushes when source records need regeneration,
+  and always run fresh verification for manual dispatch.
+
+- Detect stale schema and scoped-guarantee source records before scheduling
+  Rust, native and distribution CI builds.
+
+- Import the experimental RInfScalar Julia reference and both existing test
+  suites into `julia/src/` and `julia/test/`. Keep arithmetic unchanged, adapt
+  include paths and run the suites through the shared Julia test entry point.
 - Add the Qleisli Proof & Tactic Library preview in [`qptl/`](qptl/README.md).
   It provides categorical dagger, isometry and tensor laws, a finite complex
   matrix model and a structural proof tactic in a standalone Lean package.
+
+- The common body checker retains each selection at its original position
+  in a named call or conditional arm. Its local action and Gram equation
+  apply to that node on arbitrary external reference states. Named-call
+  boundaries bind the original source owners to the selected tokens, ports
+  and ordered axes in the parent frame. Primitive steps retain the source
+  operand and phase exponent used to check the native fragment. For a named
+  call with one primitive and one native gate or unitary tape, Lean relates
+  the original operator to the caller's action on correlated reference states,
+  including the final port permutation. The three-call regression checks the
+  phase before the selection and the Hadamard after it with a zero-width spectator.
+  For a named call whose body is one complete selection, Lean also relates
+  the parent's literal events to the original arm table. Adjacent checked
+  intervals compose in execution order, including the parent's final output
+  permutation. Connecting the whole source call chain and preserving every
+  observing history remain open.
+
+- Associate original arm source assertions with the same complete native
+  occurrence and its existing checked Meaning equation in individual constructed
+  reads and the common body graph continuation. Carry the authentic arm through
+  its indexed source plan and native request. Retain original token
+  positions, caller and Meaning declaration/source. The common body checker
+  traces each written arm assertion from its runtime call back to a unique
+  original duty in the generic queue. Repeated calls to the same function
+  retain distinct source occurrences even with identical static arguments.
+  A directly applied provider with closed Basis or Nat arguments can discharge
+  its arm's checked Meaning when the original arguments, body, ports and action
+  match the native provider. Unused static arguments retain their identities.
+  For closed subjects, compare each operation and its ordered children with
+  the checked native tree. When callers forward a formal, follow each named
+  call outward to the original supplying expression. Check its mixed-header
+  position, source tokens and stored substitution at every hop. The selected
+  child retains its exact ports and Meaning equation. Closing a generic
+  description preserves its root and ordered child indices. If a caller
+  supplies a constructed operation, match every lexical Op use to its own
+  written argument, native occurrence and supplying slot in the next call.
+  Preserve repeated edges, zero-power children and unused provider arguments.
+  Follow each of those uses through further substitutions using its position
+  in the whole original argument. The checked closed operation retains the
+  ordered child computations and their exact action. Check the original queue
+  Meaning against the same dependency root, reference requests and native
+  child. Reuse formation and source checks for previously verified operation
+  arguments. The common body reader now reconciles its initial queue with
+  the verified arm occurrences. A uniquely matched written Meaning can be
+  discharged for a fully checked tree of structural operations and bare
+  providers with direct bodies. Unreached occurrences, applied providers and
+  nested Meaning obligations retain their own status.
+
+- Validate operation-tree matrix dimensions after every constructor (#462),
+  including supplied provider and formal maps. Prove the actual successful
+  evaluator retains both carrier reads and exact logical dimensions. Preserve
+  full phase, rectangular ports and occurrence accounting under the same work
+  cap. Retain original checked-operation markers and mixed actual sources from
+  the shared source traversal, and exact native child-edge occurrences. These
+  records do not discharge original Meaning duties or source preservation.
+
+- Connect the same original source selection and retained sector to exact
+  caller/local traces and coefficient evaluation, without assuming complete
+  caller-forest code availability. Derive its existing Literal when original
+  before-owner codes are available. Retain the original primitive result as
+  erased evidence and derive join/split semantic layouts from that same result
+  and actual pair parser. No reader, acceptance rule or work cap changes;
+  full body/instrument composition and Meaning-duty discharge remain open.
+
+- Compose exact local/caller circuit locality through the same original Raw
+  operation list and actual owner-flow fold. Preserve every event boundary,
+  including empty circuits, and derive both complete traces and fixed frames.
+  Connecting the original body/sector readers remains separate work.
+
+- Derive exact local/caller circuit chunks and bounds for each original Raw
+  step from its actual step, owner-flow and sector-event receipts. Preserve
+  both quantumIf tapes, empty circuits and unchanged spectator ports.
+  Derive owner-code availability through checked pure owner transitions, and
+  distinguish a structural join's semantic layout from bounded matrix-reader
+  availability. Complete source-body composition remains open.
+
+- Derive complete input/output sparse frames from the same original storage
+  and owner reads. Propagate owner-code availability through an actual
+  selection and derive its original axis bounds and distinctness. Prove exact
+  local/caller join, split and one-Bit gate traces from actual Raw steps.
+  Intermediate whole-body availability, literal reconstruction and source
+  composition remain open; these proofs add no acceptance route.
+
+- Derive exact local/caller circuit correspondence for the same checked
+  `applyUnitary` tape, including empty circuits and unchanged spectator ports.
+  Expose per-owner code evidence from existing reads and distinguish derived
+  reader availability from observed invocations and complete body coverage.
+
+- Derive complete source-owner, sparse-code and axis transport from the actual
+  local/caller runs and literal trace. Remove the fixed lowering-shape premise
+  from common finite-target action, logical Gram and selection-witness proofs.
+  Retain every original owner, type, phase, layout and ordinal receipt. Literal
+  reconstruction and complete source composition remain separate obligations.
+
+- Consume exact original body plans in the common native runtime handler,
+  reusing graph preparations under the same final root. Keep interval, owner,
+  effect, SSA, hidden-history and return checks, with pending source duties
+  explicit. Public v5 dispatch and complete source composition remain open.
+
+- Use one source discovery handler for existing metadata callers and exact
+  source-body plans. Keep original queue coverage, access demands, arm roots
+  and static eligibility. Selected static query rows now follow event order;
+  native caller traversal and complete source acceptance remain separate.
+
+- Factor unchanged discovery data and distinguish supplied metadata from
+  genuine source-body views for the forthcoming common staged traversal.
+  Existing discovery and native acceptance behavior remain unchanged.
+
+- Prepare exact graph cuts for original operation formals and selection arms,
+  and retain an indexed continuation that checks their native trees under
+  the final root without preparing the same graphs again. Common body
+  traversal integration remains pending; no acceptance route is enabled.
+
+- Add source-indexed staging data for exact original bodies, event positions,
+  context queues and prepared operation graphs. Native consumers still owe
+  their existing checks; these data grant no acceptance or execution handle.
+
+- Retain the caller's exact checked declaration catalogue while preparing
+  quantum Meaning references. Reference-specific source, type, visibility and
+  effect checks, original body reads and the final native root stay explicit.
+
+- Reuse a static quantum core's original checked numeric environment when
+  reading its mixed runtime signature. Full type, condition, effect and actual
+  comparisons remain fresh; closed cores retain their existing preparation.
+
+- Check ordinary observing calls before and after a coherent selection through
+  the common original body walk. Typed operation continuations retain actual
+  provider, access and Meaning computations under the same fresh native root.
+  Complete hidden histories, measurement call paths and held Unit owners stay
+  explicit. Source mutations of measurement targets, XOR, phase and call order
+  refuse even when their typed Raw controls pass. Constructed-arm work costs,
+  all-original duty discharge and public v5 dispatch remain separate work.
+
+- Remove three compiler-generated partial declarations from the finite-target
+  proof closure. Mixed-radix decoding uses an explicit total recursor over the
+  exact original list length; erased reference products remain noncomputable.
+  The logical definitions and existing coordinate theorems are preserved.
+
+- Connect a checked selection's physical action and logical inner product
+  to the complete caller code for arbitrary finite targets. The proof uses
+  the actual rectangular input/output encodings, original target digit and
+  each arm's native equation and Gram receipt. It retains Unit phases,
+  nominal record padding, selector ordinals and arbitrary entangled
+  references. Target-row sums use the retained logical cardinality, without
+  assuming that it equals physical width. Composing these typed laws through
+  complete source calls and enabling public v5 dispatch remain separate work.
+  An indexed native witness retains the same node's literal-read computation;
+  its original lowering shape remains an explicit theorem premise.
+
+- Connect the checked ordered named-call intervals to the original Raw
+  program through the shared literal partition. Their physical actions
+  compose in the original order on every external-reference slice and retain
+  the actual final output permutation. Reversed or incomplete partitions
+  refuse. Typed source-operator and Gram composition remain separate work.
+
+- Check an ordered sequence of original pure calls around a named `qmatch`
+  in one native dependency graph. The internal reader follows each literal
+  interval, carries the complete owner history and checks the original return,
+  including held zero-width owners. Swapped actions, missing calls and stale
+  source positions reject. Reject unused reference groups inside provider,
+  Meaning-reference and ordinary descendant bodies. Public v5 dispatch and
+  general composition remain separate obligations.
+- Read original Meaning headers from one located module token stream. Keep
+  exact directive, declaration and byte-slice checks while avoiding repeated
+  whole-module lexing and quadratic header accumulation. The unchanged
+  `pre; choose; post` study now fits the existing shared work allowance.
+
+- Prove that the physical selector label of an encoded caller value
+  identifies exactly one original `qmatch` arm, including when the labels
+  have gaps. For a Bit target, the actual Raw action on each supported
+  selector label agrees with that arm on the complete caller and reference.
+  At unused selector labels the actual sector acts on a zero input slice.
+  The resulting theorem covers every physical output row and preserves the
+  logical inner product under the same checked arm table.
+  A three-variant source test checks every physical output coefficient for
+  each valid input, including zero amplitude on the unused selector label.
+
+- Recheck a closed `qmatch` function's original tree in its verified
+  declaration catalogue. The checker inspects the actual tree, preserves
+  callee visibility and effect requirements, and verifies the selected
+  references. A record containing an enum and a Bit now passes the public
+  source check with its exact arm phases.
+
+- Reuse a named callee's original parsed and typed setup for its exact
+  signature. The closed call still evaluates its source tree and checks
+  owner returns, quantum use and effects against the original summary.
+
+- Prove during traversal that the work list covers every selected source
+  and import. The native graph can use the exact reached module rows without
+  a second pass over original source text. Its work bound counts both graph
+  coverage checks on those rows.
+
+- Adopt a single ceiling of 20,000,000 exact-work units for ordinary and
+  source-`qmatch` checks. Rust and the native Lean checker use the same
+  budget across each request. Compilations charge all native receipts
+  cumulatively. Update both components together (#461).
+- Prove that an exhaustive source-ordered `qmatch` with a finite selector
+  and a Bit target preserves logical inner products with an arbitrary
+  external reference. Each original ordinal selects its own arm, including
+  when the selector encoding has unused physical labels.
+
+- Follow original imports from the modules a nominal `qmatch` consulted.
+  The native checker verifies exact source text, keeps reexports reachable
+  from the bundled prelude, and rejects unrelated modules. Row comparisons
+  check module names before reading source text. Each arm still checks its
+  own owner types using the original catalogue's verified natural helpers.
+
+- Check primitive actions before and after a named call containing a
+  `qmatch` against their original source positions and contiguous caller IR.
+  The internal v5 reader checks the returned owner order, including held
+  zero-width owners. The three-event example uses one shared work counter.
+
+- Traverse original expressions, source calls and operation duties with total
+  Lean functions. The ordinary-expression evaluator and its call-site
+  transport share a structural recursion principle. Their equations preserve
+  the selected branch and the original measurement history.
+- Check a direct `checked_op` caller and a complete `qmatch` interval with
+  plain or directly refined provider arms against one Lean dependency graph.
+  Each indexed arm retains its original body, exact Meaning, controlled
+  implementation and label. The sector equations detect a phase change in a
+  single arm. Composed and tensor Meanings preserve source order and use
+  every canonical input of each classical leaf. The Rust frontend retains
+  each constructed arm's own controlled-operation plan. The selected CLI
+  checks the direct example through its finite runtime request. Complete
+  catalogue discharge and the v5 source-preservation path remain open.
+- Check the complete operation supplied to a `qmatch` arm through a formal
+  parameter. For `then_op(sign,sign)`, Lean checks the controlled implementation
+  at both occurrences and compares their composition with the written Meaning.
+  A false Meaning inside a zero power is rejected at the indexed arm. The
+  selected CLI still requires transport for a named callee's operation arguments.
+- Retain a named callee's actual operation arguments, each written arm and
+  the quantum references of each Meaning in the original lowering. The
+  internal v5 comparison includes the ordered reference groups. For a caller
+  consisting of a single nested selection, both source intervals must identify
+  the same Raw instructions. The checker verifies the returned owners in the
+  same native graph.
+- Charge source-row comparisons as they occur. Repeated references to a
+  source stop at the first matching module and text. The checked result
+  preserves the original order of distinct rows.
+- Resolve bare named arms of nominal selections from their original provider
+  or bound operation. Their source proposals retain the consulted prelude and
+  its original reexport modules.
+- The earlier source-`qmatch` profile raised its native ceiling to 13,000,000
+  work units per request. The unified ceiling adopted in #461 supersedes it.
+- Check transparent powers of the intrinsic Hadamard and global phase gates
+  in the whole-source catalogue. The original count and access demand stay
+  attached to the operation, including when the count is zero.
+- Check ordinary `if` branches that call pure functions and preserve their
+  input owners. The shared traversal verifies each condition over the
+  original input and measurement histories and checks the simultaneous
+  quantum and classical returns from both arms.
+- Recover the original lexical scope when inspecting a standalone `qmatch`
+  arm. A consumed argument or local named `h` continues to shadow the
+  primitive gate at the selection site.
+- Preserve original classical-only contracts across module calls when checking
+  quantum use. Keep the declared public effect as the external effect bound.
+- Expand original operation duties in source order through checked call-chain
+  substitutions. Keep written assertions distinct, share exact callee-header
+  requirement identities and retain unresolved recursive coverage explicitly.
+  These source records do not discharge native Meaning or access obligations.
+- Relate sparse complete owner-forest coordinates to the original finite code,
+  retaining exact nominal trees, wire order, zero-width owners and actual
+  primitive/structural equations. Add reference-indexed lazy coefficient
+  transport for arbitrary ordered frame axes without changing sum, failure or
+  work order. For a checked Bit selection, replacing the returned target digit
+  stays inside the caller's logical dimension and preserves every other digit,
+  including a zero-width Unit owner's digit.
+  For a Bit selector and target, writing a target coordinate on the returned
+  wires updates that same logical digit in every joint amplitude with a
+  reference system. Bind circuit-event boundaries to their actual intervals.
+  For a Bit selector and a Bit target, both indexed arm equations give the
+  full output action on arbitrary joint caller/reference amplitudes for a
+  literal `quantumIf` or a `join`, `apply_unitary`, `split` interval.
+  The two verified arm matrices preserve every reference-pair inner product
+  when applied to the original caller's logical target. The selection node
+  retains the source layout reads that determine both arm positions.
+  For general finite carriers, a nonzero owner-code coefficient identifies
+  the physical label of its original logical digit. Padding rows have zero
+  coefficient, including when other owners share the caller's state.
+  Complete source/code/Gram composition remains required before the full qmatch
+  profile can be admitted.
+- Reuse exact original module scans and lexical lookup policy throughout the
+  complete source traversal. Preserve original declaration bodies, public
+  effects, import/reexport checks and query-specific source rows. Complete
+  bundled-source and small-caller regression checks keep the existing work cap.
+- Retain original operation subjects, mixed formal keys, supplying contexts
+  and per-child access demands with each pending Meaning assertion. Withhold
+  unconsumed concrete Meaning duties before legacy or unfinished runtime source
+  selection, including unused generic and zero-power occurrences. Complete
+  recursive-family coverage and native Meaning/access consumption remain required.
+- Bind mixed named calls to their literal Raw fragment, all visible ordinary
+  inputs and the complete caller spectator frame. Keep the original callee's
+  nested steps, owner history and final SSA values; small observing-result and
+  copied-input controls cover this component. Public v5 execution and complete
+  source/code composition remain unfinished.
+- Retain ordinary SSA input identities in nominal source frames from the same
+  original actual argument values. Keep physical input IDs unique while
+  preserving every ordinary copy in the source/result trees, and retain the
+  source gate for zero-width quantum owners even when ordinary SSA is empty.
+- Use the same original-body loop and retained Raw preparation for classical
+  gaps and destructive observations. Derive initial SSA and logical ordinals
+  from the complete typed input forest, retaining zero-width fields and nominal
+  identities. Named pure scopes derive their return order from the original
+  callee and transport every issued/retired owner back to the complete caller
+  frame. General named/branch/history/code continuations and public v5 execution
+  remain unfinished; these preparations issue no accepted handle.
+- Share the small contextual regression's source/IR data with its stage-cost
+  observer. Preserve the first incomplete prelude proposal as a refusal case,
+  retain every original semantic control and use a separately identified actual
+  empty prelude for the isolated primitive environment. Require all stages to
+  finish within the same unchanged work cap; exact historical remainders remain
+  observations rather than implementation-independent contract assertions.
+- Connect original pure body intervals to their literal Raw operation partition
+  and complete final owner order. Check explicit join/split and zero-width
+  allocation/release against the actual source owner history, Raw transition
+  and independent code coordinates. These components retain arbitrary reference
+  coefficients; complete code/action composition and native admission remain
+  unfinished.
+- Bind ordinary branch conditions and simultaneous phi operands to both original
+  source arm snapshots and actual SSA values. The lazy instrument companion uses
+  the actual history merge and preserves hidden paths, coefficient computations,
+  failures and remaining work. Complete source traversal, measurement/input
+  binding and public execution integration remain required.
+- Reuse exact, already checked source-row sets in operation trees while retaining
+  every original dependency occurrence and source query. Keep source-byte work
+  charges and capacities unchanged; this cache grants no relevance to an unused
+  source row and supplies no source-preservation theorem.
+- Check both original ordinary `if` arms and retain explicit, fully typed owner
+  phis, including differing valid return permutations and zero-width owners.
+  Authenticate lexical binder origins so an identically named local cannot
+  restore a moved outer owner. Join both effects, preserve ordinary block scope
+  and retain every nested source call/selection. Native condition, SSA/history
+  and actual branch/phi correspondence remain separate required continuations.
+- Traverse original coherent `basis` bodies through the shared ordinary source
+  evaluator. Check every finite coherent input and captured ordinary valuation
+  for injectivity, retaining exact nominal/tuple types, phase-fixed basis maps
+  and original helper bodies. Infer Unitary or Isometry from the complete map;
+  `init0` and observing `reset` retain their ordinary original implementations.
+  Native SSA, history and source/operator equation binding remains separate.
+- Add an unwired mixed-runtime continuation over the same original source syntax,
+  lookup, static actuals and effect rules. Retain ordinary copying, exact tuple
+  and nominal types, measurement/discard histories, Unit allocation/release and
+  explicit pair split/join through named calls. Keep nested callee origins and
+  caller paths separate, and prove that a checked Unitary annotation cannot
+  contain an observing event. Native ordinary SSA/history binding, basis/reset
+  forms and general ordinary branches remain unfinished; no execution authority,
+  source-preservation theorem or qmatch completion follows from this component.
+- Extend the common original quantum-body traversal to named calls and computed
+  qmatch operands. Compute each original callee's exact returned owner order
+  before transporting it to caller arguments, retaining nested tuple shape,
+  zero-width owners, static actuals and original caller/callee identities.
+  Infer body effects independently, check annotations afterward and retain
+  conservative public effects across original module boundaries. Source/Raw
+  native continuation, ordinary/observing contexts and full qmatch validation
+  remain separate work; this component adds no preservation or completion claim.
+- Prove that freshly checked named-arm IR executes with the final qmatch root's
+  actual dependencies. Recover each entry's historical checked snapshot from
+  that same graph run and retain every referenced slot, including both branches.
+  Preserve exact operators, hidden histories, failures and remaining checker
+  work without requiring unrelated dependency slots to agree. Connect these
+  proofs to the ordered original arm bindings in the common context checker.
+  Original source-body preservation and full qmatch integration remain pending.
+- Share the original source-body traversal with already checked arm signatures.
+  Add an unwired continuation that checks the actual realized arm IR and final
+  root dependencies through the same source/Raw gate. Small controls reject
+  coordinated phase substitutions, missing/stale intervals and hidden observing
+  bodies while retaining correct phase and empty identity bodies. General calls,
+  recursive selections and native request integration remain unfinished.
 - Check existing finite `phase[j,k]` calls and body-local static Nat aliases
   through the common qmatch source traversal and literal Raw interval gate.
   Retain original helper lookup at each alias initializer, check every ordinary

@@ -11,6 +11,8 @@ structure Owner where
   basis : FiniteCarrier.Basis
   deriving BEq, DecidableEq, Repr
 
+deriving instance ReflBEq, LawfulBEq for Owner
+
 inductive Atom where
   | owner (value : Owner)
   | tuple (arity : Nat)

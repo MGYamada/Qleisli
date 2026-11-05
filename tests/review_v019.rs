@@ -71,8 +71,9 @@ fn unused_static_arguments_share_exact_work_across_calls() {
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
     );
     // Original closed actuals are checked during the call and again while
-    // replaying dormant obligations. Four layers fit once; two calls exceed
-    // the unchanged exact-work ceiling even though keep never applies U.
+    // replaying dormant obligations. Four layers fit once under the 20M
+    // exact-work ceiling; four identical calls must share that allowance
+    // even though keep never applies U. Resetting it per call would pass.
     let original = "power(power(p,150),150)";
     assert_eq!(
         base.matches(original).count(),
@@ -83,11 +84,9 @@ fn unused_static_arguments_share_exact_work_across_calls() {
     let once = base.replace(original, &expression);
     let root = SourceRoot::new(&once);
     check_project(&root.0).unwrap();
-    let calls = format!("let q=keep[{expression}](q);keep[{expression}](q)");
-    root.write(
-        "main.qli",
-        &once.replace(&format!("keep[{expression}](q)"), &calls),
-    );
+    let call = format!("keep[{expression}](q)");
+    let calls = format!("let q={call};let q={call};let q={call};{call}");
+    root.write("main.qli", &once.replace(&call, &calls));
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit, "{error}");
     assert!(

@@ -279,11 +279,19 @@ PATHS = {
         ('src/interchange/native/runtime_root/tests.rs', 'runtime_stale_retained_type_storage_and_graph_cannot_borrow_original_bytes'),
         ('tests/selected_runtime_execution.rs', 'runtime_cli_reports_actual_scope_and_refuses_open_execution_and_untyped_export')]),
     'qmatch-proposal': path_rule('untrusted-proposal', 'qmatch-component', '', [
+        ('src/interchange/qmatch/v5.rs', ['pub const PROFILE: &str = "finite-source-qmatch-context-v5";',
+            'pub fn encode(&self) -> Result<Vec<u8>>', 'pub fn decode(bytes: &[u8]) -> Result<Self>',
+            'request.bounded()?;', 'Ok(request)']),
+        ('src/interchange/native/qmatch.rs', ['pub(crate) fn qmatch_context_view(',
+            'qmatch_v5::complete(prepared.graph(), &request)']),
         ('src/interchange/qmatch.rs', ['pub struct SourceSite', 'pub struct Arm', 'pub struct Request',
             'pub positions: Vec<Position>', 'finite-source-qmatch-context-v4',
             'pub fn encode(', 'pub fn decode(', 'pub(crate) fn proposal(', 'encoder.evidence(evidence)?', 'encoder.program(&arm.controlled)?', 'encoder.evidence_fields(']),
         ('src/frontend/compile/lower/quantum_match/nominal.rs', ['struct Frame', 'fn start(', 'fn finish(',
-            'lower.raw.operations[self.start..].to_vec()', 'check_qmatch_source(&artifact, &request)',
+            'let raw = retained_raw(\n            lower,\n            &name.0,\n            span,\n'
+            '            &self.inputs,\n            &self.classical_inputs,\n            self.start,\n'
+            '            value,\n            declared_effect,\n        )?;',
+            'operations: lower.raw.operations[start..].to_vec()', 'check_qmatch_source(&artifact, &request)',
             'lower.enum_label(module, label)?', 'arms::prepare(']),
         ('src/frontend/compile/lower/quantum_match/nominal/arms.rs', ['fn prepare(', 'ArmBody::Physical',
             'Access::Controlled', 'circuit::flatten(', 'operations::controlled(', 'retained_sources(']),
@@ -291,7 +299,9 @@ PATHS = {
             'carrier_description_budgeted(', 'self.work = work;']),
         ('src/frontend/compile/lower/mod.rs', ['Frame::start(self, *key, &args)?', 'frame.finish(self, &value)?',
             'self.nominal_qmatch = caller_qmatch;']),
-    ], [('src/interchange/qmatch/tests.rs', 'proposed_success_labels_logical_matrices_roots_and_implementations_refuse'),
+    ], [('src/interchange/qmatch/v5/tests.rs', 'body_cannot_masquerade_as_old_context_or_claim_an_effect_or_success'),
+        ('src/interchange/qmatch/v5/tests.rs', 'unified_body_subject_variants_are_exact_and_old_profiles_refuse'),
+        ('src/interchange/qmatch/tests.rs', 'proposed_success_labels_logical_matrices_roots_and_implementations_refuse'),
         ('src/interchange/qmatch/tests.rs', 'profile_format_version_and_required_fields_are_exact'),
         ('src/interchange/qmatch/tests.rs', 'all_event_positions_retain_postorder_without_inventing_arm_requests'),
         ('src/interchange/qmatch/tests.rs', 'every_context_position_field_is_unsigned_u32_and_has_no_extra_authority'),
@@ -325,7 +335,11 @@ PATHS = {
         ('lean-kernel/QleisliKernel/Qirf/SourceSector.lean', ['def readRowsWithSignature ', 'def readEntry ']),
         ('lean-kernel/QleisliKernel/Qirf/ContextSector.lean', ['def readHeaders ', 'def prepare ', 'def readLocal ',
             'theorem Checked.originalRoot ', 'theorem Checked.publicEffect ', 'theorem Checked.allOriginalEvents ',
-            'SourceTrace.read artifact.sources owner name',
+            'let catalogue ← GenericCatalogue.read sources\n  let _ ← SourcePendingMeaning.read catalogue\n'
+            '  let signature ← QuantumSignature.readWithArguments sources owner name {} .external (some catalogue)',
+            'let body ← SourceTrace.readWithSignature signature\n  return body.checked',
+            'let source ← SourceTypes.NaturalAffine.witness (readSource artifact.sources owner name)\n'
+            '  guard (source.val.result.events.all fun event => match event with | .named _ | .operation _ => false | _ => true) .request',
             'Validity.checkRootFromRoots artifact order (rows headers) (roots headers)',
             '(RawTrace.check headers.source.val root.val.dependencies root.val.program positions)\n  return ⟨root,context⟩',
             'let selected ← collect body.context.val.sites',
@@ -1762,12 +1776,20 @@ PATHS['ordinary-acceptance']['source_bindings'].extend([
         'QuantumLabel::Variant(self.variant_value(name, self.pos))',
         'ExprKind::QuantumMatch',
     ]),
+    dict(path='src/frontend/ast.rs', markers=['pub struct QuantumMatchArm {', 'pub operation: StaticOp,']),
     dict(path='src/frontend/check/body/quantum_matching.rs', markers=[
         'fn qmatch_labels(',
         'fn qmatch(',
-        'self.target_operation(&arm.operation, target_basis, scope)?',
+        'let operation = self.qmatch_operation(&arm.operation, target_basis, scope)?;',
         'access(&operation, Access::Controlled, arm.operation.span)?',
         'self.obligation(span, ObligationKind::TransformedMeaning, scope)?',
+    ]),
+    dict(path='src/frontend/check/body/operations.rs', markers=[
+        'if let StaticOpKind::Name(name) = &operation.kind {\n            return self.target_operation(name, basis, scope);',
+        'let checked = self.operation_with(\n            operation,\n            scope,\n            OperationMode {\n'
+        '                arrows: true,\n                ..OperationMode::ENDO',
+        'normalize::expect(\n            &checked.basis,\n            basis,\n            &scope.context,\n            operation.span,',
+        'normalize::expect(\n            checked.output(),\n            basis,\n            &scope.context,\n            operation.span,',
     ]),
     dict(path='src/frontend/specialize/projection.rs', markers=[
         'source::ExprKind::QuantumMatch(_)',

@@ -67,6 +67,7 @@ fn lowerer<'c, 'p>(compiler: &'c mut Compiler<'p>) -> Lowerer<'c, 'p> {
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
+        source_context: None,
         tuple_binding_origins: vec![BTreeMap::new()],
         access_updates: vec![BTreeSet::new()],
         effect: Effect::Unitary,
@@ -89,6 +90,47 @@ fn raw_main(project: &Project) -> (Value, RawState<u32>, Effect) {
     assert!(lower.compiler.instrument_evidence.is_empty());
     assert!(lower.instrument_calls.is_empty());
     (value, lower.raw, lower.effect)
+}
+
+#[test]
+fn named_branch_context_keeps_child_coordinates_after_caller_prefix() {
+    let project = project(
+        "unitary fn nested(c:Bit,q:Q<Bit>)->Q<Bit>{if c{h(q)}else{q}}\n\
+         pub unitary fn main(c:Bit,q:Q<Bit>)->Q<Bit>{let q=h(q);nested(c,q)}",
+    );
+    let mut compiler = untrusted_compiler(&project);
+    let key = compiler.source.resolution.qualified("main::main").unwrap();
+    let (parameters, _) = compiler.signature(&key).unwrap();
+    let mut lower = lowerer(&mut compiler);
+    let mut quantum = Vec::new();
+    let mut classical = Vec::new();
+    let arguments = parameters
+        .iter()
+        .map(|ty| lower.input(ty, "main", Span::default(), &mut quantum, &mut classical))
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
+    let result = lower.call_user(&key, arguments, None).unwrap();
+    assert_eq!(result.ty(), Ty::quantum(Ty::bit()));
+    let context = lower.source_context.as_ref().unwrap();
+    assert_eq!(context.calls.len(), 1);
+    let (call, body) = &context.calls[0];
+    assert_eq!((call.start, call.count), (1, 1));
+    assert_eq!(body.branches.len(), 1);
+    let (position, then_body, else_body) = &body.branches[0];
+    assert_eq!((position.start, position.count), (0, 1));
+    assert_eq!(then_body.positions.len(), 1);
+    assert_eq!(
+        (then_body.positions[0].start, then_body.positions[0].count),
+        (0, 1)
+    );
+    assert!(else_body.positions.is_empty());
+    assert_eq!(lower.raw.operations.len(), 2);
+    assert!(
+        matches!(&lower.raw.operations[1], RawOp::ClassicalBranch { then_ops, else_ops, .. }
+        if then_ops.len() == 1 && else_ops.is_empty())
+    );
+    assert!(lower.compiler.checked.is_empty());
+    assert!(lower.compiler.function_evidence.is_empty());
 }
 
 // This is a bounded classical observation of an untrusted proposal, not a

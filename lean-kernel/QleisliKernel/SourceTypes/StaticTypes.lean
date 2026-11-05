@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.StaticNatural
+import QleisliKernel.SourceTypes.OperationDescription
 
 /-! Original Basis/Nat substitution into the shared finite type grammar.
 Actual Basis values are reconstructed from original declarations, even when
@@ -12,12 +13,21 @@ open Finite Semantics.FiniteCarrier
 structure Arguments where
   bases : List (String × Basis) := []
   naturals : StaticNatural.Bindings := []
+  operations : List (String × OperationDescription.Description) := []
+  deriving DecidableEq
 
 def namesMatch {sources owner name} (original : StaticHeaders.Original sources owner name)
     (arguments : Arguments) : Bool :=
   let expected := original.header.formals.filter (·.kind == .basis)
   arguments.bases.length == expected.length && expected.all (fun formal =>
     (arguments.bases.filter (fun argument => argument.1 == formal.name)).length == 1)
+
+def operationsMatch {sources owner name} (original : StaticHeaders.Original sources owner name)
+    (arguments : Arguments) : Bool :=
+  let expected := original.header.formals.filter fun formal => match formal.kind with
+    | .operation _ => true | _ => false
+  arguments.operations.length == expected.length && expected.all (fun formal =>
+    (arguments.operations.filter (fun argument => argument.1 == formal.name)).length == 1)
 
 structure Actual (sources : Sources) (argument : String × Basis) where
   checked : ∃ before after,
@@ -49,15 +59,18 @@ structure Environment (sources : Sources) (owner name : String) (arguments : Arg
   closed : StaticNatural.Closed numeric arguments.naturals
   matched : namesMatch numeric.original arguments = true
   actuals : ∀ argument ∈ arguments.bases,Actual sources argument
-  noOperations : numeric.original.header.formals.all (fun formal =>
-    match formal.kind with | .operation _ => false | _ => true) = true
+  operationNames : operationsMatch numeric.original arguments = true
 
-def prepare (sources : Sources) (owner name : String) (arguments : Arguments) :
+/-- Type preparation retains operation descriptions as unresolved obligations.
+It checks their complete names, never their ports, paths or actual bodies.
+Only the separate original-operation graph checker discharges those duties. -/
+def prepareWithObligations (sources : Sources) (owner name : String) (arguments : Arguments)
+    (originals : Option (OrdinarySignature.Originals sources) := none)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) :
     WorkM (Environment sources owner name arguments) := do
-  guard (arguments.bases.length ≤ 32) .limit
-  let numeric ← StaticNatural.prepare sources owner name ["0"]
-  if operations : numeric.original.header.formals.all (fun formal =>
-      match formal.kind with | .operation _ => false | _ => true) = true then
+  guard (arguments.bases.length+arguments.naturals.length+arguments.operations.length ≤ 32) .limit
+  let numeric ← StaticNatural.prepare sources owner name ["0"] originals helpers
+  if operations : operationsMatch numeric.original arguments = true then
     exactWork (Exact.charge ((arguments.bases.map (fun a => a.1.utf8ByteSize+1)).sum*
       (numeric.original.header.formals.length+1)+1))
     if matched : namesMatch numeric.original arguments = true then
@@ -67,7 +80,16 @@ def prepare (sources : Sources) (owner name : String) (arguments : Arguments) :
     else throw .request
   else throw .request
 
-private def parameter {sources owner name arguments}
+/-- Existing type-only runtime routes retain their closed-operation boundary.
+They cannot silently accept unresolved operation formals or descriptors. -/
+def prepare (sources : Sources) (owner name : String) (arguments : Arguments) :
+    WorkM (Environment sources owner name arguments) := do
+  let environment ← prepareWithObligations sources owner name arguments
+  guard (arguments.operations.isEmpty && environment.numeric.original.header.formals.all (fun formal =>
+    match formal.kind with | .operation _ => false | _ => true)) .request
+  pure environment
+
+def parameter {sources owner name arguments}
     (environment : Environment sources owner name arguments) (tokens : List String) :
     WorkM (Option (TypeRead sources)) := do
   let [name] := tokens | pure none
@@ -83,10 +105,11 @@ private def parameter {sources owner name arguments}
 def readType {sources owner name arguments}
     (environment : Environment sources owner name arguments) (tokens : List String) :
     WorkM (TypeRead sources) := do
-  let read ← typeExpressionScopedWithSources sources owner
+  let helpers : NaturalHelpers.Checked sources := ⟨environment.numeric.helpers,environment.numeric.helpersPrepared⟩
+  let read ← typeExpressionScopedWithCheckedHelpers sources helpers owner
     (fun expression => do
-      let prepared ← StaticNatural.prepare sources owner name expression
-      return (← StaticNatural.close prepared arguments.naturals).value)
+      let prepared ← StaticNatural.prepareOriginalWithHelpers environment.numeric.original expression helpers environment.numeric.originals
+      return (← StaticNatural.close prepared.prepared arguments.naturals).value)
     (parameter environment) tokens
   let _ ← FiniteCarrier.read read.basis
   return read

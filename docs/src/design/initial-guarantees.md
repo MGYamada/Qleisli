@@ -34,10 +34,10 @@ and order, decoded optional request, intermediate work values and successful
 inspection. The guaranteed program is the root selected from that artifact.
 Neither theorem needs an optional finite request to be present.
 
-The ordinary native wrapper currently invokes that definition through
+At admission the ordinary native wrapper invoked that definition through
 `QleisliKernel.Cli.runValidity` with `contract = false` and work budget
-10,000,000. This identifies the production connection; the mathematical premise
-is Lean execution success. The contract-mode branch and hierarchy modes have
+10,000,000. The v0.3.0-beta wrapper uses 20,000,000 under #461. The
+mathematical premise quantifies the initial work and requires Lean execution success. The contract-mode branch and hierarchy modes have
 different entry points and are outside these two admitted scopes.
 
 Ownership safety accounts for the actual root's quantum ports and output

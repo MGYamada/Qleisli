@@ -109,11 +109,13 @@ class SourceChecksTests(unittest.TestCase):
 
     def test_linked_inventory_identities_precede_heavy_lane_scheduling(self):
         commands = checks.plan('source-integrity')
-        self.assertEqual(commands[:2], [
+        self.assertEqual(commands[:4], [
+            ['python3', 'scripts/check_schema_registry.py', '--source-only'],
+            ['python3', 'scripts/check_initial_guarantees.py'],
             ['python3', 'scripts/check_verification_inventory.py'],
             ['python3', 'scripts/check_production_coverage.py'],
         ])
-        self.assertEqual(commands[2:], [
+        self.assertEqual(commands[4:], [
             ['python3', 'scripts/check_input_corpus.py'],
             ['python3', 'scripts/test_current_source_fixtures.py'],
             ['python3', 'scripts/test_observation_sources.py'],

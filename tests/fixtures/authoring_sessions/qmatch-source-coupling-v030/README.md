@@ -393,3 +393,38 @@ Complete original headers retain the directive and byte positions. This is an
 informed reader study; it supplies no native execution or source-preservation
 claim. External implementation snapshots and full observer maps are disclosed
 as external, with their original identities.
+
+## Supplier occurrence first observations
+
+The [supplier packet](supplier-occurrence-first.json) retains three exact
+original sources, complete compact drivers and raw first command streams.
+Two native component observations expose forwarded formal wrappers and separate
+interior occurrences. The mixed-provider first attempt exhausts its single 20M
+counter; its printed expected paths are not observed traversal results.
+A separately scoped direct-relay diagnostic on the same source observes all
+three uses, including the zero-power child and unused mixed Op actual. It
+omits route traversal and the complete pending duty queue.
+Full kernel windows remain external-only, and the recorded base commits are
+not clean-commit build attestations. This inert packet supplies no fresh replay,
+whole-caller preservation proof, accepted handle or guarantee admission.
+
+The [written duty study](written-duty-first.json) preserves the first four-call
+source, signed body and work-limit diagnostics. Its negative control adds an
+unreached arm with the same requested Identity. The common reader retains both
+initial queue items, discharges the selected occurrence and reports the other
+queue position as residual. The signed example covers two bare phase providers
+inside an ordered composition. Applied providers and nested requested operations
+require further source evidence.
+
+The [ordered call study](ordered-call-sources.json) keeps the original
+three-call source and the first projection diagnostics. The common reader
+selects the arm inside `choose` at byte 553. The surrounding named frames
+retain the phase at byte 384 and H at byte 437, their source owners, native
+tokens, caller axes and the zero-width spectator. The observing controls
+locate the same inner role through their own call offsets.
+
+The [applied-provider study](applied-provider-origins.json) retains the first
+rejected source and the two legal spellings that distinguish the supplying
+argument from the assertion written in the arm. The common reader discharges
+the obligation for `stamp[7]`. Changing its unused argument to 8 preserves
+the matrix but fails the comparison with the source that supplied 7.

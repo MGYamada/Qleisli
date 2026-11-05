@@ -7,10 +7,26 @@ use super::carrier::{Atom, Interface};
 use super::json::{self, Value};
 use super::{Error, Result};
 
+mod context;
+pub use context::{BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
+mod operations;
+pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};
+pub mod v5;
+
 /// Original physical arm subjects, still untrusted until the enclosing source
 /// and carrier-sector check. A physical signature is not a nominal contract.
 pub(crate) enum ArmBody {
     Evidence(std::sync::Arc<crate::contract::FunctionEvidence>),
+    /// The standalone forward circuit of an original primitive or operation tree.
+    /// The complete source request separately checks each original provider.
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "retained v5 source subjects pending production composition"
+        )
+    )]
+    Program(crate::ir::RawProgram),
     Physical {
         bits: u32,
         raw: crate::ir::RawProgram,
@@ -18,9 +34,120 @@ pub(crate) enum ArmBody {
     },
 }
 
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
 pub(crate) struct ArmSubject {
     pub body: ArmBody,
     pub controlled: crate::ir::RawProgram,
+    pub operation: Option<std::sync::Arc<OperationSubject>>,
+}
+
+/// Retained original provider subjects in descriptor child-edge postorder.
+/// These objects remain proposals; Meaning reference bodies and demanded path
+/// equations are derived independently before any v5 execution authority.
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
+pub(crate) enum OriginalBody {
+    Function {
+        evidence: std::sync::Arc<crate::contract::FunctionEvidence>,
+        context: std::sync::Arc<ContextSubject>,
+    },
+    Pure {
+        program: crate::AcceptedProgram,
+        context: std::sync::Arc<ContextSubject>,
+    },
+}
+
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
+impl OriginalBody {
+    pub(crate) fn context(&self) -> &std::sync::Arc<ContextSubject> {
+        match self {
+            Self::Function { context, .. } | Self::Pure { context, .. } => context,
+        }
+    }
+}
+
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
+pub(crate) struct OperationSubject {
+    pub description: Description,
+    pub bodies: Vec<OriginalBody>,
+    /// One group per original Meaning obligation, containing the actual quantum
+    /// reference bodies in source order. Classical leaves need no program slot.
+    pub meaning_references: Vec<Vec<OriginalBody>>,
+}
+
+/// Original lowering coordinates retained alongside the exact prepared body.
+/// Encoding derives all graph indices afresh from these actual arm subjects.
+#[derive(Default)]
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
+pub(crate) struct ContextSubject {
+    pub supplies: Vec<(String, OperationSubject)>,
+    pub positions: Vec<Position>,
+    pub selections: Vec<SelectionBody>,
+    pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
+    pub branches: Vec<(
+        Position,
+        std::sync::Arc<ContextSubject>,
+        std::sync::Arc<ContextSubject>,
+    )>,
+    /// An actual operation application has provider bodies and no fabricated
+    /// containing-function prefix or nested runtime instruction coordinates.
+    pub operation: Option<std::sync::Arc<OperationSubject>>,
+    // Producer eligibility only; never serialized or trusted by a native gate.
+    pub contains_selections: bool,
+    pub requires_source_gate: bool,
+}
+
+#[cfg_attr(
+    not(test),
+    allow(
+        dead_code,
+        reason = "retained v5 source subjects pending production composition"
+    )
+)]
+pub(crate) struct SelectionBody {
+    pub interface: Interface,
+    pub position: Position,
+    pub arms: Vec<ArmSubject>,
+}
+
+impl std::fmt::Debug for ContextSubject {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ContextSubject")
+            .field("positions", &self.positions)
+            .field("selections", &self.selections.len())
+            .field("calls", &self.calls.len())
+            .field("branches", &self.branches.len())
+            .finish()
+    }
 }
 
 /// Actual local interfaces and literal positions in the complete original call.
@@ -63,6 +190,12 @@ pub(crate) fn proposal(
         for arm in selection.arms {
             let evidence = match &arm.body {
                 ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
+                ArmBody::Program(_) => {
+                    return Err(Error::new(
+                        "unsupported",
+                        "standalone qmatch arm programs require the complete v5 source gate. Wrap the gate in a named unitary function",
+                    ));
+                }
                 ArmBody::Physical {
                     bits,
                     raw,
@@ -184,23 +317,28 @@ fn interface_storage(value: &Interface, remaining: &mut usize) -> Result<()> {
             return Err(Error::limit("carrier owner capacity"));
         }
         for owner in owners {
-            if owner.basis.len() > 128 {
-                return Err(Error::limit("carrier node capacity"));
-            }
             charge(
                 remaining,
                 128usize.saturating_add(owner.port.wires.len().saturating_mul(24)),
             )?;
-            for atom in &owner.basis {
-                charge(remaining, 64)?;
-                if let Atom::Enum(origin, names) | Atom::Record(origin, names) = atom {
-                    for value in [&origin.module, &origin.declaration, &origin.source] {
-                        charge(remaining, value.len().saturating_mul(6).saturating_add(32))?;
-                    }
-                    for name in names {
-                        charge(remaining, name.len().saturating_mul(6).saturating_add(32))?;
-                    }
-                }
+            basis_storage(&owner.basis, remaining)?;
+        }
+    }
+    Ok(())
+}
+
+fn basis_storage(basis: &[Atom], remaining: &mut usize) -> Result<()> {
+    if basis.len() > 128 {
+        return Err(Error::limit("carrier node capacity"));
+    }
+    for atom in basis {
+        charge(remaining, 64)?;
+        if let Atom::Enum(origin, names) | Atom::Record(origin, names) = atom {
+            for value in [&origin.module, &origin.declaration, &origin.source] {
+                charge(remaining, value.len().saturating_mul(6).saturating_add(32))?;
+            }
+            for name in names {
+                charge(remaining, name.len().saturating_mul(6).saturating_add(32))?;
             }
         }
     }

@@ -15,6 +15,20 @@ fn phase_step(axis: usize, phase: u8) -> CircuitStep {
 }
 
 #[test]
+fn inert_builtin_context_metadata_does_not_request_finite_carrier_acceptance() {
+    // This only describes a source type. It generates and checks no quantum
+    // program, state, matrix or maximum-size instance.
+    assert_eq!(
+        nominal::builtin_basis_description(&Ty::pair(Ty::bits(7), Ty::unit())),
+        [
+            crate::interchange::carrier::Atom::Pair,
+            crate::interchange::carrier::Atom::Bits(7),
+            crate::interchange::carrier::Atom::Unit
+        ]
+    );
+}
+
+#[test]
 fn zero_width_selector_preserves_internal_control_at_new_axis_zero() {
     let mut step = phase_step(2, 1);
     step.controls = vec![

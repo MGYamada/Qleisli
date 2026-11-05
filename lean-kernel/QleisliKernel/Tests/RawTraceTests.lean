@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RawTrace
+import QleisliKernel.Qirf.RuntimeBodyGraph
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Small original-source/Raw association controls, at most two physical bits.
@@ -58,6 +59,65 @@ def mixedProgram : Observation.Program :=
     [2,5,6],[],.unitary⟩
 def mixedSource := matchSource ("let q=h(q);let(s,q)=" ++ selection ++ ";(u,s,q)")
 
+/-- This exact original caller shadows the primitive h with an identity
+function. Local interval association alone does not check that child's action.
+The former negative and real diagnostics are retained in the external frozen
+source-raw-full-build-regressions-first study. -/
+def namedShadowSource := "unitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)"
+
+def namedShadowClassified : Bool :=
+  match (SourceTrace.read (sources namedShadowSource) "main" "route").run 2000000000 with
+  | (.ok original,_) => match original.result.events with
+    | [.named event] => event.moduleName == "main" && event.functionName == "h" &&
+        event.signature.original.occurrence.body.map (·.text) == ["q"] &&
+        event.signature.original.parsedHeader.effect == some .unitary
+    | _ => false
+  | _ => false
+
+def bareHClassified : Bool :=
+  match (SourceTrace.read (sources (single "h(q)")) "main" "route").run 2000000000 with
+  | (.ok original,_) => match original.result.events with
+    | [.primitive event] => event.kind == .h
+    | _ => false
+  | _ => false
+
+/-- Plain native proposal, using exactly the original named-shadow source.
+Only main is needed: the local h resolves before any prelude absence query.
+No source Body, signature, proof or earlier accepted result is producer input.
+The full-bundle 10M SourceTrace authoring failure stays a separate benchmark. -/
+def namedShadowPayload (wrongH : Bool) : Except String
+    (Qirf.Artifact × RuntimeContextRequest.Context × RuntimeFamily.Request) := do
+  let tokens ← lexLocated namedShadowSource
+  let [_declaration,call] := tokens.filter (·.text == "h") | throw "original h definition and call"
+  let program := if wrongH then oneH else {oneH with operations := [],outputs := [10]}
+  let returned : Semantics.Raw.Port := if wrongH then ⟨13,[7],1⟩ else ⟨10,[7],1⟩
+  let position : SourceSequence.Position := ⟨call.span.startByte,0,if wrongH then 1 else 0⟩
+  let child : RuntimeContextRequest.Context := .mk [] [] [] [] []
+  let context : RuntimeContextRequest.Context := .mk [position] [] [(position,child)] [] []
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",[Semantics.RuntimeType.owner [.bit]],
+      [[.quantum ⟨⟨10,[7],1⟩,[.bit]⟩]],[[]],Semantics.RuntimeType.owner [.bit],
+      [.quantum ⟨returned,[.bit]⟩],.unitary,{}⟩
+  return (⟨#[program],#[],#[("main",namedShadowSource)],0,none⟩,context,runtime)
+
+def namedShadowNative (wrongH : Bool) : Option (Except Finite.Error (List Nat × List Nat × Nat)) :=
+  match namedShadowPayload wrongH with
+  | .error _ => none
+  | .ok (artifact,context,runtime) =>
+    let action : Finite.WorkM (List Nat × List Nat × Nat) := do
+      let prepared ← RuntimeBodyGraph.prepareRuntime artifact #[0] "main" "route" {} context runtime
+      return (prepared.derivation.result.bindings.map (·.owner.ordinal),
+        prepared.derivation.result.bindings.map (·.port.token),prepared.derivation.result.steps.length)
+    some (action.run 10000000).1
+
+def namedShadowIdentity : Bool := match namedShadowNative false with
+  | some (.ok result) => result == ([0],[10],1)
+  | _ => false
+
+def namedShadowWrongH : Bool := match namedShadowNative true with
+  | some (.error .request) => true
+  | _ => false
+
 def controls : List (String × Bool) := [
   ("single original H binds the literal instruction",checks (single "h(q)") oneH [1]),
   ("H cannot bind X",!checks (single "h(q)")
@@ -114,8 +174,9 @@ def controls : List (String × Bool) := [
     {oneH with operations := [],outputs := [10,10]} []),
   ("primitive-name local shadow refuses",!checks
     "pub unitary fn route(h:Q<Bit>)->Q<Bit>{h(h)}" oneH [1]),
-  ("ordinary named function is not primitive fallback",!checks
-    ("unitary fn h(q:Q<Bit>)->Q<Bit>{q}" ++ single "h(q)") oneH [1]),
+  ("ordinary named function is not primitive fallback",namedShadowClassified && bareHClassified && namedShadowWrongH),
+  ("genuine named identity passes the complete recursive child gate",namedShadowIdentity),
+  ("local named interval association still needs its separate child gate",checks namedShadowSource oneH [1]),
   ("primitive followed by structural qmatch interval",checks mixedSource mixedProgram [1,2]),
   ("qmatch interval cannot absorb the preceding primitive",!checks mixedSource mixedProgram [0,3]),
   ("qmatch boundary cannot cut a joined owner",!checks mixedSource mixedProgram [2,1]),

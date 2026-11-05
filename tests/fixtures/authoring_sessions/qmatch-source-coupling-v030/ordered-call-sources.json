@@ -1,0 +1,72 @@
+{
+  "format": "qleisli.ordered-call-source-study",
+  "source": {
+    "bytes": 621,
+    "sha256": "34b561f7aaea90710dd520bc59dc6895cd57a55b432a6dca2d7e5846a18540b7",
+    "text": "#![no_implicit_prelude]\nunitary fn keep(q:Q<Bit>)->Q<Bit>{q}\nunitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\nmeaning Identity:Bit=reference(keep);\nmeaning Sign:Bit=reference(sign);\nunitary fn choose[const U:Op<Bit>](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)\n    requires Applicable(U),Controllable(U) {\n    qmatch(s,q){0=>keep,1=>checked_op(U,Identity)}\n}\nunitary fn pre(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}\npub unitary fn post(q:Q<Bit>)->Q<Bit>{h(q)}\npub unitary fn route(u:Q<Unit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,(Q<Bit>,Q<Bit>)){\n    let q=pre(q);\n    let (s,q)=choose[then_op(sign,sign)](s,q);\n    let q=post(q);\n    (u,(s,q))\n}\n"
+  },
+  "scope": "Informed study of the original three-call program, the selected node and its source/native call frames. The maintained regression constructs its program and request from the existing qmatch fixture and checks these locations and port orders through the common body reader.",
+  "observations": [
+    {
+      "driver": "ActualCallPaths.first.lean",
+      "driver_sha256": "653769ecd980cf16ec10e3f35e9798aa0af0265edacd14344ec96b0d6657f66c",
+      "exit_code": 1,
+      "stdout": {
+        "bytes": 544,
+        "sha256": "a125a8fd8bed551cf233506d488ddd3f1a4bbf6dce123a8eb1214282708a0b8e",
+        "text": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/resume-qmatch-seven-20261101/ordered-source-body-preservation-next/ActualCallPaths.first.lean:774:6: error: Type mismatch\n  RuntimeSelectionWitness.Checked.selection literal \u22ef\nhas type\n  RuntimeSelectionWitness.Checked\n    (RuntimePureBody.Node.selection ?m.99 ?m.100 ?m.101 ?m.102 ?m.103 ?m.104 ?m.105 ?m.84 ?m.85 ?m.86 ?m.87 ?m.106\n      ?m.89)\nbut is expected to have type\n  RuntimeSelectionWitness.Checked hit.found.node\n"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      }
+    },
+    {
+      "driver": "ActualCallPaths.typed.lean",
+      "driver_sha256": "358f27455cde625b4377622775a152bc6b75c116bc25788d4f4df7cf4864fe30",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 1284,
+        "sha256": "3b0e708fce2c0c3215cd1a1a838e510ac07876abbe69b03012ee0dd70351f708",
+        "text": "pure result=Except.ok ([([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 553 \"main\" \"choose\",\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n   0,\n   1,\n   1)],\n [(\"pre\", 531), (\"choose\", 553), (\"post\", 596)]) spent=11024557\nobserving composed=false result=Except.ok [([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 515 \"main\" \"choose\",\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n  0,\n  1,\n  1)] spent=8290354\nobserving composed=true result=Except.ok [([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 666 \"main\" \"choose\",\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n  0,\n  1,\n  1)] spent=16908464\n"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      }
+    },
+    {
+      "driver": "FullNamedPortsSource.first.lean",
+      "driver_sha256": "89b99d0a394153035d8bed18783873c18d5ccb136878c5d5c6221423a74d514c",
+      "exit_code": 138,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      }
+    },
+    {
+      "driver": "FullNamedPortsSource.first.lean",
+      "driver_sha256": "89b99d0a394153035d8bed18783873c18d5ccb136878c5d5c6221423a74d514c",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 1452,
+        "sha256": "2d0f38e5e1e7abf83e5e36a2cd7189428d86cbdcc8ceee5a7a742f497c3a1d4d",
+        "text": "pure result=Except.ok ([([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 553 \"main\" \"choose\",\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n    QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n   0,\n   1,\n   1)],\n [(\"pre\", 531, [1], [1], [1], [8, 0], [2], some (\"phase\", 384, [1, 1, 4], 1, 2)),\n  (\"choose\", 553, [0, 2], [0, 2], [0, 1], [8], [5, 6], none),\n  (\"post\", 596, [6], [6], [1], [8, 5], [7], some (\"h\", 437, [], 6, 7))]) spent=11025309\nobserving composed=false result=Except.ok [([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 515 \"main\" \"choose\",\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n  0,\n  1,\n  1)] spent=8291234\nobserving composed=true result=Except.ok [([QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.nextOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 1,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.named 1 \"main\" \"route\" 666 \"main\" \"choose\",\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.atOrdinal 0,\n   QleisliKernel.Qirf.RuntimeSelectionSteps.Edge.pureStep 0],\n  0,\n  1,\n  1)] spent=16909440\n"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      }
+    }
+  ],
+  "interpretation": "The first projection failed to elaborate. Its typed successor observed the original paths. The full port-view probe initially exited without output. Following a full kernel rebuild the same driver reported both primitive source positions, the original selected ports and the zero-width spectator. These are bounded observations. The parent-level composition of all source actions remains a separate proof."
+}

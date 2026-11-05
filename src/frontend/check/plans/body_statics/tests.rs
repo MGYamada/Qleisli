@@ -12,6 +12,34 @@ fn checked(source: &str) -> CheckedProgram {
     .0
 }
 
+#[test]
+fn each_constructed_qmatch_arm_has_its_own_controlled_plan() {
+    let program = checked(
+        "#![no_implicit_prelude]
+         unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+         meaning Sign:Bit=reference(sign);
+         pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+             qmatch(s,q){0=>checked_op(sign,Sign),1=>checked_op(sign,Sign)}
+         }",
+    );
+    let mut roots = Vec::new();
+    for (node, plan) in &program.body_statics {
+        if let BodyStaticKind::Operation {
+            expression,
+            operation,
+            requested,
+        } = &plan.kind
+        {
+            assert_eq!(operation.node, Some(*node));
+            assert_eq!(*requested, [false, false, true]);
+            roots.push((*node, *expression));
+        }
+    }
+    assert_eq!(roots.len(), 2);
+    assert_ne!(roots[0].0, roots[1].0);
+    assert_eq!(roots[0].1, roots[1].1);
+}
+
 const BODY: &str = "
     unitary fn f[const n:Nat](q:Q<Unit>)->Q<Unit>{
         static let k=n-n;

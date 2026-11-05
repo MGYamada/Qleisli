@@ -17,6 +17,29 @@ structure Environment (entries : List NaturalHelpers.Entry) where
 def empty (entries : List NaturalHelpers.Entry) : Environment entries :=
   ⟨NaturalClosed.empty,fun bindings => NaturalClosed.emptyReader (NaturalHelpers.interpretation entries bindings)⟩
 
+def bindingNames (bindings : List (String × Nat)) : Names := fun path =>
+  match path with
+  | [name] => (bindings.find? (fun binding => binding.1 == name)).map (·.2)
+  | _ => none
+
+/-- Exact named values supplied by a separately checked original instance.
+This constructs a lexical reader, not evidence that these are caller actuals;
+the enclosing signature/application retains that independent binding. -/
+def ofBindings (entries : List NaturalHelpers.Entry) (bindings : List (String × Nat)) :
+    Environment entries :=
+  ⟨bindingNames bindings,fun _bindings _fuel path => do
+    exactWork (Exact.charge ((path.map String.utf8ByteSize).sum+
+      (bindings.map fun binding => binding.1.utf8ByteSize+1).sum+1))
+    match found : bindingNames bindings path with
+    | none => throw .request
+    | some value =>
+      pure ⟨⟨(value : Int),[]⟩,by
+        intro _ _
+        refine ⟨value,?_,?_⟩
+        · change bindingNames bindings path = some value
+          exact found
+        · simp only [Form.evaluate,dot_nil,Int.add_zero]⟩⟩
+
 /-- `originalBindings` is captured at the original initializer, never replaced
 by the call table of a later use. Only name lookup is polymorphic in that table. -/
 def extend (entries : List NaturalHelpers.Entry) (previous : Environment entries)
@@ -68,6 +91,48 @@ def read (sources : Sources) (caller : String) (entries : List NaturalHelpers.En
   let result ← NaturalClosed.read environment.names entries bindings.val
     (environment.reader bindings.val) expression
   return @Checked.mk sources caller entries environment scope expression bindings result
+
+/-- Complete closed comparison of the original operands under one original
+helper-binding table. The Bool only selects a branch; the independently
+computed predicate and both u32-checked operands remain in the receipt. -/
+def predicateBindings (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (scope : List String) (predicate : Predicate) : WorkM (List (Path × NaturalCatalog.Key)) :=
+  NaturalCatalog.scopedExpressionBindings sources (entries.map (·.original)) caller scope [predicate.left,predicate.right]
+
+structure PredicateChecked (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (environment : Environment entries) (scope : List String) (predicate : Predicate) where
+  bindings : Witness (predicateBindings sources caller entries scope predicate)
+  left : NaturalClosed.Checked environment.names
+    (NaturalHelpers.interpretation entries bindings.val) predicate.left
+  right : NaturalClosed.Checked environment.names
+    (NaturalHelpers.interpretation entries bindings.val) predicate.right
+  value : Bool
+  computed : predicate.evaluate 128 environment.names (NaturalHelpers.interpretation entries bindings.val) = some value
+  selectedTruth : (predicate.forBranch value).Truth 128 environment.names
+    (NaturalHelpers.interpretation entries bindings.val)
+
+private def predicateOfOperands {sources : Sources} {caller : String} {entries : List NaturalHelpers.Entry}
+    {environment : Environment entries} {scope : List String} {predicate : Predicate}
+    (bindings : Witness (predicateBindings sources caller entries scope predicate))
+    (left : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.left)
+    (right : NaturalClosed.Checked environment.names (NaturalHelpers.interpretation entries bindings.val) predicate.right) :
+    PredicateChecked sources caller entries environment scope predicate :=
+  @PredicateChecked.mk sources caller entries environment scope predicate bindings left right
+    (predicate.comparison.test (left.value : Int) (right.value : Int))
+    (Predicate.evaluate_of_values 128 environment.names (NaturalHelpers.interpretation entries bindings.val)
+      predicate left.value right.value left.computed right.computed)
+    (Predicate.branch_truth_of_values 128 environment.names (NaturalHelpers.interpretation entries bindings.val)
+      predicate left.value right.value left.computed right.computed)
+
+def readPredicate (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
+    (environment : Environment entries) (scope : List String) (predicate : Predicate) :
+    WorkM (PredicateChecked sources caller entries environment scope predicate) := do
+  let bindings ← NaturalAffine.witness (predicateBindings sources caller entries scope predicate)
+  let left ← NaturalClosed.read environment.names entries bindings.val
+    (environment.reader bindings.val) predicate.left
+  let right ← NaturalClosed.read environment.names entries bindings.val
+    (environment.reader bindings.val) predicate.right
+  pure (predicateOfOperands bindings left right)
 
 structure Bound (sources : Sources) (caller : String) (entries : List NaturalHelpers.Entry)
     (environment : Environment entries) (scope : List String) (name : String) (expression : Expr) where

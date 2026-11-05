@@ -19,6 +19,8 @@ inductive Mode where
   | readout | preparation | carrierPure | ordinaryRoot | runtimeRoot | qmatchSource
   deriving BEq, DecidableEq, Repr
 
+def Mode.workLimit (_ : Mode) : Nat := QleisliKernel.exactWorkLimit
+
 def Mode.name : Mode → String
   | .ordinary => "--qirf-native"
   | .contract => "--qirf-contract"
@@ -272,6 +274,7 @@ structure Reply where
 
 def Mode.errorCode : Mode → Gate.Error → String
   | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
+  | .qmatchSource, .native (.arithmetic .workLimit) => "limit"
   | _, error => Native.errorCode error
 
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=

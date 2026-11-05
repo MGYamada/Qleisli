@@ -114,6 +114,15 @@
       "commands": [
         [
           "python3",
+          "scripts/check_schema_registry.py",
+          "--source-only"
+        ],
+        [
+          "python3",
+          "scripts/check_initial_guarantees.py"
+        ],
+        [
+          "python3",
           "scripts/check_verification_inventory.py"
         ],
         [

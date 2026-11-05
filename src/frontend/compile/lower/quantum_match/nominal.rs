@@ -4,17 +4,28 @@
 use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
-use crate::interchange::qmatch::{ArmSubject, Position, SelectionSubject, SourceSite};
+use crate::interchange::qmatch::{
+    ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
+};
 
 mod arms;
+pub(super) use arms::builtin_arm;
+#[cfg(test)]
+mod tests;
 
 pub(in crate::frontend::compile::lower) struct Frame {
     key: Key,
+    supplies: Vec<(String, crate::interchange::qmatch::OperationSubject)>,
     inputs: Vec<Owner>,
+    classical_inputs: Vec<ClassicalId>,
     start: usize,
     positions: Vec<Position>,
     primitive_prelude: bool,
     selections: Vec<Selection>,
+    calls: Vec<(Position, Arc<ContextSubject>)>,
+    branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
+    contains_selections: bool,
+    source_gate: bool,
 }
 
 struct Selection {
@@ -33,25 +44,50 @@ fn outputs(
     span: Span,
     value: &Value,
 ) -> Result<Vec<Owner>, CompileError> {
-    // The native structural rule reads an atomic Q owner or a flat tuple of
-    // such owners. Preserve source order and every zero-width owner.
+    // Project actual owner leaves without rewriting the retained runtime tree.
+    // Ordinary values and every level of grouping stay in Value/runtime storage.
     match value {
         Value::Quantum(..) => Ok(vec![owner(lower, module, span, value)?]),
-        Value::Pair(left, right) => Ok(vec![
-            owner(lower, module, span, left)?,
-            owner(lower, module, span, right)?,
-        ]),
-        Value::Tuple(fields) => fields
-            .iter()
-            .map(|field| owner(lower, module, span, field))
-            .collect(),
-        _ => Err(lower.error(
-            module,
-            span,
-            ErrorCode::Unsupported,
-            "qmatch source context currently requires a flat quantum-owner result",
-        )),
+        Value::Pair(left, right) => {
+            let mut result = outputs(lower, module, span, left)?;
+            result.extend(outputs(lower, module, span, right)?);
+            Ok(result)
+        }
+        Value::Tuple(fields) | Value::Record(_, fields) => {
+            let mut result = Vec::new();
+            for field in fields {
+                result.extend(outputs(lower, module, span, field)?);
+            }
+            Ok(result)
+        }
+        _ => Ok(Vec::new()),
     }
+}
+
+/// Inert metadata must not impose the separate six-bit carrier acceptance
+/// profile on an existing built-in Raw owner. Native consumers retain their
+/// own type/code limits; describing a tree grants no validity or capability.
+pub(super) fn builtin_basis_description(ty: &Ty) -> Vec<crate::interchange::carrier::Atom> {
+    use crate::interchange::carrier::Atom;
+    let mut result = Vec::new();
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        result.push(match &ty.kind {
+            Kind::Unit => Atom::Unit,
+            Kind::Bit => Atom::Bit,
+            Kind::Bits(width) => Atom::Bits(*width),
+            Kind::Tuple(fields) => {
+                pending.extend(fields.iter().rev());
+                if fields.len() == 2 {
+                    Atom::Pair
+                } else {
+                    Atom::Tuple(fields.len() as u32)
+                }
+            }
+            _ => unreachable!("built-in basis was checked before description"),
+        });
+    }
+    result
 }
 
 fn owner(
@@ -70,9 +106,16 @@ fn owner(
             ));
     lower.compiler.charge(module, span, cost)?;
     let register = lower.raw.registers[&slot].clone();
-    let basis = lower
-        .compiler
-        .carrier_description(module, span, &register.basis)?;
+    let basis = if register.basis.basis_bits().is_some() {
+        lower
+            .compiler
+            .charge(module, span, 2 * register.basis.tree_size().nodes)?;
+        builtin_basis_description(&register.basis)
+    } else {
+        lower
+            .compiler
+            .carrier_description(module, span, &register.basis)?
+    };
     Ok(Owner {
         port: QuantumPort {
             token: register.token,
@@ -85,21 +128,54 @@ fn owner(
     })
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "retain the complete original source and native interfaces"
+)]
+fn retained_raw(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    inputs: &[Owner],
+    classical_inputs: &[ClassicalId],
+    start: usize,
+    value: &Value,
+    declared_effect: Effect,
+) -> Result<RawProgram, CompileError> {
+    lower
+        .compiler
+        .charge(module, span, value.tree_size().nodes)?;
+    let mut quantum_outputs = Vec::new();
+    let mut classical_outputs = Vec::new();
+    value.outputs(
+        &lower.raw.registers,
+        &mut quantum_outputs,
+        &mut classical_outputs,
+    );
+    lower.compiler.charge(
+        module,
+        span,
+        crate::frontend::raw_state::operations_size(&lower.raw.operations[start..]),
+    )?;
+    lower
+        .compiler
+        .charge(module, span, classical_inputs.len())?;
+    Ok(RawProgram {
+        quantum_inputs: inputs.iter().map(|owner| owner.port.clone()).collect(),
+        classical_inputs: classical_inputs.to_vec(),
+        operations: lower.raw.operations[start..].to_vec(),
+        quantum_outputs,
+        classical_outputs,
+        declared_effect,
+    })
+}
+
 impl Frame {
     pub(in crate::frontend::compile::lower) fn start(
         lower: &mut Lowerer<'_, '_>,
         key: Key,
         args: &[Value],
     ) -> Result<Option<Self>, CompileError> {
-        if args.len() < 2 || !args.iter().all(|arg| matches!(arg, Value::Quantum(..))) {
-            return Ok(None);
-        }
-        if !args.iter().any(|arg| match arg {
-            Value::Quantum(slot, _) => lower.raw.registers[slot].basis.basis_bits().is_none(),
-            _ => false,
-        }) {
-            return Ok(None);
-        }
         let name = lower
             .compiler
             .source
@@ -108,16 +184,128 @@ impl Frame {
             .name
             .clone();
         let span = lower.compiler.declarations[&key].span;
+        lower.compiler.charge(
+            &name.0,
+            span,
+            total_size(args.iter().map(|arg| arg.tree_size().nodes)),
+        )?;
+        lower.compiler.charge(
+            &name.0,
+            span,
+            total_size(args.iter().map(|arg| arg.tree_size().nodes)).saturating_mul(2),
+        )?;
+        let mut inputs = Vec::new();
+        let mut classical_inputs = Vec::new();
+        for arg in args {
+            inputs.extend(outputs(lower, &name.0, span, arg)?);
+            let mut quantum_tokens = Vec::new();
+            arg.outputs(
+                &lower.raw.registers,
+                &mut quantum_tokens,
+                &mut classical_inputs,
+            );
+        }
+        lower.compiler.charge(
+            &name.0,
+            span,
+            classical_inputs.len().saturating_add(1).saturating_pow(2),
+        )?;
+        // Ordinary actuals may alias. This is the physical SSA interface;
+        // original source arguments retain each formal occurrence separately.
+        let mut seen = BTreeSet::new();
+        classical_inputs.retain(|id| seen.insert(*id));
+        let source_gate = inputs.iter().any(|owner| {
+            owner.basis.iter().any(|atom| {
+                matches!(
+                    atom,
+                    crate::interchange::carrier::Atom::Enum(..)
+                        | crate::interchange::carrier::Atom::Record(..)
+                )
+            })
+        });
         Ok(Some(Self {
             key,
-            inputs: args
-                .iter()
-                .map(|arg| owner(lower, &name.0, span, arg))
-                .collect::<Result<_, _>>()?,
+            supplies: lower.compiler.qmatch_supplies(key, &name.0, span)?,
+            inputs,
+            classical_inputs,
             start: lower.raw.operations.len(),
             positions: Vec::new(),
             primitive_prelude: false,
             selections: Vec::new(),
+            calls: Vec::new(),
+            branches: Vec::new(),
+            contains_selections: false,
+            source_gate,
+        }))
+    }
+
+    pub(in crate::frontend::compile::lower) fn requires_source_gate(&self) -> bool {
+        self.source_gate
+    }
+
+    /// A branch inherits its original declaration/actuals, while its literal
+    /// operation coordinates start at zero in that actual Raw child list.
+    pub(in crate::frontend::compile::lower) fn branch_frame(&self) -> Self {
+        Self {
+            key: self.key,
+            supplies: Vec::new(),
+            inputs: Vec::new(),
+            // A branch inherits bindings and is not a standalone call scope.
+            classical_inputs: Vec::new(),
+            start: 0,
+            positions: Vec::new(),
+            primitive_prelude: false,
+            selections: Vec::new(),
+            calls: Vec::new(),
+            branches: Vec::new(),
+            contains_selections: false,
+            source_gate: self.source_gate,
+        }
+    }
+
+    /// Retain a real branch body without pretending that it is the complete
+    /// containing source function. The enclosing v5 gate checks its origin.
+    pub(in crate::frontend::compile::lower) fn branch_subject(
+        self,
+        lower: &mut Lowerer<'_, '_>,
+        module: &str,
+    ) -> Result<Arc<ContextSubject>, CompileError> {
+        lower.compiler.charge(
+            module,
+            lower.compiler.declarations[&self.key].span,
+            self.selections.len().saturating_mul(8) + 1,
+        )?;
+        let selections = self
+            .selections
+            .into_iter()
+            .map(|selected| {
+                Ok(SelectionBody {
+                    position: position(
+                        lower,
+                        module,
+                        selected.span,
+                        selected.offset,
+                        selected.start,
+                        selected.count,
+                    )?,
+                    interface: Interface {
+                        inputs: selected.inputs,
+                        outputs: selected.outputs,
+                        public_effect: Effect::Unitary,
+                    },
+                    arms: selected.arms,
+                })
+            })
+            .collect::<Result<Vec<_>, CompileError>>()?;
+        Ok(Arc::new(ContextSubject {
+            supplies: self.supplies,
+            positions: self.positions,
+            selections,
+            calls: self.calls,
+            branches: self.branches,
+            operation: None,
+            contains_selections: self.contains_selections,
+            requires_source_gate: self.source_gate,
         }))
     }
 
@@ -125,12 +313,48 @@ impl Frame {
         self,
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
-    ) -> Result<(), CompileError> {
+    ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
+        if !self.source_gate && !self.selections.is_empty() {
+            let module = lower
+                .compiler
+                .source
+                .resolution
+                .declaration(self.key)
+                .name
+                .0
+                .clone();
+            return self.branch_subject(lower, &module).map(Some);
+        }
+        if self.source_gate && self.contains_selections && !self.branches.is_empty() {
+            let name = lower
+                .compiler
+                .source
+                .resolution
+                .declaration(self.key)
+                .name
+                .0
+                .clone();
+            return Err(lower.error(&name, lower.compiler.declarations[&self.key].span, ErrorCode::Unsupported,
+                "nominal qmatch with ordinary branches is outside the currently checked source profile"));
+        }
         let selections = self.selections;
-        let Some(first) = selections.first() else {
-            return Ok(());
-        };
-        let span = first.span;
+        if selections.is_empty() {
+            return Ok(Some(Arc::new(ContextSubject {
+                supplies: self.supplies,
+                positions: self.positions,
+                selections: Vec::new(),
+                calls: self.calls,
+                branches: self.branches,
+                operation: None,
+                contains_selections: self.contains_selections,
+                requires_source_gate: self.source_gate,
+            })));
+        }
+        let span = selections
+            .first()
+            .map_or(lower.compiler.declarations[&self.key].span, |first| {
+                first.span
+            });
         let name = lower
             .compiler
             .source
@@ -138,42 +362,26 @@ impl Frame {
             .declaration(self.key)
             .name
             .clone();
-        let outputs = outputs(lower, &name.0, span, value)?;
-        lower.compiler.charge(
+        // A qmatch value may be nested in an ordinary runtime product. Keep
+        // that value and its full type tree intact; the Raw boundary lists
+        // only its actual owners and classical storage, in structural order.
+        let declared_effect = lower.compiler.source.effects[&self.key]
+            .asserted()
+            .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred());
+        let raw = retained_raw(
+            lower,
             &name.0,
             span,
-            crate::frontend::raw_state::operations_size(&lower.raw.operations[self.start..]),
+            &self.inputs,
+            &self.classical_inputs,
+            self.start,
+            value,
+            declared_effect,
         )?;
-        let raw = RawProgram {
-            quantum_inputs: self.inputs.iter().map(|owner| owner.port.clone()).collect(),
-            classical_inputs: vec![],
-            operations: lower.raw.operations[self.start..].to_vec(),
-            quantum_outputs: outputs.iter().map(|owner| owner.port.token).collect(),
-            classical_outputs: vec![],
-            declared_effect: lower.compiler.source.effects[&self.key]
-                .asserted()
-                .unwrap_or_else(|| lower.compiler.source.effects[&self.key].inferred()),
-        };
-        let mut rows = lower
-            .compiler
-            .retained_ordinary_type_sources(self.key, &name.0, span)?;
-        if self.primitive_prelude {
+        let rows =
             lower
                 .compiler
-                .charge(&name.0, span, rows.iter().map(|row| row.0.len() + 1).sum())?;
-            let mut modules = rows.iter().map(|row| row.0.clone()).collect::<Vec<_>>();
-            modules.push("std::prelude".to_owned());
-            modules.sort_unstable();
-            modules.dedup();
-            rows = lower
-                .compiler
-                .retain_source_modules(&name.0, span, modules)?;
-        }
-        lower.compiler.charge(
-            &name.0,
-            span,
-            rows.iter().map(|row| row.0.len() + row.1.len()).sum(),
-        )?;
+                .qmatch_source_rows(self.key, &name.0, span, self.primitive_prelude)?;
         let sources = rows
             .iter()
             .map(|row| row.as_ref().clone())
@@ -226,39 +434,68 @@ impl Frame {
                 })
             })
             .collect::<Result<Vec<_>, CompileError>>()?;
-        let proposal = crate::interchange::qmatch::proposal(
-            &raw,
-            SourceSite {
-                module: name.0.clone(),
-                function: name.1,
-            },
-            &self.positions,
-            &subjects,
-            &sources,
-        )
-        .and_then(|(artifact, request)| {
+        if !selections.is_empty() && self.source_gate {
+            let proposal = crate::interchange::qmatch::proposal(
+                &raw,
+                SourceSite {
+                    module: name.0.clone(),
+                    function: name.1,
+                },
+                &self.positions,
+                &subjects,
+                &sources,
+            )
+            .and_then(|(artifact, request)| {
+                lower
+                    .compiler
+                    .kernel
+                    .check_qmatch_source(&artifact, &request)
+            });
+            let checked = proposal.map_err(|error| {
+                let limit = error.code == "limit";
+                verification_error(
+                    lower.compiler,
+                    &lower.operation_sources,
+                    &name.0,
+                    span,
+                    error,
+                    limit,
+                )
+            })?;
             lower
                 .compiler
-                .kernel
-                .check_qmatch_source(&artifact, &request)
-        });
-        let checked = proposal.map_err(|error| {
-            let limit = error.code == "limit";
-            verification_error(
-                lower.compiler,
-                &lower.operation_sources,
-                &name.0,
-                span,
-                error,
-                limit,
-            )
-        })?;
-        lower
-            .compiler
-            .exact_work
-            .charge(checked.native().exact_work())
-            .map_err(|e| lower.compiler.op_error(&name.0, span, e.into()))?;
-        Ok(())
+                .exact_work
+                .charge(checked.native().exact_work())
+                .map_err(|e| lower.compiler.op_error(&name.0, span, e.into()))?;
+        }
+        let selections = selections
+            .into_iter()
+            .zip(interfaces)
+            .map(|(selected, interface)| {
+                Ok(SelectionBody {
+                    interface,
+                    position: position(
+                        lower,
+                        &name.0,
+                        selected.span,
+                        selected.offset,
+                        selected.start,
+                        selected.count,
+                    )?,
+                    arms: selected.arms,
+                })
+            })
+            .collect::<Result<Vec<_>, CompileError>>()?;
+        Ok(Some(Arc::new(ContextSubject {
+            supplies: self.supplies,
+            positions: self.positions,
+            selections,
+            calls: self.calls,
+            branches: self.branches,
+            operation: None,
+            contains_selections: self.contains_selections,
+            requires_source_gate: self.source_gate,
+        })))
     }
 }
 
@@ -315,6 +552,158 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position);
     frame.primitive_prelude |= prelude;
+    Ok(())
+}
+
+/// A named event encloses only the callee expansion, after its actual argument
+/// expressions. Its child's offsets remain in that child's original module.
+pub(in crate::frontend::compile::lower) fn record_named(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    callee: &Ident,
+    start: usize,
+    body: Option<Arc<ContextSubject>>,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let Some(body) = body else {
+        if frame.requires_source_gate() {
+            return Err(lower.error(
+                module,
+                callee.span,
+                ErrorCode::Unsupported,
+                "qmatch call requires its complete original lowering context",
+            ));
+        }
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            callee.span,
+            ErrorCode::InvalidIr,
+            "named call precedes its original source context",
+        )
+    })?;
+    let count = lower
+        .raw
+        .operations
+        .len()
+        .checked_sub(start)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                callee.span,
+                ErrorCode::InvalidIr,
+                "named call removed its original operation prefix",
+            )
+        })?;
+    let position = position(
+        lower,
+        module,
+        callee.span,
+        callee.span.start,
+        relative,
+        count,
+    )?;
+    lower.compiler.charge(module, callee.span, 8)?;
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.positions.push(position.clone());
+    frame.contains_selections |= body.contains_selections;
+    frame.calls.push((position, body));
+    Ok(())
+}
+
+/// Retain one actual operation application after its arguments have run.
+/// Its child carries the complete original tree, including unused suppliers.
+pub(in crate::frontend::compile::lower) fn record_operation(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    operation: &crate::frontend::compile::operations::Operation,
+    access: Access,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "operation call precedes its original source context",
+        )
+    })?;
+    let count = lower
+        .raw
+        .operations
+        .len()
+        .checked_sub(start)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "operation call removed its actual instruction prefix",
+            )
+        })?;
+    let position = position(lower, module, span, span.start, relative, count)?;
+    let original = lower
+        .compiler
+        .qmatch_operation_application(operation, access, module, span)?;
+    lower.compiler.charge(module, span, 12)?;
+    let body = Arc::new(ContextSubject {
+        operation: Some(Arc::new(original)),
+        ..ContextSubject::default()
+    });
+    let frame = lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original operation context");
+    frame.positions.push(position.clone());
+    frame.calls.push((position, body));
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn record_branch(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    then_body: Option<Arc<ContextSubject>>,
+    else_body: Option<Arc<ContextSubject>>,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let (Some(then_body), Some(else_body)) = (then_body, else_body) else {
+        return Err(lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "original branch lost one of its actual lowering contexts",
+        ));
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "branch precedes its original containing context",
+        )
+    })?;
+    let position = position(lower, module, span, span.start, relative, 1)?;
+    lower.compiler.charge(module, span, 12)?;
+    let frame = lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original containing context");
+    frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
+    frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
+    frame.positions.push(position.clone());
+    frame.branches.push((position, then_body, else_body));
     Ok(())
 }
 
@@ -401,6 +790,11 @@ pub(super) fn emit(
     {
         return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires an original structural function with quantum parameters and at most 128 selections"));
     }
+    lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original context")
+        .source_gate = true;
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
         Kind::Nominal(nominal) => match &nominal.body {
@@ -472,7 +866,7 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        let (subject, mut body) = arms::prepare(
+        let (subject, mut body, original) = arms::prepare(
             lower,
             module,
             &arm.operation,
@@ -489,6 +883,7 @@ pub(super) fn emit(
         arms.push(ArmSubject {
             body: subject,
             controlled: controlled(body.clone(), target_bits),
+            operation: Some(original),
         });
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
             .map_err(|e| lower.compiler.op_error(module, arm.span, e))?;
@@ -510,31 +905,48 @@ pub(super) fn emit(
             "qmatch requires every exact enum label",
         ));
     }
-    let inputs = vec![
-        owner(lower, module, span, &selector)?,
-        owner(lower, module, span, &target)?,
-    ];
+    apply_selection(
+        lower,
+        module,
+        span,
+        selection.keyword.start,
+        [selector, target],
+        steps,
+        arms,
+    )
+}
+
+/// Retain the same original source event and literal interval for each lowering profile.
+pub(super) fn apply_selection(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    offset: usize,
+    [selector, target]: [Value; 2],
+    steps: Vec<CircuitStep>,
+    arms: Vec<ArmSubject>,
+) -> Result<Value, CompileError> {
+    let frame_start = lower.nominal_qmatch.as_ref().map(|frame| frame.start);
+    let inputs = if frame_start.is_some() {
+        vec![
+            owner(lower, module, span, &selector)?,
+            owner(lower, module, span, &target)?,
+        ]
+    } else {
+        Vec::new()
+    };
     let start = lower.raw.operations.len();
     let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
     let slot = lower.quantum(module, span, &joined, false)?;
     lower.apply_circuit(slot, steps);
     let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+    let Some(frame_start) = frame_start else {
+        return Ok(result);
+    };
     let selected_outputs = outputs(lower, module, span, &result)?;
     let count = lower.raw.operations.len() - start;
-    let relative = start
-        - lower
-            .nominal_qmatch
-            .as_ref()
-            .expect("checked original frame")
-            .start;
-    let position = position(
-        lower,
-        module,
-        span,
-        selection.keyword.start,
-        relative,
-        count,
-    )?;
+    let relative = start - frame_start;
+    let position = position(lower, module, span, offset, relative, count)?;
     lower.compiler.charge(module, span, 4)?;
     let frame = lower
         .nominal_qmatch
@@ -542,13 +954,14 @@ pub(super) fn emit(
         .expect("checked original frame");
     frame.selections.push(Selection {
         span,
-        offset: selection.keyword.start,
+        offset,
         arms,
         inputs,
         outputs: selected_outputs,
         start: relative,
         count,
     });
+    frame.contains_selections = true;
     frame.positions.push(position);
     Ok(result)
 }

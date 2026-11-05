@@ -445,6 +445,7 @@ mod tests {
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
             nominal_qmatch: None,
+            source_context: None,
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,

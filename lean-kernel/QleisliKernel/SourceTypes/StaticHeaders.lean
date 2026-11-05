@@ -63,8 +63,7 @@ private def formals (header : OrdinarySignature.Header) : Except String (List Fo
   if parts.length > 32 then throw "static formal capacity"
   parts.foldlM (fun parsed tokens => do
     let "const" :: name :: ":" :: tokens := tokens | throw "expected const static formal"
-    if !identifier name || parsed.any (fun formal => formal.name == name) then
-      throw "invalid or duplicate static formal"
+    if parsed.any (fun formal => formal.name == name) then throw "duplicate static formal"
     let kind ← match tokens with
       | ["Basis"] => pure Kind.basis
       | ["Nat"] => pure Kind.natural
@@ -72,6 +71,8 @@ private def formals (header : OrdinarySignature.Header) : Except String (List Fo
         if rest.length < 2 || rest.getLast? != some ">" then throw "incomplete operation kind"
         pure (Kind.operation rest.dropLast)
       | _ => throw "unknown static kind"
+    if !(if kind == .natural then NaturalSyntax.isName name else identifier name) then
+      throw "invalid static formal name"
     return parsed ++ [⟨name,parsed.length,kind⟩]) []
 
 private def requirement (state : Parsed) (tokens : List String) : Except String Parsed := do
@@ -102,12 +103,19 @@ structure Original (sources : Sources) (owner name : String) where
   header : Parsed
   parsed : parse envelope.parsedHeader = .ok header
 
-def read (sources : Sources) (owner name : String) : Finite.WorkM (Original sources owner name) := do
-  let original ← OrdinarySignature.readOriginalEnvelope sources owner name
+def readOriginal {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Finite.WorkM (Original sources owner name) := do
   Finite.exactWork (Exact.charge (32*original.occurrence.header.length^2+1))
   match parsed : parse original.parsedHeader with
   | .error _ => throw .request
   | .ok header => pure ⟨original,header,parsed⟩
+
+def read (sources : Sources) (owner name : String)
+    (originals : Option (OrdinarySignature.Originals sources) := none) : Finite.WorkM (Original sources owner name) := do
+  let original ← match originals with
+    | none => OrdinarySignature.readOriginalEnvelope sources owner name
+    | some originals => OrdinarySignature.lookupOriginals originals owner name
+  readOriginal original
 
 /-- Original mixed-kind ordinals survive canonical name-first affine order. -/
 def frame {sources owner name} (original : Original sources owner name) : NaturalFrames.Frame :=

@@ -94,7 +94,10 @@ fn response_bound(
                     env!("CARGO_PKG_VERSION")
                 )
             } else if code == "limit" {
-                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000 and shared exact-work allowance is 10000000; required work is unavailable in the native failure reply".to_owned()
+                format!(
+                    "a checking capacity was exceeded; aggregate structural-work allowance is 2000000 and shared exact-work allowance is {}; required work is unavailable in the native failure reply",
+                    crate::contract::DEFAULT_EXACT_WORK
+                )
             } else if code == "edition" {
                 "the native checker does not support the requested constitutional edition"
                     .to_owned()
@@ -126,7 +129,7 @@ fn response_bound(
         Ok(n)
     };
     let work = integer(lines.next(), 2_000_000)?;
-    let exact_work = integer(lines.next(), 10_000_000)?;
+    let exact_work = integer(lines.next(), crate::contract::DEFAULT_EXACT_WORK)?;
     let count = integer(lines.next(), 100_000)?;
     let indices = (0..count)
         .map(|_| integer(lines.next(), 99_999))
@@ -259,7 +262,7 @@ mod response_diagnostics_tests {
                 valid.replacen("result 3", "result 1", 1),
                 valid.replacen("result 3", "result 2", 1),
                 valid.replacen("inspection", "execution", 1),
-                valid.replacen("\n36\n", "\n10000001\n", 1),
+                valid.replacen("\n36\n", "\n20000001\n", 1),
                 valid.replacen("\n36\n", "\n036\n", 1),
                 format!("{valid}extra\n"),
             ] {

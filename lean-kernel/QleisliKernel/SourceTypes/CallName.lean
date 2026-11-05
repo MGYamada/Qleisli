@@ -1,5 +1,7 @@
 import QleisliKernel.SourceTypes.SourceLookup
+import QleisliKernel.SourceTypes.ResolutionProvenance
 import QleisliKernel.SourceTypes.ModuleHeader
+import QleisliKernel.SourceTypes.SourceModules
 
 /-! Original-call-name candidates, without standalone acceptance authority.
 The supplied lexical scope must retain consumed bindings; authenticating that
@@ -24,14 +26,23 @@ private def allowed (segments : List String) : Bool :=
     (index == 1 && segments.head? == some "std" &&
       ["basis","observe","classical"].contains name)
 
-def readName (tokens : List LocatedToken) : Except String (Name tokens) := do
-  let segments := (tokens.map (·.text)).filter (· != "::")
+structure TextName (tokens : List String) where
+  segments : List String
+  nonempty : segments ≠ []
+  original : segments.intersperse "::" = tokens
+
+def readTextName (tokens : List String) : Except String (TextName tokens) := do
+  let segments := tokens.filter (· != "::")
   if nonempty : segments ≠ [] then
     if !allowed segments then throw "unsupported original call name"
-    if original : segments.intersperse "::" = tokens.map (·.text) then
+    if original : segments.intersperse "::" = tokens then
       return ⟨segments,nonempty,original⟩
     else throw "original call name is not an exact path"
   else throw "empty original call name"
+
+def readName (tokens : List LocatedToken) : Except String (Name tokens) := do
+  let read ← readTextName (tokens.map (·.text))
+  return ⟨read.segments,read.nonempty,read.original⟩
 
 /-- Match the actual leading module header, ignoring only what lexLocated
 itself discards. Later, repeated and malformed hash directives reject. -/
@@ -110,18 +121,33 @@ def primitiveSpelling (name : String) : Bool :=
     "measure_z","discard","take_bit","put_bit","empty_bits","prepend_bit"].contains name
 
 inductive Primitive where
-  | h | globalPhaseEighth | phase
+  | h | globalPhaseEighth | phase | measureZ | discard | unit | finish | split | join
+  | emptyBits | prependBit | takeBit | putBit
   deriving BEq, DecidableEq, Repr
 
 def Primitive.name : Primitive → String
   | .h => "h"
   | .globalPhaseEighth => "global_phase_eighth"
   | .phase => "phase"
+  | .measureZ => "measure_z" | .discard => "discard" | .unit => "unit"
+  | .finish => "finish" | .split => "split" | .join => "join"
+  | .emptyBits => "empty_bits" | .prependBit => "prepend_bit"
+  | .takeBit => "take_bit" | .putBit => "put_bit"
 
 private def primitive (name : String) : Except String Primitive :=
   if name == "h" then .ok .h
   else if name == "global_phase_eighth" then .ok .globalPhaseEighth
   else if name == "phase" then .ok .phase
+  else if name == "measure_z" then .ok .measureZ
+  else if name == "discard" then .ok .discard
+  else if name == "unit" then .ok .unit
+  else if name == "finish" then .ok .finish
+  else if name == "split" then .ok .split
+  else if name == "join" then .ok .join
+  else if name == "empty_bits" then .ok .emptyBits
+  else if name == "prepend_bit" then .ok .prependBit
+  else if name == "take_bit" then .ok .takeBit
+  else if name == "put_bit" then .ok .putBit
   else .error "not a supported unbound primitive candidate"
 
 /-- Enabled lookup retains the exact canonical row even when no public export
@@ -151,6 +177,31 @@ structure Checked (sources : Sources) (caller : String) (scope : List String)
   name : Name tokens
   decision : Decision sources caller scope (tokens.map (·.text))
 
+def PreludeMiss.sourceRows {sources name} : {disabled : Bool} →
+    PreludeMiss sources name disabled → List (String × String)
+  | _,.disabled => []
+  | _,.enabled lookup _ => [("std::prelude",lookup.source)]
+
+/-- Complete original resolution dependencies, including caller/prelude scans
+which establish absence. A named path and its reexports retain their original
+visited order; a primitive spelling alone supplies no source relevance. -/
+def sourceRows {sources caller scope tokens} (candidate : Checked sources caller scope tokens) :
+    List (String × String) :=
+  match candidate.decision with
+  | .lexical .. => []
+  | .named resolution => ResolutionProvenance.sourceRows resolution.result
+  | .prelude _ _ _ localMissing _ _ lookup _ resolution =>
+    (caller,localMissing.lookup.source) :: ("std::prelude",lookup.source) ::
+      ResolutionProvenance.sourceRows resolution.result
+  | .primitive _ _ _ localMissing _ preludeMissing _ _ =>
+    (caller,localMissing.lookup.source) :: preludeMissing.sourceRows
+
+def candidateResolution {sources caller scope tokens}
+    (candidate : Checked sources caller scope tokens) : Option Resolved :=
+  match candidate.decision with
+  | .named resolution | .prelude _ _ _ _ _ _ _ _ resolution => some resolution.result
+  | _ => none
+
 private def primitiveDecision {sources caller scope tokens name}
     (spelling : tokens = [name]) (unbound : name ∉ scope)
     (localMissing : Absent sources caller name) (policy : Policy localMissing.lookup.source)
@@ -161,36 +212,60 @@ private def primitiveDecision {sources caller scope tokens name}
     return .primitive name spelling unbound localMissing policy preludeMissing candidate originalName
   else throw .request
 
-/-- Charge original bytes and names before lexing, catalogue scans or path
-construction. There is no new expression-count cap. Existing lexing/source and
-resolver limits remain in force; the budget is intentionally conservative. -/
-def read (sources : Sources) (caller : String) (scope : List String)
-    (tokens : List LocatedToken) : Finite.WorkM (Checked sources caller scope tokens) := do
+private structure Lookup (sources : Sources) (owner name : String) where
+  checked : SourceLookup.Checked sources owner name
+  policy : Option (Policy checked.source)
+
+private def readLookup (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (owner name : String) : Finite.WorkM (Lookup sources owner name) := do
+  match modules with
+  | none => pure ⟨← adapt (SourceLookup.read sources owner name),none⟩
+  | some modules =>
+    let original ← SourceModules.lookup modules owner
+    Finite.exactWork (Exact.charge (4*((original.items.map fun item => item.name.utf8ByteSize+1).sum+
+      name.utf8ByteSize+1)))
+    let selected ← adapt (SourceLookup.select original.items name)
+    let checked : SourceLookup.Checked sources owner name :=
+      ⟨original.source,original.items,selected.binding,original.originalModule,original.originalItems,selected.matching⟩
+    pure ⟨checked,some ⟨original.tokens,original.lexed,original.disabled,original.policy⟩⟩
+
+/-- The fresh path charges full source bytes before scanning. A prepared path
+instead charges its actual module/name matching; its exact scans and policy
+are retained by the shared original-source preparation. Named/import paths
+still execute the original resolver, including every visibility/import gate. -/
+private def readTextsUsing (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (scope : List String)
+    (tokens : List String) : Finite.WorkM (Decision sources caller scope tokens) := do
   Finite.exactWork (Exact.charge (1 + caller.utf8ByteSize +
-    (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize + 3).sum * 4 +
+    (if modules.isSome then 0 else
+      (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize + 3).sum * 4) +
     (scope.map fun name => name.utf8ByteSize + 1).sum +
-    (tokens.map fun token => token.text.utf8ByteSize + 4).sum * 4))
-  let parsed ← adapt (readName tokens)
+    (tokens.map fun token => token.utf8ByteSize + 4).sum * 4))
+  let parsed ← adapt (readTextName tokens)
   let decision ← match single : parsed.segments with
     | [name] => do
-      have spelling : tokens.map (·.text) = [name] := by
+      have spelling : tokens = [name] := by
         simpa only [single,List.intersperse_singleton] using parsed.original.symm
       if bound : name ∈ scope then
         pure (.lexical name spelling bound)
       else
-        let lookup ← adapt (SourceLookup.read sources caller name)
+        let localRead ← readLookup sources modules caller name
+        let lookup := localRead.checked
         match present : lookup.binding with
         | some _ =>
-          pure (.named (← resolve sources caller (tokens.map (·.text))))
+          pure (.named (← resolve sources caller tokens))
         | none =>
           let localMissing : Absent sources caller name := ⟨lookup,present⟩
-          let policy ← adapt (readPolicy lookup.source)
+          let policy ← match localRead.policy with
+            | some policy => pure policy
+            | none => adapt (readPolicy lookup.source)
           if disabled : policy.disabled = true then
             let miss : PreludeMiss sources name policy.disabled := disabled ▸ .disabled
             primitiveDecision spelling bound localMissing policy miss
           else
             have enabled : policy.disabled = false := by cases h : policy.disabled <;> simp_all
-            let preludeLookup ← adapt (SourceLookup.read sources "std::prelude" name)
+            let preludeRead ← readLookup sources modules "std::prelude" name
+            let preludeLookup := preludeRead.checked
             -- Rust's exports::prepare rejects primitive spellings in any
             -- public prelude reexport, even though local public fn is not an export.
             Finite.guard (!(preludeLookup.items.any fun item =>
@@ -205,7 +280,29 @@ def read (sources : Sources) (caller : String) (scope : List String)
               let miss : PreludeMiss sources name policy.disabled :=
                 enabled ▸ .enabled preludeLookup missing
               primitiveDecision spelling bound localMissing policy miss
-    | _ => pure (.named (← resolve sources caller (tokens.map (·.text))))
+    | _ => pure (.named (← resolve sources caller tokens))
+  return decision
+
+def readTexts (sources : Sources) (caller : String) (scope : List String)
+    (tokens : List String) : Finite.WorkM (Decision sources caller scope tokens) :=
+  readTextsUsing sources none caller scope tokens
+
+/-- Located source calls and original raw header paths use the same candidate
+decision. Raw paths never receive synthetic source positions; their enclosing
+original header/call reader retains the actual occurrence and byte witness. -/
+def read (sources : Sources) (caller : String) (scope : List String)
+    (tokens : List LocatedToken) : Finite.WorkM (Checked sources caller scope tokens) := do
+  let decision ← readTexts sources caller scope (tokens.map (·.text))
+  let parsed ← adapt (readName tokens)
   return ⟨parsed,decision⟩
+
+/-- Same candidate semantics with one exact prepared module table. Lexical
+shadowing remains the first lookup tier, before any module is selected. -/
+def readWithModules (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (scope : List String) (tokens : List LocatedToken) :
+    Finite.WorkM (Checked sources caller scope tokens) := do
+  let decision ← readTextsUsing sources modules caller scope (tokens.map (·.text))
+  let parsed ← adapt (readName tokens)
+  pure ⟨parsed,decision⟩
 
 end QleisliKernel.SourceTypes.CallName

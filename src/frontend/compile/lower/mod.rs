@@ -126,6 +126,7 @@ struct Lowerer<'c, 'p> {
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
     nominal_qmatch: Option<quantum_match::nominal::Frame>,
+    source_context: Option<Arc<crate::interchange::qmatch::ContextSubject>>,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
@@ -507,9 +508,10 @@ impl Lowerer<'_, '_> {
         let result = (|| {
             self.nominal_qmatch = quantum_match::nominal::Frame::start(self, *key, &args)?;
             let value = self.call_user_inner(key, args, site)?;
-            if let Some(frame) = self.nominal_qmatch.take() {
-                frame.finish(self, &value)?;
-            }
+            self.source_context = match self.nominal_qmatch.take() {
+                Some(frame) => frame.finish(self, &value)?,
+                None => None,
+            };
             Ok(value)
         })();
         self.nominal_qmatch = caller_qmatch;
@@ -839,8 +841,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
         if count.is_none() {
-            let op = if let Some(op) = self.bound_operation(function) {
-                Some(op.clone())
+            let op = if let Some(op) = self.retained_bound_operation(module, function)? {
+                Some(op)
             } else {
                 match self.compiler.resolve(module, function)? {
                     Callee::User(key) => {
@@ -1238,9 +1240,8 @@ impl Lowerer<'_, '_> {
             }
             let value = values.into_iter().next().expect("one argument");
             let op = self
-                .bound_operation(callee)
-                .expect("bound operation")
-                .clone();
+                .retained_bound_operation(module, callee)?
+                .expect("bound operation");
             return self.apply_operation(module, span, &op, value, Access::Apply);
         }
         let site = CallSite {
@@ -1276,7 +1277,12 @@ impl Lowerer<'_, '_> {
                     module,
                     span,
                 )?;
-                self.call_instance(&key, values, Some(site), instance)
+                let start = self.raw.operations.len();
+                self.source_context = None;
+                let value = self.call_instance(&key, values, Some(site), instance)?;
+                let context = self.source_context.take();
+                quantum_match::nominal::record_named(self, module, callee, start, context)?;
+                Ok(value)
             }
             Callee::Primitive(primitive) => {
                 if !static_args.is_empty() {
@@ -1738,6 +1744,7 @@ impl Lowerer<'_, '_> {
             operation_sources: BTreeMap::new(),
             instrument_calls: Vec::new(),
             nominal_qmatch: None,
+            source_context: None,
             tuple_binding_origins: Vec::new(),
             access_updates: Vec::new(),
             effect: Effect::Unitary,
@@ -2046,6 +2053,7 @@ fn lower_function_in_context(
         operation_sources: BTreeMap::new(),
         instrument_calls: Vec::new(),
         nominal_qmatch: None,
+        source_context: None,
         tuple_binding_origins: Vec::new(),
         access_updates: Vec::new(),
         effect: Effect::Unitary,
@@ -2180,7 +2188,11 @@ fn lower_function_in_context(
             .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
     };
     accepted
-        .map(|program| program.retain_instrument_calls(lower.instrument_calls))
+        .map(|program| {
+            program
+                .retain_source_context(lower.source_context)
+                .retain_instrument_calls(lower.instrument_calls)
+        })
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(

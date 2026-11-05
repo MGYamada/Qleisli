@@ -180,23 +180,48 @@ private def naturalWidth (sources : Sources) (helpers : List NaturalHelpers.Entr
 -- Closed fields and original static signatures share the same type grammar.
 -- A nominal declaration's fields always use the closed declaration reader;
 -- caller static bindings must never capture names in those fields.
+inductive BasisSyntax where
+  | unit
+  | bit
+  | bits (expression : List String)
+  | tuple (parts : List (List String))
+  | named (tokens : List String)
+
+/-- Shared one-level basis grammar. Original closed, selected and symbolic
+readers use these exact delimiters and member boundaries. It supplies no type
+lookup, width value, parameter identity or acceptance by itself. -/
+def readBasisSyntax (tokens : List String) : Finite.WorkM BasisSyntax := do
+  match tokens with
+  | ["Unit"] => pure .unit
+  | ["Bit"] => pure .bit
+  | "Bits" :: "<" :: rest =>
+    Finite.guard (rest.getLast? == some ">") .request
+    pure (.bits rest.dropLast)
+  | "(" :: rest =>
+    if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then throw .request
+    let parts ← adapt (splitMembers rest.dropLast)
+    Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
+    pure (.tuple parts)
+  | _ => pure (.named tokens)
+
 private def typeNode {sources : Sources}
     (recurse width named : List String → Finite.WorkM (TypeRead sources))
     (tokens : List String) : Finite.WorkM (TypeRead sources) := do
-      match tokens with
-      | ["Unit"] => return ⟨[.unit],[]⟩
-      | ["Bit"] => return ⟨[.bit],[]⟩
-      | "Bits" :: "<" :: rest =>
-        Finite.guard (rest.getLast? == some ">") .request
-        width rest.dropLast
-      | "(" :: rest =>
-        if rest.getLast? != some ")" || rest.dropLast.getLast? == some "," then
-          throw .request
-        let parts ← adapt (splitMembers rest.dropLast)
-        Finite.guard (2 ≤ parts.length && parts.length ≤ 64) .limit
+      match ← readBasisSyntax tokens with
+      | .unit => return ⟨[.unit],[]⟩
+      | .bit => return ⟨[.bit],[]⟩
+      | .bits expression => width expression
+      | .tuple parts =>
         let children ← parts.foldlM (fun acc part => do combine acc (← recurse part)) ⟨[],[]⟩
         combine ⟨[if parts.length == 2 then Atom.pair else .tuple parts.length],[]⟩ children
-      | _ => named tokens
+      | .named tokens => named tokens
+
+private theorem typeNode_bits {sources : Sources}
+    (recurse width named : List String → Finite.WorkM (TypeRead sources)) (rest : List String) :
+    typeNode recurse width named ("Bits" :: "<" :: rest) = (do
+      Finite.guard (rest.getLast? == some ">") .request
+      width rest.dropLast) := by
+  simp only [typeNode,readBasisSyntax,bind_assoc,pure_bind]
 
 private def readers (helpers : List NaturalHelpers.Entry) : Nat → Readers :=
   Nat.rec ⟨fun _ _ _ => throw .limit,fun _ _ _ => throw .limit⟩
@@ -256,13 +281,17 @@ private def checkAtom (helpers : List NaturalHelpers.Entry) (sources : Sources) 
   | _ => pure ()
   pure (remaining.drop 1)
 
-/-- Compare every nominal subtree to its independently reconstructed source
-tree. Prefix validation occurs first, so a neighbour cannot supply missing nodes. -/
-private def sourceHelpers (sources : Sources) : Finite.WorkM (List NaturalHelpers.Entry) := do
+/-- Retain the existing source-table limits when helper preparation is shared. -/
+private def sourceBounds (sources : Sources) : Finite.WorkM Unit :=
   Finite.guard (sources.size ≤ 128 && (sources.toList.map fun row =>
     row.1.utf8ByteSize + row.2.utf8ByteSize).sum ≤ 1048576) .limit
+
+private def sourceHelpers (sources : Sources) : Finite.WorkM (List NaturalHelpers.Entry) := do
+  sourceBounds sources
   NaturalHelpers.prepare sources
 
+/-- Compare every nominal subtree to its independently reconstructed source
+tree. Prefix validation occurs first, so a neighbour cannot supply missing nodes. -/
 private def checkBasis (helpers : List NaturalHelpers.Entry) (sources : Sources) (basis : Basis) : Finite.WorkM Unit := do
   let _ ← FiniteCarrier.read basis
   let _ ← basis.foldlM (checkAtom helpers sources basis.length) basis
@@ -276,6 +305,35 @@ No caller-supplied checked template can enter this public source boundary. -/
 def checkMany (sources : Sources) (forests : List Basis) : Finite.WorkM Unit := do
   let helpers ← sourceHelpers sources
   forests.forM (checkBasis helpers sources)
+
+/-- Share only the complete original helper audit for these exact sources.
+Every forest still runs its own prefix validation, nominal reconstruction,
+field arithmetic, resolution and exact source/tree comparisons. -/
+def checkManyWithCheckedHelpers (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (forests : List Basis) : Finite.WorkM Unit := do
+  sourceBounds sources
+  forests.forM (checkBasis helpers.entries sources)
+
+/-- A prepared helper route retains its actual invocation; it is not reported
+as an execution of the fresh helper-preparation path. -/
+inductive ManyRead (sources : Sources) (forests : List Basis) : Type where
+  | fresh (read : ∃ before after,(checkMany sources forests).run before = (.ok (),after)) :
+      ManyRead sources forests
+  | prepared (helpers : NaturalHelpers.Checked sources)
+      (read : ∃ before after,(checkManyWithCheckedHelpers sources helpers forests).run before = (.ok (),after)) :
+      ManyRead sources forests
+
+def readMany (sources : Sources) (forests : List Basis)
+    (helpers : Option (NaturalHelpers.Checked sources) := none) : Finite.WorkM (ManyRead sources forests) := do
+  match helpers with
+  | none =>
+    let checked ← NaturalAffine.witness (checkMany sources forests)
+    have same : checked.val = () := by cases checked.val; rfl
+    pure (.fresh (by with_reducible simpa only [same] using checked.property))
+  | some helpers =>
+    let checked ← NaturalAffine.witness (checkManyWithCheckedHelpers sources helpers forests)
+    have same : checked.val = () := by cases checked.val; rfl
+    pure (.prepared helpers (by with_reducible simpa only [same] using checked.property))
 
 private theorem load_value (sources : Sources) (moduleName name : String)
     (result : String × Declaration) (work left : Nat)
@@ -357,15 +415,18 @@ def typeExpressionWithSources (sources : Sources) (moduleName : String) (tokens 
   let helpers ← sourceHelpers sources
   (readers helpers 65).ty sources moduleName tokens
 
-/-- The shared type grammar with explicit original static-name/size readers.
-The caller must establish those readers' original binding and value proofs.
-Nominal fields use their own closed scope, not the caller's static environment.
-This supplies no acceptance authority and keeps the existing finite limits. -/
-def typeExpressionScopedWithSources (sources : Sources) (moduleName : String)
+/-- Reuse the complete helper check for these exact original sources. The
+same closed type/field reader still performs every query and numeric check;
+sharing helper preparation supplies no additional source-relevance rows. -/
+def typeExpressionWithCheckedHelpers (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (moduleName : String) (tokens : List String) : Finite.WorkM (TypeRead sources) := do
+  sourceBounds sources
+  (readers helpers.entries 65).ty sources moduleName tokens
+
+private def scopedTypeReader (helpers : List NaturalHelpers.Entry) (sources : Sources) (moduleName : String)
     (size : List String → Finite.WorkM Nat)
     (parameter : List String → Finite.WorkM (Option (TypeRead sources)))
     (tokens : List String) : Finite.WorkM (TypeRead sources) := do
-  let helpers ← sourceHelpers sources
   let read : List String → Finite.WorkM (TypeRead sources) := Nat.rec (fun _ => throw .limit)
     (fun _ recurse => typeNode recurse
       (fun expression => do
@@ -378,6 +439,27 @@ def typeExpressionScopedWithSources (sources : Sources) (moduleName : String)
         | some value => pure value
         | none => (readers helpers 65).ty sources moduleName name)) 65
   read tokens
+
+/-- The shared type grammar with explicit original static-name/size readers.
+The caller must establish those readers' original binding and value proofs.
+Nominal fields use their own closed scope, not the caller's static environment.
+This supplies no acceptance authority and keeps the existing finite limits. -/
+def typeExpressionScopedWithSources (sources : Sources) (moduleName : String)
+    (size : List String → Finite.WorkM Nat)
+    (parameter : List String → Finite.WorkM (Option (TypeRead sources)))
+    (tokens : List String) : Finite.WorkM (TypeRead sources) := do
+  let helpers ← sourceHelpers sources
+  scopedTypeReader helpers sources moduleName size parameter tokens
+
+/-- The same scoped grammar over an already checked complete helper table.
+Caller formals remain confined to the explicit size/parameter readers;
+nominal fields retain the original closed declaration scope. -/
+def typeExpressionScopedWithCheckedHelpers (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (moduleName : String) (size : List String → Finite.WorkM Nat)
+    (parameter : List String → Finite.WorkM (Option (TypeRead sources)))
+    (tokens : List String) : Finite.WorkM (TypeRead sources) := do
+  sourceBounds sources
+  scopedTypeReader helpers.entries sources moduleName size parameter tokens
 
 /-- Endpoint compatibility for existing carrier/member consumers. Both views
 use exactly the same reader; no second type resolver supplies coverage. -/
@@ -447,6 +529,13 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
   obtain ⟨read,endRead,ran,projected⟩ := Finite.bind_success _ _ _ _ _ ok
   have projected := (Finite.pure_success _ _ _ _ projected).1
   obtain ⟨helpers,middle,prepared,body⟩ := Finite.bind_success _ _ _ _ _ ran
+  have readerBits : (readers helpers 65).ty sources moduleName ("Bits" :: "<" :: rest) = (do
+      Finite.guard (rest.getLast? == some ">") .request
+      let checked ← naturalWidth sources helpers moduleName rest.dropLast
+      pure ⟨[.bits checked.value],[]⟩) := by
+    change typeNode _ _ _ ("Bits" :: "<" :: rest) = _
+    exact typeNode_bits _ _ _ rest
+  rw [readerBits] at body
   change ((do
     Finite.guard (rest.getLast? == some ">") .request
     let checked ← naturalWidth sources helpers moduleName rest.dropLast
@@ -459,5 +548,30 @@ theorem typeExpression_bits (sources : Sources) (moduleName : String)
     beq_iff_eq.mp (Finite.guard_success _ _ _ _ closed).1,?_⟩
   exact ⟨helpers,checked.original.expression,checked.original.bindings,
     ⟨before,middle,helperRun⟩,checked.original.parsed,checked.original.resolved,checked.meaning⟩
+
+/-- Sharing a checked helper table retains the same exact original width
+meaning. The helper preparation receipt comes from those actual sources;
+the expression and declaring-module bindings are read by this invocation. -/
+theorem typeExpressionWithCheckedHelpers_bits (sources : Sources) (helpers : NaturalHelpers.Checked sources)
+    (moduleName : String) (rest : List String) (result : TypeRead sources) (work left : Nat)
+    (ok : (typeExpressionWithCheckedHelpers sources helpers moduleName ("Bits" :: "<" :: rest)).run work =
+      (.ok result,left)) :
+    ∃ width, result.basis = [.bits width] ∧ rest.getLast? = some ">" ∧
+      NaturalWidthMeaning sources moduleName rest.dropLast width := by
+  obtain ⟨_,middle,_,body⟩ := Finite.bind_success _ _ _ _ _ ok
+  have readerBits : (readers helpers.entries 65).ty sources moduleName ("Bits" :: "<" :: rest) = (do
+      Finite.guard (rest.getLast? == some ">") .request
+      let checked ← naturalWidth sources helpers.entries moduleName rest.dropLast
+      pure ⟨[.bits checked.value],[]⟩) := by
+    change typeNode _ _ _ ("Bits" :: "<" :: rest) = _
+    exact typeNode_bits _ _ _ rest
+  rw [readerBits] at body
+  obtain ⟨_,a,closed,h⟩ := Finite.bind_success _ _ _ _ _ body
+  obtain ⟨checked,b,_,h⟩ := Finite.bind_success _ _ _ _ _ h
+  have same := (Finite.pure_success _ _ _ _ h).1
+  subst result
+  refine ⟨checked.value,rfl,beq_iff_eq.mp (Finite.guard_success _ _ _ _ closed).1,?_⟩
+  exact ⟨helpers.entries,checked.original.expression,checked.original.bindings,helpers.prepared,
+    checked.original.parsed,checked.original.resolved,checked.meaning⟩
 
 end QleisliKernel.SourceTypes

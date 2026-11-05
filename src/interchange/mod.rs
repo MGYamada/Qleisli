@@ -925,7 +925,27 @@ fn decode_subject_with_types(
     ordinary: Option<&ordinary_root::Request>,
     qmatch: Option<&qmatch::Request>,
 ) -> Result<DecodedGraph> {
-    decode_subject_with_runtime(subject, budget, carrier, ordinary, qmatch, None)
+    decode_subject_with_runtime(
+        subject,
+        budget,
+        carrier,
+        ordinary,
+        qmatch.map(QmatchSource::Sequence),
+        None,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum QmatchSource<'a> {
+    Sequence(&'a qmatch::Request),
+    #[cfg_attr(
+        not(test),
+        allow(
+            dead_code,
+            reason = "retained v5 source subjects pending production composition"
+        )
+    )]
+    Context(&'a qmatch::v5::Request),
 }
 
 fn decode_subject_with_runtime(
@@ -933,13 +953,17 @@ fn decode_subject_with_runtime(
     budget: &mut Budget,
     carrier: Option<&carrier::Request>,
     ordinary: Option<&ordinary_root::Request>,
-    qmatch: Option<&qmatch::Request>,
+    qmatch: Option<QmatchSource<'_>>,
     runtime: Option<&runtime_root::Request>,
 ) -> Result<DecodedGraph> {
     let value = json::parse(subject.artifact())?;
     let (version, programs, entries, root) = envelope(&value)?;
     let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
-    let order = if let Some(request) = qmatch {
+    let runtime = match qmatch {
+        Some(QmatchSource::Context(request)) => Some(request.runtime.as_ref()),
+        _ => runtime,
+    };
+    let order = if let Some(QmatchSource::Sequence(request)) = qmatch {
         let mut roots = vec![root];
         for arm in request.sites.iter().flat_map(|site| &site.arms) {
             let evidence = usize::try_from(arm.evidence)
@@ -952,6 +976,9 @@ fn decode_subject_with_runtime(
             roots.push(programs.len() + evidence);
             roots.push(controlled);
         }
+        graph_from_roots(programs, entries, &roots, version)?
+    } else if let Some(QmatchSource::Context(request)) = qmatch {
+        let roots = request.graph_roots(root, programs.len(), entries.len())?;
         graph_from_roots(programs, entries, &roots, version)?
     } else {
         graph(programs, entries, root, version)?
@@ -1026,7 +1053,9 @@ fn decode_subject_with_runtime(
         } else {
             ordinary.map_or_else(
                 || {
-                    let request = qmatch.expect("typed request");
+                    let Some(QmatchSource::Sequence(request)) = qmatch else {
+                        unreachable!("sequence request")
+                    };
                     request
                         .sites
                         .iter()

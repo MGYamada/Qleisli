@@ -36,6 +36,15 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
         writer: &mut writer,
         dependencies: &BTreeMap::new(),
     };
+    fields(&mut view, request)?;
+    writer.depth -= 1;
+    Ok(writer.bytes)
+}
+
+/// The existing eleven typed fields, shared with the paired qmatch envelope.
+/// This walks the retained request directly and never replays encoded JSON.
+pub(super) fn fields(view: &mut View<'_>, request: &Request) -> Result<()> {
+    request.preflight()?;
     view.writer.text(request.selection.name())?;
     view.writer.text(&request.module)?;
     view.writer.text(&request.declaration)?;
@@ -63,6 +72,5 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     view.list(&request.result, atom)?;
     view.list(&request.storage, storage)?;
     view.effect(request.public_effect)?;
-    writer.depth -= 1;
-    Ok(writer.bytes)
+    Ok(())
 }

@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.QuantumArms
 
-/-! Frozen reader algorithms before shared original-witness extraction.
+/-! Compare the inlined original-site reader with the shared extraction.
+Both arm readers apply the Bit-only qif selector rule introduced after extraction.
 No runtime checker imports these test-only baselines.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.OriginalSelectionContinuity
@@ -24,16 +25,19 @@ def legacySite (sources : Sources) (owner name : String) (offset : Nat) :
 def legacyArms (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :
     WorkM (Table sources owner name offset selector target) := do
   let site ← QuantumMatch.read sources owner name offset
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let original ← NaturalAffine.witness (SourceTypes.checkMany sources [selector,target])
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,by with_reducible exact original.property,
+      return ⟨site,layout.val,.fresh (by
+        have unit : original.val = () := by cases original.val; rfl
+        with_reducible simpa only [unit] using original.property),
         by obtain ⟨before,after,ran⟩ := layout.property
            exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete⟩
+        arms,same,complete,selectorKind.down⟩
     else throw .request
   else throw .request
 
@@ -45,6 +49,6 @@ theorem armsWrapper (sources : Sources) (owner name : String)
     (offset : Nat) (selector target : Basis) :
     QuantumArms.read sources owner name offset selector target =
       legacyArms sources owner name offset selector target := by
-  simp only [QuantumArms.read, QuantumArms.readArms, legacyArms, QuantumMatch.read, bind_assoc]
+  simp only [QuantumArms.read, QuantumArms.readArms, legacyArms, QuantumMatch.read, SourceTypes.readMany, bind_assoc, pure_bind]
 
 end QleisliKernel.Tests.OriginalSelectionContinuity

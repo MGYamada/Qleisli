@@ -166,6 +166,178 @@ def bounded_history(archive_path, index_path):
 
 
 class OriginalCouplingHistory(unittest.TestCase):
+    def checked_text(self, payload):
+        data = payload['text'].encode('utf-8')
+        self.assertEqual(len(data), payload['bytes'])
+        self.assertEqual(hashlib.sha256(data).hexdigest(), payload['sha256'])
+        return payload['text']
+
+    def test_applied_provider_originals(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/applied-provider-origins.json'
+        record = history_json(path)
+        sources = {name: self.checked_text(data) for name, data in record['original'].items()}
+        self.assertEqual((record['format'], record['version']), ('qleisli.applied-provider-authoring-history', 1))
+        self.assertIn('checked_op(checked_op(stamp[7],Sign),Outer)', sources['main.qli'])
+        self.assertIn('choose[stamp[7]]', sources['Applied.qli'])
+        self.assertIn('choose[checked_op(sign,Sign)]', sources['Nested.qli'])
+        for name, meaning in [('WrongInnerPhase.qli', 'Sign'), ('WrongOuterPhase.qli', 'Outer')]:
+            self.assertEqual(sources[name], sources['Nested.qli'].replace(
+                f'meaning {meaning}:Bit=reference(sign)', f'meaning {meaning}:Bit=reference(keep)'))
+        for n in (7, 8):
+            self.assertIn(f'choose[stamp[{n}]]', sources['TwoRoots.qli'])
+        output = {}
+        for stage in ('first', 'before', 'after', 'crossed'):
+            result = record[stage]
+            self.assertEqual(result['exit_code'], int(stage == 'first'))
+            output[stage] = self.checked_text(result['stdout'])
+            error = self.checked_text(result['stderr'])
+            if stage == 'first':
+                self.assertIn('original queue preparation refused', error)
+            else:
+                self.assertEqual(error, '')
+        self.assertIn('QleisliKernel.Finite.Error.request', output['first'])
+        self.assertIn('consumed=[] residual=[11] links=[(11, 345)]', output['before'])
+        self.assertIn('consumed=[11] residual=[] links=[(11, 345)]', output['after'])
+        self.assertIn('residual=[6, 12] links=[(12, 317)]', output['after'])
+        for name in ('WrongInnerPhase.qli', 'WrongOuterPhase.qli'):
+            self.assertIn(f'{name} prepare=ok read=QleisliKernel.Finite.Error.equation', output['after'])
+        self.assertIn('Applied.qli prepare=QleisliKernel.Finite.Error.request', output['after'])
+        self.assertIn('[("n", 7)], [("n", 8)], [true, false, false, true]', output['crossed'])
+
+    def test_written_duty_first_runs(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/written-duty-first.json'
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']), ('qleisli.inert-written-duty-history', 1))
+        self.assertEqual([case['exit_code'] for case in record['studies']], [1, 1, 0])
+        for case in record['studies']:
+            source = self.checked_text(case['source'])
+            inputs = {item['file']: self.checked_text(item) for item in case['inputs']}
+            if 'program.json' in inputs:
+                self.assertEqual(json.loads(inputs['program.json'])['sources'], [{'path': 'main', 'text': source}])
+            else:
+                self.assertEqual(inputs['main.qli'], source)
+            output = self.checked_text(case['stdout'])
+            self.checked_text(case['stderr'])
+            if case['exit_code']:
+                self.assertIn('result=Except.error', output)
+                self.assertIn('Error.workLimit', output)
+            else:
+                self.assertIn('fn dormant(', source)
+                self.assertIn('result=Except.ok (2, [27], [(22, 2, 6, 325)])', output)
+        stages = self.checked_text(record['studies'][0]['stages'])
+        self.assertIn('through arm table: Except.error', stages)
+
+    def test_ordered_call_original_source_and_observations(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/ordered-call-sources.json'
+        record = history_json(path)
+        self.assertEqual(record['format'], 'qleisli.ordered-call-source-study')
+        source = self.checked_text(record['source']).encode('utf-8')
+        for offset, name in [(384, b'phase'), (437, b'h'), (531, b'pre'), (553, b'choose'), (596, b'post')]:
+            self.assertEqual(source[offset:offset + len(name)], name)
+        runs = record['observations']
+        self.assertEqual([run['exit_code'] for run in runs], [1, 0, 138, 0])
+        outputs = [self.checked_text(run['stdout']) for run in runs]
+        for run in runs:
+            self.checked_text(run['stderr'])
+        self.assertIn('Type mismatch', outputs[0])
+        self.assertIn('pure result=Except.ok', outputs[1])
+        self.assertEqual(outputs[2], '')
+        self.assertEqual(runs[2]['driver_sha256'], runs[3]['driver_sha256'])
+        self.assertIn('("pre", 531, [1], [1], [1], [8, 0], [2]', outputs[3])
+        self.assertIn('("choose", 553, [0, 2], [0, 2], [0, 1], [8], [5, 6]', outputs[3])
+        self.assertIn('("post", 596, [6], [6], [1], [8, 5], [7]', outputs[3])
+
+    def test_supplier_first_sources_and_component_results(self):
+        path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/supplier-occurrence-first.json'
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),
+                         '6969433ba78afed75e3dad408e22560f0df232f474a2353b85320af8e94cbbd1')
+        record = history_json(path)
+        self.assertEqual((record['format'], record['version']),
+                         ('qleisli.inert-supplier-source-history', 1))
+        self.assertIn('external-only', record['scope'])
+        self.assertEqual([row['id'] for row in record['studies']],
+                         ['forwarded-original-occurrences', 'constructed-interior-occurrences',
+                          'mixed-provider-first-refusal'])
+
+        def retained_blob(blob):
+            self.assertEqual(set(blob), {'path', 'bytes', 'sha256', 'text'})
+            raw = blob['text'].encode('utf-8')
+            self.assertEqual((len(raw), hashlib.sha256(raw).hexdigest()),
+                             (blob['bytes'], blob['sha256']))
+            return raw
+
+        def retained_command(driver, observation, source_path):
+            original_driver = retained_blob(driver)
+            self.assertTrue(original_driver.startswith(b'import QleisliKernel.'))
+            self.assertIn(b'def main (args : List String)', original_driver)
+            retained_blob(observation['stdout'])
+            retained_blob(observation['stderr'])
+            self.assertFalse(observation['clean_commit_build_claim'])
+            self.assertRegex(observation['repository_base_commit'], r'^[0-9a-f]{40}$')
+            self.assertIn('not build-at-commit', observation['source_state'])
+            self.assertTrue(observation['source_window_unchanged'])
+            self.assertTrue(observation['external_inputs_unchanged'])
+            self.assertEqual(observation['argv'][-2:], [driver['path'], source_path])
+            for name in ('capture_record', 'source_window'):
+                reference = observation[name]
+                self.assertGreater(reference['bytes'], 0)
+                self.assertRegex(reference['sha256'], r'^[0-9a-f]{64}$')
+            self.assertIn('external-only', observation['source_window']['scope'])
+
+        for study in record['studies']:
+            with self.subTest(study=study['id']):
+                retained_blob(study['source'])
+                retained_command(study['driver'], study['observation'], study['source']['path'])
+
+        forwarded, interior, mixed = record['studies']
+        self.assertEqual(forwarded['source']['sha256'],
+                         '6a316e93b0b94606b86f0a5ceab3b1bdfe485e8e714d6d83ddaea3dc5b76a7be')
+        original = forwarded['source']['text'].encode('utf-8')
+        self.assertEqual((original[375:376], original[462:466], original[484:488]),
+                         (b'W', b'keep', b'keep'))
+        first = forwarded['observation']
+        self.assertEqual((first['exit_code'], first['stderr']['text']), (0, ''))
+        self.assertEqual(first['stdout']['text'].count('spent=10676573'), 2)
+        self.assertEqual(first['stdout']['text'].count('("choose", 0, "U"), ("relay", 0, "W")'), 2)
+
+        self.assertEqual(interior['source']['sha256'],
+                         '26e3333acc0ebbc75265cd946fe33147a34779c893c0d4787be118f9d8e67458')
+        self.assertIn('choose[then_op(W,W)]', interior['source']['text'])
+        self.assertEqual((interior['observation']['exit_code'], interior['observation']['stderr']['text']), (0, ''))
+        self.assertEqual(interior['observation']['stdout']['text'],
+                         'result=Except.ok ([(0, 2, "relay.W"), (1, 5, "relay.W")], '
+                         '[(0, 254), (1, 254)], [(0, 515), (1, 515)]) spent=18368843\n')
+
+        self.assertEqual(mixed['source']['sha256'],
+                         'aadf326ce712dd3790281ce4fb33bfd1000fcc8371cf161541a9855769096d15')
+        self.assertIn('provider[seed,then_op(W,power(W,0)),W]', mixed['source']['text'])
+        original = mixed['source']['text'].encode('utf-8')
+        self.assertEqual([original[index:index+1] for index in (592, 600, 606)], [b'W'] * 3)
+        refusal = mixed['observation']
+        self.assertEqual(refusal['exit_code'], 1)
+        self.assertIn('workLimit)); work=17369928; left=2630072', refusal['stdout']['text'])
+        self.assertNotIn('result=Except.ok', refusal['stdout']['text'])
+        self.assertIn('expected=', refusal['stdout']['text'])
+        self.assertEqual(refusal['stderr']['text'],
+                         'uncaught exception: original mixed provider traversal refused\n')
+
+        self.assertEqual(len(mixed['diagnostics']), 1)
+        diagnostic = mixed['diagnostics'][0]
+        self.assertEqual(diagnostic['id'], 'mixed-provider-direct-relay-diagnostic')
+        self.assertEqual(diagnostic['source_sha256'], mixed['source']['sha256'])
+        self.assertIn('direct main::relay signature', diagnostic['scope'])
+        self.assertIn('diagnostic sentinel', diagnostic['scope'])
+        observed = diagnostic['observation']
+        retained_command(diagnostic['driver'], observed, mixed['source']['path'])
+        self.assertEqual((observed['exit_code'], observed['stderr']['text']), (0, ''))
+        returned = observed['stdout']['text'].split('\nexpected=', 1)[0]
+        self.assertTrue(returned.startswith('result=Except.ok (0,\n 563,\n 0,'))
+        self.assertIn('work=13913179; left=6086821', returned)
+        self.assertEqual(returned.count('Edge.actual 1'), 2)
+        self.assertEqual(returned.count('Edge.actual 2'), 1)
+        for start in (592, 600, 606):
+            self.assertEqual(returned.count(f'("W", {start}, {start+1})'), 1)
+
     def test_static_runtime_shadow_first_counterexample(self):
         path = ROOT / 'tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/runtime-static-shadow-first.json.xz'
         self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),

@@ -59,8 +59,7 @@ private def parameterTypes (tokens : List LocatedToken) : Except String (List (L
     if pattern.isEmpty || ty.isEmpty then throw "empty parameter pattern or type"
     return ty
 
-private def header (source : String) (occurrence : BodyOccurrence) : Except String Header := do
-  let declarationTokens := (← ModuleHeader.project source occurrence.header).tokens
+private def headerTokens (occurrence : BodyOccurrence) (declarationTokens : List LocatedToken) : Except String Header := do
   let tokens ← if occurrence.declaration.isPublic then do
       let (_,rest) ← expect "pub" declarationTokens
       pure rest
@@ -92,6 +91,10 @@ private def header (source : String) (occurrence : BodyOccurrence) : Except Stri
       pure (some tail.tail)
   return ⟨effect,ordinaryOnly,parameters,result,statics,requirements⟩
 
+private def header (source : String) (occurrence : BodyOccurrence) : Except String Header := do
+  let projection ← ModuleHeader.project source occurrence.header
+  headerTokens occurrence projection.tokens
+
 def envelope (occurrence : BodyOccurrence) : List LocatedToken :=
   occurrence.header ++ [occurrence.openBrace] ++ occurrence.body ++ [occurrence.closeBrace]
 
@@ -103,9 +106,149 @@ structure Original (sources : Sources) (owner name : String) where
   bound : originalBinding sources owner name = .ok (source,declaration)
   function : declaration.kind = "fn"
   catalogue : ∃ scanned, sourceCatalogue source = .ok scanned ∧ occurrence ∈ scanned.bodies
+  singleBody : ∃ scanned, sourceCatalogue source = .ok scanned ∧
+    scanned.bodies.filter (fun body => body.declaration == declaration) = [occurrence]
   sameDeclaration : occurrence.declaration = declaration
   parsed : header source occurrence = .ok parsedHeader
   bytes : LocatedFacts.OrderedSlices source.toUTF8 0 (envelope occurrence)
+
+/-- Exact retained data identify the original read. The parsed header is
+determined by its actual source/envelope computation; proof fields supply no
+extra identity, and no source text or type clause is substituted. -/
+theorem Original.sameEnvelope {sources owner name} (first second : Original sources owner name)
+    (source : first.source = second.source) (declaration : first.declaration = second.declaration)
+    (occurrence : first.occurrence = second.occurrence) : first = second := by
+  cases first with
+  | mk sourceA declarationA occurrenceA headerA boundA functionA catalogueA singleA sameA parsedA bytesA =>
+    cases second with
+    | mk sourceB declarationB occurrenceB headerB boundB functionB catalogueB singleB sameB parsedB bytesB =>
+      cases source
+      cases declaration
+      cases occurrence
+      have sameHeader : headerA = headerB := Except.ok.inj (parsedA.symm.trans parsedB)
+      cases sameHeader
+      rfl
+
+/-- Successful original readers already enforce one canonical binding and
+one body occurrence. Those equations identify the complete original value at
+this immutable Sources/owner/name, without a second byte/envelope comparison.
+This grants no visibility, instantiation, body meaning or native authority. -/
+theorem Original.sameSource {sources owner name} (first second : Original sources owner name) : first = second := by
+  have pair : (first.source,first.declaration) = (second.source,second.declaration) :=
+    Except.ok.inj (first.bound.symm.trans second.bound)
+  have source : first.source = second.source := congrArg Prod.fst pair
+  have declaration : first.declaration = second.declaration := congrArg Prod.snd pair
+  rcases first.singleBody with ⟨firstScan,firstRead,firstSingle⟩
+  rcases second.singleBody with ⟨secondScan,secondRead,secondSingle⟩
+  have secondReadHere : sourceCatalogue first.source = .ok secondScan := by
+    rw [source]
+    exact secondRead
+  have scan : firstScan = secondScan := Except.ok.inj (firstRead.symm.trans secondReadHere)
+  have bodies : [first.occurrence] = [second.occurrence] := by
+    rw [← firstSingle,scan,declaration]
+    exact secondSingle
+  exact first.sameEnvelope second source declaration (List.cons.inj bodies).1
+
+/-- Shared original source data, not a producer header table. Canonical source
+binding, actual lexer/declaration results and original UTF-8 bytes are retained
+so each declaration need not lex the complete module again. -/
+structure KnownModule (sources : Sources) (owner : String) where
+  source : String
+  bound : sources.toList.filter (fun row => row.1 == owner) = [(owner,source)]
+  tokens : List LocatedToken
+  lexed : lexLocated source = .ok tokens
+  disabled : Bool
+  policy : ModuleHeader.policyTokens (tokens.map (·.text)) = .ok disabled
+  catalogue : SourceCatalogue
+  scanned : sourceCatalogue source = .ok catalogue
+  bytes : ByteArray
+  originalBytes : bytes = source.toUTF8
+
+private theorem knownBinding {sources owner} (known : KnownModule sources owner)
+    (declaration : Declaration)
+    (selected : known.catalogue.declarations.filter (fun decl => decl.name == declaration.name) = [declaration]) :
+    originalBinding sources owner declaration.name = .ok (known.source,declaration) := by
+  have readDeclarations : declarations known.source = .ok known.catalogue.declarations := by
+    unfold declarations
+    rw [known.scanned]
+    rfl
+  unfold originalBinding
+  rw [known.bound]
+  change (do
+    let declarations : List Declaration ← SourceTypes.declarations known.source
+    let [decl] := declarations.filter (fun (decl : Declaration) => decl.name == declaration.name)
+      | throw "missing/ambiguous original type declaration"
+    pure (known.source,decl)) = .ok (known.source,declaration)
+  rw [readDeclarations]
+  change ((match known.catalogue.declarations.filter (fun decl => decl.name == declaration.name) with
+    | [decl] => .ok (known.source,decl)
+    | _ => .error "missing/ambiguous original type declaration") : Except String (String × Declaration)) =
+      .ok (known.source,declaration)
+  rw [selected]
+
+structure PackedOriginal (sources : Sources) where
+  owner : String
+  name : String
+  original : Original sources owner name
+
+abbrev Originals (sources : Sources) := List (PackedOriginal sources)
+
+def readKnownOccurrence {sources owner} (known : KnownModule sources owner)
+    (located : {occurrence : BodyOccurrence // occurrence ∈ known.catalogue.bodies}) :
+    WorkM (PackedOriginal sources) := do
+  let occurrence := located.val
+  let declaration := occurrence.declaration
+  let tokens := envelope occurrence
+  exactWork (Exact.charge (64*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)+
+    32*(occurrence.header.length+1)^2))
+  if function : declaration.kind = "fn" then
+    if selected : known.catalogue.declarations.filter (fun decl => decl.name == declaration.name) = [declaration] then
+      if unique : known.catalogue.bodies.filter (·.declaration == declaration) = [occurrence] then
+        match projected : ModuleHeader.projectKnown known.source occurrence.header known.tokens known.lexed known.disabled known.policy with
+        | .error _ => throw .request
+        | .ok projection =>
+          match parsed : headerTokens occurrence projection.tokens with
+          | .error _ => throw .request
+          | .ok parsedHeader =>
+            if bytes : LocatedFacts.checkOrdered known.bytes 0 tokens = true then
+              have projectedOriginal : ModuleHeader.project known.source occurrence.header = .ok projection :=
+                (ModuleHeader.project_known _ _ _ known.lexed _ known.policy).trans projected
+              have parsedOriginal : header known.source occurrence = .ok parsedHeader := by
+                unfold header
+                rw [projectedOriginal]
+                exact parsed
+              have originalBytes : LocatedFacts.OrderedSlices known.source.toUTF8 0 (envelope occurrence) := by
+                rw [← known.originalBytes]
+                exact LocatedFacts.checkOrdered_sound _ _ _ bytes
+              let original : Original sources owner declaration.name :=
+                ⟨known.source,declaration,occurrence,parsedHeader,knownBinding known declaration selected,function,
+                  ⟨known.catalogue,known.scanned,located.property⟩,
+                  ⟨known.catalogue,known.scanned,unique⟩,rfl,parsedOriginal,originalBytes⟩
+              pure ⟨owner,declaration.name,original⟩
+            else throw .request
+      else throw .request
+    else throw .request
+  else throw .request
+
+def readKnownModule {sources owner} (known : KnownModule sources owner) : WorkM (Originals sources) :=
+  (known.catalogue.bodies.attach.filter (fun occurrence => occurrence.val.declaration.kind == "fn")).mapM
+    (readKnownOccurrence known)
+
+def PackedOriginal.at {sources owner name} (packed : PackedOriginal sources)
+    (sameOwner : packed.owner = owner) (sameName : packed.name = name) : Original sources owner name := by
+  rcases packed with ⟨_,_,original⟩
+  cases sameOwner
+  cases sameName
+  exact original
+
+def lookupOriginals {sources} (originals : Originals sources) (owner name : String) :
+    WorkM (Original sources owner name) := do
+  exactWork (Exact.charge (16*((originals.map fun packed =>
+    packed.owner.utf8ByteSize+packed.name.utf8ByteSize+1).sum+owner.utf8ByteSize+name.utf8ByteSize+1)))
+  let some packed := originals.find? (fun packed => packed.owner == owner && packed.name == name) | throw .request
+  if sameOwner : packed.owner = owner then
+    if sameName : packed.name = name then pure (packed.at sameOwner sameName) else throw .request
+  else throw .request
 
 private def original (sources : Sources) (owner name : String) :
     Except String (Original sources owner name) := do
@@ -128,7 +271,7 @@ private def original (sources : Sources) (owner name : String) :
           | .ok parsedHeader =>
             if bytes : LocatedFacts.checkOrdered source.toUTF8 0 (envelope occurrence) = true then
               return ⟨source,declaration,occurrence,parsedHeader,bound,function,
-                ⟨scanned,scannedOk,found⟩,sameDeclaration,parsed,
+                ⟨scanned,scannedOk,found⟩,⟨scanned,scannedOk,selected⟩,sameDeclaration,parsed,
                 LocatedFacts.checkOrdered_sound _ _ _ bytes⟩
             else throw "original entry byte envelope mismatch"
         | _ => throw "original entry body multiplicity"

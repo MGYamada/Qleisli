@@ -4,6 +4,7 @@ No project build outputs, result caches, Mathlib or compiled result caches.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
+from graphlib import TopologicalSorter
 import hashlib
 import json
 import os
@@ -16,7 +17,7 @@ import time
 import tomllib
 from native_packet import envelope, parse_reply
 
-from check_lean_kernel import check_kernel
+from check_lean_kernel import check_kernel, lean_imports
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
@@ -26,11 +27,37 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def library_builds(package):
+    """Bound each cold build command without omitting library modules.
+
+    Imported project modules precede importers, so the first batch cannot
+    accidentally request the whole closure. Lake remains the actual builder;
+    the final complete library target checks coverage against its own globs.
+    """
+    sources = {}
+    for path in sorted(package.rglob("*.lean")):
+        relative = path.relative_to(package)
+        name = ".".join(relative.with_suffix("").parts)
+        if ".lake" not in relative.parts and (
+                name in {"QleisliKernel", "Protocol"}
+                or name.startswith(("QleisliKernel.", "Protocol.", "Cli."))):
+            sources[name] = path
+    graph = {name: sorted(set(lean_imports(path.read_text())) & sources.keys())
+             for name, path in sources.items()}
+    ordered = list(TopologicalSorter(graph).static_order())
+    return [["lake", "build", *("+" + name for name in ordered[start:start + 64])]
+            for start in range(0, len(ordered), 64)]
+
+
 def validate(package, validation):
     """Keep native build/audit in every lane; fresh replay belongs to full."""
     if validation not in ("tests", "model", "full"):
         raise ValueError(f"unknown validation lane: {validation}")
-    commands = [["lake", "build"], ["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"]]
+    commands = library_builds(package) + [
+        ["lake", "build", "QleisliKernel"],
+        ["lake", "build", "qleisli-kernel"],
+        ["lake", "env", "lean", "-DwarningAsError=true", "Audit.lean"],
+    ]
     if validation == "full":
         commands += [["lake", "env", "leanchecker", "--fresh", "QleisliKernel"],
                      ["lake", "env", "leanchecker", "--fresh", "Main"]]
@@ -126,7 +153,7 @@ def main(argv=None):
                                 mode="--qirf-native", scope="inspection")
             if (result.returncode != (0 if accepted else 1) or result.stderr
                     or (reply.claim != "accepted" or len(reply.payload) != 2
-                        or not 0 <= int(reply.payload[0]) <= 10_000_000
+                        or not 0 <= int(reply.payload[0]) <= 20_000_000
                         or reply.payload[1] != "1" if accepted else reply.error != "contract")):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
             logs.append(dict(command=["bin/" + binary.name, "--qirf-native", PRODUCT_VERSION], exit_code=result.returncode,

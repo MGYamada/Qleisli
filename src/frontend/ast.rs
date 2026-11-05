@@ -241,7 +241,9 @@ pub enum QuantumLabel {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct QuantumMatchArm {
     pub label: QuantumLabel,
-    pub operation: Ident,
+    /// Complete original static operation expression, including every child
+    /// and ordered specialization actual. It is not a runtime arm body.
+    pub operation: StaticOp,
     pub span: Span,
 }
 

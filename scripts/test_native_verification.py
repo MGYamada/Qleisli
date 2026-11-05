@@ -83,7 +83,7 @@ def test_control_requests(kernel, run):
         lines = reply.payload
         assert reply.claim == ("accepted" if accepted else "error"), output
         if accepted:
-            assert len(lines) == 2 and 0 <= int(lines[0]) <= 10000000 and lines[1] == "1"
+            assert len(lines) == 2 and 0 <= int(lines[0]) <= 20000000 and lines[1] == "1"
         elif error is not None:
             assert reply.error == error, output
 
@@ -162,7 +162,7 @@ def test_control_owner_requests(kernel, run):
         lines = reply.payload
         assert reply.claim == ("accepted" if accepted else "error"), output
         if accepted:
-            assert len(lines) == 2 and 0 <= int(lines[0]) <= 10000000 and lines[1] == "1"
+            assert len(lines) == 2 and 0 <= int(lines[0]) <= 20000000 and lines[1] == "1"
         elif error is not None:
             assert reply.error == error, output
 
@@ -264,7 +264,7 @@ def test_instrument_requests(kernel, run):
         lines = reply.payload
         assert reply.claim == ("accepted" if accepted else "error"), output
         if accepted:
-            assert len(lines) == 2 and 0 <= int(lines[0]) <= 10000000 and lines[1] == "1"
+            assert len(lines) == 2 and 0 <= int(lines[0]) <= 20000000 and lines[1] == "1"
         elif error is not None:
             assert reply.error == error, output
 
@@ -401,7 +401,7 @@ def main():
         lines = reply.payload
         assert reply.claim == ("accepted" if accepted else "error"), result
         if accepted:
-            assert len(lines) == 2 and 0 <= int(lines[0]) <= 10000000
+            assert len(lines) == 2 and 0 <= int(lines[0]) <= 20000000
             assert lines[1] == ("1" if request is not None else "0")
 
     try:

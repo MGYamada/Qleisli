@@ -17,8 +17,8 @@ structure Request where
   programs : List SourceArm.Programs
   deriving BEq, DecidableEq, Repr
 
-theorem rootFresh {artifact order rows roots}
-    (root : Witness (Validity.checkRootFromRoots artifact order rows roots)) :
+theorem rootFresh {artifact order rows roots profile}
+    (root : Witness (Validity.checkRootFromRoots artifact order rows roots profile)) :
     CheckedGraph artifact (Array.replicate artifact.entries.size none) order.toList root.val.receipts := by
   obtain ⟨work,left,ran⟩ := root.property
   exact (Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ ran).fresh

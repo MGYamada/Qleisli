@@ -53,6 +53,15 @@ private def premiseLoop {meaning : Valuation → Prop} (context : Context meanin
           exact proved.proof values held
         · exact remaining.proof values held other tail⟩)
 
+/-- The same original-numeric implication gate is shared by helper calls and
+ordinary static applications. Substitutions remain simultaneous in the callee's
+canonical coefficient order; no selected closed value proves an implication. -/
+def implyPremises {meaning : Valuation → Prop} (context : Context meaning)
+    (variables : Nat) (replacements : List Form) (pending : List Numeric) :
+    WorkM (Established (∀ values,meaning values → NumericsTruth pending
+      (NaturalSubstitute.replacementValues replacements values))) :=
+  premiseLoop context variables replacements (pending.length+1) pending
+
 /-- The original helper-call checker is independent of how the caller's
 Nat names are interpreted. Checked aliases may provide their own original-name
 meaning; every actual expression still carries its computation proof. -/
@@ -74,8 +83,7 @@ def readCall (variables : Nat) (names : Valuation → Names) (entries : List Ent
       if arity : args.forms.length = entry.original.helper.parameters.length then
         Finite.exactWork (Exact.charge (entry.frame.binders.length*(args.forms.length+1)+1))
         let replacements := NaturalFrames.replacements entry.frame args.forms
-        let premises ← premiseLoop context variables replacements
-          (entry.prepared.scope.numeric.length+1) entry.prepared.scope.numeric
+        let premises ← implyPremises context variables replacements entry.prepared.scope.numeric
         let result ← NaturalSubstitute.substitute variables entry.prepared.body.form replacements
         return ⟨result.form,by
           intro values held
@@ -121,5 +129,16 @@ def prepare (sources : Sources) : WorkM (List Entry) := do
     let calls := interpretation entries original.calls
     let checked ← NaturalPrepare.check original calls (reader (NaturalFrames.original original) entries original.calls)
     return (⟨original,calls,checked⟩ : Entry) :: entries) []
+
+/-- The same complete original-helper check may be shared by independently
+checked declarations in one exact source catalogue. It supplies no source-row
+coverage and is indexed by the complete original Sources value. -/
+structure Checked (sources : Sources) where
+  entries : List Entry
+  prepared : ∃ before after,(prepare sources).run before = (.ok entries,after)
+
+def read (sources : Sources) : WorkM (Checked sources) := do
+  let entries ← NaturalAffine.witness (prepare sources)
+  pure ⟨entries.val,by with_reducible exact entries.property⟩
 
 end QleisliKernel.SourceTypes.NaturalHelpers

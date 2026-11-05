@@ -35,6 +35,33 @@ def action_step(block, name):
 
 
 class CIActions(unittest.TestCase):
+    def test_rust_lint_failure_precedes_native_preparation_and_complete_suite(self):
+        producer = action('rust-producer')
+        name = 'Reject Rust lint failures before native preparation and tests'
+        self.assertLess(producer.index('Install the pinned Rust tools'), producer.index(name))
+        self.assertLess(producer.index(name), producer.index('Run the complete assigned Rust commands'))
+        block = producer.split('    - name: ' + name + '\n')[1].split('    - name: ')[0]
+        script = textwrap.dedent(block.split('      run: |\n')[1])
+        for profile, command in [
+            ('latest', 'cargo +1.98.1 clippy --locked --all-targets -- -D warnings'),
+            ('msrv', 'python3 scripts/run_msrv.py clippy --locked --all-targets -- -D warnings'),
+        ]:
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                recorded = directory / 'arguments'
+                for binary in ('cargo', 'python3'):
+                    executable = directory / binary
+                    executable.write_text('#!/bin/sh\nprintf "%s\\n" "$*" > "$CI_LINT_ARGUMENTS"\nexit 23\n')
+                    executable.chmod(0o755)
+                result = subprocess.run(
+                    ['bash', '-e', '-c', script], cwd=ROOT,
+                    env=os.environ | dict(PATH=str(directory) + os.pathsep + os.environ['PATH'],
+                                          RUST_PROFILE=profile, CI_LINT_ARGUMENTS=str(recorded)),
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(result.returncode, 23, result.stderr)
+                self.assertEqual(recorded.read_text().strip(), command.split(' ', 1)[1])
+
     def test_hosted_validation_covers_push_pr_completion_and_release(self):
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
         trigger = workflow.split('on:\n')[1].split('\nconcurrency:')[0]

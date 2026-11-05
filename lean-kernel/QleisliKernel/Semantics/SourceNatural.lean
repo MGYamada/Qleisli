@@ -184,6 +184,59 @@ def Predicate.Truth (fuel : Nat) (names : Names) (calls : Calls) (predicate : Pr
     evaluate fuel names calls predicate.right = some b ∧
     predicate.comparison.Relation (a : Int) (b : Int)
 
+/-- A static branch retains the original operands. Choosing the other branch
+negates its comparison; it does not substitute a selected argument value. -/
+def Predicate.forBranch (predicate : Predicate) (branch : Bool) : Predicate :=
+  ⟨predicate.left,if branch then predicate.comparison else predicate.comparison.negate,predicate.right⟩
+
+theorem Predicate.truth_iff_of_values (fuel : Nat) (names : Names) (calls : Calls)
+    (predicate : Predicate) (a b : Nat)
+    (left : evaluate fuel names calls predicate.left = some a)
+    (right : evaluate fuel names calls predicate.right = some b) :
+    predicate.Truth fuel names calls ↔ predicate.comparison.Relation (a : Int) (b : Int) := by
+  constructor
+  · rintro ⟨x,y,hx,hy,related⟩
+    have first : x = a := Option.some.inj (hx.symm.trans left)
+    have second : y = b := Option.some.inj (hy.symm.trans right)
+    subst x
+    subst y
+    exact related
+  · intro related
+    exact ⟨a,b,left,right,related⟩
+
+/-- Closed selection is a computation of the independent original predicate. -/
+def Predicate.evaluate (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Option Bool := do
+  let a ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left
+  let b ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right
+  pure (predicate.comparison.test (a : Int) (b : Int))
+
+theorem Predicate.evaluate_of_values (fuel : Nat) (names : Names) (calls : Calls)
+    (predicate : Predicate) (a b : Nat)
+    (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
+    (right : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right = some b) :
+    predicate.evaluate fuel names calls = some (predicate.comparison.test (a : Int) (b : Int)) := by
+  simp only [Predicate.evaluate,left,right,Option.pure_def]
+  rfl
+
+theorem Predicate.branch_truth_of_values (fuel : Nat) (names : Names) (calls : Calls)
+    (predicate : Predicate) (a b : Nat)
+    (left : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left = some a)
+    (right : QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right = some b) :
+    (predicate.forBranch (predicate.comparison.test (a : Int) (b : Int))).Truth fuel names calls := by
+  apply (Predicate.truth_iff_of_values fuel names calls
+    (predicate.forBranch (predicate.comparison.test (a : Int) (b : Int))) a b left right).mpr
+  cases compared : predicate.comparison.test (a : Int) (b : Int) with
+  | true =>
+    change predicate.comparison.Relation (a : Int) (b : Int)
+    exact (SourceAffine.Comparison.test_relation _ _ _).mp compared
+  | false =>
+    change predicate.comparison.negate.Relation (a : Int) (b : Int)
+    apply (SourceAffine.Comparison.negate_relation _ _ _).mpr
+    intro related
+    have yes := (SourceAffine.Comparison.test_relation _ _ _).mpr related
+    rw [compared] at yes
+    contradiction
+
 def PredicatesTruth (fuel : Nat) (names : Names) (calls : Calls) (predicates : List Predicate) : Prop :=
   ∀ predicate ∈ predicates,predicate.Truth fuel names calls
 
@@ -197,8 +250,8 @@ theorem predicates_singleton (fuel : Nat) (names : Names) (calls : Calls) (p : P
   simp only [PredicatesTruth,List.mem_singleton,forall_eq]
 
 def Predicate.check (fuel : Nat) (names : Names) (calls : Calls) (predicate : Predicate) : Option Unit := do
-  let a ← evaluate fuel names calls predicate.left
-  let b ← evaluate fuel names calls predicate.right
+  let a ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.left
+  let b ← QleisliKernel.Semantics.SourceNatural.evaluate fuel names calls predicate.right
   if predicate.comparison.test (a : Int) (b : Int) then some () else none
 
 theorem Predicate.check_of_truth (fuel : Nat) (names : Names) (calls : Calls) (p : Predicate)

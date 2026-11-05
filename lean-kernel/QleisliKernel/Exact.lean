@@ -119,6 +119,9 @@ def Matrix.identity (dim : Nat) : Except Error Matrix :=
 /-- State is retained on arithmetic failure. Failed precharge changes no work. -/
 abbrev WorkM := ExceptT Error (StateM Nat)
 
+/-- Initial exact-work allowance shared by ordinary and source-qmatch decisions. -/
+def _root_.QleisliKernel.exactWorkLimit : Nat := 20000000
+
 def charge (amount : Nat) : WorkM Unit := fun remaining =>
   if amount > remaining then (.error .workLimit, remaining)
   else (.ok (), remaining - amount)

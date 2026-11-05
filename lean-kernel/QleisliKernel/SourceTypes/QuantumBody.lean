@@ -51,13 +51,19 @@ def finish (pattern : Option (List String)) (selector target : Owner)
 /-- QuantumSignature's result grammar distinguishes an atomic Q owner from
 the ordinary tuple collecting separate Q owners. No width or flattened owner
 count erases that distinction. -/
+private def resultShapeRest : Nat → QuantumSignature.ResultParts → Value → Option Value :=
+  Nat.rec (fun _ _ => none) (fun _ recurse parts value => do
+    match parts,value with
+    | .owner _,.owner _ :: rest => return rest
+    | .tuple clauses,.tuple arity :: fields =>
+      if arity != clauses.length then none else
+        clauses.foldlM (fun rest tokens => do
+          let .ok child := QuantumSignature.resultParts tokens | none
+          recurse child rest) fields
+    | _,_ => none)
+
 def resultShape (parts : QuantumSignature.ResultParts) (value : Value) : Bool :=
-  match parts,value with
-  | .owner _,[.owner _] => true
-  | .tuple clauses,.tuple arity :: fields =>
-    arity == clauses.length && fields.length == arity &&
-      fields.all (fun atom => match atom with | .owner _ => true | _ => false)
-  | _,_ => false
+  resultShapeRest 65 parts value == some []
 
 structure Checked {sources owner name offset selectorBasis targetBasis}
     {site : QuantumMatch.Site sources owner name offset}
