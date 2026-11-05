@@ -503,13 +503,15 @@ logical input and reference coordinate.
 
 `RuntimeNamedThreePackedInstrument.original_three_observing` connects that
 equation to the same independently read observing event list.
-`interval_histories` factors the original observing reader and interpreter at
-an adjacent pure interval. Given the original prefix read at the checked
-interface, the interpreter preserves every inherited history and applies the
-pure action to each operator before continuing with the original suffix.
-Deriving the prefix alignment for arbitrary observing source bodies and
-covering the rest of their source actions remain open, along with public v5
-and full12/64. The packed root law uses explicit whole-slice coverage.
+`RuntimeObservingPrefix.checkOps_reference` derives the same quantum
+interface in the independent reader after each successfully checked prefix,
+including erasure, reset and both sides of classical branches.
+`root_interval_histories` uses that agreement to locate an adjacent pure
+interval in the original observing root. The interpreter preserves every
+inherited history and applies the pure action to each operator before
+continuing with the original suffix and final reorder. The source-action
+correspondence for general observing bodies remains open, along with public
+v5 and full12/64. The packed root law uses explicit whole-slice coverage.
 Native acceptance and work limits remain as specified above.
 
 The retained two-qubit general-composition development regression has an

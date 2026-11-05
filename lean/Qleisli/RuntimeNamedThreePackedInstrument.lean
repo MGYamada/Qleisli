@@ -1,4 +1,5 @@
 import Qleisli.RuntimeNamedThreePackedOutput
+import Qleisli.RuntimeObservingPrefix
 import Qleisli.Semantics.ObservingAction
 
 /-! Identify the original named-call interval in the independent observing
@@ -147,14 +148,16 @@ theorem interval_histories
     {deps program block s a b c pre choose post preEvents chooseEvents postEvents}
     (result : @RuntimeAdjacentSlices.Three deps program block s a b c pre choose post
       preEvents chooseEvents postEvents)
-    (fuel : Nat) (initial final : Semantics.RawTrace.Interface)
-    (earlier events : List Semantics.Observation.Event)
-    (entered : Semantics.Observation.readOps (fuel+1) initial (block.operations.take s) =
-      some (pre.interval.before.quantum.reference,earlier))
-    (original : Semantics.Observation.readOps (fuel+1) initial block.operations = some (final,events)) :
-    ∃ later,
+    (fuel : Nat) (depth : block.fuel = fuel+1) (final : Semantics.RawTrace.Interface)
+    (events : List Semantics.Observation.Event)
+    (original : Semantics.Observation.readOps (fuel+1) block.entry.quantum.reference
+      block.operations = some (final,events)) :
+    ∃ earlier later,
+      Semantics.Observation.readOps (fuel+1) block.entry.quantum.reference
+        (block.operations.take s) = some (pre.interval.before.quantum.reference,earlier) ∧
       Semantics.Observation.readOps (fuel+1) post.interval.after.quantum.reference
         (block.operations.drop (s+(a+b+c))) = some (final,later) ∧
+      events = earlier ++ (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure ++ later ∧
       ∀ (tail : List Semantics.Observation.Event) (history : History),
         Qleisli.Semantics.ObservingAction.run deps (fuel+1) (events++tail) history =
           (do
@@ -162,12 +165,60 @@ theorem interval_histories
             (later++tail).foldlM
               (advance deps (Qleisli.Semantics.ObservingAction.run deps fuel))
               (inherited.map (pureHistory deps (preEvents++chooseEvents++postEvents)))) := by
-  obtain ⟨later,read,slices⟩ := result.observing_interval fuel initial final earlier events entered original
-  refine ⟨later,read,?_⟩
+  obtain ⟨work,left,checked⟩ := pre.interval.prefixRead
+  rw [depth] at checked
+  obtain ⟨earlier,entered⟩ := RuntimeObservingPrefix.checkOps_reference deps (fuel+1)
+    block.entry pre.interval.before (block.operations.take s) work left checked
+  obtain ⟨later,read,slices⟩ := result.observing_interval fuel block.entry.quantum.reference
+    final earlier events entered original
+  refine ⟨earlier,later,entered,read,slices,?_⟩
   intro tail history
   rw [slices,List.append_assoc (earlier ++ _) later tail]
   exact run_surround_pure deps fuel earlier (later++tail) _ history
 
 #print axioms interval_histories
+
+/-- An interval in the actual observing root uses the original reader,
+prefix check, enclosing continuation, and final output permutation. -/
+theorem root_interval_histories {deps program}
+    (root : RuntimeInterval.Prepared deps program)
+    {s a b c pre choose post preEvents chooseEvents postEvents}
+    (result : @RuntimeAdjacentSlices.Three deps program root.block s a b c pre choose post
+      preEvents chooseEvents postEvents) :
+    ∃ earlier later,
+      root.whole.prepared.events =
+        earlier ++ (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure ++ later ∧
+      ∀ history : History,
+        Qleisli.Semantics.ObservingAction.run deps 65 root.whole.prepared.events history =
+          (do
+            let inherited ← Qleisli.Semantics.ObservingAction.run deps 65 earlier history
+            later.foldlM (advance deps (Qleisli.Semantics.ObservingAction.run deps 64))
+              (inherited.map (pureHistory deps (preEvents++chooseEvents++postEvents)))) := by
+  have actual := root.originalRoot.reader
+  unfold Semantics.Observation.read at actual
+  cases read : Semantics.Observation.readOps 65 (Semantics.RawTrace.initial program.inputs) program.operations with
+  | none => simp only [read,bind,Option.bind] at actual; cases actual
+  | some pair =>
+    obtain ⟨state,events⟩ := pair
+    simp only [read,bind,Option.bind,pure] at actual
+    let finish := Semantics.Observation.Event.pure (.reorder state.frame.length
+      (Semantics.RawTrace.axes state (program.outputs.flatMap fun token =>
+        ((state.live.find? (fun port => port.token == token)).map (·.wires)).getD [])))
+    have returned : events++[finish] = root.whole.prepared.events :=
+      congrArg Semantics.Observation.Prepared.events (Option.some.inj actual)
+    have original : Semantics.Observation.readOps 65 root.entry.quantum.reference
+        root.block.operations = some (state,events) := by
+      change Semantics.Observation.readOps 65 root.entry.quantum.reference program.operations = _
+      rw [(RuntimeNamedFrameAxes.initialized root.inputRead).1]
+      exact read
+    obtain ⟨earlier,later,_entered,_rest,slices,histories⟩ :=
+      interval_histories result 64 rfl state events original
+    refine ⟨earlier,later++[finish],?_,?_⟩
+    · rw [← returned,slices,List.append_assoc (earlier ++ _) later]
+    · intro history
+      rw [← returned]
+      exact histories [finish] history
+
+#print axioms root_interval_histories
 
 end Qleisli.RuntimeNamedThreePackedInstrument
