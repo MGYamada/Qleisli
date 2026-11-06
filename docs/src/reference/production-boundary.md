@@ -568,10 +568,11 @@ keeps its ordinary values and hidden outcomes through that exact permutation.
 `RuntimeOriginalBranchJoin.original_branch_join` composes the source condition,
 the original arm run, its quantum return permutation, and the literal
 classical merge. The original parent step returns one checked quantum and
-ordinary history for each actual arm-body result, in order. The theorem needs
-the arm body's finite operator representation, SSA agreement, retained incoming
-values, and issued identities. Establishing those properties for arbitrary
-original arm bodies remains open.
+ordinary history for each actual arm-body result, in order.
+`RuntimeObservingValueRetention.run_retains_values` proves that each successful
+literal history retains all incoming values through the actual recursive
+interpreter. The arm body's finite operator representation, SSA agreement,
+and issued identities still need to be established for arbitrary source arms.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

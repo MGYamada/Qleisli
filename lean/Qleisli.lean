@@ -91,6 +91,7 @@ import Qleisli.RuntimeOriginalObservation
 import Qleisli.RuntimeOriginalBranch
 import Qleisli.RuntimeOriginalClassicalJoin
 import Qleisli.RuntimeOriginalQuantumPhi
+import Qleisli.RuntimeObservingValueRetention
 import Qleisli.RuntimeOriginalBranchJoin
 import Qleisli.RuntimeNamedObservationEntry
 import Qleisli.RuntimeSectorPrefix

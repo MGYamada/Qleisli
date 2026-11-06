@@ -1,5 +1,6 @@
 import Qleisli.RuntimeOriginalClassicalJoin
 import Qleisli.RuntimeOriginalQuantumPhi
+import Qleisli.RuntimeObservingValueRetention
 
 /-! A literal original conditional composes the selected recursive arm, its
 quantum return permutation, and the simultaneous classical phi merge on the
@@ -10,7 +11,7 @@ open QleisliKernel QleisliKernel.Qirf
 open RuntimeForestCode (Frame OwnerCodes)
 open RuntimeOwnerCodeReindex (dimensionAt reindex)
 open RuntimeOrdinarySSA (Agreement bitValue)
-open QleisliKernel.Semantics.OrdinaryValue (Extends)
+open Qleisli.RuntimeObservingValueRetention (run_retains_values)
 open Qleisli.RuntimeOriginalQuantumPhi (armBindings outputBindings original_quantum_phi_action)
 open Qleisli.RuntimeForestOrderedProduct (layouts)
 open Qleisli.Semantics.ObservingAction (History run step merge)
@@ -77,7 +78,6 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
       ∃ returned : List History,
         run dependencies actual.childFuel (trace.armBody choice) history = some returned ∧
         ∀ result ∈ returned,
-          Extends history.values result.values ∧
           Agreement reference result.values (if choice then leftOrdinary.table else rightOrdinary.table) ∧
           result.values.map Prod.fst ⊆ (if choice then actual.thenState else actual.elseState).classical.map Prod.fst ∧
           ∃ joint, RepresentsOperator frame result joint) →
@@ -123,7 +123,9 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
       ∃ joint, RepresentsOperator frame armHistory joint ∧
         RepresentsOperator output joined (fun logical column => joint (index logical) column)) (by
       intro current present
-      obtain ⟨retained,selected,issued,joint,encoded⟩ := each current present
+      obtain ⟨selected,issued,joint,encoded⟩ := each current present
+      have retained := run_retains_values dependencies actual.childFuel (trace.armBody choice) history
+        bodyRead current present
       obtain ⟨moved,ran,hidden,values,represented⟩ :=
         quantum (run dependencies (actual.childFuel-1)) joint current encoded
       have literal : step dependencies (run dependencies (actual.childFuel-1))
