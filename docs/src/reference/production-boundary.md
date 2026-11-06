@@ -581,6 +581,11 @@ run from its own input bindings and native verification.
 classical interval with its checked SSA table. Each output is fresh in the
 actual Raw state, and the independent run returns one history whose values
 agree with the new table. The history retains its operator and hidden outcomes.
+`RuntimeOriginalObservationValues.observation_agreement` binds each actual
+measurement bit to the source measurement key transported through its checked
+call path. The valuation preserves every earlier successful expression,
+including the selected arm of `choose`. Discard preserves the ordinary table,
+and both instructions preserve issued-ID support for the resulting history.
 Arbitrary source arms still need the finite operator representation and SSA
 agreement across their complete bodies.
 

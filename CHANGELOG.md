@@ -450,6 +450,8 @@ development milestones from the scope of their evidence.
 - Prove that the independent run of each checked original classical interval
   returns one history with the corresponding source SSA values and preserves
   its operator and hidden outcomes. Use the original check for output freshness.
+- Bind the original measurement history's fresh bit to the transported source
+  expression. Preserve the preceding SSA agreement through measurement and discard.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused
