@@ -1,4 +1,5 @@
 import Qleisli.RuntimeNamedSourceFlow
+import Qleisli.RuntimeLiteralBody
 import QleisliKernel.Qirf.RuntimeBodyOperations
 
 /-! Retain actual recursive runs of original named callees and their inputs.
@@ -12,6 +13,7 @@ namespace Qleisli.RuntimeNamedChildRuns
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open RuntimePureBody
 open RuntimeNamedSourceFlow (NodeAligned)
+open RuntimeLiteralBody (At Partition)
 
 /-- The original callee, its complete real argument binding, visible ordinary
 SSA and actual recursive result determine this named step's stored child.
@@ -91,23 +93,56 @@ def CheckedStep {artifact root execution} (next : BlockRunner artifact root exec
   | .conditional .. => ConditionalRun artifact root execution next step
   | .pure .. | .gap .. | .observation .. => True
 
+/-- The ordinary states belong to the same stored steps as the owner
+states. A pure step leaves the complete table and measurement keys intact. -/
+def OrdinaryAligned {dependencies program block} (before after : RuntimeOrdinaryBody.State)
+    (step : @Step dependencies program block) : Prop :=
+  match step with
+  | .pure _ => after = before
+  | .gap (ordinary := original) gap => before = original ∧ after = gap.ssa
+  | .observation (ordinary := original) observation =>
+    before = original ∧ after = observation.ordinary
+  | .named (ordinary := original) _ _ _ _ _ final _ => before = original ∧ after = final
+  | .conditional _ _ _ _ _ (ordinary := original) action _ _ =>
+    before = original ∧ after = action.ordinaryAfter
+
+inductive OrdinaryRun {dependencies program block} : RuntimeOrdinaryBody.State →
+    List (@Step dependencies program block) → RuntimeOrdinaryBody.State → Prop where
+  | nil (state : RuntimeOrdinaryBody.State) : OrdinaryRun state [] state
+  | cons {initial middle final first rest}
+      (head : OrdinaryAligned initial middle first) (tail : OrdinaryRun middle rest final) :
+      OrdinaryRun initial (first :: rest) final
+
+theorem OrdinaryRun.snoc {dependencies program block initial middle final steps step}
+    (run : @OrdinaryRun dependencies program block initial steps middle)
+    (last : OrdinaryAligned middle final step) :
+    OrdinaryRun initial (steps ++ [step]) final := by
+  induction run with
+  | nil => exact .cons last (.nil _)
+  | cons head _ ih => exact .cons head (ih last)
+
 structure Flow {artifact root execution} (next : BlockRunner artifact root execution)
     {program block} (initial : RuntimeStructuralAction.SourceState)
-    (steps : List (Step root.dependencies program block)) (final : RuntimeStructuralAction.SourceState) : Prop where
+    (steps : List (Step root.dependencies program block)) (final : RuntimeStructuralAction.SourceState)
+    (initialOrdinary finalOrdinary : RuntimeOrdinaryBody.State) (cursor : Nat) : Prop where
   source : RuntimeNamedSourceFlow.Run initial steps final
   calls : ∀ step ∈ steps,CheckedStep next step
+  ordinary : OrdinaryRun initialOrdinary steps finalOrdinary
+  literal : Partition 0 steps cursor
 
 theorem Flow.nil {artifact root execution} (next : BlockRunner artifact root execution)
-    {program block} (state : RuntimeStructuralAction.SourceState) :
-    @Flow artifact root execution next program block state [] state :=
-  ⟨.nil _,by intro step member; cases member⟩
+    {program block} (state : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State) :
+    @Flow artifact root execution next program block state [] state ordinary ordinary 0 :=
+  ⟨.nil _,(by intro step member; cases member),.nil _,.nil _⟩
 
 theorem Flow.snoc {artifact root execution} {next : BlockRunner artifact root execution}
-    {program block initial middle final steps step}
-    (flow : @Flow artifact root execution next program block initial steps middle)
-    (source : RuntimeNamedSourceFlow.Aligned middle final step) (call : CheckedStep next step) :
-    Flow next initial (steps ++ [step]) final := by
-  refine ⟨flow.source.snoc source,?_⟩
+    {program block initial middle final steps step initialOrdinary middleOrdinary finalOrdinary middleCursor finalCursor}
+    (flow : @Flow artifact root execution next program block initial steps middle initialOrdinary middleOrdinary
+      middleCursor)
+    (source : RuntimeNamedSourceFlow.Aligned middle final step) (call : CheckedStep next step)
+    (ordinary : OrdinaryAligned middleOrdinary finalOrdinary step) (literal : At middleCursor finalCursor step) :
+    Flow next initial (steps ++ [step]) final initialOrdinary finalOrdinary finalCursor := by
+  refine ⟨flow.source.snoc source,?_,flow.ordinary.snoc ordinary,flow.literal.snoc literal⟩
   intro current member
   rcases List.mem_append.mp member with old | last
   · exact flow.calls current old
@@ -116,10 +151,14 @@ theorem Flow.snoc {artifact root execution} {next : BlockRunner artifact root ex
     exact call
 
 def Invariant {artifact root execution} (next : BlockRunner artifact root execution)
-    {program block} (initial : RuntimeStructuralAction.SourceState)
+    {program block} (initial : RuntimeStructuralAction.SourceState) (initialOrdinary : RuntimeOrdinaryBody.State)
     (state : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt) : Prop :=
   match state with
-  | (history,_,_,_,steps,_,_,_,_) => Flow next initial steps history
+  | (history,_,ordinary,_,steps,_,cursor,_,_) => Flow next initial steps history initialOrdinary ordinary cursor
+
+private def cursorOf {dependencies program block Cursor Receipt} :
+    @QueryState dependencies program block Cursor Receipt → Nat
+  | (_,_,_,_,_,_,cursor,_,_) => cursor
 
 open RuntimeNamedSourceFlow (Returned reordered_self)
 
@@ -132,7 +171,7 @@ private theorem primitive_aligned {sources caller dependencies program block sta
     (location : Option (RuntimeSourceEvent.Location event start count))
     (result : RuntimeStructuralAction.SourceState × Node dependencies program block)
     (checked : RuntimeInterval.Computed (primitiveAt interval history frame event location) result) :
-    NodeAligned history result.1 result.2 := by
+    NodeAligned history result.1 result.2 ∧ At start (start+count) (.pure result.2) := by
   obtain ⟨work,left,ran⟩ := checked
   unfold primitiveAt at ran
   obtain ⟨owners,a,_owners,h⟩ := bind_success _ _ _ _ _ ran
@@ -144,7 +183,7 @@ private theorem primitive_aligned {sources caller dependencies program block sta
     obtain ⟨_,e,_charge,h⟩ := bind_success _ _ _ _ _ h
     have same := (pure_success _ _ _ _ h).1
     subst result
-    exact ⟨rfl,rfl⟩
+    exact ⟨⟨rfl,rfl⟩,rfl,rfl⟩
   case primitive event =>
     obtain ⟨preserving,b,_preserving,h⟩ := bind_success _ _ _ _ _ h
     split at h
@@ -157,7 +196,7 @@ private theorem primitive_aligned {sources caller dependencies program block sta
       obtain ⟨_,g,_charge,h⟩ := bind_success _ _ _ _ _ h
       have same := (pure_success _ _ _ _ h).1
       subst result
-      exact ⟨rfl,rfl⟩
+      exact ⟨⟨rfl,rfl⟩,rfl,rfl⟩
     all_goals cases h
   all_goals cases h
 
@@ -167,7 +206,7 @@ private theorem operation_aligned {dependencies program}
     (expected : Semantics.Exact.Matrix) (node : Node dependencies program block)
     (initial final : RuntimeStructuralAction.SourceState)
     (checked : RuntimeInterval.Computed (operationNode block position roles before after expected) node) :
-    NodeAligned initial final node := by
+    NodeAligned initial final node ∧ At position.start (position.start+position.count) (.pure node) := by
   obtain ⟨work,left,ran⟩ := checked
   unfold operationNode at ran
   obtain ⟨inputs,a,_inputs,h⟩ := bind_success _ _ _ _ _ ran
@@ -181,7 +220,7 @@ private theorem operation_aligned {dependencies program}
   split at h
   · have same := (pure_success _ _ _ _ h).1
     subst node
-    trivial
+    exact ⟨True.intro,rfl,rfl⟩
   · cases h
 
 private theorem selection_before_transport
@@ -218,7 +257,8 @@ private theorem selection_aligned {α : Type} (artifact : Artifact)
     (sameBindings : frame.bindings = before.bindings)
     (checked : RuntimeInterval.Computed
       (selectionNode artifact interval frame owners selector target table site initial realize) result) :
-    NodeAligned before {before with bindings := owners.after.bindings} result.1 := by
+    NodeAligned before {before with bindings := owners.after.bindings} result.1 ∧
+      At start (start+count) (.pure result.1) := by
   obtain ⟨work,left,ran⟩ := checked
   unfold selectionNode at ran
   obtain ⟨_,a,_count,h⟩ := bind_success _ _ _ _ _ ran
@@ -237,6 +277,7 @@ private theorem selection_aligned {α : Type} (artifact : Artifact)
   obtain ⟨logical,n,_logical,h⟩ := bind_success _ _ _ _ _ h
   have same := (pure_success _ _ _ _ h).1
   subst result
+  refine ⟨?_,rfl,rfl⟩
   simp only [NodeAligned,selection_before_transport,selection_after_transport]
   exact ⟨sameBindings.symm,True.intro⟩
 
@@ -251,15 +292,16 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
     (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
     (program : Semantics.Observation.Program) (request : Context)
     (sourcePlan : execution.queries.BodyData source request)
-    (initialHistory : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
+    (initialHistory : RuntimeStructuralAction.SourceState) (initialOrdinary : RuntimeOrdinaryBody.State)
     (block : RuntimeInterval.Block root.dependencies program)
     (result : BlockResult root.dependencies program block × List execution.Receipt)
     (checked : RuntimeInterval.Computed
       (runBlockStep artifact root execution next .runtimeBody outputBoundary source path program request
-        sourcePlan initialHistory ordinary block) result) :
+        sourcePlan initialHistory initialOrdinary block) result) :
     ∃ initial : RuntimeOwnerMap.Checked source.initialRoles block.entry,
       RuntimeInterval.Computed (reordered source.initialRoles block.entry initialHistory.bindings) initial ∧
-      ∃ last, Flow next {initialHistory with bindings := initial.bindings} result.1.steps last ∧
+      ∃ last, Flow next {initialHistory with bindings := initial.bindings} result.1.steps last
+        initialOrdinary result.1.ordinary block.operations.length ∧
         Returned block source.outputRoles last result.1.history := by
   obtain ⟨work,left,ran⟩ := checked
   simp (config := {zeta := false}) only [runBlockStep] at ran
@@ -277,12 +319,16 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
   obtain ⟨walk,w₉,walked,rest⟩ := bind_success _ _ _ _ _ rest
   rcases walk with ⟨history,retired,ordinaryAfter,actions,steps,obligationsAfter,cursor,sourceCursorAfter,receiptsAfter⟩
   obtain ⟨_,w₁₀,_cursor,rest⟩ := bind_success _ _ _ _ _ rest
+  have inBlock : cursor ≤ block.operations.length := by
+    have valid := (guard_success _ _ _ _ _cursor).1
+    simp only [Bool.and_eq_true] at valid
+    exact of_decide_eq_true valid.1
   extract_lets finish at rest
   have finish_steps (pair : RuntimeOrdinaryBody.State × List (Step root.dependencies program block))
       (value : BlockResult root.dependencies program block × List execution.Receipt)
       (budget remaining : Nat)
       (read : (finish pair).run budget = (.ok value,remaining)) :
-      value.1.steps = pair.2 ∧ Returned block source.outputRoles history value.1.history := by
+      value.1.steps = pair.2 ∧ value.1.ordinary = pair.1 ∧ Returned block source.outputRoles history value.1.history := by
     rcases pair with ⟨ordinaryResult,actualSteps⟩
     dsimp only [finish] at read
     obtain ⟨_,a,_,h⟩ := bind_success _ _ _ _ _ read
@@ -293,15 +339,17 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
     obtain ⟨_,f,_,h⟩ := bind_success _ _ _ _ _ h
     have same := (pure_success _ _ _ _ h).1
     subst value
-    exact ⟨rfl,native,⟨a,b,nativeRead⟩,owners,⟨c,d,ownersRead⟩,rfl⟩
-  suffices connected : Flow next historyStart steps history by
+    exact ⟨rfl,rfl,native,⟨a,b,nativeRead⟩,owners,⟨c,d,ownersRead⟩,rfl⟩
+  suffices connected : Flow next historyStart steps history initialOrdinary ordinaryAfter cursor by
     have chain := connected
     split at rest
-    · obtain ⟨pair,budget,opened,finished⟩ := bind_success _ _ _ _ _ rest
+    · rename_i atEnd
+      have full : cursor = block.operations.length := beq_iff_eq.mp atEnd
+      obtain ⟨pair,budget,opened,finished⟩ := bind_success _ _ _ _ _ rest
       have same := (pure_success _ _ _ _ opened).1
       subst pair
       have finishedData := finish_steps (ordinaryAfter,steps) result budget left finished
-      exact ⟨history,finishedData.1.symm ▸ chain,finishedData.2⟩
+      exact ⟨history,finishedData.1.symm ▸ finishedData.2.1.symm ▸ full ▸ chain,finishedData.2.2⟩
     · obtain ⟨gap,budget,_gap,rest⟩ := bind_success _ _ _ _ _ rest
       obtain ⟨pair,afterGap,opened,finished⟩ := bind_success _ _ _ _ _ rest
       have same := (pure_success _ _ _ _ opened).1
@@ -309,33 +357,41 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       let gapStep : Step root.dependencies program block :=
         @Step.gap root.dependencies program block cursor (block.operations.length-cursor) history ordinaryAfter gap
       have finishedData := finish_steps (gap.ssa,steps ++ [gapStep]) result afterGap left finished
-      exact ⟨history,finishedData.1.symm ▸ chain.snoc ⟨rfl,rfl⟩ True.intro,finishedData.2⟩
+      exact ⟨history,finishedData.1.symm ▸ finishedData.2.1.symm ▸
+        chain.snoc ⟨rfl,rfl⟩ True.intro ⟨rfl,rfl⟩ ⟨rfl,by
+          change cursor+(block.operations.length-cursor) = block.operations.length
+          omega⟩,finishedData.2.2⟩
   have advances (before after : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt)
-      (start budget remaining : Nat) (incoming : Invariant next historyStart before)
-      (read : (advance before start).run budget = (.ok after,remaining)) : Invariant next historyStart after := by
+      (start budget remaining : Nat) (incoming : Invariant next historyStart initialOrdinary before)
+      (read : (advance before start).run budget = (.ok after,remaining)) :
+      Invariant next historyStart initialOrdinary after ∧ cursorOf after = start := by
     rcases before with ⟨history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts⟩
     dsimp only [advance] at read
-    obtain ⟨_,middle,_,h⟩ := bind_success _ _ _ _ _ read
+    obtain ⟨_,middle,guarded,h⟩ := bind_success _ _ _ _ _ read
+    have within : cursor ≤ start := of_decide_eq_true (guard_success _ _ _ _ guarded).1
     split at h
-    · have same := (pure_success _ _ _ _ h).1
+    · rename_i noGap
+      have same := (pure_success _ _ _ _ h).1
       subst after
-      exact incoming
+      exact ⟨incoming,beq_iff_eq.mp noGap⟩
     · obtain ⟨gap,afterGap,_gap,h⟩ := bind_success _ _ _ _ _ h
       have same := (pure_success _ _ _ _ h).1
       subst after
       have chain := incoming
-      exact chain.snoc ⟨rfl,rfl⟩ True.intro
+      exact ⟨chain.snoc ⟨rfl,rfl⟩ True.intro ⟨rfl,rfl⟩ ⟨rfl,by
+        change cursor+(start-cursor) = start
+        omega⟩,rfl⟩
   have named_preserves
       (event : SourceTypes.SourceRuntimeContext.NamedEvent artifact.sources owner)
       (position : Position) (origin : RuntimeSourceEvent.Origin (.named event) position)
       (data : execution.queries.EventData source (.named event) position)
       (before after : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt)
-      (budget remaining : Nat) (incoming : Invariant next historyStart before)
+      (budget remaining : Nat) (incoming : Invariant next historyStart initialOrdinary before)
       (read : (step (.named event) position origin data before).run budget = (.ok after,remaining)) :
-      Invariant next historyStart after := by
+      Invariant next historyStart initialOrdinary after := by
     dsimp only [step] at read
     obtain ⟨advanced,a,advanceRead,h⟩ := bind_success _ _ _ _ _ read
-    have entered := advances before advanced position.start budget a incoming advanceRead
+    obtain ⟨entered,atStart⟩ := advances before advanced position.start budget a incoming advanceRead
     rcases advanced with ⟨history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts⟩
     obtain ⟨_,b,_charge,h⟩ := bind_success _ _ _ _ _ h
     obtain ⟨interval,c,_interval,h⟩ := bind_success _ _ _ _ _ h
@@ -353,7 +409,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      refine chain.snoc ?_ ?_
+      refine chain.snoc ?_ ?_ ⟨rfl,rfl⟩ ⟨atStart.symm,rfl⟩
       · constructor
         · change history = {history with bindings := frame.bindings}
           rw [sameBindings]
@@ -365,16 +421,16 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       (position : Position) (origin : RuntimeSourceEvent.Origin event position)
       (data : execution.queries.EventData source event position)
       (before after : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt)
-      (budget remaining : Nat) (incoming : Invariant next historyStart before)
+      (budget remaining : Nat) (incoming : Invariant next historyStart initialOrdinary before)
       (read : (step event position origin data before).run budget = (.ok after,remaining)) :
-      Invariant next historyStart after := by
+      Invariant next historyStart initialOrdinary after := by
     cases event
     case named event =>
       exact named_preserves event position origin data before after budget remaining incoming read
     all_goals
       dsimp only [step] at read
       obtain ⟨advanced,a,advanceRead,h⟩ := bind_success _ _ _ _ _ read
-      have entered := advances before advanced position.start budget a incoming advanceRead
+      obtain ⟨entered,atStart⟩ := advances before advanced position.start budget a incoming advanceRead
       rcases advanced with ⟨history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts⟩
       obtain ⟨_,b,_charge,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨interval,c,_interval,h⟩ := bind_success _ _ _ _ _ h
@@ -386,7 +442,8 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc (primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩) True.intro
+      obtain ⟨aligned,first,last⟩ := primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩
+      exact chain.snoc aligned True.intro rfl ⟨first.trans atStart.symm,last⟩
     case operation =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,f,_shape,h⟩ := bind_success _ _ _ _ _ h
@@ -397,7 +454,8 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc (operation_aligned block position _ _ _ _ node history _ ⟨i,j,_node⟩) True.intro
+      obtain ⟨aligned,first,last⟩ := operation_aligned block position _ _ _ _ node history _ ⟨i,j,_node⟩
+      exact chain.snoc aligned True.intro rfl ⟨first.trans atStart.symm,last⟩
     case selection =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h
@@ -408,23 +466,23 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have same := (pure_success _ _ _ _ returned).1
       subst after
       have chain := entered
-      exact chain.snoc (by
-        have aligned := selection_aligned artifact interval frame owners _ _ _ _ _ _
-          (node,extra) history sameBindings ⟨g,i,_node⟩
-        simpa only [sameBindings] using aligned) True.intro
+      obtain ⟨aligned,first,last⟩ := selection_aligned artifact interval frame owners _ _ _ _ _ _
+        (node,extra) history sameBindings ⟨g,i,_node⟩
+      exact chain.snoc (by simpa only [sameBindings] using aligned) True.intro rfl
+        ⟨first.trans atStart.symm,last⟩
     case primitive =>
       split at h
       · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h
         have same := (pure_success _ _ _ _ returned).1
         subst after
         have chain := entered
-        exact chain.snoc True.intro True.intro
+        exact chain.snoc True.intro True.intro rfl ⟨atStart.symm,rfl⟩
       · split at h
         · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h
           have same := (pure_success _ _ _ _ returned).1
           subst after
           have chain := entered
-          refine chain.snoc ⟨?_,rfl⟩ True.intro
+          refine chain.snoc ⟨?_,rfl⟩ True.intro ⟨rfl,rfl⟩ ⟨atStart.symm,rfl⟩
           change history = {history with bindings := frame.bindings}
           rw [sameBindings]
         · obtain ⟨performed,e,_performed,returned⟩ := bind_success _ _ _ _ _ h
@@ -432,9 +490,11 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
           have same := (pure_success _ _ _ _ returned).1
           subst after
           have chain := entered
-          exact chain.snoc (primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩) True.intro
+          obtain ⟨aligned,first,last⟩ := primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩
+          exact chain.snoc aligned True.intro rfl ⟨first.trans atStart.symm,last⟩
     case conditional =>
       obtain ⟨_,e,_count,h⟩ := bind_success _ _ _ _ _ h
+      have one : position.count = 1 := beq_iff_eq.mp (guard_success _ _ _ _ _count).1
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨actual,g,_actual,h⟩ := bind_success _ _ _ _ _ h
       split at h
@@ -447,7 +507,8 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         have same := (pure_success _ _ _ _ returned).1
         subst after
         have chain := entered
-        refine chain.snoc ⟨?_,rfl⟩ (ConditionalRun.checked _left _right _action)
+        refine chain.snoc ⟨?_,rfl⟩ (ConditionalRun.checked _left _right _action) ⟨rfl,rfl⟩
+          ⟨atStart.symm,by change position.start+1 = position.start+position.count; rw [one]⟩
         change history = {history with bindings := frame.bindings}
         rw [sameBindings]
       · cases h
@@ -459,17 +520,18 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       (position : Position) (entry : RuntimeSourceEvent.At (source.events.zip request.positions) event position)
       (data : execution.queries.EventData source event position)
       (before after : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt)
-      (budget remaining : Nat) (incoming : Invariant next historyStart before)
+      (budget remaining : Nat) (incoming : Invariant next historyStart initialOrdinary before)
       (read : (outerStep event position entry data before).run budget = (.ok after,remaining)) :
-      Invariant next historyStart after := by
+      Invariant next historyStart initialOrdinary after := by
     cases event
     case staticConditional event children =>
-      rcases before with ⟨initialHistory,initialRetired,initialOrdinary,initialActions,initialSteps,initialObligations,initialCursor,initialSourceCursor,initialReceipts⟩
+      rcases before with ⟨initialHistory,initialRetired,incomingOrdinary,initialActions,initialSteps,initialObligations,initialCursor,initialSourceCursor,initialReceipts⟩
       dsimp only [outerStep] at read
       obtain ⟨actual,a,_actual,h⟩ := bind_success _ _ _ _ _ read
       obtain ⟨advanced,b,advancedRead,h⟩ := bind_success _ _ _ _ _ h
-      have entered := advances (initialHistory,initialRetired,initialOrdinary,initialActions,initialSteps,
+      have entered := (advances (initialHistory,initialRetired,incomingOrdinary,initialActions,initialSteps,
         initialObligations,initialCursor,initialSourceCursor,initialReceipts) advanced position.start a b incoming advancedRead
+        ).1
       rcases advanced with ⟨history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts⟩
       obtain ⟨interval,c,_interval,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨ordered,d,orderedRead,h⟩ := bind_success _ _ _ _ _ h
@@ -484,7 +546,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       subst after
       have trace := RuntimeBodyQueries.foldEvents_trace execution.queries source
         (actual.val.sequence.selected.result.events.zip actual.val.positions) _ actual.val.events _ _ f g walked
-      apply trace.invariant (Invariant next historyStart)
+      apply trace.invariant (Invariant next historyStart initialOrdinary)
       · simpa only [sameMap] using entered
       · intro child position inner data before after budget remaining incoming childRead
         exact steps_preserve child position _ data before after budget remaining incoming childRead
@@ -493,7 +555,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         data before after budget remaining incoming read
   have trace := RuntimeBodyQueries.foldEvents_trace execution.queries source
     (source.events.zip request.positions) outerStep opening.events _ _ w₈ w₉ walked
-  exact trace.invariant (Invariant next historyStart) (Flow.nil next historyStart)
+  exact trace.invariant (Invariant next historyStart initialOrdinary) (Flow.nil next historyStart initialOrdinary)
     (fun event position entry data before after budget remaining incoming read =>
       outer_preserves event position entry data before after budget remaining incoming read)
 
@@ -515,7 +577,8 @@ theorem core_flow (artifact : Artifact) (root : Validity.Root)
     ∃ initial : RuntimeOwnerMap.Checked source.initialRoles block.entry,
       RuntimeInterval.Computed (reordered source.initialRoles block.entry initialHistory.bindings) initial ∧
       ∃ last, Flow (runBlockCore artifact root execution fuel)
-        {initialHistory with bindings := initial.bindings} result.1.steps last ∧
+        {initialHistory with bindings := initial.bindings} result.1.steps last ordinary result.1.ordinary
+        block.operations.length ∧
         Returned block source.outputRoles last result.1.history :=
   step_flow artifact root execution (runBlockCore artifact root execution fuel) outputBoundary
     source path program request sourcePlan initialHistory ordinary block result checked
@@ -533,7 +596,8 @@ theorem original_body {artifact owner name arguments request prepared order runt
     ∃ initial : RuntimeOwnerMap.Checked source.initialRoles body.checked.native.block.entry,
       RuntimeInterval.Computed (reordered source.initialRoles body.checked.native.block.entry initialHistory.bindings) initial ∧
       ∃ last, Flow (runBlockCore artifact body.root execution 127)
-        {initialHistory with bindings := initial.bindings} body.checked.result.steps last ∧
+        {initialHistory with bindings := initial.bindings} body.checked.result.steps last
+        body.checked.initial.ssa body.checked.result.ordinary body.checked.native.block.operations.length ∧
         Returned body.checked.native.block source.outputRoles last body.checked.result.history := by
   exact core_flow artifact body.root
     (.planned (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)

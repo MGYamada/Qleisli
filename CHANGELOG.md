@@ -450,6 +450,16 @@ development milestones from the scope of their evidence.
 - Prove that the independent run of each checked original classical interval
   returns one history with the corresponding source SSA values and preserves
   its operator and hidden outcomes. Use the original check for output freshness.
+- Bind the original measurement history's fresh bit to the transported source
+  expression. Preserve the preceding SSA agreement through measurement and discard.
+- Retain the ordinary SSA state at each step of the actual body traversal.
+  Derive the post-gap and post-erasure agreement in each returned history's
+  own valuation.
+- Prove that the original traversal's intervals cover the full Raw body in
+  order and reproduce its independent observing trace, with complete shared
+  boundary states between adjacent intervals.
+- Decompose the actual independent body execution at its checked step
+  boundaries and carry per-step invariants along the original state chains.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused
