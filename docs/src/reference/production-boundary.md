@@ -387,8 +387,12 @@ block. The retained input read binds the callee's original parameter owners to
 the caller's selected ports and original input owners; the recursive call uses
 the same checked visible ordinary SSA. The input read's remaining work is the
 recursive call's starting work. Its exact result determines the stored
-child steps, returned history and ordinary state. The weaker state-flow law is
-derived from this single strengthened proof. `original_child_runs` supplies
+child steps, returned history and ordinary state. The same stored step list
+carries an `OrdinaryRun` from the actual initial SSA state to the actual
+returned SSA state. It retains the tables and measurement keys across gaps,
+observations, named calls and conditionals, with pure steps preserving both.
+The weaker state-flow law is derived from this single strengthened proof.
+`original_child_runs` supplies
 those computations for the actual pre/choose/post view. Other step constructors
 receive no child-provenance assertion here; whole-source code/action and
 observing-history composition, public v5 and full12/64 remain open.
@@ -586,6 +590,9 @@ measurement bit to the source measurement key transported through its checked
 call path. The valuation preserves every earlier successful expression,
 including the selected arm of `choose`. Discard preserves the ordinary table,
 and both instructions preserve issued-ID support for the resulting history.
+`original_gap_values` derives agreement in the returned history's own
+valuation. `observation_step_values` gives the same agreement for every
+history of the actual erasure event.
 Arbitrary source arms still need the finite operator representation and SSA
 agreement across their complete bodies.
 

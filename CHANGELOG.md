@@ -452,6 +452,9 @@ development milestones from the scope of their evidence.
   its operator and hidden outcomes. Use the original check for output freshness.
 - Bind the original measurement history's fresh bit to the transported source
   expression. Preserve the preceding SSA agreement through measurement and discard.
+- Retain the ordinary SSA state at each step of the actual body traversal.
+  Derive the post-gap and post-erasure agreement in each returned history's
+  own valuation.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused
