@@ -395,6 +395,11 @@ Its literal partition covers the complete original Raw operation list in
 order. `RuntimeLiteralBody.original_body_trace` reads each exact interval
 through the independent observing reader. Adjacent steps share the full Raw
 boundary state, and their events concatenate to the original body's trace.
+`RuntimeLiteralBody.original_body_execution` splits a successful independent
+run at those exact boundaries. Each step runs on every incoming history and
+keeps the interpreter's result order. The execution induction follows the
+same source-owner and SSA chains, so a proved local invariant applies to
+every returned history of the original body.
 The weaker state-flow law is derived from this single strengthened proof.
 `original_child_runs` supplies
 those computations for the actual pre/choose/post view. Other step constructors

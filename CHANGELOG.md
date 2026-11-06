@@ -458,6 +458,8 @@ development milestones from the scope of their evidence.
 - Prove that the original traversal's intervals cover the full Raw body in
   order and reproduce its independent observing trace, with complete shared
   boundary states between adjacent intervals.
+- Decompose the actual independent body execution at its checked step
+  boundaries and carry per-step invariants along the original state chains.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused
