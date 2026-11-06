@@ -391,6 +391,10 @@ child steps, returned history and ordinary state. The same stored step list
 carries an `OrdinaryRun` from the actual initial SSA state to the actual
 returned SSA state. It retains the tables and measurement keys across gaps,
 observations, named calls and conditionals, with pure steps preserving both.
+Its literal partition covers the complete original Raw operation list in
+order. `RuntimeLiteralBody.original_body_trace` reads each exact interval
+through the independent observing reader. Adjacent steps share the full Raw
+boundary state, and their events concatenate to the original body's trace.
 The weaker state-flow law is derived from this single strengthened proof.
 `original_child_runs` supplies
 those computations for the actual pre/choose/post view. Other step constructors
