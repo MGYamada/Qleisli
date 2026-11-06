@@ -24,6 +24,8 @@ development milestones from the scope of their evidence.
   Compose both phis on the same ordered arm-body histories, with the checked
   source condition selecting the original recursive run. Derive retention of
   incoming ordinary values directly from that interpreter.
+  Prove that each actual history uses only IDs issued by the original check,
+  including through nested branches and both kinds of phi join.
 
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
