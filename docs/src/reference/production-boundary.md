@@ -471,7 +471,24 @@ No final child Frame, successful `readFrame` invocation or remaining-work bound
 is supplied or fabricated. Caller-frame construction and availability for
 arbitrary source bodies retain their separate obligations.
 
-Connecting the middle selection to these caller coefficients, whole-function
+`RuntimeNamedBlockEncoding` partitions the actual complete caller code into
+its original selected owners and retained spectators. It derives selected-token
+uniqueness from the real call input gate, including empty-wire owners, rather
+than inferring it from physical axes. Exact owner cardinalities reindex the
+arbitrary joint/reference coefficients; no separability premise is introduced.
+`RuntimeNamedCarrierEncoding` connects the retained child's actual input code
+to those selected coefficients using full ordered port/basis equality and the
+real Raw frame. `RuntimeNamedBlockSpectators` derives disjoint axes from the
+complete valid caller and proves that scattering selected axes leaves every
+spectator coefficient unchanged.
+
+`RuntimeNamedSelectionInputEncoding.actual_occurrence_source_action` combines
+those facts with the same original child run, indexed Literal, coverage and
+parent-event source law. The source carrier equality is derived from that run,
+not supplied by a caller. Its `original_three_input_actions` consumer retains
+all three complete-input action laws on the same original root event lists.
+The middle result is still expressed in the child's retained output code.
+Connecting that result to the actual complete caller output, whole-function
 logical-action/observing-history composition, public v5 and full12/64 remains
 open. The three-call view is bounded and supplies no general-body coverage.
 These mathematical laws change no native acceptance rule, effect, work limit,

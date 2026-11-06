@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect the actual named selection's source action to its complete caller
+  input, using the original ordered owners, code receipts and correlated
+  spectator/reference coefficients. Instantiate all three pre/choose/post
+  input-action laws on the same original root events. The middle output remains
+  in its child code; caller-output and general body/instrument composition,
+  public v5 and full12/64 remain pending. Native acceptance is unchanged.
+
 - Retain the selection's actual input map and full returned source state in
   the same common-loop proof. Bind the original middle child's complete input
   carriers and final written return order to its real argument construction
