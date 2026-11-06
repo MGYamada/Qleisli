@@ -92,7 +92,8 @@ theorem checkOps_unique {deps fuel state ops first second}
     (right : Computed (Raw.Observation.checkOps deps fuel state ops) second) : first = second :=
   singleOps deps fuel state ops left right
 
-private theorem underlying {deps fuel initial ops result}
+/-- Extract the actual ordered step fold from a successful original check. -/
+theorem underlying {deps fuel initial ops result}
     (read : Computed (Raw.Observation.checkOps deps (fuel+1) initial ops) result) :
     Computed (ops.foldlM (Raw.Observation.checkStep deps (Raw.Observation.checkOps deps fuel)) initial) result := by
   obtain ⟨w,l,ran⟩ := read

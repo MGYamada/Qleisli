@@ -576,8 +576,13 @@ writes, including recursive arm writes and phi destinations, to the original
 check's issued IDs. The branch theorem derives this correspondence for every
 arm result from the incoming history's support at the checked boundary.
 `checked_program_values` obtains the same support for a complete original
-run from its own input bindings and native verification. Arbitrary source
-arms still need the finite operator representation and SSA agreement.
+run from its own input bindings and native verification.
+`RuntimeOriginalOrdinaryGap.original_gap` interprets the exact original
+classical interval with its checked SSA table. Each output is fresh in the
+actual Raw state, and the independent run returns one history whose values
+agree with the new table. The history retains its operator and hidden outcomes.
+Arbitrary source arms still need the finite operator representation and SSA
+agreement across their complete bodies.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
