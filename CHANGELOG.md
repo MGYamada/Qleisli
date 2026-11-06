@@ -21,6 +21,8 @@ development milestones from the scope of their evidence.
   every resulting history while preserving its operator and hidden outcomes.
   Relate the arm-final quantum permutation to the exact owner phi pairing
   and checked output encoding on every finite row and reference column.
+  Compose both phis on the same ordered arm-body histories, with the checked
+  source condition selecting the original recursive run.
 
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate

@@ -107,17 +107,18 @@ theorem original_merge_agrees {sources rootOwner rootName caller name dependenci
       rw [lookup_append_absent _ _ _ missing,phiBindings_lookup merged action.ordinaryPhis.distinct rawPhi]
       exact found
 
-private theorem merge_family (choice : Bool) (phis : List Phi) (histories : List History)
+theorem merge_family (choice : Bool) (phis : List Phi) (histories : List History)
+    (transport : History → History)
     (relates : History → History → Prop)
-    (each : ∀ history ∈ histories, ∃ after, merge choice phis history = some after ∧ relates history after) :
-    ∃ results, histories.mapM (merge choice phis) = some results ∧ List.Forall₂ relates histories results := by
+    (each : ∀ history ∈ histories, ∃ after, merge choice phis (transport history) = some after ∧ relates history after) :
+    ∃ results, (histories.map transport).mapM (merge choice phis) = some results ∧ List.Forall₂ relates histories results := by
   induction histories with
   | nil => exact ⟨[],rfl,.nil⟩
   | cons first rest ih =>
     obtain ⟨result,merged,related⟩ := each first List.mem_cons_self
     obtain ⟨results,allMerged,allRelated⟩ := ih (fun item member => each item (List.mem_cons_of_mem _ member))
     refine ⟨result::results,?_,.cons related allRelated⟩
-    rw [List.mapM_cons,merged,allMerged]
+    rw [List.map_cons,List.mapM_cons,merged,allMerged]
     rfl
 
 /-- Once the original selected arm has supplied its returned histories and
@@ -155,7 +156,7 @@ theorem original_branch_classical_join {sources rootOwner rootName caller name d
   refine ⟨choice,computed,?_⟩
   intro finished ran
   have each := armProof choice computed finished ran
-  obtain ⟨results,merged,related⟩ := merge_family choice actual.classical finished
+  obtain ⟨results,merged,related⟩ := merge_family choice actual.classical finished id
     (fun arm joined => joined.hidden = arm.hidden ∧ joined.operator = arm.operator ∧
       Agreement reference joined.values action.ordinaryAfter.table)
     (fun item present =>
@@ -163,7 +164,7 @@ theorem original_branch_classical_join {sources rootOwner rootName caller name d
       original_merge_agrees action reference choice item computed proof.1 proof.2.1 proof.2.2)
   refine ⟨results,?_,related⟩
   rw [actualStep,ran]
-  exact merged
+  simpa only [List.map_id] using merged
 
 #print axioms original_merge_agrees
 #print axioms original_branch_classical_join

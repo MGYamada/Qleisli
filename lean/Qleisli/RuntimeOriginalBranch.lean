@@ -35,6 +35,10 @@ structure Trace {dependencies program block offset}
   parentRead : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
     some (actual.interval.after.quantum.reference,[branchEvent actual left right])
 
+def Trace.armBody {dependencies program block offset} {actual : @RuntimeInterval.Branch dependencies program block offset}
+    (trace : Trace actual) (choice : Bool) : List Event :=
+  if choice then trace.left else trace.right
+
 def Trace.armEvents {dependencies program block offset} {actual : @RuntimeInterval.Branch dependencies program block offset}
     (trace : Trace actual) (choice : Bool) : List Event :=
   if choice then trace.left++[armFinish actual.thenState.quantum.reference actual.quantum true]

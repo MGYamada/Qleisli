@@ -565,7 +565,13 @@ each owner's exact carrier layout, including separate zero-width owners, and
 derives the source output frame in its checked owner order. The equation holds
 for every finite output row and reference column. A represented arm history
 keeps its ordinary values and hidden outcomes through that exact permutation.
-The source actions inside arbitrary arms and their full composition remain open.
+`RuntimeOriginalBranchJoin.original_branch_join` composes the source condition,
+the original arm run, its quantum return permutation, and the literal
+classical merge. The original parent step returns one checked quantum and
+ordinary history for each actual arm-body result, in order. The theorem needs
+the arm body's finite operator representation, SSA agreement, retained incoming
+values, and issued identities. Establishing those properties for arbitrary
+original arm bodies remains open.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
