@@ -70,15 +70,21 @@ theorem forest_layout {bindings : RuntimeOwnerMap.Map} (owners : OwnerCodes bind
         simp only [Semantics.FiniteCarrier.layout,shape,List.foldr_cons,stack,root,
           bind,Option.bind,pure]
 
+/-- The mathematical Frame retains the exact supplied per-owner evidence. -/
+theorem with_ownerCodes {roles state} (checked : RuntimeOwnerMap.Checked roles state)
+    (owners : OwnerCodes checked.bindings) : ∃ frame : Frame checked, frame.owners = owners := by
+  obtain ⟨layout,reference⟩ := forest_layout owners
+  obtain ⟨code,original,_same⟩ := sparseLayout_complete (forestBasis checked.bindings) layout reference
+  exact ⟨⟨owners,code,original⟩,rfl⟩
+
 /-- Original per-owner evidence supplies a mathematical Frame for this same
 complete checked map. Nonempty performs no runtime extraction from Prop; no
 new reader invocation or public work-counter sufficiency follows. -/
 theorem of_ownerCodes {roles state} (checked : RuntimeOwnerMap.Checked roles state)
     (available : Nonempty (OwnerCodes checked.bindings)) : Nonempty (Frame checked) := by
   obtain ⟨owners⟩ := available
-  obtain ⟨layout,reference⟩ := forest_layout owners
-  obtain ⟨code,original,_same⟩ := sparseLayout_complete (forestBasis checked.bindings) layout reference
-  exact ⟨⟨owners,code,original⟩⟩
+  obtain ⟨frame,_same⟩ := with_ownerCodes checked owners
+  exact ⟨frame⟩
 
 #print axioms owner_stack
 #print axioms forest_layout

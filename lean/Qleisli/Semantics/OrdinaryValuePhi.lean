@@ -28,7 +28,7 @@ private theorem lookup_cons_other (first id : Nat) (bit : Bool) (rest : Valuatio
   have unequal : (first == id) = false := beq_eq_false_iff_ne.mpr different
   simp [lookup,List.find?,unequal]
 
-private theorem lookup_append_absent (before added : Valuation) (id : Nat)
+theorem lookup_append_absent (before added : Valuation) (id : Nat)
     (fresh : lookup before id = none) : lookup (before ++ added) id = lookup added id := by
   unfold lookup at fresh ⊢
   rw [List.find?_append]
@@ -36,7 +36,7 @@ private theorem lookup_append_absent (before added : Valuation) (id : Nat)
   | none => simp
   | some pair => simp [found] at fresh
 
-private theorem phiBindings_cons (choice : Bool) (phi : Observation.ClassicalPhi)
+theorem phiBindings_cons (choice : Bool) (phi : Observation.ClassicalPhi)
     (phis : List Observation.ClassicalPhi) (before : Valuation) :
     phiBindings choice (phi :: phis) before = (do
       let bit ← lookup before (if choice then phi.thenId else phi.elseId)

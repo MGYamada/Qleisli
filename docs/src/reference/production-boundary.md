@@ -552,9 +552,27 @@ states and ordinary SSA tables, with the original work counters.
 `RuntimeOriginalBranch.original_branch_events` identifies the exact Raw branch
 event, both arm traces and their final permutations. On a history whose
 ordinary values agree with the checked source expressions,
-`original_branch_step` selects the arm by the source condition and retains the
-literal classical phi merge. The source action inside each arm and the
-source-level meaning of the phi merge remain separate.
+`original_branch_step` selects the arm by the source condition.
+`RuntimeOriginalClassicalJoin.original_branch_classical_join` uses the original
+Raw freshness check for every classical phi destination. If the selected arm
+returns histories with their checked SSA agreement and issued identities, the
+literal merge produces one corresponding history per arm result, in order.
+Its visible values agree with the checked post-branch source expressions, and
+its quantum operator and hidden outcomes are those of that arm result.
+`RuntimeOriginalQuantumPhi.original_quantum_phi_action` ties the actual
+arm-final Raw permutation to the complete original owner pairing. It retains
+each owner's exact carrier layout, including separate zero-width owners, and
+derives the source output frame in its checked owner order. The equation holds
+for every finite output row and reference column. A represented arm history
+keeps its ordinary values and hidden outcomes through that exact permutation.
+`RuntimeOriginalBranchJoin.original_branch_join` composes the source condition,
+the original arm run, its quantum return permutation, and the literal
+classical merge. The original parent step returns one checked quantum and
+ordinary history for each actual arm-body result, in order.
+`RuntimeObservingValueRetention.run_retains_values` proves that each successful
+literal history retains all incoming values through the actual recursive
+interpreter. The arm body's finite operator representation, SSA agreement,
+and issued identities still need to be established for arbitrary source arms.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

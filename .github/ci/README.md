@@ -98,7 +98,7 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch-selection-input-action`,
 `codex/beta-qmatch-composed-body`,
 `codex/beta-qmatch-packed-output`,
-`codex/beta-qmatch-adjacent-observing`, `codex/beta-qmatch-finite-rows`,
+`codex/beta-qmatch-adjacent-observing`, `codex/beta-qmatch-finite-rows`, `codex/beta-qmatch-ordinary-phis`,
 `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree. On pushes, the producer

@@ -52,7 +52,7 @@ theorem run_append_event (dependencies : List Semantics.Finite.Dependency) (fuel
     step histories event)
   simp only [List.foldlM_append,List.foldlM_cons,List.foldlM_nil,bind_pure]
 
-private theorem advance_pure (dependencies : List Semantics.Finite.Dependency)
+theorem advance_pure (dependencies : List Semantics.Finite.Dependency)
     (recurse : List Semantics.Observation.Event → History → Option (List History))
     (event : Semantics.Raw.Event) (histories : List History) :
     advance dependencies recurse histories (.pure event) =
