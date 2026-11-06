@@ -75,6 +75,36 @@ theorem original_branch_events {dependencies program block offset}
   refine ⟨⟨thenEvents,elseEvents,thenRead,elseRead,after.symm,?_⟩⟩
   rw [read,after]
 
+/-- The exact independently read arm writes only IDs issued by its original
+check. Both arm checks preserve the parent's previously issued identities. -/
+theorem original_arm_writes {dependencies program block offset}
+    {actual : @RuntimeInterval.Branch dependencies program block offset}
+    (trace : Trace actual) (choice : Bool) :
+    let state := if choice then actual.thenState else actual.elseState
+    actual.interval.before.classical ⊆ state.classical ∧
+      RuntimeObservingWrites.WritesWithin (trace.armBody choice) (RuntimeObservingPrefix.Issued state) := by
+  obtain ⟨thenWork,thenLeft,thenRan⟩ := actual.thenRead
+  obtain ⟨thenKept,thenEvents,thenRead,thenWrites⟩ :=
+    RuntimeObservingPrefix.checkOps_reference_with_writes _ _ _ _ _ thenWork thenLeft thenRan
+  cases choice with
+  | false =>
+    obtain ⟨elseWork,elseLeft,elseRan⟩ := actual.elseRead
+    obtain ⟨elseKept,elseEvents,elseRead,elseWrites⟩ :=
+      RuntimeObservingPrefix.checkOps_reference_with_writes _ _ _ _ _ elseWork elseLeft elseRan
+    change readOps actual.childFuel actual.interval.before.quantum.reference actual.elseOps =
+      some (actual.elseState.quantum.reference,elseEvents) at elseRead
+    have same : elseEvents = trace.right :=
+      congrArg Prod.snd (Option.some.inj (elseRead.symm.trans trace.rightRead))
+    subst elseEvents
+    exact ⟨fun _ member => elseKept (thenKept member),elseWrites⟩
+  | true =>
+    change readOps actual.childFuel actual.interval.before.quantum.reference actual.thenOps =
+      some (actual.thenState.quantum.reference,thenEvents) at thenRead
+    have same : thenEvents = trace.left :=
+      congrArg Prod.snd (Option.some.inj (thenRead.symm.trans trace.leftRead))
+    subst thenEvents
+    exact ⟨thenKept,thenWrites⟩
+
 private theorem phi_outputs_fresh (phis : List Semantics.Observation.ClassicalPhi)
     (before after : Raw.Observation.State)
     (read : phis.foldlM (fun state phi => Raw.Observation.insertClassical state phi.output) before = .ok after) :
@@ -188,6 +218,7 @@ theorem original_branch_step {sources rootOwner rootName owner name dependencies
   simp only [branchEvent,Trace.armEvents,Qleisli.Semantics.ObservingAction.step,read,bind,Option.bind]
 
 #print axioms original_branch_events
+#print axioms original_arm_writes
 #print axioms original_branch_outputs_fresh
 #print axioms original_branch_step
 end Qleisli.RuntimeOriginalBranch

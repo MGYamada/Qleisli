@@ -11,7 +11,8 @@ open QleisliKernel QleisliKernel.Qirf
 open RuntimeForestCode (Frame OwnerCodes)
 open RuntimeOwnerCodeReindex (dimensionAt reindex)
 open RuntimeOrdinarySSA (Agreement bitValue)
-open Qleisli.RuntimeObservingValueRetention (run_retains_values)
+open Qleisli.RuntimeObservingValueRetention (Supports run_values)
+open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
 open Qleisli.RuntimeOriginalQuantumPhi (armBindings outputBindings original_quantum_phi_action)
 open Qleisli.RuntimeForestOrderedProduct (layouts)
 open Qleisli.Semantics.ObservingAction (History run step merge)
@@ -72,6 +73,7 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
     (width : bits.length = ordinary.measurements.length) (history : History) :
     let reference := RuntimeBranchCondition.reference input ordinary.measurements bits
     Agreement reference history.values ordinary.table →
+    Supports (Issued actual.interval.before) history →
     (∀ choice,
       Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice) →
       ∃ frame : Frame (armChecked action.thenFrame action.elseFrame choice),
@@ -79,7 +81,6 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
         run dependencies actual.childFuel (trace.armBody choice) history = some returned ∧
         ∀ result ∈ returned,
           Agreement reference result.values (if choice then leftOrdinary.table else rightOrdinary.table) ∧
-          result.values.map Prod.fst ⊆ (if choice then actual.thenState else actual.elseState).classical.map Prod.fst ∧
           ∃ joint, RepresentsOperator frame result joint) →
     ∃ choice,
       Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice) ∧
@@ -103,10 +104,15 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
           joined.hidden = arm.hidden ∧ Agreement reference joined.values action.ordinaryAfter.table ∧
           ∃ joint, RepresentsOperator frame arm joint ∧
             RepresentsOperator output joined (fun logical column => joint (index logical) column)) returned results := by
-  intro reference agrees armProof
+  intro reference agrees incoming armProof
   obtain ⟨choice,condition,actualStep⟩ := RuntimeOriginalBranch.original_branch_step action.condition trace
     (run dependencies actual.childFuel) input member bits width history agrees
   obtain ⟨frame,returned,bodyRead,each⟩ := armProof choice condition
+  obtain ⟨kept,writes⟩ := RuntimeOriginalBranch.original_arm_writes trace choice
+  have supported : Supports (Issued (if choice then actual.thenState else actual.elseState)) history := by
+    intro id member
+    exact issued_mono kept (incoming member)
+  have historyFacts := run_values dependencies actual.childFuel (trace.armBody choice) history _ writes supported bodyRead
   let arm := armChecked action.thenFrame action.elseFrame choice
   have sameBindings : arm.bindings = if choice then action.thenFrame.bindings else action.elseFrame.bindings := by
     cases choice <;> rfl
@@ -123,9 +129,8 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
       ∃ joint, RepresentsOperator frame armHistory joint ∧
         RepresentsOperator output joined (fun logical column => joint (index logical) column)) (by
       intro current present
-      obtain ⟨selected,issued,joint,encoded⟩ := each current present
-      have retained := run_retains_values dependencies actual.childFuel (trace.armBody choice) history
-        bodyRead current present
+      obtain ⟨selected,joint,encoded⟩ := each current present
+      obtain ⟨retained,issued⟩ := historyFacts current present
       obtain ⟨moved,ran,hidden,values,represented⟩ :=
         quantum (run dependencies (actual.childFuel-1)) joint current encoded
       have literal : step dependencies (run dependencies (actual.childFuel-1))

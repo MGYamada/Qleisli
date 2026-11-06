@@ -24,6 +24,8 @@ development milestones from the scope of their evidence.
   Compose both phis on the same ordered arm-body histories, with the checked
   source condition selecting the original recursive run. Derive retention of
   incoming ordinary values directly from that interpreter.
+  Prove that each actual history uses only IDs issued by the original check,
+  including through nested branches and both kinds of phi join.
 
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
@@ -445,6 +447,9 @@ development milestones from the scope of their evidence.
   the actual history merge and preserves hidden paths, coefficient computations,
   failures and remaining work. Complete source traversal, measurement/input
   binding and public execution integration remain required.
+- Prove that the independent run of each checked original classical interval
+  returns one history with the corresponding source SSA values and preserves
+  its operator and hidden outcomes. Use the original check for output freshness.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused

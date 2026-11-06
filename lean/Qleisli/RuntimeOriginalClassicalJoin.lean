@@ -14,7 +14,7 @@ open Qleisli.Semantics.OrdinaryValue (phiBindings phiBindings_cons phiBindings_l
 open RuntimeOrdinarySSA (Agreement Valuation Values bitValue)
 open RuntimeOrdinaryPhis (Phi)
 
-private theorem lookup_unissued {values : Values} {id : Nat}
+theorem lookup_unissued {values : Values} {id : Nat}
     (absent : id ∉ values.map Prod.fst) : lookup values id = none := by
   unfold lookup
   cases found : values.find? (fun pair => pair.1 == id) with

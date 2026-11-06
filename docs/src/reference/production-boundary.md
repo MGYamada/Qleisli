@@ -569,10 +569,20 @@ keeps its ordinary values and hidden outcomes through that exact permutation.
 the original arm run, its quantum return permutation, and the literal
 classical merge. The original parent step returns one checked quantum and
 ordinary history for each actual arm-body result, in order.
-`RuntimeObservingValueRetention.run_retains_values` proves that each successful
-literal history retains all incoming values through the actual recursive
-interpreter. The arm body's finite operator representation, SSA agreement,
-and issued identities still need to be established for arbitrary source arms.
+`RuntimeObservingValueRetention.run_values` proves that each successful
+literal history retains all incoming values and only adds IDs from its
+trace. `RuntimeObservingPrefix.checkOps_reference_with_writes` relates those
+writes, including recursive arm writes and phi destinations, to the original
+check's issued IDs. The branch theorem derives this correspondence for every
+arm result from the incoming history's support at the checked boundary.
+`checked_program_values` obtains the same support for a complete original
+run from its own input bindings and native verification.
+`RuntimeOriginalOrdinaryGap.original_gap` interprets the exact original
+classical interval with its checked SSA table. Each output is fresh in the
+actual Raw state, and the independent run returns one history whose values
+agree with the new table. The history retains its operator and hidden outcomes.
+Arbitrary source arms still need the finite operator representation and SSA
+agreement across their complete bodies.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
