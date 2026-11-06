@@ -6,6 +6,17 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that each original `measure_z` or `discard` outcome follows the same
+  source equation as its immediately adjacent pre/choose/post Raw interval.
+  The law retains the actual prefix, suffix and outcome records. It compares
+  finite post-call rows and preserves reference columns. When the post call
+  ends the original source traversal and Raw operations, it also gives the
+  original interpreter's packed histories in the written return order.
+
+- Retain both original conditional arm runs and their checked join in the
+  source traversal proof. Relate the literal Raw branch, arm permutations,
+  and the selected arm on an agreed history to the checked source condition.
+
 - Compose the three original pre/choose/post logical actions on their actual
   Raw event slices. Derive the first frame from input storage and the intermediate
   frames from retained owner receipts. The selection uses its written return

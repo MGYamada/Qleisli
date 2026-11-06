@@ -527,8 +527,34 @@ operator on the surviving owner code is the original consumed owner's basis
 effect on that outcome, with the same arbitrary reference coordinates.
 The theorem retains all hidden outcomes and the original visible measurement
 identifier. It requires the input code representation on finite Raw rows.
-Connecting these outputs through general source traversal and the enclosing
-call actions remains a separate obligation.
+`RuntimeNamedObservationEntry.original_supplies_histories` transports every
+outcome into the entry frame of an immediately following original named call,
+using the exact source-state and Raw interval joins. The original checked
+event slices retain their finite input and output widths in
+`RawFiniteRows.checked_slice`. Their action on each inherited history depends
+only on its finite input coefficients.
+`RuntimeNamedObservationEntry.original_erasure_then_adjacent` ties the exact
+prefix, erasure, three-call interval and continuation to one original observing
+IR program. For each erasure outcome, the same three-call source equation acts
+on the unnormalized projected state in the checked post-call frame. It keeps
+the visible measurement and hidden outcome through all three calls. The
+equation applies to every finite post-call row and reference column of a
+represented incoming history. When the post call ends both the original source
+traversal and the Raw operations, the actual suffix is the final permutation.
+The same theorem gives the packed source result in the original return order
+for every outcome and identifies the list of histories returned by the original
+interpreter. General observing-body composition remains open.
+
+`RuntimeNamedChildRuns.original_body` retains the actual input and output owner
+states for classical gaps and conditionals. For each conditional it keeps both
+original recursive arm reads and the successful join on their returned owner
+states and ordinary SSA tables, with the original work counters.
+`RuntimeOriginalBranch.original_branch_events` identifies the exact Raw branch
+event, both arm traces and their final permutations. On a history whose
+ordinary values agree with the checked source expressions,
+`original_branch_step` selects the arm by the source condition and retains the
+literal classical phi merge. The source action inside each arm and the
+source-level meaning of the phi merge remain separate.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

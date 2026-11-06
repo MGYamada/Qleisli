@@ -1,5 +1,6 @@
 import Qleisli.RuntimeNamedThreePackedOutput
 import Qleisli.RuntimeObservingPrefix
+import Qleisli.RawFiniteRows
 import Qleisli.Semantics.ObservingAction
 
 /-! Identify the original named-call interval in the independent observing
@@ -17,11 +18,39 @@ noncomputable def pureHistory (dependencies : List Semantics.Finite.Dependency)
   {initial with operator := fun row col =>
     Qleisli.Semantics.RawAction.events dependencies events (fun input => initial.operator input col) row}
 
-private noncomputable def advance (dependencies : List Semantics.Finite.Dependency)
+/-- Finite-row agreement of an inherited operator with the source input
+encoding suffices for the original pure interval's operator on each column. -/
+theorem pureHistory_operator_congr {before after events}
+    (bounded : RawFiniteRows.BoundedEvents before events after)
+    (dependencies : List Semantics.Finite.Dependency) (history : History)
+    (input : Nat → Nat → ℂ)
+    (represented : ∀ col, RawFiniteRows.OnRows before
+      (fun row => history.operator row col) (fun row => input row col)) :
+    ∀ col, RawFiniteRows.OnRows after
+      (fun row => (pureHistory dependencies events history).operator row col)
+      (Qleisli.Semantics.RawAction.events dependencies events (fun row => input row col)) := by
+  intro col
+  exact bounded.congr dependencies _ _ (represented col)
+
+/-- Advance all inherited histories by one event, in the interpreter's order. -/
+noncomputable def advance (dependencies : List Semantics.Finite.Dependency)
     (recurse : List Semantics.Observation.Event → History → Option (List History))
     (histories : List History) (event : Semantics.Observation.Event) : Option (List History) := do
   let groups ← histories.mapM (Qleisli.Semantics.ObservingAction.step dependencies recurse event)
   return groups.flatten
+
+theorem run_append_event (dependencies : List Semantics.Finite.Dependency) (fuel : Nat)
+    (prior : List Semantics.Observation.Event) (event : Semantics.Observation.Event)
+    (initial : History) :
+    Qleisli.Semantics.ObservingAction.run dependencies (fuel+1) (prior++[event]) initial =
+      (do
+        let histories ← Qleisli.Semantics.ObservingAction.run dependencies (fuel+1) prior initial
+        advance dependencies (Qleisli.Semantics.ObservingAction.run dependencies fuel) histories event) := by
+  let step := advance dependencies (Qleisli.Semantics.ObservingAction.run dependencies fuel)
+  change (prior++[event]).foldlM step [initial] = (do
+    let histories ← prior.foldlM step [initial]
+    step histories event)
+  simp only [List.foldlM_append,List.foldlM_cons,List.foldlM_nil,bind_pure]
 
 private theorem advance_pure (dependencies : List Semantics.Finite.Dependency)
     (recurse : List Semantics.Observation.Event → History → Option (List History))
@@ -186,8 +215,13 @@ theorem root_interval_histories {deps program}
     (result : @RuntimeAdjacentSlices.Three deps program root.block s a b c pre choose post
       preEvents chooseEvents postEvents) :
     ∃ earlier later,
+      Semantics.Observation.readOps 65 root.block.entry.quantum.reference
+        (root.block.operations.take s) = some (pre.interval.before.quantum.reference,earlier) ∧
       root.whole.prepared.events =
         earlier ++ (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure ++ later ∧
+      (s+(a+b+c) = root.block.operations.length →
+        root.whole.prepared.state = post.interval.after.quantum.reference ∧
+        later = [.pure (readerFinish program root.whole.prepared.state)]) ∧
       ∀ history : History,
         Qleisli.Semantics.ObservingAction.run deps 65 root.whole.prepared.events history =
           (do
@@ -201,9 +235,9 @@ theorem root_interval_histories {deps program}
   | some pair =>
     obtain ⟨state,events⟩ := pair
     simp only [read,bind,Option.bind,pure] at actual
-    let finish := Semantics.Observation.Event.pure (.reorder state.frame.length
-      (Semantics.RawTrace.axes state (program.outputs.flatMap fun token =>
-        ((state.live.find? (fun port => port.token == token)).map (·.wires)).getD [])))
+    let finish := Semantics.Observation.Event.pure (readerFinish program state)
+    have finalState : root.whole.prepared.state = state :=
+      congrArg Semantics.Observation.Prepared.state (Option.some.inj actual).symm
     have returned : events++[finish] = root.whole.prepared.events :=
       congrArg Semantics.Observation.Prepared.events (Option.some.inj actual)
     have original : Semantics.Observation.readOps 65 root.entry.quantum.reference
@@ -211,10 +245,18 @@ theorem root_interval_histories {deps program}
       change Semantics.Observation.readOps 65 root.entry.quantum.reference program.operations = _
       rw [(RuntimeNamedFrameAxes.initialized root.inputRead).1]
       exact read
-    obtain ⟨earlier,later,_entered,_rest,slices,histories⟩ :=
+    obtain ⟨earlier,later,entered,rest,slices,histories⟩ :=
       interval_histories result 64 rfl state events original
-    refine ⟨earlier,later++[finish],?_,?_⟩
+    refine ⟨earlier,later++[finish],entered,?_,?_,?_⟩
     · rw [← returned,slices,List.append_assoc (earlier ++ _) later]
+    · intro ends
+      rw [ends,List.drop_length] at rest
+      change some (post.interval.after.quantum.reference,[]) = some (state,later) at rest
+      have final := Option.some.inj rest
+      refine ⟨finalState.trans (congrArg Prod.fst final).symm,?_⟩
+      have noSuffix : later = [] := (congrArg Prod.snd final).symm
+      rw [noSuffix,List.nil_append]
+      exact congrArg (fun state => [Semantics.Observation.Event.pure (readerFinish program state)]) finalState.symm
     · intro history
       rw [← returned]
       exact histories [finish] history
@@ -236,8 +278,16 @@ theorem original_adjacent_observing {artifact owner name arguments request prepa
     let post := RuntimeNamedOccurrenceAction.span view.postPrimitive
     center.start = pre.start+pre.count → post.start = center.start+center.count →
     ∃ a b c : List Semantics.Raw.Event, ∃ earlier later : List Semantics.Observation.Event,
+      Semantics.Observation.readOps 65 body.checked.native.block.entry.quantum.reference
+        (body.checked.native.block.operations.take pre.start) =
+          some (pre.slice.interval.before.quantum.reference,earlier) ∧
       body.checked.native.whole.prepared.events =
         earlier ++ (a++b++c).map Semantics.Observation.Event.pure ++ later ∧
+      (post.start+post.count = body.checked.native.block.operations.length →
+        body.checked.native.whole.prepared.state = post.slice.interval.after.quantum.reference ∧
+        later = [.pure (readerFinish body.root.program body.checked.native.whole.prepared.state)]) ∧
+      RawFiniteRows.BoundedEvents pre.slice.interval.before.quantum.frame.length
+        (a++b++c) post.slice.interval.after.quantum.frame.length ∧
       RuntimeNamedThreeFrameChain.Composed view.prePrimitive view.centerSelection view.postPrimitive held a b c ∧
       ∀ history : History,
         Qleisli.Semantics.ObservingAction.run body.root.dependencies 65
@@ -284,8 +334,24 @@ theorem original_adjacent_observing {artifact owner name arguments request prepa
         have secondRaw : center.slice.interval.after = post.slice.interval.before := by
           rw [middleRead,lastRead]
           exact chain.toPost
-        obtain ⟨earlier,later,events,histories⟩ := root_interval_histories body.checked.native chain
-        exact ⟨a,b,c,earlier,later,events,
+        obtain ⟨earlier,later,entered,events,terminal,histories⟩ :=
+          root_interval_histories body.checked.native chain
+        have finalRead : firstStart+firstCount+middleCount+lastCount =
+            body.checked.native.block.operations.length →
+            body.checked.native.whole.prepared.state = lastSlice.interval.after.quantum.reference ∧
+            later = [.pure (readerFinish body.root.program body.checked.native.whole.prepared.state)] := by
+          intro ends
+          exact terminal (by simpa only [Nat.add_assoc] using ends)
+        have finite :
+            RawFiniteRows.BoundedEvents firstSlice.interval.before.quantum.frame.length
+              (a++b++c) lastSlice.interval.after.quantum.frame.length := by
+          have firstBounds := RawFiniteRows.checked_slice firstSlice a chain.preFold.trace
+          have middleBounds := RawFiniteRows.checked_slice middleSlice b chain.chooseFold.trace
+          have lastBounds := RawFiniteRows.checked_slice lastSlice c chain.postFold.trace
+          rw [← chain.toChoose] at middleBounds
+          rw [← chain.toPost] at lastBounds
+          exact (firstBounds.append middleBounds).append lastBounds
+        exact ⟨a,b,c,earlier,later,entered,events,finalRead,finite,
           RuntimeNamedThreeFrameChain.compose_sites (fuel := 126)
             view.prePrimitive view.centerSelection view.postPrimitive held coverage
             calls.2.2.1 calls.2.2.2.1 calls.2.2.2.2 a b c preOn centerOn postOn

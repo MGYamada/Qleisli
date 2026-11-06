@@ -16,15 +16,17 @@ namespace Qleisli.RuntimeIntervalRawFold
 open QleisliKernel QleisliKernel.Finite QleisliKernel.Qirf
 open QleisliKernel.Semantics.Finite
 
-private theorem checkStep_pure_raw (dependencies : List Dependency)
+theorem checkStep_pure_raw (dependencies : List Dependency)
     (recurse : Raw.Observation.State → List Semantics.Observation.Op → WorkM Raw.Observation.State)
     (before after : Raw.Observation.State) (operation : Semantics.Raw.Op) (work left : Nat)
     (read : (Raw.Observation.checkStep dependencies recurse before (.pure operation)).run work = (.ok after,left)) :
     ∃ transition, Raw.step (dependencies.map (·.signature)) before.quantum operation = .ok transition ∧
-      after = {before with quantum := transition.state} := by
+      after = {before with quantum := transition.state} ∧ Raw.stateValid before.quantum = true ∧
+      RuntimeInterval.Computed
+        (transition.events.foldlM (fun _ event => Raw.Pure.eventCheck dependencies event) ()) () := by
   unfold Raw.Observation.checkStep at read
   obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ read
-  obtain ⟨_,w₂,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₂,valid,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨checked,w₃,action,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₄,_,h⟩ := bind_success _ _ _ _ _ h
   have same := (pure_success _ _ _ _ h).1
@@ -32,10 +34,11 @@ private theorem checkStep_pure_raw (dependencies : List Dependency)
   simp only [Raw.Observation.checkAction] at action
   obtain ⟨_,w₅,_,h⟩ := bind_success _ _ _ _ _ action
   obtain ⟨transition,w₆,step,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₇,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨result,w₇,events,h⟩ := bind_success _ _ _ _ _ h
+  cases result
   have same := (pure_success _ _ _ _ h).1
   subst checked
-  exact ⟨transition,(lift_success _ _ _ _ step).1,rfl⟩
+  exact ⟨transition,(lift_success _ _ _ _ step).1,rfl,(guard_success _ _ _ _ valid).1,w₆,w₇,events⟩
 
 /-- Prefix events and inputBits are bookkeeping from the same Raw fold.
 Every actual transition appends its entire original event list, including an
@@ -56,7 +59,7 @@ private theorem fold_pure_raw (dependencies : List Dependency)
   | cons operation operations ih =>
     simp only [List.map_cons,List.foldlM_cons] at read
     obtain ⟨next,middle,first,rest⟩ := bind_success _ _ _ _ _ read
-    obtain ⟨transition,step,nextState⟩ :=
+    obtain ⟨transition,step,nextState,_valid,_events⟩ :=
       checkStep_pure_raw dependencies recurse before next operation work middle first
     obtain ⟨events,tail⟩ := ih next (earlier ++ transition.events) middle rest
     have nextQuantum : next.quantum = transition.state := congrArg Raw.Observation.State.quantum nextState

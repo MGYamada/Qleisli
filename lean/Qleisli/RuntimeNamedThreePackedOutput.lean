@@ -134,9 +134,49 @@ theorem final_axes_permutation {roles state} (checked : RuntimeOwnerMap.Checked 
 #print axioms final_axes
 #print axioms final_axes_permutation
 
-/-- The original result storage fixes both the exact returned owner map and
-the last Raw event of the same root. On every finite row this event is its
-packed source return encoding. -/
+/-- The permutation appended by the original observing program reader. -/
+def readerFinish (program : Semantics.Observation.Program) (state : Semantics.RawTrace.Interface) :
+    Semantics.Raw.Event :=
+  .reorder state.frame.length (Semantics.RawTrace.axes state (program.outputs.flatMap fun token =>
+    ((state.live.find? (fun port => port.token == token)).map (·.wires)).getD []))
+
+/-- The original checked result storage identifies the reader's final
+permutation and its packed return encoding, for any original body trace. -/
+theorem actual_root_finish {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime) :
+    let state := body.checked.native.whole.state
+    let finish := Semantics.Raw.Event.reorder state.quantum.frame.length
+      (forestAxes state.quantum.frame body.checked.owners.bindings)
+    body.checked.native.whole.prepared.state = state.quantum.reference ∧
+    readerFinish body.root.program body.checked.native.whole.prepared.state = finish ∧
+    ∃ output : Frame body.checked.owners,
+      ∀ {Reference : Type} (joint : Nat → Reference → ℂ) row,
+        row < 2^state.quantum.frame.length → ∀ ref,
+          Qleisli.Semantics.RawAction.event body.root.dependencies finish
+            (fun input => referenceAction output joint input ref) row = packedAction output joint row ref := by
+  intro state finish
+  obtain ⟨work,left,read⟩ := body.checked.native.verified
+  have checked := Raw.Observation.verify_postcondition body.root.dependencies body.root.program
+    body.checked.native.whole work left read
+  have reference : body.checked.native.whole.prepared.state = state.quantum.reference := by
+    have lives := checked.live
+    have frames := checked.frame
+    cases original : body.checked.native.whole.prepared.state with
+    | mk live frame =>
+      rw [original] at lives frames
+      exact congrArg₂ Semantics.RawTrace.Interface.mk lives frames
+  have outputs := body.checked.outputs.rawOutputs
+  rw [body.checked.outputs.originalOwners] at outputs
+  have tokens : body.root.program.outputs = body.checked.owners.bindings.map (fun binding => binding.port.token) := by
+    simpa only [RuntimeSourceBoundary.returnedOwners,List.map_map] using outputs.symm
+  obtain ⟨output⟩ := RuntimeBoundaryFrameEvidence.outputs_frame body.checked.outputs
+  refine ⟨reference,?_,output,fun joint row bound ref =>
+    reorder_packed output body.root.dependencies (final_axes_permutation _ checked.state) joint row bound ref⟩
+  rw [reference,readerFinish,tokens]
+  erw [final_axes body.checked.owners checked.state]
+  rfl
+
+/-- An original root consisting of the three calls ends with its packed return. -/
 theorem actual_root_reorder {artifact owner name arguments request prepared order runtime}
     (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
     {pre center post : RuntimeAdjacentSlices.Span body.checked.native.block}
@@ -154,32 +194,15 @@ theorem actual_root_reorder {artifact owner name arguments request prepared orde
             (.reorder state.quantum.frame.length axes)
             (fun input => referenceAction output joint input ref) row = packedAction output joint row ref := by
   intro state axes
-  obtain ⟨work,left,read⟩ := body.checked.native.verified
-  have checked := Raw.Observation.verify_postcondition body.root.dependencies body.root.program
-    body.checked.native.whole work left read
-  have reference : body.checked.native.whole.prepared.state = state.quantum.reference := by
-    have lives := checked.live
-    have frames := checked.frame
-    cases original : body.checked.native.whole.prepared.state with
-    | mk live frame =>
-      rw [original] at lives frames
-      exact congrArg₂ Semantics.RawTrace.Interface.mk lives frames
-  have after : post.slice.interval.after.quantum.reference = state.quantum.reference :=
-    whole.finalState.symm.trans reference
-  have finalFrame : post.slice.interval.after.quantum.frame = state.quantum.frame :=
-    congrArg Semantics.RawTrace.Interface.frame after
-  have finalLive : post.slice.interval.after.quantum.live = state.quantum.live :=
-    congrArg Semantics.RawTrace.Interface.live after
-  have outputs := body.checked.outputs.rawOutputs
-  rw [body.checked.outputs.originalOwners] at outputs
-  have tokens : body.root.program.outputs = body.checked.owners.bindings.map (fun binding => binding.port.token) := by
-    simpa only [RuntimeSourceBoundary.returnedOwners,List.map_map] using outputs.symm
+  obtain ⟨_reference,finish,output,action⟩ := actual_root_finish body
   have events := whole.finalEvents
-  rw [finalFrame,finalLive,after,tokens,final_axes body.checked.owners checked.state] at events
-  obtain ⟨output⟩ := RuntimeBoundaryFrameEvidence.outputs_frame body.checked.outputs
-  exact ⟨output,events,fun joint row bound ref =>
-    reorder_packed output body.root.dependencies (final_axes_permutation _ checked.state) joint row bound ref⟩
+  change body.checked.native.whole.prepared.events =
+    (a++b++c).map Semantics.Observation.Event.pure ++
+      [.pure (readerFinish body.root.program post.slice.interval.after.quantum.reference)] at events
+  rw [← whole.finalState,finish] at events
+  exact ⟨output,events,action⟩
 
+#print axioms actual_root_finish
 #print axioms actual_root_reorder
 
 open RuntimeOwnerMap (Map)
@@ -257,19 +280,26 @@ theorem recode_return {leftRoles leftState leftChecked rightRoles rightState rig
 #print axioms actual_root_return_order
 #print axioms recode_return
 
+open Qleisli.RuntimeNamedThreeFrameChain (PostFrame encodePost)
+
+noncomputable def packedCallerReturn {dependencies program block step roles state checked}
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
+    (output : @Frame roles state checked) (caller : PostFrame post)
+    {Reference : Type} (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
+  match step,post,caller with
+  | _,.named (boundary := boundary) _ _,caller =>
+    packedAction output (fun logical reference =>
+      joint (Qleisli.MixedRadix.recode checked.bindings boundary.afterFrame.bindings
+        (dimensionAt caller.owners) logical) reference)
+
 def FinishCaller {dependencies program block step roles state checked}
     (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
     (output : @Frame roles state checked) (finish : Semantics.Raw.Event) : Prop :=
-  match post with
-  | .named (boundary := boundary) _ _ =>
-    ∀ caller : Frame boundary.afterFrame,
-      ∀ {Reference : Type} (joint : Nat → Reference → ℂ) row,
-        row < 2^state.quantum.frame.length → ∀ ref,
-          Qleisli.Semantics.RawAction.event dependencies finish
-              (fun input => referenceAction caller joint input ref) row =
-            packedAction output (fun logical reference =>
-              joint (Qleisli.MixedRadix.recode checked.bindings boundary.afterFrame.bindings
-                (dimensionAt caller.owners) logical) reference) row ref
+  ∀ caller : PostFrame post, ∀ {Reference : Type} (joint : Nat → Reference → ℂ) row,
+    row < 2^state.quantum.frame.length → ∀ ref,
+      Qleisli.Semantics.RawAction.event dependencies finish
+        (fun input => encodePost post caller joint input ref) row =
+      packedCallerReturn post output caller joint row ref
 
 theorem finish_caller {dependencies program block step roles state checked}
     (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
@@ -286,6 +316,7 @@ theorem finish_caller {dependencies program block step roles state checked}
   cases post with
   | @named start count inputs sources caller before childHistory childRetired ordinary first size inputToken outputToken role kind
       event scope body read boundary finalOrdinary primitive original bound =>
+    dsimp only [FinishCaller,PostFrame,encodePost,packedCallerReturn]
     intro caller Reference joint row bounded ref
     have encoding : (fun input => referenceAction caller joint input ref) =
         fun input => referenceAction output (fun logical reference =>
@@ -330,7 +361,34 @@ theorem original_post_finish {artifact owner name arguments request prepared ord
 
 #print axioms original_post_finish
 
-open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt Composed EntryFrame)
+/-- The terminal post call in a longer observing traversal has the same
+source return order and physical frame as the original packed result. -/
+theorem original_adjacent_post_finish {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    (terminal : view.later = [])
+    (ends : (RuntimeNamedOccurrenceAction.span view.postPrimitive).start+
+      (RuntimeNamedOccurrenceAction.span view.postPrimitive).count = body.checked.native.block.operations.length)
+    (finalState : body.checked.native.whole.prepared.state =
+      (RuntimeNamedOccurrenceAction.span view.postPrimitive).slice.interval.after.quantum.reference) :
+    let state := body.checked.native.whole.state
+    let finish := Semantics.Raw.Event.reorder state.quantum.frame.length
+      (forestAxes state.quantum.frame body.checked.owners.bindings)
+    readerFinish body.root.program body.checked.native.whole.prepared.state = finish ∧
+    state.quantum.frame = (RuntimeNamedOccurrenceAction.span view.postPrimitive).slice.interval.after.quantum.frame ∧
+    ∃ output : Frame body.checked.owners, FinishCaller view.postPrimitive output finish := by
+  intro state finish
+  obtain ⟨last,exit,returned⟩ := RuntimeNamedSourceFlow.original_adjacent_return body view terminal
+  have order : PostReturnOrder view.postPrimitive body.checked.owners.bindings := by
+    rw [RuntimeBoundaryOwnerEvidence.check_bindings body.checked.owners body.checked.ownersRead]
+    exact post_return_order view.postPrimitive last body.checked.result.history exit returned ends
+  obtain ⟨reference,actual,output,reorder⟩ := actual_root_finish body
+  have physicalFrame := congrArg Semantics.RawTrace.Interface.frame (reference.symm.trans finalState)
+  exact ⟨actual,physicalFrame,output,finish_caller view.postPrimitive output finish order physicalFrame reorder⟩
+
+#print axioms original_adjacent_post_finish
+
+open Qleisli.RuntimeNamedThreeFrameChain (checkedAt frameAt Composed ComposedAt originalBindings PointwiseAction EntryFrame)
 open Qleisli.RuntimeNamedSelectionWholeOutput (callerUpdate)
 open Qleisli.RuntimeNamedCallerAction (updatedJoint)
 open Qleisli.RuntimeForestOrderedProduct
@@ -407,7 +465,7 @@ theorem packed_composition {dependencies program block preStep centerStep postSt
   cases pre
   cases center
   cases post
-  dsimp only [EntryFrame,Composed,FinishCaller,PackedComposition] at *
+  dsimp only [EntryFrame,Composed,ComposedAt,originalBindings,PointwiseAction,encodePost,FinishCaller,packedCallerReturn,PackedComposition] at *
   cases stored : held.literal
   case selection =>
     rw [stored] at chain
@@ -420,7 +478,7 @@ theorem packed_composition {dependencies program block preStep centerStep postSt
     intro Reference joint row bounded ref
     have composed := funext fun physical => action joint physical ref
     simp only [Qleisli.Semantics.RawAction.events,List.foldl_append,List.foldl_cons,List.foldl_nil] at composed ⊢
-    rw [composed]
+    erw [composed]
     exact reorder output _ row bounded ref
 
 /-- The original input storage, actual complete three-call event list and

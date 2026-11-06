@@ -125,6 +125,75 @@ open Qleisli.RuntimeNamedCallerAction (updatedJoint)
 open Qleisli.RuntimeForestOrderedProduct
 open Qleisli.RuntimeNamedSourceFlow (entryState exitState)
 
+abbrev EncodedOperator :=
+  {Reference : Type} → (Nat → Reference → ℂ) → Nat → Reference → ℂ
+
+/-- The actual returned caller frame of the last named primitive call. -/
+def PostFrame {dependencies program block step}
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step) : Type :=
+  match post with
+  | .named (boundary := boundary) _ _ => Frame boundary.afterFrame
+
+noncomputable def encodePost {dependencies program block step}
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
+    (caller : PostFrame post) {Reference : Type} (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
+  match step,post,caller with
+  | _,.named _ _,caller => referenceAction caller joint
+
+/-- The same typed logical action can be compared either on the raw input
+encoding or on a history known to represent that encoding. -/
+def ComposedAt {dependencies program block preStep centerStep postStep rootItem rootCount}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
+    (center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep)
+    (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
+    (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
+    {roles} {checked : RuntimeOwnerMap.Checked roles (RuntimeNamedOccurrenceAction.span pre).slice.interval.before}
+    (input : Frame checked) (agree : PostFrame post → EncodedOperator → Prop) : Prop :=
+  match preStep,centerStep,postStep,pre,center,post,held,checked,input,agree with
+  | _,_,_,.named (scope := preScope) (boundary := preBoundary) (action := preOp) _ preBound,
+    .named (childHistory := child) (scope := centerScope) (boundary := centerBoundary) _ _,
+    .named (scope := postScope) (boundary := postBoundary) (action := postOp) _ postBound,held,_,input,agree =>
+    match held.literal with
+    | .selection (frame := frame) (inputCode := inCode) (outputCode := outCode)
+        (retained := retained) (labels := labels) (expected := expected)
+        (codes := codes) (layouts := layouts) literal _ =>
+      ∃ firstState : preScope.interval.after = centerScope.interval.before,
+      ∃ secondState : centerScope.interval.after = postScope.interval.before,
+      ∃ first : Frame preBoundary.afterFrame,
+      ∃ second : Frame centerBoundary.afterFrame,
+      ∃ output : Frame postBoundary.afterFrame,
+      ∃ preReturned postReturned : Binding,
+        preBoundary.mapped = [preReturned] ∧ postBoundary.mapped = [postReturned] ∧
+        let centerInput := frameAt firstState first
+        let postInput := frameAt secondState second
+        let selected := centerBoundary.input.ordered
+        let spectators := RuntimeSelectionPartition.complement
+          (checkedAt firstState preBoundary.afterFrame).bindings selected
+        ∃ selectedCodes : OwnerCodes selected, ∃ beforeCodes : OwnerCodes spectators,
+          reindex centerInput.owners (selected++spectators) = some (append selectedCodes beforeCodes) ∧
+          ∃ mappedCodes : OwnerCodes centerBoundary.mapped, ∃ afterCodes : OwnerCodes spectators,
+            reindex second.owners (centerBoundary.mapped++spectators) = some (append mappedCodes afterCodes) ∧
+            ∃ table : Qleisli.RuntimeMultiwayGram.OrdinalTable inCode outCode retained.sectors labels expected,
+              agree output (fun joint =>
+                  updatedJoint postInput output postBound.binding postReturned postOp.expected
+                    (callerUpdate centerInput literal.outputCode second (selected++spectators)
+                      child.bindings (centerBoundary.mapped++spectators)
+                      (sparseProduct selectedCodes).dimension (sparseProduct mappedCodes).dimension
+                      (Qleisli.RuntimeMultiwayGram.sourceAction frame codes layouts literal table)
+                      (updatedJoint input first preBound.binding preReturned preOp.expected joint)))
+
+def originalBindings {dependencies program block step}
+    (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step) : Map :=
+  match pre with
+  | .named (before := before) _ _ => before.bindings
+
+def PointwiseAction (dependencies : List Semantics.Finite.Dependency) (events : List Semantics.Raw.Event)
+    (encode decode : EncodedOperator) : Prop :=
+  ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
+    Qleisli.Semantics.RawAction.events dependencies events (fun row => encode joint row reference) physical =
+      decode joint physical reference
+
 def Composed {dependencies program block preStep centerStep postStep rootItem rootCount}
     {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
     (pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep)
@@ -132,42 +201,36 @@ def Composed {dependencies program block preStep centerStep postStep rootItem ro
     (post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep)
     (held : RuntimeNamedThreeOccurrence.RetainedData witness center)
     (a b c : List Semantics.Raw.Event) : Prop :=
-  match preStep,centerStep,postStep,pre,center,post,held with
-  | _,_,_,.named (before := before) (scope := preScope) (boundary := preBoundary) (action := preOp) _ preBound,
-    .named (childHistory := child) (scope := centerScope) (boundary := centerBoundary) _ _,
-    .named (scope := postScope) (boundary := postBoundary) (action := postOp) _ postBound,held =>
-    match held.literal with
-    | .selection (frame := frame) (inputCode := inCode) (outputCode := outCode)
-        (retained := retained) (labels := labels) (expected := expected)
-        (codes := codes) (layouts := layouts) literal _ =>
-      ∀ {roles} (checked : RuntimeOwnerMap.Checked roles preScope.interval.before)
-        (input : Frame checked), checked.bindings = before.bindings →
-        ∃ firstState : preScope.interval.after = centerScope.interval.before,
-        ∃ secondState : centerScope.interval.after = postScope.interval.before,
-        ∃ first : Frame preBoundary.afterFrame,
-        ∃ second : Frame centerBoundary.afterFrame,
-        ∃ output : Frame postBoundary.afterFrame,
-        ∃ preReturned postReturned : Binding,
-          preBoundary.mapped = [preReturned] ∧ postBoundary.mapped = [postReturned] ∧
-          let centerInput := frameAt firstState first
-          let postInput := frameAt secondState second
-          let selected := centerBoundary.input.ordered
-          let spectators := RuntimeSelectionPartition.complement
-            (checkedAt firstState preBoundary.afterFrame).bindings selected
-          ∃ selectedCodes : OwnerCodes selected, ∃ beforeCodes : OwnerCodes spectators,
-            reindex centerInput.owners (selected++spectators) = some (append selectedCodes beforeCodes) ∧
-            ∃ mappedCodes : OwnerCodes centerBoundary.mapped, ∃ afterCodes : OwnerCodes spectators,
-              reindex second.owners (centerBoundary.mapped++spectators) = some (append mappedCodes afterCodes) ∧
-              ∃ table : Qleisli.RuntimeMultiwayGram.OrdinalTable inCode outCode retained.sectors labels expected,
-              ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
-                Qleisli.Semantics.RawAction.events dependencies (a++b++c)
-                  (fun row => referenceAction input joint row reference) physical =
-                referenceAction output (updatedJoint postInput output postBound.binding postReturned postOp.expected
-                  (callerUpdate centerInput literal.outputCode second (selected++spectators)
-                    child.bindings (centerBoundary.mapped++spectators)
-                    (sparseProduct selectedCodes).dimension (sparseProduct mappedCodes).dimension
-                    (Qleisli.RuntimeMultiwayGram.sourceAction frame codes layouts literal table)
-                    (updatedJoint input first preBound.binding preReturned preOp.expected joint))) physical reference
+  ∀ {roles} (checked : RuntimeOwnerMap.Checked roles (RuntimeNamedOccurrenceAction.span pre).slice.interval.before)
+    (input : Frame checked), checked.bindings = originalBindings pre →
+      ComposedAt pre center post held input
+        (fun caller logical => PointwiseAction dependencies (a++b++c)
+          (fun joint => referenceAction input joint) (fun joint => encodePost post caller (logical joint)))
+
+theorem ComposedAt.imp {dependencies program block preStep centerStep postStep rootItem rootCount}
+    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+    {pre : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block preStep}
+    {center : @RuntimeNamedThreeOccurrence.Middle dependencies program block centerStep}
+    {post : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block postStep}
+    {held : RuntimeNamedThreeOccurrence.RetainedData witness center}
+    {roles} {checked : RuntimeOwnerMap.Checked roles (RuntimeNamedOccurrenceAction.span pre).slice.interval.before}
+    {input : Frame checked} {agrees next : PostFrame post → EncodedOperator → Prop}
+    (composed : ComposedAt pre center post held input agrees)
+    (implies : ∀ caller logical, agrees caller logical → next caller logical) :
+    ComposedAt pre center post held input next := by
+  cases pre
+  cases center
+  cases post
+  dsimp only [ComposedAt] at *
+  cases stored : held.literal
+  case selection =>
+    rw [stored] at composed
+    obtain ⟨firstState,secondState,first,second,output,preReturned,postReturned,
+      preMapped,postMapped,selectedCodes,beforeCodes,inputRead,mappedCodes,afterCodes,outputRead,table,action⟩ :=
+      composed
+    exact ⟨firstState,secondState,first,second,output,preReturned,postReturned,
+      preMapped,postMapped,selectedCodes,beforeCodes,inputRead,mappedCodes,afterCodes,outputRead,table,
+      implies _ _ action⟩
 
 /-- Compose the authentic three logical actions at both complete original
 source maps and Raw state boundaries. Both intermediate Frames are derived. -/
@@ -210,7 +273,7 @@ theorem compose_sites {artifact root execution fuel program block preStep center
       cases post with
       | @named qStart qCount qInputs qSources qCaller qBefore qChild qRetired qOrdinary qFirst qSize qIn qOut qRole qKind
           qEvent qScope qBody qRead qBoundary qFinal qPrimitive qOriginal qBound =>
-        dsimp only [Composed,OccurrenceWholeOutput,OccurrenceReturnOrder] at *
+        dsimp only [Composed,ComposedAt,originalBindings,PointwiseAction,encodePost,OccurrenceWholeOutput,OccurrenceReturnOrder] at *
         change pScope.interval.after = mScope.interval.before at firstRaw
         change mScope.interval.after = qScope.interval.before at secondRaw
         change some pBoundary.after = some mBefore at firstSource
