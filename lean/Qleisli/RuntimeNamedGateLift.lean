@@ -340,6 +340,43 @@ private theorem one_owner_lift (dependencies : List Dependency) (operations : Li
     action := fun joint reference base value => literal_action dependencies before port form
       parentEvents childEvents parentResult.2 childResult.2 uniqueAxes tape (fun i => joint i reference) base value }⟩
 
+/-- Use the same one-owner law directly on an original pure interval. Both
+folds come from the actual interval and its retained pure-fragment read. -/
+theorem interval_single_owner_lift {dependencies program block start count output role}
+    (port : Semantics.Raw.Port)
+    (frame : @RuntimePureInterval.Checked dependencies program block 1 start count [port.token] [output] [role])
+    (form : Form) (selected : frame.selected = [port])
+    (original : frame.operations = [form.operation port.token output]) :
+    ∃ localEntry : Raw.State,
+      (portAxes frame.interval.before.quantum port).Nodup ∧
+      Lift dependencies frame.operations frame.interval.before.quantum frame.interval.after.quantum
+        localEntry frame.pureBody.state (portAxes frame.interval.before.quantum port) port output form := by
+  obtain ⟨parent,entry,entryRead,localValid,child⟩ := RuntimeIntervalRawFold.pure_interval_traces frame
+  rw [selected] at entryRead
+  let before := frame.interval.before.quantum
+  have lookup : before.live.find? (fun p => p.token == port.token) = some port := by
+    apply singleton_lookup
+    simpa only [before,PureInterval.ports,selected] using frame.atEntry
+  obtain ⟨work,left,read⟩ := frame.interval.prefixRead
+  have valid := Raw.Ownership.valid before (Raw.Observation.checkOps_invariants _ _ _ _ _ work left read).1
+  have within : port.wires ⊆ before.frame := by
+    intro wire member
+    exact valid.covered wire (List.mem_flatMap.mpr ⟨port,List.mem_of_find?_eq_some lookup,member⟩)
+  have unique := (Raw.Ownership.valid _ localValid).frame
+  change entry.frame.Nodup at unique
+  have entryFrame := congrArg Semantics.RawTrace.Interface.frame entryRead
+  change entry.frame = [port].flatMap (·.wires) at entryFrame
+  rw [entryFrame,List.flatMap_singleton] at unique
+  have axesUnique : (portAxes before port).Nodup := by
+    apply List.Nodup.map_on _ unique
+    intro a aMember b bMember same
+    have one := RuntimeNamedFrameAxes.wireLookup before.frame (within aMember)
+    have two := RuntimeNamedFrameAxes.wireLookup before.frame (within bMember)
+    rw [same] at one
+    exact Option.some.inj (one.symm.trans two)
+  exact ⟨entry,axesUnique,one_owner_lift dependencies frame.operations before frame.interval.after.quantum entry frame.pureBody.state
+    port output form parent child lookup (by simpa only [List.flatMap_singleton] using entryRead) axesUnique original⟩
+
 /-- Pure named scopes keep their original native interface. Both literal
 spellings use the same one-owner proof and actual source-relative axis order. -/
 theorem pure_single_owner_lift {dependencies program block start count inputs}

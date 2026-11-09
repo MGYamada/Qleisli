@@ -70,6 +70,7 @@ import Qleisli.RuntimeNamedThreeRoot
 import Qleisli.RuntimeNamedThreeFlow
 import Qleisli.RuntimeNamedPrimitiveInputs
 import Qleisli.RuntimeNamedInputAction
+import Qleisli.RuntimeLiteralInlinePrimitive
 import Qleisli.RuntimeIntervalStates
 import Qleisli.RuntimeNamedPrimitiveOutputs
 import Qleisli.RuntimeNamedOutputEncoding
