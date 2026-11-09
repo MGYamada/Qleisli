@@ -36,25 +36,33 @@ theorem actual_child_start
   change scope.prepared.entry = scope.localEntry
   exact initial_unique scope.prepared.inputRead scope.entryRead
 
-/-- The source child's final return checkpoint follows the same native
-operation list, entry and depth as the paired original call. -/
-theorem actual_child_final
+/-- The source child's final prefix follows the same native operation list,
+entry and depth as the paired original call. -/
+theorem actual_child_before_return
     {dependencies program block start count inputs ordinary effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
-    native.after = scope.localAfter := by
+    native.before = scope.localAfter := by
   have all := native.prefixRead
   simp only [List.take_length] at all
   have complete : RuntimeInterval.Computed (Raw.Observation.checkOps dependencies 65
       scope.localEntry ((block.operations.drop start).take count)) native.before := by
     rw [← actual_child_start scope]
     exact all
-  have final := RuntimeAdjacentSlices.checkOps_unique complete scope.nativeRead
+  exact RuntimeAdjacentSlices.checkOps_unique complete scope.nativeRead
+
+/-- The checked source return is at the same native state as the last
+literal event. Its zero-length interval leaves the full state unchanged. -/
+theorem actual_child_final
+    {dependencies program block start count inputs ordinary effect}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
+    native.after = scope.localAfter := by
   have empty : RuntimeInterval.Computed
       (Raw.Observation.checkOps dependencies 65 native.before []) native.after := by
     simpa only [List.take_zero] using native.intervalRead
   exact (RuntimeAdjacentSlices.checkOps_unique empty
-    (RuntimeIntervalStates.empty_read dependencies 64 native.before native.history.1)).trans final
+    (RuntimeIntervalStates.empty_read dependencies 64 native.before native.history.1)).trans (actual_child_before_return scope native)
 
 /-- Retain the child's actual written owner lookup on the paired call's
 exact native exit, including zero-width owners. -/

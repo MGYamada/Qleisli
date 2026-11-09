@@ -88,6 +88,9 @@ development milestones from the scope of their evidence.
   literal chunk, including original ordinary gaps and observation outcomes.
   A conditional passes the bound to the selected original arm and uses it
   at the simultaneous phi merge, retaining ordered source results.
+  The original named child traversal uses the same source-derived input
+  bindings, the actual paired run on each spectator coordinate and the
+  checked return order. Its remaining source actions still require local laws.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when

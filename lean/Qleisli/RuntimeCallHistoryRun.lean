@@ -84,6 +84,21 @@ theorem original_call_run
       rw [← agrees.values high] at retained
       exact retained
 
+/-- A nested caller also carries its own ancestors' history. Its original
+write bound and the checked local freshness jointly protect every input ID. -/
+theorem CheckedCallRun.child_writes_avoid_nested_input
+    {dependencies program block start count inputs ordinary effect}
+    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+    {spectators actual localHistory parentEvents childEvents parents children}
+    (checked : CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children)
+    (inherited : Nat → Prop)
+    (supported : Supports (fun id => inherited id ∨ Issued scope.interval.before id) actual)
+    (avoids : WritesWithin parentEvents (fun id => ¬ inherited id)) :
+    WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst) := by
+  refine (checked.sameWrites (fun id => id ∉ actual.values.map Prod.fst)).mp ?_
+  intro event member id wrote present
+  exact (supported present).elim (avoids member wrote) (checked.parentWrites member wrote).2
+
 /-- A local replay can carry the actual inherited history. The enclosing
 call check proves that its original writes cannot shadow those input IDs. -/
 theorem CheckedCallRun.child_writes_avoid_input
@@ -93,8 +108,8 @@ theorem CheckedCallRun.child_writes_avoid_input
     (checked : CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children)
     (supported : Supports (Issued scope.interval.before) actual) :
     WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst) :=
-  (checked.sameWrites _).mp
-    (checked.parentWrites.mono (fun _ written member => written.2 (supported member)))
+  checked.child_writes_avoid_nested_input (fun _ => False)
+    (fun _ present => .inr (supported present)) (fun _ _ _ _ impossible => impossible)
 
 /-- The actual child keeps the caller's visible ordinary values on each
 physical spectator slice, including expressions evaluated from prior IDs. -/
@@ -114,5 +129,6 @@ theorem visible_child_input
 
 #print axioms original_call_run
 #print axioms CheckedCallRun.child_writes_avoid_input
+#print axioms CheckedCallRun.child_writes_avoid_nested_input
 #print axioms visible_child_input
 end Qleisli.RuntimeCallHistory
