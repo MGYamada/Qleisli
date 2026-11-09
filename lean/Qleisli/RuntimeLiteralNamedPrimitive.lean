@@ -1,5 +1,6 @@
 import Qleisli.RuntimeLiteralObservationAction
 import Qleisli.RuntimeNamedThreeFrameChain
+import Qleisli.RuntimeLiteralInlinePrimitive
 
 /-! Derive a named primitive's source action in the original caller
 coordinates and compare it with the actual literal history. The full
@@ -165,4 +166,84 @@ theorem named_primitive_history {artifact root execution fuel program block step
       exact actual.trans representedOutput
 
 #print axioms named_primitive_history
+/-- Evaluate the written primitive at the actual source owner and its
+retained return binding. The operator is obtained from the source event. -/
+noncomputable def sourceInlinePrimitive {dependencies program block start count input output role kind}
+    {primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
+    (source : RuntimePrimitiveSource.Checked primitive) (incoming : Map) (joint : Nat → Nat → ℂ) :
+    Option (Nat → Nat → ℂ) := do
+  let target ← RuntimeOwnerMap.byOwner incoming role
+  let returned ← RuntimeOwnerMap.byOwner source.after.bindings role
+  sourcePrimitive source.event incoming source.after.bindings target returned joint
+
+private theorem lookup_owner {roles state} (checked : RuntimeOwnerMap.Checked roles state)
+    (binding : Binding) (member : binding ∈ checked.bindings) :
+    RuntimeOwnerMap.byOwner checked.bindings binding.owner = some binding := by
+  unfold RuntimeOwnerMap.byOwner
+  cases found : checked.bindings.find? (fun b => b.owner == binding.owner) with
+  | none =>
+    exact False.elim (List.find?_eq_none.mp found binding member (by simp))
+  | some actual =>
+    have ordinals : (checked.bindings.map (fun b => b.owner.ordinal)).Nodup := by
+      simpa only [← checked.ordered,List.map_map,Function.comp_def] using checked.ownersDistinct
+    have owner : actual.owner = binding.owner := beq_iff_eq.mp
+      (List.find?_some (p := fun b => Binding.owner b == binding.owner) found)
+    have same := RuntimeOwnerTransitionAction.map_unique (fun b : Binding => b.owner.ordinal)
+      checked.bindings ordinals actual (List.mem_of_find?_eq_some found) binding member (congrArg (·.ordinal) owner)
+    rw [same]
+
+/-- The direct primitive fits the original ordered history relation. It uses
+the actual pure-node trace and keeps the incoming SSA and hidden outcomes. -/
+theorem inline_primitive_history {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (source : RuntimePrimitiveSource.Checked primitive)
+    (form : Qleisli.RuntimeNamedGateLift.Form)
+    (literal : primitive.interval.operations = [form.operation input output])
+    {roles} (checked : RuntimeOwnerMap.Checked roles primitive.interval.interval.before) (frame : Frame checked)
+    (bindings : checked.bindings = source.frame.bindings)
+    (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State) (history : History) (joint : Nat → Nat → ℂ)
+    (agrees : Agrees inputs primitive.interval.interval.before ordinary history)
+    (represented : RepresentsOperator frame history joint) {events : List Event} {results : List History}
+    (read : readOps block.fuel primitive.interval.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,events))
+    (executed : run dependencies block.fuel events history = some results) :
+    let stateEq := RuntimeIntervalStates.same_after source.interval primitive.interval.interval
+    ∃ output : Frame (RuntimeNamedThreeFrameChain.checkedAt stateEq source.owners.after), ∃ expected result,
+      sourceInlinePrimitive source checked.bindings joint = some expected ∧ results = [result] ∧
+      result.values = history.values ∧ result.hidden = history.hidden ∧
+      Agrees inputs primitive.interval.interval.after ordinary result ∧ RepresentsOperator output result expected := by
+  intro stateEq
+  obtain ⟨rawEvents,traced,target,member,owner,returned,present,returnedOwner,after,whole⟩ :=
+    Qleisli.RuntimeLiteralInlinePrimitive.inline_whole_action primitive source form literal checked frame bindings
+  obtain ⟨operations,performed,operationsLiteral,performedTrace,resultsEq,agreesAfter⟩ :=
+    pure_history (.primitive primitive source) inputs ordinary history agrees read executed
+  have operationsEq : operations = primitive.interval.operations :=
+    (List.map_inj_right (f := Semantics.Observation.Op.pure)
+      (fun _ _ equal => Semantics.Observation.Op.pure.inj equal)).mp
+      (operationsLiteral.symm.trans primitive.interval.literal)
+  subst operations
+  have sameTrace : performed = rawEvents := congrArg Semantics.RawTrace.Prepared.events
+    (Option.some.inj (performedTrace.symm.trans traced))
+  subst performed
+  let slice : RuntimeAdjacentSlices.Slice block start count :=
+    ⟨primitive.interval.interval,primitive.interval.operations,primitive.interval.literal⟩
+  have bounded := RawFiniteRows.checked_slice slice rawEvents traced
+  let output := RuntimeNamedThreeFrameChain.frameAt stateEq after
+  let expected := applySourceOwner checked.bindings source.after.bindings target returned primitive.expected joint
+  have operand := (RuntimeSourcePrimitiveAction.reference_action primitive source).2.1
+  have targetRead : RuntimeOwnerMap.byOwner checked.bindings role = some target :=
+    owner ▸ lookup_owner checked target member
+  have returnedRead : RuntimeOwnerMap.byOwner source.after.bindings role = some returned :=
+    returnedOwner ▸ lookup_owner source.owners.after returned present
+  refine ⟨output,expected,pureHistory dependencies rawEvents history,?_,resultsEq,rfl,rfl,agreesAfter,?_⟩
+  · simp [sourceInlinePrimitive,targetRead,returnedRead,sourcePrimitive,operand,expected]
+  · intro col row bound
+    have actual := pureHistory_operator_congr bounded dependencies history
+      (fun row col => referenceAction frame joint row col) represented col row bound
+    have outputAction := whole joint row col
+    rw [updatedJoint_source] at outputAction
+    exact actual.trans (outputAction.trans (RuntimeNamedThreeFrameChain.frameAt_action stateEq after expected row col).symm)
+
+#print axioms inline_primitive_history
+
 end Qleisli.RuntimeLiteralHistory

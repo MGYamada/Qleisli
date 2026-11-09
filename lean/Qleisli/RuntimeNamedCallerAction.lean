@@ -110,6 +110,71 @@ theorem reorder_self (dependencies : List Semantics.Finite.Dependency) (wires : 
 #print axioms updated_output_encoding
 #print axioms reorder_self
 
+/-- Finish a real one-owner action in the caller's complete returned frame.
+The local action is used only on finite rows. The original spectator bindings
+and wire order supply the remaining coefficient equality. -/
+theorem whole_caller_of_head_action
+    {dependencies inputRoles outputRoles before after inputChecked outputChecked}
+    (input : @Frame inputRoles before inputChecked) (output : @Frame outputRoles after outputChecked)
+    (target returned : Binding) (returnedMember : returned ∈ outputChecked.bindings)
+    (inputSpectators : OwnerCodes (inputChecked.bindings.erase target))
+    (spectators : outputChecked.bindings.erase returned = inputChecked.bindings.erase target)
+    (frames : after.quantum.frame = before.quantum.frame) (wires : returned.port.wires = target.port.wires)
+    (unique : (RuntimeNamedGateLift.portAxes before.quantum target.port).Nodup)
+    (native operator : Matrix) (nativeRead : RuntimeInterval.Computed
+      (Carrier.ownerCode [⟨returned.port,returned.owner.basis⟩]) native)
+    (events : List Semantics.Raw.Event)
+    (localLaw : ∀ {Reference : Type} (joint : Nat → Reference → Complex) base row reference,
+      row < native.rows →
+      Qleisli.Semantics.RawAction.event dependencies
+          (.reorder target.port.wires.length (target.port.wires.map target.port.wires.idxOf))
+          (fun value => Qleisli.Semantics.RawAction.events dependencies events
+            (fun label => referenceAction input joint label reference)
+            (scatter base (RuntimeNamedGateLift.portAxes before.quantum target.port) value)) row =
+        headEncoding native (sparseProduct inputSpectators).dimension
+          (fun high => coefficients before.quantum.frame inputSpectators base high)
+          (applyHead operator (canonicalJoint input target joint)) row reference) :
+    ∀ {Reference : Type} (joint : Nat → Reference → Complex) physical reference,
+      Qleisli.Semantics.RawAction.events dependencies events
+          (fun label => referenceAction input joint label reference) physical =
+        referenceAction output (updatedJoint input output target returned operator joint) physical reference := by
+  have permutation := (List.perm_cons_erase returnedMember).symm
+  obtain ⟨all,kept⟩ := reindex_exists output.owners (returned::outputChecked.bindings.erase returned) permutation.subset
+  cases all with
+  | cons actual outputSpectators =>
+    intro Reference joint physical reference
+    have shared := RuntimeNamedCallerGeometry.codes_same spectators.symm
+      inputSpectators outputSpectators before.quantum.frame after.quantum.frame frames
+    let axes := RuntimeNamedGateLift.portAxes before.quantum target.port
+    have outputAxes : returned.port.wires.map after.quantum.frame.idxOf = axes := by
+      rw [wires,frames]
+      rfl
+    have code := RuntimeNamedInputAction.singleton_encoding actual native nativeRead
+    have physicalRows : native.rows = 2^target.port.wires.length := by
+      calc
+        _ = 2^actual.layout.bits := by rw [code]; rfl
+        _ = 2^returned.port.wires.length := congrArg (fun n : Nat => 2^n) actual.reference.2.2.symm
+        _ = _ := congrArg (fun ws : List Nat => 2^ws.length) wires
+    have small : gather physical axes < 2^target.port.wires.length := by
+      simpa only [axes,RuntimeNamedGateLift.portAxes,List.length_map] using gather_bound physical axes
+    have wireUnique : target.port.wires.Nodup :=
+      List.Pairwise.of_map before.quantum.frame.idxOf
+        (fun _ _ different same => different (congrArg before.quantum.frame.idxOf same)) unique
+    have law := localLaw joint physical (gather physical axes) reference (by rwa [physicalRows])
+    rw [reorder_self dependencies target.port.wires wireUnique _ _ small,
+      RuntimeScatterTransport.scatter_gather physical _ unique] at law
+    have encoded := updated_output_encoding input output target returned returnedMember actual
+      outputSpectators kept native operator nativeRead joint physical reference
+    have coefficientsSame :
+        (fun high => coefficients after.quantum.frame outputSpectators physical high) =
+        (fun high => coefficients before.quantum.frame inputSpectators physical high) := by
+      funext high
+      exact (shared.2 physical high).symm
+    rw [← shared.1,coefficientsSame,outputAxes] at encoded
+    exact law.trans encoded.symm
+
+#print axioms whole_caller_of_head_action
+
 def WholeCallerAction {dependencies program block step}
     (held : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
     (events : List Semantics.Raw.Event) : Prop :=
@@ -146,58 +211,21 @@ theorem actual_whole_caller_action {artifact root execution fuel program block s
     obtain ⟨geometricReturn,geometricMap,_basis,wires,frames,spectators⟩ := geometry checked same
     have selectedReturn : geometricReturn = returned := (List.cons.inj (geometricMap.symm.trans mapped)).1
     subst geometricReturn
-    have permutation := (List.perm_cons_erase returnedMember).symm
-    obtain ⟨all,kept⟩ := reindex_exists output.owners (returned::boundary.afterFrame.bindings.erase returned) permutation.subset
-    cases all with
-    | cons actual outputSpectators =>
-      refine ⟨returned,mapped,?_⟩
-      intro Reference joint physical reference
-      have shared := RuntimeNamedCallerGeometry.codes_same spectators.symm
-        inputSpectators outputSpectators scope.interval.before.quantum.frame scope.interval.after.quantum.frame frames
-      have selected : scope.selected = [bound.binding.port] :=
-        (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary).trans
-          (congrArg (List.map RuntimeOwnerMap.Binding.port) bound.singleton)
-      have axes : RuntimeNamedFrameAxes.mixedAxes scope =
-          bound.binding.port.wires.map scope.interval.before.quantum.frame.idxOf := by
-        change (scope.selected.flatMap (·.wires)).map scope.interval.before.quantum.frame.idxOf = _
-        simpa only [List.flatMap_singleton] using
-          congrArg (fun ports : List Semantics.Raw.Port =>
-            (ports.flatMap (·.wires)).map scope.interval.before.quantum.frame.idxOf) selected
-      have outputAxes : returned.port.wires.map scope.interval.after.quantum.frame.idxOf =
-          RuntimeNamedFrameAxes.mixedAxes scope := by
-        rw [wires,frames]
-        exact axes.symm
-      have code := RuntimeNamedInputAction.singleton_encoding actual primitive.outputCode nativeRead
-      have physicalRows : primitive.physical.rows = 2^bound.binding.port.wires.length := by
-        calc
-          _ = primitive.outputCode.rows := primitive.action.physicalShape.2
-          _ = 2^actual.layout.bits := by rw [code]; rfl
-          _ = 2^returned.port.wires.length := congrArg (fun n : Nat => 2^n) actual.reference.2.2.symm
-          _ = _ := congrArg (fun ws : List Nat => 2^ws.length) wires
-      have small : gather physical (RuntimeNamedFrameAxes.mixedAxes scope) < primitive.physical.rows := by
-        rw [physicalRows]
-        simpa only [axes,List.length_map] using gather_bound physical (RuntimeNamedFrameAxes.mixedAxes scope)
-      have smallRow : gather physical (RuntimeNamedFrameAxes.mixedAxes scope) < 2^bound.binding.port.wires.length := by
-        rwa [physicalRows] at small
-      have unique := (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
-      have wireUnique : bound.binding.port.wires.Nodup := by
-        have mappedUnique : (bound.binding.port.wires.map scope.interval.before.quantum.frame.idxOf).Nodup := by
-          rw [← axes]
-          exact unique
-        exact List.Pairwise.of_map scope.interval.before.quantum.frame.idxOf
-          (fun _ _ different same => different (congrArg scope.interval.before.quantum.frame.idxOf same)) mappedUnique
-      have law := localLaw joint physical (gather physical (RuntimeNamedFrameAxes.mixedAxes scope)) reference small
-      rw [reorder_self root.dependencies bound.binding.port.wires wireUnique _ _ smallRow] at law
-      rw [RuntimeScatterTransport.scatter_gather physical _ unique] at law
-      have encoded := updated_output_encoding input output bound.binding returned returnedMember actual
-        outputSpectators kept primitive.outputCode primitive.expected nativeRead joint physical reference
-      have coefficientsSame :
-          (fun high => coefficients scope.interval.after.quantum.frame outputSpectators physical high) =
-          (fun high => coefficients scope.interval.before.quantum.frame inputSpectators physical high) := by
-        funext high
-        exact (shared.2 physical high).symm
-      rw [← shared.1,coefficientsSame,outputAxes] at encoded
-      exact law.trans encoded.symm
+    have selected : scope.selected = [bound.binding.port] :=
+      (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary).trans
+        (congrArg (List.map RuntimeOwnerMap.Binding.port) bound.singleton)
+    have axes : RuntimeNamedFrameAxes.mixedAxes scope =
+        RuntimeNamedGateLift.portAxes scope.interval.before.quantum bound.binding.port := by
+      change (scope.selected.flatMap (·.wires)).map scope.interval.before.quantum.frame.idxOf = _
+      simpa only [List.flatMap_singleton] using
+        congrArg (fun ports : List Semantics.Raw.Port =>
+          (ports.flatMap (·.wires)).map scope.interval.before.quantum.frame.idxOf) selected
+    have unique := (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
+    rw [axes] at unique localLaw
+    refine ⟨returned,mapped,whole_caller_of_head_action input output bound.binding returned returnedMember
+      inputSpectators spectators frames wires unique primitive.outputCode primitive.expected nativeRead events ?_⟩
+    intro Reference joint base row reference small
+    exact localLaw joint base row reference (by rwa [primitive.action.physicalShape.2])
 
 #print axioms actual_whole_caller_action
 

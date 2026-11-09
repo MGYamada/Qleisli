@@ -16,7 +16,7 @@ open Qleisli.RuntimeForestProduct (referenceAction)
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeLiteralHistory
   (Agrees gap_history observation_source_history sourceErasure sourcePrimitive named_primitive_history
-    sourceReturn return_order reordered_source)
+    sourceInlinePrimitive inline_primitive_history sourceReturn return_order reordered_source)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun OrdinaryAligned)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains)
@@ -26,6 +26,7 @@ open RuntimeForestCode (Frame)
 open RuntimeNamedPrimitiveOccurrence (Occurrence inspect?)
 open RuntimeOwnerMap (Map byOwner)
 open RuntimePureBody (Step)
+open Qleisli.RuntimeLiteralInlinePrimitive (literalForm)
 open RuntimeSelectionSteps (Edge)
 
 /-- The logical action, outcome sites and visible measurement bits of the
@@ -86,6 +87,12 @@ private noncomputable def sourceNamedPrimitive {dependencies program block step}
       bound.binding returned source.operator
     return [{source with owners := boundary.after, operator}]
 
+private noncomputable def sourceInlineHistory {dependencies program block start count input output role kind}
+    {primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
+    (original : RuntimePrimitiveSource.Checked primitive) (source : SourceHistory) : Option (List SourceHistory) :=
+  (sourceInlinePrimitive original source.owners.bindings source.operator).map fun operator =>
+    [{source with owners := original.after, operator}]
+
 /-- Evaluate the original gap, observation and supported named steps. The
 remaining constructors use their own source action. -/
 noncomputable def sourceStep {dependencies program block}
@@ -100,6 +107,10 @@ noncomputable def sourceStep {dependencies program block}
     let survivors ← spectators.mapM (byOwner source.owners.bindings)
     let outcomes ← sourceErasure observation.checked.operand spectators source.owners.bindings source.operator
     return outcomes.map (recordObservation source (scope ++ [.atOrdinal prior.length]) survivors observation.checked.measured)
+  | .pure (.primitive action original) =>
+    match literalForm action with
+    | some _ => sourceInlineHistory original source
+    | none => other prior step source
   | .pure _ | .conditional .. => other prior step source
   | .named .. =>
     match inspect? step with
@@ -109,6 +120,7 @@ noncomputable def sourceStep {dependencies program block}
 /-- These constructors supply their own local source action law. -/
 def NeedsSourceAction {dependencies program block} : @Step dependencies program block → Prop
   | .gap _ | .observation _ => False
+  | .pure (.primitive action _) => (literalForm action).isNone
   | .pure _ | .conditional .. => True
   | step => (inspect? step).isNone
 
@@ -161,6 +173,36 @@ private theorem sourceNamedPrimitive_refines {artifact root execution fuel progr
     · rw [sameValues,measurements]
       exact bits
 
+private theorem sourceInlinePrimitive_refines {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (original : RuntimePrimitiveSource.Checked primitive)
+    (form : Qleisli.RuntimeNamedGateLift.Form)
+    (literal : primitive.interval.operations = [form.operation input output])
+    (inputs : List Nat) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (owners : Aligned ownerBefore ownerAfter (.pure (.primitive primitive original)))
+    (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.primitive primitive original)))
+    {chunk source history outputs}
+    (read : readOps block.fuel primitive.interval.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,chunk))
+    (agrees : HistoryAgrees inputs primitive.interval.interval.before ownerBefore ordinaryBefore source history)
+    (executed : run dependencies block.fuel chunk history = some outputs) :
+    ∃ expected, sourceInlineHistory original source = some expected ∧
+      List.Forall₂ (HistoryAgrees inputs primitive.interval.interval.after ownerAfter ordinaryAfter) expected outputs := by
+  rcases owners with ⟨rfl,rfl⟩
+  cases ordinary
+  obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,frame,represented⟩ := agrees
+  obtain ⟨output,operator,result,sourceRead,rfl,sameValues,sameHidden,agreesAfter,resultRepresents⟩ :=
+    inline_primitive_history primitive original form literal checked frame (bindings.trans original.sameHistory.symm)
+      inputs _ history source.operator values represented read executed
+  let stateEq := RuntimeIntervalStates.same_after original.interval primitive.interval.interval
+  have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
+  refine ⟨[{source with owners := original.after, operator}],?_,.cons
+    ⟨rfl,sameHidden.trans hidden,?_,agreesAfter,_,_,?_,output,resultRepresents⟩ .nil⟩
+  · simp only [sourceInlineHistory,incoming,← bindings,sourceRead,Option.map_some]
+  · rw [sameValues]
+    exact bits
+  · exact RuntimeNamedThreeFrameChain.checkedAt_bindings stateEq original.owners.after
+
 theorem sourceStep_refines {artifact root execution fuel program block}
     (steps : List (@Step root.dependencies program block))
     (inputs : List Nat) (scope : List Edge)
@@ -175,7 +217,19 @@ theorem sourceStep_refines {artifact root execution fuel program block}
     owners ordinary chunk read source history outputs agrees executed
   cases first with
   | pure node =>
-    exact remaining prior (.pure node) later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+    cases node
+    case primitive action original =>
+      cases found : literalForm action with
+      | none =>
+        obtain ⟨expected,evaluated,related⟩ :=
+          remaining prior (.pure (.primitive action original)) later position
+            ⟨certified,by simp [NeedsSourceAction,found]⟩ owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [sourceStep,found] using evaluated,related⟩
+      | some form =>
+        obtain ⟨expected,evaluated,related⟩ :=
+          sourceInlinePrimitive_refines action original form.val form.property inputs owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [sourceStep,found] using evaluated,related⟩
+    all_goals exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
   | named event frame body bodyRead boundary finalOrdinary children =>
     cases inspected : inspect? (.named event frame body bodyRead boundary finalOrdinary children) with
     | none =>

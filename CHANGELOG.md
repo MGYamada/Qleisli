@@ -16,9 +16,10 @@ development milestones from the scope of their evidence.
   hidden outcomes. The final checked source return reorders the logical
   operator of every result. General pure steps and named calls remain
   separate local proof obligations.
-  Direct single-owner gates and apply-unitary tapes use the same local proof
-  on their original Raw intervals and complete caller input. Their output
-  reorder stays explicit and the law retains arbitrary reference amplitudes.
+  Direct single-owner gates and apply-unitary tapes use the same caller
+  input and output proof as named primitives. The shared arm induction uses
+  their original source operator and Raw events, preserving the ordered
+  spectators, visible values, hidden outcomes and arbitrary reference columns.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
