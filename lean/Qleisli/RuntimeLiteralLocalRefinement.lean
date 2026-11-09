@@ -2,6 +2,7 @@ import Qleisli.RuntimeLiteralBodyRefinement
 import Qleisli.RuntimeLiteralNamedPrimitive
 import Qleisli.RuntimeLiteralReturnOrder
 import Qleisli.RuntimeLiteralBranchChoice
+import Qleisli.RuntimeLiteralConditionalArms
 
 /-! Compose the source-local steps with the shared body induction. Each
 outcome carries its original source position, and the source operator is
@@ -15,7 +16,7 @@ open Qleisli.RuntimeForestProduct (referenceAction)
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeLiteralHistory
   (Agrees gap_history observation_source_history sourceErasure sourcePrimitive named_primitive_history
-    sourceReturn return_order)
+    sourceReturn return_order reordered_source)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun OrdinaryAligned)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains)
@@ -237,6 +238,34 @@ noncomputable def returnHistory (returned : Map) (source : SourceHistory) : Sour
     owners := {source.owners with bindings := returned}
     operator := sourceReturn source.owners.bindings returned source.operator }
 
+private noncomputable def returnByRoles (roles : List RuntimeOwnerMap.Owner) (source : SourceHistory) :
+    Option SourceHistory :=
+  (roles.mapM (byOwner source.owners.bindings)).map (fun bindings => returnHistory bindings source)
+
+/-- Run the original arm in source input order and return its results in
+source output order. Both orders are computed from the original owner roles. -/
+noncomputable def runSourceArm {dependencies program block}
+    (next : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (inputRoles outputRoles : List RuntimeOwnerMap.Owner) (steps : List (@Step dependencies program block))
+    (source : SourceHistory) : Option (List SourceHistory) := do
+  let input ← returnByRoles inputRoles source
+  let results ← runSourceHistories next [] steps [input]
+  results.mapM (returnByRoles outputRoles)
+
+private theorem return_family (roles : List RuntimeOwnerMap.Owner) (returned : Map) :
+    ∀ sources : List SourceHistory,
+      (∀ source ∈ sources, roles.mapM (byOwner source.owners.bindings) = some returned) →
+      sources.mapM (returnByRoles roles) = some (sources.map (returnHistory returned)) := by
+  intro sources
+  induction sources with
+  | nil => intro _; rfl
+  | cons first rest ih =>
+    intro each
+    have head := each first List.mem_cons_self
+    have tail := ih (fun source member => each source (List.mem_cons_of_mem _ member))
+    simp [List.mapM_cons,returnByRoles,head,tail]
+
 private theorem sourceReturn_refines {state roles before ordinary}
     (inputs : List Nat) (returned : RuntimeOwnerMap.Checked roles state)
     (read : RuntimeInterval.Computed (RuntimePureBody.reordered roles state before.bindings) returned)
@@ -249,6 +278,64 @@ private theorem sourceReturn_refines {state roles before ordinary}
   obtain ⟨output,encoded⟩ := return_order input returned read history source.operator represented
   refine ⟨by simp [returnHistory,owners],hidden,bits,values,_,returned,rfl,output,?_⟩
   simpa only [returnHistory,owners,← bindings] using encoded
+
+private theorem history_at_arm_entry {parent child owners ordinary source history}
+    (inputs : List Nat)
+    (live : child.quantum.live = parent.quantum.live) (axes : child.quantum.frame = parent.quantum.frame)
+    (issued : parent.classical ⊆ child.classical)
+    (agrees : HistoryAgrees inputs parent owners ordinary source history) :
+    HistoryAgrees inputs child owners ordinary source history := by
+  obtain ⟨sourceOwners,hidden,bits,values,roles,checked,bindings,input,represented⟩ := agrees
+  let entry : RuntimeOwnerMap.Checked roles child :=
+    ⟨checked.bindings,checked.ordered,checked.ownersDistinct,checked.tokensDistinct,live.symm ▸ checked.complete⟩
+  let frame : Frame entry := ⟨input.owners,input.code,input.original⟩
+  refine ⟨sourceOwners,hidden,bits,⟨values.1,?_⟩,roles,entry,bindings,frame,?_⟩
+  · intro id member
+    exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+  · intro col row bound
+    have actual := represented col row (by simpa only [axes] using bound)
+    simpa only [referenceAction,RuntimeForestCode.Frame.embedding,frame,entry,axes] using actual
+
+/-- Use the same concrete source-step induction for an actual recursive arm.
+The inherited history enters in original source order and returns in the
+checked order consumed by the parent's phi merge. -/
+theorem ArmFlow.source_refinement {artifact root mode fuel program block inputRoles outputRoles
+    before after ordinary finalOrdinary steps rawExit output events parent}
+    (arm : @ArmFlow artifact root mode (RuntimePureBody.runBlockCore artifact root mode (fuel+1))
+      program block inputRoles outputRoles before after ordinary finalOrdinary steps parent rawExit output events)
+    (inputs : List Nat) (scope : List Edge) (sourceInitial : SourceHistory) (initial : History) {results}
+    (other : List (Step root.dependencies program block) → Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps
+      (fun step => CheckedStep (RuntimePureBody.runBlockCore artifact root mode (fuel+1)) step ∧ NeedsSourceAction step)
+      other (fun _ => HistoryAgrees inputs))
+    (agrees : HistoryAgrees inputs parent before ordinary sourceInitial initial)
+    (executed : run root.dependencies block.fuel events initial = some results) :
+    ∃ expected,
+      runSourceArm (sourceStep other scope) inputRoles outputRoles steps sourceInitial = some expected ∧
+      List.Forall₂ (HistoryAgrees inputs rawExit after finalOrdinary) expected results := by
+  have entry := sourceReturn_refines inputs arm.input arm.inputRead
+    (history_at_arm_entry inputs arm.live arm.axes arm.issued agrees)
+  obtain ⟨expected,sourceRun,paired⟩ := (arm.trace.executes_singleton executed).ordered_refinement
+    arm.flow.source arm.flow.ordinary (sourceStep other scope) (fun _ => HistoryAgrees inputs) [] _
+    arm.flow.calls (sourceStep_refines steps inputs scope other remaining) (.cons entry .nil)
+  refine ⟨expected.map (returnHistory output.bindings),?_,?_⟩
+  · have initialOrder : inputRoles.mapM (byOwner sourceInitial.owners.bindings) = some arm.input.bindings := by
+      rw [agrees.1]
+      exact reordered_source arm.input arm.inputRead
+    have finalOrder := reordered_source output arm.outputRead
+    have ownerPairs : List.Forall₂ (fun source _ => source.owners = arm.beforeReturn ∧ True) expected results :=
+      paired.imp (fun _ _ matched => ⟨matched.1,True.intro⟩)
+    have sourceOwners := (List.forall₂_and_left expected results).mp ownerPairs |>.1
+    have orders := return_family outputRoles output.bindings expected (fun source member =>
+      sourceOwners source member ▸ finalOrder)
+    simp only [runSourceArm,returnByRoles,initialOrder,Option.map,bind,Option.bind,sourceRun,orders]
+  · rw [List.forall₂_map_left_iff,arm.returned]
+    apply paired.imp
+    intro source actual matched
+    apply sourceReturn_refines inputs output arm.outputRead
+    exact Eq.mp (congrArg (fun state => HistoryAgrees inputs state arm.beforeReturn finalOrdinary source actual)
+      arm.sameExit) matched
 
 /-- The same ordered execution proof covers the concrete source actions and
 the literal final source return. Every remaining step must supply its source
@@ -303,5 +390,6 @@ theorem original_body_source_refinement {artifact owner name arguments request p
 
 #print axioms sourceStep_refines
 #print axioms source_branch_choice
+#print axioms ArmFlow.source_refinement
 #print axioms original_body_source_refinement
 end Qleisli.RuntimeLiteralBody

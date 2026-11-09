@@ -21,6 +21,10 @@ development milestones from the scope of their evidence.
   branch join now carries the selected source result list through the
   quantum and classical phis, preserving each operator and outcome.
   The recursive arm refinement remains a separate premise.
+- Apply the shared source refinement to the checked recursive arm traversal.
+  Its input and return orders are evaluated from the original owner roles.
+  The complete Raw exit and event list match the same branch receipt used
+  by the parent phi merge. Each remaining step needs its local source law.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

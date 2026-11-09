@@ -120,6 +120,29 @@ theorem Execution.ordered_refinement {dependencies program block initial final s
         exact ⟨expected, by simpa [runSourceHistories, sourceStep] using sourceTail,
           by simpa only [same] using aligned⟩
 
+/-- Reuse the ordered induction on any complete original block traversal.
+The independently read Raw execution uses the actual partition and receipts. -/
+theorem refineFlow {artifact root mode next program block start finish steps initialOrdinary finalOrdinary}
+    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next program block start steps finish
+      initialOrdinary finalOrdinary block.operations.length)
+    (last : RuntimeInterval.Checked block block.operations.length 0)
+    {SourceHistory : Type} (sourceInitial : SourceHistory) (initial : History) {results : List History}
+    (sourceStep : List (Step root.dependencies program block) → Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (related : List (Step root.dependencies program block) → Raw.Observation.State →
+      RuntimeStructuralAction.SourceState → RuntimeOrdinaryBody.State → SourceHistory → History → Prop)
+    (executed : (do
+      let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
+      run root.dependencies block.fuel events initial) = some results)
+    (law : StepRefinement steps (CheckedStep next) sourceStep related)
+    (starts : related [] block.entry start initialOrdinary sourceInitial initial) :
+    ∃ expected, runSourceHistories sourceStep [] steps [sourceInitial] = some expected ∧
+      List.Forall₂ (related steps last.before finish finalOrdinary) expected results := by
+  obtain ⟨events,trace,read⟩ := flow.literal.original_trace last
+  rw [read] at executed
+  exact (trace.executes_singleton executed).ordered_refinement flow.source flow.ordinary sourceStep related [] _
+    flow.calls law (.cons starts .nil)
+
 /-- Specialize the ordered proof to the real body. The same traversal supplies
 the child receipts, the owner and SSA chains, the input ordering, and the
 return ordering that follows the last literal step. -/
@@ -158,16 +181,8 @@ theorem original_body_ordered_refinement {artifact owner name arguments request 
           expected results := by
   intro block source mode history localLaw starts
   obtain ⟨input,inputRead,ownerEnd,flow,last,lastRead,returned⟩ := RuntimeNamedChildRuns.original_body body
-  obtain ⟨events,trace,read⟩ := flow.literal.original_trace last
-  have ran : run body.root.dependencies block.fuel events initial = some results := by
-    change (do
-      let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
-      run body.root.dependencies block.fuel events initial) = _ at executed
-    rw [read] at executed
-    exact executed
   exact ⟨ownerEnd,last,lastRead,returned,
-    (trace.executes_singleton ran).ordered_refinement flow.source flow.ordinary next related [] _ flow.calls localLaw
-      (.cons (starts input inputRead) .nil)⟩
+    refineFlow flow last sourceInitial initial next related executed localLaw (starts input inputRead)⟩
 
 #print axioms Execution.ordered_refinement
 #print axioms original_body_ordered_refinement

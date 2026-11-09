@@ -103,6 +103,7 @@ import Qleisli.RuntimeLiteralObservationAction
 import Qleisli.RuntimeLiteralNamedPrimitive
 import Qleisli.RuntimeLiteralReturnOrder
 import Qleisli.RuntimeLiteralBranchChoice
+import Qleisli.RuntimeLiteralConditionalArms
 import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeOriginalBranchJoin
 import Qleisli.RuntimeNamedObservationEntry
