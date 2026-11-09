@@ -65,29 +65,30 @@ theorem merge_family {parent child : Interface} {spectators : List Port}
 /-- At a complete branch join the same written output wires cover both arm
 frames. The two actual permutations then select corresponding input rows. -/
 theorem reorder_join (dependencies : List Dependency) (parent child final : Interface)
-    (inside : final.frame ⊆ child.frame) (unique : final.frame.Nodup)
-    (parentAxes : (axes parent final.frame).Perm (List.range parent.frame.length))
-    (childAxes : (axes child final.frame).Perm (List.range child.frame.length))
+    (ordered : List Nat) (inside : ordered ⊆ child.frame) (unique : final.frame.Nodup)
+    (sameWidth : final.frame.length = ordered.length)
+    (parentAxes : (axes parent ordered).Perm (List.range parent.frame.length))
+    (childAxes : (axes child ordered).Perm (List.range child.frame.length))
     {actual : History} {localHistory : Nat → History}
     (agrees : Agrees parent child [] actual localHistory) :
     Agrees final final []
       (Qleisli.RuntimeNamedThreePackedInstrument.pureHistory dependencies
-        [.reorder parent.frame.length (axes parent final.frame)] actual)
+        [.reorder parent.frame.length (axes parent ordered)] actual)
       (fun high => Qleisli.RuntimeNamedThreePackedInstrument.pureHistory dependencies
-        [.reorder child.frame.length (axes child final.frame)] (localHistory high)) := by
+        [.reorder child.frame.length (axes child ordered)] (localHistory high)) := by
   refine ⟨agrees.values,agrees.hidden,?_⟩
   intro row col bounded
   have parentWidth : final.frame.length = parent.frame.length := by
-    simpa only [axes,List.length_map,List.length_range] using parentAxes.length_eq
+    exact sameWidth.trans (by simpa only [axes,List.length_map,List.length_range] using parentAxes.length_eq)
   have childWidth : final.frame.length = child.frame.length := by
-    simpa only [axes,List.length_map,List.length_range] using childAxes.length_eq
+    exact sameWidth.trans (by simpa only [axes,List.length_map,List.length_range] using childAxes.length_eq)
   have rowIdentity : project final final.frame row = row := by
     unfold project axes
     rw [RuntimeNamedCallerAction.self_indices _ unique]
     exact Raw.Sector.gather_identity _ _ bounded
   let event := Qleisli.Semantics.RawAction.event dependencies
-  change event (.reorder parent.frame.length (axes parent final.frame)) (fun r => actual.operator r col) row =
-    event (.reorder child.frame.length (axes child final.frame)) (fun r => (localHistory 0).operator r col)
+  change event (.reorder parent.frame.length (axes parent ordered)) (fun r => actual.operator r col) row =
+    event (.reorder child.frame.length (axes child ordered)) (fun r => (localHistory 0).operator r col)
       (project final final.frame row)
   rw [rowIdentity]
   obtain ⟨pInput,pBound,pAt,pAct⟩ := reorder_gather dependencies _ _ parentAxes
@@ -98,9 +99,9 @@ theorem reorder_join (dependencies : List Dependency) (parent child final : Inte
   rw [pAct,cAct]
   have projected : project parent child.frame pInput < 2^child.frame.length := by
     simpa only [project,axes,List.length_map] using gather_bound pInput (axes parent child.frame)
-  have selected : gather (project parent child.frame pInput) (axes child final.frame) = row :=
-    (gather_retained parent.frame child.frame final.frame _ rfl inside pInput).trans pAt
-  obtain ⟨reindex,bij,equation⟩ := gather_bijective child.frame.length (axes child final.frame) childAxes
+  have selected : gather (project parent child.frame pInput) (axes child ordered) = row :=
+    (gather_retained parent.frame child.frame ordered _ rfl inside pInput).trans pAt
+  obtain ⟨reindex,bij,equation⟩ := gather_bijective child.frame.length (axes child ordered) childAxes
   let p : Fin (2^child.frame.length) := ⟨project parent child.frame pInput,projected⟩
   let c : Fin (2^child.frame.length) := ⟨cInput,cBound⟩
   have same := congrArg Fin.val (bij.1 (Fin.ext ((equation p).trans (selected.trans (cAt.symm.trans (equation c).symm)))))

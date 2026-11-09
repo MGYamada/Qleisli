@@ -152,8 +152,12 @@ import Qleisli.RuntimeCallHistoryPure
 import Qleisli.RuntimeCallHistoryFold
 import Qleisli.RuntimeCallHistorySteps
 import Qleisli.RuntimeCallPureStepLaw
-import Qleisli.RuntimeCallHistoryScope
 import Qleisli.RuntimeCallHistoryPhi
+import Qleisli.RuntimeCallBranchRead
+import Qleisli.RuntimeCallBranchGeometry
+import Qleisli.RuntimeCallBranchAction
+import Qleisli.RuntimeCallBranchStep
+import Qleisli.RuntimeCallHistoryScope
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection

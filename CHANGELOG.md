@@ -70,9 +70,13 @@ development milestones from the scope of their evidence.
   their respective depths. It compares the complete ordered histories of
   every successful caller run and retains both issued-ID bounds. All pure,
   observing and ordinary straight-line operations supply their local laws.
-  The branch proof has local laws for the written output permutation and
-  simultaneous SSA merge. The recursive branch law and the connection to
-  the complete source-arm invariant remain separate obligations.
+  The branch law recurs through both actual native arm checks. The actual
+  condition selects the same arm from equal incoming SSA values. The
+  complete native phi list determines the ordered input wires and the fresh
+  output frame. The selected histories use that permutation and the same
+  simultaneous SSA merge, preserving their order and multiplicity. The
+  connection from this native call law to the source-arm invariant remains
+  a separate proof obligation.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

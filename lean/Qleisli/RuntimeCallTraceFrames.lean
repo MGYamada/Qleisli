@@ -19,7 +19,8 @@ structure Partition (parent child : Interface) (spectators : List Port) : Prop w
   live : parent.live.Perm (child.live ++ spectators)
   frame : parent.frame.Perm (child.frame ++ WireOrder spectators)
 
-private theorem native_wires (state : Raw.State) (valid : Raw.stateValid state = true) :
+/-- The exact live port wires cover the native frame once. -/
+theorem native_wires (state : Raw.State) (valid : Raw.stateValid state = true) :
     (WireOrder state.live).Perm state.frame := by
   have facts := Raw.Ownership.valid state valid
   obtain ⟨ordered,permutation,sublist⟩ := List.subperm_iff.mp (facts.exclusive.subperm facts.covered)
@@ -370,7 +371,8 @@ private theorem port_lookup_perm {parent child : List Port} (live : parent.Perm 
       rw [key,localRead] at actual
       cases actual
 
-private theorem branch_wires {parent child : Raw.State} (live : parent.live.Perm child.live)
+/-- The same written phi tokens select the same ordered port wires. -/
+theorem branch_wires {parent child : Raw.State} (live : parent.live.Perm child.live)
     (parentValid : Raw.stateValid parent = true) (childValid : Raw.stateValid child = true)
     (phis : List Semantics.Observation.QuantumPhi) (choice : Bool) :
     Semantics.Observation.phiWires parent.reference phis choice =
