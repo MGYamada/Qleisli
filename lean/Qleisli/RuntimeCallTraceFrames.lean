@@ -206,6 +206,9 @@ theorem basis_lift_events {signatures : List Semantics.Finite.Basis}
     (childRead : Raw.step signatures child (.liftBasis input output wires table) = .ok childAfter) :
     ∃ port : Port,
       Partition parentAfter.state.reference childAfter.state.reference spectators ∧
+      parentAfter.state.frame = parent.frame ++ wires.drop port.bits ∧
+      childAfter.state.frame = child.frame ++ wires.drop port.bits ∧
+      port.wires ⊆ child.frame ∧ wires ⊆ childAfter.state.frame ∧
       parentAfter.events = [.liftBasis parent.frame.length parentAfter.state.frame.length
         (axes parent.reference port.wires) (axes parentAfter.state.reference wires) table] ∧
       childAfter.events = [.liftBasis child.frame.length childAfter.state.frame.length
@@ -248,7 +251,8 @@ theorem basis_lift_events {signatures : List Semantics.Finite.Basis}
       simp [c,Semantics.RawTrace.insert]
     intro wire member
     exact (Raw.Ownership.valid _ childAfterValid).covered wire (List.mem_flatMap.mpr ⟨_,portIn,member⟩)
-  refine ⟨port,?_,?_,?_,wire_positions parent.reference child.reference _ localInput,
+  refine ⟨port,?_,(congrArg Interface.frame pState).symm,(congrArg Interface.frame cState).symm,
+    localInput,localOutput,?_,?_,wire_positions parent.reference child.reference _ localInput,
     wire_positions parentAfter.state.reference childAfter.state.reference _ localOutput⟩
   · rw [← pState,← cState]
     simpa only [p,c,parentFrame,childFrame] using taken.insert_append output wires extra

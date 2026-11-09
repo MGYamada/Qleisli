@@ -52,7 +52,14 @@ development milestones from the scope of their evidence.
   with paired arm outputs, the complete native phi checks determine the same
   return wires and require an empty spectator list. Each erasure outcome
   projects the same original amplitude in the parent and child frames and
-  retains the spectator coordinate after compression.
+  retains the spectator coordinate after compression. Allocation tests the
+  same new zero bit in both frames. A basis lift uses the original table and
+  ordered input and output wires in both executions. Reindexing the caller's
+  finite sum retains exactly the spectator coordinate of each output row,
+  including for correlated input amplitudes. The original apply-unitary
+  tape, certified compute and protected compute retain the same local action
+  in both fixed frames. The protected target traversal reads and returns
+  the same ordered ports while retaining arbitrary spectator coefficients.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

@@ -139,6 +139,12 @@ import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeSparseNamedBoundary
 import Qleisli.RuntimeCallTraceFrames
 import Qleisli.RuntimeCallTraceErasure
+import Qleisli.RuntimeCallTraceAllocation
+import Qleisli.RuntimeCallTraceProjection
+import Qleisli.RuntimeCallTraceBasis
+import Qleisli.RuntimeCallTraceCircuit
+import Qleisli.RuntimeCallTraceComputed
+import Qleisli.RuntimeCallTraceProtected
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
