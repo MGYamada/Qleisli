@@ -143,6 +143,15 @@ noncomputable def sourceNamedSelection {dependencies program block step}
     | named _ _ _ _ _ _ => exact False.elim selected
     | operation _ _ _ _ _ _ _ _ _ _ => exact False.elim selected
 
+noncomputable def withSparseSelection {dependencies program block}
+    (fallback : List (Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (prior : List (Step dependencies program block)) (step : Step dependencies program block)
+    (source : SourceHistory) : Option (List SourceHistory) :=
+  match RuntimeNamedThreeOccurrence.middle? step with
+  | some occurrence => some (sourceNamedSelection occurrence source)
+  | none => fallback prior step source
+
 /-- The actual selected child updates the same sparse history used by its
 caller's other original steps. The source table, literal events, output
 owner order, visible SSA and inherited outcomes are tied to one occurrence. -/

@@ -40,7 +40,8 @@ development milestones from the scope of their evidence.
   checked child traversal establishes coverage of the complete call slice.
   The source evaluator computes the expected action from original owner
   coordinates and the source arm table; the retained finite code establishes
-  the physical correspondence.
+  the physical correspondence. The ordered arm proof uses this law at the
+  actual named selection in the root and in each selected conditional child.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
