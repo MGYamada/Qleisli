@@ -34,10 +34,10 @@ development milestones from the scope of their evidence.
   sparse row, preserving the ordered outcomes and updated SSA values. A
   direct gate, literal apply-unitary tape or checked single-primitive named
   call uses the original singleton code and the unchanged sparse spectator
-  coefficients. A retained named qmatch selection also has a complete
-  sparse caller-operator equation, using its original selector table and
-  the checked child return order. Connecting that selection to the ordered
-  history theorem and handling general named calls remain separate steps.
+  coefficients. At the original source prefix, a named qmatch selection
+  satisfies the same history relation using its retained selector table,
+  checked child return order, literal Raw events and visible SSA. The
+  checked child traversal establishes coverage of the complete call slice.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
