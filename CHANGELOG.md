@@ -42,6 +42,11 @@ development milestones from the scope of their evidence.
   coordinates and the source arm table; the retained finite code establishes
   the physical correspondence. The ordered arm proof uses this law at the
   actual named selection in the root and in each selected conditional child.
+  The general named-call boundary derives the sparse input from the actual
+  argument assignment and the output from the written return order. The same
+  layouts carry arbitrary spectator and reference amplitudes. The local
+  trace preserves inherited values and bounds its writes by the child's
+  issued identities.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

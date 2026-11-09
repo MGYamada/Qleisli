@@ -11,12 +11,12 @@ open QleisliKernel QleisliKernel.Qirf
 open Semantics.Finite (gather scatter)
 open Semantics.FiniteCarrier (layout tensor)
 open RuntimeOwnerMap (Binding Map)
-open RuntimeForestCode (forestBasis forestAxes carrierOwners sparseEntry embed ofLayout_agrees tensor_agrees
-  sparseLayout_reference)
+open RuntimeForestCode (forestBasis forestAxes carrierOwners sparseEntry embed ofLayout_agrees tensor_agrees)
 open Qleisli.RuntimeSemanticForest
-  (Available Frame action ownerLayout owner_layout owner_reads product forest_read frame_exists product_agrees regroup_action)
+  (Available Frame action ownerLayout owner_layout owner_reads product forest_read frame_exists product_agrees
+    regroup_action ofNative ofNative_action)
 open Qleisli.RuntimeForestOrderedProduct (forest_append agrees_entry layout_tensor_coefficient)
-open Qleisli.RuntimeForestProduct (layout_bounds gather_append gather_bound referenceAction)
+open Qleisli.RuntimeForestProduct (layout_bounds gather_append gather_bound)
 open Qleisli.RuntimeNamedBlockEncoding (group_sum)
 open Qleisli.RuntimeNamedHeadCoefficients (fibre)
 open Qleisli.RuntimeForestRegroup (sourceDimension)
@@ -88,72 +88,6 @@ theorem coefficient_scatter (bindings : Map) (physicalFrame : List Nat) (selecte
   unfold coefficient
   rw [Qleisli.RuntimeTargetScatter.gather_disjoint physical replacement _ _ disjoint]
 
-/-- Local and parent selected codes have the same coefficients because their
-ordered full carriers coincide and the child frame uses the original wires. -/
-theorem child_encoding {roles state checked selected}
-    (child : @RuntimeForestCode.Frame roles state checked) (available : Available selected)
-    (same : carrierOwners checked.bindings = carrierOwners selected)
-    (localFrame : state.quantum.frame = selected.flatMap (·.port.wires))
-    (unique : state.quantum.frame.Nodup) (parentFrame : List Nat) {Reference : Type}
-    (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
-    referenceAction child joint (gather physical (forestAxes parentFrame selected)) reference =
-      ((List.range (product selected).labels.length).map fun digit =>
-        coefficient selected parentFrame physical digit * joint digit reference).sum := by
-  have basis : forestBasis checked.bindings = forestBasis selected :=
-    congrArg Semantics.CarrierInterface.forest same
-  have wires := Qleisli.RuntimeNamedCarrierEncoding.carrier_wires same
-  have axes : forestAxes state.quantum.frame checked.bindings = List.range state.quantum.frame.length := by
-    unfold forestAxes
-    rw [wires,← localFrame]
-    exact RuntimeNamedCallerAction.self_indices _ unique
-  have bounded : gather physical (forestAxes parentFrame selected) < 2^state.quantum.frame.length := by
-    simpa only [forestAxes,List.length_map,localFrame] using gather_bound physical (forestAxes parentFrame selected)
-  obtain ⟨actual,read,agrees⟩ := sparseLayout_reference _ _ child.original
-  rw [basis] at read
-  have sameLayout := Option.some.inj (read.symm.trans (forest_read available))
-  rw [sameLayout] at agrees
-  unfold referenceAction
-  rw [agrees.dimension]
-  apply Qleisli.Exact.sum_map_congr
-  intro logical _
-  change scalar (sparseEntry child.code
-      (gather (gather physical (forestAxes parentFrame selected)) (forestAxes state.quantum.frame checked.bindings))
-      logical) * joint logical reference = _
-  rw [axes,Raw.Sector.gather_identity _ _ bounded,agrees_entry agrees]
-  rfl
-
-/-- Lift the genuine selected child input to the original complete caller,
-with its unmodified spectator encoding and independent source coordinates. -/
-theorem caller_input {parentRoles parentState} (checked : RuntimeOwnerMap.Checked parentRoles parentState)
-    (input : Frame checked.bindings) (valid : Raw.stateValid parentState.quantum = true)
-    {selected spectators : Map} (permutation : (selected++spectators).Perm checked.bindings)
-    {childRoles childState childChecked} (child : @RuntimeForestCode.Frame childRoles childState childChecked)
-    (same : carrierOwners childChecked.bindings = carrierOwners selected)
-    (localFrame : childState.quantum.frame = selected.flatMap (·.port.wires))
-    (unique : childState.quantum.frame.Nodup) :
-    ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
-      action input parentState.quantum.frame joint physical reference =
-        RuntimeNamedSelectionAction.encodedParent child (forestAxes parentState.quantum.frame selected)
-          (fun digit environment ref =>
-            fibre (product selected).labels.length (product spectators).labels.length
-              (coefficient spectators parentState.quantum.frame environment)
-              (fun logical column => joint (recode (selected++spectators)
-                checked.bindings (sourceDimension checked.bindings) logical) column) digit ref) physical reference := by
-  have distinct : checked.bindings.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
-    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal))
-    checked.tokensDistinct
-  obtain ⟨ordered⟩ := frame_exists (fun b member => input.available b (permutation.subset member))
-  have available : Available selected := fun b member => ordered.available b (List.mem_append_left _ member)
-  have disjoint := Qleisli.RuntimeNamedBlockSpectators.partition_axes_disjoint checked valid selected spectators permutation
-  intro Reference joint physical reference
-  rw [regroup_action input ordered permutation.symm distinct,block_action ordered]
-  unfold RuntimeNamedSelectionAction.encodedParent
-  rw [child_encoding child available same localFrame unique]
-  apply Qleisli.Exact.sum_map_congr
-  intro digit _
-  unfold fibre
-  simp only [coefficient_scatter spectators _ _ disjoint]
-
 /-- Transport complete layouts across an exact ordered carrier alias. -/
 theorem available_carriers {original mapped : Map}
     (same : carrierOwners mapped = carrierOwners original) (available : Available original) :
@@ -180,6 +114,90 @@ theorem product_carriers {original mapped : Map}
   rw [basis] at read
   exact Option.some.inj (read.symm.trans (forest_read originalAvailable))
 
+/-- Local and parent selected codes have the same coefficients because their
+ordered full carriers coincide and the child frame uses the original wires. -/
+theorem child_encoding {childBindings selected}
+    (child : Frame childBindings) (available : Available selected)
+    (same : carrierOwners childBindings = carrierOwners selected)
+    (childFrame : List Nat) (localFrame : childFrame = selected.flatMap (·.port.wires))
+    (unique : childFrame.Nodup) (parentFrame : List Nat) {Reference : Type}
+    (joint : Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
+    action child childFrame joint (gather physical (forestAxes parentFrame selected)) reference =
+      ((List.range (product selected).labels.length).map fun digit =>
+        coefficient selected parentFrame physical digit * joint digit reference).sum := by
+  have sameLayout := product_carriers same available child.available
+  have wires := Qleisli.RuntimeNamedCarrierEncoding.carrier_wires same
+  have axes : forestAxes childFrame childBindings = List.range childFrame.length := by
+    unfold forestAxes
+    rw [wires,← localFrame]
+    exact RuntimeNamedCallerAction.self_indices _ unique
+  have bounded : gather physical (forestAxes parentFrame selected) < 2^childFrame.length := by
+    simpa only [forestAxes,List.length_map,localFrame] using gather_bound physical (forestAxes parentFrame selected)
+  have agrees := product_agrees child
+  rw [sameLayout] at agrees
+  unfold action
+  rw [agrees.dimension]
+  apply Qleisli.Exact.sum_map_congr
+  intro logical _
+  change scalar (sparseEntry child.code
+      (gather (gather physical (forestAxes parentFrame selected)) (forestAxes childFrame childBindings))
+      logical) * joint logical reference = _
+  rw [axes,Raw.Sector.gather_identity _ _ bounded,agrees_entry agrees]
+  rfl
+
+/-- Lift the genuine selected child input to the original complete caller,
+with its unmodified spectator encoding and independent source coordinates. -/
+theorem sparse_caller_input {parentRoles parentState} (checked : RuntimeOwnerMap.Checked parentRoles parentState)
+    (input : Frame checked.bindings) (valid : Raw.stateValid parentState.quantum = true)
+    {selected spectators : Map} (permutation : (selected++spectators).Perm checked.bindings)
+    {childBindings} (child : Frame childBindings)
+    (same : carrierOwners childBindings = carrierOwners selected)
+    (childFrame : List Nat) (localFrame : childFrame = selected.flatMap (·.port.wires))
+    (unique : childFrame.Nodup) :
+    ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
+      action input parentState.quantum.frame joint physical reference =
+        action child childFrame
+          (fibre (product selected).labels.length (product spectators).labels.length
+            (coefficient spectators parentState.quantum.frame
+              (scatter physical (forestAxes parentState.quantum.frame selected) 0))
+            (fun logical column => joint (recode (selected++spectators)
+              checked.bindings (sourceDimension checked.bindings) logical) column))
+          (gather physical (forestAxes parentState.quantum.frame selected)) reference := by
+  have distinct : checked.bindings.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal))
+    checked.tokensDistinct
+  obtain ⟨ordered⟩ := frame_exists (fun b member => input.available b (permutation.subset member))
+  have available : Available selected := fun b member => ordered.available b (List.mem_append_left _ member)
+  have disjoint := Qleisli.RuntimeNamedBlockSpectators.partition_axes_disjoint checked valid selected spectators permutation
+  intro Reference joint physical reference
+  rw [regroup_action input ordered permutation.symm distinct,block_action ordered]
+  rw [child_encoding child available same childFrame localFrame unique]
+  apply Qleisli.Exact.sum_map_congr
+  intro digit _
+  unfold fibre
+  simp only [coefficient_scatter spectators _ _ disjoint]
+
+/-- The retained native code is the same sparse representation used for a
+general child's input. -/
+theorem caller_input {parentRoles parentState} (checked : RuntimeOwnerMap.Checked parentRoles parentState)
+    (input : Frame checked.bindings) (valid : Raw.stateValid parentState.quantum = true)
+    {selected spectators : Map} (permutation : (selected++spectators).Perm checked.bindings)
+    {childRoles childState childChecked} (child : @RuntimeForestCode.Frame childRoles childState childChecked)
+    (same : carrierOwners childChecked.bindings = carrierOwners selected)
+    (localFrame : childState.quantum.frame = selected.flatMap (·.port.wires))
+    (unique : childState.quantum.frame.Nodup)
+    {Reference : Type} (joint : Nat → Reference → ℂ) physical reference :
+    action input parentState.quantum.frame joint physical reference =
+      RuntimeNamedSelectionAction.encodedParent child (forestAxes parentState.quantum.frame selected)
+        (fun digit environment ref =>
+          fibre (product selected).labels.length (product spectators).labels.length
+            (coefficient spectators parentState.quantum.frame environment)
+            (fun logical column => joint (recode (selected++spectators)
+              checked.bindings (sourceDimension checked.bindings) logical) column) digit ref) physical reference := by
+  unfold RuntimeNamedSelectionAction.encodedParent
+  rw [← ofNative_action]
+  exact sparse_caller_input checked input valid permutation (ofNative child) same _ localFrame unique joint physical reference
+
 /-- Assemble a selected result for each spectator coordinate. Modulo and
 quotient use the original selected block's logical cardinality. -/
 noncomputable def blockJoint {Reference : Type} (low : Nat) (joint : Nat → Nat → Reference → ℂ)
@@ -205,5 +223,6 @@ theorem block_result {selected spectators : Map} (frame : Frame (selected++spect
     Nat.add_mul_div_left _ _ positive,Nat.div_eq_of_lt bounded,Nat.zero_add]
 
 #print axioms block_action
+#print axioms sparse_caller_input
 #print axioms caller_input
 end Qleisli.RuntimeSparseBlockEncoding
