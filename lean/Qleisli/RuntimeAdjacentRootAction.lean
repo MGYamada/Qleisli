@@ -90,6 +90,16 @@ private theorem pure_in_observing {recurse : Reader}
       simpa only [List.map_cons,List.foldlM_cons,observationAdvance,readStep,step,bind,Option.bind,
         pure,List.map_append] using ih {initial with state := next,events := initial.events ++ added} read
 
+/-- The observing reader returns exactly the events of the original pure
+slice, without adding its own output permutation. -/
+theorem readOps_pure (fuel : Nat) (state : Semantics.RawTrace.Interface)
+    (operations : List RawOp) (trace : Semantics.RawTrace.Prepared)
+    (traced : RuntimeLocalEvents.trace state operations = some trace) :
+    Semantics.Observation.readOps (fuel+1) state (operations.map Semantics.Observation.Op.pure) =
+      some (trace.state,trace.events.map Semantics.Observation.Event.pure) := by
+  rw [Raw.ObservationAgreement.read_succ]
+  exact pure_in_observing operations _ trace traced
+
 private theorem read_carry (recurse : Reader) (operations : List Semantics.Observation.Op)
     (state : Semantics.RawTrace.Interface) (previous carried : List Semantics.Observation.Event) :
     operations.foldlM (observationAdvance recurse) (state,previous++carried) =
@@ -164,8 +174,7 @@ theorem Three.observing_interval
       ((pre.ops ++ choose.ops ++ post.ops).map Semantics.Observation.Op.pure) =
       some (post.interval.after.quantum.reference,
         (preEvents++chooseEvents++postEvents).map Semantics.Observation.Event.pure) := by
-    rw [Raw.ObservationAgreement.read_succ]
-    exact pure_in_observing _ _ _ result.parentTrace
+    exact readOps_pure fuel _ _ _ result.parentTrace
   rw [split,readOps_append,readOps_append,entered] at original
   simp only [bind,Option.bind,middle,pure] at original
   cases finished : Semantics.Observation.readOps (fuel+1) post.interval.after.quantum.reference rest with

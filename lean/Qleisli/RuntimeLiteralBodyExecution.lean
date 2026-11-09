@@ -45,6 +45,19 @@ theorem Trace.executes {dependencies program block initial final steps events}
         simpa only [runHistories,grouped,bind,pure,Option.bind] using ran
       exact .cons read grouped (ih suffix)
 
+theorem Trace.executes_singleton {dependencies program block initial final steps events}
+    (trace : @Trace dependencies program block initial steps final events) {history results}
+    (ran : run dependencies block.fuel events history = some results) :
+    Execution initial steps final events [history] results := by
+  cases depth : block.fuel with
+  | zero =>
+    rw [depth] at ran
+    cases ran
+  | succ fuel =>
+    apply trace.executes fuel depth
+    rw [runHistories_singleton]
+    exact ran
+
 theorem Execution.runHistories_eq {dependencies program block initial final steps events incoming results}
     (execution : @Execution dependencies program block initial steps final events incoming results)
     (fuel : Nat) (depth : block.fuel = fuel+1) :
@@ -114,15 +127,7 @@ theorem original_body_execution {artifact owner name arguments request prepared 
       run body.root.dependencies block.fuel events initial) = _ at executed
     rw [read] at executed
     exact executed
-  refine ⟨last,checked,events,read,?_⟩
-  cases depth : block.fuel with
-  | zero =>
-    rw [depth] at ran
-    cases ran
-  | succ fuel =>
-    apply trace.executes fuel depth
-    rw [runHistories_singleton]
-    exact ran
+  exact ⟨last,checked,events,read,trace.executes_singleton ran⟩
 
 #print axioms Execution.invariant
 #print axioms original_body_execution

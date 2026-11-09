@@ -61,6 +61,23 @@ private theorem boundary_lookup {roles state previous result}
   obtain ⟨_,budget,_charge,mapped⟩ := bind_success _ _ _ _ _ read
   exact order_lookup previous roles ordered budget middle mapped
 
+/-- The actual observation entry selects its ordered owners from the original
+source bindings by full owner identity. -/
+theorem original_before_bindings {sources caller dependencies program functionName event block position previous}
+    (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous) :
+    (checked.operand :: RuntimeObservationAction.spectators event).mapM (byOwner previous) =
+      some checked.before.bindings :=
+  boundary_lookup checked.beforeRead
+
+/-- The ordered survivors are read from the original owner map. -/
+theorem original_after_bindings {sources caller dependencies program functionName event block position previous}
+    (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous) :
+    (RuntimeObservationAction.spectators event).mapM (byOwner previous) =
+      some checked.after.bindings :=
+  boundary_lookup checked.afterRead
+
 /-- Both original observation boundary reads select from the same owner map.
 The measured or discarded owner is the first coordinate and the original
 survivors retain their complete bindings in order. -/
@@ -68,8 +85,8 @@ private theorem observation_bindings {sources caller dependencies program functi
     (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
       event block position previous) :
     checked.before.bindings = checked.input :: checked.after.bindings := by
-  have before := boundary_lookup checked.beforeRead
-  have after := boundary_lookup checked.afterRead
+  have before := original_before_bindings checked
+  have after := original_after_bindings checked
   cases found : byOwner previous checked.operand with
   | none => simp [List.mapM_cons,found] at before
   | some head =>
@@ -293,11 +310,15 @@ private theorem frame_dimension {roles state checked} (frame : @Frame roles stat
 /-- The logical effect of consuming a coded owner at an observed physical
 coordinate. It acts separately on every surviving and external reference
 coordinate, even when the input is correlated. -/
-noncomputable def outcomeJoint {Reference : Type} {binding : Binding} (owner : OwnerCode binding)
+noncomputable def outcomeJointLayout {Reference : Type} (layout : Semantics.FiniteCarrier.Layout)
     (outcome : Nat) (joint : Nat → Reference → ℂ) (tail : Nat) (ref : Reference) : ℂ :=
-  ((List.range owner.layout.labels.length).map fun logical =>
-    entry (QleisliKernel.Semantics.FiniteCarrier.encoding owner.layout) outcome logical *
-      joint (logical+owner.layout.labels.length*tail) ref).sum
+  ((List.range layout.labels.length).map fun logical =>
+    entry (QleisliKernel.Semantics.FiniteCarrier.encoding layout) outcome logical *
+      joint (logical+layout.labels.length*tail) ref).sum
+
+noncomputable def outcomeJoint {Reference : Type} {binding : Binding} (owner : OwnerCode binding)
+    (outcome : Nat) (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
+  outcomeJointLayout owner.layout outcome joint
 
 /-- Each actual erasure coefficient is the source owner's basis effect in
 the original input code. The retained owners use their original output code,
@@ -379,7 +400,7 @@ theorem original_erasure_action {sources caller dependencies program functionNam
     rw [dim,Qleisli.RuntimeNamedHeadCoefficients.sum_blocks]
     apply Qleisli.Exact.sum_map_congr
     intro tail _
-    unfold outcomeJoint
+    unfold outcomeJoint outcomeJointLayout
     rw [← List.sum_map_mul_left]
     apply Qleisli.Exact.sum_map_congr
     intro digit member
