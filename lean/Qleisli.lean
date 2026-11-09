@@ -149,6 +149,11 @@ import Qleisli.RuntimeCallHistory
 import Qleisli.RuntimeCallHistoryComposition
 import Qleisli.RuntimeCallHistoryRead
 import Qleisli.RuntimeCallHistoryPure
+import Qleisli.RuntimeCallHistoryFold
+import Qleisli.RuntimeCallHistorySteps
+import Qleisli.RuntimeCallPureStepLaw
+import Qleisli.RuntimeCallHistoryScope
+import Qleisli.RuntimeCallHistoryPhi
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection

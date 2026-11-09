@@ -82,11 +82,11 @@ theorem protected_compute_correlated (dependencies : List Semantics.Finite.Depen
     (parentRead : Raw.step (dependencies.map (·.signature)) parent
       (.computeUseUncompute input output targets ancilla function uses) = .ok parentAfter)
     (childRead : Raw.step (dependencies.map (·.signature)) child
-      (.computeUseUncompute input output targets ancilla function uses) = .ok childAfter)
-    (joint : Nat → Nat → ℂ) (row : Nat) :
+      (.computeUseUncompute input output targets ancilla function uses) = .ok childAfter) :
     let other := WireOrder spectators
     Partition parentAfter.state.reference childAfter.state.reference spectators ∧
     parentAfter.state.frame = parent.frame ∧ childAfter.state.frame = child.frame ∧
+    ∀ (joint : Nat → Nat → ℂ) (row : Nat),
     events dependencies parentAfter.events
       (fun input => joint (gather input (child.frame.map parent.frame.idxOf))
         (gather input (other.map parent.frame.idxOf))) row =
@@ -140,7 +140,8 @@ theorem protected_compute_correlated (dependencies : List Semantics.Finite.Depen
   · change parentAfter.state.frame.Perm (childAfter.state.frame ++ other)
     rw [pFrame,cFrame]
     exact partition.frame
-  · rw [← pEvents,← cEvents]
+  · intro joint row
+    rw [← pEvents,← cEvents]
     simp only [events,List.foldl_cons,List.foldl_nil,event,axes]
     exact RuntimeCallTraceComputed.embed_partition partition.frame parentFacts.frame inside _ joint row
 

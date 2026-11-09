@@ -118,9 +118,10 @@ theorem basis_lift_correlated (dependencies : List Semantics.Finite.Dependency)
     (partition : Partition parent.reference child.reference spectators)
     (input output : Nat) (wires table : List Nat) (parentAfter childAfter : Raw.Transition)
     (parentRead : Raw.step (dependencies.map (·.signature)) parent (.liftBasis input output wires table) = .ok parentAfter)
-    (childRead : Raw.step (dependencies.map (·.signature)) child (.liftBasis input output wires table) = .ok childAfter)
-    (joint : Nat → Nat → ℂ) (row : Nat) (bounded : row < 2^parentAfter.state.frame.length) :
+    (childRead : Raw.step (dependencies.map (·.signature)) child (.liftBasis input output wires table) = .ok childAfter) :
     let other := WireOrder spectators
+    Partition parentAfter.state.reference childAfter.state.reference spectators ∧
+    ∀ (joint : Nat → Nat → ℂ) (row : Nat), row < 2^parentAfter.state.frame.length →
     events dependencies parentAfter.events
       (fun input => joint (gather input (child.frame.map parent.frame.idxOf))
         (gather input (other.map parent.frame.idxOf))) row =
@@ -130,6 +131,8 @@ theorem basis_lift_correlated (dependencies : List Semantics.Finite.Dependency)
   intro other
   obtain ⟨port,afterPartition,parentGrowth,childGrowth,inputInside,outputInside,parentEvents,childEvents,_,_⟩ :=
     basis_lift_events parent child spectators partition input output wires table parentAfter childAfter parentRead childRead
+  refine ⟨afterPartition,?_⟩
+  intro joint row bounded
   obtain ⟨parentValid,_,afterValid⟩ := Raw.step_conditions _ _ _ _ parentRead
   simp only [parentEvents,childEvents,events,List.foldl_cons,List.foldl_nil,event,beq_iff_eq]
   exact lift_sum parent.frame child.frame other parentAfter.state.frame childAfter.state.frame port.wires wires

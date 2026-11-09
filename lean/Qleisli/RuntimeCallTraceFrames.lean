@@ -280,7 +280,8 @@ theorem unpack_unit_events {parent child : Interface} {spectators : List Port}
     {input : Nat} {childAfter : Interface} {events : List Semantics.Raw.Event}
     (read : Semantics.RawTrace.step child (.unpackUnit input) = some (childAfter,events)) :
     ∃ parentAfter, Semantics.RawTrace.step parent (.unpackUnit input) = some (parentAfter,events) ∧
-      Partition parentAfter childAfter spectators := by
+      Partition parentAfter childAfter spectators ∧
+      parentAfter.frame = parent.frame ∧ childAfter.frame = child.frame ∧ events = [] := by
   simp only [Semantics.RawTrace.step] at read
   obtain ⟨⟨port,childTaken⟩,childTake,finished⟩ := Option.bind_eq_some_iff.mp read
   obtain ⟨parentTaken,parentTake,live,parentFrame,childFrame,_⟩ :=
@@ -290,7 +291,7 @@ theorem unpack_unit_events {parent child : Interface} {spectators : List Port}
   next zero =>
     have equal := Option.some.inj finished
     rcases Prod.mk.inj equal with ⟨rfl,rfl⟩
-    refine ⟨parentTaken,?_,⟨live,?_⟩⟩
+    refine ⟨parentTaken,?_,⟨live,?_⟩,parentFrame,childFrame,rfl⟩
     · simp only [Semantics.RawTrace.step,parentTake,bind,Option.bind,if_pos zero,pure]
     · rw [parentFrame,childFrame]
       exact relation.frame

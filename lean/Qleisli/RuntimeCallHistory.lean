@@ -29,13 +29,13 @@ structure Agrees (parent child : Interface) (spectators : List Port)
     actual.operator row col =
       (localHistory (project parent (WireOrder spectators) row)).operator (project parent child.frame row) col
 
-structure Results (dependencies : List Dependency) (fuel : Nat)
+structure Results (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child : Interface) (spectators : List Port)
     (parentEvents childEvents : List Semantics.Observation.Event)
     (actual : History) (localHistory : Nat → History)
     (parents : List History) (children : List (Nat → History)) : Prop where
-  parentRun : run dependencies fuel parentEvents actual = some parents
-  childRun : ∀ high, run dependencies fuel childEvents (localHistory high) =
+  parentRun : run dependencies parentDepth parentEvents actual = some parents
+  childRun : ∀ high, run dependencies childDepth childEvents (localHistory high) =
     some (children.map (fun history => history high))
   paired : List.Forall₂ (Agrees parent child spectators) parents children
 
@@ -60,7 +60,7 @@ private theorem map_pair {A B : Type} {rel : A → B → Prop}
 /-- Each original erasure outcome appears once in its literal order. A
 measurement appends its original SSA ID and discard leaves the visible
 values alone. Both extend the same hidden history. -/
-theorem erase_histories (dependencies : List Dependency) (fuel : Nat)
+theorem erase_histories (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child : Raw.State) (spectators : List Port)
     (partition : Partition parent.reference child.reference spectators)
     (parentValid : Raw.stateValid parent = true) (childValid : Raw.stateValid child = true)
@@ -71,7 +71,7 @@ theorem erase_histories (dependencies : List Dependency) (fuel : Nat)
     ∃ parentTaken parents children,
       take parent.reference token = some (port,parentTaken) ∧
       Partition (removed parent.reference parentTaken port) (removed child.reference childTaken port) spectators ∧
-      Results dependencies (fuel+1)
+      Results dependencies (parentDepth+1) (childDepth+1)
         (removed parent.reference parentTaken port) (removed child.reference childTaken port) spectators
         [erasure parent.reference port measured] [erasure child.reference port measured]
         actual localHistory parents children := by
@@ -81,9 +81,9 @@ theorem erase_histories (dependencies : List Dependency) (fuel : Nat)
   let childAxes := axes child.reference port.wires
   let outcomes := List.range (2^port.wires.length)
   obtain ⟨p,pStep,pFacts⟩ := erasure_step_histories dependencies parent.frame.length parentAxes measured
-    (run dependencies fuel) actual
+    (run dependencies parentDepth) actual
   have each (high : Nat) := erasure_step_histories dependencies child.frame.length childAxes measured
-    (run dependencies fuel) (localHistory high)
+    (run dependencies childDepth) (localHistory high)
   choose c cStep cFacts using each
   refine ⟨parentTaken,outcomes.map p,outcomes.map (fun outcome high => c high outcome),parentTake,after,?_⟩
   refine ⟨?_,?_,map_pair _ _ ?_⟩
@@ -138,17 +138,17 @@ private theorem allocation_history (dependencies : List Dependency)
       dependencies joint row bound)
 
 /-- Apply the same original zero initialization to one pair of histories. -/
-theorem allocation_results (dependencies : List Dependency) (fuel : Nat)
+theorem allocation_results (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child : Interface) (spectators : List Port)
     (partition : Partition parent child spectators) (output wire : Nat) (fresh : wire ∉ parent.frame)
     {actual : History} {localHistory : Nat → History}
     (agrees : Agrees parent child spectators actual localHistory) :
-    Results dependencies (fuel+1) (allocated parent output wire) (allocated child output wire) spectators
+    Results dependencies (parentDepth+1) (childDepth+1) (allocated parent output wire) (allocated child output wire) spectators
       [.pure (.init0 parent.frame.length)] [.pure (.init0 child.frame.length)] actual localHistory
       [pureHistory dependencies [.init0 parent.frame.length] actual]
       [fun high => pureHistory dependencies [.init0 child.frame.length] (localHistory high)] :=
-  ⟨run_pure dependencies fuel [.init0 parent.frame.length] actual,
-    fun high => run_pure dependencies fuel [.init0 child.frame.length] (localHistory high),
+  ⟨run_pure dependencies parentDepth [.init0 parent.frame.length] actual,
+    fun high => run_pure dependencies childDepth [.init0 child.frame.length] (localHistory high),
     .cons (allocation_history dependencies parent child spectators partition output wire fresh agrees) .nil⟩
 
 #print axioms erase_histories

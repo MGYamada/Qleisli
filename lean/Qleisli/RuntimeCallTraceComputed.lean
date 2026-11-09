@@ -47,11 +47,11 @@ theorem certified_compute_correlated (dependencies : List Semantics.Finite.Depen
     (parentRead : Raw.step (dependencies.map (·.signature)) parent
       (.certifiedCompute input output ancilla function uses logical) = .ok parentAfter)
     (childRead : Raw.step (dependencies.map (·.signature)) child
-      (.certifiedCompute input output ancilla function uses logical) = .ok childAfter)
-    (joint : Nat → Nat → ℂ) (row : Nat) :
+      (.certifiedCompute input output ancilla function uses logical) = .ok childAfter) :
     let other := WireOrder spectators
     Partition parentAfter.state.reference childAfter.state.reference spectators ∧
     parentAfter.state.frame = parent.frame ∧ childAfter.state.frame = child.frame ∧
+    ∀ (joint : Nat → Nat → ℂ) (row : Nat),
     events dependencies parentAfter.events
       (fun input => joint (gather input (child.frame.map parent.frame.idxOf))
         (gather input (other.map parent.frame.idxOf))) row =
@@ -85,7 +85,8 @@ theorem certified_compute_correlated (dependencies : List Semantics.Finite.Depen
   · change parentAfter.state.frame.Perm (childAfter.state.frame ++ other)
     rw [pFrame,cFrame]
     exact partition.frame
-  · rw [← parentData.2,← childData.2]
+  · intro joint row
+    rw [← parentData.2,← childData.2]
     simp only [events,List.foldl_cons,List.foldl_nil,event,axes,List.length_map]
     exact embed_partition partition.frame parentFacts.frame inside _ joint row
 

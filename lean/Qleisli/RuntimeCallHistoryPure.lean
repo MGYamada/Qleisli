@@ -26,19 +26,19 @@ def PureAction (dependencies : List Dependency) (parent child parentAfter childA
     events dependencies childEvents (fun input => joint input (project parentAfter (WireOrder spectators) row))
       (project parentAfter childAfter.frame row)
 
-theorem pure_histories (dependencies : List Dependency) (fuel : Nat)
+theorem pure_histories (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child parentAfter childAfter : Interface) (spectators : List Port)
     (parentEvents childEvents : List Semantics.Raw.Event)
     (bounds : RawFiniteRows.BoundedEvents parent.frame.length parentEvents parentAfter.frame.length)
     (action : PureAction dependencies parent child parentAfter childAfter spectators parentEvents childEvents)
     (actual : History) (localHistory : Nat → History)
     (agrees : Agrees parent child spectators actual localHistory) :
-    Results dependencies (fuel+1) parentAfter childAfter spectators
+    Results dependencies (parentDepth+1) (childDepth+1) parentAfter childAfter spectators
       (parentEvents.map Semantics.Observation.Event.pure) (childEvents.map Semantics.Observation.Event.pure)
       actual localHistory [pureHistory dependencies parentEvents actual]
       [fun high => pureHistory dependencies childEvents (localHistory high)] := by
-  refine ⟨run_pure dependencies fuel parentEvents actual,
-    fun high => run_pure dependencies fuel childEvents (localHistory high),
+  refine ⟨run_pure dependencies parentDepth parentEvents actual,
+    fun high => run_pure dependencies childDepth childEvents (localHistory high),
     .cons ⟨agrees.values,agrees.hidden,?_⟩ .nil⟩
   intro row col bound
   let joint := fun low high => (localHistory high).operator low col
@@ -51,12 +51,12 @@ theorem pure_histories (dependencies : List Dependency) (fuel : Nat)
 /-- The pair of native pure reads determines the event lists and all frame
 bounds. A local coefficient law for those exact transitions supplies the
 observing-history result, without any extra execution premise. -/
-theorem checked_pure (dependencies : List Dependency) (fuel : Nat)
+theorem checked_pure (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child parentAfter childAfter : Raw.Observation.State) (spectators : List Port)
     (operation : Semantics.Raw.Op) {parentWork parentLeft childWork childLeft : Nat}
-    (parentRead : (checkStep dependencies (checkOps dependencies fuel) parent (.pure operation)).run
+    (parentRead : (checkStep dependencies (checkOps dependencies parentDepth) parent (.pure operation)).run
       parentWork = (.ok parentAfter,parentLeft))
-    (childRead : (checkStep dependencies (checkOps dependencies fuel) child (.pure operation)).run
+    (childRead : (checkStep dependencies (checkOps dependencies childDepth) child (.pure operation)).run
       childWork = (.ok childAfter,childLeft))
     (action : ∀ (p c : Raw.Transition),
       Raw.step (dependencies.map (·.signature)) parent.quantum operation = .ok p →
@@ -66,7 +66,7 @@ theorem checked_pure (dependencies : List Dependency) (fuel : Nat)
         p.state.reference c.state.reference spectators p.events c.events)
     (actual : History) (localHistory : Nat → History)
     (agrees : Agrees parent.quantum.reference child.quantum.reference spectators actual localHistory) :
-    ∃ parents children, CheckedResults dependencies fuel parent child parentAfter childAfter spectators
+    ∃ parents children, CheckedResults dependencies parentDepth childDepth parent child parentAfter childAfter spectators
       (.pure operation) actual localHistory parents children := by
   obtain ⟨p,pStep,pAfter,_,_⟩ := RuntimeIntervalRawFold.checkStep_pure_raw _ _ _ _ _ _ _ parentRead
   obtain ⟨c,cStep,cAfter,_,_⟩ := RuntimeIntervalRawFold.checkStep_pure_raw _ _ _ _ _ _ _ childRead
@@ -84,7 +84,7 @@ theorem checked_pure (dependencies : List Dependency) (fuel : Nat)
   · simp [readStep,cOriginal]
   · exact Qleisli.RuntimeObservingWrites.WritesWithin.pures _ _
   · exact Qleisli.RuntimeObservingWrites.WritesWithin.pures _ _
-  · exact pure_histories dependencies fuel _ _ _ _ spectators _ _ pBounds law actual localHistory agrees
+  · exact pure_histories dependencies parentDepth childDepth _ _ _ _ spectators _ _ pBounds law actual localHistory agrees
 
 /-- Promote the fixed circuit law to the event-list law used by the observing
 fold, retaining the actual post interfaces. -/

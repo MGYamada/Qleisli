@@ -16,16 +16,16 @@ open Qleisli.RuntimeObservingPrefix (Issued checkStep_frames_valid checkStep_ref
 open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.Semantics.ObservingAction (History)
 
-structure CheckedResults (dependencies : List Dependency) (fuel : Nat)
+structure CheckedResults (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child parentAfter childAfter : Raw.Observation.State) (spectators : List Port) (op : Op)
     (actual : History) (localHistory : Nat → History)
     (parents : List History) (children : List (Nat → History)) : Prop where
   partition : Partition parentAfter.quantum.reference childAfter.quantum.reference spectators
   traces : ∃ parentEvents childEvents,
-    readStep (readOps fuel) parent.quantum.reference op = some (parentAfter.quantum.reference,parentEvents) ∧
-    readStep (readOps fuel) child.quantum.reference op = some (childAfter.quantum.reference,childEvents) ∧
+    readStep (readOps parentDepth) parent.quantum.reference op = some (parentAfter.quantum.reference,parentEvents) ∧
+    readStep (readOps childDepth) child.quantum.reference op = some (childAfter.quantum.reference,childEvents) ∧
     WritesWithin parentEvents (Issued parentAfter) ∧ WritesWithin childEvents (Issued childAfter) ∧
-    Results dependencies (fuel+1) parentAfter.quantum.reference childAfter.quantum.reference spectators
+    Results dependencies (parentDepth+1) (childDepth+1) parentAfter.quantum.reference childAfter.quantum.reference spectators
       parentEvents childEvents actual localHistory parents children
 
 def eraseOp (token : Nat) : Option Nat → Op
@@ -40,24 +40,24 @@ private theorem erase_read (reader : Reader) (state : Interface) (token : Nat) (
 
 /-- Successful measure/discard reads determine the exact common outcomes
 and both native SSA-write bounds. -/
-theorem checked_erasure (dependencies : List Dependency) (fuel : Nat)
+theorem checked_erasure (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child parentAfter childAfter : Raw.Observation.State) (spectators : List Port)
     (partition : Partition parent.quantum.reference child.quantum.reference spectators)
     (token : Nat) (measured : Option Nat) {parentWork parentLeft childWork childLeft : Nat}
-    (parentRead : (checkStep dependencies (checkOps dependencies fuel) parent (eraseOp token measured)).run
+    (parentRead : (checkStep dependencies (checkOps dependencies parentDepth) parent (eraseOp token measured)).run
       parentWork = (.ok parentAfter,parentLeft))
-    (childRead : (checkStep dependencies (checkOps dependencies fuel) child (eraseOp token measured)).run
+    (childRead : (checkStep dependencies (checkOps dependencies childDepth) child (eraseOp token measured)).run
       childWork = (.ok childAfter,childLeft))
     (actual : History) (localHistory : Nat → History)
     (agrees : Agrees parent.quantum.reference child.quantum.reference spectators actual localHistory) :
-    ∃ parents children, CheckedResults dependencies fuel parent child parentAfter childAfter spectators
+    ∃ parents children, CheckedResults dependencies parentDepth childDepth parent child parentAfter childAfter spectators
       (eraseOp token measured) actual localHistory parents children := by
   obtain ⟨_,pEvents,pRead,pWrites⟩ := checkStep_reference_with_writes _ _ _ _ _ _ _ parentRead
   obtain ⟨_,cEvents,cRead,cWrites⟩ := checkStep_reference_with_writes _ _ _ _ _ _ _ childRead
   have cTrace := cRead
   rw [erase_read] at cTrace
   obtain ⟨⟨port,cTaken⟩,cTake,cDone⟩ := Option.bind_eq_some_iff.mp cTrace
-  obtain ⟨pTaken,parents,children,pTake,after,results⟩ := erase_histories dependencies fuel
+  obtain ⟨pTaken,parents,children,pTake,after,results⟩ := erase_histories dependencies parentDepth childDepth
     parent.quantum child.quantum spectators partition (checkStep_frames_valid parentRead).1
     (checkStep_frames_valid childRead).1 cTake measured actual localHistory agrees
   have pTrace := pRead
@@ -79,17 +79,17 @@ private theorem reset_read (reader : Reader) (state : Interface) (token output w
 /-- The checked original reset keeps every erasure history and allocates the
 literal fresh zero wire in both frames. Freshness follows from the exact
 native post-frame, and the result retains both issued-value bounds. -/
-theorem checked_reset (dependencies : List Dependency) (fuel : Nat)
+theorem checked_reset (dependencies : List Dependency) (parentDepth childDepth : Nat)
     (parent child parentAfter childAfter : Raw.Observation.State) (spectators : List Port)
     (partition : Partition parent.quantum.reference child.quantum.reference spectators)
     (token output wire : Nat) {parentWork parentLeft childWork childLeft : Nat}
-    (parentRead : (checkStep dependencies (checkOps dependencies fuel) parent (.reset token output wire)).run
+    (parentRead : (checkStep dependencies (checkOps dependencies parentDepth) parent (.reset token output wire)).run
       parentWork = (.ok parentAfter,parentLeft))
-    (childRead : (checkStep dependencies (checkOps dependencies fuel) child (.reset token output wire)).run
+    (childRead : (checkStep dependencies (checkOps dependencies childDepth) child (.reset token output wire)).run
       childWork = (.ok childAfter,childLeft))
     (actual : History) (localHistory : Nat → History)
     (agrees : Agrees parent.quantum.reference child.quantum.reference spectators actual localHistory) :
-    ∃ parents children, CheckedResults dependencies fuel parent child parentAfter childAfter spectators
+    ∃ parents children, CheckedResults dependencies parentDepth childDepth parent child parentAfter childAfter spectators
       (.reset token output wire) actual localHistory parents children := by
   obtain ⟨_,pEvents,pRead,pWrites⟩ := checkStep_reference_with_writes _ _ _ _ _ _ _ parentRead
   obtain ⟨_,cEvents,cRead,cWrites⟩ := checkStep_reference_with_writes _ _ _ _ _ _ _ childRead
@@ -111,7 +111,7 @@ theorem checked_reset (dependencies : List Dependency) (fuel : Nat)
     exact (Raw.Ownership.valid _ parentValid.2).frame
   have fresh : wire ∉ remaining parent.quantum.reference port.wires := fun held =>
     (List.nodup_append.mp grown).2.2 wire held wire List.mem_cons_self rfl
-  obtain ⟨taken,parents,children,takeRead,after,results⟩ := reset_histories dependencies fuel
+  obtain ⟨taken,parents,children,takeRead,after,results⟩ := reset_histories dependencies parentDepth childDepth
     parent.quantum child.quantum spectators partition parentValid.1 childValid.1 cTake
     output wire fresh actual localHistory agrees
   have equal : taken = pTaken := congrArg Prod.snd (Option.some.inj (takeRead.symm.trans pTake))

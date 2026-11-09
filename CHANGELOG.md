@@ -66,6 +66,13 @@ development milestones from the scope of their evidence.
   native check. Consecutive event chunks retain the order and multiplicity
   of every history through composition. The pure history adapter retains
   the actual checked events and finite rows on arbitrary reference columns.
+  The original named-call interval follows both native operation folds at
+  their respective depths. It compares the complete ordered histories of
+  every successful caller run and retains both issued-ID bounds. All pure,
+  observing and ordinary straight-line operations supply their local laws.
+  The branch proof has local laws for the written output permutation and
+  simultaneous SSA merge. The recursive branch law and the connection to
+  the complete source-arm invariant remain separate obligations.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
