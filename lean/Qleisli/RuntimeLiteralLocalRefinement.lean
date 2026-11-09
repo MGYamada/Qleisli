@@ -38,16 +38,21 @@ structure SourceHistory where
   operator : Nat → Nat → ℂ
   branches : List (List Edge × Bool) := []
 
-/-- Keep the complete source owner state, the original outcome order and the
-ordinary SSA interpretation on the same encoded history. -/
-def HistoryAgrees (inputs : List Nat) (state : Raw.Observation.State)
+/-- The common arm invariant carries ownership, outcome order, ordinary
+values and the representation of the source operator on the same history. -/
+def HistoryAgreesWith
+    (represents : Raw.Observation.State → Map → History → (Nat → Nat → ℂ) → Prop)
+    (inputs : List Nat) (state : Raw.Observation.State)
     (owners : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
     (source : SourceHistory) (history : History) : Prop :=
   source.owners = owners ∧ history.hidden = source.outcomes.map Prod.snd ∧
   measurementBits ordinary.measurements history.values = some source.measurements ∧
-  Agrees inputs state ordinary history ∧
-  ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
-    checked.bindings = owners.bindings ∧ ∃ frame : Frame checked, RepresentsOperator frame history source.operator
+  Agrees inputs state ordinary history ∧ represents state owners.bindings history source.operator
+
+def HistoryAgrees :=
+  HistoryAgreesWith fun state bindings history operator =>
+    ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
+      checked.bindings = bindings ∧ ∃ frame : Frame checked, RepresentsOperator frame history operator
 
 /-- Select the actual original branch using the measured bits computed by
 the source prefix. The same literal event runs that child's history list. -/

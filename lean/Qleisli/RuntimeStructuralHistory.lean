@@ -10,33 +10,28 @@ open QleisliKernel QleisliKernel.Qirf
 open Semantics.Observation (Event readOps)
 open Qleisli.Semantics.ObservingAction (History run)
 open Qleisli.RuntimeLiteralHistory (Agrees pure_history)
-open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
-open Qleisli.RuntimeStructuralSourceAction (spectators original_reference_action)
-open Qleisli.RuntimeForestRegroup (sourceDimension)
-open Qleisli.Semantics.Exact (scalar)
-open RuntimeForestCode
-open RuntimeOwnerMap (Map Binding)
+open Qleisli.RuntimeStructuralSourceAction (sourceRegroup original_reference_action)
+open Qleisli.RuntimeSemanticForest (Frame)
+
+def Represents {bindings} (frame : Frame bindings) (state : Raw.Observation.State)
+    (history : History) (joint : Nat → Nat → ℂ) : Prop :=
+  ∀ column row, row < 2^state.quantum.frame.length →
+    history.operator row column = RuntimeSemanticForest.action frame state.quantum.frame joint row column
 
 theorem original_history {dependencies program sources caller block start count event before}
     (action : @RuntimeStructuralAction.Checked dependencies program sources caller block start count event before)
-    (input : Frame action.beforeFrame) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
+    (input : Frame before.bindings) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
     (history : History) (joint : Nat → Nat → ℂ)
     (agrees : Agrees inputs action.interval.before ordinary history)
-    (represented : RepresentsOperator input history joint) {events : List Event} {results : List History}
+    (represented : Represents input action.interval.before history joint) {events : List Event} {results : List History}
     (read : readOps block.fuel action.interval.before.quantum.reference ((block.operations.drop start).take count) =
       some (action.interval.after.quantum.reference,events))
     (executed : run dependencies block.fuel events history = some results) :
     results = [history] ∧ Agrees inputs action.interval.after ordinary history ∧
-    ∃ selected : Map, selected.map Binding.owner = action.inputRoles ∧
-      selected.map Binding.port = action.inputs ∧ (spectators action ++ selected).Perm before.bindings ∧
-      ∃ output : Sparse, sparseLayout (forestBasis action.afterFrame.bindings) = some output ∧
-        ∀ row column, row < 2^action.interval.after.quantum.frame.length →
-          history.operator row column =
-          ((List.range output.dimension).map fun logical =>
-            scalar (embed action.interval.after.quantum.frame action.afterFrame.bindings output row logical) *
-              joint (Qleisli.MixedRadix.recode (spectators action ++ selected) before.bindings
-                (sourceDimension before.bindings) logical) column).sum := by
+    ∃ output : Frame action.after.bindings, ∃ expected,
+      sourceRegroup (event.arguments.flatMap SourceTypes.SourceRuntimeValues.valueOwners)
+        before.bindings joint = some expected ∧ Represents output action.interval.after history expected := by
   obtain ⟨operations,rawEvents,literal,rawTrace,singleton,kept⟩ :=
     pure_history (.structural action) inputs ordinary history agrees read executed
   have same : operations = [action.operation] :=
@@ -49,12 +44,12 @@ theorem original_history {dependencies program sources caller block start count 
   subst rawEvents
   have unchanged : pureHistory dependencies [] history = history := by cases history; rfl
   rw [unchanged] at singleton kept
-  obtain ⟨selected,owners,ports,permutation,output,original,whole⟩ := original_reference_action action input
-  refine ⟨singleton,kept,selected,owners,ports,permutation,output,by rwa [action.resultBindings],?_⟩
-  intro row column bound
+  obtain ⟨output,whole⟩ := original_reference_action action input
+  obtain ⟨expected,sourceRead,corresponds⟩ := whole joint
+  refine ⟨singleton,kept,output,expected,sourceRead,?_⟩
+  intro column row bound
   rw [(RuntimeStructuralWires.original_wires action).1] at bound
-  rw [action.resultBindings]
-  exact (represented column row bound).trans (whole joint row column)
+  exact (represented column row bound).trans (corresponds row column)
 
 #print axioms original_history
 end Qleisli.RuntimeStructuralHistory

@@ -201,12 +201,12 @@ theorem frame_product_agrees {roles state checked} (frame : @Frame roles state c
   subst layout
   exact same
 
-private theorem agrees_entry {code : Sparse} {layout : Layout} (same : Agrees code layout)
+theorem agrees_entry {code : Sparse} {layout : Layout} (same : Agrees code layout)
     (physical logical : Nat) : sparseEntry code physical logical = sparseEntry (.ofLayout layout) physical logical := by
   exact congrArg (fun coordinate : Option Nat => if coordinate == some physical then Scalar.one else Scalar.zero)
     (same.labels logical)
 
-private theorem layout_tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
+theorem layout_tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
     (low high logical : Nat) (bound : low < 2^left.bits) :
     scalar (sparseEntry (.ofLayout (tensor left right)) (low+2^left.bits*high) logical) =
       scalar (sparseEntry (.ofLayout left) low (logical % left.labels.length)) *

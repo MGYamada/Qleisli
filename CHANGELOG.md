@@ -23,7 +23,9 @@ development milestones from the scope of their evidence.
 - Retain the checked operand and result token order of original joins, splits,
   Unit introduction and Unit elimination. Prove their source-coordinate
   regrouping preserves the physical operator, visible values and hidden
-  outcomes. The result uses the independent sparse source layout.
+  outcomes. The common arm induction carries the independent sparse source
+  layout through successive structural operations, ordinary SSA gaps and the
+  written return order.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

@@ -42,6 +42,14 @@ private theorem owner_lookups (bindings : Map) (roles : List RuntimeOwnerMap.Own
       rw [(pure_success _ _ _ _ readBinding).1]
       simp [List.mapM_cons,source,ih tailRead]
 
+theorem order_source {roles bindings ordered}
+    (read : RuntimeInterval.Computed (RuntimeOwnerMap.order roles bindings) ordered) :
+    roles.mapM (RuntimeOwnerMap.byOwner bindings) = some ordered := by
+  obtain ⟨work,left,order⟩ := read
+  unfold RuntimeOwnerMap.order at order
+  obtain ⟨_,_,_,lookups⟩ := bind_success _ _ _ _ _ order
+  exact owner_lookups bindings roles lookups
+
 /-- The checked order is computed by the original source owner lookups. -/
 theorem reordered_source {state roles bindings}
     (output : RuntimeOwnerMap.Checked roles state)
@@ -51,11 +59,9 @@ theorem reordered_source {state roles bindings}
   unfold RuntimePureBody.reordered at ran
   obtain ⟨ordered,middle,order,checked⟩ := bind_success _ _ _ _ _ ran
   rw [RuntimeBoundaryOwnerEvidence.check_bindings output ⟨middle,left,checked⟩]
-  unfold RuntimeOwnerMap.order at order
-  obtain ⟨_,_,_,lookups⟩ := bind_success _ _ _ _ _ order
-  exact owner_lookups bindings roles lookups
+  exact order_source ⟨work,middle,order⟩
 
-private theorem return_permutation {state inputRoles outputRoles}
+theorem return_permutation {state inputRoles outputRoles}
     (input : RuntimeOwnerMap.Checked inputRoles state) (output : RuntimeOwnerMap.Checked outputRoles state)
     (read : RuntimeInterval.Computed (RuntimePureBody.reordered outputRoles state input.bindings) output) :
     output.bindings.Perm input.bindings := by
