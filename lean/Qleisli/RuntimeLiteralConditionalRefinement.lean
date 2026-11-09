@@ -2,6 +2,7 @@ import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeBranchInputDomain
 import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeLiteralSparseInline
+import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeOriginalSparsePhi
 
 /-! A conditional uses the original prefix to select an arm, applies the
@@ -18,12 +19,13 @@ open Qleisli.RuntimeOriginalBranchJoin
   (armChecked armPermutation original_arm_run original_branch_join_with original_native_phi_history sourcePhiIndex)
 open Qleisli.RuntimeOriginalSparsePhi (original_sparse_phi_history)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep ConditionalRun)
+open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun ConditionalRun)
 open Qleisli.RuntimeObservingValueRetention (run_values run_retains_values)
 open Qleisli.RuntimeObservingPrefix (issued_mono)
 open RuntimePureBody (Step Steps runBlockCore)
 open RuntimeOrdinarySSA (Agreement bitValue)
 open RuntimeSelectionSteps (Edge)
+open RuntimeNamedPrimitiveOccurrence (inspect?)
 
 abbrev ScopedSourceSteps (dependencies : List RuntimeInterval.Dependency) :=
   ∀ {program} {block : RuntimeInterval.Block dependencies program},
@@ -458,6 +460,7 @@ theorem original_body_source_steps {artifact owner name arguments request prepar
 sparse laws. Other original operations supply their own source action. -/
 def NeedsSparseLeaf {dependencies program block} : Step dependencies program block → Prop
   | .conditional .. | .observation _ => False
+  | step@(.named ..) => (inspect? step).isNone
   | step => NeedsSparseSourceAction step ∧ NeedsNonInline step
 
 /-- Match the checked recursion depth. A child keeps its original path and
@@ -466,8 +469,8 @@ noncomputable def sparseStepsAt {dependencies}
     (fallback : ScopedSourceSteps dependencies) (inputs : List Nat) : Nat → ScopedSourceSteps dependencies
   | 0 => fun scope => withSparseSteps (withSparseObservation (withSparseInline (fallback scope)) scope)
   | depth+1 => fun scope =>
-    withSparseSteps (withSparseObservation
-      (withSparseInline (withBranchSteps (sparseStepsAt fallback inputs depth) (fallback scope) inputs scope)) scope)
+    withSparseSteps (withSparseObservation (withSparseInline
+      (withSparseNamed (withBranchSteps (sparseStepsAt fallback inputs depth) (fallback scope) inputs scope))) scope)
 
 private theorem conditional_zero_impossible {artifact root mode program block step}
     (checked : @ConditionalRun artifact root mode (runBlockCore artifact root mode 0) program block step) :
@@ -478,6 +481,17 @@ private theorem conditional_zero_impossible {artifact root mode program block st
       action beforeThen afterThen afterElse afterJoin thenRead elseRead joinRead =>
     change (Except.error QleisliKernel.Finite.Error.limit,beforeThen) = (Except.ok (left,leftReceipts),afterThen) at thenRead
     cases thenRead
+
+private theorem named_zero_impossible {artifact root mode program block step}
+    (checked : @ChildRun artifact root mode (runBlockCore artifact root mode 0) program block step) :
+    False := by
+  cases checked with
+  | @named start count inputs caller before ordinary event scope body bodyRead
+      rootOwner rootName path request plan initialBindings result receipts boundary
+      beforeInput afterInput afterChild inputRead childRead =>
+    change (Except.error QleisliKernel.Finite.Error.limit,afterInput) =
+      (Except.ok (result,receipts),afterChild) at childRead
+    cases childRead
 
 /-- Compose actual nested conditionals, structural actions, observations and
 ordinary SSA updates on one invariant. Only the other operation cases need local laws. -/
@@ -503,6 +517,8 @@ theorem sparseStepsAt_refine {artifact root mode}
     cases first
     case conditional =>
       exact False.elim (conditional_zero_impossible checked.1.1.1)
+    case named =>
+      exact False.elim (named_zero_impossible checked.1.1.1)
     case observation =>
       exact False.elim checked.1.2
     all_goals
@@ -515,8 +531,8 @@ theorem sparseStepsAt_refine {artifact root mode}
     intro prior first later position checked ownerBefore ownerAfter ordinaryBefore ordinaryAfter
       owners ordinary chunk read source history outputs agrees executed
     have row := rows first (by rw [← position]; exact List.mem_append_right _ List.mem_cons_self)
-    cases first
-    case conditional path event body actual actualRead action thenSteps elseSteps =>
+    cases first with
+    | conditional path event body actual actualRead action thenSteps elseSteps =>
       rcases owners with ⟨rfl,rfl⟩
       rcases ordinary with ⟨rfl,rfl⟩
       obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
@@ -524,11 +540,24 @@ theorem sparseStepsAt_refine {artifact root mode}
           action thenSteps elseSteps checked.1.1.1 inputs row (sparseStepsAt fallback inputs depth)
           ih scope prior.length agrees read executed
       exact ⟨expected.map (finishArm action choice),
-        by simp only [withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
-    case observation =>
-      exact False.elim checked.1.2
-    all_goals
-      exact leaves (depth+1) scope steps prior _ later position ⟨checked.1.1.1,checked.1.1.2,checked.2⟩ owners ordinary read agrees executed
+        by simp only [withSparseNamed,withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
+    | named event frame body bodyRead boundary finalOrdinary children =>
+      cases inspected : inspect? (.named event frame body bodyRead boundary finalOrdinary children) with
+      | none =>
+        obtain ⟨expected,sourceRead,paired⟩ := leaves (depth+1) scope steps prior _ later position
+          ⟨checked.1.1.1,by simp [NeedsSparseLeaf,inspected]⟩ owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [withSparseNamed,inspected,withBranchSteps] using sourceRead,paired⟩
+      | some held =>
+        obtain ⟨expected,sourceRead,paired⟩ := sparse_named_primitive_refines (fuel := depth)
+          held checked.1.1.1 inputs owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [withSparseNamed,inspected] using sourceRead,paired⟩
+    | observation _ => exact False.elim checked.1.2
+    | gap _ =>
+      exact leaves (depth+1) scope steps prior _ later position
+        ⟨checked.1.1.1,checked.1.1.2,checked.2⟩ owners ordinary read agrees executed
+    | pure _ =>
+      exact leaves (depth+1) scope steps prior _ later position
+        ⟨checked.1.1.1,checked.1.1.2,checked.2⟩ owners ordinary read agrees executed
 
 /-- Use the decoded row of the actual checked root in the recursive sparse
 step proof, including at each selected child branch. -/

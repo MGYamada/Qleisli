@@ -91,7 +91,7 @@ private def recordObservation (source : SourceHistory) (site : List Edge) (survi
     measurements := source.measurements ++ (if measured.isSome then [result.1 == 1] else [])
     operator := result.2 }
 
-private noncomputable def sourceNamedPrimitive {dependencies program block step}
+noncomputable def sourceNamedPrimitive {dependencies program block step}
     (held : @Occurrence dependencies program block step) (source : SourceHistory) :
     Option (List SourceHistory) :=
   match held with

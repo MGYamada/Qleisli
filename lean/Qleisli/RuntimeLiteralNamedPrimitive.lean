@@ -110,23 +110,39 @@ def NamedPrimitiveHistory {dependencies program block} :
           Agrees inputs scope.interval.after final result ∧
           RepresentsOperator output result expected
 
-theorem named_primitive_history {artifact root execution fuel program block step}
+/-- The actual named child and the same parent read fix its pure history
+and retained ordinary SSA, independently of the quantum encoding. -/
+def NamedPrimitiveExecution {dependencies program block} :
+    ∀ {step}, @Occurrence dependencies program block step → Prop
+  | _, @Occurrence.named _ _ _ start count _ _ _ _ _ _ ordinary _ _ _ _ _ _ _ scope _ bodyRead _ final _ original bound =>
+    ∀ (inputs : List Nat) (history : History),
+      Agrees inputs scope.interval.before ordinary history →
+      ∀ {events : List Event} {results : List History},
+      readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
+        some (scope.interval.after.quantum.reference,events) →
+      run dependencies block.fuel events history = some results →
+      ∃ rawEvents,
+        RuntimeNamedOccurrenceAction.On
+          (Occurrence.named (read := bodyRead) (finalOrdinary := final) original bound) rawEvents ∧
+        RawFiniteRows.BoundedEvents scope.interval.before.quantum.frame.length rawEvents
+          scope.interval.after.quantum.frame.length ∧
+        results = [pureHistory dependencies rawEvents history] ∧
+        final.measurements = ordinary.measurements ∧
+        Agrees inputs scope.interval.after final (pureHistory dependencies rawEvents history)
+
+theorem named_primitive_execution {artifact root execution fuel program block step}
     (held : @Occurrence root.dependencies program block step)
     (call : RuntimeNamedChildRuns.ChildRun artifact root execution
       (RuntimePureBody.runBlockCore artifact root execution (fuel+1)) step) :
-    NamedPrimitiveHistory held := by
+    NamedPrimitiveExecution held := by
   cases held with
   | @named start count tokens sources caller before childHistory childRetired ordinary first size inputToken outputToken role kind
       event scope body bodyRead boundary finalOrdinary primitive original bound =>
-    intro roles checked input bindings inputs history joint agrees represented events results read executed
+    intro inputs history agrees events results read executed
     let occurrence := Occurrence.named (read := bodyRead) (finalOrdinary := finalOrdinary) original bound
     obtain ⟨rawEvents,folded,traced⟩ :=
       (RuntimeIntervalRawFold.mixed_call_traces scope [bound.operation] bound.parent).1
     have on := RuntimeNamedOccurrenceAction.on_span occurrence rawEvents folded
-    obtain ⟨output⟩ := RuntimeNamedThreeFrameChain.primitive_after_frame occurrence call rawEvents on
-      checked input bindings
-    obtain ⟨returned,mapped,whole⟩ :=
-      RuntimeNamedCallerAction.actual_whole_caller_action occurrence call rawEvents on checked input bindings output
     have same : results = [pureHistory root.dependencies rawEvents history] := by
       cases depth : block.fuel with
       | zero =>
@@ -139,14 +155,9 @@ theorem named_primitive_history {artifact root execution fuel program block step
           congrArg Prod.snd (Option.some.inj (read.symm.trans readPure))
         rw [depth,eventsEq] at executed
         exact Option.some.inj (executed.symm.trans (run_pure root.dependencies depthFuel rawEvents history))
-    let expected := applySourceOwner checked.bindings boundary.afterFrame.bindings
-      bound.binding returned primitive.expected joint
-    have source := (RuntimeSourcePrimitiveAction.reference_action primitive original).2.1
     have bounded := RawFiniteRows.checked_slice (RuntimeNamedOccurrenceAction.span occurrence).slice rawEvents traced
     have final : finalOrdinary = scope.visible.ssa := named_primitive_ordinary call
-    refine ⟨returned,mapped,output,expected,pureHistory root.dependencies rawEvents history,?_,same,rfl,rfl,
-      ?_,?_,?_⟩
-    · simp [sourcePrimitive,source,expected]
+    refine ⟨rawEvents,on,bounded,same,?_,?_⟩
     · rw [final]
       exact scope.visible.measurements
     · rw [final]
@@ -159,6 +170,31 @@ theorem named_primitive_history {artifact root execution fuel program block step
         have issued := (Raw.Observation.checkOps_history _ _ _ _ _ _ _ intervalRead).2.2
         intro id member
         exact Qleisli.RuntimeObservingPrefix.issued_mono issued (agrees.2 member)
+
+theorem named_primitive_history {artifact root execution fuel program block step}
+    (held : @Occurrence root.dependencies program block step)
+    (call : RuntimeNamedChildRuns.ChildRun artifact root execution
+      (RuntimePureBody.runBlockCore artifact root execution (fuel+1)) step) :
+    NamedPrimitiveHistory held := by
+  cases held with
+  | @named start count tokens sources caller before childHistory childRetired ordinary first size inputToken outputToken role kind
+      event scope body bodyRead boundary finalOrdinary primitive original bound =>
+    intro roles checked input bindings inputs history joint agrees represented events results read executed
+    have originalRun := named_primitive_execution
+      (Occurrence.named (read := bodyRead) (finalOrdinary := finalOrdinary) original bound) call
+    obtain ⟨rawEvents,on,bounded,same,measurements,agreesAfter⟩ :=
+      originalRun inputs history agrees read executed
+    let occurrence := Occurrence.named (read := bodyRead) (finalOrdinary := finalOrdinary) original bound
+    obtain ⟨output⟩ := RuntimeNamedThreeFrameChain.primitive_after_frame occurrence call rawEvents on
+      checked input bindings
+    obtain ⟨returned,mapped,whole⟩ :=
+      RuntimeNamedCallerAction.actual_whole_caller_action occurrence call rawEvents on checked input bindings output
+    let expected := applySourceOwner checked.bindings boundary.afterFrame.bindings
+      bound.binding returned primitive.expected joint
+    have source := (RuntimeSourcePrimitiveAction.reference_action primitive original).2.1
+    refine ⟨returned,mapped,output,expected,pureHistory root.dependencies rawEvents history,?_,same,rfl,rfl,
+      measurements,agreesAfter,?_⟩
+    · simp [sourcePrimitive,source,expected]
     · intro col row boundRow
       have actual := pureHistory_operator_congr bounded root.dependencies history
         (fun row col => referenceAction input joint row col) represented col row boundRow

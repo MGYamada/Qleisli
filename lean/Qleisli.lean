@@ -134,6 +134,7 @@ import Qleisli.RuntimeOriginalSparseObservation
 import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeSparseHeadAction
 import Qleisli.RuntimeLiteralSparseInline
+import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralStructuralRefinement
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
