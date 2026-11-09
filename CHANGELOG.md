@@ -16,6 +16,11 @@ development milestones from the scope of their evidence.
   hidden outcomes. The final checked source return reorders the logical
   operator of every result. General pure steps, calls and branches remain
   separate local proof obligations.
+- Retain the visible measurement bits computed by the source prefix. They
+  determine the same ordinary branch as the literal Raw history. The
+  branch join now carries the selected source result list through the
+  quantum and classical phis, preserving each operator and outcome.
+  The recursive arm refinement remains a separate premise.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

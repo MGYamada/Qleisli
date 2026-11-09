@@ -103,7 +103,8 @@ def NamedPrimitiveHistory {dependencies program block} :
       ∃ output : Frame boundary.afterFrame, ∃ expected result,
         sourcePrimitive original.event checked.bindings boundary.afterFrame.bindings bound.binding returned joint =
           some expected ∧ results = [result] ∧ result.values = history.values ∧
-          result.hidden = history.hidden ∧ Agrees inputs scope.interval.after final result ∧
+          result.hidden = history.hidden ∧ final.measurements = ordinary.measurements ∧
+          Agrees inputs scope.interval.after final result ∧
           RepresentsOperator output result expected
 
 theorem named_primitive_history {artifact root execution fuel program block step}
@@ -139,10 +140,13 @@ theorem named_primitive_history {artifact root execution fuel program block step
       bound.binding returned primitive.expected joint
     have source := (RuntimeSourcePrimitiveAction.reference_action primitive original).2.1
     have bounded := RawFiniteRows.checked_slice (RuntimeNamedOccurrenceAction.span occurrence).slice rawEvents traced
-    refine ⟨returned,mapped,output,expected,pureHistory root.dependencies rawEvents history,?_,same,rfl,rfl,?_,?_⟩
+    have final : finalOrdinary = scope.visible.ssa := named_primitive_ordinary call
+    refine ⟨returned,mapped,output,expected,pureHistory root.dependencies rawEvents history,?_,same,rfl,rfl,
+      ?_,?_,?_⟩
     · simp [sourcePrimitive,source,expected]
-    · have final : finalOrdinary = scope.visible.ssa := named_primitive_ordinary call
-      rw [final]
+    · rw [final]
+      exact scope.visible.measurements
+    · rw [final]
       refine ⟨?_,?_⟩
       · intro id expression member
         change (id,expression) ∈ scope.visible.table at member

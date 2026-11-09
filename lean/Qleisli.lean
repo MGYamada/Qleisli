@@ -102,6 +102,7 @@ import Qleisli.RuntimeLiteralHistory
 import Qleisli.RuntimeLiteralObservationAction
 import Qleisli.RuntimeLiteralNamedPrimitive
 import Qleisli.RuntimeLiteralReturnOrder
+import Qleisli.RuntimeLiteralBranchChoice
 import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeOriginalBranchJoin
 import Qleisli.RuntimeNamedObservationEntry
