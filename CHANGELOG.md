@@ -60,6 +60,12 @@ development milestones from the scope of their evidence.
   tape, certified compute and protected compute retain the same local action
   in both fixed frames. The protected target traversal reads and returns
   the same ordered ports while retaining arbitrary spectator coefficients.
+  Original gates, CNOT, Toffoli and both coherently controlled tapes use
+  the same coefficient law. The paired observing fold retains measurement,
+  discard and reset outcomes in order, with the exact SSA writes from each
+  native check. Consecutive event chunks retain the order and multiplicity
+  of every history through composition. The pure history adapter retains
+  the actual checked events and finite rows on arbitrary reference columns.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

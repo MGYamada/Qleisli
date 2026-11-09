@@ -250,6 +250,33 @@ theorem checkOps_reference_with_writes (dependencies : List Dependency) (fuel : 
     rw [Raw.ObservationAgreement.read_succ]
     simpa only [List.nil_append] using read
 
+/-- The actual check of one original instruction fixes its reader event list
+and its globally issued writes, including writes in the selected arm. -/
+theorem checkStep_reference_with_writes (dependencies : List Dependency) (fuel : Nat)
+    (state next : State) (op : Op) (work left : Nat)
+    (ok : (checkStep dependencies (checkOps dependencies fuel) state op).run work = (.ok next,left)) :
+    state.classical ⊆ next.classical ∧
+    ∃ events, readStep (Semantics.Observation.readOps fuel) state.quantum.reference op =
+      some (next.quantum.reference,events) ∧ WritesWithin events (Issued next) :=
+  step_reference dependencies (checkOps dependencies fuel) (Semantics.Observation.readOps fuel)
+    (fun state ops next work left => checkOps_reference_with_writes dependencies fuel state next ops work left)
+    state next op work left ok
+
+/-- Both exact quantum states of an original successful instruction satisfy
+the native frame invariant. -/
+theorem checkStep_frames_valid {dependencies : List Dependency} {fuel : Nat}
+    {state next : State} {op : Op} {work left : Nat}
+    (ok : (checkStep dependencies (checkOps dependencies fuel) state op).run work = (.ok next,left)) :
+    Raw.stateValid state.quantum = true ∧ Raw.stateValid next.quantum = true := by
+  obtain ⟨_,_,_,afterCharge⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,before,afterGuard⟩ := bind_success _ _ _ _ _ afterCharge
+  obtain ⟨result,_,_,afterAction⟩ := bind_success _ _ _ _ _ afterGuard
+  obtain ⟨_,_,after,done⟩ := bind_success _ _ _ _ _ afterAction
+  have same := (pure_success _ _ _ _ done).1
+  subst next
+  exact ⟨(guard_success _ _ _ _ before).1,
+    (Bool.and_eq_true_iff.mp (guard_success _ _ _ _ after).1).1⟩
+
 theorem checkOps_reference (dependencies : List Dependency) (fuel : Nat)
     (state next : State) (ops : List Op) (work left : Nat)
     (ok : (checkOps dependencies fuel state ops).run work = (.ok next,left)) :

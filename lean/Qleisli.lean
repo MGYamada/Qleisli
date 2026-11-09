@@ -145,6 +145,10 @@ import Qleisli.RuntimeCallTraceBasis
 import Qleisli.RuntimeCallTraceCircuit
 import Qleisli.RuntimeCallTraceComputed
 import Qleisli.RuntimeCallTraceProtected
+import Qleisli.RuntimeCallHistory
+import Qleisli.RuntimeCallHistoryComposition
+import Qleisli.RuntimeCallHistoryRead
+import Qleisli.RuntimeCallHistoryPure
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
