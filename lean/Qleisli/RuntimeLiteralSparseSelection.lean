@@ -1,5 +1,6 @@
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeSparseSelectionOutput
+import Qleisli.RuntimeSourceOrdinalAction
 
 /-! Follow the retained named selection through its original parent event
 slice, keeping the actual visible SSA and inherited observation history.
@@ -13,8 +14,8 @@ open Qleisli.RuntimeLiteralBranchChoice (measurementBits)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory pureHistory_operator_congr run_pure)
 open Qleisli.RuntimeNamedChildRuns (ChildRun OrdinaryAligned OrdinaryRun)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
-open Qleisli.RuntimeSparseSelectionOutput (CallWholeOutput callerUpdate actual_occurrence_whole_output)
-open Qleisli.RuntimeMultiwayGram (ordinal_table sourceAction)
+open Qleisli.RuntimeSparseSelectionOutput (callerAction callerUpdate actual_occurrence_whole_output)
+open Qleisli.RuntimeMultiwayGram (sourceAction selector_card)
 open Qleisli.RuntimeSemanticForest (action product)
 open RuntimeSelectionPartition (complement)
 open RuntimeNamedThreeOccurrence (Middle RetainedData)
@@ -121,22 +122,26 @@ private theorem named_pure_history {dependencies program block start count args 
     exact Qleisli.RuntimeObservingPrefix.issued_mono issued (agrees.2 member)
 
 /-- The source update uses the actual occurrence's ordered selected arguments
-and retained source table. The operator is independent of the physical trace. -/
-noncomputable def sourceNamedSelection {dependencies rootItem rootCount program block step}
-    {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
+and original source table. Its evaluator uses only source coordinates. -/
+noncomputable def sourceNamedSelection {dependencies program block step}
     (occurrence : @Middle dependencies program block step)
-    (held : RetainedData witness occurrence) (source : SourceHistory) : List SourceHistory :=
-  match occurrence,held with
-  | .named (before := before) (childHistory := child) (boundary := boundary) _ _,held =>
-    match held.literal with
-    | .selection (frame := frame) (codes := codes) (layouts := layouts) (equations := equations) literal _ =>
+    (source : SourceHistory) : List SourceHistory := by
+  cases occurrence with
+  | @named start count args sources caller before child retired old event scope body bodyRead boundary final node selected =>
+    cases node with
+    | selection frame selectorBits targetBits retained restricted inputCode outputCode labels arms logical equations codes layouts =>
       let selected := boundary.input.ordered
       let spectators := complement before.bindings selected
-      let operator := callerUpdate literal.outputCode before.bindings (selected++spectators) child.bindings
-        boundary.afterFrame.bindings (boundary.mapped++spectators) (product selected).labels.length
-        (product boundary.mapped).labels.length (sourceAction frame codes layouts literal (ordinal_table equations).2)
+      let operator := callerAction codes.owners.transport.after.bindings before.bindings (selected++spectators)
+        child.bindings boundary.afterFrame.bindings (boundary.mapped++spectators) (product selected).labels.length
+        (product boundary.mapped).labels.length (Qleisli.RuntimeSourceOrdinalAction.sourceAction
+          codes.owners.transport.after.bindings codes.owners.returned.first codes.owners.returned.second arms)
         source.operator
-      [{source with owners := boundary.after, operator}]
+      exact [{source with owners := boundary.after, operator}]
+    | primitive _ _ => exact False.elim selected
+    | structural _ => exact False.elim selected
+    | named _ _ _ _ _ _ => exact False.elim selected
+    | operation _ _ _ _ _ _ _ _ _ _ => exact False.elim selected
 
 /-- The actual selected child updates the same sparse history used by its
 caller's other original steps. The source table, literal events, output
@@ -154,7 +159,7 @@ theorem sparse_named_selection_refines {artifact root mode fuel program block st
     (agrees : SemanticHistoryAgrees inputs (stepSpan step).checked.before ownerBefore ordinaryBefore source history)
     (executed : run root.dependencies block.fuel chunk history = some outputs) :
     List.Forall₂ (SemanticHistoryAgrees inputs (stepSpan step).checked.after ownerAfter ordinaryAfter)
-      (sourceNamedSelection occurrence held source) outputs := by
+      (sourceNamedSelection occurrence source) outputs := by
   have flow := named_child_flow call
   have coverage := named_selection_coverage occurrence call held
   cases occurrence with
@@ -184,10 +189,11 @@ theorem sparse_named_selection_refines {artifact root mode fuel program block st
       rw [stored] at whole
       obtain ⟨_,output,table,law⟩ := whole checked orderedInput bindings
       let spectators := complement ownerBefore.bindings boundary.input.ordered
-      let operator := callerUpdate localLiteral.outputCode ownerBefore.bindings (boundary.input.ordered++spectators)
+      let operator := callerAction codes.owners.transport.after.bindings ownerBefore.bindings (boundary.input.ordered++spectators)
         child.bindings boundary.afterFrame.bindings (boundary.mapped++spectators)
         (product boundary.input.ordered).labels.length (product boundary.mapped).labels.length
-        (sourceAction frame codes layouts localLiteral (ordinal_table equations).2) source.operator
+        (Qleisli.RuntimeSourceOrdinalAction.sourceAction codes.owners.transport.after.bindings
+          codes.owners.returned.first codes.owners.returned.second expected) source.operator
       let result := pureHistory root.dependencies rawEvents history
       have representedOutput : Qleisli.RuntimeStructuralHistory.Represents output scope.interval.after result operator := by
         intro column row boundRow
@@ -201,13 +207,21 @@ theorem sparse_named_selection_refines {artifact root mode fuel program block st
             (boundary.mapped++complement checked.bindings boundary.input.ordered)
             (product boundary.input.ordered).labels.length (product boundary.mapped).labels.length
             (sourceAction frame codes layouts localLiteral table) source.operator = operator := by
-          unfold operator spectators
+          have childAction :
+              (fun (joint : Nat → Nat → ℂ) =>
+                Qleisli.RuntimeNamedSelectionWholeOutput.onFinite (sourceAction frame codes layouts localLiteral table joint)) =
+              Qleisli.RuntimeSourceOrdinalAction.sourceAction codes.owners.transport.after.bindings
+                codes.owners.returned.first codes.owners.returned.second expected := by
+            funext joint
+            exact Qleisli.RuntimeSourceOrdinalAction.onFinite_ordinalAction localLiteral.outputCode _ _ _
+              table (selector_card frame codes layouts localLiteral) joint
+          unfold callerUpdate operator spectators
+          rw [childAction]
           rw [bindings]
         rw [← same]
         exact law source.operator row column
-      change List.Forall₂ _ (sourceNamedSelection occurrence held source) _
-      unfold sourceNamedSelection
-      simp only [occurrence,stored]
+      change List.Forall₂ _ (sourceNamedSelection occurrence source) _
+      change List.Forall₂ _ [{source with owners := boundary.after, operator}] _
       refine .cons ⟨rfl,hidden,?_,finalEq.symm ▸ agreesAfter,_,boundary.afterFrame,boundary.sameAfter,
         boundary.sameAfter ▸ output,cast_represents boundary.sameAfter output
           (state := scope.interval.after) (history := result) (operator := operator) representedOutput⟩ .nil
@@ -231,8 +245,7 @@ theorem original_body_sparse_selection_refines {artifact owner name arguments re
     (agrees : SemanticHistoryAgrees inputs (stepSpan step).checked.before ownerBefore ordinaryBefore source history)
     (executed : run body.root.dependencies body.checked.native.block.fuel chunk history = some outputs) :
     List.Forall₂ (SemanticHistoryAgrees inputs (stepSpan step).checked.after ownerAfter ordinaryAfter)
-      (sourceNamedSelection occurrence (RuntimeNamedThreeOccurrence.actual_body_selection body prior later
-        occurrence position) source) outputs := by
+      (sourceNamedSelection occurrence source) outputs := by
   obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.original_body body
   have checked := flow.calls step (by rw [position]; exact List.mem_append_right _ List.mem_cons_self)
   cases occurrence with
@@ -240,7 +253,9 @@ theorem original_body_sparse_selection_refines {artifact owner name arguments re
       boundary final node selected =>
     exact sparse_named_selection_refines (fuel := 126)
       (Middle.named (read := childRead) (boundary := boundary) (finalOrdinary := final) node selected)
-      checked _ inputs owners ordinary read agrees executed
+      checked (RuntimeNamedThreeOccurrence.actual_body_selection body prior later
+        (Middle.named (read := childRead) (boundary := boundary) (finalOrdinary := final) node selected) position)
+      inputs owners ordinary read agrees executed
 
 #print axioms named_selection_coverage
 #print axioms sparse_named_selection_refines

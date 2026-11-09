@@ -38,6 +38,9 @@ development milestones from the scope of their evidence.
   satisfies the same history relation using its retained selector table,
   checked child return order, literal Raw events and visible SSA. The
   checked child traversal establishes coverage of the complete call slice.
+  The source evaluator computes the expected action from original owner
+  coordinates and the source arm table; the retained finite code establishes
+  the physical correspondence.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

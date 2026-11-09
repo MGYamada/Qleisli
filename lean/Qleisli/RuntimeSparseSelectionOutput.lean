@@ -59,18 +59,26 @@ theorem regrouped_output {childBindings returned mapped spectators : Map}
   unfold forestAxes
   rw [carrier_wires same,gather_scatter_wires childFrame parentFrame _ axes coordinates unique inside]
 
-/-- Independently apply the child source table at each spectator coordinate
-and interpret the result in the original caller's returned owner order. -/
+/-- Apply the logical child action at each spectator coordinate and interpret
+the result in the original caller's returned owner order. -/
+noncomputable def callerAction {Reference : Type} (child : Map)
+    (incoming inputOrder childReturn output outputOrder : Map) (inputLow outputLow : Nat)
+    (run : (Nat → Reference → ℂ) → Nat → Reference → ℂ)
+    (joint : Nat → Reference → ℂ) (logical : Nat) (reference : Reference) : ℂ :=
+  blockJoint outputLow (fun digit high ref =>
+    run (fun localDigit localRef =>
+      joint (recode inputOrder incoming (sourceDimension incoming) (localDigit+inputLow*high)) localRef)
+      (recode childReturn child (sourceDimension child) digit) ref)
+    (recode output outputOrder (sourceDimension outputOrder) logical) reference
+
+/-- Restrict the child action to the domain of its retained finite code. -/
 noncomputable def callerUpdate {Reference : Type} {childRoles childState childChecked}
     (child : @RuntimeForestCode.Frame childRoles childState childChecked)
     (incoming inputOrder childReturn output outputOrder : Map) (inputLow outputLow : Nat)
-    (run : (Nat → Reference → ℂ) → Fin child.code.dimension → Reference → ℂ)
-    (joint : Nat → Reference → ℂ) (logical : Nat) (reference : Reference) : ℂ :=
-  blockJoint outputLow (fun digit high ref =>
-    onFinite (run (fun localDigit localRef =>
-      joint (recode inputOrder incoming (sourceDimension incoming) (localDigit+inputLow*high)) localRef))
-      (recode childReturn childChecked.bindings (sourceDimension childChecked.bindings) digit) ref)
-    (recode output outputOrder (sourceDimension outputOrder) logical) reference
+    (run : (Nat → Reference → ℂ) → Fin child.code.dimension → Reference → ℂ) :
+    (Nat → Reference → ℂ) → Nat → Reference → ℂ :=
+  callerAction childChecked.bindings incoming inputOrder childReturn output outputOrder inputLow outputLow
+    (fun joint => onFinite (run joint))
 
 open Qleisli.RuntimeNamedSelectionReturnOrder (actual_occurrence_return_order OccurrenceReturnOrder)
 open Qleisli.RuntimeForestProduct (referenceAction)
