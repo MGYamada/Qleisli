@@ -11,7 +11,8 @@ open QleisliKernel.Semantics.Observation (Event)
 open Raw.Observation (checkOps checkStep insertClassical)
 open RuntimeInterval (Computed)
 open RuntimeOrdinarySSA (Agreement Action Sequence)
-open Qleisli.RuntimeObservingPrefix (Issued)
+open Qleisli.RuntimeObservingPrefix (Issued checkOps_reference)
+open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.RuntimeObservingValueRetention (Supports)
 open Qleisli.Semantics.ObservingAction (History run step)
 
@@ -82,20 +83,25 @@ private theorem run_cons (dependencies : List Semantics.Finite.Dependency) (fuel
 private theorem checked_sequence {table operations after} (sequence : Sequence table operations after)
     (dependencies : List Semantics.Finite.Dependency) (fuel : Nat)
     (state next : Raw.Observation.State) (history : History) (reference : RuntimeOrdinarySSA.Valuation)
-    (agrees : Agreement reference history.values table) (supported : Supports (Issued state) history)
-    (checked : Computed (operations.foldlM (checkStep dependencies (checkOps dependencies fuel)) state) next) :
-    ∃ events result,
-      Semantics.Observation.readOps (fuel+1) state.quantum.reference operations =
-        some (next.quantum.reference,events) ∧
-      run dependencies (fuel+1) events history = some [result] ∧
+    (inherited : Nat → Prop) (agrees : Agreement reference history.values table)
+    (supported : Supports (fun id => inherited id ∨ Issued state id) history)
+    (checked : Computed (operations.foldlM (checkStep dependencies (checkOps dependencies fuel)) state) next)
+    {events : List Event}
+    (literal : Semantics.Observation.readOps (fuel+1) state.quantum.reference operations =
+      some (next.quantum.reference,events))
+    (avoids : WritesWithin events (fun id => ¬ inherited id)) :
+    ∃ result, run dependencies (fuel+1) events history = some [result] ∧
       result.hidden = history.hidden ∧ result.operator = history.operator ∧
-      Agreement reference result.values after ∧ Supports (Issued next) result := by
-  induction sequence generalizing state next history with
+      Agreement reference result.values after ∧
+      Supports (fun id => inherited id ∨ Issued next id) result := by
+  induction sequence generalizing state next history events with
   | nil table =>
     obtain ⟨work,left,read⟩ := checked
     have same := (pure_success _ _ work left read).1
     subst next
-    exact ⟨[],history,rfl,rfl,rfl,rfl,agrees,supported⟩
+    have noEvents : [] = events := congrArg Prod.snd (Option.some.inj literal)
+    subst events
+    exact ⟨history,rfl,rfl,rfl,agrees,supported⟩
   | @cons table operation operations after action tail ih =>
     obtain ⟨work,left,read⟩ := checked
     rw [List.foldlM_cons] at read
@@ -106,40 +112,68 @@ private theorem checked_sequence {table operations after} (sequence : Sequence t
       obtain ⟨_,_,finish⟩ := except_bind_success _ _ _ inserted
       have same := congrArg Raw.Observation.State.quantum (Except.ok.inj finish).symm
       exact same
+    let event := Event.classical action.raw action.output
+    change Semantics.Observation.readOps (fuel+1) state.quantum.reference ([operation] ++ operations) = _ at literal
+    rw [RuntimeAdjacentSlices.readOps_append,read_one action] at literal
+    change (Semantics.Observation.readOps (fuel+1) state.quantum.reference operations >>= fun pair =>
+      some (pair.1,event::pair.2)) = some (next.quantum.reference,events) at literal
+    obtain ⟨⟨last,rest⟩,restRead,returned⟩ := Option.bind_eq_some_iff.mp literal
+    cases Option.some.inj returned
+    have noInherited := avoids List.mem_cons_self (Qleisli.RuntimeObservingWrites.WritesId.classical action.raw action.output)
     have unused : Semantics.OrdinaryValue.lookup history.values action.output = none :=
-      RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (supported member))
+      RuntimeOriginalClassicalJoin.lookup_unissued (fun member => (supported member).elim noInherited fresh)
     obtain ⟨bit,computed⟩ := evaluate action.definition agrees
     have independent := Qleisli.Raw.Instrument.Denotation.expression_reference _ _ _ _ _ computed
     let intermediate : History := {history with values := history.values ++ [(action.output,bit)]}
     have nextAgrees : Agreement reference intermediate.values action.after :=
       action.preserves agrees bit 0 0 unused computed
-    have nextSupported : Supports (Issued middle) intermediate := by
+    have nextSupported : Supports (fun id => inherited id ∨ Issued middle id) intermediate := by
       intro id member
       change id ∈ (history.values ++ [(action.output,bit)]).map Prod.fst at member
-      change id ∈ middle.classical.map Prod.fst
+      change inherited id ∨ id ∈ middle.classical.map Prod.fst
       rw [ids,List.map_append]
       rw [List.map_append] at member
       rcases List.mem_append.mp member with old | new
-      · exact List.mem_append.mpr (Or.inl (supported old))
-      · exact List.mem_append.mpr (Or.inr new)
-    obtain ⟨events,result,restRead,restRun,hidden,operator,afterAgrees,afterSupported⟩ :=
-      ih middle next intermediate nextAgrees nextSupported ⟨middleWork,left,tailRead⟩
-    let event := Event.classical action.raw action.output
-    refine ⟨event::events,result,?_,?_,hidden,operator,afterAgrees,afterSupported⟩
-    · change Semantics.Observation.readOps (fuel+1) state.quantum.reference ([operation] ++ operations) = _
-      rw [RuntimeAdjacentSlices.readOps_append,read_one action]
-      rw [quantum] at restRead
-      change (do
-        let (last,later) ← Semantics.Observation.readOps (fuel+1) state.quantum.reference operations
-        pure (last,event::later)) = _
-      rw [restRead]
-      rfl
-    · apply run_cons dependencies fuel event events history intermediate result _ restRun
-      change (do
-        let value ← Qleisli.Semantics.RawInstrument.expression history.values action.raw
-        some [{history with values := history.values ++ [(action.output,value)]}]) = _
-      rw [independent]
-      rfl
+      · exact (supported old).imp (fun proof => proof) (fun present => List.mem_append.mpr (.inl present))
+      · exact .inr (List.mem_append.mpr (.inr new))
+    have restLiteral : Semantics.Observation.readOps (fuel+1) middle.quantum.reference operations =
+        some (next.quantum.reference,rest) := by rwa [quantum]
+    have restAvoids : WritesWithin rest (fun id => ¬ inherited id) :=
+      fun _ present _ write => avoids (List.mem_cons_of_mem _ present) write
+    obtain ⟨result,restRun,hidden,operator,afterAgrees,afterSupported⟩ :=
+      ih middle next intermediate nextAgrees nextSupported ⟨middleWork,left,tailRead⟩ restLiteral restAvoids
+    refine ⟨result,?_,hidden,operator,afterAgrees,afterSupported⟩
+    apply run_cons dependencies fuel event rest history intermediate result _ restRun
+    change (do
+      let value ← Qleisli.Semantics.RawInstrument.expression history.values action.raw
+      some [{history with values := history.values ++ [(action.output,value)]}]) = _
+    rw [independent]
+    rfl
+
+/-- An actual ordinary gap may carry inherited values outside its local
+issued set. Its own literal writes must avoid those inherited identities. -/
+theorem original_gap_with_inherited {dependencies program block start count before ssa}
+    (gap : @RuntimeOrdinaryBody.Gap dependencies program block start count before ssa)
+    (history : History) (reference : RuntimeOrdinarySSA.Valuation) (inherited : Nat → Prop)
+    (agrees : Agreement reference history.values ssa.table)
+    (supported : Supports (fun id => inherited id ∨ Issued gap.checked.interval.before id) history)
+    {events : List Event}
+    (literal : Semantics.Observation.readOps block.fuel gap.checked.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (gap.checked.interval.after.quantum.reference,events))
+    (avoids : WritesWithin events (fun id => ¬ inherited id)) :
+    ∃ result, run dependencies block.fuel events history = some [result] ∧
+      result.hidden = history.hidden ∧ result.operator = history.operator ∧
+      Agreement reference result.values gap.ssa.table ∧
+      Supports (fun id => inherited id ∨ Issued gap.checked.interval.after id) result := by
+  have checked := gap.checked.interval.intervalRead
+  cases depth : block.fuel with
+  | zero =>
+    rw [depth] at literal
+    cases literal
+  | succ fuel =>
+    rw [depth] at checked literal
+    exact checked_sequence gap.checked.sequence dependencies fuel _ _ history reference inherited
+      agrees supported (RuntimeAdjacentSlices.underlying checked) literal avoids
 
 /-- The independent run of the exact original ordinary gap preserves the
 operator and hidden outcomes, and returns the checked source SSA values. -/
@@ -156,17 +190,14 @@ theorem original_gap {dependencies program block start count before ssa}
       result.hidden = history.hidden ∧ result.operator = history.operator ∧
       Agreement reference result.values gap.ssa.table ∧
       Supports (Issued gap.checked.interval.after) result := by
-  have checked := gap.checked.interval.intervalRead
-  cases depth : block.fuel with
-  | zero =>
-    rw [depth] at checked
-    obtain ⟨_,_,impossible⟩ := checked
-    cases impossible
-  | succ fuel =>
-    rw [depth] at checked
-    exact checked_sequence gap.checked.sequence dependencies fuel _ _ history reference
-      agrees supported (RuntimeAdjacentSlices.underlying checked)
+  obtain ⟨work,left,checked⟩ := gap.checked.interval.intervalRead
+  obtain ⟨events,literal⟩ := checkOps_reference _ _ _ _ _ work left checked
+  obtain ⟨result,executed,hidden,operator,ordinary,support⟩ :=
+    original_gap_with_inherited gap history reference (fun _ => False) agrees
+      (fun _ member => .inr (supported member)) literal (fun _ _ _ _ impossible => impossible)
+  exact ⟨events,result,literal,executed,hidden,operator,ordinary,fun _ member => (support member).resolve_left id⟩
 
+#print axioms original_gap_with_inherited
 #print axioms original_gap
 
 end Qleisli.RuntimeOriginalOrdinaryGap

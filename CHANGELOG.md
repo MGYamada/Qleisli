@@ -82,6 +82,8 @@ development milestones from the scope of their evidence.
   arms and each phi destination, is fresh at the interval's entry. Both
   native readers issue the same ordinary IDs for the original operation
   list, so the enclosing check's freshness carries into the child replay.
+  Classical gaps, measurement results and classical phi merges preserve the
+  checked SSA valuation with inherited IDs when their writes avoid that history.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when
