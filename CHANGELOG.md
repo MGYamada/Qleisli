@@ -6,6 +6,17 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Compose ordered source and Raw result families along the original checked
+  body prefix. The shared proof follows the actual owner, SSA and child
+  execution receipts and retains the final source return order. The original
+  observation uses its source basis layout and owner lookups to derive the
+  ordered outcome operators. Classical gaps retain the incoming operator
+  and update the checked SSA state. A named single-primitive call uses the
+  original operand and returned caller owner, retaining visible SSA and
+  hidden outcomes. The final checked source return reorders the logical
+  operator of every result. General pure steps, calls and branches remain
+  separate local proof obligations.
+
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.
   The law retains the actual prefix, suffix and outcome records. It compares
