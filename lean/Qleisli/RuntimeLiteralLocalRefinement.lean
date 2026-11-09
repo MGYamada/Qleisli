@@ -107,6 +107,16 @@ private noncomputable def sourceInlineHistory {dependencies program block start 
   (sourceInlinePrimitive original source.owners.bindings source.operator).map fun operator =>
     [{source with owners := original.after, operator}]
 
+noncomputable def sourceObservationStep {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa) (scope : List Edge) (ordinal : Nat) (source : SourceHistory) :
+    Option (List SourceHistory) := do
+  let spectators := RuntimeObservationAction.spectators event
+  let survivors ← spectators.mapM (byOwner source.owners.bindings)
+  let outcomes ← sourceErasure observation.checked.operand spectators source.owners.bindings source.operator
+  return outcomes.map (recordObservation source (scope ++ [.atOrdinal ordinal]) survivors observation.checked.measured)
+
 /-- Evaluate the original gap, observation and supported named steps. The
 remaining constructors use their own source action. -/
 noncomputable def sourceStep {dependencies program block}
@@ -116,11 +126,7 @@ noncomputable def sourceStep {dependencies program block}
     (step : Step dependencies program block) (source : SourceHistory) : Option (List SourceHistory) :=
   match step with
   | .gap _ => some [source]
-  | .observation (event := event) observation => do
-    let spectators := RuntimeObservationAction.spectators event
-    let survivors ← spectators.mapM (byOwner source.owners.bindings)
-    let outcomes ← sourceErasure observation.checked.operand spectators source.owners.bindings source.operator
-    return outcomes.map (recordObservation source (scope ++ [.atOrdinal prior.length]) survivors observation.checked.measured)
+  | .observation observation => sourceObservationStep observation scope prior.length source
   | .pure (.primitive action original) =>
     match literalForm action with
     | some _ => sourceInlineHistory original source
@@ -130,6 +136,61 @@ noncomputable def sourceStep {dependencies program block}
     match inspect? step with
     | some held => sourceNamedPrimitive held source
     | none => other prior step source
+
+/-- Record the independently evaluated observation outcomes on the same
+source prefix and update visible measurement keys from the actual results. -/
+theorem observation_results_refine {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa)
+    (encoding : HistoryEncoding) (inputs : List Nat) (scope : List Edge) (ordinal : Nat)
+    {source : SourceHistory} {history : History} {expected : List (Nat × (Nat → Nat → ℂ))}
+    {results : List History}
+    (agrees : EncodedHistoryAgrees encoding inputs observation.checked.interval.before before ssa source history)
+    (erased : sourceErasure observation.checked.operand (RuntimeObservationAction.spectators event)
+      before.bindings source.operator = some expected)
+    (paired : List.Forall₂ (fun sourceResult result =>
+      result.values = (match observation.checked.measured with
+        | none => history.values
+        | some id => history.values ++ [(id,sourceResult.1 == 1)]) ∧
+      result.hidden = history.hidden ++ [sourceResult.1] ∧
+      Agrees inputs observation.checked.interval.after observation.ordinary result ∧
+      encoding observation.checked.interval.after observation.checked.after.bindings result.operator sourceResult.2)
+      expected results) :
+    ∃ expectedHistories, sourceObservationStep observation scope ordinal source = some expectedHistories ∧
+      List.Forall₂ (EncodedHistoryAgrees encoding inputs observation.checked.interval.after
+        observation.after observation.ordinary) expectedHistories results := by
+  obtain ⟨ownerState,hidden,bits,values,_⟩ := agrees
+  have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
+  have survivors := Qleisli.RuntimeOriginalObservation.original_after_bindings observation.checked
+  let record := recordObservation source (scope ++ [.atOrdinal ordinal])
+    observation.checked.after.bindings observation.checked.measured
+  refine ⟨expected.map record,?_,?_⟩
+  · simp only [sourceObservationStep, incoming, survivors, erased, bind, Option.bind, pure, record]
+  · rw [List.forall₂_map_left_iff]
+    apply paired.imp
+    intro expectedResult result matched
+    refine ⟨?_,?_,?_,matched.2.2.1,matched.2.2.2⟩
+    · simp [record, recordObservation, RuntimeOrdinaryBody.Observation.after, ownerState]
+    · simpa [record, recordObservation, hidden] using matched.2.1
+    · have keys := observation_measurement_keys observation
+      cases measured : observation.checked.measured with
+      | none =>
+        rw [measured] at keys
+        simpa only [keys,matched.1,measured,record,recordObservation,Option.isSome,
+          Bool.false_eq_true,if_false,List.append_nil] using bits
+      | some id =>
+        rw [measured] at keys
+        obtain ⟨key,outputId,keys⟩ := keys
+        have fresh := (observation_measurement_ids observation measured).1
+        have unused := Qleisli.RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (values.2 member))
+        have newBit := Semantics.OrdinaryValue.lookup_append_fresh (expectedResult.1 == 1) unused
+        have oldBits := measurementBits_retains _
+          (Semantics.OrdinaryValue.append_extends history.values [(id,expectedResult.1 == 1)]) bits
+        rw [keys,matched.1,measured]
+        unfold measurementBits at oldBits ⊢
+        simp only [List.mapM_append,oldBits,List.mapM_cons,List.mapM_nil,outputId,newBit,bind,Option.bind,pure,
+          record,recordObservation,measured,Option.isSome,if_true]
 
 /-- These constructors supply their own local source action law. -/
 def NeedsSourceAction {dependencies program block} : @Step dependencies program block → Prop
@@ -282,40 +343,14 @@ theorem sourceStep_refines {artifact root execution fuel program block}
   | observation observation =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩
-    obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
+    have incomingAgrees := agrees
+    obtain ⟨_,_,_,values,_,_,bindings,input,represented⟩ := agrees
     obtain ⟨_,output,expected,erased,paired⟩ :=
       observation_source_history observation bindings input inputs history source.operator values represented read executed
-    simp only [bindings] at erased
-    have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
-    have survivors := Qleisli.RuntimeOriginalObservation.original_after_bindings observation.checked
-    let record := recordObservation source (scope ++ [.atOrdinal prior.length])
-      observation.checked.after.bindings observation.checked.measured
-    refine ⟨expected.map record,?_,?_⟩
-    · simp only [sourceStep, incoming, survivors, erased, bind, Option.bind, pure, record]
-    · rw [List.forall₂_map_left_iff]
-      apply paired.imp
-      intro expectedResult result matched
-      refine ⟨?_,?_,?_,matched.2.2.1,_,observation.checked.after,rfl,output,matched.2.2.2⟩
-      · simp [record, recordObservation, RuntimeOrdinaryBody.Observation.after, ownerState]
-      · simpa [record, recordObservation, hidden] using matched.2.1
-      · have keys := observation_measurement_keys observation
-        cases measured : observation.checked.measured with
-        | none =>
-          rw [measured] at keys
-          simpa only [keys,matched.1,measured,record,recordObservation,Option.isSome,
-            Bool.false_eq_true,if_false,List.append_nil] using bits
-        | some id =>
-          rw [measured] at keys
-          obtain ⟨key,outputId,keys⟩ := keys
-          have fresh := (observation_measurement_ids observation measured).1
-          have unused := Qleisli.RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (values.2 member))
-          have newBit := Semantics.OrdinaryValue.lookup_append_fresh (expectedResult.1 == 1) unused
-          have oldBits := measurementBits_retains _
-            (Semantics.OrdinaryValue.append_extends history.values [(id,expectedResult.1 == 1)]) bits
-          rw [keys,matched.1,measured]
-          unfold measurementBits at oldBits ⊢
-          simp only [List.mapM_append,oldBits,List.mapM_cons,List.mapM_nil,outputId,newBit,bind,Option.bind,pure,
-            record,recordObservation,measured,Option.isSome,if_true]
+    rw [bindings] at erased
+    exact observation_results_refine observation NativeHistoryEncoding inputs scope prior.length incomingAgrees erased
+      (paired.imp fun _ _ matched => ⟨matched.1,matched.2.1,matched.2.2.1,_,observation.checked.after,
+        rfl,output,matched.2.2.2⟩)
 
 noncomputable def returnHistory (returned : Map) (source : SourceHistory) : SourceHistory :=
   { source with

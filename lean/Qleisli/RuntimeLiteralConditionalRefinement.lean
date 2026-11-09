@@ -1,6 +1,6 @@
 import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeBranchInputDomain
-import Qleisli.RuntimeLiteralStructuralRefinement
+import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeOriginalSparsePhi
 
 /-! A conditional uses the original prefix to select an arm, applies the
@@ -453,19 +453,20 @@ theorem original_body_source_steps {artifact owner name arguments request prepar
   exact sourceStep_with_conditionals (fuel := 125) body.checked.result.steps row.ordinals scope
     (original_body_condition_inputs body row) children childLaws fallback remaining
 
-/-- Structural, ordinary and conditional steps use the shared sparse laws.
-Other original operations supply their own source action. -/
+/-- Structural, ordinary, observation and conditional steps use the shared
+sparse laws. Other original operations supply their own source action. -/
 def NeedsSparseLeaf {dependencies program block} : Step dependencies program block → Prop
-  | .conditional .. => False
+  | .conditional .. | .observation _ => False
   | step => NeedsSparseSourceAction step
 
 /-- Match the checked recursion depth. A child keeps its original path and
 starts a new prefix in the scope selected by its parent condition. -/
 noncomputable def sparseStepsAt {dependencies}
     (fallback : ScopedSourceSteps dependencies) (inputs : List Nat) : Nat → ScopedSourceSteps dependencies
-  | 0 => fun scope => withSparseSteps (fallback scope)
+  | 0 => fun scope => withSparseSteps (withSparseObservation (fallback scope) scope)
   | depth+1 => fun scope =>
-    withSparseSteps (withBranchSteps (sparseStepsAt fallback inputs depth) (fallback scope) inputs scope)
+    withSparseSteps (withSparseObservation
+      (withBranchSteps (sparseStepsAt fallback inputs depth) (fallback scope) inputs scope) scope)
 
 private theorem conditional_zero_impossible {artifact root mode program block step}
     (checked : @ConditionalRun artifact root mode (runBlockCore artifact root mode 0) program block step) :
@@ -477,8 +478,8 @@ private theorem conditional_zero_impossible {artifact root mode program block st
     change (Except.error QleisliKernel.Finite.Error.limit,beforeThen) = (Except.ok (left,leftReceipts),afterThen) at thenRead
     cases thenRead
 
-/-- Compose actual nested conditionals, structural actions and ordinary SSA
-updates on one invariant. Only the other operation cases need local laws. -/
+/-- Compose actual nested conditionals, structural actions, observations and
+ordinary SSA updates on one invariant. Only the other operation cases need local laws. -/
 theorem sparseStepsAt_refine {artifact root mode}
     (fallback : ScopedSourceSteps root.dependencies) (inputs : List Nat)
     (leaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)),
@@ -494,16 +495,20 @@ theorem sparseStepsAt_refine {artifact root mode}
   | zero =>
     intro program block scope steps rows
     apply sourceStep_with_sparse_structure
+    apply sourceStep_with_sparse_observation
     intro prior first later position checked ownerBefore ownerAfter ordinaryBefore ordinaryAfter
       owners ordinary chunk read source history outputs agrees executed
     cases first
     case conditional =>
-      exact False.elim (conditional_zero_impossible checked.1)
+      exact False.elim (conditional_zero_impossible checked.1.1)
+    case observation =>
+      exact False.elim checked.2
     all_goals
-      exact leaves 0 scope steps prior _ later position checked owners ordinary read agrees executed
+      exact leaves 0 scope steps prior _ later position ⟨checked.1.1,checked.1.2⟩ owners ordinary read agrees executed
   | succ depth ih =>
     intro program block scope steps rows
     apply sourceStep_with_sparse_structure
+    apply sourceStep_with_sparse_observation
     intro prior first later position checked ownerBefore ownerAfter ordinaryBefore ordinaryAfter
       owners ordinary chunk read source history outputs agrees executed
     have row := rows first (by rw [← position]; exact List.mem_append_right _ List.mem_cons_self)
@@ -513,12 +518,14 @@ theorem sparseStepsAt_refine {artifact root mode}
       rcases ordinary with ⟨rfl,rfl⟩
       obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
         sparse_conditional_refines (artifact := artifact) (mode := mode) (fuel := depth)
-          action thenSteps elseSteps checked.1 inputs row (sparseStepsAt fallback inputs depth)
+          action thenSteps elseSteps checked.1.1 inputs row (sparseStepsAt fallback inputs depth)
           ih scope prior.length agrees read executed
       exact ⟨expected.map (finishArm action choice),
         by simp only [withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
+    case observation =>
+      exact False.elim checked.2
     all_goals
-      exact leaves (depth+1) scope steps prior _ later position checked owners ordinary read agrees executed
+      exact leaves (depth+1) scope steps prior _ later position ⟨checked.1.1,checked.1.2⟩ owners ordinary read agrees executed
 
 /-- Use the decoded row of the actual checked root in the recursive sparse
 step proof, including at each selected child branch. -/

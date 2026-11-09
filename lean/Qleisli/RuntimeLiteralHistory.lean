@@ -141,7 +141,7 @@ theorem run_single (dependencies : List Dependency) (fuel : Nat) (event : Event)
   simp only [List.foldlM_cons,List.foldlM_nil,bind_pure]
   cases executed : step dependencies (run dependencies fuel) event history <;> simp [advance,executed]
 
-private theorem observation_permutation {sources caller functionName dependencies program event block position previous roles}
+theorem observation_permutation {sources caller functionName dependencies program event block position previous roles}
     (observed : @RuntimeObservationAction.Checked sources caller dependencies program functionName
       event block position previous)
     (source : RuntimeOwnerMap.Checked roles observed.interval.before)

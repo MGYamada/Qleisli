@@ -130,6 +130,8 @@ import Qleisli.RuntimeSemanticForest
 import Qleisli.RuntimeStructuralSourceAction
 import Qleisli.RuntimeStructuralHistory
 import Qleisli.RuntimeOriginalSparsePhi
+import Qleisli.RuntimeOriginalSparseObservation
+import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeLiteralStructuralRefinement
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
