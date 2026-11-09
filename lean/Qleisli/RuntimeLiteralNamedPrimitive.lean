@@ -1,6 +1,7 @@
 import Qleisli.RuntimeLiteralObservationAction
 import Qleisli.RuntimeNamedThreeFrameChain
 import Qleisli.RuntimeLiteralInlinePrimitive
+import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! Derive a named primitive's source action in the original caller
 coordinates and compare it with the actual literal history. The full
@@ -245,5 +246,42 @@ theorem inline_primitive_history {dependencies program block start count input o
     exact actual.trans (outputAction.trans (RuntimeNamedThreeFrameChain.frameAt_action stateEq after expected row col).symm)
 
 #print axioms inline_primitive_history
+
+section PrimitiveExamples
+open SourceRuntimeValues
+open Semantics.Exact (Scalar)
+
+/-- Two original small source prefixes retain the same owner and ordinary
+values, including a Unit spectator. Compare their exact source coefficients. -/
+private def readPrimitiveExample (source : String) :=
+  ((SourceRuntimeTrace.read #[("main",source)] "main" "route").run 20000000).1.toOption
+
+private def primitiveExampleBoundary (source : String) := (readPrimitiveExample source).map fun checked =>
+  (valueOwners checked.summary.value,ordinary checked.summary.value,checked.summary.consumed)
+
+private def primitiveExampleCoefficient (source : String) : Option Scalar := do
+  let checked ← readPrimitiveExample source
+  let [event] := checked.events | none
+  let (kind,owner) ← Qleisli.RuntimeSourcePrimitiveAction.operand event
+  let operator ← Semantics.PrimitiveOperator.meaning kind owner.basis
+  operator.entries[1]?
+
+private def hadamardExample := r#"#![no_implicit_prelude]
+pub unitary fn route(c: Bit, a: Q<Bit>, u: Q<Unit>) -> (Bit, Q<Bit>, Q<Unit>) {
+    (c, h(a), u)
+}
+"#
+private def zeroPhaseExample := r#"#![no_implicit_prelude]
+pub unitary fn route(c: Bit, a: Q<Bit>, u: Q<Unit>) -> (Bit, Q<Bit>, Q<Unit>) {
+    (c, phase[0,3](a), u)
+}
+"#
+
+#guard (primitiveExampleBoundary hadamardExample).isSome
+#guard primitiveExampleBoundary hadamardExample == primitiveExampleBoundary zeroPhaseExample
+#guard primitiveExampleCoefficient hadamardExample == some Semantics.PrimitiveOperator.halfRoot
+#guard primitiveExampleCoefficient zeroPhaseExample == some Scalar.zero
+
+end PrimitiveExamples
 
 end Qleisli.RuntimeLiteralHistory
