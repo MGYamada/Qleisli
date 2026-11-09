@@ -20,7 +20,6 @@ open Qleisli.RuntimeSparseBlockEncoding (available_carriers blockJoint coefficie
 open Qleisli.RuntimeNamedHeadCoefficients (fibre)
 open Qleisli.RuntimeForestRegroup (sourceDimension)
 open Qleisli.MixedRadix (recode)
-open Qleisli.RuntimeLiteralHistory (Agrees)
 open Qleisli.RuntimeObservingPrefix (Issued checkOps_reference_with_writes)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values)
 open Qleisli.Semantics.ObservingAction (History run)
@@ -113,14 +112,15 @@ values, including earlier values needed by a visible phi expression. -/
 theorem visible_entry_agreement {dependencies program block start count args old effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count args old effect)
     (inputs : List Nat) (history : History)
-    (agrees : Agrees inputs scope.interval.before old history) :
+    (agrees : RuntimeOrdinarySSA.Agreement
+      (RuntimeOrdinaryBody.valuation inputs old.measurements history.values) history.values old.table) :
     RuntimeOrdinarySSA.Agreement
       (RuntimeOrdinaryBody.valuation inputs scope.visible.ssa.measurements history.values)
       history.values scope.visible.ssa.table := by
   intro id expression member
   change (id,expression) ∈ scope.visible.table at member
   rw [scope.visible.original] at member
-  exact agrees.1 id expression (List.mem_filter.mp member).1
+  exact agrees id expression (List.mem_filter.mp member).1
 
 /-- The original child trace retains inherited values. Any value in a result
 is covered by the parent entry or the child's own checked issued set. -/

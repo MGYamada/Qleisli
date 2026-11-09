@@ -23,8 +23,6 @@ open Qleisli.MixedRadix (recode)
 open Qleisli.Semantics.Exact (scalar)
 open Qleisli.RuntimeStructuralHistory (Represents)
 open Qleisli.Semantics.ObservingAction (History run)
-open Qleisli.RuntimeObservingPrefix (Issued)
-open Qleisli.RuntimeObservingValueRetention (Supports)
 
 /-- Keep an arbitrary correlated source coefficient on the physical
 spectator coordinate of the original caller row. -/
@@ -132,12 +130,12 @@ def NamedHistoryEntry {dependencies program block} : Step dependencies program b
             (spectators.map (·.port)) actual localHistory ∧
           (∀ high, Represents frame scope.prepared.block.entry (localHistory high)
             (coordinateFibre checked.bindings selected spectators high joint)) ∧
-          (∀ ordinals, Qleisli.RuntimeLiteralHistory.Agrees ordinals scope.interval.before ordinary actual →
+          (∀ ordinals, RuntimeOrdinarySSA.Agreement
+            (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table →
             ∀ high, RuntimeOrdinarySSA.Agreement
               (RuntimeOrdinaryBody.valuation ordinals scope.visible.ssa.measurements (localHistory high).values)
               (localHistory high).values scope.visible.ssa.table) ∧
           ∀ {parentEvents : List Event} {parents : List History},
-            Supports (Issued scope.interval.before) actual →
             readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
               some (scope.interval.after.quantum.reference,parentEvents) →
             run dependencies block.fuel parentEvents actual = some parents →
@@ -163,8 +161,8 @@ theorem actual_named_history_entry {artifact root execution fuel program block s
     have paired := original_child_history scope boundary checked same parent frame actual joint represented (law joint)
     refine ⟨paired,fun _ _ _ _ => rfl,fun ordinals agrees => visible_child_input scope ordinals actual _
       paired.values agrees,?_⟩
-    intro parentEvents parents inherited read executed
-    exact original_call_run scope boundary checked same actual _ paired inherited read executed
+    intro parentEvents parents read executed
+    exact original_call_run scope boundary checked same actual _ paired read executed
 
 #print axioms inputFibre_coordinate
 #print axioms actual_named_history_entry

@@ -10,7 +10,7 @@ open QleisliKernel QleisliKernel.Qirf
 open Semantics.Observation (Event readOps)
 open Semantics.Raw (Port)
 open RuntimeCallTraceFrames (Partition)
-open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
+open Qleisli.RuntimeObservingPrefix (Issued)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values)
 open Qleisli.RuntimeSparseNamedBoundary (visible_entry_agreement)
 open Qleisli.Semantics.ObservingAction (History run)
@@ -26,10 +26,11 @@ structure CheckedCallRun
   paired : Results dependencies block.fuel scope.prepared.block.fuel scope.interval.after.quantum.reference
     scope.localAfter.quantum.reference spectators parentEvents childEvents actual localHistory parents children
   parentValues : ∀ result ∈ parents,
-    Semantics.OrdinaryValue.Extends actual.values result.values ∧ Supports (Issued scope.interval.after) result
+    Semantics.OrdinaryValue.Extends actual.values result.values ∧
+      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.interval.after id) result
   childValues : ∀ high result, result ∈ children.map (fun history => history high) →
     Semantics.OrdinaryValue.Extends actual.values result.values ∧
-      Supports (fun id => Issued scope.interval.before id ∨ Issued scope.localAfter id) result
+      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.localAfter id) result
 
 /-- Relate the result list of the actual caller interval to the original
 prepared child run on every spectator slice. Inherited ordinary values and
@@ -45,7 +46,6 @@ theorem original_call_run
     (agrees : Agrees scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
       ((RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port))
       actual localHistory)
-    (inherited : Supports (Issued scope.interval.before) actual)
     {parentEvents : List Event} {parents : List History}
     (read : readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
       some (scope.interval.after.quantum.reference,parentEvents))
@@ -67,21 +67,15 @@ theorem original_call_run
     obtain ⟨children,results⟩ := segment.transport actual localHistory agrees parents executed
     refine ⟨cEvents,children,⟨segment.partition,cRead,?_,?_,?_⟩⟩
     · simpa only [depth] using results
-    · have keeps : scope.interval.before.classical ⊆ scope.interval.after.classical := by
-        have history := scope.interval.history.2.2.2
-        simp only [Raw.Observation.history_eq,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at history
-        exact history.2
-      have support : Supports (Issued scope.interval.after) actual :=
-        fun _ member => issued_mono keeps (inherited member)
-      exact run_values dependencies (fuel+1) parentEvents actual _ parentWrites support executed
+    · exact run_values dependencies (fuel+1) parentEvents actual _
+        (parentWrites.mono (fun _ issued => Or.inr issued)) (fun _ present => Or.inl present) executed
     · intro high result member
-      let allowed := fun id => Issued scope.interval.before id ∨ Issued scope.localAfter id
+      let allowed := fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.localAfter id
       have support : Supports allowed (localHistory high) := by
-        intro id used
+        intro id present
         apply Or.inl
-        apply inherited
         rw [agrees.values high]
-        exact used
+        exact present
       have retained := run_values dependencies 65 cEvents (localHistory high) allowed
         (writes.mono (fun _ issued => Or.inr issued)) support (results.childRun high) result member
       rw [← agrees.values high] at retained
@@ -94,7 +88,8 @@ theorem visible_child_input
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (ordinals : List Nat) (actual : History) (localHistory : Nat → History)
     (same : ∀ high, actual.values = (localHistory high).values)
-    (ordinaryAgrees : Qleisli.RuntimeLiteralHistory.Agrees ordinals scope.interval.before ordinary actual) :
+    (ordinaryAgrees : RuntimeOrdinarySSA.Agreement
+      (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table) :
     ∀ high, RuntimeOrdinarySSA.Agreement
       (RuntimeOrdinaryBody.valuation ordinals scope.visible.ssa.measurements (localHistory high).values)
       (localHistory high).values scope.visible.ssa.table := by
