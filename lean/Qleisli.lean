@@ -133,6 +133,9 @@ import Qleisli.RuntimeOriginalSparsePhi
 import Qleisli.RuntimeOriginalSparseObservation
 import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeSparseHeadAction
+import Qleisli.RuntimeSparseBlockEncoding
+import Qleisli.RuntimeSparseSelectionAction
+import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralStructuralRefinement
