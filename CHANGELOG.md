@@ -20,6 +20,10 @@ development milestones from the scope of their evidence.
   input and output proof as named primitives. The shared arm induction uses
   their original source operator and Raw events, preserving the ordered
   spectators, visible values, hidden outcomes and arbitrary reference columns.
+- Retain the checked operand and result token order of original joins, splits,
+  Unit introduction and Unit elimination. Prove their source-coordinate
+  regrouping preserves the physical operator, visible values and hidden
+  outcomes. The result uses the independent sparse source layout.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

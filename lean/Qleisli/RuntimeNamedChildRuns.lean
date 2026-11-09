@@ -487,7 +487,9 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         have same := (pure_success _ _ _ _ returned).1
         subst after
         have chain := entered
-        exact chain.snoc True.intro True.intro rfl ⟨atStart.symm,rfl⟩ True.intro
+        refine chain.snoc ⟨?_,rfl⟩ True.intro rfl ⟨atStart.symm,rfl⟩ True.intro
+        change history = {history with bindings := frame.bindings}
+        rw [sameBindings]
       · split at h
         · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h
           have same := (pure_success _ _ _ _ returned).1
