@@ -14,17 +14,13 @@ development milestones from the scope of their evidence.
   and update the checked SSA state. A named single-primitive call uses the
   original operand and returned caller owner, retaining visible SSA and
   hidden outcomes. The final checked source return reorders the logical
-  operator of every result. General pure steps, calls and branches remain
+  operator of every result. General pure steps and named calls remain
   separate local proof obligations.
-- Retain the visible measurement bits computed by the source prefix. They
-  determine the same ordinary branch as the literal Raw history. The
-  branch join now carries the selected source result list through the
-  quantum and classical phis, preserving each operator and outcome.
-  The recursive arm refinement remains a separate premise.
-- Apply the shared source refinement to the checked recursive arm traversal.
-  Its input and return orders are evaluated from the original owner roles.
-  The complete Raw exit and event list match the same branch receipt used
-  by the parent phi merge. Each remaining step needs its local source law.
+- Use the source prefix's measurement bits to select the original branch.
+  Apply the shared refinement to its checked child traversal and preserve
+  the selected path, operator and ordered results through the parent phis.
+  This branch proof requires a canonical input row and smaller-fuel laws for
+  the child steps.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

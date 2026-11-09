@@ -8,13 +8,13 @@ same ordered family of histories.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeOriginalBranchJoin
 open QleisliKernel QleisliKernel.Qirf
-open RuntimeForestCode (Frame OwnerCodes)
-open RuntimeOwnerCodeReindex (dimensionAt reindex)
+open RuntimeForestCode (Frame)
+open RuntimeOwnerCodeReindex (dimensionAt)
 open RuntimeOrdinarySSA (Agreement bitValue)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values)
 open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
 open Qleisli.RuntimeOriginalQuantumPhi (armBindings outputBindings original_quantum_phi_action)
-open Qleisli.RuntimeForestOrderedProduct (layouts)
+open Qleisli.RuntimeForestRegroup (sourceDimension dimensionAt_source)
 open Qleisli.Semantics.ObservingAction (History run step merge)
 open Qleisli.RuntimeNamedThreePackedInstrument (advance_pure pureHistory run_append_event)
 open Qleisli.RuntimeForestProduct (referenceAction)
@@ -33,6 +33,15 @@ def RepresentsOperator {roles state checked} (frame : @Frame roles state checked
     (history : History) (joint : Nat → Nat → ℂ) : Prop :=
   ∀ col, RawFiniteRows.OnRows state.quantum.frame.length (fun row => history.operator row col)
     (fun row => referenceAction frame joint row col)
+
+/-- Logical coordinate transport through the source owners bound to the
+actual phi. Cardinalities come from the original basis trees. -/
+def sourcePhiIndex {dependencies program block offset actual source spectators leftRoles rightRoles outputRoles left right}
+    (bound : @RuntimeOwnerPhis.Bound dependencies program block offset actual source spectators
+      leftRoles rightRoles outputRoles left right) (choice : Bool) (logical : Nat) : Nat :=
+  let incoming := (armChecked left right choice).bindings
+  Qleisli.MixedRadix.recode (armBindings bound choice) incoming (sourceDimension incoming)
+    (Qleisli.MixedRadix.recode bound.output.bindings (outputBindings bound) (sourceDimension (outputBindings bound)) logical)
 
 private def armPermutation {dependencies program block offset}
     (actual : @RuntimeInterval.Branch dependencies program block offset) (choice : Bool) : Semantics.Raw.Event :=
@@ -71,46 +80,37 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
     (input : List Nat) (member : input ∈ action.condition.inputs.rows) (bits : List Bool)
     (width : bits.length = ordinary.measurements.length) (history : History)
     {SourceResult : Type} (sourceRun : Bool → Option (List SourceResult))
-    (operator : SourceResult → Nat → Nat → ℂ) (outcomes : SourceResult → List Nat) :
+    (operator : SourceResult → Nat → Nat → ℂ) (outcomes : SourceResult → List Nat)
+    (retains : SourceResult → Prop) :
     let reference := RuntimeBranchCondition.reference input ordinary.measurements bits
     Agreement reference history.values ordinary.table →
     Supports (Issued actual.interval.before) history →
     (∀ choice,
       Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice) →
-      ∃ frame : Frame (armChecked action.thenFrame action.elseFrame choice),
       ∃ expected : List SourceResult, ∃ returned : List History,
         sourceRun choice = some expected ∧
         run dependencies actual.childFuel (trace.armBody choice) history = some returned ∧
         List.Forall₂ (fun logical result =>
-          result.hidden = outcomes logical ∧
+          retains logical ∧ result.hidden = outcomes logical ∧
           Agreement reference result.values (if choice then leftOrdinary.table else rightOrdinary.table) ∧
-          RepresentsOperator frame result (operator logical)) expected returned) →
+          ∃ frame : Frame (armChecked action.thenFrame action.elseFrame choice),
+            RepresentsOperator frame result (operator logical)) expected returned) →
     ∃ choice,
       Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice) ∧
-      ∃ frame : Frame (armChecked action.thenFrame action.elseFrame choice),
-      ∃ output : Frame action.ownerPhis.output,
-      ∃ beforeCodes : OwnerCodes (armBindings action.ownerPhis choice),
-      ∃ afterCodes : OwnerCodes (outputBindings action.ownerPhis),
       ∃ expected : List SourceResult, ∃ returned results : List History,
-        reindex frame.owners (armBindings action.ownerPhis choice) = some beforeCodes ∧
-        layouts afterCodes = layouts beforeCodes ∧
-        reindex afterCodes action.ownerPhis.output.bindings = some output.owners ∧
         sourceRun choice = some expected ∧
         run dependencies actual.childFuel (trace.armBody choice) history = some returned ∧
         step dependencies (run dependencies actual.childFuel)
           (RuntimeOriginalBranch.branchEvent actual trace.left trace.right) history = some results ∧
-        let index := fun logical =>
-          Qleisli.MixedRadix.recode (armBindings action.ownerPhis choice)
-            (armChecked action.thenFrame action.elseFrame choice).bindings (dimensionAt frame.owners)
-            (Qleisli.MixedRadix.recode action.ownerPhis.output.bindings (outputBindings action.ownerPhis)
-              (dimensionAt afterCodes) logical)
         List.Forall₂ (fun logical joined =>
-          joined.hidden = outcomes logical ∧ Agreement reference joined.values action.ordinaryAfter.table ∧
-          RepresentsOperator output joined (fun row column => operator logical (index row) column)) expected results := by
+          retains logical ∧ joined.hidden = outcomes logical ∧ Agreement reference joined.values action.ordinaryAfter.table ∧
+          ∃ output : Frame action.ownerPhis.output,
+            RepresentsOperator output joined (fun row column =>
+              operator logical (sourcePhiIndex action.ownerPhis choice row) column)) expected results := by
   intro reference agrees incoming armProof
   obtain ⟨choice,condition,actualStep⟩ := RuntimeOriginalBranch.original_branch_step action.condition trace
     (run dependencies actual.childFuel) input member bits width history agrees
-  obtain ⟨frame,expected,returned,sourceRead,bodyRead,paired⟩ := armProof choice condition
+  obtain ⟨expected,returned,sourceRead,bodyRead,paired⟩ := armProof choice condition
   obtain ⟨kept,writes⟩ := RuntimeOriginalBranch.original_arm_writes trace choice
   have supported : Supports (Issued (if choice then actual.thenState else actual.elseState)) history := by
     intro id member
@@ -119,21 +119,19 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
   let arm := armChecked action.thenFrame action.elseFrame choice
   have sameBindings : arm.bindings = if choice then action.thenFrame.bindings else action.elseFrame.bindings := by
     cases choice <;> rfl
-  obtain ⟨output,beforeCodes,afterCodes,inputRead,layoutsEq,outputRead,_equation,quantum⟩ :=
-    original_quantum_phi_action actual action.ownerPhis trace choice arm sameBindings frame
-  let index := fun logical =>
-    Qleisli.MixedRadix.recode (armBindings action.ownerPhis choice) arm.bindings (dimensionAt frame.owners)
-      (Qleisli.MixedRadix.recode action.ownerPhis.output.bindings (outputBindings action.ownerPhis)
-        (dimensionAt afterCodes) logical)
   let transport := pureHistory dependencies [armPermutation actual choice]
   have mergeStep : ∀ logical current, current ∈ returned →
-      (current.hidden = outcomes logical ∧
+      (retains logical ∧ current.hidden = outcomes logical ∧
         Agreement reference current.values (if choice then leftOrdinary.table else rightOrdinary.table) ∧
-        RepresentsOperator frame current (operator logical)) →
+        ∃ frame : Frame arm, RepresentsOperator frame current (operator logical)) →
       ∃ joined, merge choice actual.classical (transport current) = some joined ∧
-        joined.hidden = outcomes logical ∧ Agreement reference joined.values action.ordinaryAfter.table ∧
-        RepresentsOperator output joined (fun row column => operator logical (index row) column) := by
-      intro logical current present ⟨outcome,selected,encoded⟩
+        retains logical ∧ joined.hidden = outcomes logical ∧ Agreement reference joined.values action.ordinaryAfter.table ∧
+        ∃ output : Frame action.ownerPhis.output,
+          RepresentsOperator output joined (fun row column =>
+            operator logical (sourcePhiIndex action.ownerPhis choice row) column) := by
+      intro logical current present ⟨keptSource,outcome,selected,frame,encoded⟩
+      obtain ⟨output,_,afterCodes,_,_,_,_,quantum⟩ :=
+        original_quantum_phi_action actual action.ownerPhis trace choice arm sameBindings frame
       obtain ⟨retained,issued⟩ := historyFacts current present
       obtain ⟨moved,ran,hidden,values,represented⟩ :=
         quantum (run dependencies (actual.childFuel-1)) (operator logical) current encoded
@@ -150,14 +148,16 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
       obtain ⟨joined,joinedRead,joinedHidden,sameOperator,agreement⟩ :=
         RuntimeOriginalClassicalJoin.original_merge_agrees action reference choice (transport current)
           condition old (by rwa [values]) (by rwa [values])
-      refine ⟨joined,joinedRead,joinedHidden.trans (hidden.trans outcome),agreement,?_⟩
+      refine ⟨joined,joinedRead,keptSource,joinedHidden.trans (hidden.trans outcome),agreement,output,?_⟩
       intro column row bounded
       rw [sameOperator]
+      change (transport current).operator row column = _
+      dsimp only [sourcePhiIndex]
+      rw [← funext (dimensionAt_source frame.owners),← funext (dimensionAt_source afterCodes)]
       exact represented column row bounded
   obtain ⟨results,merged,related⟩ :=
     RuntimeOriginalClassicalJoin.merge_paired_family choice actual.classical transport paired mergeStep
-  refine ⟨choice,condition,frame,output,beforeCodes,afterCodes,expected,returned,results,
-    inputRead,layoutsEq,outputRead,sourceRead,bodyRead,?_,related⟩
+  refine ⟨choice,condition,expected,returned,results,sourceRead,bodyRead,?_,related⟩
   rw [actualStep,original_arm_run trace choice history,bodyRead]
   exact merged
 

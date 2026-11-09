@@ -35,6 +35,7 @@ structure SourceHistory where
   outcomes : List (List Edge × Nat)
   measurements : List Bool
   operator : Nat → Nat → ℂ
+  branches : List (List Edge × Bool) := []
 
 /-- Keep the complete source owner state, the original outcome order and the
 ordinary SSA interpretation on the same encoded history. -/
@@ -69,7 +70,8 @@ theorem source_branch_choice {sources rootOwner rootName owner name dependencies
 
 private def recordObservation (source : SourceHistory) (site : List Edge) (survivors : Map) (measured : Option Nat)
     (result : Nat × (Nat → Nat → ℂ)) : SourceHistory :=
-  { owners := {source.owners with bindings := survivors}
+  { source with
+    owners := {source.owners with bindings := survivors}
     outcomes := source.outcomes ++ [(site,result.1)]
     measurements := source.measurements ++ (if measured.isSome then [result.1 == 1] else [])
     operator := result.2 }
@@ -122,6 +124,14 @@ private theorem sameFrame_represents {state firstRoles secondRoles}
     RepresentsOperator (sameFrame same frame) history operator := by
   intro col row bound
   simpa only [referenceAction, Frame.embedding, sameFrame, ← same] using represented col row bound
+
+theorem HistoryAgrees.represents {inputs state owners ordinary source history roles}
+    (agrees : HistoryAgrees inputs state owners ordinary source history)
+    (checked : RuntimeOwnerMap.Checked roles state) (bindings : checked.bindings = owners.bindings) :
+    ∃ frame : Frame checked, RepresentsOperator frame history source.operator := by
+  obtain ⟨_,_,_,_,_,actual,actualBindings,frame,represented⟩ := agrees
+  have same := actualBindings.trans bindings.symm
+  exact ⟨sameFrame same frame,sameFrame_represents same frame represented⟩
 
 private theorem sourceNamedPrimitive_refines {artifact root execution fuel program block step}
     (held : @Occurrence root.dependencies program block step)

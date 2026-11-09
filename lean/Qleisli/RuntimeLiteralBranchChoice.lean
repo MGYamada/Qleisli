@@ -95,6 +95,17 @@ def sourceChoice (reference : RuntimeOrdinarySSA.Valuation) (condition : Runtime
   | some 1 => some true
   | _ => none
 
+theorem sourceChoice_eval_iff {reference condition choice} :
+    sourceChoice reference condition = some choice ↔
+      Semantics.SourceOrdinary.evaluate reference condition = some (bitValue choice) := by
+  unfold sourceChoice
+  cases read : Semantics.SourceOrdinary.evaluate reference condition with
+  | none => simp
+  | some value =>
+    cases value with
+    | zero => cases choice <;> decide
+    | succ value => cases value <;> cases choice <;> simp [bitValue]
+
 /-- The selected source condition reads the same values and measurement keys
 as the actual Raw branch. The independently read event uses the actual child
 fuel and runs that arm's events, then applies the literal parent merge. -/

@@ -105,6 +105,7 @@ import Qleisli.RuntimeLiteralReturnOrder
 import Qleisli.RuntimeLiteralBranchChoice
 import Qleisli.RuntimeLiteralConditionalArms
 import Qleisli.RuntimeLiteralLocalRefinement
+import Qleisli.RuntimeLiteralConditionalRefinement
 import Qleisli.RuntimeOriginalBranchJoin
 import Qleisli.RuntimeNamedObservationEntry
 import Qleisli.RuntimeSectorPrefix

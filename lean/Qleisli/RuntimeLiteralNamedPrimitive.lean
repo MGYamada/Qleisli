@@ -14,6 +14,7 @@ open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory pureHistory_operator
 open Qleisli.RuntimeNamedCallerAction (canonicalJoint updatedJoint)
 open Qleisli.RuntimeNamedHeadCoefficients (applyHead)
 open Qleisli.RuntimeForestProduct (referenceAction)
+open Qleisli.RuntimeForestRegroup (sourceDimension dimensionAt_source)
 open RuntimeForestCode (Frame)
 open RuntimeOwnerMap (Binding Map)
 open RuntimeNamedPrimitiveOccurrence (Occurrence)

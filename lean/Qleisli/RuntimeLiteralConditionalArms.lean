@@ -14,7 +14,7 @@ open RuntimePureBody (BlockRunner BlockResult Step Steps reordered runBlockCore)
 open RuntimeOwnerMap (Binding Owner)
 open Qleisli.RuntimeNamedChildRuns (ConditionalRun Flow core_flow)
 
-private def stepList {dependencies program block} :
+def stepList {dependencies program block} :
     @Steps dependencies program block → List (@Step dependencies program block)
   | .nil => []
   | .cons first rest => first :: stepList rest

@@ -10,6 +10,7 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.Semantics.ObservingAction (History)
 open Qleisli.RuntimeForestProduct (referenceAction)
+open Qleisli.RuntimeForestRegroup (sourceDimension dimensionAt_source)
 open Qleisli.RuntimeForestOrderedProduct (ordered_product_action product_agrees frame_product_agrees sparseProduct)
 open RuntimeForestCode (Frame)
 open RuntimeOwnerCodeReindex (dimensionAt reindex_exists)
