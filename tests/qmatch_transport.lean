@@ -1283,7 +1283,7 @@ private def spectatorsData {dependencies program block} : RuntimePureBody.Step d
       (fun port => (port.token,port.wires,port.bits)))
   | _ => none
 
-private abbrev MiddleData := String × Nat × List RuntimeSelectionSteps.Edge × Nat × Nat
+private abbrev MiddleData := String × Nat × Nat × List RuntimeSelectionSteps.Edge × Nat × Nat
 
 private def middleCoversCall {dependencies rootItem rootCount program block step}
     {witness : @RuntimeSelectionSteps.Witness dependencies rootItem rootCount}
@@ -1303,10 +1303,10 @@ private def retainedMiddleData {dependencies rootItem rootCount program block st
   match middle,held with
   | .named (event := event) node _,held =>
     have _sameRead : RuntimeInterval.Computed (RuntimeSelectionWitness.read node) held.literal := held.obtained
-    have _sameOccurrence : RuntimeSelectionSteps.At witness 0 held.path
+    have _sameOccurrence : RuntimeSelectionSteps.At witness held.rank held.path
       ⟨_,_,0,node,held.literal,held.obtained⟩ := held.original
     let size := literalSize held.literal
-    (event.target.resolution.declaration.name,event.call.calleeOffset,held.path,size.1,size.2)
+    (event.target.resolution.declaration.name,event.call.calleeOffset,held.rank,held.path,size.1,size.2)
 
 
 private def checkOrderedOriginalCalls : WorkM Unit := do
@@ -1332,7 +1332,7 @@ private def checkOrderedOriginalCalls : WorkM Unit := do
     some (0,1,[2],[[2]]),some (1,3,[1,2],[[1],[2]]),some (4,1,[2],[[2]])]) .invalid
   guard ([view.pre,view.center,view.post].map spectatorsData == [
     some [(8,[],0),(0,[0],1)],some [(8,[],0)],some [(8,[],0),(5,[0],1)]]) .invalid
-  guard (middle == ("choose",553,
+  guard (middle == ("choose",553,0,
     [.nextOrdinal 1,.atOrdinal 1,.named 1 "main" "route" 553 "main" "choose",.atOrdinal 0,.pureStep 0],1,1)) .invalid
   guard (body.selections.count == 1) .invalid
   -- This is the complete list, not a filtered list of named calls. These
