@@ -25,7 +25,9 @@ development milestones from the scope of their evidence.
   regrouping preserves the physical operator, visible values and hidden
   outcomes. The common arm induction carries the independent sparse source
   layout through successive structural operations, ordinary SSA gaps and the
-  written return order.
+  written return order. Carry the sparse source frame through the selected
+  arm's exact quantum phi permutation and the simultaneous classical SSA
+  merge, retaining the original order and multiplicity of results.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

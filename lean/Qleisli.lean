@@ -129,6 +129,7 @@ import Qleisli.RuntimeStructuralWires
 import Qleisli.RuntimeSemanticForest
 import Qleisli.RuntimeStructuralSourceAction
 import Qleisli.RuntimeStructuralHistory
+import Qleisli.RuntimeOriginalSparsePhi
 import Qleisli.RuntimeLiteralStructuralRefinement
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction
