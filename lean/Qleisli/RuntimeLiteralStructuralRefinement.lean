@@ -29,17 +29,20 @@ def SemanticHistoryAgreesWithInherited := EncodedHistoryAgreesWithInherited Sema
 def SemanticHistoryAgrees := SemanticHistoryAgreesWithInherited none
 
 theorem sparse_history_at_arm_entry {parent child owners ordinary source history}
-    (inputs : List Nat)
+    (inputs : List Nat) {inherited : Option (Nat → Prop)}
     (live : child.quantum.live = parent.quantum.live) (axes : child.quantum.frame = parent.quantum.frame)
     (issued : parent.classical ⊆ child.classical)
-    (agrees : SemanticHistoryAgrees inputs parent owners ordinary source history) :
-    SemanticHistoryAgrees inputs child owners ordinary source history := by
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs parent owners ordinary source history) :
+    SemanticHistoryAgreesWithInherited inherited inputs child owners ordinary source history := by
   obtain ⟨sourceOwners,hidden,bits,values,roles,checked,bindings,input,represented⟩ := agrees
   let entry : RuntimeOwnerMap.Checked roles child :=
     ⟨checked.bindings,checked.ordered,checked.ownersDistinct,checked.tokensDistinct,live.symm ▸ checked.complete⟩
   refine ⟨sourceOwners,hidden,bits,⟨values.1,?_⟩,roles,entry,bindings,input,?_⟩
   · intro id member
-    exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+    cases inherited with
+    | none => exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+    | some _ =>
+      exact (values.2 member).imp (fun held => held) (Qleisli.RuntimeObservingPrefix.issued_mono issued)
   · intro column row bound
     rw [axes] at bound ⊢
     exact represented column row bound
@@ -224,11 +227,12 @@ theorem Execution.sparse_structure_refinement {dependencies program block initia
 /-- The written return order reindexes the same sparse source operator on
 every finite physical row and retains its original history. -/
 theorem sparse_return_refines {state roles before ordinary}
-    (inputs : List Nat) (returned : RuntimeOwnerMap.Checked roles state)
+    (inputs : List Nat) {inherited : Option (Nat → Prop)}
+    (returned : RuntimeOwnerMap.Checked roles state)
     (read : RuntimeInterval.Computed (RuntimePureBody.reordered roles state before.bindings) returned)
     {source history}
-    (agrees : SemanticHistoryAgrees inputs state before ordinary source history) :
-    SemanticHistoryAgrees inputs state {before with bindings := returned.bindings} ordinary
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs state before ordinary source history) :
+    SemanticHistoryAgreesWithInherited inherited inputs state {before with bindings := returned.bindings} ordinary
       (returnHistory returned.bindings source) history := by
   obtain ⟨owners,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
   have readBound : RuntimeInterval.Computed
@@ -248,8 +252,10 @@ theorem sparse_return_refines {state roles before ordinary}
     source.operator row column
   simpa only [returnHistory,owners,RuntimeLiteralHistory.sourceReturn] using original.trans order
 
-def sparseArmEncodingLaws (inputs : List Nat) : ArmEncodingLaws SemanticHistoryEncoding inputs :=
-  ⟨sparse_history_at_arm_entry inputs,sparse_return_refines inputs⟩
+def sparseArmEncodingLaws (inputs : List Nat) (inherited : Option (Nat → Prop) := none) :
+    ArmEncodingLaws SemanticHistoryEncoding inputs inherited :=
+  ⟨sparse_history_at_arm_entry inputs (inherited := inherited),
+    sparse_return_refines inputs (inherited := inherited)⟩
 
 #print axioms HistoryAgrees.toSemantic
 #print axioms sourceStep_with_inherited_gaps

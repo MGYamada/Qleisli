@@ -90,7 +90,9 @@ theorem source_branch_choice {sources rootOwner rootName owner name dependencies
     (checked : @RuntimeBranchCondition.Checked sources rootOwner rootName owner name dependencies program
       block offset path event actual ordinary)
     (inputs : List Nat) (member : inputs ∈ checked.inputs.rows) {expected history events}
-    (agrees : EncodedHistoryAgrees encoding inputs actual.interval.before owners ordinary expected history)
+    {inherited : Option (Nat → Prop)}
+    (agrees : EncodedHistoryAgreesWithInherited encoding inherited inputs
+      actual.interval.before owners ordinary expected history)
     (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
       some (actual.interval.after.quantum.reference,events)) :
     ∃ trace : Qleisli.RuntimeOriginalBranch.Trace actual, ∃ choice,
@@ -466,16 +468,17 @@ private theorem history_at_arm_entry {parent child owners ordinary source histor
     simpa only [referenceAction,RuntimeForestCode.Frame.embedding,frame,entry,axes] using actual
 
 /-- Operations on the inherited representation at the checked arm boundaries. -/
-structure ArmEncodingLaws (encoding : HistoryEncoding) (inputs : List Nat) : Prop where
+structure ArmEncodingLaws (encoding : HistoryEncoding) (inputs : List Nat)
+    (inherited : Option (Nat → Prop) := none) : Prop where
   entered : ∀ {parent child owners ordinary source history},
       child.quantum.live = parent.quantum.live → child.quantum.frame = parent.quantum.frame →
       parent.classical ⊆ child.classical →
-      EncodedHistoryAgrees encoding inputs parent owners ordinary source history →
-      EncodedHistoryAgrees encoding inputs child owners ordinary source history
+      EncodedHistoryAgreesWithInherited encoding inherited inputs parent owners ordinary source history →
+      EncodedHistoryAgreesWithInherited encoding inherited inputs child owners ordinary source history
   ordered : ∀ {state roles before ordinary} (returned : RuntimeOwnerMap.Checked roles state),
       RuntimeInterval.Computed (RuntimePureBody.reordered roles state before.bindings) returned →
-      ∀ {source history}, EncodedHistoryAgrees encoding inputs state before ordinary source history →
-      EncodedHistoryAgrees encoding inputs state {before with bindings := returned.bindings} ordinary
+      ∀ {source history}, EncodedHistoryAgreesWithInherited encoding inherited inputs state before ordinary source history →
+      EncodedHistoryAgreesWithInherited encoding inherited inputs state {before with bindings := returned.bindings} ordinary
         (returnHistory returned.bindings source) history
 
 def nativeArmEncodingLaws (inputs : List Nat) : ArmEncodingLaws NativeHistoryEncoding inputs :=
@@ -488,23 +491,25 @@ theorem ArmFlow.refinement_with {artifact root mode fuel rootInputs program bloc
     (arm : @ArmFlow artifact root mode (RuntimePureBody.runBlockCore artifact root mode fuel) rootInputs
       program block inputRoles outputRoles before after ordinary finalOrdinary steps parent rawExit output events)
     (encoding : HistoryEncoding) (inputs : List Nat) (sourceInitial : SourceHistory) (initial : History)
-    {results}
+    {results} {inherited : Option (Nat → Prop)}
     (next : List (Step root.dependencies program block) → Step root.dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (localLaw : StepRefinement steps
       (CheckedStep (RuntimePureBody.runBlockCore artifact root mode fuel))
-      next (fun _ => EncodedHistoryAgrees encoding inputs))
-    (laws : ArmEncodingLaws encoding inputs)
-    (agrees : EncodedHistoryAgrees encoding inputs parent before ordinary sourceInitial initial)
-    (executed : run root.dependencies block.fuel events initial = some results) :
+      next (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)))
+    (laws : ArmEncodingLaws encoding inputs inherited)
+    (agrees : EncodedHistoryAgreesWithInherited encoding inherited inputs parent before ordinary sourceInitial initial)
+    (executed : run root.dependencies block.fuel events initial = some results)
+    (writes : TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) events := by trivial) :
     ∃ expected,
       runSourceArm next inputRoles outputRoles steps sourceInitial = some expected ∧
-      List.Forall₂ (EncodedHistoryAgrees encoding inputs rawExit after finalOrdinary) expected results := by
+      List.Forall₂ (EncodedHistoryAgreesWithInherited encoding inherited inputs rawExit after finalOrdinary) expected results := by
   have entry := laws.ordered arm.input arm.inputRead
     (laws.entered arm.live arm.axes arm.issued agrees)
-  obtain ⟨expected,sourceRun,paired⟩ := (arm.trace.executes_singleton executed).ordered_refinement
-    arm.flow.source arm.flow.ordinary next (fun _ => EncodedHistoryAgrees encoding inputs) [] _
-    arm.flow.calls localLaw (.cons entry .nil)
+  obtain ⟨expected,sourceRun,paired⟩ := (arm.trace.executes_singleton executed).ordered_refinement_with_writes
+    arm.flow.source arm.flow.ordinary next (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs) [] _
+    arm.flow.calls writes localLaw (.cons entry .nil)
   refine ⟨expected.map (returnHistory output.bindings),?_,?_⟩
   · have initialOrder : inputRoles.mapM (byOwner sourceInitial.owners.bindings) = some arm.input.bindings := by
       rw [agrees.1]
@@ -520,7 +525,7 @@ theorem ArmFlow.refinement_with {artifact root mode fuel rootInputs program bloc
     apply paired.imp
     intro source actual matched
     apply laws.ordered output arm.outputRead
-    exact Eq.mp (congrArg (fun state => EncodedHistoryAgrees encoding inputs state arm.beforeReturn finalOrdinary source actual)
+    exact Eq.mp (congrArg (fun state => EncodedHistoryAgreesWithInherited encoding inherited inputs state arm.beforeReturn finalOrdinary source actual)
       arm.sameExit) matched
 
 /-- Use the same concrete source-step induction for an actual recursive arm.
@@ -542,6 +547,7 @@ theorem ArmFlow.source_refinement {artifact root mode fuel rootInputs program bl
       runSourceArm (sourceStep other scope) inputRoles outputRoles steps sourceInitial = some expected ∧
       List.Forall₂ (HistoryAgrees inputs rawExit after finalOrdinary) expected results := by
   exact arm.refinement_with NativeHistoryEncoding inputs sourceInitial initial (sourceStep other scope)
+    (inherited := none)
     (sourceStep_refines steps inputs scope other remaining)
     (nativeArmEncodingLaws inputs) agrees executed
 

@@ -17,12 +17,13 @@ open Qleisli.Semantics.ObservingAction (History run)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains reference_measurement_row
   sourceChoice sourceChoice_eval_iff)
 open Qleisli.RuntimeOriginalBranchJoin
-  (armChecked armPermutation original_arm_run original_branch_join_with original_native_phi_history sourcePhiIndex)
+  (armChecked armPermutation original_arm_run original_branch_join_with_inherited original_native_phi_history sourcePhiIndex)
 open Qleisli.RuntimeOriginalSparsePhi (original_sparse_phi_history)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun ConditionalRun)
-open Qleisli.RuntimeObservingValueRetention (run_values run_retains_values)
-open Qleisli.RuntimeObservingPrefix (issued_mono)
+open Qleisli.RuntimeObservingValueRetention (Supports run_values run_retains_values)
+open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
+open Qleisli.RuntimeObservingWrites (WritesWithin)
 open RuntimePureBody (Step Steps runBlockCore)
 open RuntimeOrdinarySSA (Agreement bitValue)
 open RuntimeSelectionSteps (Edge)
@@ -86,13 +87,13 @@ private theorem arm_results {dependencies program} {block : RuntimeInterval.Bloc
     {outputRoles} {before : RuntimeStructuralAction.SourceState}
     {ordinary finalOrdinary : RuntimeOrdinaryBody.State}
     {rawExit events} {history : History} {results expected}
-    (encoding : HistoryEncoding) (inputs : List Nat) (bits : List Bool)
+    (encoding : HistoryEncoding) (inputs : List Nat) (bits : List Bool) (inherited : Option (Nat → Prop))
     (measurements : finalOrdinary.measurements = ordinary.measurements)
     (bitsRead : measurementBits ordinary.measurements history.values = some bits)
     (returned : @RuntimeOwnerMap.Checked outputRoles rawExit)
     (bindings : returned.bindings = before.bindings)
     (executed : run dependencies block.fuel events history = some results)
-    (paired : List.Forall₂ (EncodedHistoryAgrees encoding inputs rawExit before finalOrdinary) expected results) :
+    (paired : List.Forall₂ (EncodedHistoryAgreesWithInherited encoding inherited inputs rawExit before finalOrdinary) expected results) :
     List.Forall₂ (fun source actual =>
       source.measurements = bits ∧ actual.hidden = source.outcomes.map Prod.snd ∧
       Agreement (RuntimeBranchCondition.reference inputs ordinary.measurements bits) actual.values finalOrdinary.table ∧
@@ -143,13 +144,15 @@ private def ChildStepRefinement {dependencies program block offset}
     (left : Steps dependencies program actual.thenBlock) (right : Steps dependencies program actual.elseBlock)
     (certifies : ∀ {program block},Step dependencies program block → Prop)
     (encoding : HistoryEncoding) (inputs : List Nat) (other : ScopedSourceSteps dependencies)
-    (scope : List Edge) (ordinal : Nat) : Prop :=
+    (scope : List Edge) (ordinal : Nat) (inherited : Option (Nat → Prop) := none) : Prop :=
   ((∀ step ∈ stepList left, ConditionInput inputs step) →
     StepRefinement (stepList left) certifies (other (armScope scope ordinal true))
-      (fun _ => EncodedHistoryAgrees encoding inputs)) ∧
+      (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) ∧
   ((∀ step ∈ stepList right, ConditionInput inputs step) →
     StepRefinement (stepList right) certifies (other (armScope scope ordinal false))
-      (fun _ => EncodedHistoryAgrees encoding inputs))
+      (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)))
 
 /-- The original condition and its actual selected arm determine the source
 results before and after the same literal parent phi merge. -/
@@ -162,7 +165,8 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     (elseSteps : Steps root.dependencies program actual.elseBlock)
     (call : ConditionalRun artifact root mode (runBlockCore artifact root mode (fuel+1))
       (.conditional path event body actual actualRead action thenSteps elseSteps))
-    (encoding : HistoryEncoding) (inputs : List Nat) (laws : ArmEncodingLaws encoding inputs)
+    (encoding : HistoryEncoding) (inputs : List Nat)
+    {inherited : Option (Nat → Prop)} (laws : ArmEncodingLaws encoding inputs inherited)
     (transport : ∀ _trace : RuntimeOriginalBranch.Trace actual, ∀ choice joint (current : History),
       encoding (if choice then actual.thenState else actual.elseState)
         (armChecked action.thenFrame action.elseFrame choice).bindings current.operator joint →
@@ -172,19 +176,42 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     (member : inputs ∈ action.condition.inputs.rows) (other : ScopedSourceSteps root.dependencies)
     (scope : List Edge) (ordinal : Nat)
     (remaining : ChildStepRefinement actual thenSteps elseSteps
-      (CheckedStep (runBlockCore artifact root mode fuel)) encoding inputs other scope ordinal)
+      (CheckedStep (runBlockCore artifact root mode fuel)) encoding inputs other scope ordinal inherited)
     {source history events results}
-    (agrees : EncodedHistoryAgrees encoding inputs actual.interval.before before ordinary source history)
+    (agrees : EncodedHistoryAgreesWithInherited encoding inherited inputs actual.interval.before before ordinary source history)
     (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
       some (actual.interval.after.quantum.reference,events))
-    (executed : run root.dependencies block.fuel events history = some results) :
+    (executed : run root.dependencies block.fuel events history = some results)
+    (bounded : TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) events := by trivial) :
     ∃ choice expected,
       sourceChoice (RuntimeBranchCondition.reference inputs ordinary.measurements source.measurements)
         action.condition.required = some choice ∧
       runArms body actual thenSteps elseSteps other scope ordinal source choice = some expected ∧
-      List.Forall₂ (EncodedHistoryAgrees encoding inputs actual.interval.after action.next action.ordinaryAfter)
+      List.Forall₂ (EncodedHistoryAgreesWithInherited encoding inherited inputs actual.interval.after action.next action.ordinaryAfter)
         (expected.map (finishArm action choice)) results := by
-  obtain ⟨trace,chosen,choiceRead,rawRun⟩ := source_branch_choice action.condition inputs member agrees read
+  obtain ⟨trace,chosen,choiceRead,rawRun⟩ := source_branch_choice action.condition inputs member (inherited := inherited) agrees read
+  have eventEq : events = [Qleisli.RuntimeOriginalBranch.branchEvent actual trace.left trace.right] :=
+    congrArg Prod.snd (Option.some.inj (read.symm.trans trace.parentRead))
+  let held := inherited.getD (fun _ => False)
+  have branchWrites : WritesWithin [Qleisli.RuntimeOriginalBranch.branchEvent actual trace.left trace.right]
+      (fun id => ¬ held id) := by
+    cases inherited with
+    | none => exact fun _ _ _ _ impossible => impossible
+    | some _ => exact eventEq ▸ bounded
+  have armWrites (choice : Bool) :
+      TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) (trace.armBody choice) := by
+    cases inherited with
+    | none => trivial
+    | some holds =>
+      intro event present id wrote
+      cases choice
+      · exact branchWrites List.mem_cons_self (.elseArm (List.mem_append.mpr (.inl present)) wrote)
+      · exact branchWrites List.mem_cons_self (.thenArm (List.mem_append.mpr (.inl present)) wrote)
+  have incomingSupport : Supports (fun id => held id ∨ Issued actual.interval.before id) history := by
+    intro id present
+    cases inherited with
+    | none => exact .inr (agrees.2.2.2.1.2 present)
+    | some _ => exact agrees.2.2.2.1.2 present
   have actualArm : ∃ returned, run root.dependencies actual.childFuel (trace.armBody chosen) history = some returned := by
     have ran := executed
     rw [rawRun,original_arm_run] at ran
@@ -210,18 +237,18 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     | false =>
       obtain ⟨arm⟩ := rightRun
       obtain ⟨expected,evaluated,paired⟩ := arm.refinement_with encoding inputs
-        (enterArm scope ordinal false source) history (other (armScope scope ordinal false))
-        (remaining.2 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead
+        (enterArm scope ordinal false source) history (other (armScope scope ordinal false)) (inherited := inherited)
+        (remaining.2 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead (armWrites false)
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
-      exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.elseBlock) encoding inputs source.measurements
+      exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.elseBlock) encoding inputs source.measurements inherited
         (same_measurements action.noElseMeasurements).symm agrees.2.2.1 action.elseFrame bindings.symm bodyRead paired⟩
     | true =>
       obtain ⟨arm⟩ := leftRun
       obtain ⟨expected,evaluated,paired⟩ := arm.refinement_with encoding inputs
-        (enterArm scope ordinal true source) history (other (armScope scope ordinal true))
-        (remaining.1 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead
+        (enterArm scope ordinal true source) history (other (armScope scope ordinal true)) (inherited := inherited)
+        (remaining.1 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead (armWrites true)
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
-      exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.thenBlock) encoding inputs source.measurements
+      exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.thenBlock) encoding inputs source.measurements inherited
         (same_measurements action.noThenMeasurements).symm agrees.2.2.1 action.thenFrame bindings.symm bodyRead paired⟩
   obtain ⟨width,sourceReference⟩ := reference_measurement_row agrees.2.2.1 inputs
   have incoming : Agreement reference history.values ordinary.table := by
@@ -230,15 +257,13 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     rw [sourceReference]
     exact agrees.2.2.2.1.1
   obtain ⟨choice,condition,expected,_,merged,sourceRead,_,mergeRead,paired⟩ :=
-    original_branch_join_with action trace inputs member source.measurements width history
+    original_branch_join_with_inherited action trace inputs member source.measurements width history held branchWrites
       (runArms body actual thenSteps elseSteps other scope ordinal source) (·.operator) (fun source => source.outcomes.map Prod.snd)
       (fun result => result.measurements = source.measurements)
       (fun choice => encoding (if choice then actual.thenState else actual.elseState)
         (armChecked action.thenFrame action.elseFrame choice).bindings)
       (encoding actual.interval.after action.next.bindings)
-      (transport trace) incoming agrees.2.2.2.1.2 armProof
-  have eventEq : events = [Qleisli.RuntimeOriginalBranch.branchEvent actual trace.left trace.right] :=
-    congrArg Prod.snd (Option.some.inj (read.symm.trans trace.parentRead))
+      (transport trace) incoming incomingSupport armProof
   have sameResults : merged = results := by
     have result := executed
     rw [eventEq,actual.depth,Qleisli.RuntimeLiteralHistory.run_single,mergeRead] at result
@@ -249,8 +274,9 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     root.dependencies block.fuel _ _ _ work leftWork checked
   have sameEvents : events = actualEvents := congrArg Prod.snd (Option.some.inj (read.symm.trans literal))
   rw [← sameEvents] at writes
-  have facts := run_values root.dependencies block.fuel events history _ writes
-    (fun id present => issued_mono keeps (agrees.2.2.2.1.2 present)) executed
+  have facts := run_values root.dependencies block.fuel events history
+    (fun id => held id ∨ Issued actual.interval.after id) (writes.mono (fun _ issued => .inr issued))
+    (fun _ present => (incomingSupport present).imp (fun inside => inside) (issued_mono keeps)) executed
   have finalMeasurements := (congrArg RuntimeOrdinaryBody.State.measurements action.ordinaryRead).trans
     action.ordinaryVisible.measurements
   refine ⟨choice,expected,sourceChoice_eval_iff.mpr condition,sourceRead,?_⟩
@@ -263,9 +289,13 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
   change Agreement (RuntimeBranchCondition.reference inputs ordinary.measurements source.measurements)
     result.values action.ordinaryAfter.table at values
   rw [finalReference,← finalMeasurements] at values
-  refine ⟨rfl,hidden,?_,⟨values,support⟩,represented⟩
-  rw [finalMeasurements]
-  exact measured.trans (congrArg some bits.symm)
+  refine ⟨rfl,hidden,?_,⟨values,?_⟩,represented⟩
+  · rw [finalMeasurements]
+    exact measured.trans (congrArg some bits.symm)
+  · intro id present
+    cases inherited with
+    | none => exact (support present).resolve_left (fun impossible => impossible)
+    | some _ => exact support present
 
 /-- The original condition and its actual selected arm determine the source
 results before and after the same literal parent phi merge. -/
@@ -296,7 +326,7 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
       List.Forall₂ (HistoryAgrees inputs actual.interval.after action.next action.ordinaryAfter)
         (expected.map (finishArm action choice)) results := by
   refine source_conditional_refines_with (fuel := fuel+1) action thenSteps elseSteps call NativeHistoryEncoding inputs
-    (nativeArmEncodingLaws inputs) ?_ member (fun atArm => sourceStep (other atArm) atArm)
+    (inherited := none) (nativeArmEncodingLaws inputs) ?_ member (fun atArm => sourceStep (other atArm) atArm)
     scope ordinal ?_ agrees read executed
   swap
   · exact ⟨fun rows => sourceStep_refines _ inputs _ _ (remaining _ _ rows),
@@ -320,22 +350,23 @@ theorem sparse_conditional_refines {artifact : Artifact} {root : Validity.Root}
     (call : ConditionalRun artifact root mode (runBlockCore artifact root mode (fuel+1))
       (.conditional path event body actual actualRead action thenSteps elseSteps))
     (inputs : List Nat) (member : inputs ∈ action.condition.inputs.rows) (other : ScopedSourceSteps root.dependencies)
-    (scope : List Edge) (ordinal : Nat)
+    (scope : List Edge) (ordinal : Nat) {inherited : Option (Nat → Prop)}
     (remaining : ChildStepRefinement actual thenSteps elseSteps
-      (CheckedStep (runBlockCore artifact root mode fuel)) SemanticHistoryEncoding inputs other scope ordinal)
+      (CheckedStep (runBlockCore artifact root mode fuel)) SemanticHistoryEncoding inputs other scope ordinal inherited)
     {source history events results}
-    (agrees : SemanticHistoryAgrees inputs actual.interval.before before ordinary source history)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs actual.interval.before before ordinary source history)
     (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
       some (actual.interval.after.quantum.reference,events))
-    (executed : run root.dependencies block.fuel events history = some results) :
+    (executed : run root.dependencies block.fuel events history = some results)
+    (bounded : TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) events := by trivial) :
     ∃ choice expected,
       sourceChoice (RuntimeBranchCondition.reference inputs ordinary.measurements source.measurements)
         action.condition.required = some choice ∧
       runArms body actual thenSteps elseSteps other scope ordinal source choice = some expected ∧
-      List.Forall₂ (SemanticHistoryAgrees inputs actual.interval.after action.next action.ordinaryAfter)
+      List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs actual.interval.after action.next action.ordinaryAfter)
         (expected.map (finishArm action choice)) results := by
   refine source_conditional_refines_with action thenSteps elseSteps call SemanticHistoryEncoding inputs
-    (sparseArmEncodingLaws inputs) ?_ member other scope ordinal remaining agrees read executed
+    (inherited := inherited) (sparseArmEncodingLaws inputs inherited) ?_ member other scope ordinal remaining agrees read executed bounded
   intro trace choice joint current encoded
   obtain ⟨_,_,_,frame,represented⟩ := encoded
   obtain ⟨output,result⟩ := original_sparse_phi_history actual action.ownerPhis trace choice joint current frame represented
@@ -392,6 +423,44 @@ private noncomputable def withBranchSteps {dependencies program block}
     let expected ← runArms body actual thenSteps elseSteps children scope prior.length source choice
     return expected.map (finishArm action choice)
   | _ => fallback prior step source
+
+/-- The scoped sparse step law uses the smaller original child traversal
+and the literal write exclusion on this occurrence of the branch. -/
+theorem sourceStep_with_inherited_conditionals {artifact root mode fuel program block}
+    (steps : List (Step root.dependencies program block)) (inputs : List Nat) (scope : List Edge)
+    (inherited : Nat → Prop) (rows : ∀ step ∈ steps, ConditionInput inputs step)
+    (children : ScopedSourceSteps root.dependencies)
+    (childLaws : ∀ {program block} (atArm : List Edge) (nested : List (Step root.dependencies program block)),
+      (∀ step ∈ nested, ConditionInput inputs step) →
+      StepRefinement nested (CheckedStep (runBlockCore artifact root mode fuel))
+        (children atArm) (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
+        (some (fun id => ¬ inherited id)))
+    (fallback : List (Step root.dependencies program block) → Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps
+      (fun step => CheckedStep (runBlockCore artifact root mode (fuel+1)) step ∧
+        (match step with | .conditional .. => False | _ => True))
+      fallback (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
+      (some (fun id => ¬ inherited id))) :
+    StepRefinement steps (CheckedStep (runBlockCore artifact root mode (fuel+1)))
+      (withBranchSteps children fallback inputs scope)
+      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
+      (some (fun id => ¬ inherited id)) := by
+  intro prior first later position checked ownerBefore ownerAfter ordinaryBefore ordinaryAfter owners ordinary
+    chunk read writes source history outputs agrees executed
+  have row := rows first (by rw [← position]; exact List.mem_append_right _ List.mem_cons_self)
+  cases first
+  case conditional path event body actual actualRead action thenSteps elseSteps =>
+    rcases owners with ⟨rfl,rfl⟩
+    rcases ordinary with ⟨rfl,rfl⟩
+    obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
+      sparse_conditional_refines (fuel := fuel) action thenSteps elseSteps checked inputs row children
+        scope prior.length (inherited := some inherited)
+        ⟨childLaws _ _,childLaws _ _⟩ agrees read executed writes
+    exact ⟨expected.map (finishArm action choice),
+      by simp only [withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
+  all_goals
+    exact remaining prior _ later position ⟨checked,trivial⟩ owners ordinary read writes agrees executed
 
 /-- Supply the original branch action to the shared source evaluator. -/
 noncomputable def withConditionals {dependencies program block}
@@ -557,7 +626,7 @@ theorem sparseStepsAt_refine {artifact root mode}
       obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
         sparse_conditional_refines (artifact := artifact) (mode := mode) (fuel := depth)
           action thenSteps elseSteps checked.1.1.1 inputs row (sparseStepsAt fallback inputs depth)
-          scope prior.length
+          scope prior.length (inherited := none)
           ⟨ih _ (stepList thenSteps) (by simpa only [ofList_stepList] using leftWitness),
             ih _ (stepList elseSteps) (by simpa only [ofList_stepList] using rightWitness)⟩ agrees read executed
       exact ⟨expected.map (finishArm action choice),
@@ -653,6 +722,7 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
 
 #print axioms source_conditional_refines
 #print axioms sparse_conditional_refines
+#print axioms sourceStep_with_inherited_conditionals
 #print axioms sparseStepsAt_refine
 #print axioms original_body_sparse_steps
 #print axioms original_body_sparse_refinement

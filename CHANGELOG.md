@@ -86,6 +86,8 @@ development milestones from the scope of their evidence.
   checked SSA valuation with inherited IDs when their writes avoid that history.
   The shared ordered prefix proof now transports this bound along each
   literal chunk, including original ordinary gaps and observation outcomes.
+  A conditional passes the bound to the selected original arm and uses it
+  at the simultaneous phi merge, retaining ordered source results.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when
