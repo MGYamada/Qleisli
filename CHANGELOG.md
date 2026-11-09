@@ -84,6 +84,8 @@ development milestones from the scope of their evidence.
   list, so the enclosing check's freshness carries into the child replay.
   Classical gaps, measurement results and classical phi merges preserve the
   checked SSA valuation with inherited IDs when their writes avoid that history.
+  The shared ordered prefix proof now transports this bound along each
+  literal chunk, including original ordinary gaps and observation outcomes.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when

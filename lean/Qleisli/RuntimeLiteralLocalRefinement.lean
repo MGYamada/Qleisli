@@ -20,7 +20,8 @@ open Qleisli.RuntimeLiteralHistory
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun OrdinaryAligned)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains)
-open Qleisli.RuntimeObservingValueRetention (run_retains_values)
+open Qleisli.RuntimeObservingValueRetention (Supports run_retains_values)
+open Qleisli.RuntimeObservingPrefix (Issued)
 open Qleisli.RuntimeOriginalObservationValues (observation_measurement_keys observation_measurement_ids)
 open RuntimeForestCode (Frame)
 open RuntimeNamedPrimitiveOccurrence (Occurrence inspect?)
@@ -38,22 +39,41 @@ structure SourceHistory where
   operator : Nat → Nat → ℂ
   branches : List (List Edge × Bool) := []
 
+def ScopedOrdinaryAgrees (inherited : Option (Nat → Prop))
+    (inputs : List Nat) (state : Raw.Observation.State) (ordinary : RuntimeOrdinaryBody.State)
+    (history : History) : Prop :=
+  RuntimeOrdinarySSA.Agreement (RuntimeOrdinaryBody.valuation inputs ordinary.measurements history.values)
+    history.values ordinary.table ∧
+  Supports (fun id => match inherited with
+    | none => Issued state id
+    | some holds => holds id ∨ Issued state id) history
+
 /-- The common arm invariant carries ownership, outcome order, ordinary
-values and the representation of the source operator on the same history. -/
-def HistoryAgreesWith
+values and the representation of the source operator on the same history.
+A child can retain values belonging to an enclosing literal trace. -/
+def HistoryAgreesWithInherited
     (represents : Raw.Observation.State → Map → History → (Nat → Nat → ℂ) → Prop)
+    (inherited : Option (Nat → Prop))
     (inputs : List Nat) (state : Raw.Observation.State)
     (owners : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
     (source : SourceHistory) (history : History) : Prop :=
   source.owners = owners ∧ history.hidden = source.outcomes.map Prod.snd ∧
   measurementBits ordinary.measurements history.values = some source.measurements ∧
-  Agrees inputs state ordinary history ∧ represents state owners.bindings history source.operator
+  ScopedOrdinaryAgrees inherited inputs state ordinary history ∧
+    represents state owners.bindings history source.operator
+
+def HistoryAgreesWith
+    (represents : Raw.Observation.State → Map → History → (Nat → Nat → ℂ) → Prop) :=
+  HistoryAgreesWithInherited represents none
 
 abbrev HistoryEncoding := Raw.Observation.State → Map →
   (Nat → Nat → ℂ) → (Nat → Nat → ℂ) → Prop
 
+def EncodedHistoryAgreesWithInherited (encoding : HistoryEncoding) :=
+  HistoryAgreesWithInherited fun state bindings history operator => encoding state bindings history.operator operator
+
 def EncodedHistoryAgrees (encoding : HistoryEncoding) :=
-  HistoryAgreesWith fun state bindings history operator => encoding state bindings history.operator operator
+  EncodedHistoryAgreesWithInherited encoding none
 
 def NativeHistoryEncoding : HistoryEncoding := fun state bindings actual operator =>
   ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
@@ -139,14 +159,18 @@ noncomputable def sourceStep {dependencies program block}
 
 /-- Record the independently evaluated observation outcomes on the same
 source prefix and update visible measurement keys from the actual results. -/
-theorem observation_results_refine {sources rootOwner rootName caller functionName dependencies program
+theorem observation_results_refine_with_inherited {sources rootOwner rootName caller functionName dependencies program
     path event block position before ssa}
     (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
       program path event block position before ssa)
     (encoding : HistoryEncoding) (inputs : List Nat) (scope : List Edge) (ordinal : Nat)
+    (inherited : Option (Nat → Prop))
     {source : SourceHistory} {history : History} {expected : List (Nat × (Nat → Nat → ℂ))}
     {results : List History}
-    (agrees : EncodedHistoryAgrees encoding inputs observation.checked.interval.before before ssa source history)
+    (agrees : EncodedHistoryAgreesWithInherited encoding inherited inputs
+      observation.checked.interval.before before ssa source history)
+    (unused : ∀ id, observation.checked.measured = some id →
+      Semantics.OrdinaryValue.lookup history.values id = none)
     (erased : sourceErasure observation.checked.operand (RuntimeObservationAction.spectators event)
       before.bindings source.operator = some expected)
     (paired : List.Forall₂ (fun sourceResult result =>
@@ -154,13 +178,13 @@ theorem observation_results_refine {sources rootOwner rootName caller functionNa
         | none => history.values
         | some id => history.values ++ [(id,sourceResult.1 == 1)]) ∧
       result.hidden = history.hidden ++ [sourceResult.1] ∧
-      Agrees inputs observation.checked.interval.after observation.ordinary result ∧
+      ScopedOrdinaryAgrees inherited inputs observation.checked.interval.after observation.ordinary result ∧
       encoding observation.checked.interval.after observation.checked.after.bindings result.operator sourceResult.2)
       expected results) :
     ∃ expectedHistories, sourceObservationStep observation scope ordinal source = some expectedHistories ∧
-      List.Forall₂ (EncodedHistoryAgrees encoding inputs observation.checked.interval.after
+      List.Forall₂ (EncodedHistoryAgreesWithInherited encoding inherited inputs observation.checked.interval.after
         observation.after observation.ordinary) expectedHistories results := by
-  obtain ⟨ownerState,hidden,bits,values,_⟩ := agrees
+  obtain ⟨ownerState,hidden,bits,_,_⟩ := agrees
   have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
   have survivors := Qleisli.RuntimeOriginalObservation.original_after_bindings observation.checked
   let record := recordObservation source (scope ++ [.atOrdinal ordinal])
@@ -182,15 +206,41 @@ theorem observation_results_refine {sources rootOwner rootName caller functionNa
       | some id =>
         rw [measured] at keys
         obtain ⟨key,outputId,keys⟩ := keys
-        have fresh := (observation_measurement_ids observation measured).1
-        have unused := Qleisli.RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (values.2 member))
-        have newBit := Semantics.OrdinaryValue.lookup_append_fresh (expectedResult.1 == 1) unused
+        have newBit := Semantics.OrdinaryValue.lookup_append_fresh (expectedResult.1 == 1) (unused id measured)
         have oldBits := measurementBits_retains _
           (Semantics.OrdinaryValue.append_extends history.values [(id,expectedResult.1 == 1)]) bits
         rw [keys,matched.1,measured]
         unfold measurementBits at oldBits ⊢
         simp only [List.mapM_append,oldBits,List.mapM_cons,List.mapM_nil,outputId,newBit,bind,Option.bind,pure,
           record,recordObservation,measured,Option.isSome,if_true]
+
+theorem observation_results_refine {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa)
+    (encoding : HistoryEncoding) (inputs : List Nat) (scope : List Edge) (ordinal : Nat)
+    {source : SourceHistory} {history : History} {expected : List (Nat × (Nat → Nat → ℂ))}
+    {results : List History}
+    (agrees : EncodedHistoryAgrees encoding inputs observation.checked.interval.before before ssa source history)
+    (erased : sourceErasure observation.checked.operand (RuntimeObservationAction.spectators event)
+      before.bindings source.operator = some expected)
+    (paired : List.Forall₂ (fun sourceResult result =>
+      result.values = (match observation.checked.measured with
+        | none => history.values
+        | some id => history.values ++ [(id,sourceResult.1 == 1)]) ∧
+      result.hidden = history.hidden ++ [sourceResult.1] ∧
+      Agrees inputs observation.checked.interval.after observation.ordinary result ∧
+      encoding observation.checked.interval.after observation.checked.after.bindings result.operator sourceResult.2)
+      expected results) :
+    ∃ expectedHistories, sourceObservationStep observation scope ordinal source = some expectedHistories ∧
+      List.Forall₂ (EncodedHistoryAgrees encoding inputs observation.checked.interval.after
+        observation.after observation.ordinary) expectedHistories results := by
+  have unused : ∀ id, observation.checked.measured = some id →
+      Semantics.OrdinaryValue.lookup history.values id = none := by
+    intro id measured
+    exact Qleisli.RuntimeOriginalClassicalJoin.lookup_unissued
+      (fun present => (observation_measurement_ids observation measured).1 (agrees.2.2.2.1.2 present))
+  exact observation_results_refine_with_inherited observation encoding inputs scope ordinal none agrees unused erased paired
 
 /-- These constructors supply their own local source action law. -/
 def NeedsSourceAction {dependencies program block} : @Step dependencies program block → Prop
