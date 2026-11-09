@@ -75,8 +75,13 @@ development milestones from the scope of their evidence.
   complete native phi list determines the ordered input wires and the fresh
   output frame. The selected histories use that permutation and the same
   simultaneous SSA merge, preserving their order and multiplicity. The
-  connection from this native call law to the source-arm invariant remains
-  a separate proof obligation.
+  source argument assignment now supplies the child's exact input on every
+  physical spectator slice. Its paired execution retains inherited values
+  and the actual issued-ID bounds. The original source return checkpoint
+  uses the same complete native state, and its written owner order
+  determines a single caller encoding for the ordered result family when
+  the child source returns agree on each slice. The recursive source-arm
+  correspondence for these child results remains a proof obligation.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
