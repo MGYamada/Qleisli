@@ -148,6 +148,37 @@ theorem original_branch_join_with {sources rootOwner rootName caller name depend
   rw [actualStep,original_arm_run trace choice history,bodyRead]
   exact merged
 
+/-- The literal selected-arm permutation in the native bounded encoding. -/
+theorem original_native_phi_history {dependencies program block offset source spectators leftRoles rightRoles outputRoles}
+    (actual : @RuntimeInterval.Branch dependencies program block offset)
+    {left : RuntimeOwnerMap.Checked leftRoles actual.thenState}
+    {right : RuntimeOwnerMap.Checked rightRoles actual.elseState}
+    (bound : RuntimeOwnerPhis.Bound actual source spectators leftRoles rightRoles outputRoles left right)
+    (trace : RuntimeOriginalBranch.Trace actual) (choice : Bool)
+    (joint : Nat → Nat → ℂ) (current : History)
+    (frame : Frame (armChecked left right choice)) (encoded : RepresentsOperator frame current joint) :
+    ∃ output : Frame bound.output,
+      RepresentsOperator output (pureHistory dependencies [armPermutation actual choice] current)
+        (fun row column => joint (sourcePhiIndex bound choice row) column) := by
+  let arm := armChecked left right choice
+  have sameBindings : arm.bindings = if choice then left.bindings else right.bindings := by
+    cases choice <;> rfl
+  obtain ⟨output,_,afterCodes,_,_,_,_,quantum⟩ :=
+    original_quantum_phi_action actual bound trace choice arm sameBindings frame
+  obtain ⟨moved,ran,_,_,represented⟩ :=
+    quantum (run dependencies (actual.childFuel-1)) joint current encoded
+  have literal : step dependencies (run dependencies (actual.childFuel-1))
+      (RuntimeOriginalBranch.armFinish (if choice then actual.thenState else actual.elseState).quantum.reference
+        actual.quantum choice) current = some [pureHistory dependencies [armPermutation actual choice] current] := rfl
+  have same : moved = pureHistory dependencies [armPermutation actual choice] current :=
+    List.cons.inj (Option.some.inj (ran.symm.trans literal)) |>.1
+  subst moved
+  refine ⟨output,?_⟩
+  intro column row bounded
+  dsimp only [sourcePhiIndex]
+  rw [← funext (dimensionAt_source frame.owners),← funext (dimensionAt_source afterCodes)]
+  exact represented column row bounded
+
 /-- Carry each expected source result through the original selected arm's
 quantum return permutation and simultaneous classical phi merge. The output
 operator uses the same source result that was paired with the child history. -/
@@ -196,24 +227,7 @@ theorem original_branch_join {sources rootOwner rootName caller name dependencie
         ∀ col, RawFiniteRows.OnRows _ (fun row => actualOperator row col)
           (fun row => referenceAction frame joint row col)) ?_
   intro choice joint current ⟨frame,encoded⟩
-  let arm := armChecked action.thenFrame action.elseFrame choice
-  have sameBindings : arm.bindings = if choice then action.thenFrame.bindings else action.elseFrame.bindings := by
-    cases choice <;> rfl
-  obtain ⟨output,_,afterCodes,_,_,_,_,quantum⟩ :=
-    original_quantum_phi_action actual action.ownerPhis trace choice arm sameBindings frame
-  obtain ⟨moved,ran,_,_,represented⟩ :=
-    quantum (run dependencies (actual.childFuel-1)) joint current encoded
-  have literal : step dependencies (run dependencies (actual.childFuel-1))
-      (RuntimeOriginalBranch.armFinish (if choice then actual.thenState else actual.elseState).quantum.reference
-        actual.quantum choice) current = some [pureHistory dependencies [armPermutation actual choice] current] := rfl
-  have same : moved = pureHistory dependencies [armPermutation actual choice] current :=
-    List.cons.inj (Option.some.inj (ran.symm.trans literal)) |>.1
-  subst moved
-  refine ⟨output,?_⟩
-  intro column row bounded
-  dsimp only [sourcePhiIndex]
-  rw [← funext (dimensionAt_source frame.owners),← funext (dimensionAt_source afterCodes)]
-  exact represented column row bounded
+  exact original_native_phi_history actual action.ownerPhis trace choice joint current frame encoded
 
 #print axioms original_arm_run
 #print axioms original_branch_join_with

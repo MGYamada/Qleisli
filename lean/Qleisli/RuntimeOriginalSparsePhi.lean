@@ -146,6 +146,29 @@ theorem original_sparse_phi {dependencies program block offset source spectators
   exact regroup_action orderedOutput output afterPerm (afterPerm.symm.nodup (bindings_unique bound.output))
     actual.interval.after.quantum.frame reordered row column
 
+/-- The literal selected-arm permutation in the independent sparse encoding. -/
+theorem original_sparse_phi_history {dependencies program block offset source spectators leftRoles rightRoles outputRoles}
+    (actual : @RuntimeInterval.Branch dependencies program block offset)
+    {left : RuntimeOwnerMap.Checked leftRoles actual.thenState}
+    {right : RuntimeOwnerMap.Checked rightRoles actual.elseState}
+    (bound : RuntimeOwnerPhis.Bound actual source spectators leftRoles rightRoles outputRoles left right)
+    (trace : RuntimeOriginalBranch.Trace actual) (choice : Bool)
+    (joint : Nat → Nat → ℂ) (current : History)
+    (frame : Frame (armChecked left right choice).bindings)
+    (encoded : Represents frame (if choice then actual.thenState else actual.elseState) current joint) :
+    ∃ output : Frame bound.output.bindings,
+      Represents output actual.interval.after (pureHistory dependencies [armPermutation actual choice] current)
+        (fun row column => joint (sourcePhiIndex bound choice row) column) := by
+  obtain ⟨output,transport⟩ := original_sparse_phi actual bound trace choice frame
+  obtain ⟨moved,ran,_,_,represented⟩ :=
+    transport (run dependencies actual.childFuel) joint current encoded
+  have literal : step dependencies (run dependencies actual.childFuel)
+      (RuntimeOriginalBranch.armFinish (if choice then actual.thenState else actual.elseState).quantum.reference
+        actual.quantum choice) current = some [pureHistory dependencies [armPermutation actual choice] current] := rfl
+  have same : moved = pureHistory dependencies [armPermutation actual choice] current :=
+    List.cons.inj (Option.some.inj (ran.symm.trans literal)) |>.1
+  exact ⟨output,same ▸ represented⟩
+
 /-- Carry the selected original child result family through both phi kinds
 using the independent sparse representation for its quantum operators. -/
 theorem original_sparse_branch_join {sources rootOwner rootName caller name dependencies program block offset
@@ -195,15 +218,7 @@ theorem original_sparse_branch_join {sources rootOwner rootName caller name depe
           actualOperator row column = RuntimeSemanticForest.action frame actual.interval.after.quantum.frame
             joint row column) ?_
   intro choice joint current ⟨frame,encoded⟩
-  obtain ⟨output,transport⟩ := original_sparse_phi actual action.ownerPhis trace choice frame
-  obtain ⟨moved,ran,_,_,represented⟩ :=
-    transport (run dependencies actual.childFuel) joint current encoded
-  have literal : step dependencies (run dependencies actual.childFuel)
-      (RuntimeOriginalBranch.armFinish (if choice then actual.thenState else actual.elseState).quantum.reference
-        actual.quantum choice) current = some [pureHistory dependencies [armPermutation actual choice] current] := rfl
-  have same : moved = pureHistory dependencies [armPermutation actual choice] current :=
-    List.cons.inj (Option.some.inj (ran.symm.trans literal)) |>.1
-  exact ⟨output,same ▸ represented⟩
+  exact original_sparse_phi_history actual action.ownerPhis trace choice joint current frame encoded
 
 #print axioms original_sparse_phi
 #print axioms original_sparse_branch_join

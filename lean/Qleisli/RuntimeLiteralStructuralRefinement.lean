@@ -17,11 +17,29 @@ open Qleisli.RuntimeStructuralSourceAction (sourceRegroup)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits_retains)
 open Qleisli.RuntimeObservingValueRetention (run_retains_values)
 
-def SemanticHistoryAgrees :=
-  HistoryAgreesWith fun state bindings history operator =>
-    ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
-      checked.bindings = bindings ∧
-        ∃ frame : RuntimeSemanticForest.Frame bindings, Represents frame state history operator
+def SemanticHistoryEncoding : HistoryEncoding := fun state bindings actual operator =>
+  ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
+    checked.bindings = bindings ∧ ∃ frame : RuntimeSemanticForest.Frame bindings,
+      ∀ column row, row < 2^state.quantum.frame.length →
+        actual row column = RuntimeSemanticForest.action frame state.quantum.frame operator row column
+
+def SemanticHistoryAgrees := EncodedHistoryAgrees SemanticHistoryEncoding
+
+theorem sparse_history_at_arm_entry {parent child owners ordinary source history}
+    (inputs : List Nat)
+    (live : child.quantum.live = parent.quantum.live) (axes : child.quantum.frame = parent.quantum.frame)
+    (issued : parent.classical ⊆ child.classical)
+    (agrees : SemanticHistoryAgrees inputs parent owners ordinary source history) :
+    SemanticHistoryAgrees inputs child owners ordinary source history := by
+  obtain ⟨sourceOwners,hidden,bits,values,roles,checked,bindings,input,represented⟩ := agrees
+  let entry : RuntimeOwnerMap.Checked roles child :=
+    ⟨checked.bindings,checked.ordered,checked.ownersDistinct,checked.tokensDistinct,live.symm ▸ checked.complete⟩
+  refine ⟨sourceOwners,hidden,bits,⟨values.1,?_⟩,roles,entry,bindings,input,?_⟩
+  · intro id member
+    exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+  · intro column row bound
+    rw [axes] at bound ⊢
+    exact represented column row bound
 
 private theorem cast_represents {first second : RuntimeOwnerMap.Map}
     (same : first = second) (frame : RuntimeSemanticForest.Frame first)
@@ -179,6 +197,9 @@ theorem sparse_return_refines {state roles before ordinary}
   have order := RuntimeSemanticForest.regroup_action input output permutation.symm unique state.quantum.frame
     source.operator row column
   simpa only [returnHistory,owners,RuntimeLiteralHistory.sourceReturn] using original.trans order
+
+def sparseArmEncodingLaws (inputs : List Nat) : ArmEncodingLaws SemanticHistoryEncoding inputs :=
+  ⟨sparse_history_at_arm_entry inputs,sparse_return_refines inputs⟩
 
 #print axioms HistoryAgrees.toSemantic
 #print axioms sourceStep_with_sparse_structure
