@@ -122,8 +122,8 @@ theorem Execution.ordered_refinement {dependencies program block initial final s
 
 /-- Reuse the ordered induction on any complete original block traversal.
 The independently read Raw execution uses the actual partition and receipts. -/
-theorem refineFlow {artifact root mode next program block start finish steps initialOrdinary finalOrdinary}
-    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next program block start steps finish
+theorem refineFlow {artifact root mode next rootInputs program block start finish steps initialOrdinary finalOrdinary}
+    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next rootInputs program block start steps finish
       initialOrdinary finalOrdinary block.operations.length)
     (last : RuntimeInterval.Checked block block.operations.length 0)
     {SourceHistory : Type} (sourceInitial : SourceHistory) (initial : History) {results : List History}

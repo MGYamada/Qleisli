@@ -1,4 +1,5 @@
 import Qleisli.RuntimeLiteralLocalRefinement
+import Qleisli.RuntimeBranchInputDomain
 
 /-! A conditional uses the original prefix to select an arm, applies the
 shared recursion to its real child receipt, and passes that exact ordered
@@ -105,6 +106,28 @@ private noncomputable def finishArm {sources rootOwner rootName caller name depe
     owners := action.next
     operator := fun row column => source.operator (sourcePhiIndex action.ownerPhis choice row) column}
 
+/-- A condition uses the decoded row of its original checked input domain. -/
+def ConditionInput {dependencies program block} (inputs : List Nat) :
+    Step dependencies program block → Prop
+  | .conditional _ _ _ _ _ action _ _ => inputs ∈ action.condition.inputs.rows
+  | _ => True
+
+private theorem child_condition_inputs {artifact root mode next program block before after steps
+    ordinary finalOrdinary cursor sources rootOwner rootName owner name}
+    {path : RuntimeOrdinaryBody.CallPath sources rootOwner rootName owner name}
+    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next (RuntimeBranchCondition.rootEntries path) program block
+      before steps after ordinary finalOrdinary cursor)
+    (parent : RuntimeBranchCondition.Inputs path) {inputs : List Nat} (member : inputs ∈ parent.rows) :
+    ∀ step ∈ steps, ConditionInput inputs step := by
+  intro step present
+  have origin := flow.conditions step present
+  cases step with
+  | conditional _ _ _ _ _ action _ _ =>
+    have rows := Qleisli.RuntimeBranchInputDomain.same_input_rows action.condition.inputs parent origin
+    change inputs ∈ action.condition.inputs.rows
+    rwa [rows]
+  | _ => exact True.intro
+
 /-- The original condition and its actual selected arm determine the source
 results before and after the same literal parent phi merge. -/
 theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
@@ -118,6 +141,7 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
       (.conditional path event body actual actualRead action thenSteps elseSteps))
     (inputs : List Nat) (member : inputs ∈ action.condition.inputs.rows) (other : ScopedSourceSteps root.dependencies)
     (remaining : ∀ {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)),
+      (∀ step ∈ steps, ConditionInput inputs step) →
       StepRefinement steps
         (fun step => CheckedStep (runBlockCore artifact root mode (fuel+1)) step ∧ NeedsSourceAction step)
         (other scope) (fun _ => HistoryAgrees inputs))
@@ -159,7 +183,8 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
       obtain ⟨arm⟩ := rightRun
       obtain ⟨expected,evaluated,paired⟩ := arm.source_refinement inputs (armScope scope ordinal false)
         (enterArm scope ordinal false source) history (other (armScope scope ordinal false))
-        (remaining (armScope scope ordinal false) (stepList elseSteps)) agrees bodyRead
+        (remaining (armScope scope ordinal false) (stepList elseSteps)
+          (child_condition_inputs arm.flow action.condition.inputs member)) agrees bodyRead
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
       exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.elseBlock) inputs source.measurements
         (same_measurements action.noElseMeasurements).symm agrees.2.2.1 action.elseFrame bindings.symm bodyRead paired⟩
@@ -167,7 +192,8 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
       obtain ⟨arm⟩ := leftRun
       obtain ⟨expected,evaluated,paired⟩ := arm.source_refinement inputs (armScope scope ordinal true)
         (enterArm scope ordinal true source) history (other (armScope scope ordinal true))
-        (remaining (armScope scope ordinal true) (stepList thenSteps)) agrees bodyRead
+        (remaining (armScope scope ordinal true) (stepList thenSteps)
+          (child_condition_inputs arm.flow action.condition.inputs member)) agrees bodyRead
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
       exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.thenBlock) inputs source.measurements
         (same_measurements action.noThenMeasurements).symm agrees.2.2.1 action.thenFrame bindings.symm bodyRead paired⟩
@@ -211,12 +237,34 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
   rw [finalMeasurements]
   exact measured.trans (congrArg some bits.symm)
 
-/-- A condition's canonical input row must belong to its original checked
-input domain. Other steps impose no additional row premise. -/
-def ConditionInput {dependencies program block} (inputs : List Nat) :
-    Step dependencies program block → Prop
-  | .conditional _ _ _ _ _ action _ _ => inputs ∈ action.condition.inputs.rows
-  | _ => True
+/-- Every actual condition in the checked traversal has the original root's
+decoded input row. This also applies to a child's retained traversal when
+its call path reaches the same root. -/
+theorem flow_condition_inputs {artifact root mode next rootInputs program block before after steps
+    ordinary finalOrdinary cursor sources rootOwner rootName signature rootProgram}
+    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next rootInputs program block before steps after
+      ordinary finalOrdinary cursor)
+    {body : @SourceRuntimeTrace.Body sources rootOwner rootName signature}
+    {prepared : RuntimeInterval.Prepared root.dependencies rootProgram} {runtime inputs}
+    {initial : RuntimeOrdinaryInputs.Checked body prepared runtime inputs}
+    {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row initial assignment)
+    (original : rootInputs = RuntimeBranchCondition.rootEntries (.root body)) :
+    ∀ step ∈ steps, ConditionInput row.ordinals step := by
+  intro step present
+  have path := flow.conditions step present
+  cases step with
+  | conditional _ _ _ _ _ action _ _ =>
+    exact Qleisli.RuntimeBranchInputDomain.original_row_member row action.condition.inputs (path.trans original)
+  | _ => exact True.intro
+
+/-- Instantiate the condition-row premise on the actual root body and its
+checked row, without an additional assumption about the input table. -/
+theorem original_body_condition_inputs {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row body.checked.initial assignment) :
+    ∀ step ∈ body.checked.result.steps, ConditionInput row.ordinals step := by
+  obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.original_body body
+  exact flow_condition_inputs flow row rfl
 
 def NeedsNonbranchAction {dependencies program block} : Step dependencies program block → Prop
   | .conditional .. => False
@@ -244,6 +292,7 @@ theorem sourceStep_with_conditionals {artifact root mode fuel program block}
     (rows : ∀ step ∈ steps, ConditionInput inputs step)
     (children : ScopedSourceSteps root.dependencies)
     (childLaws : ∀ {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)),
+      (∀ step ∈ steps, ConditionInput inputs step) →
       StepRefinement steps
         (fun step => CheckedStep (runBlockCore artifact root mode (fuel+1)) step ∧ NeedsSourceAction step)
         (children scope) (fun _ => HistoryAgrees inputs))
@@ -276,6 +325,32 @@ theorem sourceStep_with_conditionals {artifact root mode fuel program block}
     exact ⟨expected.map (finishArm action choice),
       by simp only [withConditionals,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
 
+/-- Use the actual root's checked input row in the shared step theorem. -/
+theorem original_body_source_steps {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row body.checked.initial assignment)
+    (scope : List Edge) (children : ScopedSourceSteps body.root.dependencies)
+    (fallback : List (Step body.root.dependencies body.root.program body.checked.native.block) →
+      Step body.root.dependencies body.root.program body.checked.native.block → SourceHistory → Option (List SourceHistory)) :
+    let mode := RuntimePureBody.ExecutionMode.planned
+      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
+      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
+    (∀ {program block} (scope : List Edge) (steps : List (Step body.root.dependencies program block)),
+      (∀ step ∈ steps, ConditionInput row.ordinals step) →
+      StepRefinement steps
+        (fun step => CheckedStep (runBlockCore artifact body.root mode 126) step ∧ NeedsSourceAction step)
+        (children scope) (fun _ => HistoryAgrees row.ordinals)) →
+    StepRefinement body.checked.result.steps
+      (fun step => CheckedStep (runBlockCore artifact body.root mode 127) step ∧ NeedsNonbranchAction step)
+      fallback (fun _ => HistoryAgrees row.ordinals) →
+    StepRefinement body.checked.result.steps (CheckedStep (runBlockCore artifact body.root mode 127))
+      (sourceStep (withConditionals children fallback row.ordinals scope) scope) (fun _ => HistoryAgrees row.ordinals) := by
+  intro mode childLaws remaining
+  exact sourceStep_with_conditionals (fuel := 125) body.checked.result.steps row.ordinals scope
+    (original_body_condition_inputs body row) children childLaws fallback remaining
+
 #print axioms source_conditional_refines
 #print axioms sourceStep_with_conditionals
+#print axioms original_body_condition_inputs
+#print axioms original_body_source_steps
 end Qleisli.RuntimeLiteralBody

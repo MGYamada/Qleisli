@@ -309,9 +309,9 @@ private theorem history_at_arm_entry {parent child owners ordinary source histor
 /-- Use the same concrete source-step induction for an actual recursive arm.
 The inherited history enters in original source order and returns in the
 checked order consumed by the parent's phi merge. -/
-theorem ArmFlow.source_refinement {artifact root mode fuel program block inputRoles outputRoles
+theorem ArmFlow.source_refinement {artifact root mode fuel rootInputs program block inputRoles outputRoles
     before after ordinary finalOrdinary steps rawExit output events parent}
-    (arm : @ArmFlow artifact root mode (RuntimePureBody.runBlockCore artifact root mode (fuel+1))
+    (arm : @ArmFlow artifact root mode (RuntimePureBody.runBlockCore artifact root mode (fuel+1)) rootInputs
       program block inputRoles outputRoles before after ordinary finalOrdinary steps parent rawExit output events)
     (inputs : List Nat) (scope : List Edge) (sourceInitial : SourceHistory) (initial : History) {results}
     (other : List (Step root.dependencies program block) → Step root.dependencies program block →

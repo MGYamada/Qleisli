@@ -19,8 +19,8 @@ development milestones from the scope of their evidence.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
-  This branch proof requires a canonical input row and smaller-fuel laws for
-  the child steps.
+  Derive the condition's input row from the actual checked root row and its
+  original call path. The recursive proof requires local laws for child steps.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

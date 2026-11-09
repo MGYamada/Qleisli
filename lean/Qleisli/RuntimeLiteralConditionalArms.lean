@@ -12,7 +12,7 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes QleisliKernel.Fi
 open QleisliKernel.Semantics.Observation (Event readOps)
 open RuntimePureBody (BlockRunner BlockResult Step Steps reordered runBlockCore)
 open RuntimeOwnerMap (Binding Owner)
-open Qleisli.RuntimeNamedChildRuns (ConditionalRun Flow core_flow)
+open Qleisli.RuntimeNamedChildRuns (ConditionalRun Flow RootInputs core_flow)
 
 def stepList {dependencies program block} :
     @Steps dependencies program block → List (@Step dependencies program block)
@@ -27,7 +27,7 @@ private theorem stepList_ofList {dependencies program block} (steps : List (@Ste
 
 /-- The actual recursive run supplies the ordered input, flow, exact Raw
 events and ordered output. The phi input frame is the same checked result. -/
-structure ArmFlow {artifact root mode} (next : BlockRunner artifact root mode)
+structure ArmFlow {artifact root mode} (next : BlockRunner artifact root mode) (rootInputs : RootInputs)
     {program block} (inputRoles : List Owner) {outputRoles : List Owner}
     (before after : RuntimeStructuralAction.SourceState) (ordinary finalOrdinary : RuntimeOrdinaryBody.State)
     (steps : List (Step root.dependencies program block)) (parent : Raw.Observation.State)
@@ -39,7 +39,7 @@ structure ArmFlow {artifact root mode} (next : BlockRunner artifact root mode)
   input : RuntimeOwnerMap.Checked inputRoles block.entry
   inputRead : RuntimeInterval.Computed (reordered inputRoles block.entry before.bindings) input
   beforeReturn : RuntimeStructuralAction.SourceState
-  flow : Flow next {before with bindings := input.bindings} steps beforeReturn ordinary finalOrdinary
+  flow : Flow next rootInputs {before with bindings := input.bindings} steps beforeReturn ordinary finalOrdinary
     block.operations.length
   last : RuntimeInterval.Checked block block.operations.length 0
   sameExit : last.before = rawExit
@@ -78,7 +78,8 @@ private theorem checked_arm {artifact : Artifact} {root : Validity.Root}
     {events : List Event}
     (literalRead : readOps block.fuel block.entry.quantum.reference block.operations =
       some (rawExit.quantum.reference,events)) :
-    Nonempty (ArmFlow (runBlockCore artifact root mode fuel) source.initialRoles before result.1.history
+    Nonempty (ArmFlow (runBlockCore artifact root mode fuel) (RuntimeBranchCondition.rootEntries path)
+      source.initialRoles before result.1.history
       ordinary result.1.ordinary result.1.steps parent output events) := by
   obtain ⟨input,inputRead,ownerEnd,flow,last,lastRead,returned⟩ :=
     core_flow artifact root mode fuel .frame source path program request plan before ordinary block result child
@@ -114,11 +115,11 @@ def ConditionalArms {artifact root mode} (next : BlockRunner artifact root mode)
     {program block} (step : Step root.dependencies program block) : Prop :=
   match step with
   | .conditional (before := before) (left := left) (right := right) (ordinary := ordinary)
-      (leftOrdinary := leftOrdinary) (rightOrdinary := rightOrdinary) _ event _ actual _ action thenSteps elseSteps =>
+      (leftOrdinary := leftOrdinary) (rightOrdinary := rightOrdinary) path event _ actual _ action thenSteps elseSteps =>
     ∀ trace : Qleisli.RuntimeOriginalBranch.Trace actual,
-      Nonempty (ArmFlow next (event.held ++ SourceRuntimeValues.owners event.before)
+      Nonempty (ArmFlow next (RuntimeBranchCondition.rootEntries path) (event.held ++ SourceRuntimeValues.owners event.before)
         before left ordinary leftOrdinary (stepList thenSteps) actual.interval.before action.thenFrame trace.left) ∧
-      Nonempty (ArmFlow next (event.held ++ SourceRuntimeValues.owners event.before)
+      Nonempty (ArmFlow next (RuntimeBranchCondition.rootEntries path) (event.held ++ SourceRuntimeValues.owners event.before)
         before right ordinary rightOrdinary (stepList elseSteps) actual.interval.before action.elseFrame trace.right)
   | _ => True
 
