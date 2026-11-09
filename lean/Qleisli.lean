@@ -137,6 +137,8 @@ import Qleisli.RuntimeSparseBlockEncoding
 import Qleisli.RuntimeSparseSelectionAction
 import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeSparseNamedBoundary
+import Qleisli.RuntimeCallTraceFrames
+import Qleisli.RuntimeCallTraceErasure
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection

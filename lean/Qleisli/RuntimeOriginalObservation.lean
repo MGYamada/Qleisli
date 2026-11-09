@@ -231,6 +231,26 @@ private theorem axes_partition (bits : Nat) (axes : List Nat) (unique : axes.Nod
     exact ⟨fun h => ⟨covered h,h⟩,And.right⟩
   exact (selected.append_right _).trans (List.filter_append_perm axes.contains _)
 
+/-- The surviving wires of an erasure are enumerated in the exact compressed
+order. Together with the consumed wires they form a complete coordinate
+permutation of the original frame. -/
+theorem erasure_frame_geometry (frame wires : List Nat) (frameUnique : frame.Nodup)
+    (wireUnique : wires.Nodup) (inside : wires ⊆ frame) :
+    let consumed := wires.map frame.idxOf
+    let surviving := (frame.filter (fun wire => !wires.contains wire)).map frame.idxOf
+    surviving = (List.range frame.length).filter (fun axis => !consumed.contains axis) ∧
+      (consumed ++ surviving).Perm (List.range frame.length) := by
+  intro consumed surviving
+  have kept := kept_indices frame wires frameUnique inside
+  refine ⟨kept,?_⟩
+  change (consumed ++ surviving).Perm _
+  rw [show surviving = _ from kept]
+  apply axes_partition
+  · exact List.Nodup.map_on (fun wire member _ _ equal => (List.idxOf_inj (inside member)).mp equal) wireUnique
+  · intro axis member
+    obtain ⟨wire,present,rfl⟩ := List.mem_map.mp member
+    exact List.mem_range.mpr (List.idxOf_lt_length_of_mem (inside present))
+
 private theorem read_erasure_instruction (fuel : Nat) (before : Semantics.RawTrace.Interface)
     (port : Semantics.Raw.Port) {kind ops output}
     (instruction : RuntimeObservationAction.Reading port.token kind ops output)

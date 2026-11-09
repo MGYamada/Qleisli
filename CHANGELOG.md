@@ -47,6 +47,12 @@ development milestones from the scope of their evidence.
   layouts carry arbitrary spectator and reference amplitudes. The local
   trace preserves inherited values and bounds its writes by the child's
   issued identities.
+  The named-call trace proof relates the exact parent and child wire frames
+  for allocation, erasure, reset, basis lift and Unit moves. For a branch
+  with paired arm outputs, the complete native phi checks determine the same
+  return wires and require an empty spectator list. Each erasure outcome
+  projects the same original amplitude in the parent and child frames and
+  retains the spectator coordinate after compression.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
