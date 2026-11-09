@@ -1,4 +1,5 @@
 import Qleisli.RuntimeCallBranchStep
+import Qleisli.RuntimeObservingReadWrites
 
 /-! Bind the paired history fold to the two retained native reads of the
 actual named call. Each reader uses its own original nesting depth.
@@ -8,8 +9,9 @@ open QleisliKernel QleisliKernel.Qirf
 open Semantics.Observation (readOps)
 open Semantics.Raw (Port)
 open RuntimeCallTraceFrames (Partition)
-open Qleisli.RuntimeObservingPrefix (Issued checkOps_reference_with_writes)
-open Qleisli.RuntimeObservingWrites (WritesWithin)
+open Qleisli.RuntimeObservingPrefix (Issued FreshWrites checkOps_reference_with_writes
+  checkOps_reference_with_fresh_writes)
+open Qleisli.RuntimeObservingWrites (WritesWithin readOps_same_writes)
 
 /-- The parent interval and the fresh local check use the same slice of the
 original operation list. The local reader starts at the actual prepared
@@ -24,8 +26,9 @@ theorem actual_call_segment {dependencies program block start count inputs ordin
         some (scope.interval.after.quantum.reference,parentEvents) ∧
       readOps scope.prepared.block.fuel scope.prepared.block.entry.quantum.reference scope.prepared.block.operations =
         some (scope.localAfter.quantum.reference,childEvents) ∧
-      WritesWithin parentEvents (Issued scope.interval.after) ∧
+      FreshWrites scope.interval.before scope.interval.after parentEvents ∧
       WritesWithin childEvents (Issued scope.localAfter) ∧
+      (∀ allowed, WritesWithin parentEvents allowed ↔ WritesWithin childEvents allowed) ∧
       Segment dependencies parentDepth 64 scope.interval.before.quantum.reference
         scope.prepared.block.entry.quantum.reference scope.interval.after.quantum.reference
         scope.localAfter.quantum.reference spectators parentEvents childEvents := by
@@ -40,14 +43,16 @@ theorem actual_call_segment {dependencies program block start count inputs ordin
       (fun op _ => operation_step_law dependencies parentDepth 64 spectators op)
   obtain ⟨pWork,pLeft,pRan⟩ := parentRead
   obtain ⟨cWork,cLeft,cRan⟩ := scope.nativeRead
-  obtain ⟨_,pEvents,pRead,pWrites⟩ := checkOps_reference_with_writes _ _ _ _ _ pWork pLeft pRan
+  obtain ⟨_,pEvents,pRead,pWrites⟩ := checkOps_reference_with_fresh_writes _ _ _ _ _ pWork pLeft pRan
   obtain ⟨_,cEvents,cRead,cWrites⟩ := checkOps_reference_with_writes _ _ _ _ _ cWork cLeft cRan
   have pEq : pEvents = parentEvents := congrArg Prod.snd (Option.some.inj (pRead.symm.trans parent))
   have cEq : cEvents = childEvents := congrArg Prod.snd (Option.some.inj (cRead.symm.trans child))
-  refine ⟨parentEvents,childEvents,?_,?_,pEq ▸ pWrites,cEq ▸ cWrites,?_⟩
+  refine ⟨parentEvents,childEvents,?_,?_,pEq ▸ pWrites,cEq ▸ cWrites,?_,?_⟩
   · rwa [depth]
   · change readOps 65 scope.prepared.block.entry.quantum.reference ((block.operations.drop start).take count) = _
     rwa [← entry]
+  · intro allowed
+    exact readOps_same_writes allowed (parentDepth+1) 65 _ parent child
   · rw [← entry]
     exact segment
 

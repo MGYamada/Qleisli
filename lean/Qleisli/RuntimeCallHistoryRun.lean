@@ -10,7 +10,8 @@ open QleisliKernel QleisliKernel.Qirf
 open Semantics.Observation (Event readOps)
 open Semantics.Raw (Port)
 open RuntimeCallTraceFrames (Partition)
-open Qleisli.RuntimeObservingPrefix (Issued)
+open Qleisli.RuntimeObservingPrefix (Issued FreshWrites)
+open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values)
 open Qleisli.RuntimeSparseNamedBoundary (visible_entry_agreement)
 open Qleisli.Semantics.ObservingAction (History run)
@@ -25,6 +26,8 @@ structure CheckedCallRun
     some (scope.localAfter.quantum.reference,childEvents)
   paired : Results dependencies block.fuel scope.prepared.block.fuel scope.interval.after.quantum.reference
     scope.localAfter.quantum.reference spectators parentEvents childEvents actual localHistory parents children
+  parentWrites : FreshWrites scope.interval.before scope.interval.after parentEvents
+  sameWrites : ∀ allowed, WritesWithin parentEvents allowed ↔ WritesWithin childEvents allowed
   parentValues : ∀ result ∈ parents,
     Semantics.OrdinaryValue.Extends actual.values result.values ∧
       Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.interval.after id) result
@@ -59,16 +62,16 @@ theorem original_call_run
     rw [depth] at executed
     cases executed
   | succ fuel =>
-    obtain ⟨pEvents,cEvents,pRead,cRead,parentWrites,writes,segment⟩ :=
+    obtain ⟨pEvents,cEvents,pRead,cRead,parentWrites,writes,sameWrites,segment⟩ :=
       actual_call_segment scope fuel depth spectators (RuntimeCallTraceFrames.original_entry scope boundary checked bindings)
     rw [depth] at executed
     have sameEvents : pEvents = parentEvents := congrArg Prod.snd (Option.some.inj (pRead.symm.trans read))
     subst pEvents
     obtain ⟨children,results⟩ := segment.transport actual localHistory agrees parents executed
-    refine ⟨cEvents,children,⟨segment.partition,cRead,?_,?_,?_⟩⟩
+    refine ⟨cEvents,children,⟨segment.partition,cRead,?_,parentWrites,sameWrites,?_,?_⟩⟩
     · simpa only [depth] using results
     · exact run_values dependencies (fuel+1) parentEvents actual _
-        (parentWrites.mono (fun _ issued => Or.inr issued)) (fun _ present => Or.inl present) executed
+        (parentWrites.mono (fun _ written => Or.inr written.1)) (fun _ present => Or.inl present) executed
     · intro high result member
       let allowed := fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.localAfter id
       have support : Supports allowed (localHistory high) := by
@@ -80,6 +83,18 @@ theorem original_call_run
         (writes.mono (fun _ issued => Or.inr issued)) support (results.childRun high) result member
       rw [← agrees.values high] at retained
       exact retained
+
+/-- A local replay can carry the actual inherited history. The enclosing
+call check proves that its original writes cannot shadow those input IDs. -/
+theorem CheckedCallRun.child_writes_avoid_input
+    {dependencies program block start count inputs ordinary effect}
+    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+    {spectators actual localHistory parentEvents childEvents parents children}
+    (checked : CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children)
+    (supported : Supports (Issued scope.interval.before) actual) :
+    WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst) :=
+  (checked.sameWrites _).mp
+    (checked.parentWrites.mono (fun _ written member => written.2 (supported member)))
 
 /-- The actual child keeps the caller's visible ordinary values on each
 physical spectator slice, including expressions evaluated from prior IDs. -/
@@ -98,5 +113,6 @@ theorem visible_child_input
   exact visible_entry_agreement scope ordinals actual ordinaryAgrees
 
 #print axioms original_call_run
+#print axioms CheckedCallRun.child_writes_avoid_input
 #print axioms visible_child_input
 end Qleisli.RuntimeCallHistory

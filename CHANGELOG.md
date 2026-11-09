@@ -79,7 +79,9 @@ development milestones from the scope of their evidence.
   physical spectator slice. Its paired execution retains inherited values
   and bounds result IDs by the actual input history and the checked exit.
   The original checker establishes that every literal write, including both
-  arms and each phi destination, is fresh at the interval's entry.
+  arms and each phi destination, is fresh at the interval's entry. Both
+  native readers issue the same ordinary IDs for the original operation
+  list, so the enclosing check's freshness carries into the child replay.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when
