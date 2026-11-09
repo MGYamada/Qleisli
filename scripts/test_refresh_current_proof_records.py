@@ -126,6 +126,13 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-qmatch-caller-action",
                 "refs/heads/codex/beta-qmatch-selection-flow",
                 "refs/heads/codex/beta-qmatch-selection-input-action",
+                "refs/heads/codex/beta-qmatch-composed-body",
+                "refs/heads/codex/beta-qmatch-packed-output",
+                "refs/heads/codex/beta-qmatch-adjacent-observing",
+                "refs/heads/codex/beta-qmatch-finite-rows",
+                "refs/heads/codex/beta-qmatch-ordinary-phis",
+                "refs/heads/codex/beta-qmatch-history-ids",
+                "refs/heads/codex/beta-qmatch-measurement-values",
                 "refs/heads/codex/beta-quantum-runtime-types",
                 "refs/heads/codex/beta-runtime-static-bindings")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))

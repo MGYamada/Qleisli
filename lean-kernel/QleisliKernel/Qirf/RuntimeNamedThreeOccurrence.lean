@@ -1,9 +1,9 @@
 import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimeNamedPrimitiveOccurrence
 
-/-! Read the middle selection from an original three-call body's stored witness.
-The enclosing list has a one-primitive call on either side. All three positions
-are tied to original steps, including the precise named callee's prepared block.
+/-! Retain an original middle selection at its actual position in a body's
+stored witness. The adjacent-call view ties all three positions to the original
+steps and to each named callee's prepared block.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 
 namespace QleisliKernel.Qirf.RuntimeNamedThreeOccurrence
@@ -49,6 +49,18 @@ structure Three {dependencies program block} (steps : List (Step dependencies pr
   centerSelection : Middle center
   postPrimitive : RuntimeNamedPrimitiveOccurrence.Occurrence post
 
+/-- Three adjacent named calls at a fixed position in the original body. -/
+structure Adjacent {dependencies program block} (steps : List (Step dependencies program block)) where
+  earlier : List (Step dependencies program block)
+  pre : Step dependencies program block
+  center : Step dependencies program block
+  post : Step dependencies program block
+  later : List (Step dependencies program block)
+  original : steps = earlier ++ pre :: center :: post :: later
+  prePrimitive : RuntimeNamedPrimitiveOccurrence.Occurrence pre
+  centerSelection : Middle center
+  postPrimitive : RuntimeNamedPrimitiveOccurrence.Occurrence post
+
 /-- Non-three lists, extra gaps/observations, or different child shapes stay
 unchanged in their original result and yield none. There is no filtered list,
 name/offset lookup, matrix equality or new native validation here. -/
@@ -80,24 +92,6 @@ private def namedEdge {sources caller} (ordinal : Nat) (event : SourceRuntimeCon
   .named ordinal caller event.target.callerName event.call.calleeOffset
     event.target.resolution.moduleName event.target.resolution.declaration.name
 
-private theorem nil_count {dependencies program block ordinal count}
-    (witness : @Witness dependencies (.steps (program := program) (block := block) ordinal .nil) count) : count = 0 := by
-  cases witness with
-  | leaf _ => rfl
-  | selection original _ _ => cases original
-  | child original _ => cases original
-  | pair original _ _ => cases original
-
-private theorem primitive_count {dependencies program block ordinal first size input output role kind count}
-    {action : @RuntimePrimitiveAction.Checked dependencies program block first size input output role kind}
-    {original : RuntimePrimitiveSource.Checked action}
-    (witness : Witness (.node ordinal (.primitive action original)) count) : count = 0 := by
-  cases witness with
-  | leaf _ => rfl
-  | selection original _ _ => cases original
-  | child original _ => cases original
-  | pair original _ _ => cases original
-
 /-- A Type-side retained leaf: executable access to the SAME stored literal
 and its read receipt, with the path certified by the original Witness. -/
 structure SelectionAt {dependencies rootItem rootCount program block}
@@ -105,9 +99,9 @@ structure SelectionAt {dependencies rootItem rootCount program block}
     (node : Node dependencies program block) (ordinal : Nat) where
   literal : RuntimeSelectionWitness.Checked node
   obtained : RuntimeInterval.Computed (RuntimeSelectionWitness.read node) literal
-  one : rootCount = 1
+  rank : Nat
   path : List Edge
-  original : At witness 0 path ⟨program,block,ordinal,node,literal,obtained⟩
+  original : At witness rank path ⟨program,block,ordinal,node,literal,obtained⟩
 
 private structure ConsData {dependencies program block ordinal first rest count}
     (witness : @Witness dependencies (.steps (program := program) (block := block) ordinal (.cons first rest)) count) where
@@ -115,7 +109,6 @@ private structure ConsData {dependencies program block ordinal first rest count}
   b : Nat
   head : Witness (.step ordinal first) a
   tail : Witness (.steps (ordinal+1) rest) b
-  total : count = a+b
   firstLift : ∀ rank path found, At head rank path found → At witness rank (.atOrdinal ordinal :: path) found
   restLift : ∀ rank path found, At tail rank path found → At witness (a+rank) (.nextOrdinal (ordinal+1) :: path) found
 
@@ -128,7 +121,7 @@ private def consData {dependencies program block ordinal first rest count}
   | child original _ => cases original
   | pair original head tail =>
     cases original
-    exact ⟨_,_,head,tail,rfl,fun _ _ _ inside => .first inside,fun _ _ _ inside => .rest inside⟩
+    exact ⟨_,_,head,tail,fun _ _ _ inside => .first inside,fun _ _ _ inside => .rest inside⟩
 
 private structure ChildData {dependencies item count} (witness : @Witness dependencies item count)
     (one : Item dependencies) (edge : Edge) where
@@ -168,19 +161,6 @@ private def namedData {dependencies program block ordinal start count inputs sou
     cases original
     exact ⟨nested,fun _ _ _ inside => .child inside⟩
 
-private theorem primitive_occurrence_count {dependencies program block ordinal step count}
-    (occurrence : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
-    (witness : Witness (.step ordinal step) count) : count = 0 := by
-  cases occurrence with
-  | named _original _bound =>
-    let child := namedData witness
-    let parts := consData child.nested
-    let first := pureData parts.head
-    have total := parts.total
-    have zeroHead := primitive_count first.nested
-    have zeroTail := nil_count parts.tail
-    omega
-
 private def selectionData {dependencies program block ordinal node count}
     (selected : @IsSelection dependencies program block node)
     (witness : Witness (.node ordinal node) count) : SelectionAt witness node ordinal := by
@@ -191,7 +171,7 @@ private def selectionData {dependencies program block ordinal node count}
   | pair original _ _ => cases original
   | selection original literal obtained =>
     cases original
-    exact ⟨literal,obtained,rfl,[],.selection⟩
+    exact ⟨literal,obtained,0,[],.selection⟩
 
 private def singletonData {dependencies program block node count}
     (selected : @IsSelection dependencies program block node)
@@ -200,50 +180,84 @@ private def singletonData {dependencies program block node count}
   let parts := consData witness
   let child := pureData parts.head
   let leaf := selectionData selected child.nested
-  have total := parts.total
-  have one := leaf.one
-  have zero := nil_count parts.tail
-  refine ⟨leaf.literal,leaf.obtained,by omega,.atOrdinal 0 :: .pureStep 0 :: leaf.path,?_⟩
+  refine ⟨leaf.literal,leaf.obtained,leaf.rank,.atOrdinal 0 :: .pureStep 0 :: leaf.path,?_⟩
   exact parts.firstLift _ _ _ (child.liftAt _ _ _ leaf.original)
 
 def RetainedData {dependencies rootItem rootCount program block step}
     (witness : @Witness dependencies rootItem rootCount) : @Middle dependencies program block step → Type
   | .named node _ => SelectionAt witness node 0
 
-/-- Fixed structural projections, not another recursive traversal or reader.
-The path identifies this leaf in the complete stored traversal. -/
-private def retainedData_three {dependencies program block steps count}
-    (witness : @Witness dependencies (.steps 0 (Steps.ofList (program := program) (block := block) steps)) count)
-    (view : Three steps) : RetainedData witness view.centerSelection := by
-  cases view with
-  | mk pre center post order prePrimitive middle postPrimitive =>
-    subst steps
-    cases middle with
-    | named node selected =>
-      change SelectionAt witness node 0
-      change Witness (.steps 0 (.cons pre (.cons _ (.cons post .nil)))) count at witness
-      let whole := consData witness
-      let middle := consData whole.tail
-      let final := consData middle.tail
-      let child := namedData middle.head
+/-- Follow the actual source prefix in the stored witness. Each preceding
+step contributes its real selection count and original ordinal edge. -/
+private def retainedData_at {dependencies program block step count ordinal}
+    (earlier later : List (Step dependencies program block))
+    (occurrence : @Middle dependencies program block step)
+    (witness : @Witness dependencies (.steps ordinal (Steps.ofList (earlier ++ step :: later))) count) :
+    RetainedData witness occurrence := by
+  cases occurrence with
+  | @named start span inputs sources caller before childHistory childRetired ordinary
+      event scope body read boundary finalOrdinary node selected =>
+    let target : Step dependencies program block :=
+      .named event scope body read boundary finalOrdinary (.cons (.pure node) .nil)
+    change SelectionAt witness node 0
+    let atHead {ordinal count : Nat}
+        (w : Witness (.steps ordinal (.cons target (Steps.ofList later))) count) :
+        SelectionAt w node 0 := by
+      let current := consData w
+      let child := namedData current.head
       let leaf := singletonData selected child.nested
-      have total := whole.total
-      have middleCount := middle.total
-      have finalCount := final.total
-      have one := leaf.one
-      have preCount := primitive_occurrence_count prePrimitive whole.head
-      have postCount := primitive_occurrence_count postPrimitive final.head
-      have endCount := nil_count final.tail
-      refine ⟨leaf.literal,leaf.obtained,by omega,.nextOrdinal 1 :: .atOrdinal 1 :: child.edge :: leaf.path,?_⟩
-      have atMiddle := middle.firstLift _ _ _ (child.liftAt _ _ _ leaf.original)
-      have atRoot := whole.restLift _ _ _ atMiddle
-      simpa only [preCount,Nat.zero_add] using atRoot
+      refine ⟨leaf.literal,leaf.obtained,leaf.rank,.atOrdinal ordinal :: child.edge :: leaf.path,?_⟩
+      exact current.firstLift _ _ _ (child.liftAt _ _ _ leaf.original)
+    refine (Nat.rec (motive := fun fuel =>
+      (remaining : List (Step dependencies program block)) → remaining.length ≤ fuel →
+      ∀ {ordinal count : Nat}
+        (w : Witness (.steps ordinal (Steps.ofList (remaining ++ target :: later))) count),
+        SelectionAt w node 0) ?_ ?_ earlier.length) earlier (Nat.le_refl _) witness
+    · intro remaining bound ordinal count current
+      cases remaining with
+      | nil => exact atHead current
+      | cons head tail => exact False.elim (Nat.not_succ_le_zero tail.length bound)
+    · intro fuel recurse remaining bound ordinal count current
+      cases remaining with
+      | nil => exact atHead current
+      | cons head tail =>
+        change Witness (.steps ordinal (.cons head (Steps.ofList (tail ++ target :: later)))) count at current
+        let parts := consData current
+        let held := recurse tail (Nat.le_of_succ_le_succ bound) parts.tail
+        exact ⟨held.literal,held.obtained,parts.a+held.rank,.nextOrdinal (ordinal+1) :: held.path,
+          parts.restLift _ _ _ held.original⟩
+
+private def retainedData_in {dependencies program block steps count step}
+    (witness : @Witness dependencies (.steps 0 (Steps.ofList (program := program) (block := block) steps)) count)
+    (earlier later : List (Step dependencies program block))
+    (occurrence : @Middle dependencies program block step)
+    (split : steps = earlier ++ step :: later) : RetainedData witness occurrence := by
+  subst steps
+  exact retainedData_at earlier later occurrence witness
+
+/-- Retain the original selection at a specified occurrence, with its actual
+global rank and path. The prefix and suffix may contain other selections. -/
+def actual_body_selection {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (earlier later : List (Step body.root.dependencies body.root.program body.checked.native.block))
+    {step : Step body.root.dependencies body.root.program body.checked.native.block}
+    (occurrence : Middle step)
+    (split : body.checked.result.steps = earlier ++ step :: later) :
+    RetainedData body.selections.witness occurrence :=
+  retainedData_in body.selections.witness earlier later occurrence split
 
 def actual_body_middle {artifact owner name arguments request prepared order runtime}
     (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
     (view : Three body.checked.result.steps) : RetainedData body.selections.witness view.centerSelection :=
-  retainedData_three body.selections.witness view
+  actual_body_selection body [view.pre] [view.post] view.centerSelection view.original
 
+def actual_adjacent_middle {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : Adjacent body.checked.result.steps) : RetainedData body.selections.witness view.centerSelection :=
+  actual_body_selection body (view.earlier++[view.pre]) (view.post::view.later) view.centerSelection
+    (by simpa only [List.append_assoc,List.cons_append,List.nil_append] using view.original)
+
+#print axioms actual_body_selection
 #print axioms actual_body_middle
 
 end QleisliKernel.Qirf.RuntimeNamedThreeOccurrence

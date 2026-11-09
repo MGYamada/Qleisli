@@ -103,6 +103,91 @@ theorem original_child_runs {artifact owner name arguments request prepared orde
     primitive_child _ view.postPrimitive (flow.calls view.post
       ((congrArg (fun steps => view.post ∈ steps) view.original).mpr (by simp)))⟩
 
+/-- The real adjacent source steps and all three recursive child reads also
+remain available inside a longer original source body. -/
+theorem original_adjacent_calls {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps) :
+    let execution := RuntimePureBody.ExecutionMode.planned
+      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
+      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
+    let next := RuntimePureBody.runBlockCore artifact body.root execution 127
+    exitState view.pre = entryState view.center ∧
+      exitState view.center = entryState view.post ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.pre ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.center ∧
+      RuntimeNamedChildRuns.ChildRun artifact body.root execution next view.post := by
+  obtain ⟨_initial,_input,_last,flow,_returned⟩ := RuntimeNamedChildRuns.original_body body
+  have source := flow.source
+  rw [view.original] at source
+  obtain ⟨_entry,tail⟩ := source.suffix
+  cases tail with
+  | cons pre tail =>
+    cases tail with
+    | cons center tail =>
+      cases tail with
+      | cons post _ =>
+        exact ⟨(pre.exit (primitive_exit view.prePrimitive)).trans
+            (center.entry (middle_entry view.centerSelection)).symm,
+          (center.exit (middle_exit view.centerSelection)).trans
+            (post.entry (primitive_entry view.postPrimitive)).symm,
+          primitive_child _ view.prePrimitive (flow.calls view.pre
+            ((congrArg (fun steps => view.pre ∈ steps) view.original).mpr (by simp))),
+          middle_child _ view.centerSelection (flow.calls view.center
+            ((congrArg (fun steps => view.center ∈ steps) view.original).mpr (by simp))),
+          primitive_child _ view.postPrimitive (flow.calls view.post
+            ((congrArg (fun steps => view.post ∈ steps) view.original).mpr (by simp)))⟩
+
+/-- The same original source traversal supplies the exact join from a
+preceding destructive observation to the first adjacent named call. -/
+theorem original_observation_join {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    {rootOwner rootName caller functionName path event position before ssa}
+    (observed : @RuntimeOrdinaryBody.Observation artifact.sources rootOwner rootName caller functionName
+      body.root.dependencies body.root.program path event body.checked.native.block position before ssa)
+    (earlier : List (RuntimePureBody.Step body.root.dependencies body.root.program body.checked.native.block))
+    (prefixShape : view.earlier = earlier ++ [.observation observed]) :
+    some observed.after = entryState view.pre := by
+  obtain ⟨_initial,_read,_last,flow,_returned⟩ := RuntimeNamedChildRuns.original_body body
+  have source := flow.source
+  have split : body.checked.result.steps =
+      earlier ++ .observation observed :: view.pre :: view.center :: view.post :: view.later := by
+    calc
+      _ = view.earlier ++ view.pre :: view.center :: view.post :: view.later := view.original
+      _ = (earlier ++ [.observation observed]) ++ view.pre :: view.center :: view.post :: view.later :=
+        congrArg (fun preceding => preceding ++ view.pre :: view.center :: view.post :: view.later) prefixShape
+      _ = _ := by simp only [List.append_assoc,List.cons_append,List.nil_append]
+  rw [split] at source
+  obtain ⟨_state,tail⟩ := source.suffix
+  obtain ⟨entry,read⟩ := primitive_entry view.prePrimitive
+  exact (congrArg some (tail.adjacent (rfl : exitState (.observation observed) = some observed.after) read)).trans
+    read.symm
+
+/-- A terminal adjacent post call supplies the input of the original return
+read, even when the original traversal has preceding observing steps. -/
+theorem original_adjacent_return {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    (view : RuntimeNamedThreeOccurrence.Adjacent body.checked.result.steps)
+    (terminal : view.later = []) :
+    let source := SourceTypes.SourceRuntimeScope.Subject.whole prepared.source.body
+    ∃ last, exitState view.post = some last ∧
+      Returned body.checked.native.block source.outputRoles last body.checked.result.history := by
+  obtain ⟨_initial,_read,last,flow,returned⟩ := original_body body
+  rw [view.original,terminal] at flow
+  obtain ⟨_entry,tail⟩ := flow.suffix
+  cases tail with
+  | cons pre tail =>
+    cases tail with
+    | cons center tail =>
+      cases tail with
+      | cons post tail =>
+        cases tail
+        exact ⟨last,post.exit (primitive_exit view.postPrimitive),returned⟩
+
+#print axioms original_adjacent_return
+#print axioms original_observation_join
+#print axioms original_adjacent_calls
 #print axioms original_three
 #print axioms original_child_runs
 end Qleisli.RuntimeNamedSourceFlow

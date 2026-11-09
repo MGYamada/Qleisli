@@ -387,8 +387,21 @@ block. The retained input read binds the callee's original parameter owners to
 the caller's selected ports and original input owners; the recursive call uses
 the same checked visible ordinary SSA. The input read's remaining work is the
 recursive call's starting work. Its exact result determines the stored
-child steps, returned history and ordinary state. The weaker state-flow law is
-derived from this single strengthened proof. `original_child_runs` supplies
+child steps, returned history and ordinary state. The same stored step list
+carries an `OrdinaryRun` from the actual initial SSA state to the actual
+returned SSA state. It retains the tables and measurement keys across gaps,
+observations, named calls and conditionals, with pure steps preserving both.
+Its literal partition covers the complete original Raw operation list in
+order. `RuntimeLiteralBody.original_body_trace` reads each exact interval
+through the independent observing reader. Adjacent steps share the full Raw
+boundary state, and their events concatenate to the original body's trace.
+`RuntimeLiteralBody.original_body_execution` splits a successful independent
+run at those exact boundaries. Each step runs on every incoming history and
+keeps the interpreter's result order. The execution induction follows the
+same source-owner and SSA chains, so a proved local invariant applies to
+every returned history of the original body.
+The weaker state-flow law is derived from this single strengthened proof.
+`original_child_runs` supplies
 those computations for the actual pre/choose/post view. Other step constructors
 receive no child-provenance assertion here; whole-source code/action and
 observing-history composition, public v5 and full12/64 remain open.
@@ -487,12 +500,110 @@ those facts with the same original child run, indexed Literal, coverage and
 parent-event source law. The source carrier equality is derived from that run,
 not supplied by a caller. Its `original_three_input_actions` consumer retains
 all three complete-input action laws on the same original root event lists.
-The middle result is still expressed in the child's retained output code.
-Connecting that result to the actual complete caller output, whole-function
-logical-action/observing-history composition, public v5 and full12/64 remains
-open. The three-call view is bounded and supplies no general-body coverage.
-These mathematical laws change no native acceptance rule, effect, work limit,
-capability or admitted guarantee.
+The selection output proof uses the child's actual return permutation and
+the original mapping to caller owners. It transports the corresponding sparse
+coefficients through the exact output axes and applies each source arm on every
+spectator coordinate of the joint input. This yields the complete caller output
+in its original owner order, with all reference correlations.
+
+The original input storage and entry read supply the first frame in
+`RuntimeNamedThreeFrameChain.original_three_composed`. At both joins the same
+native state and source owner map carry the preceding output into the next
+call. `RuntimeNamedThreePackedOutput.original_three_packed` also identifies the
+actual final Raw reorder and the original return's owner reindex. Its
+finite-row equation includes the complete packed output for every joint
+logical input and reference coordinate.
+
+`RuntimeNamedThreePackedInstrument.original_three_observing` connects that
+equation to the same independently read observing event list.
+`RuntimeObservingPrefix.checkOps_reference` derives the same quantum
+interface in the independent reader after each successfully checked prefix,
+including erasure, reset and both sides of classical branches.
+`root_interval_histories` uses that agreement to locate an adjacent pure
+interval in the original observing root. The interpreter preserves every
+inherited history and applies the pure action to each operator before
+continuing with the original suffix and final reorder.
+`original_adjacent_observing` locates the three original calls in a longer
+source traversal and retains the selection at its actual global rank. The
+same Raw events drive both the source-action equation and every inherited
+operator column represented in the checked input frame. The law still
+requires that input representation, the supported call shapes, and exact
+adjacency of their Raw slices. The source-action correspondence for general
+observing bodies remains open, along with public v5 and full12/64. The packed
+root law uses explicit whole-slice coverage.
+Native acceptance and work limits remain as specified above.
+
+For a checked original `measure_z` or `discard`,
+`RuntimeOriginalObservation.original_observation_histories` identifies the
+actual Raw erasure event and every emitted outcome. Each unnormalized
+operator on the surviving owner code is the original consumed owner's basis
+effect on that outcome, with the same arbitrary reference coordinates.
+The theorem retains all hidden outcomes and the original visible measurement
+identifier. It requires the input code representation on finite Raw rows.
+`RuntimeNamedObservationEntry.original_supplies_histories` transports every
+outcome into the entry frame of an immediately following original named call,
+using the exact source-state and Raw interval joins. The original checked
+event slices retain their finite input and output widths in
+`RawFiniteRows.checked_slice`. Their action on each inherited history depends
+only on its finite input coefficients.
+`RuntimeNamedObservationEntry.original_erasure_then_adjacent` ties the exact
+prefix, erasure, three-call interval and continuation to one original observing
+IR program. For each erasure outcome, the same three-call source equation acts
+on the unnormalized projected state in the checked post-call frame. It keeps
+the visible measurement and hidden outcome through all three calls. The
+equation applies to every finite post-call row and reference column of a
+represented incoming history. When the post call ends both the original source
+traversal and the Raw operations, the actual suffix is the final permutation.
+The same theorem gives the packed source result in the original return order
+for every outcome and identifies the list of histories returned by the original
+interpreter. General observing-body composition remains open.
+
+`RuntimeNamedChildRuns.original_body` retains the actual input and output owner
+states for classical gaps and conditionals. For each conditional it keeps both
+original recursive arm reads and the successful join on their returned owner
+states and ordinary SSA tables, with the original work counters.
+`RuntimeOriginalBranch.original_branch_events` identifies the exact Raw branch
+event, both arm traces and their final permutations. On a history whose
+ordinary values agree with the checked source expressions,
+`original_branch_step` selects the arm by the source condition.
+`RuntimeOriginalClassicalJoin.original_branch_classical_join` uses the original
+Raw freshness check for every classical phi destination. If the selected arm
+returns histories with their checked SSA agreement and issued identities, the
+literal merge produces one corresponding history per arm result, in order.
+Its visible values agree with the checked post-branch source expressions, and
+its quantum operator and hidden outcomes are those of that arm result.
+`RuntimeOriginalQuantumPhi.original_quantum_phi_action` ties the actual
+arm-final Raw permutation to the complete original owner pairing. It retains
+each owner's exact carrier layout, including separate zero-width owners, and
+derives the source output frame in its checked owner order. The equation holds
+for every finite output row and reference column. A represented arm history
+keeps its ordinary values and hidden outcomes through that exact permutation.
+`RuntimeOriginalBranchJoin.original_branch_join` composes the source condition,
+the original arm run, its quantum return permutation, and the literal
+classical merge. The original parent step returns one checked quantum and
+ordinary history for each actual arm-body result, in order.
+`RuntimeObservingValueRetention.run_values` proves that each successful
+literal history retains all incoming values and only adds IDs from its
+trace. `RuntimeObservingPrefix.checkOps_reference_with_writes` relates those
+writes, including recursive arm writes and phi destinations, to the original
+check's issued IDs. The branch theorem derives this correspondence for every
+arm result from the incoming history's support at the checked boundary.
+`checked_program_values` obtains the same support for a complete original
+run from its own input bindings and native verification.
+`RuntimeOriginalOrdinaryGap.original_gap` interprets the exact original
+classical interval with its checked SSA table. Each output is fresh in the
+actual Raw state, and the independent run returns one history whose values
+agree with the new table. The history retains its operator and hidden outcomes.
+`RuntimeOriginalObservationValues.observation_agreement` binds each actual
+measurement bit to the source measurement key transported through its checked
+call path. The valuation preserves every earlier successful expression,
+including the selected arm of `choose`. Discard preserves the ordinary table,
+and both instructions preserve issued-ID support for the resulting history.
+`original_gap_values` derives agreement in the returned history's own
+valuation. `observation_step_values` gives the same agreement for every
+history of the actual erasure event.
+Arbitrary source arms still need the finite operator representation and SSA
+agreement across their complete bodies.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

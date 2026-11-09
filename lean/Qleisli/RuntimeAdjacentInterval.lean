@@ -85,7 +85,15 @@ private theorem singleOps (deps : List Dependency) (fuel : Nat) (state : Raw.Obs
     intro result
     exact singleBind (singleUnit _) (fun _ => singlePure result)
 
-private theorem underlying {deps fuel initial ops result}
+/-- Two successful reads of the same original operations return one complete
+state, even when the successful work budgets differ. -/
+theorem checkOps_unique {deps fuel state ops first second}
+    (left : Computed (Raw.Observation.checkOps deps fuel state ops) first)
+    (right : Computed (Raw.Observation.checkOps deps fuel state ops) second) : first = second :=
+  singleOps deps fuel state ops left right
+
+/-- Extract the actual ordered step fold from a successful original check. -/
+theorem underlying {deps fuel initial ops result}
     (read : Computed (Raw.Observation.checkOps deps (fuel+1) initial ops) result) :
     Computed (ops.foldlM (Raw.Observation.checkStep deps (Raw.Observation.checkOps deps fuel)) initial) result := by
   obtain ⟨w,l,ran⟩ := read

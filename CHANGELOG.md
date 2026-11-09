@@ -6,6 +6,33 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that each original `measure_z` or `discard` outcome follows the same
+  source equation as its immediately adjacent pre/choose/post Raw interval.
+  The law retains the actual prefix, suffix and outcome records. It compares
+  finite post-call rows and preserves reference columns. When the post call
+  ends the original source traversal and Raw operations, it also gives the
+  original interpreter's packed histories in the written return order.
+
+- Retain both original conditional arm runs and their checked join in the
+  source traversal proof. Relate the literal Raw branch, arm permutations,
+  and the selected arm on an agreed history to the checked source condition.
+  With the selected arm's SSA agreement and issued identities, prove that
+  the literal classical phi merge supplies the checked visible values for
+  every resulting history while preserving its operator and hidden outcomes.
+  Relate the arm-final quantum permutation to the exact owner phi pairing
+  and checked output encoding on every finite row and reference column.
+  Compose both phis on the same ordered arm-body histories, with the checked
+  source condition selecting the original recursive run. Derive retention of
+  incoming ordinary values directly from that interpreter.
+  Prove that each actual history uses only IDs issued by the original check,
+  including through nested branches and both kinds of phi join.
+
+- Compose the three original pre/choose/post logical actions on their actual
+  Raw event slices. Derive the first frame from input storage and the intermediate
+  frames from retained owner receipts. The selection uses its written return
+  order and preserves correlated spectators and external references. The root
+  witness retains the final Raw reorder for the remaining source return proof.
+
 - Connect the actual named selection's source action to its complete caller
   input, using the original ordered owners, code receipts and correlated
   spectator/reference coefficients. Instantiate all three pre/choose/post
@@ -74,6 +101,8 @@ development milestones from the scope of their evidence.
   component retains exact source, provider, call and Meaning checks; general
   nested duties, public v5 and the full qmatch profile remain pending.
 
+- Retry failed mdBook release downloads through the GitHub release asset API
+  and verify the same pinned archive digest before rendering the book.
 - Check Rust lint failures before native preparation and lengthy tests.
 - Compile fresh native bundles in bounded batches in import order, then build
   the complete library and executable before auditing and replaying the same products.
@@ -420,6 +449,19 @@ development milestones from the scope of their evidence.
   the actual history merge and preserves hidden paths, coefficient computations,
   failures and remaining work. Complete source traversal, measurement/input
   binding and public execution integration remain required.
+- Prove that the independent run of each checked original classical interval
+  returns one history with the corresponding source SSA values and preserves
+  its operator and hidden outcomes. Use the original check for output freshness.
+- Bind the original measurement history's fresh bit to the transported source
+  expression. Preserve the preceding SSA agreement through measurement and discard.
+- Retain the ordinary SSA state at each step of the actual body traversal.
+  Derive the post-gap and post-erasure agreement in each returned history's
+  own valuation.
+- Prove that the original traversal's intervals cover the full Raw body in
+  order and reproduce its independent observing trace, with complete shared
+  boundary states between adjacent intervals.
+- Decompose the actual independent body execution at its checked step
+  boundaries and carry per-step invariants along the original state chains.
 - Reuse exact, already checked source-row sets in operation trees while retaining
   every original dependency occurrence and source query. Keep source-byte work
   charges and capacities unchanged; this cache grants no relevance to an unused

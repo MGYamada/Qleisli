@@ -515,6 +515,7 @@ jobs:
     # External presentation toolchain; independent of Qleisli/Cargo/Qargo versions.
     env:
       MDBOOK_VERSION: '0.5.4'
+      MDBOOK_LINUX_ASSET_ID: '468209394'
       MDBOOK_LINUX_SHA256: '3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -524,9 +525,13 @@ jobs:
         run: |
           archive="$RUNNER_TEMP/mdbook.tar.gz"
           tool_dir="$RUNNER_TEMP/mdbook-bin"
-          curl --fail --location --retry 3 \
+          if ! curl --fail --location --retry 3 \
             "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
-            --output "$archive"
+            --output "$archive"; then
+            curl --fail --location --retry 3 --header 'Accept: application/octet-stream' \
+              "https://api.github.com/repos/rust-lang/mdBook/releases/assets/${MDBOOK_LINUX_ASSET_ID}" \
+              --output "$archive"
+          fi
           printf '%s  %s\n' "$MDBOOK_LINUX_SHA256" "$archive" | sha256sum --check --strict
           mkdir -p "$tool_dir"
           tar -xzf "$archive" -C "$tool_dir" mdbook
