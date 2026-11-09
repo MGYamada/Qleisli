@@ -177,7 +177,7 @@ noncomputable def sourceInlinePrimitive {dependencies program block start count 
   let returned ← RuntimeOwnerMap.byOwner source.after.bindings role
   sourcePrimitive source.event incoming source.after.bindings target returned joint
 
-private theorem lookup_owner {roles state} (checked : RuntimeOwnerMap.Checked roles state)
+theorem lookup_owner {roles state} (checked : RuntimeOwnerMap.Checked roles state)
     (binding : Binding) (member : binding ∈ checked.bindings) :
     RuntimeOwnerMap.byOwner checked.bindings binding.owner = some binding := by
   unfold RuntimeOwnerMap.byOwner

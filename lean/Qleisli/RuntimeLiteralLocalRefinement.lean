@@ -101,7 +101,7 @@ private noncomputable def sourceNamedPrimitive {dependencies program block step}
       bound.binding returned source.operator
     return [{source with owners := boundary.after, operator}]
 
-private noncomputable def sourceInlineHistory {dependencies program block start count input output role kind}
+noncomputable def sourceInlineHistory {dependencies program block start count input output role kind}
     {primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
     (original : RuntimePrimitiveSource.Checked primitive) (source : SourceHistory) : Option (List SourceHistory) :=
   (sourceInlinePrimitive original source.owners.bindings source.operator).map fun operator =>

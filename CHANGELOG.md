@@ -31,9 +31,10 @@ development milestones from the scope of their evidence.
   same sparse invariant through the actual checked child traversal of nested
   conditionals and the root's written return. A literal measurement or
   discard applies the original consumed owner's layout to each surviving
-  sparse row, preserving the ordered outcomes and updated SSA values. The
-  theorem still requires local laws for named calls and non-structural pure
-  steps.
+  sparse row, preserving the ordered outcomes and updated SSA values. A
+  direct gate or literal apply-unitary tape uses the original singleton
+  code and the unchanged sparse spectator coefficients. Other pure steps
+  and named calls still require local laws.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

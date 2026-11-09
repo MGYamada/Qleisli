@@ -212,31 +212,27 @@ theorem inline_spectators {dependencies program block start count input output r
     have belongs := List.mem_filter.mp inAfter
     exact List.mem_filter.mpr ⟨spectators binding belongs.1 (by simpa using belongs.2),belongs.2⟩
 
-/-- The original direct primitive acts on the complete returned caller frame.
-The source target and its returned owner are retained, including the relative
-order and exact code of every spectator and arbitrary reference columns. -/
-theorem inline_whole_action {dependencies program block start count input output role kind}
+/-- The original local action preserves its surrounding caller geometry.
+Both code reads are taken from the operated ports and their full source trees. -/
+theorem inline_caller_geometry {dependencies program block start count input output role kind}
     (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
     (source : RuntimePrimitiveSource.Checked primitive)
-    (form : Form) (literal : primitive.interval.operations = [form.operation input output])
-    {roles} (checked : RuntimeOwnerMap.Checked roles primitive.interval.interval.before) (frame : Frame checked)
-    (bindings : checked.bindings = source.frame.bindings) :
-    let before := primitive.interval.interval.before.quantum
-    let after := primitive.interval.interval.after.quantum
-    ∃ events,
-      RuntimeLocalEvents.trace before.reference primitive.interval.operations =
-        some ⟨after.reference,events,before.frame.length⟩ ∧
-      ∃ target ∈ checked.bindings, target.owner = role ∧
-        ∃ returned ∈ source.owners.after.bindings, returned.owner = role ∧
-          ∃ result : Frame source.owners.after,
-          ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
-            Qleisli.Semantics.RawAction.events dependencies events
-                (fun label => referenceAction frame joint label reference) physical =
-              referenceAction result
-                (updatedJoint frame result target returned primitive.expected joint) physical reference := by
-  intro before after
-  obtain ⟨events,trace,target,member,owner,port,unique,interface,localLaw⟩ :=
-    inline_encoded_action primitive source form literal checked frame bindings
+    {roles} (checked : RuntimeOwnerMap.Checked roles primitive.interval.interval.before)
+    (bindings : checked.bindings = source.frame.bindings) (target : Binding)
+    (member : target ∈ checked.bindings) (owner : target.owner = role) (port : target.port = source.inputPort.port)
+    (interface :
+      let before := primitive.interval.interval.before.quantum
+      primitive.interval.interval.after.quantum.reference = Semantics.RawTrace.insert
+        {before.reference with live := before.live.filter (fun p => p.token != target.port.token)}
+        output target.port.wires) :
+    ∃ returned ∈ source.owners.after.bindings, returned.owner = role ∧
+      source.owners.after.bindings.erase returned = checked.bindings.erase target ∧
+      source.interval.after.quantum.frame = primitive.interval.interval.before.quantum.frame ∧
+      returned.port.wires = target.port.wires ∧
+      RuntimeInterval.Computed (Carrier.ownerCode [⟨target.port,target.owner.basis⟩]) primitive.inputCode ∧
+      RuntimeInterval.Computed (Carrier.ownerCode [⟨returned.port,returned.owner.basis⟩]) primitive.outputCode := by
+  let before := primitive.interval.interval.before.quantum
+  let after := primitive.interval.interval.after.quantum
   obtain ⟨returned,present,returnedOwner,returnedPort⟩ := RuntimeNamedPrimitiveOutputs.port_binding source.outputPort
   have originalMember : target ∈ source.frame.bindings := bindings ▸ member
   have spectators := (inline_spectators source target originalMember owner port returned present returnedOwner).trans
@@ -274,6 +270,35 @@ theorem inline_whole_action {dependencies program block start count input output
     rfl
   have inputRead := primitive.inputRead
   rw [inputCarriers] at inputRead
+  exact ⟨returned,present,returnedOwner,spectators,frames,wires,inputRead,outputRead⟩
+
+/-- The original direct primitive acts on the complete returned caller frame.
+The source target and its returned owner are retained, including the relative
+order and exact code of every spectator and arbitrary reference columns. -/
+theorem inline_whole_action {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (source : RuntimePrimitiveSource.Checked primitive)
+    (form : Form) (literal : primitive.interval.operations = [form.operation input output])
+    {roles} (checked : RuntimeOwnerMap.Checked roles primitive.interval.interval.before) (frame : Frame checked)
+    (bindings : checked.bindings = source.frame.bindings) :
+    let before := primitive.interval.interval.before.quantum
+    let after := primitive.interval.interval.after.quantum
+    ∃ events,
+      RuntimeLocalEvents.trace before.reference primitive.interval.operations =
+        some ⟨after.reference,events,before.frame.length⟩ ∧
+      ∃ target ∈ checked.bindings, target.owner = role ∧
+        ∃ returned ∈ source.owners.after.bindings, returned.owner = role ∧
+          ∃ result : Frame source.owners.after,
+          ∀ {Reference : Type} (joint : Nat → Reference → ℂ) physical reference,
+            Qleisli.Semantics.RawAction.events dependencies events
+                (fun label => referenceAction frame joint label reference) physical =
+              referenceAction result
+                (updatedJoint frame result target returned primitive.expected joint) physical reference := by
+  intro before after
+  obtain ⟨events,trace,target,member,owner,port,unique,interface,localLaw⟩ :=
+    inline_encoded_action primitive source form literal checked frame bindings
+  obtain ⟨returned,present,returnedOwner,spectators,frames,wires,inputRead,outputRead⟩ :=
+    inline_caller_geometry primitive source checked bindings target member owner port interface
   have permutation := (List.perm_cons_erase member).symm
   obtain ⟨all,kept⟩ := reindex_exists frame.owners (target::checked.bindings.erase target) permutation.subset
   cases all with

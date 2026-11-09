@@ -132,6 +132,8 @@ import Qleisli.RuntimeStructuralHistory
 import Qleisli.RuntimeOriginalSparsePhi
 import Qleisli.RuntimeOriginalSparseObservation
 import Qleisli.RuntimeLiteralSparseObservation
+import Qleisli.RuntimeSparseHeadAction
+import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralStructuralRefinement
 import Qleisli.RuntimeOwnerTransitionAction
 import Qleisli.RuntimeBitSectorAction

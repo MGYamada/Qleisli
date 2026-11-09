@@ -41,7 +41,7 @@ theorem sparse_history_at_arm_entry {parent child owners ordinary source history
     rw [axes] at bound ⊢
     exact represented column row bound
 
-private theorem cast_represents {first second : RuntimeOwnerMap.Map}
+theorem cast_represents {first second : RuntimeOwnerMap.Map}
     (same : first = second) (frame : RuntimeSemanticForest.Frame first)
     {state history operator} (represented : Represents frame state history operator) :
     Represents (same ▸ frame) state history operator := by
