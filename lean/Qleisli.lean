@@ -35,6 +35,7 @@ import Qleisli.RuntimeFiniteTargetLogical
 import Qleisli.RuntimeFiniteTargetAction
 import Qleisli.RuntimeFiniteTargetGram
 import Qleisli.RuntimeSelectionWitnessAction
+import Qleisli.RuntimeSelectionArmTrace
 import Qleisli.RuntimeSourcePrimitiveAction
 import Qleisli.RuntimeLiteralFrame
 import Qleisli.RuntimeSelectionBoundary
