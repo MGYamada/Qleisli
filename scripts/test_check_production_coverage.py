@@ -23,8 +23,8 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 39)
-        self.assertEqual(result['native_modes'], 17)
+        self.assertEqual(result['production_paths'], 40)
+        self.assertEqual(result['native_modes'], 18)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -142,6 +142,17 @@ class ProductionCoverage(unittest.TestCase):
         ):
             data = copy.deepcopy(self.data)
             next(row for row in data['paths'] if row['id'] == 'qmatch-check')[field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, message):
+                coverage.check(coverage.ROOT, data, self.inventory)
+
+    def test_qmatch_v5_requires_its_separate_native_mode_and_limited_proof_scope(self):
+        for field, value, message in (
+            ('native_modes', ['--qmatch-source-check'], 'classification or binding'),
+            ('proof_scope', 'Complete source preservation', 'qmatch v5 proof scope'),
+            ('gaps', 'All source and runtime proofs are complete', 'qmatch v5 proof scope'),
+        ):
+            data = copy.deepcopy(self.data)
+            next(row for row in data['paths'] if row['id'] == 'qmatch-v5-check')[field] = value
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, message):
                 coverage.check(coverage.ROOT, data, self.inventory)
 
@@ -427,7 +438,7 @@ class ProductionCoverage(unittest.TestCase):
             else:
                 checker(coverage.ROOT)
 
-    def test_current_native_dispatch_uses_all_fourteen_canonical_modes(self):
+    def test_current_native_dispatch_uses_all_canonical_modes(self):
         self.assertEqual(coverage.check_native_dispatch(coverage.ROOT),
                          {mode for row in self.data['paths'] for mode in row['native_modes']})
 

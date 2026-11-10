@@ -215,6 +215,21 @@ QMATCH_PROOF = {
 }
 
 
+QMATCH_V5_PROOF = {
+    'proof_scope': (
+        'NativeContext.run_qmatch_v5_binding connects the execution-only mode to the original v5 packet '
+        'and the exact QDV comparison. CheckedQmatchV5.check_binding binds the actual source-context '
+        'read and description to the complete compared execution view. Original.covers and '
+        'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
+        'Rust retains the compared runtime request and uses it for recheck.'),
+    'gaps': (
+        'The bounded v5 route does not establish complete original source or numerical runtime '
+        'preservation, full twelve-bit/64-label validation, external schemas, broader QS/PR/RS/EXACT '
+        'or S05 discharge, or release readiness. The full original nested provider body proof and '
+        'remaining source language coverage are separate.'),
+}
+
+
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
                 native_modes=modes.split(),
@@ -236,7 +251,7 @@ PATHS = {
             'view.list(&request.parameters,', 'view.list(&request.input_storage,', 'view.effect(request.public_effect)?']),
         ('src/frontend/compile/lower/runtime.rs', ['fn type_tree(', 'fn storage(', 'fn inputs(',
             'values: values.to_vec()', 'registers: lower.raw.registers.clone()',
-            'ordinary::proposed_rows(&ordinary)?', 'check_runtime_root(proposal.artifact(), &bytes)?']),
+            'ordinary::proposed_rows(&ordinary)?', 'check_runtime_root(proposal.artifact(), &request.encode()?)?']),
         ('src/frontend/compile/lower/mod.rs', ['runtime::inputs(&mut lower, *key, &args)?',
             'runtime::accept(&mut lower, key, &params, inputs, &result, &raw)']),
         ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
@@ -272,7 +287,7 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_uses_the_common_original_source_and_named_arm_evidence'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_keeps_public_arm_effects_and_checks_inactive_arms')]),
     'runtime-result-views': path_rule('checked-view', 'runtime-result', '', [
-        ('src/interchange/native.rs', ['pub fn runtime_result(', 'self.runtime_result.is_some()', '"--runtime-root-check"']),
+        ('src/interchange/native.rs', ['pub fn runtime_result(', 'self.runtime_result().is_some()', '"--runtime-root-check"']),
         ('src/frontend/compile/report.rs', ['pub fn entry_runtime_result_checked(']),
         ('src/bin/qleisli/check_report.rs', ['runtime_result_checked', 'program.runtime_result().is_some()']),
     ], [('src/interchange/native/runtime_root/tests.rs', 'runtime_full_request_is_retained_by_execution_clone_and_fresh_recheck'),
@@ -388,6 +403,25 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_context_retains_the_exact_prefix_phase'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_context_preserves_grouped_postorder_calls_and_zero_width_owners'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator')]),
+    'qmatch-v5-check': path_rule('native-acceptance', 'qmatch-component', '--qmatch-source-v5-check', [
+        ('src/interchange/native/qmatch.rs', ['pub fn check_qmatch_source_v5(',
+            'qmatch_v5::complete(prepared.graph(), &request)?', '"--qmatch-source-v5-check"',
+            'prepared.bind(native)?', 'qmatch_result = Some(Arc::new(request))']),
+        ('src/interchange/native.rs', ['"qmatch recheck requires the complete retained request"',
+            'super::execution_view::finite::qmatch_v5::complete(', 'pub fn qmatch_source_checked(']),
+        ('src/interchange/execution_view/finite/qmatch_v5.rs', ['graph.write(&mut writer)?',
+            'source(&mut view, &request.source)?', 'runtime(&mut view, &request.runtime)?',
+            'context(&mut view, &request.context)?']),
+        ('lean-kernel/Protocol/NativeContext.lean', ['| .qmatchSourceV5 => CheckedQmatchV5.run']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean', ['Protocol.Qirf.readAll body',
+            'Protocol.QmatchV5.readRequest requestBytes', 'RuntimeBodyOperations.prepare artifact.val.1',
+            'RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime',
+            '0 < checked.val.selections.count', 'checked.val.coverage.residual = []',
+            'guard (supplied.data == expected.data) .decodedView', 'theorem check_binding ',
+            'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
+    ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
+        ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
         ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
             'pub fn request_bytes(', 'pub fn native(']),
@@ -412,7 +446,7 @@ PATHS = {
         ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
             'prepare_borrowed_originals(originals, SourceLimits::selected())?',
             'let uses = compiler.source.lexical[&key].resolved_uses();',
-            'lower::lower_instance_function(&mut compiler, instance)?', 'compiler.check_dormant_operations()?',
+            'lower::lower_instance_function(&mut compiler, instance, requires_operation_closure)?', 'compiler.check_dormant_operations()?',
             'ClosedSubstitution::named_budgeted(', 'named_instance(&mut compiler, selected, entry,',
             'compiler.check_dormant_controls()?', 'source: selected.clone()', 'pub fn runtime_parameters(']),
         ('src/frontend/compile/selected.rs', ['selected_entry: Some(entry)',
@@ -1211,6 +1245,7 @@ PATHS['hierarchy-qpe']['tests'].extend(
 NATIVE_DISPATCH = {
     '--runtime-root-check': '.runtimeRoot',
     '--qmatch-source-check': '.qmatchSource',
+    '--qmatch-source-v5-check': '.qmatchSourceV5',
     '--ordinary-root-check': '.ordinaryRoot',
     '--qirf-native': '.ordinary',
     '--qirf-contract': '.contract',
@@ -1759,7 +1794,7 @@ PATHS['ordinary-acceptance']['source_bindings'].extend([
         'pub fn check_program(',
         'let mode = program.native.mode();',
         'self.subject(program.artifact(), program.request())?',
-        'let graph = if mode == "--runtime-root-check"',
+        'let graph = match mode', '"--runtime-root-check" => {',
         'program.execution_view_description()?',
         'let retained = AcceptedProgram {',
         '..program.clone()',
@@ -1889,6 +1924,7 @@ for _rule in PATHS.values():
 
 for _id, _binding in {
     'qmatch-check': 'run_qmatch_binding',
+    'qmatch-v5-check': 'run_qmatch_v5_binding',
     'ordinary-result-check': 'run_typed_ordinary_binding',
     'runtime-result-check': 'run_typed_runtime_binding',
     'carrier-check': 'run_carrier_binding',
@@ -1996,6 +2032,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'qmatch-check':
             require({key: row[key] for key in QMATCH_PROOF} == QMATCH_PROOF,
                     'unreviewed qmatch-component proof scope')
+        if row['id'] == 'qmatch-v5-check':
+            require({key: row[key] for key in QMATCH_V5_PROOF} == QMATCH_V5_PROOF,
+                    'unreviewed qmatch v5 proof scope')
         if row['id'] == 'engineering-pure-check':
             require({key: row[key] for key in ENGINEERING_PURE_PROOF} == ENGINEERING_PURE_PROOF,
                     'unreviewed engineering-pure proof scope')
